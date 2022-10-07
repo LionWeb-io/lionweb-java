@@ -3,6 +3,10 @@ package lioncore.java;
 public class Annotation extends MetamodelElement {
     private String platformSpecific;
 
+    public Annotation(Metamodel metamodel, String simpleName) {
+        super(metamodel, simpleName);
+    }
+
     @Override
     public String getSimpleName() {
         throw new UnsupportedOperationException();

@@ -4,6 +4,11 @@ import java.util.List;
 
 public class ConceptInterface extends AbstractConcept {
     private boolean isAbstract;
+
+    public ConceptInterface(Metamodel metamodel, String simpleName) {
+        super(metamodel, simpleName);
+    }
+
     public boolean isAbstract() {
         return this.isAbstract;
     }
