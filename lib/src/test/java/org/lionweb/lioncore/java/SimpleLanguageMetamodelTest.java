@@ -21,10 +21,24 @@ public class SimpleLanguageMetamodelTest {
         Concept expression = new Concept(metamodel, "Expression");
         assertEquals("Expression", expression.getSimpleName());
         assertSame(metamodel, expression.getContainer());
+        assertSame(metamodel, expression.getMetamodel());
         assertEquals("SimpleLanguage.Expression", expression.qualifiedName());
         assertEquals("SimpleLanguage.Expression", expression.namespaceQualifier());
         assertNull(expression.getExtendedConcept());
         assertEquals(0, expression.getImplemented().size());
+        assertEquals(0, expression.getFeatures().size());
         assertFalse(expression.isAbstract());
+    }
+
+    @Test public void emptyConceptInterfaceDefinition() {
+        Metamodel metamodel = new Metamodel("SimpleLanguage");
+        ConceptInterface deprecated = new ConceptInterface(metamodel, "Deprecated");
+        assertEquals("Deprecated", deprecated.getSimpleName());
+        assertSame(metamodel, deprecated.getContainer());
+        assertSame(metamodel, deprecated.getMetamodel());
+        assertEquals("SimpleLanguage.Deprecated", deprecated.qualifiedName());
+        assertEquals("SimpleLanguage.Deprecated", deprecated.namespaceQualifier());
+        assertEquals(0, deprecated.getExtendedInterface().size());
+        assertEquals(0, deprecated.getFeatures().size());
     }
 }

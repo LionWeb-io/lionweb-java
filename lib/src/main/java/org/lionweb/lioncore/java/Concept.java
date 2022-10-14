@@ -25,7 +25,7 @@ public class Concept extends AbstractConcept {
     }
 
     public List<ConceptInterface> getImplemented() {
-        throw new UnsupportedOperationException();
+        return this.implemented;
     }
 
     public void setExtendedConcept(Concept extended) {

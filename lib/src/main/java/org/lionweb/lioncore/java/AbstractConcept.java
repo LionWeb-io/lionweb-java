@@ -4,7 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 public abstract class AbstractConcept extends MetamodelElement implements NamespaceProvider, FeaturesContainer {
-    protected List<Feature> features = new LinkedList<>();
+    private List<Feature> features = new LinkedList<>();
 
     public AbstractConcept(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);

@@ -1,8 +1,8 @@
 package org.lionweb.lioncore.java;
 
 public abstract class MetamodelElement implements NamespacedEntity {
-    protected Metamodel metamodel;
-    protected String simpleName;
+    private Metamodel metamodel;
+    private String simpleName;
 
     public MetamodelElement(Metamodel metamodel, String simpleName) {
         this.metamodel = metamodel;
@@ -10,7 +10,7 @@ public abstract class MetamodelElement implements NamespacedEntity {
     }
 
     public Metamodel getMetamodel() {
-        throw new UnsupportedOperationException();
+        return this.metamodel;
     }
 
     @Override
