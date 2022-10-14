@@ -1,9 +1,12 @@
-package lioncore.java;
+package org.lionweb.lioncore.java;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public class Concept extends AbstractConcept {
     private boolean isAbstract;
+    private Concept extended;
+    private List<ConceptInterface> implemented = new LinkedList<>();
 
     public Concept(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
@@ -13,11 +16,21 @@ public class Concept extends AbstractConcept {
         return this.isAbstract;
     }
 
+    public void setAbstract(boolean anAbstract) {
+        isAbstract = anAbstract;
+    }
+
     public Concept getExtendedConcept() {
-        throw new UnsupportedOperationException();
+        return this.extended;
     }
 
     public List<ConceptInterface> getImplemented() {
         throw new UnsupportedOperationException();
     }
+
+    public void setExtendedConcept(Concept extended) {
+        this.extended = extended;
+    }
+
+
 }

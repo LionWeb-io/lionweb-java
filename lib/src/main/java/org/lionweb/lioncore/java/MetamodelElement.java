@@ -1,6 +1,4 @@
-package lioncore.java;
-
-import java.util.List;
+package org.lionweb.lioncore.java;
 
 public abstract class MetamodelElement implements NamespacedEntity {
     protected Metamodel metamodel;
@@ -18,6 +16,10 @@ public abstract class MetamodelElement implements NamespacedEntity {
     @Override
     public String getSimpleName() {
         return this.simpleName;
+    }
+
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName;
     }
 
     @Override

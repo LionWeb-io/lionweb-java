@@ -1,4 +1,4 @@
-package lioncore.java;
+package org.lionweb.lioncore.java;
 
 public enum Multiplicity {
     Optional,

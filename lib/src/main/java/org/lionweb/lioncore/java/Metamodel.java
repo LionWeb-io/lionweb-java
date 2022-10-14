@@ -1,4 +1,4 @@
-package lioncore.java;
+package org.lionweb.lioncore.java;
 
 import java.util.LinkedList;
 import java.util.List;

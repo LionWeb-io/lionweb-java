@@ -1,7 +1,9 @@
-package lioncore.java;
+package org.lionweb.lioncore.java;
 
-public class Reference extends Link {
-    private Containment specialized;
+public class PrimitiveType extends Datatype {
+    public PrimitiveType(Metamodel metamodel, String simpleName) {
+        super(metamodel, simpleName);
+    }
 
     @Override
     public String getSimpleName() {
