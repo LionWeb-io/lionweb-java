@@ -208,6 +208,15 @@ package org.lionweb.lioncore.java;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * This represents a group of elements that shares some characteristics.
+ *
+ * For example, Dated and Invoice could be both AbstractConcepts, while having different levels of tightness in the
+ * groups.
+ *
+ * AbstractConcept is similar to EClass in Ecore (which is used both for classes and interfaces) and to
+ * AbstractConcept in MPS.
+ */
 public abstract class AbstractConcept extends MetamodelElement implements NamespaceProvider, FeaturesContainer {
     private List<Feature> features = new LinkedList<>();
 

@@ -205,6 +205,8 @@
 
 package org.lionweb.lioncore.java;
 
+import org.lionweb.lioncore.java.utils.Naming;
+
 public abstract class Feature implements NamespacedEntity {
     private Multiplicity multiplicity;
     private boolean derived;
@@ -212,6 +214,8 @@ public abstract class Feature implements NamespacedEntity {
     private FeaturesContainer container;
 
     public Feature(String simpleName, FeaturesContainer container) {
+        // TODO verify that the container is also a NamespaceProvider
+        Naming.validateSimpleName(simpleName);
         this.simpleName = simpleName;
         this.container = container;
     }
@@ -237,4 +241,13 @@ public abstract class Feature implements NamespacedEntity {
         return simpleName;
     }
 
+    @Override
+    public String qualifiedName() {
+        return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
+    }
+
+    @Override
+    public NamespaceProvider getContainer() {
+        return (NamespaceProvider) container;
+    }
 }

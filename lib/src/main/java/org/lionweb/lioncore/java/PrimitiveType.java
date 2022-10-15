@@ -205,23 +205,17 @@
 
 package org.lionweb.lioncore.java;
 
-public class PrimitiveType extends Datatype {
+/**
+ * This represents an arbitrary primitive value, which is not an enumeration.
+ *
+ * BooleanType, NumberType, and StringType are common PrimitiveTypes.
+ *
+ * A PrimitiveType is similar to Ecore’s EDataType and to MPS’ PrimitiveDataTypeDeclaration.
+ *
+ * All PrimitiveTypes in LionCore are builtin.
+ */
+public class PrimitiveType extends DataType {
     public PrimitiveType(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
-    }
-
-    @Override
-    public String getSimpleName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String qualifiedName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public NamespaceProvider getContainer() {
-        throw new UnsupportedOperationException();
     }
 }

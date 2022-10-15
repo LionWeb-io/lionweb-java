@@ -205,7 +205,7 @@
 
 package org.lionweb.lioncore.java;
 
-public class Typedef extends Datatype {
+public class Typedef extends DataType {
     private PrimitiveType primitiveType;
     public Typedef(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
