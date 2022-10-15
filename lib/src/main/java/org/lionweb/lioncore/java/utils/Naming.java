@@ -203,48 +203,20 @@
  *
  */
 
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.utils;
 
-import org.lionweb.lioncore.java.utils.Naming;
+import java.util.regex.Pattern;
 
-import java.util.LinkedList;
-import java.util.List;
-
-/**
- * A Metamodel will provide the Concepts necessary to describe data in a particular domain together with supporting
- * elements necessary for the definition of those Concepts.
- *
- * It also represents the namespace within which Concepts and other supporting elements are organized.
- * For example, a Metamodel for accounting could collect several Concepts such as Invoice, Customer, InvoiceLine,
- * Product. It could also contain related elements necessary for the definitions of the concepts. For example, a
- * DataType named Currency.
- *
- * A Metamodel in LionWeb will be roughly equivalent to an EPackage or the contents of the structure aspect of an MPS
- * Language.
- */
-public class Metamodel implements NamespaceProvider {
-    private String qualifiedName;
-    private List<Metamodel> dependsOn = new LinkedList<>();
-    private List<MetamodelElement> elements = new LinkedList<>();
-
-    public Metamodel(String qualifiedName) {
-        Naming.validateQualifiedName(qualifiedName);
-        this.qualifiedName = qualifiedName;
+public class Naming {
+    public static void validateQualifiedName(String qualifiedName) {
+        if (!Pattern.matches("[a-zA-Z][a-zA-Z0-9_]*(\\.[a-zA-Z][a-zA-Z0-9_]*)*", qualifiedName)) {
+            throw new InvalidName("qualified name", qualifiedName);
+        }
     }
 
-    @Override
-    public String namespaceQualifier() {
-        return qualifiedName;
-    }
-
-    public List<Metamodel> dependsOn() {
-        return this.dependsOn;
-    }
-    public List<MetamodelElement> getElements() {
-        return this.elements;
-    }
-
-    public String getQualifiedName() {
-        return this.qualifiedName;
+    public static void validateSimpleName(String simpleName) {
+        if (!Pattern.matches("[a-zA-Z][a-zA-Z0-9_]*", simpleName)) {
+            throw new InvalidName("simple name", simpleName);
+        }
     }
 }

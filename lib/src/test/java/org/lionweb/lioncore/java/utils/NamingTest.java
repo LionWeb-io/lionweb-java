@@ -203,48 +203,27 @@
  *
  */
 
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.utils;
 
-import org.lionweb.lioncore.java.utils.Naming;
+import org.junit.Test;
+import org.lionweb.lioncore.java.Metamodel;
 
-import java.util.LinkedList;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
-/**
- * A Metamodel will provide the Concepts necessary to describe data in a particular domain together with supporting
- * elements necessary for the definition of those Concepts.
- *
- * It also represents the namespace within which Concepts and other supporting elements are organized.
- * For example, a Metamodel for accounting could collect several Concepts such as Invoice, Customer, InvoiceLine,
- * Product. It could also contain related elements necessary for the definitions of the concepts. For example, a
- * DataType named Currency.
- *
- * A Metamodel in LionWeb will be roughly equivalent to an EPackage or the contents of the structure aspect of an MPS
- * Language.
- */
-public class Metamodel implements NamespaceProvider {
-    private String qualifiedName;
-    private List<Metamodel> dependsOn = new LinkedList<>();
-    private List<MetamodelElement> elements = new LinkedList<>();
+public class NamingTest {
 
-    public Metamodel(String qualifiedName) {
-        Naming.validateQualifiedName(qualifiedName);
-        this.qualifiedName = qualifiedName;
+    @Test
+    public void validSimpleName() {
+        Naming.validateSimpleName("myID123");
     }
 
-    @Override
-    public String namespaceQualifier() {
-        return qualifiedName;
+    @Test(expected = InvalidName.class)
+    public void invalidSimpleNameStartingWithDigits() {
+        Naming.validateSimpleName("1myID");
     }
 
-    public List<Metamodel> dependsOn() {
-        return this.dependsOn;
-    }
-    public List<MetamodelElement> getElements() {
-        return this.elements;
-    }
-
-    public String getQualifiedName() {
-        return this.qualifiedName;
+    @Test
+    public void validQualifiedName() {
+        Naming.validateQualifiedName("myID123.a.b");
     }
 }
