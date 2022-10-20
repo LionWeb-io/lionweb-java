@@ -10,6 +10,7 @@ import org.lionweb.lioncore.java.utils.Naming;
  *
  * A Feature in LionWeb will be roughly equivalent to an {@link org.eclipse.emf.ecore.EStructuralFeature EStructuralFeature}
  * or to the combination of Properties and Links (both containment and reference links) in MPS /
+ * <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">Concept members</a> /
  * <a href="http://127.0.0.1:63320/node?ref=8865b7a8-5271-43d3-884c-6fd1d9cfdd34%2Fjava%3Aorg.jetbrains.mps.openapi.language%28MPS.OpenAPI%2F%29%2F%7ESConceptFeature">SConceptFeature</a>.
  */
 public abstract class Feature implements NamespacedEntity {
