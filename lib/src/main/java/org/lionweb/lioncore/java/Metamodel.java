@@ -14,8 +14,8 @@ import java.util.List;
  * Product. It could also contain related elements necessary for the definitions of the concepts. For example, a
  * {@link DataType} named Currency.
  *
- * A Metamodel in LionWeb will be roughly equivalent to an Ecore {@link org.eclipse.emf.ecore.EPackage EPackage}
- * or the contents of the structure aspect of an MPS Language.
+ * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
+ * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
 public class Metamodel implements NamespaceProvider {
     private String qualifiedName;

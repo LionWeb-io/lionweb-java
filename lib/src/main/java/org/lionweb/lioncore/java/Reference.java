@@ -5,12 +5,10 @@ package org.lionweb.lioncore.java;
  *
  * A VariableReference may have a Reference to a VariableDeclaration.
  *
- * A Containment is similar to an Ecore’s {@link org.eclipse.emf.ecore.EReference EReference} with the containment flag set to false.
- * In MPS, it's a
- * <a href="https://www.jetbrains.com/help/mps/structure.html#references">Reference</a> /
- * <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">LinkDeclaration</a>
- * with metaClass having value reference /
- * <a href="http://127.0.0.1:63320/node?ref=8865b7a8-5271-43d3-884c-6fd1d9cfdd34%2Fjava%3Aorg.jetbrains.mps.openapi.language%28MPS.OpenAPI%2F%29%2F%7ESReferenceLink">SReferenceLink</a>.
+ * @see org.eclipse.emf.ecore.EReference Ecore equivalent <i>EReference</i> (with the <tt>containment</tt> flag set to <tt>false</tt>)
+ * @see <a href="https://www.jetbrains.com/help/mps/structure.html#references">MPS equivalent <i>Reference</i> in documentation</a>
+ * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">MPS equivalent <i>LinkDeclaration</i> in local MPS (with <tt>metaClass</tt> having value <tt>reference</tt>)</a>
+ * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
  */
 public class Reference extends Link {
     private Reference specialized;

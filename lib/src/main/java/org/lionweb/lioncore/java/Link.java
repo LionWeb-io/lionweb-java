@@ -5,10 +5,9 @@ package org.lionweb.lioncore.java;
  *
  * An Invoice can be connected to its InvoiceLines and to a Customer.
  *
- * It is similar to Ecore's {@link org.eclipse.emf.ecore.EReference EReference}.
- * It is also similar to MPS'
- * <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">LinkDeclaration</a> /
- * <a href="http://127.0.0.1:63320/node?ref=8865b7a8-5271-43d3-884c-6fd1d9cfdd34%2Fjava%3Aorg.jetbrains.mps.openapi.language%28MPS.OpenAPI%2F%29%2F%7ESAbstractLink">SAbstractLink</a>.
+ * @see org.eclipse.emf.ecore.EReference Ecore equivalent <i>EReference</i>
+ * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">MPS equivalent <i>LinkDeclaration</i> in local MPS</a>
+ * @see org.jetbrains.mps.openapi.language.SAbstractLink MPS equivalent <i>SAbstractLink</i> in SModel
  */
 public abstract class Link extends Feature {
 
