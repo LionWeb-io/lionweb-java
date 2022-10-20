@@ -7,7 +7,9 @@ import org.lionweb.lioncore.java.utils.Naming;
  *
  * A DocumentationComment could be specified as an annotation.
  *
- * This is similar to Ecore’s EAnnotation. And to MPS’s NodeAttribute.
+ * This is similar to Ecore’s {@link org.eclipse.emf.ecore.EAnnotation EAnnotation}.
+ * And to MPS’s
+ * <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">NodeAttribute</a>.
  */
 public class Annotation extends AbstractConcept {
     private String platformSpecific;

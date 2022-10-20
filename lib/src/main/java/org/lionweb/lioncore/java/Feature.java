@@ -8,8 +8,9 @@ import org.lionweb.lioncore.java.utils.Naming;
  * For example, an Invoice can have an associated date, a number, a connection with a customer, and it can contain
  * InvoiceLines. All of this information is represented by features.
  *
- * A Feature in LionWeb will be roughly equivalent to an EStructuralFeature or to the combination of Properties and
- * Links (both containment and reference links) in MPS.
+ * A Feature in LionWeb will be roughly equivalent to an {@link org.eclipse.emf.ecore.EStructuralFeature EStructuralFeature}
+ * or to the combination of Properties and Links (both containment and reference links) in MPS /
+ * <a href="http://127.0.0.1:63320/node?ref=8865b7a8-5271-43d3-884c-6fd1d9cfdd34%2Fjava%3Aorg.jetbrains.mps.openapi.language%28MPS.OpenAPI%2F%29%2F%7ESConceptFeature">SConceptFeature</a>.
  */
 public abstract class Feature implements NamespacedEntity {
     private Multiplicity multiplicity;
