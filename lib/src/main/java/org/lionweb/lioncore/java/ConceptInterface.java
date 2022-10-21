@@ -11,7 +11,7 @@ import java.util.List;
  * @see org.eclipse.emf.ecore.EClass Ecore equivalent <i>EClass</i> (with the <code>isInterface</code> flag set to <code>true</code>)
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptsandconceptinterfaces">MPS equivalent <i>Concept Interface</i> in documentation</a>
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1169125989551">MPS equivalent <i>InterfaceConceptDeclaration</i> in local MPS</a>
- * @see org.jetbrains.mps.openapi.language.SConceptInterface MPS equivalent <i>SConceptInterface</i> in SModel
+ * @see org.jetbrains.mps.openapi.language.SInterfaceConcept MPS equivalent <i>SInterfaceConcept</i> in SModel
  */
 public class ConceptInterface extends AbstractConcept {
     private List<ConceptInterface> extended = new LinkedList<>();
