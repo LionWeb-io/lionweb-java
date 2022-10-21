@@ -3,12 +3,13 @@ package org.lionweb.lioncore.java;
 import org.lionweb.lioncore.java.utils.Naming;
 
 /**
- * A MetamodelElement is an element with an identity within a Metamodel.
+ * A MetamodelElement is an element with an identity within a {@link Metamodel}.
  *
  * For example, Invoice, Currency, Named, or String could be MetamodelElements.
  *
- * MetamodelElement is similar to Ecore's EClassifier.
- * MetamodelElement is similar to MPS' IStructureElement.
+ * @see org.eclipse.emf.ecore.EClassifier Ecore equivalent <i>EClassifier</i>
+ * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1588368162880706270">MPS equivalent <i>IStructureElement</i> in local MPS</a>
+ * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
 public abstract class MetamodelElement implements NamespacedEntity {
     private Metamodel metamodel;

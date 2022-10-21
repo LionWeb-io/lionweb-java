@@ -6,16 +6,16 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * A Metamodel will provide the Concepts necessary to describe data in a particular domain together with supporting
+ * A Metamodel will provide the {@link Concept}s necessary to describe data in a particular domain together with supporting
  * elements necessary for the definition of those Concepts.
  *
  * It also represents the namespace within which Concepts and other supporting elements are organized.
  * For example, a Metamodel for accounting could collect several Concepts such as Invoice, Customer, InvoiceLine,
  * Product. It could also contain related elements necessary for the definitions of the concepts. For example, a
- * DataType named Currency.
+ * {@link DataType} named Currency.
  *
- * A Metamodel in LionWeb will be roughly equivalent to an EPackage or the contents of the structure aspect of an MPS
- * Language.
+ * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
+ * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
 public class Metamodel implements NamespaceProvider {
     private String qualifiedName;

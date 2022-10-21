@@ -9,8 +9,9 @@ import java.util.List;
  * For example, Dated and Invoice could be both AbstractConcepts, while having different levels of tightness in the
  * groups.
  *
- * AbstractConcept is similar to EClass in Ecore (which is used both for classes and interfaces) and to
- * AbstractConcept in MPS.
+ * @see org.eclipse.emf.ecore.EClass Ecore equivalent <i>EClass</i> (which is used both for classes and interfaces)
+ * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1169125787135">MPS equivalent <i>AbstractConceptDeclaration</i> in local MPS</a>
+ * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i> in SModel
  */
 public abstract class AbstractConcept extends MetamodelElement implements NamespaceProvider, FeaturesContainer {
     private List<Feature> features = new LinkedList<>();
