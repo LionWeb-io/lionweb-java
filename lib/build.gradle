@@ -46,7 +46,3 @@ javadoc {
         links 'https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/'
     }
 }
-
-//tasks.withType(JavaCompile) {
-//    options.release = 11
-//}
