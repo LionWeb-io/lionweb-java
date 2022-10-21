@@ -45,6 +45,8 @@ javadoc {
         links 'https://docs.oracle.com/javase/8/docs/api/'
         links 'https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/'
     }
+    // required until we find a way to download MPS OpenAPI jars
+    failOnError = false
 }
 
 //tasks.withType(JavaCompile) {
