@@ -19,4 +19,4 @@ jobs:
         distribution: 'adopt'
         java-version: ${{ matrix.java }}
     - name: Javadoc generation
-      run: ./gradlew lionJavadoc
+      run: ./gradlew javadoc

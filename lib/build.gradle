@@ -39,7 +39,6 @@ java {
 }
 
 javadoc {
-//task lionJavadoc(type: Javadoc, dependsOn: getDependencies) {
     source = sourceSets.main.allJava
     classpath = configurations.javadocConfig
     options {
