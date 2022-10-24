@@ -5,7 +5,6 @@
  * For more details take a look at the 'Building Java & JVM projects' chapter in the Gradle
  * User Manual available at https://docs.gradle.org/6.7.1/userguide/building_java_projects.html
  */
-
 plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
@@ -14,6 +13,14 @@ plugins {
 repositories {
     // Use JCenter for resolving dependencies.
     jcenter()
+    // Required for MPS OpenAPI
+    maven {
+        url 'https://artifacts.itemis.cloud/repository/maven-mps/'
+    }
+}
+
+configurations {
+    javadocConfig.extendsFrom testImplementation
 }
 
 dependencies {
@@ -25,14 +32,17 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation 'com.google.guava:guava:29.0-jre'
+
+    javadocConfig 'org.eclipse.emf:org.eclipse.emf.ecore:2.28.0'
+    javadocConfig 'com.jetbrains:mps-openapi:2021.3.1'
 }
 
-java {
-    toolchain {
-        languageVersion.set(JavaLanguageVersion.of(8))
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.javadocConfig
+    options {
+        links 'https://docs.oracle.com/javase/8/docs/api/'
+        links 'https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/'
+        links 'https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/'
     }
 }
-
-//tasks.withType(JavaCompile) {
-//    options.release = 8
-//}

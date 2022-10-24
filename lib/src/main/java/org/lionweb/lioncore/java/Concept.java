@@ -8,7 +8,7 @@ import java.util.List;
  *
  * For example, Invoice would be a Concept. Single entities could be Concept instances, such as Invoice #1/2022.
  *
- * @see org.eclipse.emf.ecore.EClass Ecore equivalent <i>EClass</i> (with the <tt>isInterface</tt> flag set to <tt>false</tt>)
+ * @see org.eclipse.emf.ecore.EClass Ecore equivalent <i>EClass</i> (with the <code>isInterface</code> flag set to <code>false</code>)
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptsandconceptinterfaces">MPS equivalent <i>Concept</i> in documentation</a>
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489090640">MPS equivalent <i>ConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
