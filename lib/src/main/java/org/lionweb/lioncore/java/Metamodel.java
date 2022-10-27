@@ -42,4 +42,21 @@ public class Metamodel implements NamespaceProvider {
     public String getQualifiedName() {
         return this.qualifiedName;
     }
+
+    public MetamodelElement getElementByName(String name) {
+        return getElements().stream().filter(element -> element.getSimpleName().equals(name)).findFirst()
+                .orElse(null);
+    }
+
+    public PrimitiveType getPrimitiveTypeByName(String name) {
+        MetamodelElement element = this.getElementByName(name);
+        if (element == null) {
+            return null;
+        }
+        if (element instanceof PrimitiveType) {
+            return (PrimitiveType) element;
+        } else {
+            throw new RuntimeException("Element " + name + " is not a PrimitiveType");
+        }
+    }
 }
