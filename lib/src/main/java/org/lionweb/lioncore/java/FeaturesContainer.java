@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * Something which can own {@link Feature}s.
@@ -11,4 +12,8 @@ import java.util.List;
  */
 public interface FeaturesContainer {
     List<Feature> getFeatures();
+    default Feature getFeatureByName(String name) {
+        return getFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
+                .orElse(null);
+    }
 }
