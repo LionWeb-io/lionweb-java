@@ -9,6 +9,7 @@ import java.util.List;
  *
  * @see org.eclipse.emf.ecore.EObject Ecore equivalent <i>EObject</i>
  * @see <a href="https://www.jetbrains.com/help/mps/basic-notions.html">MPS equivalent <i>Node</i> in documentation</a>
+ * @see org.modelix.model.api.INode Modelix equivalent <i>INode</i>
  *
  * TODO consider if the Model should have a version too
  */
