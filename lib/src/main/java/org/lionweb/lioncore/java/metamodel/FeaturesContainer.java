@@ -1,7 +1,6 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * Something which can own {@link Feature}s.

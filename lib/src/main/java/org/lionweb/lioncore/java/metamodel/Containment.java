@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 /**
  * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link AbstractConcept}.

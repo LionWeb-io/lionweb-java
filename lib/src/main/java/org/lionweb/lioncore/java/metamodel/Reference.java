@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 /**
  * This represents a relation between an {@link FeaturesContainer} and referred {@link AbstractConcept}.

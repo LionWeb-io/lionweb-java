@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 /**
  * Measure of the number of elements targeted by a {@link Feature}.

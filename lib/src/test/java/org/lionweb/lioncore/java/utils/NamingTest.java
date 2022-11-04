@@ -1,7 +1,6 @@
 package org.lionweb.lioncore.java.utils;
 
 import org.junit.Test;
-import org.lionweb.lioncore.java.Metamodel;
 
 import static org.junit.Assert.assertEquals;
 
