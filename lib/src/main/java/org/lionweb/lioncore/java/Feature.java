@@ -15,6 +15,15 @@ import org.lionweb.lioncore.java.utils.Naming;
 public abstract class Feature implements NamespacedEntity {
     private boolean optional;
     private boolean derived;
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
+    }
+
     private String simpleName;
     private FeaturesContainer container;
 
@@ -24,14 +33,6 @@ public abstract class Feature implements NamespacedEntity {
         Naming.validateSimpleName(simpleName);
         this.simpleName = simpleName;
         this.container = container;
-    }
-
-    public Multiplicity getMultiplicity() {
-        return multiplicity;
-    }
-
-    public void setMultiplicity(Multiplicity multiplicity) {
-        this.multiplicity = multiplicity;
     }
 
     public boolean isDerived() {
