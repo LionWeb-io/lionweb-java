@@ -28,9 +28,4 @@ public class Reference extends Link {
         this.specialized = specialized;
     }
 
-    @Override
-    public void setMultiplicity(Multiplicity multiplicity) {
-        // TODO check constraint on multiplicity
-        super.setMultiplicity(multiplicity);
-    }
 }
