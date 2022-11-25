@@ -15,6 +15,8 @@ import java.util.List;
  */
 public class Concept extends AbstractConcept {
     private boolean isAbstract;
+    // DOUBT: would this be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
+    //        another concept?
     private Concept extended;
     private List<ConceptInterface> implemented = new LinkedList<>();
 
