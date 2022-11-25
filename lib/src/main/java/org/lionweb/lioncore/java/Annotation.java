@@ -2,6 +2,8 @@ package org.lionweb.lioncore.java;
 
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nullable;
+
 /**
  * This represents additional metadata relative to some orthogonal concern.
  *
@@ -12,18 +14,18 @@ import org.lionweb.lioncore.java.utils.Naming;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">MPS equivalent <i>NodeAttribute</i> in local MPS</a>
  */
 public class Annotation extends AbstractConcept {
-    private String platformSpecific;
+    private @Nullable String platformSpecific;
     private AbstractConcept target;
 
     public Annotation(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }
 
-    public String getPlatformSpecific() {
+    public @Nullable String getPlatformSpecific() {
         return platformSpecific;
     }
 
-    public void setPlatformSpecific(String platformSpecific) {
+    public void setPlatformSpecific(@Nullable String platformSpecific) {
         if (platformSpecific != null) {
             Naming.validateSimpleName(platformSpecific);
         }
