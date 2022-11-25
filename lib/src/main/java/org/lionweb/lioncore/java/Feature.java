@@ -13,7 +13,7 @@ import org.lionweb.lioncore.java.utils.Naming;
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
 public abstract class Feature implements NamespacedEntity {
-    private Multiplicity multiplicity;
+    private boolean optional;
     private boolean derived;
     private String simpleName;
     private FeaturesContainer container;

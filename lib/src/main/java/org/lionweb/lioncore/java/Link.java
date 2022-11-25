@@ -10,7 +10,7 @@ package org.lionweb.lioncore.java;
  * @see org.jetbrains.mps.openapi.language.SAbstractLink MPS equivalent <i>SAbstractLink</i> in SModel
  */
 public abstract class Link extends Feature {
-
+    private boolean multiple;
     public Link(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
