@@ -25,7 +25,7 @@ public abstract class Link extends Feature {
         super(simpleName, container);
     }
 
-    public AbstractConcept getType() {
+    public FeaturesContainer getType() {
         throw new UnsupportedOperationException();
     }
 

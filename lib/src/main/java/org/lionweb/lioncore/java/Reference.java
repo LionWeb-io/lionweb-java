@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java;
 
 /**
- * This represents a relation between an {@link FeaturesContainer} and referred {@link AbstractConcept}.
+ * This represents a relation between an {@link FeaturesContainer} and referred {@link FeaturesContainer}.
  *
  * A VariableReference may have a Reference to a VariableDeclaration.
  *

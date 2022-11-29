@@ -1,19 +1,45 @@
 package org.lionweb.lioncore.java;
 
+import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
- * Something which can own {@link Feature}s.
+ * This represents a group of elements that shares some characteristics.
  *
- * For example, a {@link Concept} can have several features.
+ * For example, Dated and Invoice could be both AbstractConcepts, while having different levels of tightness in the
+ * groups.
  *
- * In Ecore there is no equivalent as only EClasses can have features, while in LionCore, also {@link Annotation}s can.
+ * @see org.eclipse.emf.ecore.EClass Ecore equivalent <i>EClass</i> (which is used both for classes and interfaces)
+ * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1169125787135">MPS equivalent <i>AbstractConceptDeclaration</i> in local MPS</a>
+ * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i> in SModel
  */
-public interface FeaturesContainer {
-    List<Feature> getFeatures();
-    default Feature getFeatureByName(String name) {
+public abstract class FeaturesContainer extends MetamodelElement implements NamespaceProvider {
+    private List<Feature> features = new LinkedList<>();
+
+
+    public FeaturesContainer(Metamodel metamodel, String simpleName) {
+        super(metamodel, simpleName);
+    }
+
+    public Feature getFeatureByName(String name) {
         return getFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
+    }
+
+    public List<Feature> allFeatures() {
+        // TODO Should this return features which are overriden?
+        // TODO Should features be returned in a particular order?
+        throw new UnsupportedOperationException();
+    }
+
+    // TODO should this expose an immutable list to force users to use methods on this class
+    //      to modify the collection?
+    public List<Feature> getFeatures() {
+        return this.features;
+    }
+
+    @Override
+    public String namespaceQualifier() {
+        return this.qualifiedName();
     }
 }

@@ -14,9 +14,9 @@ import javax.annotation.Nullable;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">MPS equivalent <i>NodeAttribute</i> in local MPS</a>
  */
 @Experimental
-public class Annotation extends AbstractConcept {
+public class Annotation extends FeaturesContainer {
     private @Nullable String platformSpecific;
-    private AbstractConcept target;
+    private FeaturesContainer target;
 
     public Annotation(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
@@ -33,11 +33,11 @@ public class Annotation extends AbstractConcept {
         this.platformSpecific = platformSpecific;
     }
 
-    public AbstractConcept getTarget() {
+    public FeaturesContainer getTarget() {
         return target;
     }
 
-    public void setTarget(AbstractConcept target) {
+    public void setTarget(FeaturesContainer target) {
         // TODO prevent annotations to be used as target
         this.target = target;
     }

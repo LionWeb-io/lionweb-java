@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java;
 
 /**
- * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link AbstractConcept}.
+ * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link FeaturesContainer}.
  *
  * Between an IfStatement and its condition there is a Containment relation.
  *
