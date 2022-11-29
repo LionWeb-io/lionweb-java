@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java;
 
 /**
- * Represent a connection to an {@link AbstractConcept}.
+ * Represent a connection to an {@link FeaturesContainer}.
  *
  * An Invoice can be connected to its InvoiceLines and to a Customer.
  *
