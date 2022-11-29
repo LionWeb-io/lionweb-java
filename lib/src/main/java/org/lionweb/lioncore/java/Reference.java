@@ -11,6 +11,7 @@ package org.lionweb.lioncore.java;
  * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
  */
 public class Reference extends Link {
+    @Experimental
     private Reference specialized;
 
     public Reference(String simpleName, FeaturesContainer container) {

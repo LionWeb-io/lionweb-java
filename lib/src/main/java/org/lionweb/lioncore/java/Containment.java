@@ -13,6 +13,7 @@ package org.lionweb.lioncore.java;
  * @see org.jetbrains.mps.openapi.language.SContainmentLink MPS equivalent <i>SContainmentLink</i> in SModel
  */
 public class Containment extends Link {
+    @Experimental
     private Containment specialized;
 
     public Containment(String simpleName, FeaturesContainer container) {

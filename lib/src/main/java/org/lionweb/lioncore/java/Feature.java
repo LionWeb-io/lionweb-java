@@ -14,6 +14,7 @@ import org.lionweb.lioncore.java.utils.Naming;
  */
 public abstract class Feature implements NamespacedEntity {
     private boolean optional;
+    @Experimental
     private boolean derived;
 
     public boolean isOptional() {
@@ -35,10 +36,12 @@ public abstract class Feature implements NamespacedEntity {
         this.container = container;
     }
 
+    @Experimental
     public boolean isDerived() {
         return derived;
     }
 
+    @Experimental
     public void setDerived(boolean derived) {
         this.derived = derived;
     }
