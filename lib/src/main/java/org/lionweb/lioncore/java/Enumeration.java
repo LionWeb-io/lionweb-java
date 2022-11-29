@@ -2,20 +2,19 @@ package org.lionweb.lioncore.java;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 
-public class EnumDeclaration extends DataType {
-    private List<EnumLiteral> literals = new LinkedList<>();
+public class Enumeration extends DataType {
+    private List<EnumerationLiteral> literals = new LinkedList<>();
 
-    public EnumDeclaration(Metamodel metamodel, String simpleName) {
+    public Enumeration(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }
 
-    public List<EnumLiteral> getLiterals() {
+    public List<EnumerationLiteral> getLiterals() {
         return literals;
     }
 
-    public void addLiteral(EnumLiteral literal) {
+    public void addLiteral(EnumerationLiteral literal) {
         if (literals.stream().anyMatch(enumLiteral -> enumLiteral.getName().equals(literal.getName()))) {
             throw new IllegalArgumentException("Duplicate literal name");
         }

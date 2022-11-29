@@ -46,5 +46,4 @@ public class Concept extends FeaturesContainer {
         this.extended = extended;
     }
 
-
 }
