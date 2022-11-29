@@ -3,7 +3,7 @@ package org.lionweb.lioncore.java;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Enumeration extends DataType {
+public class Enumeration extends DataType implements NamespaceProvider {
     private List<EnumerationLiteral> literals = new LinkedList<>();
 
     public Enumeration(Metamodel metamodel, String simpleName) {
@@ -19,5 +19,10 @@ public class Enumeration extends DataType {
             throw new IllegalArgumentException("Duplicate literal name");
         }
         this.literals.add(literal);
+    }
+
+    @Override
+    public String namespaceQualifier() {
+        throw new UnsupportedOperationException();
     }
 }
