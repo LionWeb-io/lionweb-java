@@ -7,6 +7,7 @@ package org.lionweb.lioncore.java;
  * Therefore, Invoice will have the qualifiedName com.foo.Accounting.Invoice.
  */
 public interface NamespacedEntity {
+    // TODO add ID, once details are cleare
     String getSimpleName();
     String qualifiedName();
     NamespaceProvider getContainer();

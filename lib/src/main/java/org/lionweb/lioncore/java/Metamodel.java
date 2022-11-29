@@ -18,6 +18,8 @@ import java.util.List;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
 public class Metamodel implements NamespaceProvider {
+    // TODO add ID, once details are cleare
+
     private String qualifiedName;
     private List<Metamodel> dependsOn = new LinkedList<>();
     private List<MetamodelElement> elements = new LinkedList<>();
