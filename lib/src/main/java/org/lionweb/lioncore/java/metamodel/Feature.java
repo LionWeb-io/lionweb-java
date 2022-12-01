@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.Naming;
+import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.metamodel.utils.Naming;
 
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.

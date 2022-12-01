@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.Experimental;
+
 /**
  * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link FeaturesContainer}.
  *

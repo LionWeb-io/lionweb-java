@@ -1,11 +1,13 @@
 package org.lionweb.lioncore.java.model;
 
+import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.metamodel.Containment;
 import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.metamodel.Reference;
 
 import java.util.List;
 
+@Experimental
 public interface HasFeatureValues {
     /**
      * Get the property value associated with the specified property.

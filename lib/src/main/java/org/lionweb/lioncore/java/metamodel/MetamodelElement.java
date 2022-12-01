@@ -1,6 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.Naming;
+import org.lionweb.lioncore.java.metamodel.utils.Naming;
 
 /**
  * A MetamodelElement is an element with an identity within a {@link Metamodel}.
