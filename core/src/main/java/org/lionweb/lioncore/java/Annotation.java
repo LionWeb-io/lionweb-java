@@ -3,6 +3,7 @@ package org.lionweb.lioncore.java;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 /**
  * This represents additional metadata relative to some orthogonal concern.
@@ -20,6 +21,11 @@ public class Annotation extends FeaturesContainer {
 
     public Annotation(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
+    }
+
+    @Override
+    public List<Feature> allFeatures() {
+        throw new UnsupportedOperationException();
     }
 
     public @Nullable String getPlatformSpecific() {

@@ -11,6 +11,7 @@ package org.lionweb.lioncore.java;
  */
 public abstract class Link extends Feature {
     private boolean multiple;
+    private FeaturesContainer type;
 
     public boolean isMultiple() {
         return multiple;
@@ -26,7 +27,10 @@ public abstract class Link extends Feature {
     }
 
     public FeaturesContainer getType() {
-        throw new UnsupportedOperationException();
+        return this.type;
     }
 
+    public void setType(FeaturesContainer type) {
+        this.type = type;
+    }
 }

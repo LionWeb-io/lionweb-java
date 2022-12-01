@@ -17,4 +17,12 @@ public class LionCoreBuiltins extends Metamodel {
     public static LionCoreBuiltins getInstance() {
         return INSTANCE;
     }
+
+    public static PrimitiveType getString() {
+        return INSTANCE.getPrimitiveTypeByName("String");
+    }
+
+    public static PrimitiveType getInteger() {
+        return INSTANCE.getPrimitiveTypeByName("Integer");
+    }
 }

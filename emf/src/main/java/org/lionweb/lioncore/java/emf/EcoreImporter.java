@@ -7,8 +7,7 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.lionweb.lioncore.java.Concept;
-import org.lionweb.lioncore.java.Metamodel;
+import org.lionweb.lioncore.java.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,6 +18,10 @@ import java.util.List;
 import java.util.Map;
 
 public class EcoreImporter {
+    private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
+    private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
+    private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
+
     public List<Metamodel> importEcoreFile(File ecoreFile) {
         Map<String, Object> extensionsToFactoryMap = Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
         extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
@@ -52,8 +55,35 @@ public class EcoreImporter {
         return metamodels;
     }
 
+    private DataType convertEClassifierToDataType(EClassifier eClassifier) {
+        if (eClassifier.equals(EcorePackage.Literals.ESTRING)) {
+            return LionCoreBuiltins.getString();
+        }
+        if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
+            if (eClassifier.getName().equals("String")) {
+                return LionCoreBuiltins.getString();
+            }
+            if (eClassifier.getName().equals("Int")) {
+                return LionCoreBuiltins.getInteger();
+            }
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    private FeaturesContainer convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
+        if (eClassesToConcepts.containsKey(eClassifier)) {
+            return eClassesToConcepts.get(eClassifier);
+        } else {
+            throw new IllegalArgumentException("Reference to an EClassifier we did not met: " + eClassifier);
+        }
+    }
+
     public Metamodel importEPackage(EPackage ePackage) {
         Metamodel metamodel = new Metamodel(ePackage.getName());
+        packagesToMetamodels.put(ePackage, metamodel);
+
+        // Initially we just create empty concepts, later we populate the features as they could refer to
+        // EClasses which we meet later on in the EPackage
         for (EClassifier eClassifier : ePackage.getEClassifiers()) {
             if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
                 EClass eClass = (EClass) eClassifier;
@@ -62,6 +92,63 @@ public class EcoreImporter {
                 } else {
                     Concept concept = new Concept(metamodel, eClass.getName());
                     metamodel.addElement(concept);
+                    eClassesToConcepts.put(eClass, concept);
+                }
+            } else {
+                throw new UnsupportedOperationException();
+            }
+        }
+
+        // Now that all Concepts have been created we can draw links to them when processing features
+        // or supertypes
+        for (EClassifier eClassifier : ePackage.getEClassifiers()) {
+            if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
+                EClass eClass = (EClass) eClassifier;
+                if (eClass.isInterface()) {
+                    throw new UnsupportedOperationException();
+                } else {
+                    Concept concept = eClassesToConcepts.get(eClass);
+
+                    for (EClass supertype : eClass.getESuperTypes()) {
+                        if (supertype.isInterface()) {
+                            ConceptInterface superConceptInterface = eClassesToConceptInterfacess.get(supertype);
+                            concept.addImplementedInterface(superConceptInterface);
+                        } else {
+                            Concept superConcept = eClassesToConcepts.get(supertype);
+                            if (concept.getExtendedConcept() != null) {
+                                throw new IllegalStateException("Cannot set more than one extended concept");
+                            }
+                            concept.setExtendedConcept(superConcept);
+                        }
+                    }
+
+                    for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
+                        if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
+                            EAttribute eAttribute = (EAttribute)eFeature;
+                            Property property = new Property(eFeature.getName(), concept);
+                            concept.addFeature(property);
+                            property.setOptional(eAttribute.getLowerBound() == 0);
+                            property.setDerived(eAttribute.isDerived());
+                            property.setType(convertEClassifierToDataType(eFeature.getEType()));
+                        } else if (eFeature.eClass().getName().equals(EcorePackage.Literals.EREFERENCE.getName())) {
+                            EReference eReference = (EReference)eFeature;
+                            if (eReference.isContainment()) {
+                                Containment containment = new Containment(eFeature.getName(), concept);
+                                containment.setOptional(eReference.getLowerBound() == 0);
+                                containment.setMultiple(eReference.getUpperBound() != 1);
+                                concept.addFeature(containment);
+                                containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
+                            } else {
+                                Reference reference = new Reference(eFeature.getName(), concept);
+                                reference.setOptional(eReference.getLowerBound() == 0);
+                                reference.setMultiple(eReference.getUpperBound() != 1);
+                                concept.addFeature(reference);
+                                reference.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
+                            }
+                        } else {
+                            throw new UnsupportedOperationException();
+                        }
+                    }
                 }
             } else {
                 throw new UnsupportedOperationException();

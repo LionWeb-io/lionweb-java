@@ -41,9 +41,32 @@ public class Concept extends FeaturesContainer {
         return this.implemented;
     }
 
+    public void addImplementedInterface(ConceptInterface conceptInterface) {
+        this.implemented.add(conceptInterface);
+    }
+
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(Concept extended) {
         this.extended = extended;
     }
 
+    @Override
+    public String toString() {
+        return "Concept(" + this.qualifiedName() + ")";
+    }
+
+    @Override
+    public List<Feature> allFeatures() {
+        // TODO Should this return features which are overriden?
+        // TODO Should features be returned in a particular order?
+        List<Feature> result = new LinkedList<>();
+        result.addAll(this.getFeatures());
+        if (this.extended != null) {
+            result.addAll(this.extended.allFeatures());
+        }
+        for (ConceptInterface superInterface: implemented) {
+            result.addAll(superInterface.allFeatures());
+        }
+        return result;
+    }
 }

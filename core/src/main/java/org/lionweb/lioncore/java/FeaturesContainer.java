@@ -16,7 +16,6 @@ import java.util.List;
 public abstract class FeaturesContainer extends MetamodelElement implements NamespaceProvider {
     private List<Feature> features = new LinkedList<>();
 
-
     public FeaturesContainer(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }
@@ -26,16 +25,19 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
                 .orElse(null);
     }
 
-    public List<Feature> allFeatures() {
-        // TODO Should this return features which are overriden?
-        // TODO Should features be returned in a particular order?
-        throw new UnsupportedOperationException();
-    }
+    public abstract List<Feature> allFeatures();
 
     // TODO should this expose an immutable list to force users to use methods on this class
     //      to modify the collection?
     public List<Feature> getFeatures() {
         return this.features;
+    }
+
+    public void addFeature(Feature feature) {
+        if (feature.getContainer() != this) {
+            throw new IllegalArgumentException("The given feature is not associated to this container: " + feature);
+        }
+        this.features.add(feature);
     }
 
     @Override

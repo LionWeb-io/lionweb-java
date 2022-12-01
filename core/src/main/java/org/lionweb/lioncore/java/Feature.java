@@ -21,6 +21,10 @@ public abstract class Feature implements NamespacedEntity {
         return optional;
     }
 
+    public boolean isRequired() {
+        return !optional;
+    }
+
     public void setOptional(boolean optional) {
         this.optional = optional;
     }

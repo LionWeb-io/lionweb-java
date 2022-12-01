@@ -23,4 +23,16 @@ public class ConceptInterface extends FeaturesContainer {
     public List<ConceptInterface> getExtendedInterface() {
         return this.extended;
     }
+
+    @Override
+    public List<Feature> allFeatures() {
+        // TODO Should this return features which are overriden?
+        // TODO Should features be returned in a particular order?
+        List<Feature> result = new LinkedList<>();
+        result.addAll(this.getFeatures());
+        for (ConceptInterface superInterface: extended) {
+            result.addAll(superInterface.allFeatures());
+        }
+        return result;
+    }
 }

@@ -15,4 +15,9 @@ public class PrimitiveType extends DataType {
     public PrimitiveType(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }
+
+    @Override
+    public String toString() {
+        return "PrimitiveType(" + getSimpleName() + ")";
+    }
 }
