@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 /**
  * This represents an arbitrary primitive value, which is not an enumeration.

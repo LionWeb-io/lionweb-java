@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 /**
  * Something with a name and contained in a Namespace.

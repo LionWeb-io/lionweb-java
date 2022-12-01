@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 public class LionCoreBuiltins extends Metamodel {
     private static LionCoreBuiltins INSTANCE = new LionCoreBuiltins();

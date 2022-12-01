@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 /**
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#constraineddatatypes">MPS equivalent <i>Constrained Data Type</i> in documentation</a>
