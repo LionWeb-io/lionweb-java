@@ -6,7 +6,7 @@ plugins {
 
 repositories {
     mavenCentral()
-    // Required for MPS OpenAPI
+    // Required for MPS OpenAPI and Modelix's Model API
     maven {
         url 'https://artifacts.itemis.cloud/repository/maven-mps/'
     }
@@ -32,6 +32,8 @@ dependencies {
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
     // on Maven
     javadocConfig 'com.jetbrains:mps-openapi:2021.3.1'
+
+    javadocConfig 'org.modelix:model-api:1.3.2'
 }
 
 javadoc {

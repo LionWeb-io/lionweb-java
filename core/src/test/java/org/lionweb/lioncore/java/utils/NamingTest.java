@@ -1,7 +1,8 @@
 package org.lionweb.lioncore.java.utils;
 
 import org.junit.Test;
-import org.lionweb.lioncore.java.Metamodel;
+import org.lionweb.lioncore.java.utils.InvalidName;
+import org.lionweb.lioncore.java.utils.Naming;
 
 import static org.junit.Assert.assertEquals;
 
