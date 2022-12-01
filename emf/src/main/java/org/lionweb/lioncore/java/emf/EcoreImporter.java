@@ -127,21 +127,24 @@ public class EcoreImporter {
                             EAttribute eAttribute = (EAttribute)eFeature;
                             Property property = new Property(eFeature.getName(), concept);
                             concept.addFeature(property);
-                            property.setOptional(eAttribute.getLowerBound() == 0);
+                            property.setOptional(!eAttribute.isRequired());
                             property.setDerived(eAttribute.isDerived());
                             property.setType(convertEClassifierToDataType(eFeature.getEType()));
+                            if (eAttribute.isMany()) {
+                                throw new IllegalArgumentException("EAttributes with upper bound > 1 are not supported");
+                            }
                         } else if (eFeature.eClass().getName().equals(EcorePackage.Literals.EREFERENCE.getName())) {
                             EReference eReference = (EReference)eFeature;
                             if (eReference.isContainment()) {
                                 Containment containment = new Containment(eFeature.getName(), concept);
-                                containment.setOptional(eReference.getLowerBound() == 0);
-                                containment.setMultiple(eReference.getUpperBound() != 1);
+                                containment.setOptional(!eReference.isRequired());
+                                containment.setMultiple(eReference.isMany());
                                 concept.addFeature(containment);
                                 containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
                             } else {
                                 Reference reference = new Reference(eFeature.getName(), concept);
-                                reference.setOptional(eReference.getLowerBound() == 0);
-                                reference.setMultiple(eReference.getUpperBound() != 1);
+                                reference.setOptional(!eReference.isRequired());
+                                reference.setMultiple(eReference.isMany());
                                 concept.addFeature(reference);
                                 reference.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
                             }

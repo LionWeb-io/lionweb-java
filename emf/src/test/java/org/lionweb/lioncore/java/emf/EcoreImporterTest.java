@@ -92,6 +92,14 @@ public class EcoreImporterTest {
         assertEquals(1, writer.getFeatures().size());
         assertEquals(1, writer.allFeatures().size());
 
+        Property writerName = (Property) writer.getFeatureByName("name");
+        assertEquals(LionCoreBuiltins.getString(), writerName.getType());
+        assertSame(writer, writerName.getContainer());
+        assertEquals("library.Writer.name", writerName.qualifiedName());
+        assertEquals(false, writerName.isDerived());
+        assertEquals(false, writerName.isOptional());
+        assertEquals(true, writerName.isRequired());
+
         Concept guideBookWriter = (Concept)metamodel.getElementByName("GuideBookWriter");
         assertSame(writer, guideBookWriter.getExtendedConcept());
         assertEquals(0, guideBookWriter.getImplemented().size());
