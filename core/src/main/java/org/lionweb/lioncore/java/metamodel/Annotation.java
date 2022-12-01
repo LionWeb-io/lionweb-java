@@ -1,5 +1,6 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nullable;

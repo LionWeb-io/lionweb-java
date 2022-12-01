@@ -1,6 +1,10 @@
-package org.lionweb.lioncore.java;
+package org.lionweb.lioncore.java.metamodel;
 
 import org.junit.Test;
+import org.lionweb.lioncore.java.metamodel.Concept;
+import org.lionweb.lioncore.java.metamodel.ConceptInterface;
+import org.lionweb.lioncore.java.metamodel.Metamodel;
+
 import static org.junit.Assert.*;
 
 public class SimpleLanguageMetamodelTest {
