@@ -8,6 +8,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.lionweb.lioncore.java.*;
+import org.lionweb.lioncore.java.metamodel.*;
 
 import java.io.File;
 import java.io.IOException;

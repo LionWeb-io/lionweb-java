@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.emf;
 
 import org.junit.Test;
 import org.lionweb.lioncore.java.*;
+import org.lionweb.lioncore.java.metamodel.*;
 
 import java.io.IOException;
 import java.io.InputStream;
