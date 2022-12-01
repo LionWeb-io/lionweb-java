@@ -21,7 +21,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     }
 
     public Feature getFeatureByName(String name) {
-        return getFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
+        return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
     }
 

@@ -108,6 +108,22 @@ public class EcoreImporterTest {
         assertEquals(1, guideBookWriter.getFeatures().size());
         assertEquals(2, guideBookWriter.allFeatures().size());
 
+        Property guideBookWriterCountries = (Property) guideBookWriter.getFeatureByName("countries");
+        assertEquals(LionCoreBuiltins.getString(), guideBookWriterCountries.getType());
+        assertSame(guideBookWriter, guideBookWriterCountries.getContainer());
+        assertEquals("library.GuideBookWriter.countries", guideBookWriterCountries.qualifiedName());
+        assertEquals(false, guideBookWriterCountries.isDerived());
+        assertEquals(true, guideBookWriterCountries.isOptional());
+        assertEquals(false, guideBookWriterCountries.isRequired());
+
+        Property guideBookWriterName = (Property) guideBookWriter.getFeatureByName("name");
+        assertEquals(LionCoreBuiltins.getString(), guideBookWriterName.getType());
+        assertSame(writer, guideBookWriterName.getContainer());
+        assertEquals("library.Writer.name", guideBookWriterName.qualifiedName());
+        assertEquals(false, guideBookWriterName.isDerived());
+        assertEquals(false, guideBookWriterName.isOptional());
+        assertEquals(true, guideBookWriterName.isRequired());
+
         Concept specialistBookWriter = (Concept)metamodel.getElementByName("SpecialistBookWriter");
         assertSame(writer, specialistBookWriter.getExtendedConcept());
         assertEquals(0, specialistBookWriter.getImplemented().size());
@@ -115,6 +131,22 @@ public class EcoreImporterTest {
         assertEquals("library.SpecialistBookWriter", specialistBookWriter.qualifiedName());
         assertEquals(1, specialistBookWriter.getFeatures().size());
         assertEquals(2, specialistBookWriter.allFeatures().size());
+
+        Property specialistBookWriterSubject = (Property) specialistBookWriter.getFeatureByName("subject");
+        assertEquals(LionCoreBuiltins.getString(), specialistBookWriterSubject.getType());
+        assertSame(specialistBookWriter, specialistBookWriterSubject.getContainer());
+        assertEquals("library.SpecialistBookWriter.subject", specialistBookWriterSubject.qualifiedName());
+        assertEquals(false, specialistBookWriterSubject.isDerived());
+        assertEquals(true, specialistBookWriterSubject.isOptional());
+        assertEquals(false, specialistBookWriterSubject.isRequired());
+
+        Property specialistBookWriterName = (Property) specialistBookWriter.getFeatureByName("name");
+        assertEquals(LionCoreBuiltins.getString(), specialistBookWriterName.getType());
+        assertSame(writer, specialistBookWriterName.getContainer());
+        assertEquals("library.Writer.name", specialistBookWriterName.qualifiedName());
+        assertEquals(false, specialistBookWriterName.isDerived());
+        assertEquals(false, specialistBookWriterName.isOptional());
+        assertEquals(true, specialistBookWriterName.isRequired());
     }
 
 }
