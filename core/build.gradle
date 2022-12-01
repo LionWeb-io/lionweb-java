@@ -47,8 +47,8 @@ javadoc {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.lionweb'
-            artifactId = 'lioncore-java'
+            groupId = 'org.lionweb.lioncore-java'
+            artifactId = 'core'
             version = '0.1-SNAPSHOT'
 
             from components.java

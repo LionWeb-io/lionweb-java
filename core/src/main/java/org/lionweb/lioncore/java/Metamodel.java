@@ -41,6 +41,13 @@ public class Metamodel implements NamespaceProvider {
         return this.elements;
     }
 
+    public void addElement(MetamodelElement element) {
+        if (element.getMetamodel() != this) {
+            throw new IllegalArgumentException("The given element is not associated to this metamodel: " + element);
+        }
+        this.elements.add(element);
+    }
+
     public String getQualifiedName() {
         return this.qualifiedName;
     }
