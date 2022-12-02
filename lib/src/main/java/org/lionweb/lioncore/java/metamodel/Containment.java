@@ -1,7 +1,9 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.Experimental;
+
 /**
- * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link AbstractConcept}.
+ * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link FeaturesContainer}.
  *
  * Between an IfStatement and its condition there is a Containment relation.
  *
@@ -13,6 +15,7 @@ package org.lionweb.lioncore.java.metamodel;
  * @see org.jetbrains.mps.openapi.language.SContainmentLink MPS equivalent <i>SContainmentLink</i> in SModel
  */
 public class Containment extends Link {
+    @Experimental
     private Containment specialized;
 
     public Containment(String simpleName, FeaturesContainer container) {

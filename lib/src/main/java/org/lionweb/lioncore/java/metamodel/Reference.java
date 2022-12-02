@@ -1,7 +1,9 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.Experimental;
+
 /**
- * This represents a relation between an {@link FeaturesContainer} and referred {@link AbstractConcept}.
+ * This represents a relation between an {@link FeaturesContainer} and referred {@link FeaturesContainer}.
  *
  * A VariableReference may have a Reference to a VariableDeclaration.
  *
@@ -11,6 +13,7 @@ package org.lionweb.lioncore.java.metamodel;
  * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
  */
 public class Reference extends Link {
+    @Experimental
     private Reference specialized;
 
     public Reference(String simpleName, FeaturesContainer container) {
@@ -28,9 +31,4 @@ public class Reference extends Link {
         this.specialized = specialized;
     }
 
-    @Override
-    public void setMultiplicity(Multiplicity multiplicity) {
-        // TODO check constraint on multiplicity
-        super.setMultiplicity(multiplicity);
-    }
 }

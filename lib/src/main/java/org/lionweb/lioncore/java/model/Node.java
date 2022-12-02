@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.model;
 
+import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.metamodel.*;
 
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  *
  * TODO consider if the Model should have a version too
  */
+@Experimental
 public interface Node extends HasFeatureValues {
     /**
      * The Model in which the Node is contained. A Node is contained into a Model when it is a root node of that

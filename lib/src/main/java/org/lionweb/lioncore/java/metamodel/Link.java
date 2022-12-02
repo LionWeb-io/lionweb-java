@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 /**
- * Represent a connection to an {@link AbstractConcept}.
+ * Represent a connection to an {@link FeaturesContainer}.
  *
  * An Invoice can be connected to its InvoiceLines and to a Customer.
  *
@@ -10,13 +10,22 @@ package org.lionweb.lioncore.java.metamodel;
  * @see org.jetbrains.mps.openapi.language.SAbstractLink MPS equivalent <i>SAbstractLink</i> in SModel
  */
 public abstract class Link extends Feature {
+    private boolean multiple;
+
+    public boolean isMultiple() {
+        return multiple;
+    }
+
+    public void setMultiple(boolean multiple) {
+        this.multiple = multiple;
+    }
 
     public Link(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
     }
 
-    public AbstractConcept getType() {
+    public FeaturesContainer getType() {
         throw new UnsupportedOperationException();
     }
 

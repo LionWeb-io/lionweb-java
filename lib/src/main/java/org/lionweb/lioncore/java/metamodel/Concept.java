@@ -13,8 +13,10 @@ import java.util.List;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489090640">MPS equivalent <i>ConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
-public class Concept extends AbstractConcept {
+public class Concept extends FeaturesContainer {
     private boolean isAbstract;
+    // DOUBT: would this be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
+    //        another concept?
     private Concept extended;
     private List<ConceptInterface> implemented = new LinkedList<>();
 
@@ -43,6 +45,5 @@ public class Concept extends AbstractConcept {
     public void setExtendedConcept(Concept extended) {
         this.extended = extended;
     }
-
 
 }

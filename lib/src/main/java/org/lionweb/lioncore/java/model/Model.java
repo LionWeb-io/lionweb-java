@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.model;
 
+import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
 
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.List;
  *
  * TODO consider if the Model should have a version too
  */
+@Experimental
 public interface Model {
     /**
      * Return the fully qualified name associated with the model.

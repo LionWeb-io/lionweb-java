@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java.utils;
+package org.lionweb.lioncore.java.metamodel.utils;
 
 public class InvalidName extends RuntimeException {
     public InvalidName(String nameType, String value) {

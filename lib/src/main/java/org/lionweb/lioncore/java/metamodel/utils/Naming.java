@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java.utils;
+package org.lionweb.lioncore.java.metamodel.utils;
 
 import java.util.regex.Pattern;
 

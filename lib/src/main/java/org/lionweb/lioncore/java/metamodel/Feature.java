@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.Naming;
+import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.metamodel.utils.Naming;
 
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
@@ -13,8 +14,18 @@ import org.lionweb.lioncore.java.utils.Naming;
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
 public abstract class Feature implements NamespacedEntity {
-    private Multiplicity multiplicity;
+    private boolean optional;
+    @Experimental
     private boolean derived;
+
+    public boolean isOptional() {
+        return optional;
+    }
+
+    public void setOptional(boolean optional) {
+        this.optional = optional;
+    }
+
     private String simpleName;
     private FeaturesContainer container;
 
@@ -26,18 +37,12 @@ public abstract class Feature implements NamespacedEntity {
         this.container = container;
     }
 
-    public Multiplicity getMultiplicity() {
-        return multiplicity;
-    }
-
-    public void setMultiplicity(Multiplicity multiplicity) {
-        this.multiplicity = multiplicity;
-    }
-
+    @Experimental
     public boolean isDerived() {
         return derived;
     }
 
+    @Experimental
     public void setDerived(boolean derived) {
         this.derived = derived;
     }

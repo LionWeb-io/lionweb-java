@@ -1,6 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.Naming;
+import org.lionweb.lioncore.java.metamodel.utils.Naming;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,6 +18,8 @@ import java.util.List;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
 public class Metamodel implements NamespaceProvider {
+    // TODO add ID, once details are cleare
+
     private String qualifiedName;
     private List<Metamodel> dependsOn = new LinkedList<>();
     private List<MetamodelElement> elements = new LinkedList<>();

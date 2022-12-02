@@ -18,12 +18,6 @@ public class Property extends Feature {
         super(simpleName, container);
     }
 
-    @Override
-    public void setMultiplicity(Multiplicity multiplicity) {
-        // TODO check constraint on multiplicity
-        super.setMultiplicity(multiplicity);
-    }
-
     public DataType getType() {
         return type;
     }
