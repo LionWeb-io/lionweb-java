@@ -1,0 +1,37 @@
+plugins {
+    // Apply the java-library plugin for API and implementation separation.
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    javadocConfig.extendsFrom testImplementation
+}
+
+dependencies {
+    api project(":core")
+
+    api group: 'org.eclipse.emf', name: 'org.eclipse.emf.common', version: '2.23.0'
+    api group: 'org.eclipse.emf', name: 'org.eclipse.emf.ecore', version: '2.25.0'
+    api group: 'org.eclipse.emf', name: 'org.eclipse.emf.ecore.xmi', version: '2.16.0'
+
+    // Use JUnit test framework.
+    testImplementation 'junit:junit:4.13'
+}
+
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            groupId = 'org.lionweb.lioncore-java'
+            artifactId = 'emf'
+            version = '0.1-SNAPSHOT'
+
+            from components.java
+        }
+    }
+}
