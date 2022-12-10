@@ -4,6 +4,7 @@ import org.lionweb.lioncore.java.utils.Validatable;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This represents a group of elements that shares some characteristics.
@@ -32,6 +33,10 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     }
 
     public abstract List<Feature> allFeatures();
+
+    public List<Containment> allContainmentFeatures() {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f).collect(Collectors.toList());
+    }
 
     // TODO should this expose an immutable list to force users to use methods on this class
     //      to modify the collection?

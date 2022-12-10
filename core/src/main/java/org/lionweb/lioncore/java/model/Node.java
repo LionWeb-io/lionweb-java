@@ -56,7 +56,7 @@ public interface Node extends HasFeatureValues {
      *
      * TODO: Decide if we can have multiple annotation instances of the same annotation of one node.
      */
-    AnnotationInstance getAnnotation(Annotation annotation);
+    List<AnnotationInstance> getAnnotations(Annotation annotation);
 
     /**
      * If an annotation instance was already associated under the Annotation link used by this AnnotationInstance, then
@@ -65,6 +65,6 @@ public interface Node extends HasFeatureValues {
      * In case the specified Annotation link cannot be used on Nodes of this Concept, then the exception
      * IllegalArgumentException will be thrown.
      */
-    void setAnnotation(AnnotationInstance instance);
+    void addAnnotation(AnnotationInstance instance);
 
 }

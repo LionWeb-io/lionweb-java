@@ -11,6 +11,7 @@ import org.lionweb.lioncore.java.model.Node;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class BaseNode implements Node {
     private Node parent;
@@ -32,7 +33,10 @@ public abstract class BaseNode implements Node {
 
     @Override
     public Node getRoot() {
-        throw new UnsupportedOperationException();
+        if (getParent() == null) {
+            return this;
+        }
+        return getParent().getRoot();
     }
 
     @Override
@@ -56,13 +60,13 @@ public abstract class BaseNode implements Node {
     }
 
     @Override
-    public AnnotationInstance getAnnotation(Annotation annotation) {
-        throw new UnsupportedOperationException();
+    public List<AnnotationInstance> getAnnotations(Annotation annotation) {
+        return annotationInstances.stream().filter(a -> a.getAnnotationDefinition() == annotation).collect(Collectors.toList());
     }
 
     @Override
-    public void setAnnotation(AnnotationInstance instance) {
-        throw new UnsupportedOperationException();
+    public void addAnnotation(AnnotationInstance instance) {
+        annotationInstances.add(instance);
     }
 
     @Override
@@ -77,7 +81,9 @@ public abstract class BaseNode implements Node {
 
     @Override
     public List<Node> getChildren() {
-        throw new UnsupportedOperationException();
+        List<Node> allChildren = new LinkedList<>();
+        getConcept().allContainmentFeatures().stream().map(c -> getChildren(c)).forEach(children -> allChildren.addAll(children));
+        return allChildren;
     }
 
     @Override
