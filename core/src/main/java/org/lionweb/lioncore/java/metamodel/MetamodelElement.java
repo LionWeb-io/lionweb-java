@@ -57,7 +57,4 @@ public abstract class MetamodelElement implements NamespacedEntity, Validatable 
                 .checkForError(() -> getMetamodel() == null, "Metamodel not set");
     }
 
-    public boolean isValid() {
-        return validate().isSuccessful();
-    }
 }

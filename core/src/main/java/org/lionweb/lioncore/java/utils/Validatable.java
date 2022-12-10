@@ -38,4 +38,8 @@ public interface Validatable {
      * of this element.
      */
     ValidationResult validate();
+
+    default boolean isValid() {
+        return validate().isSuccessful();
+    }
 }
