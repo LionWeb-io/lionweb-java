@@ -42,4 +42,7 @@ public class Issue {
     }
 
 
+    public boolean isError() {
+        return severity == IssueSeverity.Error;
+    }
 }

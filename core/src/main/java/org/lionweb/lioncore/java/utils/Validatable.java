@@ -1,14 +1,23 @@
 package org.lionweb.lioncore.java.utils;
 
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Supplier;
 
+/**
+ * An element that can self-check its status. This is typically useful when we want to allow elements to be in a
+ * temporary invalid state. For example, this is typically the case during unserialization or as an intermediate
+ * step in a larger transaction. Eventually we want to validate the element for consistency, and we can do that
+ * through the methods provided by this interface.
+ */
 public interface Validatable {
 
     class ValidationResult {
-        private List<Issue> issues;
+        private Set<Issue> issues = new HashSet<>();
 
-        public List<Issue> getIssues() {
+        public Set<Issue> getIssues() {
             return issues;
         }
 
@@ -24,5 +33,9 @@ public interface Validatable {
         }
     }
 
+    /**
+     * This typically return exclusively error on the element itself on not the errors in all the descendants
+     * of this element.
+     */
     ValidationResult validate();
 }
