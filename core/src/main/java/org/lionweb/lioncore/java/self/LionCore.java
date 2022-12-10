@@ -282,6 +282,9 @@ public class LionCore {
             metamodelElement.addImplementedInterface(namespacedEntity);
             metamodel.setAbstract(true);
 
+            // NOTE this is a violation of the current metamodel, as we stated that
+            //      ConceptInterface can only have derived features. However this does not seem to be correct
+            //      in this case
             namespacedEntity.addRequiredProperty("simpleName", LionCoreBuiltins.getString());
             namespacedEntity.addProperty("qualifiedName", LionCoreBuiltins.getString(), false, true);
 
