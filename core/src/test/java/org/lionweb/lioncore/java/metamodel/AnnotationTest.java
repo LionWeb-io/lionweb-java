@@ -2,12 +2,9 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.junit.Test;
 import org.lionweb.lioncore.java.self.LionCore;
-import org.lionweb.lioncore.java.utils.IssueSeverity;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -71,13 +68,13 @@ public class AnnotationTest {
 
     @Test
     public void getReferenceValueTarget() {
-        Metamodel metamodel = new Metamodel();
+        Metamodel metamodel = new Metamodel("mymm");
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
-        assertEquals(null, annotation.getReferredNode(LionCore.getAnnotation().getReferenceByName("target")));
+        assertEquals(Arrays.asList(), annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
 
-        Concept myConcept = new Concept();
+        Concept myConcept = new Concept(metamodel, "myc");
         annotation.setTarget(myConcept);
-        assertEquals(myConcept, annotation.getReferredNode(LionCore.getAnnotation().getReferenceByName("target")));
+        assertEquals(Arrays.asList(myConcept), annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
     }
 
     @Test
@@ -86,7 +83,7 @@ public class AnnotationTest {
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
 
         Concept myConcept = new Concept();
-        annotation.setReferredNode(LionCore.getAnnotation().getReferenceByName("target"), myConcept);
+        annotation.addReferredNode(LionCore.getAnnotation().getReferenceByName("target"), myConcept);
         assertEquals(myConcept, annotation.getTarget());
     }
 

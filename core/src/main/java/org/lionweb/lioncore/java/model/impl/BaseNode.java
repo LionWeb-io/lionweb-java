@@ -113,7 +113,7 @@ public abstract class BaseNode implements Node {
     }
 
     @Override
-    public Node getReferredNode(Reference reference) {
+    public List<Node> getReferredNodes(Reference reference) {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
@@ -121,7 +121,7 @@ public abstract class BaseNode implements Node {
     }
 
     @Override
-    public void setReferredNode(Reference reference, Node referredNode) {
+    public void addReferredNode(Reference reference, Node referredNode) {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }

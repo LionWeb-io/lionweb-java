@@ -1,10 +1,12 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
-import java.sql.Ref;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A Concept represents a category of entities sharing the same structure.
@@ -81,6 +83,34 @@ public class Concept extends FeaturesContainer {
     public Concept getConcept() {
         // We cannot simply set the field concept because we have a problem of circular dependency
         return LionCore.getConcept();
+    }
+
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getAnnotation().getPropertyByName("abstract")) {
+            return this.isAbstract();
+        }
+        return super.getPropertyValue(property);
+    }
+
+    @Override
+    public void setPropertyValue(Property property, Object value) {
+        if (property == LionCore.getAnnotation().getPropertyByName("abstract")) {
+            setAbstract((Boolean) value);
+            return;
+        }
+        super.setPropertyValue(property, value);
+    }
+
+    @Override
+    public List<Node> getReferredNodes(Reference reference) {
+        if (reference == LionCore.getAnnotation().getReferenceByName("extended")) {
+            return Arrays.asList(this.getExtendedConcept());
+        }
+        if (reference == LionCore.getAnnotation().getReferenceByName("implemented")) {
+            return this.getImplemented().stream().collect(Collectors.toList());
+        }
+        return super.getReferredNodes(reference);
     }
 
 }

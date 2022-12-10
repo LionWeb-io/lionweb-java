@@ -52,17 +52,18 @@ public interface HasFeatureValues {
     void removeChild(Node node);
 
     /**
-     * Return the Node referred to under the specified Reference link. This returns null if no Node is associated
-     * with the specified Reference link.
+     * Return the Nodes referred to under the specified Reference link. This returns an empty list if no Node is
+     * associated with the specified Reference link.
      *
      * The Node returned is guaranteed to be either part of this Node's Model or of Models imported by this Node's
      * Model.
      */
-    Node getReferredNode(Reference reference);
+    List<Node> getReferredNodes(Reference reference);
 
     /**
-     * If a Node was already associated with this reference link, it will be dissasociated and replaced by this new
-     * Node specified.
+     * Add the Node to the list of Nodes referred to from this Node under the given Reference.
+     *
+     * If the Reference is not multiple, any previous value will be replaced.
      *
      * The Node specified should be either part of this Node's Model or of Models imported by this Node's
      * Model. If that is not the case the exception IllegalArgumentException will be thrown.
@@ -71,5 +72,5 @@ public interface HasFeatureValues {
      * IllegalArgumentException will be thrown.
      * If the Reference feature is derived, the exception IllegalArgumentException will be thrown.
      */
-    void setReferredNode(Reference reference, Node referredNode);
+    void addReferredNode(Reference reference, Node referredNode);
 }

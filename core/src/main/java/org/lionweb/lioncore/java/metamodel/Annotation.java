@@ -4,12 +4,10 @@ import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
-import org.lionweb.lioncore.java.utils.Validatable;
 
 import javax.annotation.Nullable;
+import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -79,19 +77,19 @@ public class Annotation extends FeaturesContainer {
     }
 
     @Override
-    public Node getReferredNode(Reference reference) {
+    public List<Node> getReferredNodes(Reference reference) {
         if (reference == LionCore.getAnnotation().getReferenceByName("target")) {
-            return this.getTarget();
+            return Arrays.asList(this.getTarget()).stream().filter(e -> e != null).collect(Collectors.toList());
         }
-        return super.getReferredNode(reference);
+        return super.getReferredNodes(reference);
     }
 
     @Override
-    public void setReferredNode(Reference reference, Node referredNode) {
+    public void addReferredNode(Reference reference, Node referredNode) {
         if (reference == LionCore.getAnnotation().getReferenceByName("target")) {
             this.setTarget((FeaturesContainer) referredNode);
             return;
         }
-        super.setReferredNode(reference, referredNode);
+        super.addReferredNode(reference, referredNode);
     }
 }
