@@ -37,4 +37,5 @@ public abstract class Link extends Feature {
     public void setType(FeaturesContainer type) {
         this.type = type;
     }
+
 }

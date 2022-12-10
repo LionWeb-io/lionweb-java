@@ -82,7 +82,7 @@ public abstract class BaseNode implements Node {
     @Override
     public List<Node> getChildren() {
         List<Node> allChildren = new LinkedList<>();
-        getConcept().allContainmentFeatures().stream().map(c -> getChildren(c)).forEach(children -> allChildren.addAll(children));
+        getConcept().allContainments().stream().map(c -> getChildren(c)).forEach(children -> allChildren.addAll(children));
         return allChildren;
     }
 

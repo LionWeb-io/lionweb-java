@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.utils.Validatable;
 
+import java.sql.Ref;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,15 +28,44 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         super(metamodel, simpleName);
     }
 
-    public Feature getFeatureByName(String name) {
-        return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
+    public Feature getFeatureByName(String simpleName) {
+        return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
+                .orElse(null);
+    }
+
+    public Property getPropertyByName(String simpleName) {
+        return allFeatures().stream().filter(feature -> feature instanceof Property)
+                .map(feature -> (Property)feature)
+                .filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
+                .orElse(null);
+    }
+
+    public Containment getContainmentByName(String simpleName) {
+        return allFeatures().stream().filter(feature -> feature instanceof Containment)
+                .map(feature -> (Containment)feature)
+                .filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
+                .orElse(null);
+    }
+
+    public Reference getReferenceByName(String simpleName) {
+        return allFeatures().stream().filter(feature -> feature instanceof Reference)
+                .map(feature -> (Reference)feature)
+                .filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
                 .orElse(null);
     }
 
     public abstract List<Feature> allFeatures();
 
-    public List<Containment> allContainmentFeatures() {
+    public List<Property> allProperties() {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f).collect(Collectors.toList());
+    }
+
+    public List<Containment> allContainments() {
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f).collect(Collectors.toList());
+    }
+
+    public List<Reference> allReferences() {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f).collect(Collectors.toList());
     }
 
     // TODO should this expose an immutable list to force users to use methods on this class
@@ -46,7 +76,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     public void addFeature(Feature feature) {
         if (feature.getContainer() != this) {
-            throw new IllegalArgumentException("The given feature is not associated to this container: " + feature);
+            feature.setContainer(this);
         }
         this.features.add(feature);
     }

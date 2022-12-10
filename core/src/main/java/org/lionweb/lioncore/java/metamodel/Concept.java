@@ -82,4 +82,5 @@ public class Concept extends FeaturesContainer {
         // We cannot simply set the field concept because we have a problem of circular dependency
         return LionCore.getConcept();
     }
+
 }

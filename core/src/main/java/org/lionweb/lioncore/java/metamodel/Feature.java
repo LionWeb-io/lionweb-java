@@ -77,6 +77,10 @@ public abstract class Feature extends BaseNode implements NamespacedEntity, Vali
         return (NamespaceProvider) container;
     }
 
+    public void setContainer(FeaturesContainer container) {
+        this.container = container;
+    }
+
     @Override
     public Validatable.ValidationResult validate() {
         return new Validatable.ValidationResult()

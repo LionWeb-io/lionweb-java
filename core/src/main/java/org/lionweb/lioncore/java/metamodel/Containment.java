@@ -40,4 +40,12 @@ public class Containment extends Link {
         this.specialized = specialized;
     }
 
+    @Override
+    public String toString() {
+        return "Containment{" +
+                "simpleName=" + getSimpleName() + ", " +
+                "type=" + getType() +
+                '}';
+    }
+
 }

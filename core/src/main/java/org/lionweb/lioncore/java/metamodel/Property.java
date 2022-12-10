@@ -33,4 +33,12 @@ public class Property extends Feature {
     public void setType(DataType type) {
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return "Property{" +
+                "simpleName=" + getSimpleName() + ", " +
+                "type=" + type +
+                '}';
+    }
 }

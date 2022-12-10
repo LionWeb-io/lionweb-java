@@ -38,4 +38,11 @@ public class Reference extends Link {
         this.specialized = specialized;
     }
 
+    @Override
+    public String toString() {
+        return "Reference{" +
+                "simpleName=" + getSimpleName() + ", " +
+                "type=" + getType() +
+                '}';
+    }
 }

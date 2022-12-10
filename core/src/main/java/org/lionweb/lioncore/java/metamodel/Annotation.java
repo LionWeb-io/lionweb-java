@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 import org.lionweb.lioncore.java.utils.Validatable;
@@ -9,6 +10,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * This represents additional metadata relative to some orthogonal concern.
@@ -59,4 +61,73 @@ public class Annotation extends FeaturesContainer {
         this.target = target;
     }
 
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (!getConcept().allProperties().contains(property)) {
+            throw new IllegalArgumentException("Property not belonging to this concept");
+        }
+        if (property == LionCore.getFeaturesContainer().getPropertyByName("simpleName")) {
+            return this.getSimpleName();
+        }
+        if (property == LionCore.getAnnotation().getPropertyByName("platformSpecific")) {
+            return this.getPlatformSpecific();
+        }
+        if (property == LionCore.getAnnotation().getPropertyByName("qualifiedName")) {
+            return this.qualifiedName();
+        }
+        if (property == LionCore.getAnnotation().getPropertyByName("namespaceQualifier")) {
+            return this.namespaceQualifier();
+        }
+        throw new UnsupportedOperationException("Property " + property + " not supported");
+    }
+
+    @Override
+    public void setPropertyValue(Property property, Object value) {
+        if (!getConcept().allProperties().contains(property)) {
+            throw new IllegalArgumentException("Property not belonging to this concept");
+        }
+        if (property == LionCore.getAnnotation().getPropertyByName("simpleName")) {
+            setSimpleName((String)value);
+            return;
+        }
+        if (property == LionCore.getAnnotation().getPropertyByName("platformSpecific")) {
+            setPlatformSpecific((String)value);
+            return;
+        }
+        throw new UnsupportedOperationException("Property " + property + " not supported");
+    }
+
+    @Override
+    public List<Node> getChildren(Containment containment) {
+        if (!getConcept().allContainments().contains(containment)) {
+            throw new IllegalArgumentException("Containment not belonging to this concept");
+        }
+        if (containment == LionCore.getAnnotation().getContainmentByName("features")) {
+            return this.getFeatures().stream().collect(Collectors.toList());
+        }
+        throw new UnsupportedOperationException("Containment " + containment + " not supported");
+    }
+
+    @Override
+    public Node getReferredNode(Reference reference) {
+        if (!getConcept().allReferences().contains(reference)) {
+            throw new IllegalArgumentException("Reference not belonging to this concept");
+        }
+        if (reference == LionCore.getAnnotation().getReferenceByName("target")) {
+            return this.getTarget();
+        }
+        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+    }
+
+    @Override
+    public void setReferredNode(Reference reference, Node referredNode) {
+        if (!getConcept().allReferences().contains(reference)) {
+            throw new IllegalArgumentException("Reference not belonging to this concept");
+        }
+        if (reference == LionCore.getAnnotation().getReferenceByName("target")) {
+            this.setTarget((FeaturesContainer) referredNode);
+            return;
+        }
+        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+    }
 }
