@@ -13,17 +13,21 @@ public abstract class Link extends Feature {
     private boolean multiple;
     private FeaturesContainer type;
 
+    public Link() {
+        super();
+    }
+
+    public Link(String simpleName, FeaturesContainer container) {
+        // TODO verify that the container is also a NamespaceProvider
+        super(simpleName, container);
+    }
+
     public boolean isMultiple() {
         return multiple;
     }
 
     public void setMultiple(boolean multiple) {
         this.multiple = multiple;
-    }
-
-    public Link(String simpleName, FeaturesContainer container) {
-        // TODO verify that the container is also a NamespaceProvider
-        super(simpleName, container);
     }
 
     public FeaturesContainer getType() {

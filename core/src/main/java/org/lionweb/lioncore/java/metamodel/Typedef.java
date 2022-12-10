@@ -9,6 +9,11 @@ import org.lionweb.lioncore.java.Experimental;
 @Experimental
 public class Typedef extends DataType {
     private PrimitiveType primitiveType;
+
+    public Typedef() {
+        super();
+    }
+
     public Typedef(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }

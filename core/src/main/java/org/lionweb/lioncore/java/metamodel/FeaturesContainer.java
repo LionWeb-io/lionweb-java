@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.utils.Validatable;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -13,8 +15,12 @@ import java.util.List;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1169125787135">MPS equivalent <i>AbstractConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i> in SModel
  */
-public abstract class FeaturesContainer extends MetamodelElement implements NamespaceProvider {
+public abstract class FeaturesContainer extends MetamodelElement implements NamespaceProvider, Validatable {
     private List<Feature> features = new LinkedList<>();
+
+    public FeaturesContainer() {
+        super();
+    }
 
     public FeaturesContainer(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);

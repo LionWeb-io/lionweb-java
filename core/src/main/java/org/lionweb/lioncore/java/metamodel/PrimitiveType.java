@@ -12,6 +12,10 @@ package org.lionweb.lioncore.java.metamodel;
  * All PrimitiveTypes in LionCore are builtin.
  */
 public class PrimitiveType extends DataType {
+    public PrimitiveType() {
+        super();
+    }
+
     public PrimitiveType(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }

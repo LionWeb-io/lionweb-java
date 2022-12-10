@@ -6,9 +6,20 @@ import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.impl.BaseNode;
 
 import java.util.List;
+import org.lionweb.lioncore.java.utils.Validatable;
 
-public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
+public class EnumerationLiteral extends BaseNode implements NamespacedEntity, Validatable {
     private String simpleName;
+
+    private Enumeration enumeration;
+
+    public EnumerationLiteral() {
+
+    }
+
+    public EnumerationLiteral(String simpleName) {
+        this.simpleName = simpleName;
+    }
 
     public Enumeration getEnumeration() {
         return enumeration;
@@ -18,15 +29,13 @@ public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
         this.enumeration = enumeration;
     }
 
-    private Enumeration enumeration;
-
-    public EnumerationLiteral(String simpleName) {
-        this.simpleName = simpleName;
-    }
-
     @Override
     public String getSimpleName() {
         return simpleName;
+    }
+
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName;
     }
 
     @Override
@@ -39,4 +48,9 @@ public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
         return getEnumeration();
     }
 
+    @Override
+    public Validatable.ValidationResult validate() {
+        return new Validatable.ValidationResult()
+                .checkForError(() -> getSimpleName() == null, "Simple name not set");
+    }
 }

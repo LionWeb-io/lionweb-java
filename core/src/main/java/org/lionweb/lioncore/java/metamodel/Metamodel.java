@@ -3,6 +3,7 @@ package org.lionweb.lioncore.java.metamodel;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.impl.BaseNode;
 import org.lionweb.lioncore.java.utils.Naming;
+import org.lionweb.lioncore.java.utils.Validatable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -19,12 +20,16 @@ import java.util.List;
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
-public class Metamodel extends BaseNode implements NamespaceProvider {
+public class Metamodel extends BaseNode implements NamespaceProvider, Validatable {
     // TODO add ID, once details are cleare
 
     private String qualifiedName;
     private List<Metamodel> dependsOn = new LinkedList<>();
     private List<MetamodelElement> elements = new LinkedList<>();
+
+    public Metamodel() {
+
+    }
 
     public Metamodel(String qualifiedName) {
         Naming.validateQualifiedName(qualifiedName);
@@ -95,5 +100,11 @@ public class Metamodel extends BaseNode implements NamespaceProvider {
         } else {
             throw new RuntimeException("Element " + name + " is not a PrimitiveType");
         }
+    }
+
+    @Override
+    public Validatable.ValidationResult validate() {
+        return new Validatable.ValidationResult()
+                .checkForError(() -> getQualifiedName() == null, "Qualified name not set");
     }
 }

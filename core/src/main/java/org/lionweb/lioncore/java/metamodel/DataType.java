@@ -10,6 +10,10 @@ package org.lionweb.lioncore.java.metamodel;
  * @see org.jetbrains.mps.openapi.language.SDataType MPS equivalent <i>SDataType</i> in SModel
  */
 public abstract class DataType extends MetamodelElement {
+    public DataType() {
+        super();
+    }
+
     public DataType(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }

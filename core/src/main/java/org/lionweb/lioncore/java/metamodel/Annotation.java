@@ -2,9 +2,12 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
+import org.lionweb.lioncore.java.utils.Validatable;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 /**
  * This represents additional metadata relative to some orthogonal concern.
@@ -19,6 +22,10 @@ import java.util.List;
 public class Annotation extends FeaturesContainer {
     private @Nullable String platformSpecific;
     private FeaturesContainer target;
+
+    public Annotation() {
+        super();
+    }
 
     public Annotation(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
@@ -48,4 +55,5 @@ public class Annotation extends FeaturesContainer {
         // TODO prevent annotations to be used as target
         this.target = target;
     }
+
 }

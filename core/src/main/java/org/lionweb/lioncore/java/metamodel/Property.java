@@ -13,6 +13,10 @@ package org.lionweb.lioncore.java.metamodel;
 public class Property extends Feature {
     private DataType type;
 
+    public Property() {
+        super();
+    }
+
     public Property(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);

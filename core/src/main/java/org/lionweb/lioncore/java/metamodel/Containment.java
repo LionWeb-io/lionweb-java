@@ -18,6 +18,10 @@ public class Containment extends Link {
     @Experimental
     private Containment specialized;
 
+    public Containment() {
+        super();
+    }
+
     public Containment(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
