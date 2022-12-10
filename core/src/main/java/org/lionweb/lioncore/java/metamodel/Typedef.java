@@ -1,7 +1,12 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#constraineddatatypes">MPS equivalent <i>Constrained Data Type</i> in documentation</a>
@@ -27,5 +32,22 @@ public class Typedef extends DataType {
 
     public void setPrimitiveType(PrimitiveType primitiveType) {
         this.primitiveType = primitiveType;
+    }
+
+    @Override
+    public List<Node> getReferredNodes(Reference reference) {
+        if (reference == LionCore.getTypedef().getReferenceByName("primitiveType")) {
+            return Arrays.asList(getPrimitiveType()).stream().filter(e -> e != null).collect(Collectors.toList());
+        }
+        return super.getReferredNodes(reference);
+    }
+
+    @Override
+    public void addReferredNode(Reference reference, Node referredNode) {
+        if (reference == LionCore.getTypedef().getReferenceByName("primitiveType")) {
+            this.setPrimitiveType((PrimitiveType) referredNode);
+            return;
+        }
+        super.addReferredNode(reference, referredNode);
     }
 }

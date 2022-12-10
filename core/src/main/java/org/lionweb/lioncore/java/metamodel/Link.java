@@ -64,7 +64,7 @@ public abstract class Link extends Feature {
 
     @Override
     public List<Node> getReferredNodes(Reference reference) {
-        if (reference == LionCore.getAnnotation().getReferenceByName("type")) {
+        if (reference == LionCore.getLink().getReferenceByName("type")) {
             return Arrays.asList(this.getType()).stream().filter(e -> e != null).collect(Collectors.toList());
         }
         return super.getReferredNodes(reference);
@@ -72,7 +72,7 @@ public abstract class Link extends Feature {
 
     @Override
     public void addReferredNode(Reference reference, Node referredNode) {
-        if (reference == LionCore.getAnnotation().getReferenceByName("type")) {
+        if (reference == LionCore.getLink().getReferenceByName("type")) {
             this.setType((FeaturesContainer) referredNode);
             return;
         }

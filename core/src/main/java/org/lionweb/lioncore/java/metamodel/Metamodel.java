@@ -117,8 +117,16 @@ public class Metamodel extends BaseNode implements NamespaceProvider, Validatabl
     }
 
     @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getMetamodel().getPropertyByName("namespaceQualifier")) {
+            return this.namespaceQualifier();
+        }
+        return super.getPropertyValue(property);
+    }
+
+    @Override
     public List<Node> getChildren(Containment containment) {
-        if (containment == LionCore.getFeaturesContainer().getContainmentByName("elements")) {
+        if (containment == LionCore.getMetamodel().getContainmentByName("elements")) {
             return this.getElements().stream().collect(Collectors.toList());
         }
         return super.getChildren(containment);
@@ -126,7 +134,7 @@ public class Metamodel extends BaseNode implements NamespaceProvider, Validatabl
 
     @Override
     public List<Node> getReferredNodes(Reference reference) {
-        if (reference == LionCore.getAnnotation().getReferenceByName("dependsOn")) {
+        if (reference == LionCore.getMetamodel().getReferenceByName("dependsOn")) {
             return dependsOn().stream().collect(Collectors.toList());
         }
         return super.getReferredNodes(reference);
@@ -134,7 +142,7 @@ public class Metamodel extends BaseNode implements NamespaceProvider, Validatabl
 
     @Override
     public void addReferredNode(Reference reference, Node referredNode) {
-        if (reference == LionCore.getAnnotation().getReferenceByName("dependsOn")) {
+        if (reference == LionCore.getMetamodel().getReferenceByName("dependsOn")) {
             this.dependsOn.add((Metamodel) referredNode);
             return;
         }

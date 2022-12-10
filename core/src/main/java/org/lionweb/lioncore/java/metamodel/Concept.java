@@ -87,7 +87,7 @@ public class Concept extends FeaturesContainer {
 
     @Override
     public Object getPropertyValue(Property property) {
-        if (property == LionCore.getAnnotation().getPropertyByName("abstract")) {
+        if (property == LionCore.getConcept().getPropertyByName("abstract")) {
             return this.isAbstract();
         }
         return super.getPropertyValue(property);
@@ -95,7 +95,7 @@ public class Concept extends FeaturesContainer {
 
     @Override
     public void setPropertyValue(Property property, Object value) {
-        if (property == LionCore.getAnnotation().getPropertyByName("abstract")) {
+        if (property == LionCore.getConcept().getPropertyByName("abstract")) {
             setAbstract((Boolean) value);
             return;
         }

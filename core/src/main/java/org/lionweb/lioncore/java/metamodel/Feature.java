@@ -68,6 +68,10 @@ public abstract class Feature extends BaseNode implements NamespacedEntity, Vali
         return simpleName;
     }
 
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName;
+    }
+
     @Override
     public String qualifiedName() {
         return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
@@ -94,6 +98,12 @@ public abstract class Feature extends BaseNode implements NamespacedEntity, Vali
         if (property == LionCore.getFeature().getPropertyByName("optional")) {
             return this.isOptional();
         }
+        if (property == LionCore.getFeature().getPropertyByName("simpleName")) {
+            return this.getSimpleName();
+        }
+        if (property == LionCore.getFeature().getPropertyByName("qualifiedName")) {
+            return this.qualifiedName();
+        }
         return super.getPropertyValue(property);
     }
 
@@ -101,6 +111,10 @@ public abstract class Feature extends BaseNode implements NamespacedEntity, Vali
     public void setPropertyValue(Property property, Object value) {
         if (property == LionCore.getFeature().getPropertyByName("optional")) {
             setOptional((Boolean) value);
+            return;
+        }
+        if (property == LionCore.getFeature().getPropertyByName("simpleName")) {
+            setSimpleName((String)value);
             return;
         }
         super.setPropertyValue(property, value);

@@ -56,4 +56,24 @@ public class EnumerationLiteral extends BaseNode implements NamespacedEntity, Va
         return new Validatable.ValidationResult()
                 .checkForError(() -> getSimpleName() == null, "Simple name not set");
     }
+
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getEnumerationLiteral().getPropertyByName("simpleName")) {
+            return this.getSimpleName();
+        }
+        if (property == LionCore.getEnumerationLiteral().getPropertyByName("qualifiedName")) {
+            return this.qualifiedName();
+        }
+        return super.getPropertyValue(property);
+    }
+
+    @Override
+    public void setPropertyValue(Property property, Object value) {
+        if (property == LionCore.getEnumerationLiteral().getPropertyByName("simpleName")) {
+            setSimpleName((String)value);
+            return;
+        }
+        super.setPropertyValue(property, value);
+    }
 }

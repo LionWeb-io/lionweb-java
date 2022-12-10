@@ -1,6 +1,11 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This indicates a simple value associated to an entity.
@@ -40,5 +45,22 @@ public class Property extends Feature {
                 "simpleName=" + getSimpleName() + ", " +
                 "type=" + type +
                 '}';
+    }
+
+    @Override
+    public List<Node> getReferredNodes(Reference reference) {
+        if (reference == LionCore.getProperty().getReferenceByName("type")) {
+            return Arrays.asList(getType()).stream().filter(e -> e != null).collect(Collectors.toList());
+        }
+        return super.getReferredNodes(reference);
+    }
+
+    @Override
+    public void addReferredNode(Reference reference, Node referredNode) {
+        if (reference == LionCore.getProperty().getReferenceByName("type")) {
+            this.setType((DataType) referredNode);
+            return;
+        }
+        super.addReferredNode(reference, referredNode);
     }
 }
