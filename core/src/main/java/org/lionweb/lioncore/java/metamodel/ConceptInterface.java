@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,5 +36,11 @@ public class ConceptInterface extends FeaturesContainer {
             result.addAll(superInterface.allFeatures());
         }
         return result;
+    }
+
+    @Override
+    public Concept getConcept() {
+        // We cannot simply set the field concept because we have a problem of circular dependency
+        return LionCore.getConceptInterface();
     }
 }

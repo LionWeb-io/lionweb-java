@@ -218,6 +218,78 @@ public class LionCore {
 
     private static Metamodel INSTANCE;
 
+    public static Concept getAnnotation() {
+        return getInstance().getConceptByName("Annotation");
+    }
+
+    public static Concept getConcept() {
+        return getInstance().getConceptByName("Concept");
+    }
+
+    public static Concept getConceptInterface() {
+        return getInstance().getConceptByName("ConceptInterface");
+    }
+
+    public static Concept getContainment() {
+        return getInstance().getConceptByName("Containment");
+    }
+
+    public static Concept getDataType() {
+        return getInstance().getConceptByName("DataType");
+    }
+
+    public static Concept getEnumeration() {
+        return getInstance().getConceptByName("Enumeration");
+    }
+
+    public static Concept getEnumerationLiteral() {
+        return getInstance().getConceptByName("EnumerationLiteral");
+    }
+
+    public static Concept getFeature() {
+        return getInstance().getConceptByName("Feature");
+    }
+
+    public static Concept getFeaturesContainer() {
+        return getInstance().getConceptByName("FeaturesContainer");
+    }
+
+    public static Concept getLink() {
+        return getInstance().getConceptByName("Link");
+    }
+
+    public static Concept getMetamodel() {
+        return getInstance().getConceptByName("Metamodel");
+    }
+
+    public static Concept getMetamodelElement() {
+        return getInstance().getConceptByName("MetamodelElement");
+    }
+
+    public static ConceptInterface getNamespacedEntity() {
+        return getInstance().getConceptInterfaceByName("NamespacedEntity");
+    }
+
+    public static ConceptInterface getNamespaceProvider() {
+        return getInstance().getConceptInterfaceByName("NamespaceProvider");
+    }
+
+    public static Concept getPrimitiveType() {
+        return getInstance().getConceptByName("PrimitiveType");
+    }
+
+    public static Concept getProperty() {
+        return getInstance().getConceptByName("Property");
+    }
+
+    public static Concept getReference() {
+        return getInstance().getConceptByName("Reference");
+    }
+
+    public static Concept getTypedef() {
+        return getInstance().getConceptByName("Typedef");
+    }
+
     public static Metamodel getInstance() {
         if (INSTANCE == null) {
             INSTANCE = new Metamodel("lionweb.lioncore");

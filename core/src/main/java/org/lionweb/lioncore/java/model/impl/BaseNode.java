@@ -9,9 +9,22 @@ import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
 
+import java.util.LinkedList;
 import java.util.List;
 
 public abstract class BaseNode implements Node {
+    private Node parent;
+    private Concept concept;
+    private List<AnnotationInstance> annotationInstances = new LinkedList<>();
+
+    public void setParent(Node parent) {
+        this.parent = parent;
+    }
+
+    protected void setConcept(Concept concept) {
+        this.concept = concept;
+    }
+
     @Override
     public Model getModel() {
         throw new UnsupportedOperationException();
@@ -24,17 +37,17 @@ public abstract class BaseNode implements Node {
 
     @Override
     public Node getParent() {
-        throw new UnsupportedOperationException();
+        return parent;
     }
 
     @Override
     public Concept getConcept() {
-        throw new UnsupportedOperationException();
+        return concept;
     }
 
     @Override
     public List<AnnotationInstance> getAnnotations() {
-        throw new UnsupportedOperationException();
+        return this.annotationInstances;
     }
 
     @Override

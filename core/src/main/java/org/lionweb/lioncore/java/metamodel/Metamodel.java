@@ -71,6 +71,20 @@ public class Metamodel extends BaseNode implements NamespaceProvider {
                 .orElse(null);
     }
 
+    public Concept getConceptByName(String name) {
+        return getElements().stream().filter(element -> element instanceof Concept)
+                .map(element -> (Concept)element)
+                .filter(element -> element.getSimpleName().equals(name)).findFirst()
+                .orElse(null);
+    }
+
+    public ConceptInterface getConceptInterfaceByName(String name) {
+        return getElements().stream().filter(element -> element instanceof ConceptInterface)
+                .map(element -> (ConceptInterface)element)
+                .filter(element -> element.getSimpleName().equals(name)).findFirst()
+                .orElse(null);
+    }
+
     public PrimitiveType getPrimitiveTypeByName(String name) {
         MetamodelElement element = this.getElementByName(name);
         if (element == null) {
