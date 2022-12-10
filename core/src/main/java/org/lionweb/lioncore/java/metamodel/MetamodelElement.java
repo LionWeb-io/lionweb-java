@@ -68,10 +68,10 @@ public abstract class MetamodelElement extends BaseNode implements NamespacedEnt
 
     @Override
     public Object getPropertyValue(Property property) {
-        if (property == LionCore.getFeaturesContainer().getPropertyByName("simpleName")) {
+        if (property == LionCore.getMetamodelElement().getPropertyByName("simpleName")) {
             return this.getSimpleName();
         }
-        if (property == LionCore.getAnnotation().getPropertyByName("qualifiedName")) {
+        if (property == LionCore.getMetamodelElement().getPropertyByName("qualifiedName")) {
             return this.qualifiedName();
         }
         return super.getPropertyValue(property);
@@ -79,7 +79,7 @@ public abstract class MetamodelElement extends BaseNode implements NamespacedEnt
 
     @Override
     public void setPropertyValue(Property property, Object value) {
-        if (property == LionCore.getAnnotation().getPropertyByName("simpleName")) {
+        if (property == LionCore.getMetamodelElement().getPropertyByName("simpleName")) {
             setSimpleName((String)value);
             return;
         }

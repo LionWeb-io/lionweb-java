@@ -104,13 +104,25 @@ public class Concept extends FeaturesContainer {
 
     @Override
     public List<Node> getReferredNodes(Reference reference) {
-        if (reference == LionCore.getAnnotation().getReferenceByName("extended")) {
+        if (reference == LionCore.getConcept().getReferenceByName("extended")) {
             return Arrays.asList(this.getExtendedConcept());
         }
-        if (reference == LionCore.getAnnotation().getReferenceByName("implemented")) {
+        if (reference == LionCore.getConcept().getReferenceByName("implemented")) {
             return this.getImplemented().stream().collect(Collectors.toList());
         }
         return super.getReferredNodes(reference);
     }
 
+    @Override
+    public void addReferredNode(Reference reference, Node referredNode) {
+        if (reference == LionCore.getConcept().getReferenceByName("extended")) {
+            setExtendedConcept((Concept)referredNode);
+            return;
+        }
+        if (reference == LionCore.getConcept().getReferenceByName("implemented")) {
+            addImplementedInterface((ConceptInterface) referredNode);
+            return;
+        }
+        super.addReferredNode(reference, referredNode);
+    }
 }

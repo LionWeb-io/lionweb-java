@@ -1,9 +1,12 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A ConceptInterface represents a category of entities sharing some similar characteristics.
@@ -26,8 +29,12 @@ public class ConceptInterface extends FeaturesContainer {
         super(metamodel, simpleName);
     }
 
-    public List<ConceptInterface> getExtendedInterface() {
+    public List<ConceptInterface> getExtendedInterfaces() {
         return this.extended;
+    }
+
+    public void addExtendedInterface(ConceptInterface conceptInterface) {
+        this.extended.add(conceptInterface);
     }
 
     @Override
@@ -46,5 +53,22 @@ public class ConceptInterface extends FeaturesContainer {
     public Concept getConcept() {
         // We cannot simply set the field concept because we have a problem of circular dependency
         return LionCore.getConceptInterface();
+    }
+
+    @Override
+    public List<Node> getReferredNodes(Reference reference) {
+        if (reference == LionCore.getConceptInterface().getReferenceByName("extended")) {
+            return getExtendedInterfaces().stream().collect(Collectors.toList());
+        }
+        return super.getReferredNodes(reference);
+    }
+
+    @Override
+    public void addReferredNode(Reference reference, Node referredNode) {
+        if (reference == LionCore.getConceptInterface().getReferenceByName("extended")) {
+            addExtendedInterface((ConceptInterface)referredNode);
+            return;
+        }
+        super.addReferredNode(reference, referredNode);
     }
 }

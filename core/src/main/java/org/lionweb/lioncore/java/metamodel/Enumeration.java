@@ -1,9 +1,11 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Enumeration extends DataType implements NamespaceProvider {
     private List<EnumerationLiteral> literals = new LinkedList<>();
@@ -33,4 +35,13 @@ public class Enumeration extends DataType implements NamespaceProvider {
     public String namespaceQualifier() {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public List<Node> getChildren(Containment containment) {
+        if (containment == LionCore.getEnumeration().getContainmentByName("literals")) {
+            return this.getLiterals().stream().collect(Collectors.toList());
+        }
+        return super.getChildren(containment);
+    }
+
 }

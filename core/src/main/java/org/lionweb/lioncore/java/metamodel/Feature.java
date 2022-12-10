@@ -5,6 +5,7 @@ import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 import org.lionweb.lioncore.java.utils.Validatable;
 
@@ -86,5 +87,22 @@ public abstract class Feature extends BaseNode implements NamespacedEntity, Vali
         return new Validatable.ValidationResult()
                 .checkForError(() -> getSimpleName() == null, "Simple name not set")
                 .checkForError(() -> getContainer() == null, "Container not set");
+    }
+
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getFeature().getPropertyByName("optional")) {
+            return this.isOptional();
+        }
+        return super.getPropertyValue(property);
+    }
+
+    @Override
+    public void setPropertyValue(Property property, Object value) {
+        if (property == LionCore.getFeature().getPropertyByName("optional")) {
+            setOptional((Boolean) value);
+            return;
+        }
+        super.setPropertyValue(property, value);
     }
 }

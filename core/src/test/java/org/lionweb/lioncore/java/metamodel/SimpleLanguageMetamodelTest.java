@@ -39,7 +39,7 @@ public class SimpleLanguageMetamodelTest {
         assertSame(metamodel, deprecated.getMetamodel());
         assertEquals("SimpleLanguage.Deprecated", deprecated.qualifiedName());
         assertEquals("SimpleLanguage.Deprecated", deprecated.namespaceQualifier());
-        assertEquals(0, deprecated.getExtendedInterface().size());
+        assertEquals(0, deprecated.getExtendedInterfaces().size());
         assertEquals(0, deprecated.getFeatures().size());
     }
 }

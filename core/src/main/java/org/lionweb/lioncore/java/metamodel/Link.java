@@ -1,5 +1,12 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.self.LionCore;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Represent a connection to an {@link FeaturesContainer}.
  *
@@ -36,6 +43,40 @@ public abstract class Link extends Feature {
 
     public void setType(FeaturesContainer type) {
         this.type = type;
+    }
+
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getLink().getPropertyByName("multiple")) {
+            return this.isMultiple();
+        }
+        return super.getPropertyValue(property);
+    }
+
+    @Override
+    public void setPropertyValue(Property property, Object value) {
+        if (property == LionCore.getLink().getPropertyByName("multiple")) {
+            setMultiple((Boolean) value);
+            return;
+        }
+        super.setPropertyValue(property, value);
+    }
+
+    @Override
+    public List<Node> getReferredNodes(Reference reference) {
+        if (reference == LionCore.getAnnotation().getReferenceByName("type")) {
+            return Arrays.asList(this.getType()).stream().filter(e -> e != null).collect(Collectors.toList());
+        }
+        return super.getReferredNodes(reference);
+    }
+
+    @Override
+    public void addReferredNode(Reference reference, Node referredNode) {
+        if (reference == LionCore.getAnnotation().getReferenceByName("type")) {
+            this.setType((FeaturesContainer) referredNode);
+            return;
+        }
+        super.addReferredNode(reference, referredNode);
     }
 
 }

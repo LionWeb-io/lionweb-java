@@ -6,8 +6,10 @@ import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 import org.lionweb.lioncore.java.utils.Validatable;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A Metamodel will provide the {@link Concept}s necessary to describe data in a particular domain together with supporting
@@ -112,5 +114,30 @@ public class Metamodel extends BaseNode implements NamespaceProvider, Validatabl
     public Concept getConcept() {
         // We cannot simply set the field concept because we have a problem of circular dependency
         return LionCore.getMetamodel();
+    }
+
+    @Override
+    public List<Node> getChildren(Containment containment) {
+        if (containment == LionCore.getFeaturesContainer().getContainmentByName("elements")) {
+            return this.getElements().stream().collect(Collectors.toList());
+        }
+        return super.getChildren(containment);
+    }
+
+    @Override
+    public List<Node> getReferredNodes(Reference reference) {
+        if (reference == LionCore.getAnnotation().getReferenceByName("dependsOn")) {
+            return dependsOn().stream().collect(Collectors.toList());
+        }
+        return super.getReferredNodes(reference);
+    }
+
+    @Override
+    public void addReferredNode(Reference reference, Node referredNode) {
+        if (reference == LionCore.getAnnotation().getReferenceByName("dependsOn")) {
+            this.dependsOn.add((Metamodel) referredNode);
+            return;
+        }
+        super.addReferredNode(reference, referredNode);
     }
 }

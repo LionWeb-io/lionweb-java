@@ -156,7 +156,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     @Override
     public List<Node> getChildren(Containment containment) {
-        if (containment == LionCore.getAnnotation().getContainmentByName("features")) {
+        if (containment == LionCore.getFeaturesContainer().getContainmentByName("features")) {
             return this.getFeatures().stream().collect(Collectors.toList());
         }
         return super.getChildren(containment);
@@ -164,7 +164,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     @Override
     public Object getPropertyValue(Property property) {
-        if (property == LionCore.getAnnotation().getPropertyByName("namespaceQualifier")) {
+        if (property == LionCore.getFeaturesContainer().getPropertyByName("namespaceQualifier")) {
             return this.namespaceQualifier();
         }
         return super.getPropertyValue(property);
