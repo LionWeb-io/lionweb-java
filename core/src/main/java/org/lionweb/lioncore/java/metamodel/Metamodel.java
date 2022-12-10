@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 import org.lionweb.lioncore.java.utils.Validatable;
 
@@ -28,7 +29,6 @@ public class Metamodel extends BaseNode implements NamespaceProvider, Validatabl
     private List<MetamodelElement> elements = new LinkedList<>();
 
     public Metamodel() {
-
     }
 
     public Metamodel(String qualifiedName) {
@@ -106,5 +106,11 @@ public class Metamodel extends BaseNode implements NamespaceProvider, Validatabl
     public Validatable.ValidationResult validate() {
         return new Validatable.ValidationResult()
                 .checkForError(() -> getQualifiedName() == null, "Qualified name not set");
+    }
+
+    @Override
+    public Concept getConcept() {
+        // We cannot simply set the field concept because we have a problem of circular dependency
+        return LionCore.getMetamodel();
     }
 }

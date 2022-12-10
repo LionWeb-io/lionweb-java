@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.self.LionCore;
 
 /**
  * This represents a relation between an {@link FeaturesContainer} and referred {@link FeaturesContainer}.
@@ -18,11 +19,13 @@ public class Reference extends Link {
 
     public Reference() {
         super();
+        setConcept(LionCore.getReference());
     }
 
     public Reference(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
+        setConcept(LionCore.getReference());
     }
 
     public Reference getSpecialized() {

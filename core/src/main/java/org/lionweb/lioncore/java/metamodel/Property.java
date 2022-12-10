@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 /**
  * This indicates a simple value associated to an entity.
  *
@@ -15,11 +17,13 @@ public class Property extends Feature {
 
     public Property() {
         super();
+        setConcept(LionCore.getProperty());
     }
 
     public Property(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
+        setConcept(LionCore.getProperty());
     }
 
     public DataType getType() {

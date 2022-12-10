@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.self.LionCore;
 
 /**
  * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link FeaturesContainer}.
@@ -20,11 +21,13 @@ public class Containment extends Link {
 
     public Containment() {
         super();
+        setConcept(LionCore.getContainment());
     }
 
     public Containment(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
+        setConcept(LionCore.getContainment());
     }
 
     public Containment getSpecialized() {

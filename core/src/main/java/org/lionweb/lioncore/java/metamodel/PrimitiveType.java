@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 /**
  * This represents an arbitrary primitive value, which is not an enumeration.
  *
@@ -14,10 +16,12 @@ package org.lionweb.lioncore.java.metamodel;
 public class PrimitiveType extends DataType {
     public PrimitiveType() {
         super();
+        setConcept(LionCore.getPrimitiveType());
     }
 
     public PrimitiveType(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
+        setConcept(LionCore.getPrimitiveType());
     }
 
     @Override

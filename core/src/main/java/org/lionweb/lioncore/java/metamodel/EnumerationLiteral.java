@@ -6,6 +6,8 @@ import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.impl.BaseNode;
 
 import java.util.List;
+
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Validatable;
 
 public class EnumerationLiteral extends BaseNode implements NamespacedEntity, Validatable {
@@ -14,11 +16,12 @@ public class EnumerationLiteral extends BaseNode implements NamespacedEntity, Va
     private Enumeration enumeration;
 
     public EnumerationLiteral() {
-
+        setConcept(LionCore.getEnumerationLiteral());
     }
 
     public EnumerationLiteral(String simpleName) {
         this.simpleName = simpleName;
+        setConcept(LionCore.getEnumerationLiteral());
     }
 
     public Enumeration getEnumeration() {
