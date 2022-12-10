@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Validatable;
 
 import java.sql.Ref;
@@ -150,5 +152,21 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     public void addMultipleAndRequiredContainment(String simpleName, FeaturesContainer type) {
         addContainment(simpleName, type, false, true);
+    }
+
+    @Override
+    public List<Node> getChildren(Containment containment) {
+        if (containment == LionCore.getAnnotation().getContainmentByName("features")) {
+            return this.getFeatures().stream().collect(Collectors.toList());
+        }
+        return super.getChildren(containment);
+    }
+
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getAnnotation().getPropertyByName("namespaceQualifier")) {
+            return this.namespaceQualifier();
+        }
+        return super.getPropertyValue(property);
     }
 }

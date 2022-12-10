@@ -4,10 +4,12 @@ import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 import org.lionweb.lioncore.java.utils.Validatable;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A MetamodelElement is an element with an identity within a {@link Metamodel}.
@@ -62,6 +64,26 @@ public abstract class MetamodelElement extends BaseNode implements NamespacedEnt
         return new Validatable.ValidationResult()
                 .checkForError(() -> getSimpleName() == null, "Simple name not set")
                 .checkForError(() -> getMetamodel() == null, "Metamodel not set");
+    }
+
+    @Override
+    public Object getPropertyValue(Property property) {
+        if (property == LionCore.getFeaturesContainer().getPropertyByName("simpleName")) {
+            return this.getSimpleName();
+        }
+        if (property == LionCore.getAnnotation().getPropertyByName("qualifiedName")) {
+            return this.qualifiedName();
+        }
+        return super.getPropertyValue(property);
+    }
+
+    @Override
+    public void setPropertyValue(Property property, Object value) {
+        if (property == LionCore.getAnnotation().getPropertyByName("simpleName")) {
+            setSimpleName((String)value);
+            return;
+        }
+        super.setPropertyValue(property, value);
     }
 
 }

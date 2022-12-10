@@ -3,11 +3,13 @@ package org.lionweb.lioncore.java.model.impl;
 import org.lionweb.lioncore.java.metamodel.Annotation;
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Containment;
+import org.lionweb.lioncore.java.metamodel.FeaturesContainer;
 import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.metamodel.Reference;
 import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.self.LionCore;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -71,12 +73,18 @@ public abstract class BaseNode implements Node {
 
     @Override
     public Object getPropertyValue(Property property) {
-        throw new UnsupportedOperationException();
+        if (!getConcept().allProperties().contains(property)) {
+            throw new IllegalArgumentException("Property not belonging to this concept");
+        }
+        throw new UnsupportedOperationException("Property " + property + " not supported");
     }
 
     @Override
     public void setPropertyValue(Property property, Object value) {
-        throw new UnsupportedOperationException();
+        if (!getConcept().allProperties().contains(property)) {
+            throw new IllegalArgumentException("Property not belonging to this concept");
+        }
+        throw new UnsupportedOperationException("Property " + property + " not supported");
     }
 
     @Override
@@ -88,7 +96,10 @@ public abstract class BaseNode implements Node {
 
     @Override
     public List<Node> getChildren(Containment containment) {
-        throw new UnsupportedOperationException();
+        if (!getConcept().allContainments().contains(containment)) {
+            throw new IllegalArgumentException("Containment not belonging to this concept");
+        }
+        throw new UnsupportedOperationException("Containment " + containment + " not supported");
     }
 
     @Override
@@ -103,11 +114,17 @@ public abstract class BaseNode implements Node {
 
     @Override
     public Node getReferredNode(Reference reference) {
-        throw new UnsupportedOperationException();
+        if (!getConcept().allReferences().contains(reference)) {
+            throw new IllegalArgumentException("Reference not belonging to this concept");
+        }
+        throw new UnsupportedOperationException("Reference " + reference + " not supported");
     }
 
     @Override
     public void setReferredNode(Reference reference, Node referredNode) {
-        throw new UnsupportedOperationException();
+        if (!getConcept().allReferences().contains(reference)) {
+            throw new IllegalArgumentException("Reference not belonging to this concept");
+        }
+        throw new UnsupportedOperationException("Reference " + reference + " not supported");
     }
 }

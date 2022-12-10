@@ -63,71 +63,35 @@ public class Annotation extends FeaturesContainer {
 
     @Override
     public Object getPropertyValue(Property property) {
-        if (!getConcept().allProperties().contains(property)) {
-            throw new IllegalArgumentException("Property not belonging to this concept");
-        }
-        if (property == LionCore.getFeaturesContainer().getPropertyByName("simpleName")) {
-            return this.getSimpleName();
-        }
         if (property == LionCore.getAnnotation().getPropertyByName("platformSpecific")) {
             return this.getPlatformSpecific();
         }
-        if (property == LionCore.getAnnotation().getPropertyByName("qualifiedName")) {
-            return this.qualifiedName();
-        }
-        if (property == LionCore.getAnnotation().getPropertyByName("namespaceQualifier")) {
-            return this.namespaceQualifier();
-        }
-        throw new UnsupportedOperationException("Property " + property + " not supported");
+        return super.getPropertyValue(property);
     }
 
     @Override
     public void setPropertyValue(Property property, Object value) {
-        if (!getConcept().allProperties().contains(property)) {
-            throw new IllegalArgumentException("Property not belonging to this concept");
-        }
-        if (property == LionCore.getAnnotation().getPropertyByName("simpleName")) {
-            setSimpleName((String)value);
-            return;
-        }
         if (property == LionCore.getAnnotation().getPropertyByName("platformSpecific")) {
             setPlatformSpecific((String)value);
             return;
         }
-        throw new UnsupportedOperationException("Property " + property + " not supported");
-    }
-
-    @Override
-    public List<Node> getChildren(Containment containment) {
-        if (!getConcept().allContainments().contains(containment)) {
-            throw new IllegalArgumentException("Containment not belonging to this concept");
-        }
-        if (containment == LionCore.getAnnotation().getContainmentByName("features")) {
-            return this.getFeatures().stream().collect(Collectors.toList());
-        }
-        throw new UnsupportedOperationException("Containment " + containment + " not supported");
+        super.setPropertyValue(property, value);
     }
 
     @Override
     public Node getReferredNode(Reference reference) {
-        if (!getConcept().allReferences().contains(reference)) {
-            throw new IllegalArgumentException("Reference not belonging to this concept");
-        }
         if (reference == LionCore.getAnnotation().getReferenceByName("target")) {
             return this.getTarget();
         }
-        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        return super.getReferredNode(reference);
     }
 
     @Override
     public void setReferredNode(Reference reference, Node referredNode) {
-        if (!getConcept().allReferences().contains(reference)) {
-            throw new IllegalArgumentException("Reference not belonging to this concept");
-        }
         if (reference == LionCore.getAnnotation().getReferenceByName("target")) {
             this.setTarget((FeaturesContainer) referredNode);
             return;
         }
-        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        super.setReferredNode(reference, referredNode);
     }
 }
