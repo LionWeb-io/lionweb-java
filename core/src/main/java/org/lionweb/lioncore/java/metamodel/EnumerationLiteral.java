@@ -1,6 +1,13 @@
 package org.lionweb.lioncore.java.metamodel;
 
-public class EnumerationLiteral implements NamespacedEntity {
+import org.lionweb.lioncore.java.model.AnnotationInstance;
+import org.lionweb.lioncore.java.model.Model;
+import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.BaseNode;
+
+import java.util.List;
+
+public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
     private String simpleName;
 
     public Enumeration getEnumeration() {
@@ -31,4 +38,5 @@ public class EnumerationLiteral implements NamespacedEntity {
     public NamespaceProvider getContainer() {
         return getEnumeration();
     }
+
 }

@@ -1,7 +1,13 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.model.AnnotationInstance;
+import org.lionweb.lioncore.java.model.Model;
+import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.BaseNode;
 import org.lionweb.lioncore.java.utils.Naming;
+
+import java.util.List;
 
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
@@ -13,7 +19,7 @@ import org.lionweb.lioncore.java.utils.Naming;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature implements NamespacedEntity {
+public abstract class Feature extends BaseNode implements NamespacedEntity {
     private boolean optional;
     @Experimental
     private boolean derived;
@@ -65,4 +71,5 @@ public abstract class Feature implements NamespacedEntity {
     public NamespaceProvider getContainer() {
         return (NamespaceProvider) container;
     }
+
 }
