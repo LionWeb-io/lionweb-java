@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import java.sql.Ref;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -69,4 +70,5 @@ public class Concept extends FeaturesContainer {
         }
         return result;
     }
+
 }

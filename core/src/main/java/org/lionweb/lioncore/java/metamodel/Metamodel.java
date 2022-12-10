@@ -48,6 +48,18 @@ public class Metamodel implements NamespaceProvider {
         this.elements.add(element);
     }
 
+    public Concept addConcept(String simpleName) {
+        Concept concept = new Concept(this, simpleName);
+        addElement(concept);
+        return concept;
+    }
+
+    public ConceptInterface addConceptInterface(String simpleName) {
+        ConceptInterface conceptInterface = new ConceptInterface(this, simpleName);
+        addElement(conceptInterface);
+        return conceptInterface;
+    }
+
     public String getQualifiedName() {
         return this.qualifiedName;
     }
