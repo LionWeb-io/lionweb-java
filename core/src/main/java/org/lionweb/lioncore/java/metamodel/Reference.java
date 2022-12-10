@@ -16,6 +16,10 @@ public class Reference extends Link {
     @Experimental
     private Reference specialized;
 
+    public Reference() {
+        super();
+    }
+
     public Reference(String simpleName, FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);

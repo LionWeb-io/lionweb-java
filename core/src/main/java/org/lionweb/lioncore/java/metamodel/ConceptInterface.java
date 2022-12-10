@@ -16,6 +16,10 @@ import java.util.List;
 public class ConceptInterface extends FeaturesContainer {
     private List<ConceptInterface> extended = new LinkedList<>();
 
+    public ConceptInterface() {
+        super();
+    }
+
     public ConceptInterface(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }

@@ -20,6 +20,10 @@ public class Concept extends FeaturesContainer {
     private Concept extended;
     private List<ConceptInterface> implemented = new LinkedList<>();
 
+    public Concept() {
+        super();
+    }
+
     public Concept(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }

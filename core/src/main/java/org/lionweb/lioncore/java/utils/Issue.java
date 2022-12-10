@@ -6,7 +6,7 @@ public class Issue {
     private String message;
     private IssueSeverity severity;
 
-    public Issue(String message, IssueSeverity severity) {
+    public Issue(IssueSeverity severity, String message) {
         this.message = message;
         this.severity = severity;
     }
