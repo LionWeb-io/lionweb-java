@@ -2,12 +2,9 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
-import org.lionweb.lioncore.java.utils.Validatable;
 
 import javax.annotation.Nullable;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 /**
  * This represents additional metadata relative to some orthogonal concern.
