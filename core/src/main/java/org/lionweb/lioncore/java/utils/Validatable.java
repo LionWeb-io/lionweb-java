@@ -14,7 +14,7 @@ import java.util.function.Supplier;
  */
 public interface Validatable {
 
-    class ValidationResult {
+    final class ValidationResult {
         private Set<Issue> issues = new HashSet<>();
 
         public Set<Issue> getIssues() {
