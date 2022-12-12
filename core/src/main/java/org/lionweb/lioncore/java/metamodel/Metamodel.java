@@ -1,7 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.utils.Naming;
-import org.lionweb.lioncore.java.utils.Validatable;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -47,9 +46,6 @@ public class Metamodel implements NamespaceProvider {
     }
 
     public void addElement(MetamodelElement element) {
-        if (element.getMetamodel() != this) {
-            throw new IllegalArgumentException("The given element is not associated to this metamodel: " + element);
-        }
         this.elements.add(element);
     }
 

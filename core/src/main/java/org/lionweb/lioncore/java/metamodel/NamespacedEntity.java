@@ -9,6 +9,8 @@ package org.lionweb.lioncore.java.metamodel;
 public interface NamespacedEntity {
     // TODO add ID, once details are cleare
     String getSimpleName();
-    String qualifiedName();
+    default String qualifiedName() {
+        return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
+    }
     NamespaceProvider getContainer();
 }

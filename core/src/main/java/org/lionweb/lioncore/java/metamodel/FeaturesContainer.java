@@ -1,7 +1,5 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.Validatable;
-
 import java.util.LinkedList;
 import java.util.List;
 

@@ -19,7 +19,7 @@ public class Enumeration extends DataType implements NamespaceProvider {
     }
 
     public void addLiteral(EnumerationLiteral literal) {
-        if (literals.stream().anyMatch(enumLiteral -> enumLiteral.getName().equals(literal.getName()))) {
+        if (literals.stream().anyMatch(enumLiteral -> enumLiteral.getSimpleName().equals(literal.getSimpleName()))) {
             throw new IllegalArgumentException("Duplicate literal name");
         }
         this.literals.add(literal);

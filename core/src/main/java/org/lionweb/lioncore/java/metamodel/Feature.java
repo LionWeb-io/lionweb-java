@@ -2,7 +2,6 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
-import org.lionweb.lioncore.java.utils.Validatable;
 
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
@@ -14,7 +13,7 @@ import org.lionweb.lioncore.java.utils.Validatable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature implements NamespacedEntity, Validatable {
+public abstract class Feature implements NamespacedEntity {
     private boolean optional;
     @Experimental
     private boolean derived;
@@ -59,11 +58,6 @@ public abstract class Feature implements NamespacedEntity, Validatable {
     @Override
     public String getSimpleName() {
         return simpleName;
-    }
-
-    @Override
-    public String qualifiedName() {
-        return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
     }
 
     @Override

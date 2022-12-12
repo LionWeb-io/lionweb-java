@@ -1,24 +1,36 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.Validatable;
-
-public class EnumerationLiteral  {
-    private String name;
+public class EnumerationLiteral implements NamespacedEntity {
+    private String simpleName;
+    private Enumeration enumeration;
 
     public EnumerationLiteral() {
 
     }
 
-    public EnumerationLiteral(String name) {
-        this.name = name;
+    public EnumerationLiteral(String simpleName) {
+        this.simpleName = simpleName;
     }
 
-    public String getName() {
-        return name;
+    @Override
+    public String getSimpleName() {
+        return simpleName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setSimpleName(String simpleName) {
+        this.simpleName = simpleName;
     }
 
+    public Enumeration getEnumeration() {
+        return enumeration;
+    }
+
+    public void setEnumeration(Enumeration enumeration) {
+        this.enumeration = enumeration;
+    }
+
+    @Override
+    public Enumeration getContainer() {
+        return enumeration;
+    }
 }
