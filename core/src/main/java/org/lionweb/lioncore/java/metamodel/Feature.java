@@ -71,10 +71,4 @@ public abstract class Feature implements NamespacedEntity, Validatable {
         return (NamespaceProvider) container;
     }
 
-    @Override
-    public Validatable.ValidationResult validate() {
-        return new Validatable.ValidationResult()
-                .checkForError(() -> getSimpleName() == null, "Simple name not set")
-                .checkForError(() -> getContainer() == null, "Container not set");
-    }
 }

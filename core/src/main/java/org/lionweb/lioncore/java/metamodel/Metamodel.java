@@ -18,7 +18,7 @@ import java.util.List;
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
-public class Metamodel implements NamespaceProvider, Validatable {
+public class Metamodel implements NamespaceProvider {
     // TODO add ID, once details are cleare
 
     private String qualifiedName;
@@ -74,9 +74,4 @@ public class Metamodel implements NamespaceProvider, Validatable {
         }
     }
 
-    @Override
-    public Validatable.ValidationResult validate() {
-        return new Validatable.ValidationResult()
-                .checkForError(() -> getQualifiedName() == null, "Qualified name not set");
-    }
 }

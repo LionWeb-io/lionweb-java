@@ -6,9 +6,12 @@ public class Issue {
     private String message;
     private IssueSeverity severity;
 
-    public Issue(IssueSeverity severity, String message) {
+    private Object subject;
+
+    public Issue(IssueSeverity severity, String message, Object subject) {
         this.message = message;
         this.severity = severity;
+        this.subject = subject;
     }
 
     public String getMessage() {
@@ -17,6 +20,10 @@ public class Issue {
 
     public IssueSeverity getSeverity() {
         return severity;
+    }
+
+    public Object getSubject() {
+        return subject;
     }
 
     @Override
@@ -29,7 +36,7 @@ public class Issue {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Issue issue = (Issue) o;
-        return Objects.equals(message, issue.message) && severity == issue.severity;
+        return Objects.equals(message, issue.message) && severity == issue.severity && subject == issue.subject;
     }
 
 
@@ -38,6 +45,7 @@ public class Issue {
         return "Issue{" +
                 "message='" + message + '\'' +
                 ", severity=" + severity +
+                ", subject=" + subject +
                 '}';
     }
 
