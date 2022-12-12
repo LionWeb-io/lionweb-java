@@ -38,9 +38,6 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     }
 
     public void addFeature(Feature feature) {
-        if (feature.getContainer() != this) {
-            throw new IllegalArgumentException("The given feature is not associated to this container: " + feature);
-        }
         this.features.add(feature);
     }
 
