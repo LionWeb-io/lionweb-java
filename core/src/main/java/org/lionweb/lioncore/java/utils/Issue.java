@@ -22,6 +22,7 @@ public class Issue {
         return severity;
     }
 
+    // TODO once each element of the Metamodel implement the Node interface this method could return a Node
     public Object getSubject() {
         return subject;
     }

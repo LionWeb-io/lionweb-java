@@ -1,7 +1,9 @@
 package org.lionweb.lioncore.java.utils;
 
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.Annotation;
+import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.metamodel.PrimitiveType;
 
@@ -61,5 +63,32 @@ public class MetamodelValidatorTest {
         assertTrue(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
         assertTrue(new MetamodelValidator().isMetamodelValid(metamodel));
         assertEquals(0, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
+    }
+
+    @Test
+    public void simpleSelfInheritanceIsCaught() {
+        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Concept a = new Concept(metamodel, "a");
+        a.setExtendedConcept(a);
+        metamodel.addElement(a);
+
+        assertEquals(new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a))),
+                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+    }
+
+    @Test
+    public void indirectSelfInheritanceIsCaught() {
+        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Concept a = new Concept(metamodel, "a");
+        Concept b = new Concept(metamodel, "b");
+        a.setExtendedConcept(b);
+        b.setExtendedConcept(a);
+        metamodel.addElement(a);
+        metamodel.addElement(b);
+
+        assertEquals(new HashSet<>(Arrays.asList(
+                new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a),
+                        new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
+                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
     }
 }

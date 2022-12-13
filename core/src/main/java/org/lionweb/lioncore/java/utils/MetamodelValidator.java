@@ -23,20 +23,13 @@ public class MetamodelValidator {
             return issues.stream().noneMatch(issue -> issue.getSeverity() == IssueSeverity.Error);
         }
 
-        public ValidationResult checkForError(Supplier<Boolean> check, String message, Object subject) {
-            if (check.get()) {
-                issues.add(new Issue(IssueSeverity.Error, message, subject));
-            }
-            return this;
-        }
-
         public ValidationResult addError(String message, Object subject) {
             issues.add(new Issue(IssueSeverity.Error, message, subject));
             return this;
         }
 
-        public <S> ValidationResult checkForError(Function<S, Boolean> check, String message, S subject) {
-            if (check.apply(subject)) {
+        public <S> ValidationResult checkForError(boolean check, String message, S subject) {
+            if (check) {
                 issues.add(new Issue(IssueSeverity.Error, message, subject));
             }
             return this;
@@ -58,36 +51,72 @@ public class MetamodelValidator {
         return validateMetamodel(metamodel).isSuccessful();
     }
 
+    private void checkAncestors(Concept concept, ValidationResult validationResult) {
+        checkAncestorsHelper(new HashSet<>(), concept, validationResult);
+    }
+
+    private void checkAncestors(ConceptInterface conceptInterface, ValidationResult validationResult) {
+        checkAncestorsHelper(new HashSet<>(), conceptInterface, validationResult);
+    }
+
+    private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, Concept concept, ValidationResult validationResult) {
+        if (alreadyExplored.contains(concept)) {
+            validationResult.addError("Cyclic hierarchy found", concept);
+        } else {
+            alreadyExplored.add(concept);
+            if (concept.getExtendedConcept() != null) {
+                checkAncestorsHelper(alreadyExplored, concept.getExtendedConcept(), validationResult);
+            }
+            concept.getImplemented().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult));
+        }
+    }
+
+    private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, ConceptInterface conceptInterface, ValidationResult validationResult) {
+        // It is ok to implement multiple time the same interface, we just should avoid a stack overflow
+        if (!alreadyExplored.contains(conceptInterface)) {
+            alreadyExplored.add(conceptInterface);
+            conceptInterface.getExtendedInterface().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult));
+        }
+    }
+
     public ValidationResult validateMetamodel(Metamodel metamodel) {
         ValidationResult result = new ValidationResult();
 
-        result.checkForError((Metamodel sub) -> sub.getQualifiedName() == null,
+        result.checkForError(metamodel.getQualifiedName() == null,
                 "Qualified name not set", metamodel);
 
         validateNamesAreUnique(metamodel.getElements(), result);
 
+        // TODO once we implement the Node interface we could navigate the tree differently
+
         metamodel.getElements().forEach((MetamodelElement el) -> {
             result
-                    .checkForError((MetamodelElement sub) -> sub.getSimpleName() == null, "Simple name not set", el)
-                    .checkForError((MetamodelElement sub) -> sub.getMetamodel() == null, "Metamodel not set", el)
-                    .checkForError((MetamodelElement sub) -> sub.getMetamodel() != null && sub.getMetamodel() != metamodel,
+                    .checkForError(el.getSimpleName() == null, "Simple name not set", el)
+                    .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
+                    .checkForError(el.getMetamodel() != null && el.getMetamodel() != metamodel,
                             "Metamodel not set correctly", el);
 
             if (el instanceof Enumeration) {
                 Enumeration enumeration = (Enumeration) el;
                 enumeration.getLiterals().forEach((EnumerationLiteral lit) ->
-                        result.checkForError((EnumerationLiteral sub) -> sub.getSimpleName() == null, "Simple name not set", lit));
+                        result.checkForError(lit.getSimpleName() == null, "Simple name not set", lit));
                 validateNamesAreUnique(enumeration.getLiterals(), result);
             }
             if (el instanceof FeaturesContainer) {
                 FeaturesContainer featuresContainer = (FeaturesContainer) el;
                 featuresContainer.getFeatures().forEach((Feature feature)->
                         result
-                                .checkForError((Feature sub) -> sub.getSimpleName() == null, "Simple name not set", feature)
-                                .checkForError((Feature sub) -> sub.getContainer() == null, "Container not set", feature)
-                                .checkForError((Feature sub) -> sub.getContainer() != null && sub.getContainer() != featuresContainer,
+                                .checkForError(feature.getSimpleName() == null, "Simple name not set", feature)
+                                .checkForError(feature == null, "Container not set", feature)
+                                .checkForError(feature != null && feature.getContainer() != featuresContainer,
                                         "Features container not set correctly", feature));
                 validateNamesAreUnique(featuresContainer.getFeatures(), result);
+            }
+            if (el instanceof Concept) {
+                checkAncestors((Concept) el, result);
+            }
+            if (el instanceof ConceptInterface) {
+                checkAncestors((ConceptInterface) el, result);
             }
         });
 
