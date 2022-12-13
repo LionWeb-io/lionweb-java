@@ -7,7 +7,7 @@ package org.lionweb.lioncore.java.metamodel;
  * Therefore, Invoice will have the qualifiedName com.foo.Accounting.Invoice.
  */
 public interface NamespacedEntity {
-    // TODO add ID, once details are cleare
+    // TODO add ID, once details are clearer
     String getSimpleName();
     default String qualifiedName() {
         return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
