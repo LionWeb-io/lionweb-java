@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -26,6 +27,10 @@ public class ConceptInterface extends FeaturesContainer {
 
     public List<ConceptInterface> getExtendedInterface() {
         return this.extended;
+    }
+
+    public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
+        this.extended.add(extendedInterface);
     }
 
     @Override

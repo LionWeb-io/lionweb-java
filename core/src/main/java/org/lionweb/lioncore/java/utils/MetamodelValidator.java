@@ -52,30 +52,46 @@ public class MetamodelValidator {
     }
 
     private void checkAncestors(Concept concept, ValidationResult validationResult) {
-        checkAncestorsHelper(new HashSet<>(), concept, validationResult);
+        checkAncestorsHelper(new HashSet<>(), concept, validationResult, true);
     }
 
     private void checkAncestors(ConceptInterface conceptInterface, ValidationResult validationResult) {
-        checkAncestorsHelper(new HashSet<>(), conceptInterface, validationResult);
+        checkAncestorsHelper(new HashSet<>(), conceptInterface, validationResult, false);
     }
 
-    private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, Concept concept, ValidationResult validationResult) {
+    private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, Concept concept,
+                                                 ValidationResult validationResult, boolean examiningConcept) {
         if (alreadyExplored.contains(concept)) {
             validationResult.addError("Cyclic hierarchy found", concept);
         } else {
             alreadyExplored.add(concept);
             if (concept.getExtendedConcept() != null) {
-                checkAncestorsHelper(alreadyExplored, concept.getExtendedConcept(), validationResult);
+                checkAncestorsHelper(alreadyExplored, concept.getExtendedConcept(), validationResult, examiningConcept);
             }
-            concept.getImplemented().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult));
+            concept.getImplemented().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult, examiningConcept));
         }
     }
 
-    private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, ConceptInterface conceptInterface, ValidationResult validationResult) {
-        // It is ok to implement multiple time the same interface, we just should avoid a stack overflow
-        if (!alreadyExplored.contains(conceptInterface)) {
+    private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, ConceptInterface conceptInterface,
+                                      ValidationResult validationResult, boolean examiningConcept) {
+        if (alreadyExplored.contains(conceptInterface)) {
+            // It is ok to implement multiple time the same interface, we just should avoid a stack overflow
+            // It is instead an issue in case we are looking into interfaces
+            if (!examiningConcept) {
+                validationResult.addError("Cyclic hierarchy found", conceptInterface);
+            }
+        } else {
             alreadyExplored.add(conceptInterface);
-            conceptInterface.getExtendedInterface().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult));
+            conceptInterface.getExtendedInterface().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult, examiningConcept));
+        }
+    }
+
+    private void checkAncestorsHelperForConceptInterfaces(Set<ConceptInterface> alreadyExplored, ConceptInterface conceptInterface, ValidationResult validationResult) {
+        if (alreadyExplored.contains(conceptInterface)) {
+            validationResult.addError("Cyclic hierarchy found", conceptInterface);
+        } else {
+            alreadyExplored.add(conceptInterface);
+            conceptInterface.getExtendedInterface().forEach(interf -> checkAncestorsHelperForConceptInterfaces(alreadyExplored, interf, validationResult));
         }
     }
 
