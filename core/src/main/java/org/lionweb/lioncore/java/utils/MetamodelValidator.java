@@ -123,8 +123,8 @@ public class MetamodelValidator {
                 featuresContainer.getFeatures().forEach((Feature feature)->
                         result
                                 .checkForError(feature.getSimpleName() == null, "Simple name not set", feature)
-                                .checkForError(feature == null, "Container not set", feature)
-                                .checkForError(feature != null && feature.getContainer() != featuresContainer,
+                                .checkForError(feature.getContainer() == null, "Container not set", feature)
+                                .checkForError(feature.getContainer() != null && feature.getContainer() != featuresContainer,
                                         "Features container not set correctly", feature));
                 validateNamesAreUnique(featuresContainer.getFeatures(), result);
             }
