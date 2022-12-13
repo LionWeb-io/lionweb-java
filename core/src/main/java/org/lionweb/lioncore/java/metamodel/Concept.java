@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -37,20 +39,20 @@ public class Concept extends FeaturesContainer {
     }
 
     // TODO should this return BaseConcept when extended is equal null?
-    public Concept getExtendedConcept() {
+    public @Nullable Concept getExtendedConcept() {
         return this.extended;
     }
 
-    public List<ConceptInterface> getImplemented() {
+    public @Nonnull List<ConceptInterface> getImplemented() {
         return this.implemented;
     }
 
-    public void addImplementedInterface(ConceptInterface conceptInterface) {
+    public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
         this.implemented.add(conceptInterface);
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
-    public void setExtendedConcept(Concept extended) {
+    public void setExtendedConcept(@Nullable Concept extended) {
         this.extended = extended;
     }
 
@@ -60,7 +62,7 @@ public class Concept extends FeaturesContainer {
     }
 
     @Override
-    public List<Feature> allFeatures() {
+    public @Nonnull List<Feature> allFeatures() {
         // TODO Should this return features which are overriden?
         // TODO Should features be returned in a particular order?
         List<Feature> result = new LinkedList<>();

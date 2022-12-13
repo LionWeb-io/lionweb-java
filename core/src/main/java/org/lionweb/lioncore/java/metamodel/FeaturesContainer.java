@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -21,16 +22,16 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         super();
     }
 
-    public FeaturesContainer(Metamodel metamodel, String simpleName) {
+    public FeaturesContainer(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 
-    public Feature getFeatureByName(String name) {
+    public @Nullable Feature getFeatureByName(String name) {
         return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
     }
 
-    public abstract List<Feature> allFeatures();
+    public abstract @Nonnull List<Feature> allFeatures();
 
     // TODO should this expose an immutable list to force users to use methods on this class
     //      to modify the collection?
@@ -38,7 +39,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         return this.features;
     }
 
-    public void addFeature(Feature feature) {
+    public void addFeature(@Nonnull Feature feature) {
         this.features.add(feature);
     }
 

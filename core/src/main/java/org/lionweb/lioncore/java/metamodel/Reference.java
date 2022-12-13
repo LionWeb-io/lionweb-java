@@ -2,6 +2,8 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
 
+import javax.annotation.Nullable;
+
 /**
  * This represents a relation between an {@link FeaturesContainer} and referred {@link FeaturesContainer}.
  *
@@ -20,16 +22,16 @@ public class Reference extends Link {
         super();
     }
 
-    public Reference(String simpleName, FeaturesContainer container) {
+    public Reference(String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
     }
 
-    public Reference getSpecialized() {
+    public @Nullable Reference getSpecialized() {
         return specialized;
     }
 
-    public void setSpecialized(Reference specialized) {
+    public void setSpecialized(@Nullable Reference specialized) {
         // TODO check which limitations there are: should have the same name? Should it belong
         //      to an ancestor of the FeaturesContainer holding this Containment?
         this.specialized = specialized;

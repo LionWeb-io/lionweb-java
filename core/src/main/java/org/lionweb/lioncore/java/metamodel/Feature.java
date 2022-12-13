@@ -3,6 +3,8 @@ package org.lionweb.lioncore.java.metamodel;
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nullable;
+
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
  *
@@ -25,7 +27,7 @@ public abstract class Feature implements NamespacedEntity {
 
     }
 
-    public Feature(String simpleName, FeaturesContainer container) {
+    public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
         Naming.validateSimpleName(simpleName);
@@ -61,7 +63,7 @@ public abstract class Feature implements NamespacedEntity {
     }
 
     @Override
-    public NamespaceProvider getContainer() {
+    public @Nullable NamespaceProvider getContainer() {
         return (NamespaceProvider) container;
     }
 

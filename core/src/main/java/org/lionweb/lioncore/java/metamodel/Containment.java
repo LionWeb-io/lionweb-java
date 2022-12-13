@@ -2,6 +2,8 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
 
+import javax.annotation.Nullable;
+
 /**
  * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link FeaturesContainer}.
  *
@@ -22,16 +24,16 @@ public class Containment extends Link {
         super();
     }
 
-    public Containment(String simpleName, FeaturesContainer container) {
+    public Containment(String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
     }
 
-    public Containment getSpecialized() {
+    public @Nullable Containment getSpecialized() {
         return specialized;
     }
 
-    public void setSpecialized(Containment specialized) {
+    public void setSpecialized(@Nullable Containment specialized) {
         // TODO check which limitations there are: should have the same name? Should it belong
         //      to an ancestor of the FeaturesContainer holding this Containment?
         this.specialized = specialized;

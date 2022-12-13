@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nullable;
+
 /**
  * A type of value which has not a relevant identity in the context of a model.
  *
@@ -14,7 +16,7 @@ public abstract class DataType extends MetamodelElement {
         super();
     }
 
-    public DataType(Metamodel metamodel, String simpleName) {
+    public DataType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 }
