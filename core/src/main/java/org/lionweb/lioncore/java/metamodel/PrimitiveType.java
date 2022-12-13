@@ -18,7 +18,7 @@ public class PrimitiveType extends DataType {
         super();
     }
 
-    public PrimitiveType(@Nullable Metamodel metamodel, String simpleName) {
+    public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 

@@ -16,7 +16,7 @@ public class Typedef extends DataType {
         super();
     }
 
-    public Typedef(@Nullable Metamodel metamodel, String simpleName) {
+    public Typedef(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 

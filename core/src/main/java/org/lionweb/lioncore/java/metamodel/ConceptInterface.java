@@ -22,11 +22,11 @@ public class ConceptInterface extends FeaturesContainer {
         super();
     }
 
-    public ConceptInterface(@Nullable Metamodel metamodel, String simpleName) {
+    public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 
-    public @Nonnull List<ConceptInterface> getExtendedInterface() {
+    public @Nonnull List<@Nonnull ConceptInterface> getExtendedInterface() {
         return this.extended;
     }
 

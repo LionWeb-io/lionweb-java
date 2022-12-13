@@ -21,7 +21,7 @@ public abstract class MetamodelElement implements NamespacedEntity {
 
     }
 
-    public MetamodelElement(@Nullable Metamodel metamodel, String simpleName) {
+    public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         // TODO enforce uniqueness of the name within the Metamodel
         Naming.validateSimpleName(simpleName);
         this.metamodel = metamodel;
@@ -33,7 +33,7 @@ public abstract class MetamodelElement implements NamespacedEntity {
     }
 
     @Override
-    public String getSimpleName() {
+    public @Nullable String getSimpleName() {
         return this.simpleName;
     }
 

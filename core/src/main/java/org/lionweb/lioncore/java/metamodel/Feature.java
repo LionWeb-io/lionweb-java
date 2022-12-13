@@ -58,7 +58,7 @@ public abstract class Feature implements NamespacedEntity {
     }
 
     @Override
-    public String getSimpleName() {
+    public @Nullable String getSimpleName() {
         return simpleName;
     }
 

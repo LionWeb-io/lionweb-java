@@ -19,7 +19,7 @@ public class Property extends Feature {
         super();
     }
 
-    public Property(String simpleName, @Nullable FeaturesContainer container) {
+    public Property(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
     }

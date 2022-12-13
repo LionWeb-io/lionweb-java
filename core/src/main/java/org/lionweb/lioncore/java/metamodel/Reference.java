@@ -22,7 +22,7 @@ public class Reference extends Link {
         super();
     }
 
-    public Reference(String simpleName, @Nullable FeaturesContainer container) {
+    public Reference(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
     }
