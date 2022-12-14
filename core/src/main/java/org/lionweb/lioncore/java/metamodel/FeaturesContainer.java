@@ -61,7 +61,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         return this.qualifiedName();
     }
 
-    public void addProperty(String simpleName, DataType dataType, boolean optional, boolean derived) {
+    public void addProperty(@Nullable String simpleName, @Nullable DataType dataType, boolean optional, boolean derived) {
         Property property = new Property(simpleName, this);
         property.setType(dataType);
         property.setOptional(optional);
@@ -69,15 +69,15 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         addFeature(property);
     }
 
-    public void addOptionalProperty(String simpleName, DataType dataType) {
+    public void addOptionalProperty(@Nullable String simpleName, @Nullable DataType dataType) {
         addProperty(simpleName, dataType, true, false);
     }
 
-    public void addRequiredProperty(String simpleName, DataType dataType) {
+    public void addRequiredProperty(@Nullable String simpleName, @Nullable DataType dataType) {
         addProperty(simpleName, dataType, false, false);
     }
 
-    public void addReference(String simpleName, FeaturesContainer type, boolean optional, boolean multiple) {
+    public void addReference(@Nullable String simpleName, @Nullable FeaturesContainer type, boolean optional, boolean multiple) {
         Reference reference = new Reference(simpleName, this);
         reference.setType(type);
         reference.setDerived(false);
@@ -86,23 +86,23 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         addFeature(reference);
     }
 
-    public void addOptionalReference(String simpleName, FeaturesContainer type) {
+    public void addOptionalReference(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addReference(simpleName, type, true, false);
     }
 
-    public void addRequiredReference(String simpleName, FeaturesContainer type) {
+    public void addRequiredReference(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addReference(simpleName, type, false, false);
     }
 
-    public void addMultipleReference(String simpleName, FeaturesContainer type) {
+    public void addMultipleReference(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addReference(simpleName, type, true, true);
     }
 
-    public void addMultipleAndRequiredReference(String simpleName, FeaturesContainer type) {
+    public void addMultipleAndRequiredReference(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addReference(simpleName, type, false, true);
     }
 
-    public void addContainment(String simpleName, FeaturesContainer type, boolean optional, boolean multiple) {
+    public void addContainment(@Nullable String simpleName, @Nullable FeaturesContainer type, boolean optional, boolean multiple) {
         Containment containment = new Containment(simpleName, this);
         containment.setType(type);
         containment.setDerived(false);
@@ -111,19 +111,19 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         addFeature(containment);
     }
 
-    public void addOptionalContainment(String simpleName, FeaturesContainer type) {
+    public void addOptionalContainment(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addContainment(simpleName, type, true, false);
     }
 
-    public void addRequiredContainment(String simpleName, FeaturesContainer type) {
+    public void addRequiredContainment(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addContainment(simpleName, type, false, false);
     }
 
-    public void addMultipleContainment(String simpleName, FeaturesContainer type) {
+    public void addMultipleContainment(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addContainment(simpleName, type, true, true);
     }
 
-    public void addMultipleAndRequiredContainment(String simpleName, FeaturesContainer type) {
+    public void addMultipleAndRequiredContainment(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         addContainment(simpleName, type, false, true);
     }
 
