@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -16,16 +18,24 @@ import java.util.List;
 public class ConceptInterface extends FeaturesContainer {
     private List<ConceptInterface> extended = new LinkedList<>();
 
-    public ConceptInterface(Metamodel metamodel, String simpleName) {
+    public ConceptInterface() {
+        super();
+    }
+
+    public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 
-    public List<ConceptInterface> getExtendedInterface() {
+    public @Nonnull List<ConceptInterface> getExtendedInterface() {
         return this.extended;
     }
 
+    public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
+        this.extended.add(extendedInterface);
+    }
+
     @Override
-    public List<Feature> allFeatures() {
+    public @Nonnull List<Feature> allFeatures() {
         // TODO Should this return features which are overriden?
         // TODO Should features be returned in a particular order?
         List<Feature> result = new LinkedList<>();

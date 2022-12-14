@@ -3,6 +3,8 @@ package org.lionweb.lioncore.java.metamodel;
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nullable;
+
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
  *
@@ -18,6 +20,21 @@ public abstract class Feature implements NamespacedEntity {
     @Experimental
     private boolean derived;
 
+    private String simpleName;
+    private FeaturesContainer container;
+
+    public Feature() {
+
+    }
+
+    public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        // TODO verify that the container is also a NamespaceProvider
+        // TODO enforce uniqueness of the name within the FeauturesContainer
+        Naming.validateSimpleName(simpleName);
+        this.simpleName = simpleName;
+        this.container = container;
+    }
+
     public boolean isOptional() {
         return optional;
     }
@@ -28,17 +45,6 @@ public abstract class Feature implements NamespacedEntity {
 
     public void setOptional(boolean optional) {
         this.optional = optional;
-    }
-
-    private String simpleName;
-    private FeaturesContainer container;
-
-    public Feature(String simpleName, FeaturesContainer container) {
-        // TODO verify that the container is also a NamespaceProvider
-        // TODO enforce uniqueness of the name within the FeauturesContainer
-        Naming.validateSimpleName(simpleName);
-        this.simpleName = simpleName;
-        this.container = container;
     }
 
     @Experimental
@@ -52,17 +58,13 @@ public abstract class Feature implements NamespacedEntity {
     }
 
     @Override
-    public String getSimpleName() {
+    public @Nullable String getSimpleName() {
         return simpleName;
     }
 
     @Override
-    public String qualifiedName() {
-        return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
-    }
-
-    @Override
-    public NamespaceProvider getContainer() {
+    public @Nullable NamespaceProvider getContainer() {
         return (NamespaceProvider) container;
     }
+
 }

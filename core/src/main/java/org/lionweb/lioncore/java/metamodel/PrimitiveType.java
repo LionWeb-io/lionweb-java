@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nullable;
+
 /**
  * This represents an arbitrary primitive value, which is not an enumeration.
  *
@@ -12,7 +14,11 @@ package org.lionweb.lioncore.java.metamodel;
  * All PrimitiveTypes in LionCore are builtin.
  */
 public class PrimitiveType extends DataType {
-    public PrimitiveType(Metamodel metamodel, String simpleName) {
+    public PrimitiveType() {
+        super();
+    }
+
+    public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
 

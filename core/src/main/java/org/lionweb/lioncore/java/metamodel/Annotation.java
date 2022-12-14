@@ -3,6 +3,7 @@ package org.lionweb.lioncore.java.metamodel;
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
@@ -20,12 +21,16 @@ public class Annotation extends FeaturesContainer {
     private @Nullable String platformSpecific;
     private FeaturesContainer target;
 
+    public Annotation() {
+        super();
+    }
+
     public Annotation(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
     }
 
     @Override
-    public List<Feature> allFeatures() {
+    public @Nonnull List<Feature> allFeatures() {
         throw new UnsupportedOperationException();
     }
 
@@ -40,12 +45,13 @@ public class Annotation extends FeaturesContainer {
         this.platformSpecific = platformSpecific;
     }
 
-    public FeaturesContainer getTarget() {
+    public @Nullable FeaturesContainer getTarget() {
         return target;
     }
 
-    public void setTarget(FeaturesContainer target) {
+    public void setTarget(@Nullable FeaturesContainer target) {
         // TODO prevent annotations to be used as target
         this.target = target;
     }
+
 }

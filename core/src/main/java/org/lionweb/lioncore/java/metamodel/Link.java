@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nullable;
+
 /**
  * Represent a connection to an {@link FeaturesContainer}.
  *
@@ -13,6 +15,15 @@ public abstract class Link extends Feature {
     private boolean multiple;
     private FeaturesContainer type;
 
+    public Link() {
+        super();
+    }
+
+    public Link(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        // TODO verify that the container is also a NamespaceProvider
+        super(simpleName, container);
+    }
+
     public boolean isMultiple() {
         return multiple;
     }
@@ -21,16 +32,11 @@ public abstract class Link extends Feature {
         this.multiple = multiple;
     }
 
-    public Link(String simpleName, FeaturesContainer container) {
-        // TODO verify that the container is also a NamespaceProvider
-        super(simpleName, container);
-    }
-
-    public FeaturesContainer getType() {
+    public @Nullable FeaturesContainer getType() {
         return this.type;
     }
 
-    public void setType(FeaturesContainer type) {
+    public void setType(@Nullable FeaturesContainer type) {
         this.type = type;
     }
 }

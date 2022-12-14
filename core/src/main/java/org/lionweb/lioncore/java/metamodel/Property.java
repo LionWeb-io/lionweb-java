@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nullable;
+
 /**
  * This indicates a simple value associated to an entity.
  *
@@ -13,12 +15,16 @@ package org.lionweb.lioncore.java.metamodel;
 public class Property extends Feature {
     private DataType type;
 
-    public Property(String simpleName, FeaturesContainer container) {
+    public Property() {
+        super();
+    }
+
+    public Property(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
     }
 
-    public DataType getType() {
+    public @Nullable DataType getType() {
         return type;
     }
 

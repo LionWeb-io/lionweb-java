@@ -2,6 +2,8 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nullable;
+
 /**
  * A MetamodelElement is an element with an identity within a {@link Metamodel}.
  *
@@ -15,19 +17,23 @@ public abstract class MetamodelElement implements NamespacedEntity {
     private Metamodel metamodel;
     private String simpleName;
 
-    public MetamodelElement(Metamodel metamodel, String simpleName) {
+    public MetamodelElement() {
+
+    }
+
+    public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         // TODO enforce uniqueness of the name within the Metamodel
         Naming.validateSimpleName(simpleName);
         this.metamodel = metamodel;
         this.simpleName = simpleName;
     }
 
-    public Metamodel getMetamodel() {
+    public @Nullable Metamodel getMetamodel() {
         return this.metamodel;
     }
 
     @Override
-    public String getSimpleName() {
+    public @Nullable String getSimpleName() {
         return this.simpleName;
     }
 
@@ -36,12 +42,8 @@ public abstract class MetamodelElement implements NamespacedEntity {
     }
 
     @Override
-    public String qualifiedName() {
-        return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
-    }
-
-    @Override
-    public NamespaceProvider getContainer() {
+    public @Nullable NamespaceProvider getContainer() {
         return this.metamodel;
     }
+
 }

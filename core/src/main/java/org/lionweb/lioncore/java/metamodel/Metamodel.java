@@ -2,6 +2,8 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -24,6 +26,10 @@ public class Metamodel implements NamespaceProvider {
     private List<Metamodel> dependsOn = new LinkedList<>();
     private List<MetamodelElement> elements = new LinkedList<>();
 
+    public Metamodel() {
+
+    }
+
     public Metamodel(String qualifiedName) {
         Naming.validateQualifiedName(qualifiedName);
         this.qualifiedName = qualifiedName;
@@ -34,17 +40,14 @@ public class Metamodel implements NamespaceProvider {
         return qualifiedName;
     }
 
-    public List<Metamodel> dependsOn() {
+    public @Nonnull List<Metamodel> dependsOn() {
         return this.dependsOn;
     }
-    public List<MetamodelElement> getElements() {
+    public @Nonnull List<MetamodelElement> getElements() {
         return this.elements;
     }
 
-    public void addElement(MetamodelElement element) {
-        if (element.getMetamodel() != this) {
-            throw new IllegalArgumentException("The given element is not associated to this metamodel: " + element);
-        }
+    public void addElement(@Nonnull MetamodelElement element) {
         this.elements.add(element);
     }
 
@@ -52,12 +55,12 @@ public class Metamodel implements NamespaceProvider {
         return this.qualifiedName;
     }
 
-    public MetamodelElement getElementByName(String name) {
+    public @Nullable MetamodelElement getElementByName(String name) {
         return getElements().stream().filter(element -> element.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
     }
 
-    public PrimitiveType getPrimitiveTypeByName(String name) {
+    public @Nullable PrimitiveType getPrimitiveTypeByName(String name) {
         MetamodelElement element = this.getElementByName(name);
         if (element == null) {
             return null;
@@ -68,4 +71,5 @@ public class Metamodel implements NamespaceProvider {
             throw new RuntimeException("Element " + name + " is not a PrimitiveType");
         }
     }
+
 }
