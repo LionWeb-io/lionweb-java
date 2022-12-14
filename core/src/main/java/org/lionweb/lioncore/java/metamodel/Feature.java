@@ -71,4 +71,7 @@ public abstract class Feature implements NamespacedEntity {
         return container;
     }
 
+    public void setContainer(@Nullable FeaturesContainer container) {
+        this.container = container;
+    }
 }

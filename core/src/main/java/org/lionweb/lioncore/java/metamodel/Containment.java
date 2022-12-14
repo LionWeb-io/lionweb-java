@@ -17,6 +17,34 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SContainmentLink MPS equivalent <i>SContainmentLink</i> in SModel
  */
 public class Containment extends Link {
+
+    public static Containment createOptional(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Containment containment = new Containment(simpleName, container);
+        containment.setOptional(true);
+        containment.setMultiple(false);
+        return containment;
+    }
+
+    public static Containment createRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Containment containment = new Containment(simpleName, container);
+        containment.setOptional(false);
+        containment.setMultiple(false);
+        return containment;
+    }
+
+    public static Containment createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Containment containment = new Containment(simpleName, container);
+        containment.setOptional(true);
+        containment.setMultiple(true);
+        return containment;
+    }
+
+    public static Containment createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Containment containment = new Containment(simpleName, container);
+        containment.setOptional(false);
+        containment.setMultiple(true);
+        return containment;
+    }
     @Experimental
     private Containment specialized;
 

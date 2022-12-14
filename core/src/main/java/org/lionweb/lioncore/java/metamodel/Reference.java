@@ -15,6 +15,35 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
  */
 public class Reference extends Link {
+
+    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Reference reference = new Reference(simpleName, container);
+        reference.setOptional(true);
+        reference.setMultiple(false);
+        return reference;
+    }
+
+    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Reference reference = new Reference(simpleName, container);
+        reference.setOptional(false);
+        reference.setMultiple(false);
+        return reference;
+    }
+
+    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Reference reference = new Reference(simpleName, container);
+        reference.setOptional(true);
+        reference.setMultiple(true);
+        return reference;
+    }
+
+    public static Reference createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        Reference reference = new Reference(simpleName, container);
+        reference.setOptional(false);
+        reference.setMultiple(true);
+        return reference;
+    }
+
     @Experimental
     private Reference specialized;
 
