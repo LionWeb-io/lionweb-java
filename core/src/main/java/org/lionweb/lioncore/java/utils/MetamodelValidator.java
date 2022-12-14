@@ -75,8 +75,16 @@ public class MetamodelValidator {
     private void checkAncestorsHelper(Set<FeaturesContainer> alreadyExplored, ConceptInterface conceptInterface,
                                       ValidationResult validationResult, boolean examiningConcept) {
         if (alreadyExplored.contains(conceptInterface)) {
-            // It is ok to implement multiple time the same interface, we just should avoid a stack overflow
-            // It is instead an issue in case we are looking into interfaces
+            // It is ok to indirectly implement multiple time the same interface for a Concept.
+            // It is instead an issue in case we are looking into interfaces.
+            //
+            // For example, this is fine:
+            // class A extends B, implements I
+            // class B implements I
+            //
+            // This is not fine:
+            // interface I1 extends I2
+            // interface I2 extends I1
             if (!examiningConcept) {
                 validationResult.addError("Cyclic hierarchy found", conceptInterface);
             }
@@ -129,7 +137,10 @@ public class MetamodelValidator {
                 validateNamesAreUnique(featuresContainer.getFeatures(), result);
             }
             if (el instanceof Concept) {
-                checkAncestors((Concept) el, result);
+                Concept concept = (Concept) el;
+                checkAncestors(concept, result);
+                result.checkForError(concept.getImplemented().size() != concept.getImplemented().stream().distinct().count(),
+                    "The same interface has been implemented multiple times", concept);
             }
             if (el instanceof ConceptInterface) {
                 checkAncestors((ConceptInterface) el, result);

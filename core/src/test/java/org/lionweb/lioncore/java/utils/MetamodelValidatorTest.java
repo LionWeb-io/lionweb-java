@@ -104,4 +104,38 @@ public class MetamodelValidatorTest {
                         new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
                 new MetamodelValidator().validateMetamodel(metamodel).getIssues());
     }
+
+    @Test
+    public void multipleDirectImplementationsOfTheSameInterfaceAreNotAllowed() {
+        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Concept a = new Concept(metamodel, "A");
+        ConceptInterface i = new ConceptInterface(metamodel, "I");
+
+        a.addImplementedInterface(i);
+        a.addImplementedInterface(i);
+
+        metamodel.addElement(a);
+        metamodel.addElement(i);
+
+        assertEquals(new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "The same interface has been implemented multiple times", a))),
+                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+    }
+    @Test
+    public void multipleIndirectImplementationsOfTheSameInterfaceAreAllowed() {
+        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Concept a = new Concept(metamodel, "A");
+        Concept b = new Concept(metamodel, "B");
+        ConceptInterface i = new ConceptInterface(metamodel, "I");
+
+        a.setExtendedConcept(b);
+        a.addImplementedInterface(i);
+        b.addImplementedInterface(i);
+
+        metamodel.addElement(a);
+        metamodel.addElement(b);
+        metamodel.addElement(i);
+
+        assertEquals(new HashSet<>(Arrays.asList()),
+                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+    }
 }
