@@ -34,15 +34,15 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     public abstract @Nonnull List<Feature> allFeatures();
 
-    public List<Property> allProperties() {
+    public @Nonnull List<Property> allProperties() {
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f).collect(Collectors.toList());
     }
 
-    public List<Containment> allContainments() {
+    public @Nonnull List<Containment> allContainments() {
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f).collect(Collectors.toList());
     }
 
-    public List<Reference> allReferences() {
+    public @Nonnull List<Reference> allReferences() {
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f).collect(Collectors.toList());
     }
 
