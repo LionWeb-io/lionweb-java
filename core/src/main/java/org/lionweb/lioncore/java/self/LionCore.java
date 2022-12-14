@@ -1,9 +1,6 @@
 package org.lionweb.lioncore.java.self;
 
-import org.lionweb.lioncore.java.metamodel.Concept;
-import org.lionweb.lioncore.java.metamodel.ConceptInterface;
-import org.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import org.lionweb.lioncore.java.metamodel.Metamodel;
+import org.lionweb.lioncore.java.metamodel.*;
 
 public class LionCore {
 
@@ -109,16 +106,16 @@ public class LionCore {
             Concept typedef = INSTANCE.addConcept("Typedef");
 
             annotation.setExtendedConcept(featuresContainer);
-            annotation.addOptionalProperty("platformSpecific", LionCoreBuiltins.getString());
-            annotation.addRequiredReference("target", featuresContainer);
+            annotation.addFeature(Property.createOptional("platformSpecific", LionCoreBuiltins.getString()));
+            annotation.addFeature(Reference.createRequired("target", featuresContainer));
 
             concept.setExtendedConcept(featuresContainer);
-            concept.addRequiredProperty("abstract", LionCoreBuiltins.getBoolean());
-            concept.addOptionalReference("extended", concept);
-            concept.addMultipleReference("implemented", conceptInterface);
+            concept.addFeature(Property.createRequired("abstract", LionCoreBuiltins.getBoolean()));
+            concept.addFeature(Reference.createOptional("extended", concept));
+            concept.addFeature(Reference.createMultiple("implemented", conceptInterface));
 
             conceptInterface.setExtendedConcept(featuresContainer);
-            conceptInterface.addMultipleReference("extended", conceptInterface);
+            conceptInterface.addFeature(Reference.createMultiple("extended", conceptInterface));
 
             containment.setExtendedConcept(link);
 
@@ -127,24 +124,24 @@ public class LionCore {
 
             enumeration.setExtendedConcept(dataType);
             enumeration.addImplementedInterface(namespaceProvider);
-            enumeration.addMultipleContainment("literals", enumerationLiteral);
+            enumeration.addFeature(Containment.createMultiple("literals", enumerationLiteral));
 
             enumerationLiteral.addImplementedInterface(namespacedEntity);
 
             feature.addImplementedInterface(namespacedEntity);
-            feature.addRequiredProperty("optional", LionCoreBuiltins.getBoolean());
+            feature.addFeature(Property.createRequired("optional", LionCoreBuiltins.getBoolean()));
 
             featuresContainer.setExtendedConcept(metamodelElement);
             featuresContainer.addImplementedInterface(namespaceProvider);
-            featuresContainer.addMultipleContainment("features", feature);
+            featuresContainer.addFeature(Containment.createMultiple("features", feature));
 
             link.setExtendedConcept(featuresContainer);
-            link.addRequiredProperty("multiple", LionCoreBuiltins.getBoolean());
-            link.addRequiredReference("type", featuresContainer);
+            link.addFeature(Property.createRequired("multiple", LionCoreBuiltins.getBoolean()));
+            link.addFeature(Reference.createRequired("type", featuresContainer));
 
             metamodel.addImplementedInterface(namespaceProvider);
-            metamodel.addMultipleReference("dependsOn", metamodel);
-            metamodel.addMultipleContainment("elements", metamodelElement);
+            metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
+            metamodel.addFeature(Containment.createMultiple("elements", metamodelElement));
 
             metamodelElement.addImplementedInterface(namespacedEntity);
             metamodel.setAbstract(true);
@@ -152,20 +149,20 @@ public class LionCore {
             // NOTE this is a violation of the current metamodel, as we stated that
             //      ConceptInterface can only have derived features. However this does not seem to be correct
             //      in this case
-            namespacedEntity.addRequiredProperty("simpleName", LionCoreBuiltins.getString());
-            namespacedEntity.addProperty("qualifiedName", LionCoreBuiltins.getString(), false, true);
+            namespacedEntity.addFeature(Property.createRequired("simpleName", LionCoreBuiltins.getString()));
+            namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString()));
 
-            namespaceProvider.addProperty("namespaceQualifier", LionCoreBuiltins.getString(), false, true);
+            namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString()));
 
             primitiveType.setExtendedConcept(dataType);
 
             property.setExtendedConcept(feature);
-            property.addRequiredReference("type", dataType);
+            property.addFeature(Reference.createRequired("type", dataType));
 
             reference.setExtendedConcept(link);
 
             typedef.setExtendedConcept(dataType);
-            typedef.addRequiredReference("primitiveType", primitiveType);
+            typedef.addFeature(Reference.createRequired("primitiveType", primitiveType));
         }
         return INSTANCE;
     }
