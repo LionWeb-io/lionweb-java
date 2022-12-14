@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class MetamodelValidator {
@@ -90,7 +88,7 @@ public class MetamodelValidator {
             }
         } else {
             alreadyExplored.add(conceptInterface);
-            conceptInterface.getExtendedInterface().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult, examiningConcept));
+            conceptInterface.getExtendedInterfaces().forEach(interf -> checkAncestorsHelper(alreadyExplored, interf, validationResult, examiningConcept));
         }
     }
 
@@ -99,7 +97,7 @@ public class MetamodelValidator {
             validationResult.addError("Cyclic hierarchy found", conceptInterface);
         } else {
             alreadyExplored.add(conceptInterface);
-            conceptInterface.getExtendedInterface().forEach(interf -> checkAncestorsHelperForConceptInterfaces(alreadyExplored, interf, validationResult));
+            conceptInterface.getExtendedInterfaces().forEach(interf -> checkAncestorsHelperForConceptInterfaces(alreadyExplored, interf, validationResult));
         }
     }
 
