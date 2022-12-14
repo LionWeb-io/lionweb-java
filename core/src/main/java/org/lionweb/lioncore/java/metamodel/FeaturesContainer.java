@@ -54,6 +54,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     public void addFeature(@Nonnull Feature feature) {
         this.features.add(feature);
+        feature.setContainer(this);
     }
 
     @Override

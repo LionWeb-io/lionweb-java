@@ -14,15 +14,17 @@ import javax.annotation.Nullable;
  */
 public class Property extends Feature {
 
-    public static Property createOptional(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Property property = new Property(simpleName, container);
+    public static Property createOptional(@Nullable String simpleName, @Nullable DataType type) {
+        Property property = new Property(simpleName, null);
         property.setOptional(true);
+        property.setType(type);
         return property;
     }
 
-    public static Property createRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Property property = new Property(simpleName, container);
+    public static Property createRequired(@Nullable String simpleName, @Nullable DataType type) {
+        Property property = new Property(simpleName, null);
         property.setOptional(false);
+        property.setType(type);
         return property;
     }
 
@@ -41,7 +43,7 @@ public class Property extends Feature {
         return type;
     }
 
-    public void setType(DataType type) {
+    public void setType(@Nullable DataType type) {
         this.type = type;
     }
 
