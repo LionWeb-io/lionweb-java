@@ -13,6 +13,21 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SProperty MPS equivalent <i>SProperty</i> in SModel
  */
 public class Property extends Feature {
+
+    public static Property createOptional(@Nullable String simpleName, @Nullable DataType type) {
+        Property property = new Property(simpleName, null);
+        property.setOptional(true);
+        property.setType(type);
+        return property;
+    }
+
+    public static Property createRequired(@Nullable String simpleName, @Nullable DataType type) {
+        Property property = new Property(simpleName, null);
+        property.setOptional(false);
+        property.setType(type);
+        return property;
+    }
+
     private DataType type;
 
     public Property() {
@@ -28,7 +43,15 @@ public class Property extends Feature {
         return type;
     }
 
-    public void setType(DataType type) {
+    public void setType(@Nullable DataType type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return "Property{" +
+                "simpleName=" + getSimpleName() + ", " +
+                "type=" + type +
+                '}';
     }
 }

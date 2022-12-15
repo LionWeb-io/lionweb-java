@@ -32,6 +32,10 @@ public abstract class MetamodelElement implements NamespacedEntity {
         return this.metamodel;
     }
 
+    public void setMetamodel(@Nullable Metamodel metamodel) {
+        this.metamodel = metamodel;
+    }
+
     @Override
     public @Nullable String getSimpleName() {
         return this.simpleName;

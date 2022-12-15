@@ -15,6 +15,39 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
  */
 public class Reference extends Link {
+
+    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
+        reference.setOptional(true);
+        reference.setMultiple(false);
+        reference.setType(type);
+        return reference;
+    }
+
+    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
+        reference.setOptional(false);
+        reference.setMultiple(false);
+        reference.setType(type);
+        return reference;
+    }
+
+    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
+        reference.setOptional(true);
+        reference.setMultiple(true);
+        reference.setType(type);
+        return reference;
+    }
+
+    public static Reference createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
+        reference.setOptional(false);
+        reference.setMultiple(true);
+        reference.setType(type);
+        return reference;
+    }
+
     @Experimental
     private Reference specialized;
 
@@ -27,6 +60,10 @@ public class Reference extends Link {
         super(simpleName, container);
     }
 
+    public Reference(@Nullable String simpleName) {
+        super(simpleName, null);
+    }
+
     public @Nullable Reference getSpecialized() {
         return specialized;
     }
@@ -35,6 +72,14 @@ public class Reference extends Link {
         // TODO check which limitations there are: should have the same name? Should it belong
         //      to an ancestor of the FeaturesContainer holding this Containment?
         this.specialized = specialized;
+    }
+
+    @Override
+    public String toString() {
+        return "Reference{" +
+                "simpleName=" + getSimpleName() + ", " +
+                "type=" + getType() +
+                '}';
     }
 
 }

@@ -17,6 +17,38 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SContainmentLink MPS equivalent <i>SContainmentLink</i> in SModel
  */
 public class Containment extends Link {
+
+    public static Containment createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
+        containment.setOptional(true);
+        containment.setMultiple(false);
+        containment.setType(type);
+        return containment;
+    }
+
+    public static Containment createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
+        containment.setOptional(false);
+        containment.setMultiple(false);
+        containment.setType(type);
+        return containment;
+    }
+
+    public static Containment createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
+        containment.setOptional(true);
+        containment.setMultiple(true);
+        containment.setType(type);
+        return containment;
+    }
+
+    public static Containment createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
+        containment.setOptional(false);
+        containment.setMultiple(true);
+        containment.setType(type);
+        return containment;
+    }
     @Experimental
     private Containment specialized;
 
@@ -29,6 +61,10 @@ public class Containment extends Link {
         super(simpleName, container);
     }
 
+    public Containment(String simpleName) {
+        super(simpleName, null);
+    }
+
     public @Nullable Containment getSpecialized() {
         return specialized;
     }
@@ -37,6 +73,14 @@ public class Containment extends Link {
         // TODO check which limitations there are: should have the same name? Should it belong
         //      to an ancestor of the FeaturesContainer holding this Containment?
         this.specialized = specialized;
+    }
+
+    @Override
+    public String toString() {
+        return "Containment{" +
+                "simpleName=" + getSimpleName() + ", " +
+                "type=" + getType() +
+                '}';
     }
 
 }

@@ -62,9 +62,16 @@ public abstract class Feature implements NamespacedEntity {
         return simpleName;
     }
 
-    @Override
-    public @Nullable NamespaceProvider getContainer() {
-        return (NamespaceProvider) container;
+    public void setSimpleName(@Nullable String simpleName) {
+        this.simpleName = simpleName;
     }
 
+    @Override
+    public @Nullable NamespaceProvider getContainer() {
+        return container;
+    }
+
+    public void setContainer(@Nullable FeaturesContainer container) {
+        this.container = container;
+    }
 }

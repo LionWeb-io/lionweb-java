@@ -20,7 +20,7 @@ import java.util.List;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
 public class Metamodel implements NamespaceProvider {
-    // TODO add ID, once details are cleare
+    // TODO add ID, once details are clearer
 
     private String qualifiedName;
     private List<Metamodel> dependsOn = new LinkedList<>();
@@ -49,6 +49,21 @@ public class Metamodel implements NamespaceProvider {
 
     public void addElement(@Nonnull MetamodelElement element) {
         this.elements.add(element);
+        element.setMetamodel(this);
+    }
+
+    public Concept getConceptByName(String name) {
+        return getElements().stream().filter(element -> element instanceof Concept)
+                .map(element -> (Concept)element)
+                .filter(element -> element.getSimpleName().equals(name)).findFirst()
+                .orElse(null);
+    }
+
+    public ConceptInterface getConceptInterfaceByName(String name) {
+        return getElements().stream().filter(element -> element instanceof ConceptInterface)
+                .map(element -> (ConceptInterface)element)
+                .filter(element -> element.getSimpleName().equals(name)).findFirst()
+                .orElse(null);
     }
 
     public String getQualifiedName() {

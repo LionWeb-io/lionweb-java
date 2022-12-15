@@ -1,6 +1,5 @@
 package org.lionweb.lioncore.java.utils;
 
-import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.*;
 
@@ -20,9 +19,9 @@ public class MetamodelValidatorTest {
 
         assertFalse(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
         assertFalse(new MetamodelValidator().isMetamodelValid(metamodel));
-        assertEquals(3, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
+        assertEquals(2, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
         assertTrue(new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().allMatch(issue -> issue.isError()));
-        assertEquals(new HashSet<>(Arrays.asList("Metamodel not set", "Simple name not set", "Qualified name not set")),
+        assertEquals(new HashSet<>(Arrays.asList("Simple name not set", "Qualified name not set")),
                 new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().map(issue -> issue.getMessage()).collect(Collectors.toSet()));
     }
 
@@ -45,9 +44,9 @@ public class MetamodelValidatorTest {
 
         assertFalse(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
         assertFalse(new MetamodelValidator().isMetamodelValid(metamodel));
-        assertEquals(2, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
+        assertEquals(1, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
         assertTrue(new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().allMatch(issue -> issue.isError()));
-        assertEquals(new HashSet<>(Arrays.asList("Metamodel not set", "Simple name not set")),
+        assertEquals(new HashSet<>(Arrays.asList("Simple name not set")),
                 new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().map(issue -> issue.getMessage()).collect(Collectors.toSet()));
     }
 

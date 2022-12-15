@@ -4,6 +4,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * This represents a group of elements that shares some characteristics.
@@ -26,12 +27,24 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
         super(metamodel, simpleName);
     }
 
-    public @Nullable Feature getFeatureByName(String name) {
-        return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(name)).findFirst()
+    public @Nullable Feature getFeatureByName(@Nonnull String simpleName) {
+        return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
                 .orElse(null);
     }
 
     public abstract @Nonnull List<Feature> allFeatures();
+
+    public @Nonnull List<Property> allProperties() {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f).collect(Collectors.toList());
+    }
+
+    public @Nonnull List<Containment> allContainments() {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f).collect(Collectors.toList());
+    }
+
+    public @Nonnull List<Reference> allReferences() {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f).collect(Collectors.toList());
+    }
 
     // TODO should this expose an immutable list to force users to use methods on this class
     //      to modify the collection?
@@ -41,6 +54,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
 
     public void addFeature(@Nonnull Feature feature) {
         this.features.add(feature);
+        feature.setContainer(this);
     }
 
     @Override
