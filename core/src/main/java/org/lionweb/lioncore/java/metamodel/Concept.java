@@ -26,8 +26,12 @@ public class Concept extends FeaturesContainer {
         super();
     }
 
-    public Concept(Metamodel metamodel, String simpleName) {
+    public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+    }
+
+    public Concept(@Nullable String simpleName) {
+        super(null, simpleName);
     }
 
     public boolean isAbstract() {

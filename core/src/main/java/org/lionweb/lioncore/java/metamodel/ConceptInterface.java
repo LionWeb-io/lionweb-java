@@ -26,6 +26,10 @@ public class ConceptInterface extends FeaturesContainer {
         super(metamodel, simpleName);
     }
 
+    public ConceptInterface(@Nullable String simpleName) {
+        super(null, simpleName);
+    }
+
     public @Nonnull List<ConceptInterface> getExtendedInterfaces() {
         return this.extended;
     }
