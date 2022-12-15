@@ -86,24 +86,24 @@ public class LionCore {
         if (INSTANCE == null) {
             INSTANCE = new Metamodel("lionweb.lioncore");
 
-            Concept annotation = INSTANCE.addConcept("Annotation");
-            Concept concept = INSTANCE.addConcept("Concept");
-            Concept conceptInterface = INSTANCE.addConcept("ConceptInterface");
-            Concept containment = INSTANCE.addConcept("Containment");
-            Concept dataType = INSTANCE.addConcept("DataType");
-            Concept enumeration = INSTANCE.addConcept("Enumeration");
-            Concept enumerationLiteral = INSTANCE.addConcept("EnumerationLiteral");
-            Concept feature = INSTANCE.addConcept("Feature");
-            Concept featuresContainer = INSTANCE.addConcept("FeaturesContainer");
-            Concept link = INSTANCE.addConcept("Link");
-            Concept metamodel = INSTANCE.addConcept("Metamodel");
-            Concept metamodelElement = INSTANCE.addConcept("MetamodelElement");
-            ConceptInterface namespacedEntity = INSTANCE.addConceptInterface("NamespacedEntity");
-            ConceptInterface namespaceProvider = INSTANCE.addConceptInterface("NamespaceProvider");
-            Concept primitiveType = INSTANCE.addConcept("PrimitiveType");
-            Concept property = INSTANCE.addConcept("Property");
-            Concept reference = INSTANCE.addConcept("Reference");
-            Concept typedef = INSTANCE.addConcept("Typedef");
+            Concept annotation = INSTANCE.addElement(new Concept("Annotation"));
+            Concept concept = INSTANCE.addElement(new Concept("Concept"));
+            Concept conceptInterface = INSTANCE.addElement(new Concept("ConceptInterface"));
+            Concept containment = INSTANCE.addElement(new Concept("Containment"));
+            Concept dataType = INSTANCE.addElement(new Concept("DataType"));
+            Concept enumeration = INSTANCE.addElement(new Concept("Enumeration"));
+            Concept enumerationLiteral = INSTANCE.addElement(new Concept("EnumerationLiteral"));
+            Concept feature = INSTANCE.addElement(new Concept("Feature"));
+            Concept featuresContainer = INSTANCE.addElement(new Concept("FeaturesContainer"));
+            Concept link = INSTANCE.addElement(new Concept("Link"));
+            Concept metamodel = INSTANCE.addElement(new Concept("Metamodel"));
+            Concept metamodelElement = INSTANCE.addElement(new Concept("MetamodelElement"));
+            ConceptInterface namespacedEntity = INSTANCE.addElement(new ConceptInterface("NamespacedEntity"));
+            ConceptInterface namespaceProvider = INSTANCE.addElement(new ConceptInterface("NamespaceProvider"));
+            Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
+            Concept property = INSTANCE.addElement(new Concept("Property"));
+            Concept reference = INSTANCE.addElement(new Concept("Reference"));
+            Concept typedef = INSTANCE.addElement(new Concept("Typedef"));
 
             annotation.setExtendedConcept(featuresContainer);
             annotation.addFeature(Property.createOptional("platformSpecific", LionCoreBuiltins.getString()));
