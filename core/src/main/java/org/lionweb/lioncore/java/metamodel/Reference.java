@@ -16,31 +16,35 @@ import javax.annotation.Nullable;
  */
 public class Reference extends Link {
 
-    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Reference reference = new Reference(simpleName, container);
+    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
         reference.setOptional(true);
         reference.setMultiple(false);
+        reference.setType(type);
         return reference;
     }
 
-    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Reference reference = new Reference(simpleName, container);
+    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
         reference.setOptional(false);
         reference.setMultiple(false);
+        reference.setType(type);
         return reference;
     }
 
-    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Reference reference = new Reference(simpleName, container);
+    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
         reference.setOptional(true);
         reference.setMultiple(true);
+        reference.setType(type);
         return reference;
     }
 
-    public static Reference createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Reference reference = new Reference(simpleName, container);
+    public static Reference createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Reference reference = new Reference(simpleName);
         reference.setOptional(false);
         reference.setMultiple(true);
+        reference.setType(type);
         return reference;
     }
 
@@ -54,6 +58,10 @@ public class Reference extends Link {
     public Reference(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
+    }
+
+    public Reference(@Nullable String simpleName) {
+        super(simpleName, null);
     }
 
     public @Nullable Reference getSpecialized() {

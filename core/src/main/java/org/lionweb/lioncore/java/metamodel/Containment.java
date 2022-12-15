@@ -18,31 +18,35 @@ import javax.annotation.Nullable;
  */
 public class Containment extends Link {
 
-    public static Containment createOptional(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Containment containment = new Containment(simpleName, container);
+    public static Containment createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
         containment.setOptional(true);
         containment.setMultiple(false);
+        containment.setType(type);
         return containment;
     }
 
-    public static Containment createRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Containment containment = new Containment(simpleName, container);
+    public static Containment createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
         containment.setOptional(false);
         containment.setMultiple(false);
+        containment.setType(type);
         return containment;
     }
 
-    public static Containment createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Containment containment = new Containment(simpleName, container);
+    public static Containment createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
         containment.setOptional(true);
         containment.setMultiple(true);
+        containment.setType(type);
         return containment;
     }
 
-    public static Containment createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        Containment containment = new Containment(simpleName, container);
+    public static Containment createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
+        Containment containment = new Containment(simpleName);
         containment.setOptional(false);
         containment.setMultiple(true);
+        containment.setType(type);
         return containment;
     }
     @Experimental
@@ -55,6 +59,10 @@ public class Containment extends Link {
     public Containment(String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
+    }
+
+    public Containment(String simpleName) {
+        super(simpleName, null);
     }
 
     public @Nullable Containment getSpecialized() {
