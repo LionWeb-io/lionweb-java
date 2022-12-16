@@ -86,6 +86,8 @@ public class LionCore {
         if (INSTANCE == null) {
             INSTANCE = new Metamodel("lionweb.lioncore");
 
+            // We first instantiate all Concepts and ConceptInterfaces
+            // we add features only after as the features will have references to these elements
             Concept annotation = INSTANCE.addElement(new Concept("Annotation"));
             Concept concept = INSTANCE.addElement(new Concept("Concept"));
             Concept conceptInterface = INSTANCE.addElement(new Concept("ConceptInterface"));
@@ -104,6 +106,8 @@ public class LionCore {
             Concept property = INSTANCE.addElement(new Concept("Property"));
             Concept reference = INSTANCE.addElement(new Concept("Reference"));
             Concept typedef = INSTANCE.addElement(new Concept("Typedef"));
+
+            // Now we start adding the features to all the Concepts and ConceptInterfaces
 
             annotation.setExtendedConcept(featuresContainer);
             annotation.addFeature(Property.createOptional("platformSpecific", LionCoreBuiltins.getString()));
