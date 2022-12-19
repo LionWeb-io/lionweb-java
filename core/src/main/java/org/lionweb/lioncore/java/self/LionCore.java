@@ -88,7 +88,6 @@ public class LionCore {
 
             // We first instantiate all Concepts and ConceptInterfaces
             // we add features only after as the features will have references to these elements
-            Concept annotation = INSTANCE.addElement(new Concept("Annotation"));
             Concept concept = INSTANCE.addElement(new Concept("Concept"));
             Concept conceptInterface = INSTANCE.addElement(new Concept("ConceptInterface"));
             Concept containment = INSTANCE.addElement(new Concept("Containment"));
@@ -105,13 +104,8 @@ public class LionCore {
             Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
             Concept property = INSTANCE.addElement(new Concept("Property"));
             Concept reference = INSTANCE.addElement(new Concept("Reference"));
-            Concept typedef = INSTANCE.addElement(new Concept("Typedef"));
 
             // Now we start adding the features to all the Concepts and ConceptInterfaces
-
-            annotation.setExtendedConcept(featuresContainer);
-            annotation.addFeature(Property.createOptional("platformSpecific", LionCoreBuiltins.getString()));
-            annotation.addFeature(Reference.createRequired("target", featuresContainer));
 
             concept.setExtendedConcept(featuresContainer);
             concept.addFeature(Property.createRequired("abstract", LionCoreBuiltins.getBoolean()));
@@ -164,9 +158,6 @@ public class LionCore {
             property.addFeature(Reference.createRequired("type", dataType));
 
             reference.setExtendedConcept(link);
-
-            typedef.setExtendedConcept(dataType);
-            typedef.addFeature(Reference.createRequired("primitiveType", primitiveType));
         }
         return INSTANCE;
     }
