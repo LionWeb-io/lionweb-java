@@ -99,7 +99,7 @@ public class LionCore {
             Concept link = INSTANCE.addElement(new Concept("Link"));
             Concept metamodel = INSTANCE.addElement(new Concept("Metamodel"));
             Concept metamodelElement = INSTANCE.addElement(new Concept("MetamodelElement"));
-            ConceptInterface namespacedEntity = INSTANCE.addElement(new ConceptInterface("NamespacedEntity"));
+            Concept namespacedEntity = INSTANCE.addElement(new Concept("NamespacedEntity"));
             ConceptInterface namespaceProvider = INSTANCE.addElement(new ConceptInterface("NamespaceProvider"));
             Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
             Concept property = INSTANCE.addElement(new Concept("Property"));
@@ -124,9 +124,9 @@ public class LionCore {
             enumeration.addImplementedInterface(namespaceProvider);
             enumeration.addFeature(Containment.createMultiple("literals", enumerationLiteral));
 
-            enumerationLiteral.addImplementedInterface(namespacedEntity);
+            enumerationLiteral.setExtendedConcept(namespacedEntity);
 
-            feature.addImplementedInterface(namespacedEntity);
+            feature.setExtendedConcept(namespacedEntity);
             feature.addFeature(Property.createRequired("optional", LionCoreBuiltins.getBoolean()));
 
             featuresContainer.setExtendedConcept(metamodelElement);
@@ -141,12 +141,10 @@ public class LionCore {
             metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement));
 
-            metamodelElement.addImplementedInterface(namespacedEntity);
+            metamodelElement.setExtendedConcept(namespacedEntity);
             metamodel.setAbstract(true);
 
-            // NOTE this is a violation of the current metamodel, as we stated that
-            //      ConceptInterface can only have derived features. However, this does not seem to be correct
-            //      in this case
+            namespacedEntity.setAbstract(true);
             namespacedEntity.addFeature(Property.createRequired("simpleName", LionCoreBuiltins.getString()));
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString()));
 
