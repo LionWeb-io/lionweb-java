@@ -47,9 +47,10 @@ public class Metamodel implements NamespaceProvider {
         return this.elements;
     }
 
-    public void addElement(@Nonnull MetamodelElement element) {
+    public <T extends MetamodelElement> T addElement(@Nonnull T element) {
         this.elements.add(element);
         element.setMetamodel(this);
+        return element;
     }
 
     public Concept getConceptByName(String name) {
