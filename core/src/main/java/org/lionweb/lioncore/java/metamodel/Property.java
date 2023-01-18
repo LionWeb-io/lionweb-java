@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nullable;
 
 /**
@@ -37,6 +39,7 @@ public class Property extends Feature {
     public Property(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
+        setConcept(LionCore.getProperty());
     }
 
     public @Nullable DataType getType() {

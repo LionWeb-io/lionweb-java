@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nonnull;
@@ -28,12 +29,13 @@ public class Metamodel extends BaseNode implements NamespaceProvider {
     private List<MetamodelElement> elements = new LinkedList<>();
 
     public Metamodel() {
-
+        setConcept(LionCore.getMetamodel());
     }
 
     public Metamodel(String qualifiedName) {
         Naming.validateQualifiedName(qualifiedName);
         this.qualifiedName = qualifiedName;
+        setConcept(LionCore.getMetamodel());
     }
 
     @Override

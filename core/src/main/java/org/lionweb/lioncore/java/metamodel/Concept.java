@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -24,14 +26,17 @@ public class Concept extends FeaturesContainer {
 
     public Concept() {
         super();
+        setConcept(LionCore.getConcept());
     }
 
     public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+        setConcept(LionCore.getConcept());
     }
 
     public Concept(@Nullable String simpleName) {
         super(null, simpleName);
+        setConcept(LionCore.getConcept());
     }
 
     public boolean isAbstract() {

@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -20,14 +22,17 @@ public class ConceptInterface extends FeaturesContainer {
 
     public ConceptInterface() {
         super();
+        setConcept(LionCore.getConceptInterface());
     }
 
     public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+        setConcept(LionCore.getConceptInterface());
     }
 
     public ConceptInterface(@Nullable String simpleName) {
         super(null, simpleName);
+        setConcept(LionCore.getConceptInterface());
     }
 
     public @Nonnull List<ConceptInterface> getExtendedInterfaces() {

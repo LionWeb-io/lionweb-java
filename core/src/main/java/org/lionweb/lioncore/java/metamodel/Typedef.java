@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nullable;
 
@@ -18,6 +19,7 @@ public class Typedef extends DataType {
 
     public Typedef(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+        setConcept(LionCore.getTypedef());
     }
 
     public @Nullable PrimitiveType getPrimitiveType() {

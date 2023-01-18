@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nullable;
 
 /**
@@ -16,10 +18,12 @@ import javax.annotation.Nullable;
 public class PrimitiveType extends DataType {
     public PrimitiveType() {
         super();
+        setConcept(LionCore.getPrimitiveType());
     }
 
     public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+        setConcept(LionCore.getPrimitiveType());
     }
 
     @Override
