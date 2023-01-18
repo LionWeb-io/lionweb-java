@@ -1,8 +1,10 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.impl.BaseNode;
+
 import javax.annotation.Nullable;
 
-public class EnumerationLiteral implements NamespacedEntity {
+public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
     private String simpleName;
     private Enumeration enumeration;
 
