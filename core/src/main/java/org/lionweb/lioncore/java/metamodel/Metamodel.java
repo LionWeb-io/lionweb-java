@@ -54,14 +54,23 @@ public class Metamodel extends BaseNode implements NamespaceProvider {
         return element;
     }
 
-    public Concept getConceptByName(String name) {
+    public @Nullable Concept getConceptByName(String name) {
         return getElements().stream().filter(element -> element instanceof Concept)
                 .map(element -> (Concept)element)
                 .filter(element -> element.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
     }
 
-    public ConceptInterface getConceptInterfaceByName(String name) {
+    public Concept requireConceptByName(String name) {
+        Concept concept = getConceptByName(name);
+        if (concept == null) {
+            throw new IllegalArgumentException("Concept named " + name + " was not found");
+        } else {
+            return concept;
+        }
+    }
+
+    public @Nullable ConceptInterface getConceptInterfaceByName(String name) {
         return getElements().stream().filter(element -> element instanceof ConceptInterface)
                 .map(element -> (ConceptInterface)element)
                 .filter(element -> element.getSimpleName().equals(name)).findFirst()
