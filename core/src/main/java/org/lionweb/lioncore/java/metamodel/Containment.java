@@ -60,12 +60,10 @@ public class Containment extends Link {
     public Containment(String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
-        setConcept(LionCore.getContainment());
     }
 
     public Containment(String simpleName) {
         super(simpleName, null);
-        setConcept(LionCore.getContainment());
     }
 
     public @Nullable Containment getSpecialized() {
@@ -86,4 +84,8 @@ public class Containment extends Link {
                 '}';
     }
 
+    @Override
+    public Concept getConcept() {
+        return LionCore.getContainment();
+    }
 }

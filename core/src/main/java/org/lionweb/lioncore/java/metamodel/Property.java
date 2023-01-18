@@ -39,7 +39,6 @@ public class Property extends Feature {
     public Property(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
-        setConcept(LionCore.getProperty());
     }
 
     public @Nullable DataType getType() {
@@ -56,5 +55,10 @@ public class Property extends Feature {
                 "simpleName=" + getSimpleName() + ", " +
                 "type=" + type +
                 '}';
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getProperty();
     }
 }

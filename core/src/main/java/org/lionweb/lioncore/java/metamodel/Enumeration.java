@@ -12,12 +12,10 @@ public class Enumeration extends DataType implements NamespaceProvider {
 
     public Enumeration() {
         super();
-        setConcept(LionCore.getEnumeration());
     }
 
     public Enumeration(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
-        setConcept(LionCore.getEnumeration());
     }
 
     public @Nonnull List<EnumerationLiteral> getLiterals() {
@@ -31,5 +29,10 @@ public class Enumeration extends DataType implements NamespaceProvider {
     @Override
     public String namespaceQualifier() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getEnumeration();
     }
 }

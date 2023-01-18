@@ -10,12 +10,10 @@ public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
     private Enumeration enumeration;
 
     public EnumerationLiteral() {
-        setConcept(LionCore.getEnumerationLiteral());
     }
 
     public EnumerationLiteral(@Nullable String simpleName) {
         this.simpleName = simpleName;
-        setConcept(LionCore.getEnumerationLiteral());
     }
 
     @Override
@@ -38,5 +36,10 @@ public class EnumerationLiteral extends BaseNode implements NamespacedEntity {
     @Override
     public @Nullable Enumeration getContainer() {
         return enumeration;
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getEnumerationLiteral();
     }
 }

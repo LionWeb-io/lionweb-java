@@ -18,16 +18,19 @@ import javax.annotation.Nullable;
 public class PrimitiveType extends DataType {
     public PrimitiveType() {
         super();
-        setConcept(LionCore.getPrimitiveType());
     }
 
     public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
-        setConcept(LionCore.getPrimitiveType());
     }
 
     @Override
     public String toString() {
         return "PrimitiveType(" + getSimpleName() + ")";
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getPrimitiveType();
     }
 }

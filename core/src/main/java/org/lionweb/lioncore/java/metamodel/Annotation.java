@@ -24,12 +24,10 @@ public class Annotation extends FeaturesContainer {
 
     public Annotation() {
         super();
-        setConcept(LionCore.getAnnotation());
     }
 
     public Annotation(Metamodel metamodel, String simpleName) {
         super(metamodel, simpleName);
-        setConcept(LionCore.getAnnotation());
     }
 
     @Override
@@ -57,4 +55,9 @@ public class Annotation extends FeaturesContainer {
         this.target = target;
     }
 
+    @Override
+    public Concept getConcept() {
+        throw new UnsupportedOperationException(
+                "Annotation is currently not yet approved, so there is no concept defined for it");
+    }
 }

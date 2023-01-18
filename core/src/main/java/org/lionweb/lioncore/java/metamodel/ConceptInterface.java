@@ -22,17 +22,14 @@ public class ConceptInterface extends FeaturesContainer {
 
     public ConceptInterface() {
         super();
-        setConcept(LionCore.getConceptInterface());
     }
 
     public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
-        setConcept(LionCore.getConceptInterface());
     }
 
     public ConceptInterface(@Nullable String simpleName) {
         super(null, simpleName);
-        setConcept(LionCore.getConceptInterface());
     }
 
     public @Nonnull List<ConceptInterface> getExtendedInterfaces() {
@@ -53,5 +50,10 @@ public class ConceptInterface extends FeaturesContainer {
             result.addAll(superInterface.allFeatures());
         }
         return result;
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getConceptInterface();
     }
 }

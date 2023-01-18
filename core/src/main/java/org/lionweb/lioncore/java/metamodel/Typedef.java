@@ -19,7 +19,6 @@ public class Typedef extends DataType {
 
     public Typedef(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
-        setConcept(LionCore.getTypedef());
     }
 
     public @Nullable PrimitiveType getPrimitiveType() {
@@ -28,5 +27,11 @@ public class Typedef extends DataType {
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
         this.primitiveType = primitiveType;
+    }
+
+    @Override
+    public Concept getConcept() {
+        throw new UnsupportedOperationException(
+                "Typedef is currently not yet approved, so there is no concept defined for it");
     }
 }

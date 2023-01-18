@@ -59,12 +59,10 @@ public class Reference extends Link {
     public Reference(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
-        setConcept(LionCore.getReference());
     }
 
     public Reference(@Nullable String simpleName) {
         super(simpleName, null);
-        setConcept(LionCore.getReference());
     }
 
     public @Nullable Reference getSpecialized() {
@@ -83,6 +81,11 @@ public class Reference extends Link {
                 "simpleName=" + getSimpleName() + ", " +
                 "type=" + getType() +
                 '}';
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getReference();
     }
 
 }

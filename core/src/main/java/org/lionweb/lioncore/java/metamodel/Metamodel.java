@@ -29,13 +29,11 @@ public class Metamodel extends BaseNode implements NamespaceProvider {
     private List<MetamodelElement> elements = new LinkedList<>();
 
     public Metamodel() {
-        setConcept(LionCore.getMetamodel());
     }
 
     public Metamodel(String qualifiedName) {
         Naming.validateQualifiedName(qualifiedName);
         this.qualifiedName = qualifiedName;
-        setConcept(LionCore.getMetamodel());
     }
 
     @Override
@@ -89,6 +87,11 @@ public class Metamodel extends BaseNode implements NamespaceProvider {
         } else {
             throw new RuntimeException("Element " + name + " is not a PrimitiveType");
         }
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getMetamodel();
     }
 
 }

@@ -26,17 +26,14 @@ public class Concept extends FeaturesContainer {
 
     public Concept() {
         super();
-        setConcept(LionCore.getConcept());
     }
 
     public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
-        setConcept(LionCore.getConcept());
     }
 
     public Concept(@Nullable String simpleName) {
         super(null, simpleName);
-        setConcept(LionCore.getConcept());
     }
 
     public boolean isAbstract() {
@@ -84,4 +81,10 @@ public class Concept extends FeaturesContainer {
         }
         return result;
     }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getConcept();
+    }
+
 }
