@@ -47,7 +47,10 @@ public interface Node extends HasFeatureValues {
 
     /**
      * Return the Containment feature used to hold this Node within its parent.
-     * This will be null only for root nodes.
+     * This will be null only for root nodes or dangling nodes (which are not distinguishable by looking at the node
+     * itself).
+     *
+     * @see <a href="https://download.eclipse.org/modeling/emf/emf/javadoc/2.6.0/org/eclipse/emf/ecore/EObject.html#eContainingFeature()">Ecore equivalent <i>EObject.eContainingFeature</i> in documentation</a>.
      */
     Containment getContainmentFeature();
 
