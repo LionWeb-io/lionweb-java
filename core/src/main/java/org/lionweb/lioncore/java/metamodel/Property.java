@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nullable;
 
 /**
@@ -53,5 +55,10 @@ public class Property extends Feature {
                 "simpleName=" + getSimpleName() + ", " +
                 "type=" + type +
                 '}';
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getProperty();
     }
 }

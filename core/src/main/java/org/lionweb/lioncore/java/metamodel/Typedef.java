@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nullable;
 
@@ -26,5 +27,11 @@ public class Typedef extends DataType {
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
         this.primitiveType = primitiveType;
+    }
+
+    @Override
+    public Concept getConcept() {
+        throw new UnsupportedOperationException(
+                "Typedef is currently not yet approved, so there is no concept defined for it");
     }
 }

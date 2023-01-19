@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nonnull;
@@ -19,7 +21,7 @@ import java.util.List;
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
-public class Metamodel implements NamespaceProvider {
+public class Metamodel extends BaseNode implements NamespaceProvider {
     // TODO add ID, once details are clearer
 
     private String qualifiedName;
@@ -27,7 +29,6 @@ public class Metamodel implements NamespaceProvider {
     private List<MetamodelElement> elements = new LinkedList<>();
 
     public Metamodel() {
-
     }
 
     public Metamodel(String qualifiedName) {
@@ -53,14 +54,23 @@ public class Metamodel implements NamespaceProvider {
         return element;
     }
 
-    public Concept getConceptByName(String name) {
+    public @Nullable Concept getConceptByName(String name) {
         return getElements().stream().filter(element -> element instanceof Concept)
                 .map(element -> (Concept)element)
                 .filter(element -> element.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
     }
 
-    public ConceptInterface getConceptInterfaceByName(String name) {
+    public Concept requireConceptByName(String name) {
+        Concept concept = getConceptByName(name);
+        if (concept == null) {
+            throw new IllegalArgumentException("Concept named " + name + " was not found");
+        } else {
+            return concept;
+        }
+    }
+
+    public @Nullable ConceptInterface getConceptInterfaceByName(String name) {
         return getElements().stream().filter(element -> element instanceof ConceptInterface)
                 .map(element -> (ConceptInterface)element)
                 .filter(element -> element.getSimpleName().equals(name)).findFirst()
@@ -86,6 +96,11 @@ public class Metamodel implements NamespaceProvider {
         } else {
             throw new RuntimeException("Element " + name + " is not a PrimitiveType");
         }
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getMetamodel();
     }
 
 }

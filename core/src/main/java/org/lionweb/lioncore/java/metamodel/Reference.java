@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nullable;
 
@@ -80,6 +81,11 @@ public class Reference extends Link {
                 "simpleName=" + getSimpleName() + ", " +
                 "type=" + getType() +
                 '}';
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getReference();
     }
 
 }

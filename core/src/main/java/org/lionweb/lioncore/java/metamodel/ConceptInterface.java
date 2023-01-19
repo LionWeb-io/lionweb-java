@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -48,5 +50,10 @@ public class ConceptInterface extends FeaturesContainer {
             result.addAll(superInterface.allFeatures());
         }
         return result;
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getConceptInterface();
     }
 }

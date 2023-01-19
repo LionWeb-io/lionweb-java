@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.self.LionCore;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
@@ -27,5 +29,10 @@ public class Enumeration extends DataType implements NamespaceProvider {
     @Override
     public String namespaceQualifier() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public Concept getConcept() {
+        return LionCore.getEnumeration();
     }
 }

@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nonnull;
@@ -54,4 +55,9 @@ public class Annotation extends FeaturesContainer {
         this.target = target;
     }
 
+    @Override
+    public Concept getConcept() {
+        throw new UnsupportedOperationException(
+                "Annotation is currently not yet approved, so there is no concept defined for it");
+    }
 }
