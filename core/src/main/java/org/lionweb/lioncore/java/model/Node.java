@@ -4,6 +4,7 @@ import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.metamodel.*;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -17,6 +18,16 @@ import java.util.List;
  */
 @Experimental
 public interface Node extends HasFeatureValues {
+
+    /**
+     * This return the Node ID.
+     *
+     * A valid Node ID should not be null, but this method can return a null
+     * value in case the Node is in invalid state.
+     */
+    @Nullable
+    String getID();
+
     /**
      * The Model in which the Node is contained. A Node is contained into a Model when it is a root node of that
      * Node or if one of its ancestors is.

@@ -1,6 +1,10 @@
 package org.lionweb.lioncore.java.self;
 
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.model.impl.BaseNode;
+
+import java.util.Collections;
+import java.util.List;
 
 public class LionCore {
 
@@ -80,7 +84,8 @@ public class LionCore {
 
     public static Metamodel getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new Metamodel("lionweb.lioncore");
+            INSTANCE = new Metamodel("LIonCore.M3");
+            INSTANCE.setID("LIonCore_M3");
 
             // We first instantiate all Concepts and ConceptInterfaces
             // we add features only after as the features will have references to these elements
@@ -153,7 +158,33 @@ public class LionCore {
 
             reference.setExtendedConcept(link);
         }
+        checkIDs(INSTANCE);
         return INSTANCE;
+    }
+
+    private static void checkIDs(BaseNode node) {
+        if (node.getID() == null) {
+            if (node instanceof NamespacedEntity) {
+                NamespacedEntity namespacedEntity = (NamespacedEntity) node;
+                node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
+            } else {
+                throw new IllegalStateException(node.toString());
+            }
+        }
+        // TODO To be changed once getChildren is implemented correctly
+        getChildrenHelper(node).forEach(c -> checkIDs(c));
+    }
+
+    private static List<? extends BaseNode> getChildrenHelper(BaseNode node) {
+        if (node instanceof Metamodel) {
+            return ((Metamodel)node).getElements();
+        } else if (node instanceof FeaturesContainer) {
+            return ((FeaturesContainer)node).getFeatures();
+        } else if (node instanceof Feature) {
+            return Collections.emptyList();
+        } else {
+            throw new UnsupportedOperationException("Unsupported " + node);
+        }
     }
 
 }
