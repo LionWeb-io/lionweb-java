@@ -93,4 +93,19 @@ public class Concept extends FeaturesContainer {
         return LionCore.getConcept();
     }
 
+    public @Nullable Property getPropertyByName(String propertyName) {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
+                .filter(p -> p.getSimpleName().equals(propertyName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Containment getContainmentByName(String containmentName) {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
+                .filter(c -> c.getSimpleName().equals(containmentName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Reference getReferenceByName(String referenceName) {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
+                .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
+    }
+
 }
