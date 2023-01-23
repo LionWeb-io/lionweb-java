@@ -15,7 +15,6 @@ public class AnnotationTest {
 
     @Test
     public void getPropertyValueSimpleName() {
-        System.out.println(LionCore.getAnnotation().allFeatures());
         Metamodel metamodel = new Metamodel();
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
         assertEquals("MyAnnotation", annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("simpleName")));

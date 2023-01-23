@@ -9,6 +9,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -21,6 +24,55 @@ import java.util.stream.Collectors;
 public abstract class BaseNode<T extends BaseNode> implements Node {
     private String id;
     private Node parent;
+    private Map<String, Consumer<Object>> setters;
+    private Map<String, Supplier<List<? extends Node>>> childrenGetters;
+    private Map<String, Consumer<Node>> childrenAdders;
+    private Map<String, Consumer<Node>> referenceAdders;
+
+    protected void recordSetter(Property property, Consumer<Object> setter) {
+        if (property == null) {
+            throw new IllegalStateException("Property is null");
+        }
+        if (property.getID() == null) {
+            throw new IllegalStateException("No ID for property " + property);
+        }
+        setters.put(property.getID(), setter);
+    }
+
+    private void ensureReflectionElementsAreInPlace() {
+        if (setters == null) {
+            setters = new HashMap<>();
+            childrenGetters = new HashMap<>();
+            childrenAdders = new HashMap<>();
+            referenceAdders = new HashMap<>();
+            registerReflectionElements();
+        }
+    }
+    protected void recordChildrenGetter(@Nonnull Containment containment, @Nonnull Supplier<List<? extends Node>> getter) {
+        if (containment == null) {
+            throw new IllegalArgumentException();
+        }
+        childrenGetters.put(containment.getID(), getter);
+    }
+
+    protected void recordChildrenAdder(@Nonnull Containment containment, @Nonnull Consumer<Node> adder) {
+        if (containment == null) {
+            throw new IllegalArgumentException("Given containment is null");
+        }
+        childrenAdders.put(containment.getID(), adder);
+    }
+
+    protected void recordReferenceAdder(@Nonnull Reference reference, @Nonnull Consumer<Node> adder) {
+        if (reference == null) {
+            throw new IllegalArgumentException("Given reference is null");
+        }
+        referenceAdders.put(reference.getID(), adder);
+    }
+
+    protected void registerReflectionElements() {
+
+    }
+
     private List<AnnotationInstance> annotationInstances = new LinkedList<>();
 
     public T setID(String id) {
