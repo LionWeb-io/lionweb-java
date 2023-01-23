@@ -80,7 +80,8 @@ public class LionCore {
 
     public static Metamodel getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new Metamodel("lionweb.lioncore");
+            INSTANCE = new Metamodel("LIonCore.M3");
+            INSTANCE.setID("LIonCore_M3");
 
             // We first instantiate all Concepts and ConceptInterfaces
             // we add features only after as the features will have references to these elements
