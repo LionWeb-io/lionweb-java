@@ -5,6 +5,8 @@ import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,9 +18,15 @@ import java.util.stream.Collectors;
  * the scope of this library. This library should provide a solid, basic dependency to be used by other implementation
  * and it should be as reusable, basic, and unopinionated as possible.
  */
-public abstract class BaseNode implements Node {
+public abstract class BaseNode<T extends BaseNode> implements Node {
+    private String id;
     private Node parent;
     private List<AnnotationInstance> annotationInstances = new LinkedList<>();
+
+    public T setID(String id) {
+        this.id = id;
+        return (T)this;
+    }
 
     public void setParent(Node parent) {
         this.parent = parent;
@@ -117,5 +125,11 @@ public abstract class BaseNode implements Node {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
         throw new UnsupportedOperationException("Reference " + reference + " not supported");
+    }
+
+    @Nullable
+    @Override
+    public String getID() {
+        return id;
     }
 }
