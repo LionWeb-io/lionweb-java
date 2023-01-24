@@ -64,7 +64,13 @@ public class Concept extends FeaturesContainer {
 
     @Override
     public String toString() {
-        return "Concept(" + this.qualifiedName() + ")";
+        String qn;
+        try {
+            qn = this.qualifiedName();
+        } catch (Throwable e) {
+            qn = "...";
+        }
+        return "Concept(" + qn + ")";
     }
 
     @Override
