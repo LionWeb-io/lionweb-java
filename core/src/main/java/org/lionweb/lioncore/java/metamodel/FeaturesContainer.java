@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 /**
  * This represents a group of elements that shares some characteristics.
- *
+ * <p>
  * For example, Dated and Invoice could be both AbstractConcepts, while having different levels of tightness in the
  * groups.
  *
@@ -35,15 +35,15 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     public abstract @Nonnull List<Feature> allFeatures();
 
     public @Nonnull List<Property> allProperties() {
-        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f).collect(Collectors.toList());
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property) f).collect(Collectors.toList());
     }
 
     public @Nonnull List<Containment> allContainments() {
-        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f).collect(Collectors.toList());
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment) f).collect(Collectors.toList());
     }
 
     public @Nonnull List<Reference> allReferences() {
-        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f).collect(Collectors.toList());
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference) f).collect(Collectors.toList());
     }
 
     // TODO should this expose an immutable list to force users to use methods on this class
@@ -60,6 +60,35 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     @Override
     public String namespaceQualifier() {
         return this.qualifiedName();
+    }
+
+    public @Nullable Property getPropertyByID(String propertyId) {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property) f)
+                .filter(p -> p.getID().equals(propertyId)).findFirst().orElse(null);
+    }
+
+    public @Nullable Property getPropertyByName(String propertyName) {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property) f)
+                .filter(p -> p.getSimpleName().equals(propertyName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Containment getContainmentByID(String containmentID) {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment) f)
+                .filter(c -> c.getID().equals(containmentID)).findFirst().orElse(null);
+    }
+
+    public @Nullable Containment getContainmentByName(String containmentName) {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment) f)
+                .filter(c -> c.getSimpleName().equals(containmentName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Reference getReferenceByID(String referenceID) {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference) f)
+                .filter(c -> c.getID().equals(referenceID)).findFirst().orElse(null);
+    }
+    public @Nullable Reference getReferenceByName(String referenceName) {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference) f)
+                .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
     }
 
 }
