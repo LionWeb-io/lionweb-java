@@ -91,4 +91,10 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
                 .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
     }
 
+    @Override
+    protected void registerReflectionElements() {
+        super.registerReflectionElements();
+        this.<String>recordPropertyHandler(this.getConcept().getPropertyByName("simpleName"), String.class,
+                (PropertyGetter<String>) this::getSimpleName, simpleName -> setSimpleName((String)simpleName));
+    }
 }

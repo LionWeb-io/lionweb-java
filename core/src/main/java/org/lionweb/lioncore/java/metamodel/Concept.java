@@ -4,6 +4,8 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -106,6 +108,20 @@ public class Concept extends FeaturesContainer {
     public @Nullable Reference getReferenceByName(String referenceName) {
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
                 .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
+    }
+
+    @Override
+    protected void registerReflectionElements() {
+        super.registerReflectionElements();
+        this.<Boolean>recordPropertyHandler(this.getConcept().getPropertyByName("abstract"), Boolean.class,
+                this::isAbstract, v -> setAbstract((boolean)v));
+        this.recordReferenceHandler(this.getConcept().getReferenceByName("extended"), Concept.class, (ReferenceGetter<Concept>) () -> {
+            if (getExtendedConcept() == null) {
+                return Collections.emptyList();
+            } else {
+                return Arrays.asList(getExtendedConcept());
+            }
+        }, (ReferenceSetter<Concept>) this::setExtendedConcept);
     }
 
 }

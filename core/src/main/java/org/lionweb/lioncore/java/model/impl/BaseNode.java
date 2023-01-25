@@ -26,12 +26,37 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
     private Node parent;
     private Map<String, PropertyHandler> propertyHandlers;
     private Map<String, ContainmentHandler> containmentHandlers;
+    private Map<String, ReferenceHandler> referenceHandlers;
 
     class ContainmentHandler {
 
     }
 
-    interface PropertyHandler {
+    protected interface PropertyGetter<T> {
+
+        T getValue();
+    }
+
+    protected interface PropertySetter<T> {
+
+        void setValue(T value);
+    }
+
+    protected interface PropertyHandler<T> extends PropertyGetter<T>, PropertySetter<T> {
+
+    }
+
+    protected interface ReferenceGetter<T extends Node> {
+
+        List<T> getValue();
+    }
+
+    protected interface ReferenceSetter<T> {
+
+        void addValue(T value);
+    }
+
+    protected interface ReferenceHandler<T extends Node> extends ReferenceGetter<T>, ReferenceSetter<T> {
 
     }
 
@@ -43,6 +68,46 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
             throw new IllegalStateException("No ID for property " + property);
         }
         propertyHandlers.put(property.getID(), handler);
+    }
+
+    protected <T> void recordPropertyHandler(Property property, Class<T> clazz, PropertyGetter<Object> getter,
+                                             PropertySetter<T> setter) {
+        recordPropertyHandler(property, new PropertyHandler<Object>() {
+            @Override
+            public T getValue() {
+                return clazz.cast(getter.getValue());
+            }
+
+            @Override
+            public void setValue(Object value) {
+                setter.setValue(clazz.cast(value));
+            }
+        });
+    }
+
+    protected void recordReferenceHandler(Reference reference, ReferenceHandler handler) {
+        if (reference == null) {
+            throw new IllegalStateException("Reference is null");
+        }
+        if (reference.getID() == null) {
+            throw new IllegalStateException("No ID for reference " + reference);
+        }
+        referenceHandlers.put(reference.getID(), handler);
+    }
+
+    protected <T extends Node> void recordReferenceHandler(Reference reference, Class<T> clazz, ReferenceGetter<T> getter, ReferenceSetter<T> setter) {
+        recordReferenceHandler(reference, new ReferenceHandler<T>() {
+            @Override
+            public void addValue(T value) {
+                setter.addValue(value);
+            }
+
+            @Override
+            public List<T> getValue() {
+                return getter.getValue();
+            }
+
+        });
     }
 
     protected void recordContainmentHandler(Containment containment, ContainmentHandler handler) {
@@ -60,6 +125,7 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (propertyHandlers == null) {
             propertyHandlers = new HashMap<>();
             containmentHandlers = new HashMap<>();
+            referenceHandlers = new HashMap<>();
             registerReflectionElements();
         }
     }
@@ -122,7 +188,12 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
-        throw new UnsupportedOperationException("Property " + property + " not supported");
+        ensureReflectionElementsAreInPlace();
+        if (this.propertyHandlers.containsKey(property.getID())) {
+            return this.propertyHandlers.get(property.getID()).getValue();    
+        } else {
+            throw new UnsupportedOperationException("Property " + property + " not supported");
+        }
     }
 
     @Override
@@ -130,7 +201,12 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
-        throw new UnsupportedOperationException("Property " + property + " not supported");
+        ensureReflectionElementsAreInPlace();
+        if (this.propertyHandlers.containsKey(property.getID())) {
+            this.propertyHandlers.get(property.getID()).setValue(value);
+        } else {
+            throw new UnsupportedOperationException("Property " + property + " not supported");
+        }
     }
 
     @Override
@@ -163,7 +239,12 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        ensureReflectionElementsAreInPlace();
+        if (this.referenceHandlers.containsKey(reference.getID())) {
+            return this.referenceHandlers.get(reference.getID()).getValue();
+        } else {
+            throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        }
     }
 
     @Override
@@ -171,7 +252,12 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        ensureReflectionElementsAreInPlace();
+        if (this.referenceHandlers.containsKey(reference.getID())) {
+            this.referenceHandlers.get(reference.getID()).addValue(referredNode);
+        } else {
+            throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        }
     }
 
     @Nullable
