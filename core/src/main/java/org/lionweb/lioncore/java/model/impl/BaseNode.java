@@ -24,115 +24,8 @@ import java.util.stream.Collectors;
 public abstract class BaseNode<T extends BaseNode> implements Node {
     private String id;
     private Node parent;
-    private Map<String, PropertyHandler> propertyHandlers;
-    private Map<String, ContainmentHandler> containmentHandlers;
-    private Map<String, ReferenceHandler> referenceHandlers;
-
-    class ContainmentHandler {
-
-    }
-
-    protected interface PropertyGetter<T> {
-
-        T getValue();
-    }
-
-    protected interface PropertySetter<T> {
-
-        void setValue(T value);
-    }
-
-    protected interface PropertyHandler<T> extends PropertyGetter<T>, PropertySetter<T> {
-
-    }
-
-    protected interface ReferenceGetter<T extends Node> {
-
-        List<T> getValue();
-    }
-
-    protected interface ReferenceSetter<T> {
-
-        void addValue(T value);
-    }
-
-    protected interface ReferenceHandler<T extends Node> extends ReferenceGetter<T>, ReferenceSetter<T> {
-
-    }
-
-    protected void recordPropertyHandler(Property property, PropertyHandler handler) {
-        if (property == null) {
-            throw new IllegalStateException("Property is null");
-        }
-        if (property.getID() == null) {
-            throw new IllegalStateException("No ID for property " + property);
-        }
-        propertyHandlers.put(property.getID(), handler);
-    }
-
-    protected <T> void recordPropertyHandler(Property property, Class<T> clazz, PropertyGetter<Object> getter,
-                                             PropertySetter<T> setter) {
-        recordPropertyHandler(property, new PropertyHandler<Object>() {
-            @Override
-            public T getValue() {
-                return clazz.cast(getter.getValue());
-            }
-
-            @Override
-            public void setValue(Object value) {
-                setter.setValue(clazz.cast(value));
-            }
-        });
-    }
-
-    protected void recordReferenceHandler(Reference reference, ReferenceHandler handler) {
-        if (reference == null) {
-            throw new IllegalStateException("Reference is null");
-        }
-        if (reference.getID() == null) {
-            throw new IllegalStateException("No ID for reference " + reference);
-        }
-        referenceHandlers.put(reference.getID(), handler);
-    }
-
-    protected <T extends Node> void recordReferenceHandler(Reference reference, Class<T> clazz, ReferenceGetter<T> getter, ReferenceSetter<T> setter) {
-        recordReferenceHandler(reference, new ReferenceHandler<T>() {
-            @Override
-            public void addValue(T value) {
-                setter.addValue(value);
-            }
-
-            @Override
-            public List<T> getValue() {
-                return getter.getValue();
-            }
-
-        });
-    }
-
-    protected void recordContainmentHandler(Containment containment, ContainmentHandler handler) {
-        if (containment == null) {
-            throw new IllegalStateException("Containment is null");
-        }
-        if (containment.getID() == null) {
-            throw new IllegalStateException("No ID for containment " + containment);
-        }
-        containmentHandlers.put(containment.getID(), handler);
-    }
-
-    private void ensureReflectionElementsAreInPlace() {
-        assert (propertyHandlers == null) == (containmentHandlers == null);
-        if (propertyHandlers == null) {
-            propertyHandlers = new HashMap<>();
-            containmentHandlers = new HashMap<>();
-            referenceHandlers = new HashMap<>();
-            registerReflectionElements();
-        }
-    }
-
-    protected void registerReflectionElements() {
-
-    }
+    private Map<String, Object> propertyValues = new HashMap<>();
+    private Map<String, List<Node>> linkValues = new HashMap<>();
 
     private List<AnnotationInstance> annotationInstances = new LinkedList<>();
 
@@ -188,12 +81,7 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
-        ensureReflectionElementsAreInPlace();
-        if (this.propertyHandlers.containsKey(property.getID())) {
-            return this.propertyHandlers.get(property.getID()).getValue();    
-        } else {
-            throw new UnsupportedOperationException("Property " + property + " not supported");
-        }
+        return propertyValues.get(property.getID());
     }
 
     @Override
@@ -201,12 +89,7 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
-        ensureReflectionElementsAreInPlace();
-        if (this.propertyHandlers.containsKey(property.getID())) {
-            this.propertyHandlers.get(property.getID()).setValue(value);
-        } else {
-            throw new UnsupportedOperationException("Property " + property + " not supported");
-        }
+        propertyValues.put(property.getID(), value);
     }
 
     @Override
@@ -221,7 +104,11 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allContainments().contains(containment)) {
             throw new IllegalArgumentException("Containment not belonging to this concept");
         }
-        throw new UnsupportedOperationException("Containment " + containment + " not supported");
+        if (linkValues.containsKey(containment.getID())) {
+            return linkValues.get(containment.getID());
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     @Override
@@ -239,11 +126,10 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        ensureReflectionElementsAreInPlace();
-        if (this.referenceHandlers.containsKey(reference.getID())) {
-            return this.referenceHandlers.get(reference.getID()).getValue();
+        if (linkValues.containsKey(reference.getID())) {
+            return linkValues.get(reference.getID());
         } else {
-            throw new UnsupportedOperationException("Reference " + reference + " not supported");
+            return Collections.emptyList();
         }
     }
 
@@ -252,17 +138,31 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        ensureReflectionElementsAreInPlace();
-        if (this.referenceHandlers.containsKey(reference.getID())) {
-            this.referenceHandlers.get(reference.getID()).addValue(referredNode);
-        } else {
-            throw new UnsupportedOperationException("Reference " + reference + " not supported");
-        }
+        throw new UnsupportedOperationException("Reference " + reference + " not supported");
     }
 
     @Nullable
     @Override
     public String getID() {
         return id;
+    }
+
+    protected <T extends Node> T getLinkSingleValue(String linkName) {
+        Link link = getConcept().getLinkByName(linkName);
+        if (link == null) {
+            throw new IllegalArgumentException();
+        }
+        if (linkValues.containsKey(linkName)) {
+            List<Node> values = linkValues.get(linkName);
+            if (values.size() == 0) {
+                return null;
+            } else if (values.size() == 1) {
+                return (T)(values.get(0));
+            } else {
+                throw new IllegalStateException();
+            }
+        } else {
+            return null;
+        }
     }
 }

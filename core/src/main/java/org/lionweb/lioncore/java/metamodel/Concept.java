@@ -110,18 +110,8 @@ public class Concept extends FeaturesContainer {
                 .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
     }
 
-    @Override
-    protected void registerReflectionElements() {
-        super.registerReflectionElements();
-        this.<Boolean>recordPropertyHandler(this.getConcept().getPropertyByName("abstract"), Boolean.class,
-                this::isAbstract, v -> setAbstract((boolean)v));
-        this.recordReferenceHandler(this.getConcept().getReferenceByName("extended"), Concept.class, (ReferenceGetter<Concept>) () -> {
-            if (getExtendedConcept() == null) {
-                return Collections.emptyList();
-            } else {
-                return Arrays.asList(getExtendedConcept());
-            }
-        }, (ReferenceSetter<Concept>) this::setExtendedConcept);
+    public @Nullable Link getLinkByName(String linkName) {
+        return allFeatures().stream().filter(f -> f instanceof Link).map(f -> (Link)f)
+                .filter(c -> c.getSimpleName().equals(linkName)).findFirst().orElse(null);
     }
-
 }

@@ -15,8 +15,8 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
 public abstract class MetamodelElement extends BaseNode implements NamespacedEntity {
-    private Metamodel metamodel;
-    private String simpleName;
+    //private Metamodel metamodel;
+    //private String simpleName;
 
     public MetamodelElement() {
 
@@ -25,30 +25,31 @@ public abstract class MetamodelElement extends BaseNode implements NamespacedEnt
     public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         // TODO enforce uniqueness of the name within the Metamodel
         Naming.validateSimpleName(simpleName);
-        this.metamodel = metamodel;
-        this.simpleName = simpleName;
+        this.setMetamodel(metamodel);
+        this.setSimpleName(simpleName);
     }
 
     public @Nullable Metamodel getMetamodel() {
-        return this.metamodel;
+        return this.<Metamodel>getLinkSingleValue("metamodel");
     }
 
     public void setMetamodel(@Nullable Metamodel metamodel) {
-        this.metamodel = metamodel;
+        //this.metamodel = metamodel;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public @Nullable String getSimpleName() {
-        return this.simpleName;
+        throw new UnsupportedOperationException();
     }
 
     public void setSimpleName(String simpleName) {
-        this.simpleName = simpleName;
+        throw new UnsupportedOperationException();
     }
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return this.metamodel;
+        return this.getMetamodel();
     }
 
 }
