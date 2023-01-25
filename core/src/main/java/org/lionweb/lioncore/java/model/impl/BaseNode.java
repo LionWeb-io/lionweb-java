@@ -24,49 +24,44 @@ import java.util.stream.Collectors;
 public abstract class BaseNode<T extends BaseNode> implements Node {
     private String id;
     private Node parent;
-    private Map<String, Consumer<Object>> setters;
-    private Map<String, Supplier<List<? extends Node>>> childrenGetters;
-    private Map<String, Consumer<Node>> childrenAdders;
-    private Map<String, Consumer<Node>> referenceAdders;
+    private Map<String, PropertyHandler> propertyHandlers;
+    private Map<String, ContainmentHandler> containmentHandlers;
 
-    protected void recordSetter(Property property, Consumer<Object> setter) {
+    class ContainmentHandler {
+
+    }
+
+    interface PropertyHandler {
+
+    }
+
+    protected void recordPropertyHandler(Property property, PropertyHandler handler) {
         if (property == null) {
             throw new IllegalStateException("Property is null");
         }
         if (property.getID() == null) {
             throw new IllegalStateException("No ID for property " + property);
         }
-        setters.put(property.getID(), setter);
+        propertyHandlers.put(property.getID(), handler);
+    }
+
+    protected void recordContainmentHandler(Containment containment, ContainmentHandler handler) {
+        if (containment == null) {
+            throw new IllegalStateException("Containment is null");
+        }
+        if (containment.getID() == null) {
+            throw new IllegalStateException("No ID for containment " + containment);
+        }
+        containmentHandlers.put(containment.getID(), handler);
     }
 
     private void ensureReflectionElementsAreInPlace() {
-        if (setters == null) {
-            setters = new HashMap<>();
-            childrenGetters = new HashMap<>();
-            childrenAdders = new HashMap<>();
-            referenceAdders = new HashMap<>();
+        assert (propertyHandlers == null) == (containmentHandlers == null);
+        if (propertyHandlers == null) {
+            propertyHandlers = new HashMap<>();
+            containmentHandlers = new HashMap<>();
             registerReflectionElements();
         }
-    }
-    protected void recordChildrenGetter(@Nonnull Containment containment, @Nonnull Supplier<List<? extends Node>> getter) {
-        if (containment == null) {
-            throw new IllegalArgumentException();
-        }
-        childrenGetters.put(containment.getID(), getter);
-    }
-
-    protected void recordChildrenAdder(@Nonnull Containment containment, @Nonnull Consumer<Node> adder) {
-        if (containment == null) {
-            throw new IllegalArgumentException("Given containment is null");
-        }
-        childrenAdders.put(containment.getID(), adder);
-    }
-
-    protected void recordReferenceAdder(@Nonnull Reference reference, @Nonnull Consumer<Node> adder) {
-        if (reference == null) {
-            throw new IllegalArgumentException("Given reference is null");
-        }
-        referenceAdders.put(reference.getID(), adder);
     }
 
     protected void registerReflectionElements() {
