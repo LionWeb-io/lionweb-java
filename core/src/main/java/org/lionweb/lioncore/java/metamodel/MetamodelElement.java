@@ -30,21 +30,20 @@ public abstract class MetamodelElement extends BaseNode implements NamespacedEnt
     }
 
     public @Nullable Metamodel getMetamodel() {
-        return this.<Metamodel>getLinkSingleValue("metamodel");
+        return (Metamodel) this.<Metamodel>getLinkSingleValue("metamodel");
     }
 
     public void setMetamodel(@Nullable Metamodel metamodel) {
-        //this.metamodel = metamodel;
-        throw new UnsupportedOperationException();
+        this.setLinkSingleValue("metamodel", metamodel, false);
     }
 
     @Override
     public @Nullable String getSimpleName() {
-        throw new UnsupportedOperationException();
+        return (String) this.<String>getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(String simpleName) {
-        throw new UnsupportedOperationException();
+        this.setPropertyValue("simpleName", simpleName);
     }
 
     @Override

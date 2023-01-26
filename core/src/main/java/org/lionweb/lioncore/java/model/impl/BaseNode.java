@@ -24,6 +24,10 @@ import java.util.stream.Collectors;
 public abstract class BaseNode<T extends BaseNode> implements Node {
     private String id;
     private Node parent;
+
+    // We use as keys of these maps the name of the features and not the IDs.
+    // The reason why we do that, is to avoid a circular dependency as the classes for defining metamodel
+    // elements are inheriting from this class.
     private Map<String, Object> propertyValues = new HashMap<>();
     private Map<String, List<Node>> linkValues = new HashMap<>();
 
@@ -81,7 +85,16 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
-        return propertyValues.get(property.getID());
+        return propertyValues.get(property.getSimpleName());
+    }
+
+    protected <V> V getPropertyValue(String propertyName, Class<V> clazz) {
+        Object value = propertyValues.get(propertyName);
+        if (value == null) {
+            return null;
+        } else {
+            return clazz.cast(value);
+        }
     }
 
     @Override
@@ -89,7 +102,11 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
-        propertyValues.put(property.getID(), value);
+        setPropertyValue(property.getSimpleName(), value);
+    }
+
+    protected void setPropertyValue(String propertyName, Object value) {
+        propertyValues.put(propertyName, value);
     }
 
     @Override
@@ -104,8 +121,8 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allContainments().contains(containment)) {
             throw new IllegalArgumentException("Containment not belonging to this concept");
         }
-        if (linkValues.containsKey(containment.getID())) {
-            return linkValues.get(containment.getID());
+        if (linkValues.containsKey(containment.getSimpleName())) {
+            return linkValues.get(containment.getSimpleName());
         } else {
             return Collections.emptyList();
         }
@@ -126,8 +143,8 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        if (linkValues.containsKey(reference.getID())) {
-            return linkValues.get(reference.getID());
+        if (linkValues.containsKey(reference.getSimpleName())) {
+            return linkValues.get(reference.getSimpleName());
         } else {
             return Collections.emptyList();
         }
@@ -147,22 +164,45 @@ public abstract class BaseNode<T extends BaseNode> implements Node {
         return id;
     }
 
-    protected <T extends Node> T getLinkSingleValue(String linkName) {
-        Link link = getConcept().getLinkByName(linkName);
-        if (link == null) {
-            throw new IllegalArgumentException();
-        }
+    protected <V extends Node> V getLinkSingleValue(String linkName) {
+//        Link link = getConcept().getLinkByName(linkName);
+//        if (link == null) {
+//            throw new IllegalArgumentException();
+//        }
         if (linkValues.containsKey(linkName)) {
             List<Node> values = linkValues.get(linkName);
             if (values.size() == 0) {
                 return null;
             } else if (values.size() == 1) {
-                return (T)(values.get(0));
+                return (V)(values.get(0));
             } else {
                 throw new IllegalStateException();
             }
         } else {
             return null;
+        }
+    }
+
+    /*
+     * This method could be invoked by the metamodel elements classes before the LionCore metamodel
+     * has been built, therefore we cannot look for the definition of the features to verify they
+     * exist. We instead just trust a link with that name to exist.
+     */
+    protected void setLinkSingleValue(String linkName, Node value, boolean containment) {
+        if (containment) {
+            List<Node> prevValue = linkValues.get(linkName);
+            if (prevValue != null) {
+                List<Node> copy = new LinkedList<>(prevValue);
+                copy.forEach(c -> this.removeChild(c));
+            }
+        }
+        if (value == null) {
+            linkValues.remove(linkName);
+        } else {
+            if (containment) {
+                //value.setParent(this);
+            }
+            linkValues.put(linkName, Arrays.asList(value));
         }
     }
 }
