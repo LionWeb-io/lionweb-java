@@ -20,7 +20,7 @@ import java.util.List;
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
 public class Concept extends FeaturesContainer {
-    private boolean isAbstract;
+    //private boolean isAbstract;
     // DOUBT: would this be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
     //        another concept?
     private Concept extended;
@@ -39,11 +39,11 @@ public class Concept extends FeaturesContainer {
     }
 
     public boolean isAbstract() {
-        return this.isAbstract;
+        return (boolean) this.getPropertyValue("abstract", Boolean.class);
     }
 
-    public void setAbstract(boolean anAbstract) {
-        isAbstract = anAbstract;
+    public void setAbstract(boolean value) {
+        this.setPropertyValue("abstract", value);
     }
 
     // TODO should this return BaseConcept when extended is equal null?
