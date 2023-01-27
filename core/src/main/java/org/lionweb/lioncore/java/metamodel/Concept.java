@@ -4,8 +4,6 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -36,7 +34,7 @@ public class Concept extends FeaturesContainer {
     }
 
     public boolean isAbstract() {
-        return (boolean) this.getPropertyValue("abstract", Boolean.class, false);
+        return (boolean) this.<Boolean>getPropertyValue("abstract", Boolean.class, false);
     }
 
     public void setAbstract(boolean value) {
@@ -45,7 +43,7 @@ public class Concept extends FeaturesContainer {
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return (Concept) this.getLinkSingleValue("extended");
+        return (Concept) this.<Concept>getLinkSingleValue("extended");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {

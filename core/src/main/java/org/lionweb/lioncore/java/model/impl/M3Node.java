@@ -85,6 +85,10 @@ public abstract class M3Node<T extends M3Node> implements Node {
         return propertyValues.get(property.getSimpleName());
     }
 
+    /**
+     * This internal method uses a property name and not a property or the property id because
+     * of a circular dependency problem present for nodes representing M3 elements.
+     */
     protected <V> V getPropertyValue(String propertyName, Class<V> clazz, V defaultValue) {
         Object value = propertyValues.get(propertyName);
         if (value == null) {
@@ -166,10 +170,6 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
 
     protected <V extends Node> V getLinkSingleValue(String linkName) {
-//        Link link = getConcept().getLinkByName(linkName);
-//        if (link == null) {
-//            throw new IllegalArgumentException();
-//        }
         if (linkValues.containsKey(linkName)) {
             List<Node> values = linkValues.get(linkName);
             if (values.size() == 0) {
