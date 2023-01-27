@@ -21,7 +21,7 @@ import java.util.List;
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
-public class Metamodel extends M3Node implements NamespaceProvider {
+public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
     public Metamodel() {
     }
 
@@ -76,7 +76,7 @@ public class Metamodel extends M3Node implements NamespaceProvider {
     }
 
     public String getQualifiedName() {
-        return (String) this.getPropertyValue("qualifiedName", String.class);
+        return this.getPropertyValue("qualifiedName", String.class);
     }
 
     public @Nullable MetamodelElement getElementByName(String name) {

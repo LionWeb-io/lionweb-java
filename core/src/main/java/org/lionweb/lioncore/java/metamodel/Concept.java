@@ -17,7 +17,7 @@ import java.util.List;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489090640">MPS equivalent <i>ConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
-public class Concept extends FeaturesContainer {
+public class Concept extends FeaturesContainer<Concept> {
     // DOUBT: would extended be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
     //        another concept?
 
@@ -34,7 +34,7 @@ public class Concept extends FeaturesContainer {
     }
 
     public boolean isAbstract() {
-        return (boolean) this.<Boolean>getPropertyValue("abstract", Boolean.class, false);
+        return this.getPropertyValue("abstract", Boolean.class, false);
     }
 
     public void setAbstract(boolean value) {
@@ -47,7 +47,7 @@ public class Concept extends FeaturesContainer {
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
-        return (List<ConceptInterface>) this.getLinkMultipleValue("implemented");
+        return this.getLinkMultipleValue("implemented");
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {

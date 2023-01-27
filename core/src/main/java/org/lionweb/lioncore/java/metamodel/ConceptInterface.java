@@ -17,7 +17,7 @@ import java.util.List;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1169125989551">MPS equivalent <i>InterfaceConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SInterfaceConcept MPS equivalent <i>SInterfaceConcept</i> in SModel
  */
-public class ConceptInterface extends FeaturesContainer {
+public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
     public ConceptInterface() {
         super();
     }

@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288299">MPS equivalent <i>PropertyDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SProperty MPS equivalent <i>SProperty</i> in SModel
  */
-public class Property extends Feature {
+public class Property extends Feature<Property> {
 
     public static Property createOptional(@Nullable String simpleName, @Nullable DataType type) {
         Property property = new Property(simpleName, null);

@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
 
-public class Enumeration extends DataType implements NamespaceProvider {
+public class Enumeration extends DataType<Enumeration> implements NamespaceProvider {
     public Enumeration() {
         super();
     }

@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  *
  * All PrimitiveTypes in LionCore are builtin.
  */
-public class PrimitiveType extends DataType {
+public class PrimitiveType extends DataType<PrimitiveType> {
     public PrimitiveType() {
         super();
     }

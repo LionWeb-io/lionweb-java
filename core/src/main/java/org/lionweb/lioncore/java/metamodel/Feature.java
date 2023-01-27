@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature extends M3Node implements NamespacedEntity {
+public abstract class Feature<T extends M3Node> extends M3Node<T> implements NamespacedEntity {
     @Experimental
     private boolean derived;
 

@@ -5,7 +5,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nullable;
 
-public class EnumerationLiteral extends M3Node implements NamespacedEntity {
+public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements NamespacedEntity {
 
     public EnumerationLiteral() {
     }
