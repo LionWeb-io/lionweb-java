@@ -39,7 +39,7 @@ public abstract class MetamodelElement extends M3Node implements NamespacedEntit
 
     @Override
     public @Nullable String getSimpleName() {
-        return (String) this.<String>getPropertyValue("simpleName", String.class);
+        return (String) this.<String>getPropertyValue("simpleName", String.class, null);
     }
 
     public void setSimpleName(String simpleName) {

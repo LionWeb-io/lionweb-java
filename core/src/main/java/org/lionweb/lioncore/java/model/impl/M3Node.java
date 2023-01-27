@@ -85,10 +85,10 @@ public abstract class M3Node<T extends M3Node> implements Node {
         return propertyValues.get(property.getSimpleName());
     }
 
-    protected <V> V getPropertyValue(String propertyName, Class<V> clazz) {
+    protected <V> V getPropertyValue(String propertyName, Class<V> clazz, V defaultValue) {
         Object value = propertyValues.get(propertyName);
         if (value == null) {
-            return null;
+            return defaultValue;
         } else {
             return clazz.cast(value);
         }
@@ -152,7 +152,11 @@ public abstract class M3Node<T extends M3Node> implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        throw new UnsupportedOperationException("Reference " + reference + " not supported");
+        if (reference.isMultiple()) {
+            addLinkMultipleValue(reference.getSimpleName(), referredNode, false);
+        } else {
+            setLinkSingleValue(reference.getSimpleName(), referredNode, false);
+        }
     }
 
     @Nullable
@@ -180,6 +184,19 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
 
+    protected <V extends Node> List<V> getLinkMultipleValue(String linkName) {
+//        Link link = getConcept().getLinkByName(linkName);
+//        if (link == null) {
+//            throw new IllegalArgumentException();
+//        }
+        if (linkValues.containsKey(linkName)) {
+            List<V> values = (List<V>) linkValues.get(linkName);
+            return values;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     /*
      * This method could be invoked by the metamodel elements classes before the LionCore metamodel
      * has been built, therefore we cannot look for the definition of the features to verify they
@@ -199,7 +216,15 @@ public abstract class M3Node<T extends M3Node> implements Node {
             if (containment) {
                 //value.setParent(this);
             }
-            linkValues.put(linkName, Arrays.asList(value));
+            linkValues.put(linkName, new ArrayList(Arrays.asList(value)));
+        }
+    }
+
+    protected void addLinkMultipleValue(String linkName, Node value, boolean containment) {
+        if (linkValues.containsKey(linkName)) {
+            linkValues.get(linkName).add(value);
+        } else {
+            linkValues.put(linkName, new ArrayList(Arrays.asList(value)));
         }
     }
 }

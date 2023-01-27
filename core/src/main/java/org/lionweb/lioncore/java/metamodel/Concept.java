@@ -23,8 +23,8 @@ public class Concept extends FeaturesContainer {
     //private boolean isAbstract;
     // DOUBT: would this be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
     //        another concept?
-    private Concept extended;
-    private List<ConceptInterface> implemented = new LinkedList<>();
+    //private Concept extended;
+    //private List<ConceptInterface> implemented = new LinkedList<>();
 
     public Concept() {
         super();
@@ -39,7 +39,7 @@ public class Concept extends FeaturesContainer {
     }
 
     public boolean isAbstract() {
-        return (boolean) this.getPropertyValue("abstract", Boolean.class);
+        return (boolean) this.getPropertyValue("abstract", Boolean.class, false);
     }
 
     public void setAbstract(boolean value) {
@@ -48,20 +48,20 @@ public class Concept extends FeaturesContainer {
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return this.extended;
+        return (Concept) this.getLinkSingleValue("extended");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
-        return this.implemented;
+        return (List<ConceptInterface>) this.getLinkMultipleValue("implemented");
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
-        this.implemented.add(conceptInterface);
+        this.addLinkMultipleValue("implemented", conceptInterface, false);
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(@Nullable Concept extended) {
-        this.extended = extended;
+        this.setLinkSingleValue("extended", extended, true);
     }
 
     @Override
@@ -81,10 +81,10 @@ public class Concept extends FeaturesContainer {
         // TODO Should features be returned in a particular order?
         List<Feature> result = new LinkedList<>();
         result.addAll(this.getFeatures());
-        if (this.extended != null) {
-            result.addAll(this.extended.allFeatures());
+        if (this.getExtendedConcept() != null) {
+            result.addAll(this.getExtendedConcept().allFeatures());
         }
-        for (ConceptInterface superInterface: implemented) {
+        for (ConceptInterface superInterface: this.getImplemented()) {
             result.addAll(superInterface.allFeatures());
         }
         return result;
