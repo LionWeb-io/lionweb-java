@@ -32,7 +32,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
     }
 
     public boolean isOptional() {
-        return (boolean) this.getPropertyValue("optional", Boolean.class, false);
+        return this.getPropertyValue("optional", Boolean.class, false);
     }
 
     public boolean isRequired() {
@@ -55,7 +55,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     @Override
     public @Nullable String getSimpleName() {
-        return (String) getPropertyValue("simpleName", String.class);
+        return getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(@Nullable String simpleName) {
@@ -64,7 +64,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return (NamespaceProvider) getLinkSingleValue("container");
+        return getLinkSingleValue("container");
     }
 
     public void setContainer(@Nullable FeaturesContainer container) {
