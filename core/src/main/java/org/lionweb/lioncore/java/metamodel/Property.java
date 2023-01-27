@@ -40,7 +40,7 @@ public class Property extends Feature<Property> {
     }
 
     public @Nullable DataType getType() {
-        return (DataType) getLinkSingleValue("type");
+        return getLinkSingleValue("type");
     }
 
     public void setType(@Nullable DataType type) {

@@ -19,7 +19,7 @@ public class Typedef extends DataType<Typedef> {
     }
 
     public @Nullable PrimitiveType getPrimitiveType() {
-        return (PrimitiveType) getLinkSingleValue("primitiveType");
+        return getLinkSingleValue("primitiveType");
     }
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {

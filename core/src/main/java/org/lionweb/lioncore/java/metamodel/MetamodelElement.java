@@ -29,7 +29,7 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     // TODO consider making this a derived feature just casting the parent
     public @Nullable Metamodel getMetamodel() {
-        return (Metamodel) this.<Metamodel>getLinkSingleValue("metamodel");
+        return this.getLinkSingleValue("metamodel");
     }
 
     public void setMetamodel(@Nullable Metamodel metamodel) {
@@ -38,7 +38,7 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     @Override
     public @Nullable String getSimpleName() {
-        return (String) this.<String>getPropertyValue("simpleName", String.class);
+        return this.getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(String simpleName) {

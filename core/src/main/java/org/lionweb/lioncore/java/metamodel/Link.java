@@ -24,7 +24,7 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     }
 
     public boolean isMultiple() {
-        return (boolean) getPropertyValue("multiple", Boolean.class, false);
+        return getPropertyValue("multiple", Boolean.class, false);
     }
 
     public void setMultiple(boolean multiple) {
@@ -32,7 +32,7 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     }
 
     public @Nullable FeaturesContainer getType() {
-        return (FeaturesContainer) getLinkSingleValue("type");
+        return getLinkSingleValue("type");
     }
 
     public void setType(@Nullable FeaturesContainer type) {
