@@ -30,8 +30,6 @@ public class Property extends Feature {
         return property;
     }
 
-    private DataType type;
-
     public Property() {
         super();
     }
@@ -42,18 +40,18 @@ public class Property extends Feature {
     }
 
     public @Nullable DataType getType() {
-        return type;
+        return (DataType) getLinkSingleValue("type");
     }
 
     public void setType(@Nullable DataType type) {
-        this.type = type;
+        setLinkSingleValue("type", type, false);
     }
 
     @Override
     public String toString() {
         return "Property{" +
                 "simpleName=" + getSimpleName() + ", " +
-                "type=" + type +
+                "type=" + getType() +
                 '}';
     }
 

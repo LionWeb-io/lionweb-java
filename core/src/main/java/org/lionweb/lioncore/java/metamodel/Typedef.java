@@ -11,8 +11,6 @@ import javax.annotation.Nullable;
  */
 @Experimental
 public class Typedef extends DataType {
-    private PrimitiveType primitiveType;
-
     public Typedef() {
         super();
     }
@@ -22,11 +20,11 @@ public class Typedef extends DataType {
     }
 
     public @Nullable PrimitiveType getPrimitiveType() {
-        return primitiveType;
+        return (PrimitiveType) getLinkSingleValue("primitiveType");
     }
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
-        this.primitiveType = primitiveType;
+        this.setLinkSingleValue("primitiveType", primitiveType, false);
     }
 
     @Override

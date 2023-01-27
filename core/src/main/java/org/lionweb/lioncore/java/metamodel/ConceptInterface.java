@@ -18,8 +18,6 @@ import java.util.List;
  * @see org.jetbrains.mps.openapi.language.SInterfaceConcept MPS equivalent <i>SInterfaceConcept</i> in SModel
  */
 public class ConceptInterface extends FeaturesContainer {
-    private List<ConceptInterface> extended = new LinkedList<>();
-
     public ConceptInterface() {
         super();
     }
@@ -33,11 +31,11 @@ public class ConceptInterface extends FeaturesContainer {
     }
 
     public @Nonnull List<ConceptInterface> getExtendedInterfaces() {
-        return this.extended;
+        return getLinkMultipleValue("extended");
     }
 
     public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
-        this.extended.add(extendedInterface);
+        this.addLinkMultipleValue("extended", extendedInterface, false);
     }
 
     @Override
@@ -46,7 +44,7 @@ public class ConceptInterface extends FeaturesContainer {
         // TODO Should features be returned in a particular order?
         List<Feature> result = new LinkedList<>();
         result.addAll(this.getFeatures());
-        for (ConceptInterface superInterface: extended) {
+        for (ConceptInterface superInterface: getExtendedInterfaces()) {
             result.addAll(superInterface.allFeatures());
         }
         return result;

@@ -6,36 +6,34 @@ import org.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nullable;
 
 public class EnumerationLiteral extends M3Node implements NamespacedEntity {
-    private String simpleName;
-    private Enumeration enumeration;
 
     public EnumerationLiteral() {
     }
 
     public EnumerationLiteral(@Nullable String simpleName) {
-        this.simpleName = simpleName;
+        setSimpleName(simpleName);
     }
 
     @Override
     public @Nullable String getSimpleName() {
-        return simpleName;
+        return (String) getPropertyValue("simpleName", String.class, null);
     }
 
     public void setSimpleName(@Nullable String simpleName) {
-        this.simpleName = simpleName;
+        this.setPropertyValue("simpleName", simpleName);
     }
 
     public @Nullable Enumeration getEnumeration() {
-        return enumeration;
+        return (Enumeration) getLinkSingleValue("enumeration");
     }
 
     public void setEnumeration(@Nullable Enumeration enumeration) {
-        this.enumeration = enumeration;
+        this.setLinkSingleValue("enumeration", enumeration, false);
     }
 
     @Override
     public @Nullable Enumeration getContainer() {
-        return enumeration;
+        return (Enumeration) this.getLinkSingleValue("enumeration");
     }
 
     @Override

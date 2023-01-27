@@ -17,12 +17,8 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
 public abstract class Feature extends M3Node implements NamespacedEntity {
-    private boolean optional;
     @Experimental
     private boolean derived;
-
-    private String simpleName;
-    private FeaturesContainer container;
 
     public Feature() {
 
@@ -32,20 +28,20 @@ public abstract class Feature extends M3Node implements NamespacedEntity {
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
         Naming.validateSimpleName(simpleName);
-        this.simpleName = simpleName;
-        this.container = container;
+        setSimpleName(simpleName);
+        setContainer(container);
     }
 
     public boolean isOptional() {
-        return optional;
+        return (boolean) this.getPropertyValue("optional", Boolean.class, false);
     }
 
     public boolean isRequired() {
-        return !optional;
+        return !isOptional();
     }
 
     public void setOptional(boolean optional) {
-        this.optional = optional;
+        setPropertyValue("optional", optional);
     }
 
     @Experimental
@@ -60,19 +56,19 @@ public abstract class Feature extends M3Node implements NamespacedEntity {
 
     @Override
     public @Nullable String getSimpleName() {
-        return simpleName;
+        return (String) getPropertyValue("simpleName", String.class, null);
     }
 
     public void setSimpleName(@Nullable String simpleName) {
-        this.simpleName = simpleName;
+        this.setPropertyValue("simpleName", simpleName);
     }
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return container;
+        return (NamespaceProvider) getLinkSingleValue("container");
     }
 
     public void setContainer(@Nullable FeaturesContainer container) {
-        this.container = container;
+        this.setLinkSingleValue("container", container, false);
     }
 }

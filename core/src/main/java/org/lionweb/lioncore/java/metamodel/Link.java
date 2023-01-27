@@ -12,9 +12,6 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractLink MPS equivalent <i>SAbstractLink</i> in SModel
  */
 public abstract class Link extends Feature {
-    private boolean multiple;
-    private FeaturesContainer type;
-
     public Link() {
         super();
     }
@@ -25,18 +22,18 @@ public abstract class Link extends Feature {
     }
 
     public boolean isMultiple() {
-        return multiple;
+        return (boolean) getPropertyValue("multiple", Boolean.class, false);
     }
 
     public void setMultiple(boolean multiple) {
-        this.multiple = multiple;
+        this.setPropertyValue("multiple", multiple);
     }
 
     public @Nullable FeaturesContainer getType() {
-        return this.type;
+        return (FeaturesContainer) getLinkSingleValue("type");
     }
 
     public void setType(@Nullable FeaturesContainer type) {
-        this.type = type;
+        this.setLinkSingleValue("type", type, false);
     }
 }

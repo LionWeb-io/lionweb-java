@@ -20,11 +20,8 @@ import java.util.List;
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
 public class Concept extends FeaturesContainer {
-    //private boolean isAbstract;
-    // DOUBT: would this be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
+    // DOUBT: would extended be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
     //        another concept?
-    //private Concept extended;
-    //private List<ConceptInterface> implemented = new LinkedList<>();
 
     public Concept() {
         super();

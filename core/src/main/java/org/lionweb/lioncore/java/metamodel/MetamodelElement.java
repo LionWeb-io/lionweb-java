@@ -15,8 +15,6 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
 public abstract class MetamodelElement extends M3Node implements NamespacedEntity {
-    //private Metamodel metamodel;
-    //private String simpleName;
 
     public MetamodelElement() {
 

@@ -22,34 +22,31 @@ import java.util.List;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
 public class Metamodel extends M3Node implements NamespaceProvider {
-    // TODO add ID, once details are clearer
-
-    private String qualifiedName;
-    private List<Metamodel> dependsOn = new LinkedList<>();
-    private List<MetamodelElement> elements = new LinkedList<>();
-
     public Metamodel() {
     }
 
     public Metamodel(String qualifiedName) {
-        Naming.validateQualifiedName(qualifiedName);
-        this.qualifiedName = qualifiedName;
+        this.setQualifiedName(qualifiedName);
+    }
+
+    private void setQualifiedName(String qualifiedName) {
+        setPropertyValue("qualifiedName", qualifiedName);
     }
 
     @Override
     public String namespaceQualifier() {
-        return qualifiedName;
+        return getQualifiedName();
     }
 
     public @Nonnull List<Metamodel> dependsOn() {
-        return this.dependsOn;
+        return this.getLinkMultipleValue("dependsOn");
     }
     public @Nonnull List<MetamodelElement> getElements() {
-        return this.elements;
+        return this.getLinkMultipleValue("elements");
     }
 
     public <T extends MetamodelElement> T addElement(@Nonnull T element) {
-        this.elements.add(element);
+        this.addLinkMultipleValue("elements", element, true);
         element.setMetamodel(this);
         return element;
     }
@@ -78,7 +75,7 @@ public class Metamodel extends M3Node implements NamespaceProvider {
     }
 
     public String getQualifiedName() {
-        return this.qualifiedName;
+        return (String) this.getPropertyValue("qualifiedName", String.class, null);
     }
 
     public @Nullable MetamodelElement getElementByName(String name) {

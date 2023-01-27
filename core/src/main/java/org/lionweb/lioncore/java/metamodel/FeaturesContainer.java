@@ -17,8 +17,6 @@ import java.util.stream.Collectors;
  * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i> in SModel
  */
 public abstract class FeaturesContainer extends MetamodelElement implements NamespaceProvider {
-    private List<Feature> features = new LinkedList<>();
-
     public FeaturesContainer() {
         super();
     }
@@ -49,11 +47,11 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     // TODO should this expose an immutable list to force users to use methods on this class
     //      to modify the collection?
     public @Nonnull List<Feature> getFeatures() {
-        return this.features;
+        return this.getLinkMultipleValue("features");
     }
 
     public void addFeature(@Nonnull Feature feature) {
-        this.features.add(feature);
+        this.addLinkMultipleValue("features", feature, true);
         feature.setContainer(this);
     }
 
