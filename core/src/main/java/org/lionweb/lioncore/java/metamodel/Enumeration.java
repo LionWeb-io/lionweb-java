@@ -4,7 +4,6 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
 import java.util.List;
 
 public class Enumeration extends DataType implements NamespaceProvider {

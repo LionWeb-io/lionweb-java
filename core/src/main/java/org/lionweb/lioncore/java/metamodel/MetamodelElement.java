@@ -27,6 +27,7 @@ public abstract class MetamodelElement extends M3Node implements NamespacedEntit
         this.setSimpleName(simpleName);
     }
 
+    // TODO consider making this a derived feature just casting the parent
     public @Nullable Metamodel getMetamodel() {
         return (Metamodel) this.<Metamodel>getLinkSingleValue("metamodel");
     }
@@ -37,7 +38,7 @@ public abstract class MetamodelElement extends M3Node implements NamespacedEntit
 
     @Override
     public @Nullable String getSimpleName() {
-        return (String) this.<String>getPropertyValue("simpleName", String.class, null);
+        return (String) this.<String>getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(String simpleName) {

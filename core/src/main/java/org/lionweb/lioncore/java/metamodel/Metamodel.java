@@ -41,6 +41,7 @@ public class Metamodel extends M3Node implements NamespaceProvider {
     public @Nonnull List<Metamodel> dependsOn() {
         return this.getLinkMultipleValue("dependsOn");
     }
+
     public @Nonnull List<MetamodelElement> getElements() {
         return this.getLinkMultipleValue("elements");
     }
@@ -75,7 +76,7 @@ public class Metamodel extends M3Node implements NamespaceProvider {
     }
 
     public String getQualifiedName() {
-        return (String) this.getPropertyValue("qualifiedName", String.class, null);
+        return (String) this.getPropertyValue("qualifiedName", String.class);
     }
 
     public @Nullable MetamodelElement getElementByName(String name) {

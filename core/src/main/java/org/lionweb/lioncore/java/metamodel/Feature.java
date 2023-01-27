@@ -27,7 +27,6 @@ public abstract class Feature extends M3Node implements NamespacedEntity {
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
-        Naming.validateSimpleName(simpleName);
         setSimpleName(simpleName);
         setContainer(container);
     }
@@ -56,7 +55,7 @@ public abstract class Feature extends M3Node implements NamespacedEntity {
 
     @Override
     public @Nullable String getSimpleName() {
-        return (String) getPropertyValue("simpleName", String.class, null);
+        return (String) getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(@Nullable String simpleName) {

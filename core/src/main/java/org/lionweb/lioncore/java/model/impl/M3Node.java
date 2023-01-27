@@ -98,6 +98,10 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
 
+    protected <V> V getPropertyValue(String propertyName, Class<V> clazz) {
+        return getPropertyValue(propertyName, clazz, null);
+    }
+
     @Override
     public void setPropertyValue(Property property, Object value) {
         if (!getConcept().allProperties().contains(property)) {

@@ -2,7 +2,6 @@ package org.lionweb.lioncore.java.metamodel;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 

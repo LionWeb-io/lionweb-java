@@ -16,7 +16,7 @@ public class EnumerationLiteral extends M3Node implements NamespacedEntity {
 
     @Override
     public @Nullable String getSimpleName() {
-        return (String) getPropertyValue("simpleName", String.class, null);
+        return (String) getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(@Nullable String simpleName) {
