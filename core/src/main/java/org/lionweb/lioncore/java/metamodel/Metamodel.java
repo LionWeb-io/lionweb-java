@@ -1,6 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.utils.Naming;
 
@@ -21,7 +21,7 @@ import java.util.List;
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
-public class Metamodel extends BaseNode implements NamespaceProvider {
+public class Metamodel extends M3Node implements NamespaceProvider {
     // TODO add ID, once details are clearer
 
     private String qualifiedName;

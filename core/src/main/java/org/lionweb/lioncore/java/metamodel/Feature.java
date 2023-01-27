@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
-import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nullable;
@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature extends BaseNode implements NamespacedEntity {
+public abstract class Feature extends M3Node implements NamespacedEntity {
     private boolean optional;
     @Experimental
     private boolean derived;

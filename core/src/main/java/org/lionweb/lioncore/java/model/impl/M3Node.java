@@ -5,13 +5,10 @@ import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 /**
@@ -21,7 +18,7 @@ import java.util.stream.Collectors;
  * the scope of this library. This library should provide a solid, basic dependency to be used by other implementation
  * and it should be as reusable, basic, and unopinionated as possible.
  */
-public abstract class BaseNode<T extends BaseNode> implements Node {
+public abstract class M3Node<T extends M3Node> implements Node {
     private String id;
     private Node parent;
 
