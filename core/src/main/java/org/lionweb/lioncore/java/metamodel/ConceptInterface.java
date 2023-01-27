@@ -35,7 +35,7 @@ public class ConceptInterface extends FeaturesContainer {
     }
 
     public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
-        this.addLinkMultipleValue("extended", extendedInterface, false);
+        this.addReferenceMultipleValue("extended", extendedInterface);
     }
 
     @Override

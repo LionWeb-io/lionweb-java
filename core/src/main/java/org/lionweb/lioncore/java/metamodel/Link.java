@@ -34,6 +34,6 @@ public abstract class Link extends Feature {
     }
 
     public void setType(@Nullable FeaturesContainer type) {
-        this.setLinkSingleValue("type", type, false);
+        this.setReferenceSingleValue("type", type);
     }
 }

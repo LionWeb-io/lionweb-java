@@ -32,7 +32,7 @@ public abstract class MetamodelElement extends M3Node implements NamespacedEntit
     }
 
     public void setMetamodel(@Nullable Metamodel metamodel) {
-        this.setLinkSingleValue("metamodel", metamodel, false);
+        this.setReferenceSingleValue("metamodel", metamodel);
     }
 
     @Override

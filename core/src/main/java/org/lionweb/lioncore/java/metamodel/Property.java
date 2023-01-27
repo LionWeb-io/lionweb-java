@@ -44,7 +44,7 @@ public class Property extends Feature {
     }
 
     public void setType(@Nullable DataType type) {
-        setLinkSingleValue("type", type, false);
+        setReferenceSingleValue("type", type);
     }
 
     @Override

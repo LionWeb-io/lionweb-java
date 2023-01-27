@@ -24,7 +24,7 @@ public class Typedef extends DataType {
     }
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
-        this.setLinkSingleValue("primitiveType", primitiveType, false);
+        this.setReferenceSingleValue("primitiveType", primitiveType);
     }
 
     @Override

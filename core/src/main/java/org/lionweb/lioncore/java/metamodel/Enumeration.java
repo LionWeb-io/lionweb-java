@@ -21,7 +21,7 @@ public class Enumeration extends DataType implements NamespaceProvider {
     }
 
     public void addLiteral(@Nonnull EnumerationLiteral literal) {
-        this.addLinkMultipleValue("literals", literal, true);
+        this.addContainmentMultipleValue("literals", literal);
     }
 
     @Override

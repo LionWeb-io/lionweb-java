@@ -69,6 +69,6 @@ public abstract class Feature extends M3Node implements NamespacedEntity {
     }
 
     public void setContainer(@Nullable FeaturesContainer container) {
-        this.setLinkSingleValue("container", container, false);
+        this.setReferenceSingleValue("container", container);
     }
 }

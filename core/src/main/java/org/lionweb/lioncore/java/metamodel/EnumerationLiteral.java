@@ -28,7 +28,7 @@ public class EnumerationLiteral extends M3Node implements NamespacedEntity {
     }
 
     public void setEnumeration(@Nullable Enumeration enumeration) {
-        this.setLinkSingleValue("enumeration", enumeration, false);
+        this.setReferenceSingleValue("enumeration", enumeration);
     }
 
     @Override

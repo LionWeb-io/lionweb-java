@@ -34,7 +34,7 @@ public class Concept extends FeaturesContainer {
     }
 
     public boolean isAbstract() {
-        return (boolean) this.<Boolean>getPropertyValue("abstract", Boolean.class, false);
+        return (boolean) this.<Boolean>getPropertyValue("abstract", Boolean.class, Boolean.FALSE);
     }
 
     public void setAbstract(boolean value) {
@@ -51,12 +51,12 @@ public class Concept extends FeaturesContainer {
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
-        this.addLinkMultipleValue("implemented", conceptInterface, false);
+        this.addContainmentMultipleValue("implemented", conceptInterface);
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(@Nullable Concept extended) {
-        this.setLinkSingleValue("extended", extended, true);
+        this.setContainmentSingleValue("extended", extended);
     }
 
     @Override

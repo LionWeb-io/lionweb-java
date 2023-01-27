@@ -185,10 +185,6 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
 
     protected <V extends Node> List<V> getLinkMultipleValue(String linkName) {
-//        Link link = getConcept().getLinkByName(linkName);
-//        if (link == null) {
-//            throw new IllegalArgumentException();
-//        }
         if (linkValues.containsKey(linkName)) {
             List<V> values = (List<V>) linkValues.get(linkName);
             return values;
@@ -197,12 +193,20 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
 
+    protected void setContainmentSingleValue(String linkName, Node value) {
+        setLinkSingleValue(linkName, value, true);
+    }
+
+    protected void setReferenceSingleValue(String linkName, Node value) {
+        setLinkSingleValue(linkName, value, false);
+    }
+
     /*
      * This method could be invoked by the metamodel elements classes before the LionCore metamodel
      * has been built, therefore we cannot look for the definition of the features to verify they
      * exist. We instead just trust a link with that name to exist.
      */
-    protected void setLinkSingleValue(String linkName, Node value, boolean containment) {
+    private void setLinkSingleValue(String linkName, Node value, boolean containment) {
         if (containment) {
             List<Node> prevValue = linkValues.get(linkName);
             if (prevValue != null) {
@@ -214,13 +218,25 @@ public abstract class M3Node<T extends M3Node> implements Node {
             linkValues.remove(linkName);
         } else {
             if (containment) {
-                //value.setParent(this);
+                ((M3Node)value).setParent(this);
             }
             linkValues.put(linkName, new ArrayList(Arrays.asList(value)));
         }
     }
 
-    protected void addLinkMultipleValue(String linkName, Node value, boolean containment) {
+    protected void addContainmentMultipleValue(String linkName, Node value) {
+        addLinkMultipleValue(linkName, value, true);
+    }
+
+    protected void addReferenceMultipleValue(String linkName, Node value) {
+        addLinkMultipleValue(linkName, value, false);
+    }
+
+
+    private void addLinkMultipleValue(String linkName, Node value, boolean containment) {
+        if (containment) {
+            ((M3Node)value).setParent(this);
+        }
         if (linkValues.containsKey(linkName)) {
             linkValues.get(linkName).add(value);
         } else {

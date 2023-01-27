@@ -51,7 +51,7 @@ public abstract class FeaturesContainer extends MetamodelElement implements Name
     }
 
     public void addFeature(@Nonnull Feature feature) {
-        this.addLinkMultipleValue("features", feature, true);
+        this.addContainmentMultipleValue("features", feature);
         feature.setContainer(this);
     }
 
