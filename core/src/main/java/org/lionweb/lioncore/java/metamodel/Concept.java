@@ -44,7 +44,7 @@ public class Concept extends FeaturesContainer<Concept> {
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return (Concept) this.<Concept>getLinkSingleValue("extended");
+        return this.getLinkSingleValue("extended");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
