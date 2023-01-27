@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Concept represents a category of entities sharing the same structure.
@@ -92,21 +93,21 @@ public class Concept extends FeaturesContainer<Concept> {
 
     public @Nullable Property getPropertyByName(String propertyName) {
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
-                .filter(p -> p.getSimpleName().equals(propertyName)).findFirst().orElse(null);
+                .filter(p -> Objects.equals(p.getSimpleName(), propertyName)).findFirst().orElse(null);
     }
 
     public @Nullable Containment getContainmentByName(String containmentName) {
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
-                .filter(c -> c.getSimpleName().equals(containmentName)).findFirst().orElse(null);
+                .filter(c -> Objects.equals(c.getSimpleName(), containmentName)).findFirst().orElse(null);
     }
 
     public @Nullable Reference getReferenceByName(String referenceName) {
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
-                .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
+                .filter(c -> Objects.equals(c.getSimpleName(), referenceName)).findFirst().orElse(null);
     }
 
     public @Nullable Link getLinkByName(String linkName) {
         return allFeatures().stream().filter(f -> f instanceof Link).map(f -> (Link)f)
-                .filter(c -> c.getSimpleName().equals(linkName)).findFirst().orElse(null);
+                .filter(c -> Objects.equals(c.getSimpleName(), linkName)).findFirst().orElse(null);
     }
 }
