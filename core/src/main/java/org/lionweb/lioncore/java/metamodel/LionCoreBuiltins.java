@@ -9,10 +9,10 @@ public class LionCoreBuiltins extends Metamodel {
     private LionCoreBuiltins() {
         super("org.lionweb.Builtins");
         setID("lioncore_builtins");
-        this.getElements().add(new PrimitiveType(this, "String"));
-        this.getElements().add(new PrimitiveType(this, "Boolean"));
-        this.getElements().add(new PrimitiveType(this, "Integer"));
-        this.getElements().add(new PrimitiveType(this, "JSON"));
+        this.addElement(new PrimitiveType(this, "String"));
+        this.addElement(new PrimitiveType(this, "Boolean"));
+        this.addElement(new PrimitiveType(this, "Integer"));
+        this.addElement(new PrimitiveType(this, "JSON"));
     }
 
     public static LionCoreBuiltins getInstance() {

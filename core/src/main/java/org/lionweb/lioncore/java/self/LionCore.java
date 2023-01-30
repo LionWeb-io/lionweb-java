@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java.self;
 
 import org.lionweb.lioncore.java.metamodel.*;
-import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import java.util.Collections;
 import java.util.List;
@@ -162,7 +162,7 @@ public class LionCore {
         return INSTANCE;
     }
 
-    private static void checkIDs(BaseNode node) {
+    private static void checkIDs(M3Node node) {
         if (node.getID() == null) {
             if (node instanceof NamespacedEntity) {
                 NamespacedEntity namespacedEntity = (NamespacedEntity) node;
@@ -175,7 +175,7 @@ public class LionCore {
         getChildrenHelper(node).forEach(c -> checkIDs(c));
     }
 
-    private static List<? extends BaseNode> getChildrenHelper(BaseNode node) {
+    private static List<? extends M3Node> getChildrenHelper(M3Node node) {
         if (node instanceof Metamodel) {
             return ((Metamodel)node).getElements();
         } else if (node instanceof FeaturesContainer) {

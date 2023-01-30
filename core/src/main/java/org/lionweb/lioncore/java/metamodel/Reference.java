@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">MPS equivalent <i>LinkDeclaration</i> in local MPS (with <code>metaClass</code> having value <code>reference</code>)</a>
  * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
  */
-public class Reference extends Link {
+public class Reference extends Link<Reference> {
 
     public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         Reference reference = new Reference(simpleName);

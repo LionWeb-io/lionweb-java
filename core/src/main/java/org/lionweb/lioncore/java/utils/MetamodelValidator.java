@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.utils;
 
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import java.util.HashSet;
 import java.util.List;
@@ -125,7 +126,7 @@ public class MetamodelValidator {
                 validateNamesAreUnique(enumeration.getLiterals(), result);
             }
             if (el instanceof FeaturesContainer) {
-                FeaturesContainer featuresContainer = (FeaturesContainer) el;
+                FeaturesContainer<M3Node> featuresContainer = (FeaturesContainer) el;
                 featuresContainer.getFeatures().forEach((Feature feature)->
                         result
                                 .checkForError(feature.getSimpleName() == null, "Simple name not set", feature)

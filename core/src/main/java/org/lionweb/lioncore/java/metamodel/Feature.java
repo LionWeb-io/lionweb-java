@@ -1,7 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
-import org.lionweb.lioncore.java.model.impl.BaseNode;
+import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nullable;
@@ -16,13 +16,9 @@ import javax.annotation.Nullable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature extends BaseNode implements NamespacedEntity {
-    private boolean optional;
+public abstract class Feature<T extends M3Node> extends M3Node<T> implements NamespacedEntity {
     @Experimental
     private boolean derived;
-
-    private String simpleName;
-    private FeaturesContainer container;
 
     public Feature() {
 
@@ -31,21 +27,20 @@ public abstract class Feature extends BaseNode implements NamespacedEntity {
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
-        Naming.validateSimpleName(simpleName);
-        this.simpleName = simpleName;
-        this.container = container;
+        setSimpleName(simpleName);
+        setContainer(container);
     }
 
     public boolean isOptional() {
-        return optional;
+        return this.getPropertyValue("optional", Boolean.class, false);
     }
 
     public boolean isRequired() {
-        return !optional;
+        return !isOptional();
     }
 
     public void setOptional(boolean optional) {
-        this.optional = optional;
+        setPropertyValue("optional", optional);
     }
 
     @Experimental
@@ -60,19 +55,19 @@ public abstract class Feature extends BaseNode implements NamespacedEntity {
 
     @Override
     public @Nullable String getSimpleName() {
-        return simpleName;
+        return getPropertyValue("simpleName", String.class);
     }
 
     public void setSimpleName(@Nullable String simpleName) {
-        this.simpleName = simpleName;
+        this.setPropertyValue("simpleName", simpleName);
     }
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return container;
+        return getLinkSingleValue("container");
     }
 
     public void setContainer(@Nullable FeaturesContainer container) {
-        this.container = container;
+        this.setReferenceSingleValue("container", container);
     }
 }

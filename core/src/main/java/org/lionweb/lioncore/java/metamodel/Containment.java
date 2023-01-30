@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">MPS equivalent <i>LinkDeclaration</i> in local MPS (with <code>metaClass</code> having value <code>aggregation</code>)</a>
  * @see org.jetbrains.mps.openapi.language.SContainmentLink MPS equivalent <i>SContainmentLink</i> in SModel
  */
-public class Containment extends Link {
+public class Containment extends Link<Containment> {
 
     public static Containment createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         Containment containment = new Containment(simpleName);

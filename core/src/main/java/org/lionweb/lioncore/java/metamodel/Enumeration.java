@@ -4,12 +4,9 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
 import java.util.List;
 
-public class Enumeration extends DataType implements NamespaceProvider {
-    private List<EnumerationLiteral> literals = new LinkedList<>();
-
+public class Enumeration extends DataType<Enumeration> implements NamespaceProvider {
     public Enumeration() {
         super();
     }
@@ -19,11 +16,11 @@ public class Enumeration extends DataType implements NamespaceProvider {
     }
 
     public @Nonnull List<EnumerationLiteral> getLiterals() {
-        return literals;
+        return getLinkMultipleValue("literals");
     }
 
     public void addLiteral(@Nonnull EnumerationLiteral literal) {
-        this.literals.add(literal);
+        this.addContainmentMultipleValue("literals", literal);
     }
 
     @Override

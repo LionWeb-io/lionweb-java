@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Concept represents a category of entities sharing the same structure.
@@ -17,12 +18,9 @@ import java.util.List;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489090640">MPS equivalent <i>ConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
-public class Concept extends FeaturesContainer {
-    private boolean isAbstract;
-    // DOUBT: would this be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
+public class Concept extends FeaturesContainer<Concept> {
+    // DOUBT: would extended be null only for BaseConcept? Would this be null for all Concept that do not explicitly extend
     //        another concept?
-    private Concept extended;
-    private List<ConceptInterface> implemented = new LinkedList<>();
 
     public Concept() {
         super();
@@ -37,29 +35,29 @@ public class Concept extends FeaturesContainer {
     }
 
     public boolean isAbstract() {
-        return this.isAbstract;
+        return this.getPropertyValue("abstract", Boolean.class, false);
     }
 
-    public void setAbstract(boolean anAbstract) {
-        isAbstract = anAbstract;
+    public void setAbstract(boolean value) {
+        this.setPropertyValue("abstract", value);
     }
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return this.extended;
+        return this.getLinkSingleValue("extended");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
-        return this.implemented;
+        return this.getLinkMultipleValue("implemented");
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
-        this.implemented.add(conceptInterface);
+        this.addReferenceMultipleValue("implemented", conceptInterface);
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(@Nullable Concept extended) {
-        this.extended = extended;
+        this.setReferenceSingleValue("extended", extended);
     }
 
     @Override
@@ -79,10 +77,10 @@ public class Concept extends FeaturesContainer {
         // TODO Should features be returned in a particular order?
         List<Feature> result = new LinkedList<>();
         result.addAll(this.getFeatures());
-        if (this.extended != null) {
-            result.addAll(this.extended.allFeatures());
+        if (this.getExtendedConcept() != null) {
+            result.addAll(this.getExtendedConcept().allFeatures());
         }
-        for (ConceptInterface superInterface: implemented) {
+        for (ConceptInterface superInterface: this.getImplemented()) {
             result.addAll(superInterface.allFeatures());
         }
         return result;
@@ -93,4 +91,23 @@ public class Concept extends FeaturesContainer {
         return LionCore.getConcept();
     }
 
+    public @Nullable Property getPropertyByName(String propertyName) {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
+                .filter(p -> Objects.equals(p.getSimpleName(), propertyName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Containment getContainmentByName(String containmentName) {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
+                .filter(c -> Objects.equals(c.getSimpleName(), containmentName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Reference getReferenceByName(String referenceName) {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
+                .filter(c -> Objects.equals(c.getSimpleName(), referenceName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Link getLinkByName(String linkName) {
+        return allFeatures().stream().filter(f -> f instanceof Link).map(f -> (Link)f)
+                .filter(c -> Objects.equals(c.getSimpleName(), linkName)).findFirst().orElse(null);
+    }
 }

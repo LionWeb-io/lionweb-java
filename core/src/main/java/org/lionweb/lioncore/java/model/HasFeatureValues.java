@@ -12,6 +12,8 @@ import java.util.List;
 public interface HasFeatureValues {
     /**
      * Get the property value associated with the specified property.
+     *
+     * Should this return a String?
      */
     Object getPropertyValue(Property property);
 

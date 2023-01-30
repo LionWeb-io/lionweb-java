@@ -1,7 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
-import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nullable;
 
@@ -10,9 +9,7 @@ import javax.annotation.Nullable;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1082978499127">MPS equivalent <i>ConstrainedDataTypeDeclaration</i> in local MPS</a>
  */
 @Experimental
-public class Typedef extends DataType {
-    private PrimitiveType primitiveType;
-
+public class Typedef extends DataType<Typedef> {
     public Typedef() {
         super();
     }
@@ -22,11 +19,11 @@ public class Typedef extends DataType {
     }
 
     public @Nullable PrimitiveType getPrimitiveType() {
-        return primitiveType;
+        return getLinkSingleValue("primitiveType");
     }
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
-        this.primitiveType = primitiveType;
+        this.setReferenceSingleValue("primitiveType", primitiveType);
     }
 
     @Override

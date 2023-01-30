@@ -18,7 +18,7 @@ import java.util.List;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">MPS equivalent <i>NodeAttribute</i> in local MPS</a>
  */
 @Experimental
-public class Annotation extends FeaturesContainer {
+public class Annotation extends FeaturesContainer<Annotation> {
     private @Nullable String platformSpecific;
     private FeaturesContainer target;
 
