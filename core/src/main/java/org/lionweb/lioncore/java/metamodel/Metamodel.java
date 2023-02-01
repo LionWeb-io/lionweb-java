@@ -2,11 +2,9 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
-import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -25,7 +23,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
     public Metamodel() {
     }
 
-    public Metamodel(String qualifiedName) {
+    public Metamodel(@Nonnull String qualifiedName) {
         this.setQualifiedName(qualifiedName);
     }
 

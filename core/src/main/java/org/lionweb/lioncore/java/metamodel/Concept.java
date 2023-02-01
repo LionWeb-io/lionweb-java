@@ -26,6 +26,10 @@ public class Concept extends FeaturesContainer<Concept> {
         super();
     }
 
+    public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
+        super(metamodel, simpleName, id);
+    }
+
     public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
@@ -91,6 +95,11 @@ public class Concept extends FeaturesContainer<Concept> {
         return LionCore.getConcept();
     }
 
+    public @Nullable Property getPropertyByID(String propertyId) {
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
+                .filter(p -> p.getID().equals(propertyId)).findFirst().orElse(null);
+    }
+
     public @Nullable Property getPropertyByName(String propertyName) {
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
                 .filter(p -> Objects.equals(p.getSimpleName(), propertyName)).findFirst().orElse(null);
@@ -103,7 +112,17 @@ public class Concept extends FeaturesContainer<Concept> {
 
     public @Nullable Reference getReferenceByName(String referenceName) {
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
-                .filter(c -> Objects.equals(c.getSimpleName(), referenceName)).findFirst().orElse(null);
+                .filter(c -> c.getSimpleName().equals(referenceName)).findFirst().orElse(null);
+    }
+
+    public @Nullable Containment getContainmentByID(String containmentID) {
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
+                .filter(c -> c.getID().equals(containmentID)).findFirst().orElse(null);
+    }
+
+    public @Nullable Reference getReferenceByID(String referenceID) {
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
+                .filter(c -> c.getID().equals(referenceID)).findFirst().orElse(null);
     }
 
     public @Nullable Link getLinkByName(String linkName) {

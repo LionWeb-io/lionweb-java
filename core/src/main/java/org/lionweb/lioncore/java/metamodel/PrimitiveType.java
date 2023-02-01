@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.self.LionCore;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -20,8 +21,17 @@ public class PrimitiveType extends DataType<PrimitiveType> {
         super();
     }
 
+    public PrimitiveType(@Nonnull String id) {
+        super(id);
+    }
+
     public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+    }
+
+    public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName, String id) {
+        super(metamodel, simpleName);
+        setID(id);
     }
 
     @Override
@@ -33,4 +43,5 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     public Concept getConcept() {
         return LionCore.getPrimitiveType();
     }
+
 }

@@ -3,6 +3,7 @@ package org.lionweb.lioncore.java.metamodel;
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.self.LionCore;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -25,6 +26,14 @@ public class Reference extends Link<Reference> {
         return reference;
     }
 
+    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Reference reference = new Reference(simpleName, id);
+        reference.setOptional(true);
+        reference.setMultiple(false);
+        reference.setType(type);
+        return reference;
+    }
+
     public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         Reference reference = new Reference(simpleName);
         reference.setOptional(false);
@@ -33,8 +42,24 @@ public class Reference extends Link<Reference> {
         return reference;
     }
 
+    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Reference reference = new Reference(simpleName, id);
+        reference.setOptional(false);
+        reference.setMultiple(false);
+        reference.setType(type);
+        return reference;
+    }
+
     public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type) {
         Reference reference = new Reference(simpleName);
+        reference.setOptional(true);
+        reference.setMultiple(true);
+        reference.setType(type);
+        return reference;
+    }
+
+    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Reference reference = new Reference(simpleName, id);
         reference.setOptional(true);
         reference.setMultiple(true);
         reference.setType(type);
@@ -62,7 +87,11 @@ public class Reference extends Link<Reference> {
     }
 
     public Reference(@Nullable String simpleName) {
-        super(simpleName, null);
+        super(simpleName, (FeaturesContainer) null);
+    }
+
+    public Reference(@Nullable String simpleName, @Nonnull String id) {
+        super(simpleName, id);
     }
 
     public @Nullable Reference getSpecialized() {
