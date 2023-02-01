@@ -26,6 +26,10 @@ public class Concept extends FeaturesContainer<Concept> {
         super();
     }
 
+    public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
+        super(metamodel, simpleName, id);
+    }
+
     public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }
@@ -91,22 +95,58 @@ public class Concept extends FeaturesContainer<Concept> {
         return LionCore.getConcept();
     }
 
-    public @Nullable Property getPropertyByName(String propertyName) {
+    public @Nullable Property getPropertyByID(@Nonnull String propertyId) {
+        if (propertyId == null) {
+            throw new IllegalArgumentException("propertyId cannot be null");
+        }
+        return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
+                .filter(p -> p.getID().equals(propertyId)).findFirst().orElse(null);
+    }
+
+    public @Nullable Property getPropertyByName(@Nonnull String propertyName) {
+        if (propertyName == null) {
+            throw new IllegalArgumentException("propertyName cannot be null");
+        }
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
                 .filter(p -> Objects.equals(p.getSimpleName(), propertyName)).findFirst().orElse(null);
     }
 
-    public @Nullable Containment getContainmentByName(String containmentName) {
+    public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
+        if (containmentName == null) {
+            throw new IllegalArgumentException("containmentName cannot be null");
+        }
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), containmentName)).findFirst().orElse(null);
     }
 
-    public @Nullable Reference getReferenceByName(String referenceName) {
+    public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
+        if (referenceName == null) {
+            throw new IllegalArgumentException("referenceName cannot be null");
+        }
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), referenceName)).findFirst().orElse(null);
     }
 
+    public @Nullable Containment getContainmentByID(@Nonnull String containmentID) {
+        if (containmentID == null) {
+            throw new IllegalArgumentException("containmentID cannot be null");
+        }
+        return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
+                .filter(c -> Objects.equals(c.getID(), containmentID)).findFirst().orElse(null);
+    }
+
+    public @Nullable Reference getReferenceByID(@Nonnull String referenceID) {
+        if (referenceID == null) {
+            throw new IllegalArgumentException("referenceID cannot be null");
+        }
+        return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
+                .filter(c -> c.getID().equals(referenceID)).findFirst().orElse(null);
+    }
+
     public @Nullable Link getLinkByName(String linkName) {
+        if (linkName == null) {
+            throw new IllegalArgumentException("linkName cannot be null");
+        }
         return allFeatures().stream().filter(f -> f instanceof Link).map(f -> (Link)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), linkName)).findFirst().orElse(null);
     }

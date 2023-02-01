@@ -13,6 +13,7 @@ public class LionCoreBuiltins extends Metamodel {
         this.addElement(new PrimitiveType(this, "Boolean"));
         this.addElement(new PrimitiveType(this, "Integer"));
         this.addElement(new PrimitiveType(this, "JSON"));
+        this.getElements().forEach(e -> e.setID(this.getID() + "_" + ((PrimitiveType)e).getSimpleName()));
     }
 
     public static LionCoreBuiltins getInstance() {

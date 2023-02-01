@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.self.LionCore;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -30,8 +31,20 @@ public class Property extends Feature<Property> {
         return property;
     }
 
+    public static Property createRequired(@Nullable String simpleName, @Nullable DataType type, @Nonnull String id) {
+        Property property = new Property(simpleName, null, id);
+        property.setOptional(false);
+        property.setType(type);
+        return property;
+    }
+
     public Property() {
         super();
+    }
+
+    public Property(@Nullable String simpleName, @Nullable FeaturesContainer container, @Nonnull String id) {
+        // TODO verify that the container is also a NamespaceProvider
+        super(simpleName, container, id);
     }
 
     public Property(@Nullable String simpleName, @Nullable FeaturesContainer container) {
@@ -43,8 +56,9 @@ public class Property extends Feature<Property> {
         return getLinkSingleValue("type");
     }
 
-    public void setType(@Nullable DataType type) {
+    public Property setType(@Nullable DataType type) {
         setReferenceSingleValue("type", type);
+        return this;
     }
 
     @Override
@@ -59,4 +73,5 @@ public class Property extends Feature<Property> {
     public Concept getConcept() {
         return LionCore.getProperty();
     }
+
 }

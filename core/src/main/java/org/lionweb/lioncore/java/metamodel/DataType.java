@@ -1,8 +1,8 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.model.impl.M3Node;
-import org.lionweb.lioncore.java.self.LionCore;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -17,6 +17,10 @@ import javax.annotation.Nullable;
 public abstract class DataType<T extends M3Node> extends MetamodelElement<T> {
     public DataType() {
         super();
+    }
+
+    public DataType(@Nonnull String id) {
+        super(null, null, id);
     }
 
     public DataType(@Nullable Metamodel metamodel, @Nullable String simpleName) {

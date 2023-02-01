@@ -3,6 +3,7 @@ package org.lionweb.lioncore.java.metamodel;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -18,6 +19,11 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     public MetamodelElement() {
 
+    }
+
+    public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
+        this(metamodel, simpleName);
+        this.setID(id);
     }
 
     public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {

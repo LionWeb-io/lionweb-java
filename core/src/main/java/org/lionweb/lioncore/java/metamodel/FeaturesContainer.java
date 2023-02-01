@@ -23,6 +23,10 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
         super();
     }
 
+    public FeaturesContainer(@Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
+        super(metamodel, simpleName, id);
+    }
+
     public FeaturesContainer(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
     }

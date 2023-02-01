@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import javax.annotation.Nonnull;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import javax.annotation.Nullable;
@@ -18,6 +19,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
         super();
     }
 
+    public Link(@Nullable String simpleName, @Nonnull String id) {
+        // TODO verify that the container is also a NamespaceProvider
+        super(simpleName, id);
+    }
+
     public Link(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         super(simpleName, container);
@@ -27,15 +33,17 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
         return getPropertyValue("multiple", Boolean.class, false);
     }
 
-    public void setMultiple(boolean multiple) {
+    public T setMultiple(boolean multiple) {
         this.setPropertyValue("multiple", multiple);
+        return (T)this;
     }
 
     public @Nullable FeaturesContainer getType() {
         return getLinkSingleValue("type");
     }
 
-    public void setType(@Nullable FeaturesContainer type) {
+    public T setType(@Nullable FeaturesContainer type) {
         this.setReferenceSingleValue("type", type);
+        return (T) this;
     }
 }

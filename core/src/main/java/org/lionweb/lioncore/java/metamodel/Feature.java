@@ -2,8 +2,8 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.model.impl.M3Node;
-import org.lionweb.lioncore.java.utils.Naming;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -24,6 +24,17 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     }
 
+    public Feature(@Nullable String simpleName, @Nonnull String id) {
+        this(simpleName, null, id);
+    }
+
+    public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container, @Nonnull String id) {
+        this.setID(id);
+        // TODO verify that the container is also a NamespaceProvider
+        // TODO enforce uniqueness of the name within the FeauturesContainer
+        setSimpleName(simpleName);
+        setContainer(container);
+    }
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
@@ -39,8 +50,9 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
         return !isOptional();
     }
 
-    public void setOptional(boolean optional) {
+    public T setOptional(boolean optional) {
         setPropertyValue("optional", optional);
+        return (T)this;
     }
 
     @Experimental
@@ -49,8 +61,9 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
     }
 
     @Experimental
-    public void setDerived(boolean derived) {
+    public T setDerived(boolean derived) {
         this.derived = derived;
+        return (T)this;
     }
 
     @Override
@@ -70,4 +83,5 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
     public void setContainer(@Nullable FeaturesContainer container) {
         this.setReferenceSingleValue("container", container);
     }
+
 }

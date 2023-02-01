@@ -10,6 +10,9 @@ public interface NamespacedEntity {
     // TODO add ID, once details are clearer
     String getSimpleName();
     default String qualifiedName() {
+        if (this.getContainer() == null) {
+            throw new IllegalStateException("No container for " + this);
+        }
         return this.getContainer().namespaceQualifier() + "." + this.getSimpleName();
     }
     NamespaceProvider getContainer();
