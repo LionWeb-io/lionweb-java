@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.model.impl.M3Node;
+import org.lionweb.lioncore.java.utils.Naming;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

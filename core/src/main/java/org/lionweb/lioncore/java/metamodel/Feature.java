@@ -52,6 +52,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     public T setOptional(boolean optional) {
         setPropertyValue("optional", optional);
+        return (T)this;
     }
 
     @Experimental
