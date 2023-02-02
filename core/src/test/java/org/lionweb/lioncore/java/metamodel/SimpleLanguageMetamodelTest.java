@@ -7,7 +7,7 @@ import static org.junit.Assert.*;
 public class SimpleLanguageMetamodelTest {
 
     @Test public void emptyMetamodelDefinition() {
-        Metamodel metamodel = new Metamodel("SimpleLanguage");
+        Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
         assertEquals("SimpleLanguage", metamodel.getQualifiedName());
         assertEquals("SimpleLanguage", metamodel.namespaceQualifier());
         assertEquals(0, metamodel.dependsOn().size());
@@ -15,7 +15,7 @@ public class SimpleLanguageMetamodelTest {
     }
 
     @Test public void emptyConceptDefinition() {
-        Metamodel metamodel = new Metamodel("SimpleLanguage");
+        Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
         Concept expression = new Concept(metamodel, "Expression");
         assertEquals("Expression", expression.getSimpleName());
         assertSame(metamodel, expression.getContainer());
@@ -29,7 +29,7 @@ public class SimpleLanguageMetamodelTest {
     }
 
     @Test public void emptyConceptInterfaceDefinition() {
-        Metamodel metamodel = new Metamodel("SimpleLanguage");
+        Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
         ConceptInterface deprecated = new ConceptInterface(metamodel, "Deprecated");
         assertEquals("Deprecated", deprecated.getSimpleName());
         assertSame(metamodel, deprecated.getContainer());

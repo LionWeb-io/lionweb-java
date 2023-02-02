@@ -81,4 +81,13 @@ public interface Node extends HasFeatureValues {
      */
     void addAnnotation(AnnotationInstance instance);
 
+    default Object getPropertyValueByName(String propertyName) {
+        Property property = this.getConcept().getPropertyByName(propertyName);
+        return getPropertyValue(property);
+    }
+
+    default Object getPropertyValueByID(String propertyID) {
+        Property property = this.getConcept().getPropertyByID(propertyID);
+        return getPropertyValue(property);
+    }
 }

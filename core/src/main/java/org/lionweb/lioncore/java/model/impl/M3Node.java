@@ -135,7 +135,11 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
     @Override
     public void addChild(Containment containment, Node child) {
-        throw new UnsupportedOperationException();
+        if (containment.isMultiple()) {
+            addLinkMultipleValue(containment.getSimpleName(), child, true);
+        } else {
+            setLinkSingleValue(containment.getSimpleName(), child, true);
+        }
     }
 
     @Override
