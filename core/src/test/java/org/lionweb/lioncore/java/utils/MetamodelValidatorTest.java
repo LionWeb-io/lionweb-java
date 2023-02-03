@@ -27,7 +27,7 @@ public class MetamodelValidatorTest {
 
     @Test
     public void anAnnotationCanBeValid() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
         metamodel.addElement(annotation);
 
@@ -38,7 +38,7 @@ public class MetamodelValidatorTest {
 
     @Test
     public void anEmptyPrimitiveTypeIsInvalid() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         PrimitiveType primitiveType = new PrimitiveType();
         metamodel.addElement(primitiveType);
 
@@ -52,7 +52,7 @@ public class MetamodelValidatorTest {
 
     @Test
     public void aPrimitiveTypeCanBeValid() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         PrimitiveType primitiveType = new PrimitiveType(metamodel, "PrimitiveType");
         metamodel.addElement(primitiveType);
 
@@ -63,7 +63,7 @@ public class MetamodelValidatorTest {
 
     @Test
     public void simpleSelfInheritanceIsCaught() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         Concept a = new Concept(metamodel, "a");
         a.setExtendedConcept(a);
         metamodel.addElement(a);
@@ -74,7 +74,7 @@ public class MetamodelValidatorTest {
 
     @Test
     public void indirectSelfInheritanceOfConceptsIsCaught() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         Concept a = new Concept(metamodel, "a");
         Concept b = new Concept(metamodel, "b");
         a.setExtendedConcept(b);
@@ -90,7 +90,7 @@ public class MetamodelValidatorTest {
 
     @Test
     public void indirectSelfInheritanceOfConceptInterfacesIsCaught() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         ConceptInterface a = new ConceptInterface(metamodel, "a");
         ConceptInterface b = new ConceptInterface(metamodel, "b");
         a.addExtendedInterface(b);
@@ -121,7 +121,7 @@ public class MetamodelValidatorTest {
     }
     @Test
     public void multipleIndirectImplementationsOfTheSameInterfaceAreAllowed() {
-        Metamodel metamodel = new Metamodel("MyMetamodel");
+        Metamodel metamodel = new Metamodel("MyMetamodel").setID("myM3ID");
         Concept a = new Concept(metamodel, "A");
         Concept b = new Concept(metamodel, "B");
         ConceptInterface i = new ConceptInterface(metamodel, "I");

@@ -28,7 +28,6 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         // TODO enforce uniqueness of the name within the Metamodel
-        Naming.validateSimpleName(simpleName);
         this.setMetamodel(metamodel);
         this.setSimpleName(simpleName);
     }
