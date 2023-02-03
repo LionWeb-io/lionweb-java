@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  */
 public class JsonSerialization {
 
-    private static final String TYPE_LABEL = "type";
+    private static final String CONCEPT_LABEL = "concept";
     private static final String ID_LABEL = "id";
 
     /**
@@ -96,7 +96,7 @@ public class JsonSerialization {
 
     private JsonObject serializeThisNode(Node node) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty(TYPE_LABEL, node.getConcept().getID());
+        jsonObject.addProperty(CONCEPT_LABEL, node.getConcept().getID());
         jsonObject.addProperty(ID_LABEL, node.getID());
 
         JsonObject properties = new JsonObject();
@@ -219,7 +219,7 @@ public class JsonSerialization {
     private Node unserializeNode(JsonElement jsonElement) {
         if (jsonElement.isJsonObject()) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            String type = getStringProperty(jsonObject, TYPE_LABEL);
+            String type = getStringProperty(jsonObject, CONCEPT_LABEL);
             Concept concept = conceptResolver.resolveConcept(type);
             String nodeID = getStringProperty(jsonObject, ID_LABEL);
             Node node = nodeInstantiator.instantiate(concept, jsonObject, nodeID);
