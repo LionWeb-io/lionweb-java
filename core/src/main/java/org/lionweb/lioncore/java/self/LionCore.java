@@ -152,7 +152,7 @@ public class LionCore {
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(),
                     "LIonCore_M3_NamespacedEntity_qualifiedName").setDerived(true));
 
-            namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString(), "LIonCore_M3_NamespaceProvider_namespaceQualifier"));
+            namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString(), "LIonCore_M3_NamespaceProvider_namespaceQualifier").setDerived(true));
 
             primitiveType.setExtendedConcept(dataType);
 
