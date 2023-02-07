@@ -12,6 +12,8 @@ import org.lionweb.lioncore.java.self.LionCore;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
@@ -78,14 +80,12 @@ public class JsonSerializationTest {
     private void assertEquivalentLionWebJson(JsonArray expected, JsonArray actual) {
         Map<String, JsonObject> expectedElements = new HashMap<>();
         Map<String, JsonObject> actualElements = new HashMap<>();
-        expected.forEach(e -> {
+        Function<Map<String, JsonObject>, Consumer<JsonElement>> idCollector = collection -> e -> {
             String id = e.getAsJsonObject().get("id").getAsString();
-            expectedElements.put(id, e.getAsJsonObject());
-        });
-        actual.forEach(e -> {
-            String id = e.getAsJsonObject().get("id").getAsString();
-            actualElements.put(id, e.getAsJsonObject());
-        });
+            collection.put(id, e.getAsJsonObject());
+        };
+        expected.forEach(idCollector.apply(expectedElements));
+        actual.forEach(idCollector.apply(actualElements));
         Set<String> unexpectedIDs = new HashSet<>(actualElements.keySet());
         unexpectedIDs.removeAll(expectedElements.keySet());
         Set<String> missingIDs = new HashSet<>(expectedElements.keySet());
