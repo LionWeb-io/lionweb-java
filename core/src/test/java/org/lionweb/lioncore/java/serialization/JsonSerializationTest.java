@@ -131,7 +131,7 @@ public class JsonSerializationTest {
             } else if (key.equals("properties")) {
                 assertEquivalentObjects(expected.getAsJsonObject("properties"), actual.getAsJsonObject("properties"), "Properties of " + context);
             } else {
-                throw new UnsupportedOperationException(key);
+                throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
             }
         }
     }
