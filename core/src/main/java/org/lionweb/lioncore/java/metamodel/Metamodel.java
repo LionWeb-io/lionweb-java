@@ -44,6 +44,11 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
         return this.getLinkMultipleValue("elements");
     }
 
+    public Metamodel addDependency(@Nonnull Metamodel dependency) {
+        this.addReferenceMultipleValue("dependsOn", dependency);
+        return dependency;
+    }
+
     public <T extends MetamodelElement> T addElement(@Nonnull T element) {
         this.addContainmentMultipleValue("elements", element);
         element.setMetamodel(this);
