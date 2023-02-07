@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
@@ -100,7 +101,7 @@ public class JsonSerialization {
         jsonObject.addProperty(ID_LABEL, node.getID());
 
         JsonObject properties = new JsonObject();
-        node.getConcept().allProperties().forEach(property -> {
+        node.getConcept().allProperties().stream().filter(p -> !p.isDerived()).forEach(property -> {
             properties.addProperty(property.getID(), serializePropertyValue(node.getPropertyValue(property)));
         });
         jsonObject.add("properties", properties);
@@ -120,6 +121,12 @@ public class JsonSerialization {
             references.add(reference.getID(), serializedValue);
         });
         jsonObject.add("references", references);
+
+        if (node.getParent() == null) {
+            jsonObject.add("parent", JsonNull.INSTANCE);
+        } else {
+            jsonObject.addProperty("parent", node.getParent().getID());
+        }
 
         return jsonObject;
     }
@@ -182,7 +189,8 @@ public class JsonSerialization {
             }
         }
         if (data.has("parent")) {
-            String parentNodeID = data.get("parent").getAsString();
+            JsonElement parentValue = data.get("parent");
+            String parentNodeID = parentValue instanceof JsonNull ? null : parentValue.getAsString();
             Node parent = nodeIdToNode.get(parentNodeID);
             if (node instanceof M3Node) {
                 ((M3Node<M3Node>) node).setParent(parent);
