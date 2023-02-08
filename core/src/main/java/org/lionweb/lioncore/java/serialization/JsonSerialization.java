@@ -22,6 +22,12 @@ import java.util.stream.Collectors;
  * If this requirement is not satisfied the unserialization will fail.
  * The actual class implementing Node being instantiated will depend on the configuration.
  * Specific classes for specific Concepts can be registered, and the usage of DynamicNode for all others can be enabled.
+ *
+ * Note that by default JsonSerialization will require specific Node subclasses to be specified.
+ * For example, it will need to know that the concept with id 'foo-library' can be unserialized to instances of the
+ * class Library.
+ * If you want serialization to instantiate DynamicNodes for concepts for which you do not have a corresponding Node
+ * subclass, then you need to enable that behavior explicitly by calling getNodeInstantiator().enableDynamicNodes().
  */
 public class JsonSerialization {
 
