@@ -79,7 +79,6 @@ public class JsonSerializationTest {
         assertEquals(LionCore.getProperty(), simpleName.getConcept());
         assertEquals("simpleName", simpleName.getPropertyValueByName("simpleName"));
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
-        //assertEquals("LIonCore_M3_String", simpleName.getType().getID());
     }
 
     @Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
