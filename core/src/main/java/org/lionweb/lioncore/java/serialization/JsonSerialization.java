@@ -186,6 +186,8 @@ public class JsonSerialization {
             JsonElement parentValue = data.get("parent");
             String parentNodeID = parentValue instanceof JsonNull ? null : parentValue.getAsString();
             Node parent = nodeIdToNode.get(parentNodeID);
+            // FIXME this does not look great...
+            // should we add setParent to the Node interface?
             if (node instanceof M3Node) {
                 ((M3Node<M3Node>) node).setParent(parent);
             } else if (node instanceof DynamicNode) {
