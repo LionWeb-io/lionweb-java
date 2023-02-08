@@ -83,6 +83,9 @@ public interface Node extends HasFeatureValues {
 
     default Object getPropertyValueByName(String propertyName) {
         Property property = this.getConcept().getPropertyByName(propertyName);
+        if (property == null) {
+            throw new IllegalArgumentException("Concept " + this.getConcept().qualifiedName() + " does not contained a property named " + propertyName);
+        }
         return getPropertyValue(property);
     }
 

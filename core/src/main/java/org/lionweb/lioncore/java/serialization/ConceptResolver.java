@@ -23,12 +23,13 @@ public class ConceptResolver {
         }
     }
 
-    public void registerMetamodel(Metamodel metamodel) {
+    public ConceptResolver registerMetamodel(Metamodel metamodel) {
         metamodel.getElements().forEach(e -> {
             if (e instanceof Concept) {
                 registerConcept((Concept) e);
             }
         });
+        return this;
     }
 
     private void registerConcept(Concept concept) {

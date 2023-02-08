@@ -80,7 +80,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     @Override
     public Object getPropertyValue(Property property) {
         if (!getConcept().allProperties().contains(property)) {
-            throw new IllegalArgumentException("Property not belonging to this concept");
+            throw new IllegalArgumentException("Property not belonging to this concept: " + property);
         }
         return propertyValues.get(property.getSimpleName());
     }

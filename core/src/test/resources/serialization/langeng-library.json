@@ -1,0 +1,46 @@
+[
+  {
+    "concept": "Pk1NRJfHMt4eSja2kpXia7x8vj6Vzc6WQCUzT3aVeYY",
+    "id": "lib-1",
+    "properties": {
+      "LdgCnVXNgZD7CLbBhBin2Rcdumx4qZUYz_jh2QnP5z8": "Language Engineering Library"
+    },
+    "children": {
+      "TFS1ME6sEyRbkRchsr8zaZCcj_uF1LM0LXK24gbnxZM": [
+        "de",
+        "bfd"
+      ]
+    },
+    "references": {}
+  },
+  {
+    "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
+    "id": "de",
+    "properties": {
+      "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": "DSL Engineering",
+      "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": "558"
+    },
+    "children": {},
+    "references": {
+      "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
+        "mv"
+      ]
+    },
+    "parent": "lib-1"
+  },
+  {
+    "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
+    "id": "bfd",
+    "properties": {
+      "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": "Business-Friendly DSLs",
+      "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": "517"
+    },
+    "children": {},
+    "references": {
+      "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
+        "mb"
+      ]
+    },
+    "parent": "lib-1"
+  }
+]

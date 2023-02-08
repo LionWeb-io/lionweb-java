@@ -6,6 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
@@ -122,9 +123,7 @@ public class JsonSerialization {
         });
         jsonObject.add("references", references);
 
-        if (node.getParent() == null) {
-            jsonObject.add("parent", JsonNull.INSTANCE);
-        } else {
+        if (node.getParent() != null) {
             jsonObject.addProperty("parent", node.getParent().getID());
         }
 
@@ -194,6 +193,8 @@ public class JsonSerialization {
             Node parent = nodeIdToNode.get(parentNodeID);
             if (node instanceof M3Node) {
                 ((M3Node<M3Node>) node).setParent(parent);
+            } else if (node instanceof DynamicNode) {
+                ((DynamicNode) node).setParent(parent);
             }
         }
     }
