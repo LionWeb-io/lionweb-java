@@ -9,6 +9,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 
+/**
+ * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose only homogeneous-APIs
+ * (e.g., getProperty('book')) and not heterogeneous-APIs (e.g., getBook()).
+ */
 public class DynamicNode implements Node {
     private String id;
     private Node parent = null;
