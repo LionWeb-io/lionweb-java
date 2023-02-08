@@ -81,6 +81,16 @@ public class JsonSerializationTest {
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
     }
 
+    @Test(expected = RuntimeException.class)
+    public void unserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
+        jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
+        jsonSerialization.unserialize(jsonElement);
+    }
+
     @Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
     @Test
     public void serializeLionCore() {
