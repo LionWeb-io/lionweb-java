@@ -3,6 +3,7 @@ package org.lionweb.lioncore.java.serialization;
 import com.google.gson.JsonObject;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import java.util.HashMap;
@@ -21,6 +22,11 @@ public class NodeInstantiator {
     private ConceptSpecificNodeInstantiator<?> defaultNodeUnserializer = (ConceptSpecificNodeInstantiator<Node>) (concept, data, id) -> {
         throw new IllegalArgumentException("Unable to unserialize node with concept "  + concept);
     };
+
+    public NodeInstantiator enableDynamicNodes() {
+        defaultNodeUnserializer = (concept, data, nodeID) -> new DynamicNode(nodeID, concept);
+        return this;
+    }
 
     public Node instantiate(Concept concept, JsonObject data, String nodeID) {
         if (customUnserializers.containsKey(concept.getID())) {

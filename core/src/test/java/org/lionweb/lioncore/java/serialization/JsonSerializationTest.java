@@ -1,27 +1,28 @@
 package org.lionweb.lioncore.java.serialization;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
+import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 public class JsonSerializationTest {
 
     @Test
-    public void unserializeLionCore() {
+    public void unserializeLionCoreToConcreteClasses() {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
@@ -49,6 +50,47 @@ public class JsonSerializationTest {
         assertEquals("LIonCore_M3_String", simpleName.getType().getID());
     }
 
+    @Test
+    public void unserializeLionCoreToDynamicNodes() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
+        jsonSerialization.getNodeInstantiator().enableDynamicNodes();
+        jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
+        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+
+        DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
+        assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
+        assertEquals("LIonCore_M3", lioncore.getID());
+        assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("qualifiedName"));
+        assertEquals(16, lioncore.getChildren().size());
+        assertEquals(null, lioncore.getParent());
+
+        DynamicNode namespacedEntity = (DynamicNode) unserializedNodes.get(1);
+        assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
+        assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
+        assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
+        assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("simpleName"));
+        assertEquals(2, namespacedEntity.getChildren().size());
+        assertEquals(lioncore, namespacedEntity.getParent());
+
+        DynamicNode simpleName = (DynamicNode) unserializedNodes.get(2);
+        assertEquals(LionCore.getProperty(), simpleName.getConcept());
+        assertEquals("simpleName", simpleName.getPropertyValueByName("simpleName"));
+        assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void unserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
+        jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
+        jsonSerialization.unserialize(jsonElement);
+    }
+
     @Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
     @Test
     public void serializeLionCore() {
@@ -65,6 +107,8 @@ public class JsonSerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        Node book = unserializedNodes.stream().filter(n -> n.getID().equals("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs")).findFirst().get();
+        assertEquals("Book", book.getPropertyValueByName("simpleName"));
     }
 
     @Test
@@ -77,87 +121,19 @@ public class JsonSerializationTest {
         assertEquivalentLionWebJson(jsonElement.getAsJsonArray(), reserialized.getAsJsonArray());
     }
 
-    private void assertEquivalentLionWebJson(JsonArray expected, JsonArray actual) {
-        Map<String, JsonObject> expectedElements = new HashMap<>();
-        Map<String, JsonObject> actualElements = new HashMap<>();
-        Function<Map<String, JsonObject>, Consumer<JsonElement>> idCollector = collection -> e -> {
-            String id = e.getAsJsonObject().get("id").getAsString();
-            collection.put(id, e.getAsJsonObject());
-        };
-        expected.forEach(idCollector.apply(expectedElements));
-        actual.forEach(idCollector.apply(actualElements));
-        Set<String> unexpectedIDs = new HashSet<>(actualElements.keySet());
-        unexpectedIDs.removeAll(expectedElements.keySet());
-        Set<String> missingIDs = new HashSet<>(expectedElements.keySet());
-        missingIDs.removeAll(actualElements.keySet());
-        if (!unexpectedIDs.isEmpty()) {
-            throw new AssertionError("Unexpected IDs found: " + unexpectedIDs);
-        }
-        if (!missingIDs.isEmpty()) {
-            throw new AssertionError("Missing IDs found: " + missingIDs);
-        }
-        for (String id: expectedElements.keySet()) {
-            JsonObject expectedElement = expectedElements.get(id);
-            JsonObject actualElement = actualElements.get(id);
-            assertEquivalentNodes(expectedElement, actualElement, "Node " + id);
-        }
-    }
-
-    private void assertEquivalentNodes(JsonObject expected, JsonObject actual, String context) {
-        Set<String> actualMeaningfulKeys = actual.keySet();
-        Set<String> expectedMeaningfulKeys = expected.keySet();
-
-        Set<String> unexpectedKeys = new HashSet<>(actualMeaningfulKeys);
-        unexpectedKeys.removeAll(expectedMeaningfulKeys);
-        Set<String> missingKeys = new HashSet<>(expectedMeaningfulKeys);
-        missingKeys.removeAll(actualMeaningfulKeys);
-        if (!unexpectedKeys.isEmpty()) {
-            throw new AssertionError("(" + context + ") Unexpected keys found: " + unexpectedKeys);
-        }
-        if (!missingKeys.isEmpty()) {
-            throw new AssertionError("(" + context + ") Missing keys found: " + missingKeys);
-        }
-        for (String key: actualMeaningfulKeys) {
-            if (key.equals("parent")) {
-                assertEquals("(" + context + ") different parent", expected.get("parent"), actual.get("parent"));
-            } else if (key.equals("concept")) {
-                assertEquals("(" + context + ") different concept", expected.get("concept"), actual.get("concept"));
-            } else if (key.equals("id")) {
-                assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
-            } else if (key.equals("references")) {
-                assertEquivalentObjects(expected.getAsJsonObject("references"), actual.getAsJsonObject("references"), "References of " + context);
-            } else if (key.equals("children")) {
-                assertEquivalentObjects(expected.getAsJsonObject("children"), actual.getAsJsonObject("children"), "Children of " + context);
-            } else if (key.equals("properties")) {
-                assertEquivalentObjects(expected.getAsJsonObject("properties"), actual.getAsJsonObject("properties"), "Properties of " + context);
-            } else {
-                throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
-            }
-        }
-    }
-
-    private void assertEquivalentObjects(JsonObject expected, JsonObject actual, String context) {
-        Set<String> actualMeaningfulKeys = actual.keySet().stream().filter(k ->
-                !actual.get(k).equals(new JsonObject())
-                        && !actual.get(k).equals(new JsonArray())
-                        && !actual.get(k).equals(JsonNull.INSTANCE)).collect(Collectors.toSet());
-        Set<String> expectedMeaningfulKeys = expected.keySet().stream().filter(k -> !expected.get(k).equals(new JsonObject())
-                && !expected.get(k).equals(new JsonArray())
-                && !expected.get(k).equals(JsonNull.INSTANCE)).collect(Collectors.toSet());
-
-        Set<String> unexpectedKeys = new HashSet<>(actualMeaningfulKeys);
-        unexpectedKeys.removeAll(expectedMeaningfulKeys);
-        Set<String> missingKeys = new HashSet<>(expectedMeaningfulKeys);
-        missingKeys.removeAll(actualMeaningfulKeys);
-        if (!unexpectedKeys.isEmpty()) {
-            throw new AssertionError("(" + context + ") Unexpected keys found: " + unexpectedKeys);
-        }
-        if (!missingKeys.isEmpty()) {
-            throw new AssertionError("(" + context + ") Missing keys found: " + missingKeys);
-        }
-        for (String key: actualMeaningfulKeys) {
-            assertEquals("(" + context + ") Different values for key " + key, expected.get(key), actual.get(key));
-        }
+    @Test
+    public void serializeLibraryInstance() {
+        Library library = new Library("lib-1", "Language Engineering Library");
+        Writer mv = new Writer("mv", "Markus Völter");
+        Writer mb = new Writer("mb", "Meinte Boersma");
+        Book de = new Book("de", "DSL Engineering", mv).setPages(558);
+        Book bfd = new Book("bfd", "Business-Friendly DSLs", mb).setPages(517);
+        library.addBook(de);
+        library.addBook(bfd);
+        JsonArray jsonSerialized = JsonSerialization.getStandardSerialization().serialize(library).getAsJsonArray();
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
+        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }
 
 }

@@ -6,6 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
@@ -17,15 +18,16 @@ import java.util.stream.Collectors;
 /**
  * This class is responsible for unserializing models.
  *
- * The unserialization of each node can be affected by different points:
- * 1. Is the Concept used by the Node known to the unserializer?
- * 2. If the Concept is known, is there a specific class that should be used to unserialize that particular concept?
+ * The unserialization of each node _requires_ the unserializer to be able to resolve the Concept used.
+ * If this requirement is not satisfied the unserialization will fail.
+ * The actual class implementing Node being instantiated will depend on the configuration.
+ * Specific classes for specific Concepts can be registered, and the usage of DynamicNode for all others can be enabled.
  *
- * Depending on the answers to these questions the Node could be unserialized using a specific class or the generic
- * DynamicNode class. Moreover, it could have access to a proper Concept or a DynamicConcept.
- *
- * For the initial implementation we consider only the case in which the Concept can be resolved and we have a specific
- * Node subclass to be used for the instantiation of the node.
+ * Note that by default JsonSerialization will require specific Node subclasses to be specified.
+ * For example, it will need to know that the concept with id 'foo-library' can be unserialized to instances of the
+ * class Library.
+ * If you want serialization to instantiate DynamicNodes for concepts for which you do not have a corresponding Node
+ * subclass, then you need to enable that behavior explicitly by calling getNodeInstantiator().enableDynamicNodes().
  */
 public class JsonSerialization {
 
@@ -122,9 +124,7 @@ public class JsonSerialization {
         });
         jsonObject.add("references", references);
 
-        if (node.getParent() == null) {
-            jsonObject.add("parent", JsonNull.INSTANCE);
-        } else {
+        if (node.getParent() != null) {
             jsonObject.addProperty("parent", node.getParent().getID());
         }
 
@@ -192,8 +192,12 @@ public class JsonSerialization {
             JsonElement parentValue = data.get("parent");
             String parentNodeID = parentValue instanceof JsonNull ? null : parentValue.getAsString();
             Node parent = nodeIdToNode.get(parentNodeID);
+            // FIXME this does not look great...
+            // should we add setParent to the Node interface?
             if (node instanceof M3Node) {
                 ((M3Node<M3Node>) node).setParent(parent);
+            } else if (node instanceof DynamicNode) {
+                ((DynamicNode) node).setParent(parent);
             }
         }
     }
