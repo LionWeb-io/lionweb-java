@@ -18,15 +18,10 @@ import java.util.stream.Collectors;
 /**
  * This class is responsible for unserializing models.
  *
- * The unserialization of each node can be affected by different points:
- * 1. Is the Concept used by the Node known to the unserializer?
- * 2. If the Concept is known, is there a specific class that should be used to unserialize that particular concept?
- *
- * Depending on the answers to these questions the Node could be unserialized using a specific class or the generic
- * DynamicNode class. Moreover, it could have access to a proper Concept or a DynamicConcept.
- *
- * For the initial implementation we consider only the case in which the Concept can be resolved and we have a specific
- * Node subclass to be used for the instantiation of the node.
+ * The unserialization of each node _requires_ the unserializer to be able to resolve the Concept used.
+ * If this requirement is not satisfied the unserialization will fail.
+ * The actual class implementing Node being instantiated will depend on the configuration.
+ * Specific classes for specific Concepts can be registered, and the usage of DynamicNode for all others can be enabled.
  */
 public class JsonSerialization {
 
