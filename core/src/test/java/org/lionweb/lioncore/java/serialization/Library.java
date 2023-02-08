@@ -2,8 +2,9 @@ package org.lionweb.lioncore.java.serialization;
 
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.impl.DynamicNode;
 
-public class Library extends DummyNode {
+public class Library extends DynamicNode {
 
     public Library(String id, String name) {
         super(id, LibraryMetamodel.LIBRARY);
