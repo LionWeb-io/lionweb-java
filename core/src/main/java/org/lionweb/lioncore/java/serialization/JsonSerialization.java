@@ -10,6 +10,7 @@ import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +84,16 @@ public class JsonSerialization {
         JsonArray arrayOfNodes = new JsonArray();
         serialize(node, arrayOfNodes);
         return arrayOfNodes;
+    }
+
+    public JsonElement serialize(List<Node> nodes) {
+        JsonArray arrayOfNodes = new JsonArray();
+        nodes.forEach(node -> serialize(node, arrayOfNodes));
+        return arrayOfNodes;
+    }
+
+    public JsonElement serialize(Node... nodes) {
+        return serialize(Arrays.asList(nodes));
     }
 
     private void serialize(Node node, JsonArray arrayOfNodes) {
@@ -253,4 +264,5 @@ public class JsonSerialization {
             throw new IllegalArgumentException(propertyName + " property expected to be a string while it is " + value);
         }
     }
+
 }
