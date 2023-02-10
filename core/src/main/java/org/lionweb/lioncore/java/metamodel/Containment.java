@@ -5,6 +5,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link FeaturesContainer}.
@@ -45,6 +46,7 @@ public class Containment extends Link<Containment> {
     }
 
     public static Containment createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Objects.requireNonNull(id, "id should not be null");
         Containment containment = new Containment(simpleName, id);
         containment.setOptional(true);
         containment.setMultiple(true);

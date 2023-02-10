@@ -5,6 +5,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * This represents a relation between an {@link FeaturesContainer} and referred {@link FeaturesContainer}.
@@ -27,6 +28,7 @@ public class Reference extends Link<Reference> {
     }
 
     public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Objects.requireNonNull(id, "id should not be null");
         Reference reference = new Reference(simpleName, id);
         reference.setOptional(true);
         reference.setMultiple(false);
@@ -43,6 +45,7 @@ public class Reference extends Link<Reference> {
     }
 
     public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Objects.requireNonNull(id, "id should not be null");
         Reference reference = new Reference(simpleName, id);
         reference.setOptional(false);
         reference.setMultiple(false);
@@ -59,6 +62,7 @@ public class Reference extends Link<Reference> {
     }
 
     public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+        Objects.requireNonNull(id, "id should not be null");
         Reference reference = new Reference(simpleName, id);
         reference.setOptional(true);
         reference.setMultiple(true);

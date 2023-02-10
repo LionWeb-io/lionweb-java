@@ -14,6 +14,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -132,6 +133,35 @@ public class JsonSerializationTest {
         library.addBook(bfd);
         JsonArray jsonSerialized = JsonSerialization.getStandardSerialization().serialize(library).getAsJsonArray();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
+        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+    }
+
+    @Test
+    public void serializeMultipleSubtrees() {
+        Library bobsLibrary = new Library("bl", "Bob's Library");
+        GuideBookWriter jackLondon = new GuideBookWriter("jl", "Jack London");
+        jackLondon.setCountries("Alaska");
+        Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
+        bobsLibrary.addBook(explorerBook);
+        assertEquals(Arrays.asList(explorerBook), bobsLibrary.getChildren());
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon).getAsJsonArray();
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
+        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+    }
+
+    @Test
+    public void serializeMultipleSubtreesSkipDuplicateNodes() {
+        Library bobsLibrary = new Library("bl", "Bob's Library");
+        GuideBookWriter jackLondon = new GuideBookWriter("jl", "Jack London");
+        jackLondon.setCountries("Alaska");
+        Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
+        bobsLibrary.addBook(explorerBook);
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon, explorerBook).getAsJsonArray();
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }

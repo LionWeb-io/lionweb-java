@@ -6,6 +6,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A Metamodel will provide the {@link Concept}s necessary to describe data in a particular domain together with supporting
@@ -24,6 +25,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
     }
 
     public Metamodel(@Nonnull String qualifiedName) {
+        Objects.requireNonNull(qualifiedName, "qualifiedName should not be null");
         this.setQualifiedName(qualifiedName);
     }
 
@@ -45,11 +47,13 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
     }
 
     public Metamodel addDependency(@Nonnull Metamodel dependency) {
+        Objects.requireNonNull(dependency, "dependency should not be null");
         this.addReferenceMultipleValue("dependsOn", dependency);
         return dependency;
     }
 
     public <T extends MetamodelElement> T addElement(@Nonnull T element) {
+        Objects.requireNonNull(element, "element should not be null");
         this.addContainmentMultipleValue("elements", element);
         element.setMetamodel(this);
         return element;

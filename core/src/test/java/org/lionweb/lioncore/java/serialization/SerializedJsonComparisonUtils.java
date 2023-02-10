@@ -40,6 +40,7 @@ class SerializedJsonComparisonUtils {
         if (!missingIDs.isEmpty()) {
             throw new AssertionError("Missing IDs found: " + missingIDs);
         }
+        assertEquals("The number of nodes is different", expected.size(), actual.size());
         for (String id: expectedElements.keySet()) {
             JsonObject expectedElement = expectedElements.get(id);
             JsonObject actualElement = actualElements.get(id);

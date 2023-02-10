@@ -17,6 +17,8 @@ public class LibraryMetamodel {
     public static Concept BOOK;
     public static Concept WRITER;
 
+    public static Concept GUIDE_BOOK_WRITER;
+
     static {
         InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
@@ -26,5 +28,6 @@ public class LibraryMetamodel {
         LIBRARY  = LIBRARY_MM.getConceptByName("Library");
         BOOK = LIBRARY_MM.getConceptByName("Book");
         WRITER = LIBRARY_MM.getConceptByName("Writer");
+        GUIDE_BOOK_WRITER = LIBRARY_MM.getConceptByName("GuideBookWriter");
     }
 }

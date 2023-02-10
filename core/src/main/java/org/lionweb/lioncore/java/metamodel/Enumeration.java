@@ -5,6 +5,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.Objects;
 
 public class Enumeration extends DataType<Enumeration> implements NamespaceProvider {
     public Enumeration() {
@@ -20,6 +21,7 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
     }
 
     public void addLiteral(@Nonnull EnumerationLiteral literal) {
+        Objects.requireNonNull(literal, "literal should not be null");
         this.addContainmentMultipleValue("literals", literal);
     }
 

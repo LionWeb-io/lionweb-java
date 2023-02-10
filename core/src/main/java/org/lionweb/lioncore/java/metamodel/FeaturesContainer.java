@@ -32,6 +32,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     }
 
     public @Nullable Feature getFeatureByName(@Nonnull String simpleName) {
+        Objects.requireNonNull(simpleName, "simpleName should not be null");
         return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
                 .orElse(null);
     }
@@ -57,6 +58,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     }
 
     public void addFeature(@Nonnull Feature feature) {
+        Objects.requireNonNull(feature, "feature should not be null");
         this.addContainmentMultipleValue("features", feature);
         feature.setContainer(this);
     }
@@ -67,30 +69,36 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     }
 
     public @Nullable Property getPropertyByID(@Nonnull String propertyId) {
+        Objects.requireNonNull(propertyId, "propertyId should not be null");
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property) f)
                 .filter(p -> Objects.equals(p.getID(), propertyId)).findFirst().orElse(null);
     }
 
     public @Nullable Property getPropertyByName(@Nonnull String propertyName) {
+        Objects.requireNonNull(propertyName, "propertyName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property) f)
                 .filter(p -> Objects.equals(p.getSimpleName(), propertyName)).findFirst().orElse(null);
     }
 
     public @Nullable Containment getContainmentByID(@Nonnull String containmentID) {
+        Objects.requireNonNull(containmentID, "containmentID should not be null");
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment) f)
                 .filter(c -> Objects.equals(c.getID(), containmentID)).findFirst().orElse(null);
     }
 
     public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
+        Objects.requireNonNull(containmentName, "containmentName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment) f)
                 .filter(c -> Objects.equals(c.getSimpleName(), containmentName)).findFirst().orElse(null);
     }
 
     public @Nullable Reference getReferenceByID(@Nonnull String referenceID) {
+        Objects.requireNonNull(referenceID, "referenceID should not be null");
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference) f)
                 .filter(c -> Objects.equals(c.getID(), referenceID)).findFirst().orElse(null);
     }
     public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
+        Objects.requireNonNull(referenceName, "referenceName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference) f)
                 .filter(c -> Objects.equals(c.getSimpleName(), referenceName)).findFirst().orElse(null);
     }
