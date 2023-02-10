@@ -4,6 +4,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * This indicates a simple value associated to an entity.
@@ -32,6 +33,7 @@ public class Property extends Feature<Property> {
     }
 
     public static Property createRequired(@Nullable String simpleName, @Nullable DataType type, @Nonnull String id) {
+        Objects.requireNonNull(id, "id should not be null");
         Property property = new Property(simpleName, null, id);
         property.setOptional(false);
         property.setType(type);

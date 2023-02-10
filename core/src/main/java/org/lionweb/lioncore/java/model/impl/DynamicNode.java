@@ -26,12 +26,9 @@ public class DynamicNode implements Node {
         this.concept = concept;
     }
 
-
     @Override
     public Object getPropertyValue(@Nonnull Property property) {
-        if (property == null) {
-            throw new IllegalArgumentException("Property should not be null");
-        }
+        Objects.requireNonNull(property, "Property should not be null");
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept");
         }
@@ -40,9 +37,7 @@ public class DynamicNode implements Node {
 
     @Override
     public void setPropertyValue(@Nonnull Property property, Object value) {
-        if (property == null) {
-            throw new IllegalArgumentException("Property should not be null");
-        }
+        Objects.requireNonNull(property, "Property should not be null");
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property " + property + " is not belonging to concept " + getConcept());
         }

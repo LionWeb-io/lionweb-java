@@ -5,6 +5,7 @@ import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.Objects;
 
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
@@ -29,6 +30,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
     }
 
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container, @Nonnull String id) {
+        Objects.requireNonNull(id, "id should not be null");
         this.setID(id);
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer

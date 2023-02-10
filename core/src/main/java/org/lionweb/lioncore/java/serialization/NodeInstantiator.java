@@ -37,7 +37,7 @@ public class NodeInstantiator {
     }
 
     public void registerLionCoreCustomUnserializers() {
-        customUnserializers.put(LionCore.getMetamodel().getID(), (concept, data, id) -> new Metamodel(null).setID(id));
+        customUnserializers.put(LionCore.getMetamodel().getID(), (concept, data, id) -> new Metamodel().setID(id));
         customUnserializers.put(LionCore.getConcept().getID(), (concept, data, id) -> new Concept((String) null).setID(id));
         customUnserializers.put(LionCore.getConceptInterface().getID(), (concept, data, id) -> new ConceptInterface((String) null).setID(id));
         customUnserializers.put(LionCore.getProperty().getID(), (concept, data, id) -> new Property(null, null, id));

@@ -56,6 +56,7 @@ public class Concept extends FeaturesContainer<Concept> {
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
+        Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
         this.addReferenceMultipleValue("implemented", conceptInterface);
     }
 
@@ -104,49 +105,37 @@ public class Concept extends FeaturesContainer<Concept> {
     }
 
     public @Nullable Property getPropertyByName(@Nonnull String propertyName) {
-        if (propertyName == null) {
-            throw new IllegalArgumentException("propertyName cannot be null");
-        }
+        Objects.requireNonNull(propertyName, "propertyName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Property).map(f -> (Property)f)
                 .filter(p -> Objects.equals(p.getSimpleName(), propertyName)).findFirst().orElse(null);
     }
 
     public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
-        if (containmentName == null) {
-            throw new IllegalArgumentException("containmentName cannot be null");
-        }
+        Objects.requireNonNull(containmentName, "containmentName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), containmentName)).findFirst().orElse(null);
     }
 
     public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
-        if (referenceName == null) {
-            throw new IllegalArgumentException("referenceName cannot be null");
-        }
+        Objects.requireNonNull(referenceName, "referenceName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), referenceName)).findFirst().orElse(null);
     }
 
     public @Nullable Containment getContainmentByID(@Nonnull String containmentID) {
-        if (containmentID == null) {
-            throw new IllegalArgumentException("containmentID cannot be null");
-        }
+        Objects.requireNonNull(containmentID, "containmentID should not be null");
         return allFeatures().stream().filter(f -> f instanceof Containment).map(f -> (Containment)f)
                 .filter(c -> Objects.equals(c.getID(), containmentID)).findFirst().orElse(null);
     }
 
     public @Nullable Reference getReferenceByID(@Nonnull String referenceID) {
-        if (referenceID == null) {
-            throw new IllegalArgumentException("referenceID cannot be null");
-        }
+        Objects.requireNonNull(referenceID, "referenceID should not be null");
         return allFeatures().stream().filter(f -> f instanceof Reference).map(f -> (Reference)f)
                 .filter(c -> c.getID().equals(referenceID)).findFirst().orElse(null);
     }
 
-    public @Nullable Link getLinkByName(String linkName) {
-        if (linkName == null) {
-            throw new IllegalArgumentException("linkName cannot be null");
-        }
+    public @Nullable Link getLinkByName(@Nonnull String linkName) {
+        Objects.requireNonNull(linkName, "linkName should not be null");
         return allFeatures().stream().filter(f -> f instanceof Link).map(f -> (Link)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), linkName)).findFirst().orElse(null);
     }

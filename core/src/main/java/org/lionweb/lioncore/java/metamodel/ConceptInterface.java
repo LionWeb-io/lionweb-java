@@ -6,6 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A ConceptInterface represents a category of entities sharing some similar characteristics.
@@ -43,6 +44,7 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
     }
 
     public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
+        Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
         this.addReferenceMultipleValue("extended", extendedInterface);
     }
 
