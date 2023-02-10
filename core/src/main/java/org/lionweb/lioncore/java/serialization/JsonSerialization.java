@@ -10,10 +10,7 @@ import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -82,13 +79,14 @@ public class JsonSerialization {
 
     public JsonElement serialize(Node node) {
         JsonArray arrayOfNodes = new JsonArray();
-        serialize(node, arrayOfNodes);
+        serialize(node, arrayOfNodes, new HashSet<>());
         return arrayOfNodes;
     }
 
     public JsonElement serialize(List<Node> nodes) {
         JsonArray arrayOfNodes = new JsonArray();
-        nodes.forEach(node -> serialize(node, arrayOfNodes));
+        Set<String> encounteredIDs = new HashSet<>();
+        nodes.forEach(node -> serialize(node, arrayOfNodes, encounteredIDs));
         return arrayOfNodes;
     }
 
@@ -96,9 +94,13 @@ public class JsonSerialization {
         return serialize(Arrays.asList(nodes));
     }
 
-    private void serialize(Node node, JsonArray arrayOfNodes) {
+    private void serialize(Node node, JsonArray arrayOfNodes, Set<String> encounteredIDs) {
+        if (encounteredIDs.contains(node.getID())) {
+            return;
+        }
         arrayOfNodes.add(serializeThisNode(node));
-        node.getChildren().forEach(c -> serialize(c, arrayOfNodes));
+        encounteredIDs.add(node.getID());
+        node.getChildren().forEach(c -> serialize(c, arrayOfNodes, encounteredIDs));
     }
 
     private String serializePropertyValue(Object value) {

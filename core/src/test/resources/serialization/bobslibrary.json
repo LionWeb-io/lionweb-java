@@ -6,7 +6,9 @@
       "LdgCnVXNgZD7CLbBhBin2Rcdumx4qZUYz_jh2QnP5z8": "Bob's Library"
     },
     "children": {
-      "TFS1ME6sEyRbkRchsr8zaZCcj_uF1LM0LXK24gbnxZM": []
+      "TFS1ME6sEyRbkRchsr8zaZCcj_uF1LM0LXK24gbnxZM": [
+        "eb"
+      ]
     },
     "references": {}
   },
@@ -14,13 +16,25 @@
     "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
     "id": "eb",
     "properties": {
-      "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": "Explorer Book"
+      "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": "Explorer Book",
+      "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": null
     },
     "children": {},
     "references": {
       "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
         "jl"
       ]
-    }
+    },
+    "parent": "bl"
+  },
+  {
+    "concept": "nNUEzZ7it7d2HoHPAtk5rGO4SsqVA3hAlBwkK1KP8QU",
+    "id": "jl",
+    "properties": {
+      "PoZyl6WXh-Cz5h2RspK1NL6zX9DdLwGpUUC-ygQmHMA": "Alaska",
+      "onRRrZaasiOtDU2qFJgyW8OVz8p5-hqQu0Vlc_7Aq6s": "Jack London"
+    },
+    "children": {},
+    "references": {}
   }
 ]

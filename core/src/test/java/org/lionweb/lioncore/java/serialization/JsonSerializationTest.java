@@ -143,8 +143,24 @@ public class JsonSerializationTest {
         GuideBookWriter jackLondon = new GuideBookWriter("jl", "Jack London");
         jackLondon.setCountries("Alaska");
         Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
+        bobsLibrary.addBook(explorerBook);
+        assertEquals(Arrays.asList(explorerBook), bobsLibrary.getChildren());
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, explorerBook).getAsJsonArray();
+        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon).getAsJsonArray();
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
+        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+    }
+
+    @Test
+    public void serializeMultipleSubtreesSkipDuplicateNodes() {
+        Library bobsLibrary = new Library("bl", "Bob's Library");
+        GuideBookWriter jackLondon = new GuideBookWriter("jl", "Jack London");
+        jackLondon.setCountries("Alaska");
+        Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
+        bobsLibrary.addBook(explorerBook);
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon, explorerBook).getAsJsonArray();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
