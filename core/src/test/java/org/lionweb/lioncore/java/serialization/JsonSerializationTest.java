@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -164,6 +165,120 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+    }
+
+    @Test
+    public void serializeBoolean() {
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        node.setP1(true);
+
+        JsonArray expected = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p1\": \"true\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        assertEquivalentLionWebJson(expected, serialized);
+    }
+
+    @Test
+    public void unserializeBoolean() {
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        node.setP1(true);
+
+        JsonArray serialized = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p1\": \"true\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
+        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        assertEquals(Arrays.asList(node), unserialized);
+    }
+
+    @Test
+    public void serializeString() {
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        node.setP3("qwerty");
+
+        JsonArray expected = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p3\": \"qwerty\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        assertEquivalentLionWebJson(expected, serialized);
+    }
+
+    @Test
+    public void unserializeString() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void serializeInteger() {
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        node.setP2(2904);
+
+        JsonArray expected = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p2\": \"2904\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        assertEquivalentLionWebJson(expected, serialized);
+    }
+
+    @Test
+    public void unserializeInteger() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Test
+    public void serializeJSON() {
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        JsonArray ja = new JsonArray();
+        ja.add(1);
+        ja.add("foo");
+        node.setP4(ja);
+
+        JsonArray expected = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p4\": \"[1,\\\"foo\\\"]\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        assertEquivalentLionWebJson(expected, serialized);
+    }
+
+    @Test
+    public void unserializeJSON() {
+        throw new UnsupportedOperationException();
     }
 
 }

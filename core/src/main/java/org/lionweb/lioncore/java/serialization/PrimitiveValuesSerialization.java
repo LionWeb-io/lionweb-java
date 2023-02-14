@@ -1,5 +1,9 @@
 package org.lionweb.lioncore.java.serialization;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import org.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
 
 import java.util.HashMap;
@@ -28,6 +32,10 @@ public class PrimitiveValuesSerialization {
     public void registerLionBuiltinsPrimitiveSerializersAndUnserializers() {
         primitiveUnserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
         primitiveUnserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
+        primitiveUnserializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveUnserializer<JsonElement>) serializedValue -> JsonParser.parseString(serializedValue));
+
+        primitiveSerializers.put(LionCoreBuiltins.getBoolean().getID(), (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
+        primitiveSerializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
     }
 
     public Object unserialize(String primitiveTypeID, String serializedValue) {
