@@ -44,5 +44,7 @@ public class NodeInstantiator {
         customUnserializers.put(LionCore.getReference().getID(), (concept, data, id) -> new Reference(null, id));
         customUnserializers.put(LionCore.getContainment().getID(), (concept, data, id) -> new Containment(null, id));
         customUnserializers.put(LionCore.getPrimitiveType().getID(), (concept, data, id) -> new PrimitiveType(id));
+        customUnserializers.put(LionCore.getEnumeration().getID(), (concept, data, id) -> new Enumeration().setID(id));
+        customUnserializers.put(LionCore.getEnumerationLiteral().getID(), (concept, data, id) -> new EnumerationLiteral().setID(id));
     }
 }
