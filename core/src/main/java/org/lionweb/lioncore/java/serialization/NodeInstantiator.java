@@ -36,6 +36,11 @@ public class NodeInstantiator {
         }
     }
 
+    public NodeInstantiator registerCustomUnserializer(String conceptID, ConceptSpecificNodeInstantiator<?> conceptSpecificNodeInstantiator) {
+        customUnserializers.put(conceptID, conceptSpecificNodeInstantiator);
+        return this;
+    }
+
     public void registerLionCoreCustomUnserializers() {
         customUnserializers.put(LionCore.getMetamodel().getID(), (concept, data, id) -> new Metamodel().setID(id));
         customUnserializers.put(LionCore.getConcept().getID(), (concept, data, id) -> new Concept((String) null).setID(id));
@@ -44,5 +49,7 @@ public class NodeInstantiator {
         customUnserializers.put(LionCore.getReference().getID(), (concept, data, id) -> new Reference(null, id));
         customUnserializers.put(LionCore.getContainment().getID(), (concept, data, id) -> new Containment(null, id));
         customUnserializers.put(LionCore.getPrimitiveType().getID(), (concept, data, id) -> new PrimitiveType(id));
+        customUnserializers.put(LionCore.getEnumeration().getID(), (concept, data, id) -> new Enumeration().setID(id));
+        customUnserializers.put(LionCore.getEnumerationLiteral().getID(), (concept, data, id) -> new EnumerationLiteral().setID(id));
     }
 }

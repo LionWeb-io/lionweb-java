@@ -2,10 +2,12 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.Concept;
+import org.lionweb.lioncore.java.metamodel.Enumeration;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.model.Node;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
@@ -164,6 +167,45 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+    }
+
+    @Test
+    public void unserializeMetamodelWithEnumerations() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+
+        Enumeration testEnumeration1 = (Enumeration) unserializedNodes.stream().filter(n -> n.getID().equals("MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI")).findFirst().get();
+        assertEquals("TestEnumeration1", testEnumeration1.getSimpleName());
+        assertEquals(2, testEnumeration1.getLiterals().size());
+
+        Concept sideTransformInfo = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ")).findFirst().get();
+        assertEquals("SideTransformInfo", sideTransformInfo.getSimpleName());
+        assertEquals(false, sideTransformInfo.isAbstract());
+        assertEquals(3, sideTransformInfo.getFeatures().size());
+        assertEquals(3, sideTransformInfo.getChildren().size());
+    }
+
+    @Test
+    public void reserializeMetamodelWithEnumerations() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        JsonArray reserialized = jsonSerialization.serialize(unserializedNodes).getAsJsonArray();
+
+        List<JsonObject> metamodels = getNodesByConcept(reserialized, "LIonCore_M3_Metamodel");
+        assertEquals(2, metamodels.size());
+
+        List<JsonObject> concepts = getNodesByConcept(reserialized, "LIonCore_M3_Concept");
+        assertEquals(19, concepts.size());
+
+        assertEquivalentLionWebJson(jsonElement.getAsJsonArray(), reserialized);
+    }
+
+    private List<JsonObject> getNodesByConcept(JsonArray nodes, String conceptID) {
+        return nodes.asList().stream().map(JsonElement::getAsJsonObject).filter(e -> e.get("concept").getAsString().equals(conceptID)).collect(Collectors.toList());
     }
 
 }
