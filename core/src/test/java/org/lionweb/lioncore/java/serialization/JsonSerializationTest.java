@@ -132,6 +132,9 @@ public class JsonSerializationTest {
         Book bfd = new Book("bfd", "Business-Friendly DSLs", mb).setPages(517);
         library.addBook(de);
         library.addBook(bfd);
+
+        // The library MM is not using the standard primitive types but its own, so we need to specify how to serialize
+        // those values
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
@@ -149,6 +152,9 @@ public class JsonSerializationTest {
         Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
         bobsLibrary.addBook(explorerBook);
         assertEquals(Arrays.asList(explorerBook), bobsLibrary.getChildren());
+
+        // The library MM is not using the standard primitive types but its own, so we need to specify how to serialize
+        // those values
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
@@ -165,6 +171,9 @@ public class JsonSerializationTest {
         jackLondon.setCountries("Alaska");
         Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
         bobsLibrary.addBook(explorerBook);
+
+        // The library MM is not using the standard primitive types but its own, so we need to specify how to serialize
+        // those values
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
