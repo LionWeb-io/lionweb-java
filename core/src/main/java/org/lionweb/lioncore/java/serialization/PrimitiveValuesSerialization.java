@@ -33,9 +33,12 @@ public class PrimitiveValuesSerialization {
         primitiveUnserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
         primitiveUnserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
         primitiveUnserializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveUnserializer<JsonElement>) serializedValue -> JsonParser.parseString(serializedValue));
+        primitiveUnserializers.put(LionCoreBuiltins.getInteger().getID(), (PrimitiveUnserializer<Integer>) serializedValue -> Integer.parseInt(serializedValue));
 
         primitiveSerializers.put(LionCoreBuiltins.getBoolean().getID(), (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
         primitiveSerializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
+        primitiveSerializers.put(LionCoreBuiltins.getString().getID(), (PrimitiveSerializer<String>) value -> value);
+        primitiveSerializers.put(LionCoreBuiltins.getInteger().getID(), (PrimitiveSerializer<Integer>) value -> value.toString());
     }
 
     public Object unserialize(String primitiveTypeID, String serializedValue) {

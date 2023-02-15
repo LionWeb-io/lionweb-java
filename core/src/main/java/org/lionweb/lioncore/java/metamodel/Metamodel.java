@@ -29,8 +29,9 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
         this.setQualifiedName(qualifiedName);
     }
 
-    private void setQualifiedName(String qualifiedName) {
+    public Metamodel setQualifiedName(String qualifiedName) {
         setPropertyValue("qualifiedName", qualifiedName);
+        return this;
     }
 
     @Override

@@ -202,6 +202,7 @@ public class JsonSerializationTest {
                 "  }]").getAsJsonArray();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
+        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
         List<Node> unserialized = jsonSerialization.unserialize(serialized);
         assertEquals(Arrays.asList(node), unserialized);
     }
@@ -227,7 +228,23 @@ public class JsonSerializationTest {
 
     @Test
     public void unserializeString() {
-        throw new UnsupportedOperationException();
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        node.setP3("qwerty");
+
+        JsonArray serialized = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p3\": \"qwerty\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
+        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
+        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        assertEquals(Arrays.asList(node), unserialized);
     }
 
     @Test
@@ -251,7 +268,23 @@ public class JsonSerializationTest {
 
     @Test
     public void unserializeInteger() {
-        throw new UnsupportedOperationException();
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        node.setP2(2904);
+
+        JsonArray serialized = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p2\": \"2904\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
+        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
+        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        assertEquals(Arrays.asList(node), unserialized);
     }
 
     @Test
@@ -278,7 +311,26 @@ public class JsonSerializationTest {
 
     @Test
     public void unserializeJSON() {
-        throw new UnsupportedOperationException();
+        MyNodeWithProperties node = new MyNodeWithProperties("n1");
+        JsonArray ja = new JsonArray();
+        ja.add(1);
+        ja.add("foo");
+        node.setP4(ja);
+
+        JsonArray serialized = JsonParser.parseString("[{\n" +
+                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
+                "    \"id\": \"n1\",\n" +
+                "    \"properties\": {\n" +
+                "      \"p4\": \"[1,\\\"foo\\\"]\"\n" +
+                "    },\n" +
+                "    \"children\": {},\n" +
+                "    \"references\": {}\n" +
+                "  }]").getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
+        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
+        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        assertEquals(Arrays.asList(node), unserialized);
     }
 
 }

@@ -36,6 +36,11 @@ public class NodeInstantiator {
         }
     }
 
+    public NodeInstantiator registerCustomUnserializer(String conceptID, ConceptSpecificNodeInstantiator<?> instantiator) {
+        customUnserializers.put(conceptID, instantiator);
+        return this;
+    }
+
     public void registerLionCoreCustomUnserializers() {
         customUnserializers.put(LionCore.getMetamodel().getID(), (concept, data, id) -> new Metamodel().setID(id));
         customUnserializers.put(LionCore.getConcept().getID(), (concept, data, id) -> new Concept((String) null).setID(id));
