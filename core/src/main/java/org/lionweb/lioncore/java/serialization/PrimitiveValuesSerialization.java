@@ -29,6 +29,16 @@ public class PrimitiveValuesSerialization {
     private Map<String, PrimitiveUnserializer<?>> primitiveUnserializers = new HashMap<>();
     private Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
+    public PrimitiveValuesSerialization registerUnserializer(String dataTypeID, PrimitiveUnserializer<?> unserializer) {
+        this.primitiveUnserializers.put(dataTypeID, unserializer);
+        return this;
+    }
+
+    public PrimitiveValuesSerialization registerSerializer(String dataTypeID, PrimitiveSerializer<?> serializer) {
+        this.primitiveSerializers.put(dataTypeID, serializer);
+        return this;
+    }
+
     public void registerLionBuiltinsPrimitiveSerializersAndUnserializers() {
         primitiveUnserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
         primitiveUnserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
@@ -53,7 +63,7 @@ public class PrimitiveValuesSerialization {
         if (primitiveSerializers.containsKey(primitiveTypeID)) {
             return ((PrimitiveSerializer<Object>)primitiveSerializers.get(primitiveTypeID)).serialize(value);
         } else {
-            throw new IllegalArgumentException("Unable to serialize primitive values of type " + primitiveTypeID);
+            throw new IllegalArgumentException("Unable to serialize primitive values of type " + primitiveTypeID + " (class: "+value.getClass()+")");
         }
     }
 }

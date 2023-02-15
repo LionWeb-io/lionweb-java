@@ -20,7 +20,7 @@ public class Book extends DynamicNode {
     }
 
     public Book setPages(int pages) {
-        this.setPropertyValue(getConcept().getPropertyByName("pages"), Integer.toString(pages));
+        this.setPropertyValue(getConcept().getPropertyByName("pages"), pages);
         return this;
     }
 

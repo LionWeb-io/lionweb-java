@@ -132,7 +132,10 @@ public class JsonSerializationTest {
         Book bfd = new Book("bfd", "Business-Friendly DSLs", mb).setPages(517);
         library.addBook(de);
         library.addBook(bfd);
-        JsonArray jsonSerialized = JsonSerialization.getStandardSerialization().serialize(library).getAsJsonArray();
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
+        JsonArray jsonSerialized = jsonSerialization.serialize(library).getAsJsonArray();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
@@ -147,6 +150,8 @@ public class JsonSerializationTest {
         bobsLibrary.addBook(explorerBook);
         assertEquals(Arrays.asList(explorerBook), bobsLibrary.getChildren());
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
         JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon).getAsJsonArray();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
@@ -161,6 +166,8 @@ public class JsonSerializationTest {
         Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
         bobsLibrary.addBook(explorerBook);
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
         JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon, explorerBook).getAsJsonArray();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
