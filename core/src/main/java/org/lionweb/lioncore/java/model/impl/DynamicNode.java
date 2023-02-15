@@ -185,8 +185,13 @@ public class DynamicNode implements Node {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof DynamicNode that)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof DynamicNode)) {
+            return false;
+        }
+        DynamicNode that = (DynamicNode) o;
         return Objects.equals(id, that.id) && Objects.equals(parent, that.parent) && Objects.equals(concept, that.concept) && Objects.equals(propertyValues, that.propertyValues) && Objects.equals(linkValues, that.linkValues);
     }
 
