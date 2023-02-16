@@ -37,8 +37,9 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
         return this.getLinkSingleValue("metamodel");
     }
 
-    public void setMetamodel(@Nullable Metamodel metamodel) {
+    public T setMetamodel(@Nullable Metamodel metamodel) {
         this.setReferenceSingleValue("metamodel", metamodel);
+        return (T)this;
     }
 
     @Override
@@ -46,8 +47,9 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
         return this.getPropertyValue("simpleName", String.class);
     }
 
-    public void setSimpleName(String simpleName) {
+    public T setSimpleName(String simpleName) {
         this.setPropertyValue("simpleName", simpleName);
+        return (T)this;
     }
 
     @Override

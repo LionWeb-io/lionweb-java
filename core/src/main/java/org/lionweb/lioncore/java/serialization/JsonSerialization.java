@@ -103,11 +103,11 @@ public class JsonSerialization {
         node.getChildren().forEach(c -> serialize(c, arrayOfNodes, encounteredIDs));
     }
 
-    private String serializePropertyValue(Object value) {
+    private String serializePropertyValue(DataType dataType, Object value) {
         if (value == null) {
             return null;
         }
-        return value.toString();
+        return primitiveValuesSerialization.serialize(dataType.getID(), value);
     }
 
     private JsonObject serializeThisNode(Node node) {
@@ -117,7 +117,7 @@ public class JsonSerialization {
 
         JsonObject properties = new JsonObject();
         node.getConcept().allProperties().stream().filter(p -> !p.isDerived()).forEach(property -> {
-            properties.addProperty(property.getID(), serializePropertyValue(node.getPropertyValue(property)));
+            properties.addProperty(property.getID(), serializePropertyValue(property.getType(), node.getPropertyValue(property)));
         });
         jsonObject.add("properties", properties);
 

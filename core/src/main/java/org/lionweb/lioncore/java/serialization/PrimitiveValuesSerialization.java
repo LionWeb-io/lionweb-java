@@ -1,5 +1,9 @@
 package org.lionweb.lioncore.java.serialization;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import org.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
 
 import java.util.HashMap;
@@ -25,9 +29,26 @@ public class PrimitiveValuesSerialization {
     private Map<String, PrimitiveUnserializer<?>> primitiveUnserializers = new HashMap<>();
     private Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
+    public PrimitiveValuesSerialization registerUnserializer(String dataTypeID, PrimitiveUnserializer<?> unserializer) {
+        this.primitiveUnserializers.put(dataTypeID, unserializer);
+        return this;
+    }
+
+    public PrimitiveValuesSerialization registerSerializer(String dataTypeID, PrimitiveSerializer<?> serializer) {
+        this.primitiveSerializers.put(dataTypeID, serializer);
+        return this;
+    }
+
     public void registerLionBuiltinsPrimitiveSerializersAndUnserializers() {
         primitiveUnserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
         primitiveUnserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
+        primitiveUnserializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveUnserializer<JsonElement>) serializedValue -> JsonParser.parseString(serializedValue));
+        primitiveUnserializers.put(LionCoreBuiltins.getInteger().getID(), (PrimitiveUnserializer<Integer>) serializedValue -> Integer.parseInt(serializedValue));
+
+        primitiveSerializers.put(LionCoreBuiltins.getBoolean().getID(), (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
+        primitiveSerializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
+        primitiveSerializers.put(LionCoreBuiltins.getString().getID(), (PrimitiveSerializer<String>) value -> value);
+        primitiveSerializers.put(LionCoreBuiltins.getInteger().getID(), (PrimitiveSerializer<Integer>) value -> value.toString());
     }
 
     public Object unserialize(String primitiveTypeID, String serializedValue) {
@@ -42,7 +63,7 @@ public class PrimitiveValuesSerialization {
         if (primitiveSerializers.containsKey(primitiveTypeID)) {
             return ((PrimitiveSerializer<Object>)primitiveSerializers.get(primitiveTypeID)).serialize(value);
         } else {
-            throw new IllegalArgumentException("Unable to serialize primitive values of type " + primitiveTypeID);
+            throw new IllegalArgumentException("Unable to serialize primitive values of type " + primitiveTypeID + " (class: "+value.getClass()+")");
         }
     }
 }

@@ -67,12 +67,19 @@ public class Concept extends FeaturesContainer<Concept> {
 
     @Override
     public String toString() {
-        String qn;
-        try {
-            qn = this.qualifiedName();
-        } catch (Throwable e) {
-            qn = "...";
-        }
+        String qualifier = "<no metamodel>";
+        if (this.getContainer() != null) {
+            if (this.getContainer().namespaceQualifier() != null) {
+                qualifier = this.getContainer().namespaceQualifier();
+            } else {
+                qualifier = "<unnamed metamodel>";
+            }
+        };
+        String qualified = "<unnamed>";
+        if (this.getSimpleName() != null) {
+            qualified = this.getSimpleName();
+        };
+        String qn = qualifier + "." + qualified;
         return "Concept(" + qn + ")";
     }
 
