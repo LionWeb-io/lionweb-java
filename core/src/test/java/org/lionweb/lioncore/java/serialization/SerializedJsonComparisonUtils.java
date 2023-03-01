@@ -5,10 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -21,7 +18,21 @@ class SerializedJsonComparisonUtils {
 
     }
 
-    static void assertEquivalentLionWebJson(JsonArray expected, JsonArray actual) {
+    // getAsJsonObject().get("nodes")
+
+    static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
+        Set<String> keys = new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes"));
+        if (!expected.keySet().equals(keys)) {
+            throw new RuntimeException("The expected object has irregular keys: " + expected.keySet());
+        }
+        if (!actual.keySet().equals(keys)) {
+            throw new RuntimeException("The actual object has irregular keys: " + actual.keySet());
+        }
+        assertEquals("serializationFormatVersion", expected.get("serializationFormatVersion"), actual.get("serializationFormatVersion"));
+        assertEquivalentLionWebJsonNodes(expected.getAsJsonArray("nodes"), actual.getAsJsonArray("nodes"));
+    }
+
+    private static void assertEquivalentLionWebJsonNodes(JsonArray expected, JsonArray actual) {
         Map<String, JsonObject> expectedElements = new HashMap<>();
         Map<String, JsonObject> actualElements = new HashMap<>();
         Function<Map<String, JsonObject>, Consumer<JsonElement>> idCollector = collection -> e -> {

@@ -80,14 +80,20 @@ public class JsonSerialization {
     public JsonElement serialize(Node node) {
         JsonArray arrayOfNodes = new JsonArray();
         serialize(node, arrayOfNodes, new HashSet<>());
-        return arrayOfNodes;
+        JsonObject topLevel = new JsonObject();
+        topLevel.addProperty("serializationFormatVersion", "1");
+        topLevel.add("nodes", arrayOfNodes);
+        return topLevel;
     }
 
     public JsonElement serialize(List<Node> nodes) {
         JsonArray arrayOfNodes = new JsonArray();
         Set<String> encounteredIDs = new HashSet<>();
         nodes.forEach(node -> serialize(node, arrayOfNodes, encounteredIDs));
-        return arrayOfNodes;
+        JsonObject topLevel = new JsonObject();
+        topLevel.addProperty("serializationFormatVersion", "1");
+        topLevel.add("nodes", arrayOfNodes);
+        return topLevel;
     }
 
     public JsonElement serialize(Node... nodes) {
@@ -216,28 +222,43 @@ public class JsonSerialization {
     }
 
     public List<Node> unserialize(JsonElement jsonElement) {
-        if (jsonElement.isJsonArray()) {
-            List<Node> nodes = jsonElement.getAsJsonArray().asList().stream().map(element -> {
-                try {
-                    Node node = unserializeNode(element);
-                    if (node.getID() == null) {
-                        throw new IllegalStateException();
-                    }
-                    this.nodeIdToData.put(node.getID(), element.getAsJsonObject());
-                    this.nodeIdToNode.put(node.getID(), node);
-                    return node;
-                } catch (Exception e) {
-                    throw new RuntimeException("Issue while unserializing " + element, e);
-                }
-            }).collect(Collectors.toList());
-            for (Map.Entry<String, JsonObject> entry : nodeIdToData.entrySet()) {
-                populateLinks(nodeIdToNode.get(entry.getKey()), entry.getValue());
+        if (jsonElement.isJsonObject()) {
+            JsonObject topLevel = jsonElement.getAsJsonObject();
+            if (!topLevel.has("serializationFormatVersion")) {
+                throw new IllegalArgumentException("serializationFormatVersion not specified");
             }
-            nodeIdToData.clear();
-            nodeIdToNode.clear();;
-            return nodes;
+            String serializationFormatVersion = topLevel.get("serializationFormatVersion").getAsString();
+            if (!serializationFormatVersion.equals("1")) {
+                throw new IllegalArgumentException("Only serializationFormatVersion = '1' is supported");
+            }
+            if (!topLevel.has("nodes")) {
+                throw new IllegalArgumentException("nodes not specified");
+            }
+            if (topLevel.get("nodes").isJsonArray()) {
+                List<Node> nodes = topLevel.get("nodes").getAsJsonArray().asList().stream().map(element -> {
+                    try {
+                        Node node = unserializeNode(element);
+                        if (node.getID() == null) {
+                            throw new IllegalStateException();
+                        }
+                        this.nodeIdToData.put(node.getID(), element.getAsJsonObject());
+                        this.nodeIdToNode.put(node.getID(), node);
+                        return node;
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue while unserializing " + element, e);
+                    }
+                }).collect(Collectors.toList());
+                for (Map.Entry<String, JsonObject> entry : nodeIdToData.entrySet()) {
+                    populateLinks(nodeIdToNode.get(entry.getKey()), entry.getValue());
+                }
+                nodeIdToData.clear();
+                nodeIdToNode.clear();
+                return nodes;
+            } else {
+                throw new IllegalArgumentException("We expected a Json Array, we got instead: " + jsonElement);
+            }
         } else {
-            throw new IllegalArgumentException("We expected a Json Array, we got instead: " + jsonElement);
+            throw new IllegalArgumentException("We expected a Json Object, we got instead: " + jsonElement);
         }
     }
 
