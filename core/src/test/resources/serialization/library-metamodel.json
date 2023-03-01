@@ -90,8 +90,11 @@
       "children": {
       },
       "references": {
-        "LIonCore_M3_Property_type": [{"resolveInfo": null, "reference":
-          "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0"}
+        "LIonCore_M3_Property_type": [
+          {
+            "resolveInfo": null,
+            "reference": "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0"
+          }
         ]
       },
       "parent": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs"
@@ -107,8 +110,11 @@
       "children": {
       },
       "references": {
-        "LIonCore_M3_Property_type": [{"resolveInfo": null, "reference":
-          "gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4"}
+        "LIonCore_M3_Property_type": [
+          {
+            "resolveInfo": null,
+            "reference": "gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4"
+          }
         ]
       },
       "parent": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs"
@@ -123,8 +129,11 @@
         "LIonCore_M3_Link_multiple": "true"
       },
       "references": {
-        "LIonCore_M3_Link_type": [{"resolveInfo": null, "reference":
-          "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE"}
+        "LIonCore_M3_Link_type": [
+          {
+            "resolveInfo": null,
+            "reference": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE"
+          }
         ]
       },
       "children": {},
@@ -161,7 +170,10 @@
       },
       "references": {
         "LIonCore_M3_Property_type": [
-          {"reference":"INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", "resolveInfo": null}
+          {
+            "reference": "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0",
+            "resolveInfo": null
+          }
         ]
       },
       "parent": "Pk1NRJfHMt4eSja2kpXia7x8vj6Vzc6WQCUzT3aVeYY"
@@ -180,8 +192,7 @@
       "references": {
         "LIonCore_M3_Link_type": [
           {
-            "reference":
-            "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
+            "reference": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
             "resolveInfo": null
           }
         ]
@@ -218,10 +229,10 @@
       },
       "references": {
         "LIonCore_M3_Property_type": [
-          {"reference":
-
-          "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0",
-            "resolveInfo": null}
+          {
+            "reference": "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0",
+            "resolveInfo": null
+          }
         ]
       },
       "parent": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE"
@@ -240,8 +251,10 @@
       },
       "references": {
         "LIonCore_M3_Concept_extends": [
-          { "reference": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE",
-            "resolveInfo": null}
+          {
+            "reference": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE",
+            "resolveInfo": null
+          }
         ],
         "LIonCore_M3_Concept_implements": []
       },
@@ -281,7 +294,10 @@
       },
       "references": {
         "LIonCore_M3_Concept_extends": [
-          {"reference": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE", "resolveInfo": null}
+          {
+            "reference": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE",
+            "resolveInfo": null
+          }
         ],
         "LIonCore_M3_Concept_implements": []
       },
@@ -298,7 +314,8 @@
       "children": {
       },
       "references": {
-        "LIonCore_M3_Property_type": [{
+        "LIonCore_M3_Property_type": [
+          {
             "reference": "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0",
             "resolveInfo": null
           }

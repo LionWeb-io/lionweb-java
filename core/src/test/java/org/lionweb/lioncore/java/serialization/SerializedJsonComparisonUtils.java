@@ -18,8 +18,6 @@ class SerializedJsonComparisonUtils {
 
     }
 
-    // getAsJsonObject().get("nodes")
-
     static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
         Set<String> keys = new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes"));
         if (!expected.keySet().equals(keys)) {
