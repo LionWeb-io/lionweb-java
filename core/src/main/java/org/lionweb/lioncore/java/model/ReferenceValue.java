@@ -35,7 +35,8 @@ public class ReferenceValue {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ReferenceValue that)) return false;
+        if (!(o instanceof ReferenceValue)) return false;
+        ReferenceValue that = (ReferenceValue) o;
         return Objects.equals(referred, that.referred) && Objects.equals(resolveInfo, that.resolveInfo);
     }
 
