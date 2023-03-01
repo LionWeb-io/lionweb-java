@@ -8,7 +8,7 @@ import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class MyNodeWithProperties extends DynamicNode  {
-    public static Metamodel METAMODEL = new Metamodel().setID("mm1").setQualifiedName("MM1");
+    public static Metamodel METAMODEL = new Metamodel().setID("mm1").setName("MM1");
     public static Concept CONCEPT = new Concept().setID("concept-MyNodeWithProperties")
             .setSimpleName("MyNodeWithProperties")
             .addFeature(Property.createOptional("p1", LionCoreBuiltins.getBoolean()).setID("p1"))

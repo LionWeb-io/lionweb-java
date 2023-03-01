@@ -161,6 +161,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
     @Override
     public void addReferredNode(Reference reference, Node referredNode) {
+        Objects.requireNonNull(reference, "reference should not be null");
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
         }

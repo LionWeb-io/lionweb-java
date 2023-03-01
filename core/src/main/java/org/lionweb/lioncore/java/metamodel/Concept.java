@@ -52,12 +52,12 @@ public class Concept extends FeaturesContainer<Concept> {
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
-        return this.getLinkMultipleValue("implemented");
+        return this.getLinkMultipleValue("implements");
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
         Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
-        this.addReferenceMultipleValue("implemented", conceptInterface);
+        this.addReferenceMultipleValue("implements", conceptInterface);
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?

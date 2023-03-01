@@ -1,7 +1,6 @@
 package org.lionweb.lioncore.java.emf;
 
 import org.junit.Test;
-import org.lionweb.lioncore.java.*;
 import org.lionweb.lioncore.java.metamodel.*;
 
 import java.io.IOException;
@@ -21,7 +20,7 @@ public class EcoreImporterTest {
         assertEquals(1, metamodels.size());
 
         Metamodel metamodel = metamodels.get(0);
-        assertEquals("library", metamodel.getQualifiedName());
+        assertEquals("library", metamodel.getName());
 
         assertEquals(5, metamodel.getElements().size());
 

@@ -35,7 +35,7 @@ public class JsonSerializationTest {
         Metamodel lioncore = (Metamodel) unserializedNodes.get(0);
         assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
         assertEquals("LIonCore_M3", lioncore.getID());
-        assertEquals("LIonCore.M3", lioncore.getQualifiedName());
+        assertEquals("LIonCore.M3", lioncore.getName());
         assertEquals(16, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParent());
 
@@ -67,7 +67,7 @@ public class JsonSerializationTest {
         DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
         assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
         assertEquals("LIonCore_M3", lioncore.getID());
-        assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("qualifiedName"));
+        assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
         assertEquals(16, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParent());
 

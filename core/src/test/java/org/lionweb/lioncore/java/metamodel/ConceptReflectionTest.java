@@ -52,7 +52,7 @@ public class ConceptReflectionTest {
         Metamodel metamodel = new Metamodel();
         Concept concept = new Concept(metamodel, "MyConcept");
         Concept otherConcept = new Concept(metamodel, "OtherConcept");
-        Reference reference = LionCore.getConcept().getReferenceByName("extended");
+        Reference reference = LionCore.getConcept().getReferenceByName("extends");
         concept.setExtendedConcept(null);
         assertEquals(Collections.emptyList(), concept.getReferredNodes(reference));
         concept.setExtendedConcept(otherConcept);
@@ -64,7 +64,7 @@ public class ConceptReflectionTest {
         Metamodel metamodel = new Metamodel();
         Concept concept = new Concept(metamodel, "MyConcept");
         Concept otherConcept = new Concept(metamodel, "OtherConcept");
-        Reference reference = LionCore.getConcept().getReferenceByName("extended");
+        Reference reference = LionCore.getConcept().getReferenceByName("extends");
         concept.addReferredNode(reference, null);
         assertEquals(null, concept.getExtendedConcept());
         concept.addReferredNode(reference, otherConcept);
@@ -77,7 +77,7 @@ public class ConceptReflectionTest {
         Concept concept = new Concept(metamodel, "MyConcept");
         ConceptInterface i1 = new ConceptInterface(metamodel, "I1");
         ConceptInterface i2 = new ConceptInterface(metamodel, "I2");
-        Reference reference = LionCore.getConcept().getReferenceByName("implemented");
+        Reference reference = LionCore.getConcept().getReferenceByName("implements");
         assertEquals(Collections.emptyList(), concept.getReferredNodes(reference));
         concept.addImplementedInterface(i1);
         assertEquals(Arrays.asList(i1), concept.getReferredNodes(reference));
@@ -91,7 +91,7 @@ public class ConceptReflectionTest {
         Concept concept = new Concept(metamodel, "MyConcept");
         ConceptInterface i1 = new ConceptInterface(metamodel, "I1");
         ConceptInterface i2 = new ConceptInterface(metamodel, "I2");
-        Reference reference = LionCore.getConcept().getReferenceByName("implemented");
+        Reference reference = LionCore.getConcept().getReferenceByName("implements");
         assertEquals(Collections.emptyList(), concept.getImplemented());
         concept.addReferredNode(reference, i1);
         assertEquals(Arrays.asList(i1), concept.getImplemented());
