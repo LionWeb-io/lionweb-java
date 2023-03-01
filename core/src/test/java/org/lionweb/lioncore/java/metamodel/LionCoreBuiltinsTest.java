@@ -14,4 +14,12 @@ public class LionCoreBuiltinsTest {
         assertEquals("String", string.getSimpleName());
         assertEquals("org.lionweb.Builtins.String", string.qualifiedName());
     }
+
+    @Test
+    public void primitiveTypesHaveAgreedIDs() {
+        assertEquals("LIonCore_M3_String", LionCoreBuiltins.getString().getID());
+        assertEquals("LIonCore_M3_Boolean", LionCoreBuiltins.getBoolean().getID());
+        assertEquals("LIonCore_M3_Integer", LionCoreBuiltins.getInteger().getID());
+        assertEquals("LIonCore_M3_JSON", LionCoreBuiltins.getJSON().getID());
+    }
 }
