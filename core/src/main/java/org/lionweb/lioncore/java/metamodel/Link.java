@@ -45,7 +45,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     }
 
     public T setType(@Nullable FeaturesContainer type) {
-        this.setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+        if (type == null) {
+            this.setReferenceSingleValue("type", null);
+        } else {
+            this.setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+        }
         return (T) this;
     }
 }
