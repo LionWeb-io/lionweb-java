@@ -240,7 +240,7 @@
       },
       "references": {
         "LIonCore_M3_Concept_extends": [
-          { "reference:": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE",
+          { "reference": "DuBg-a_slgc_VOG0huySkSWi3rZQX1Q20EEd2f7lvLE",
             "resolveInfo": null}
         ],
         "LIonCore_M3_Concept_implements": []

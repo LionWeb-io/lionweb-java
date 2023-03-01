@@ -209,11 +209,15 @@ public class JsonSerialization {
                 }
                 JsonArray value = references.get(referenceID).getAsJsonArray();
                 for (JsonElement referredEl : value.asList()) {
-                    JsonObject referenceObj = referredEl.getAsJsonObject();
-                    String referredId = getAsStringOrNull(referenceObj.get("reference"));
-                    String resolveInfo = getAsStringOrNull(referenceObj.get("resolveInfo"));
-                    Node referred = nodeIdToNode.get(referredId);
-                    node.addReferredNode(reference, referred, resolveInfo);
+                    try {
+                        JsonObject referenceObj = referredEl.getAsJsonObject();
+                        String referredId = getAsStringOrNull(referenceObj.get("reference"));
+                        String resolveInfo = getAsStringOrNull(referenceObj.get("resolveInfo"));
+                        Node referred = nodeIdToNode.get(referredId);
+                        node.addReferredNode(reference, referred, resolveInfo);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue deserializing reference " + referenceID, e);
+                    }
                 }
             }
         }
@@ -267,7 +271,11 @@ public class JsonSerialization {
                     }
                 }).collect(Collectors.toList());
                 for (Map.Entry<String, JsonObject> entry : nodeIdToData.entrySet()) {
-                    populateLinks(nodeIdToNode.get(entry.getKey()), entry.getValue());
+                    try {
+                        populateLinks(nodeIdToNode.get(entry.getKey()), entry.getValue());
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue while unserializing " + entry, e);
+                    }
                 }
                 nodeIdToData.clear();
                 nodeIdToNode.clear();

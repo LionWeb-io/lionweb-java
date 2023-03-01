@@ -23,6 +23,10 @@ public class Writer extends DynamicNode {
         this.setPropertyValue(getConcept().getPropertyByName("name"), name);
     }
 
+    public String getName() {
+        return (String)this.getPropertyValueByName("name");
+    }
+
     @Override
     public Concept getConcept() {
         return LibraryMetamodel.WRITER;

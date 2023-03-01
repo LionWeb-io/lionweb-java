@@ -193,7 +193,16 @@ public abstract class M3Node<T extends M3Node> implements Node {
             if (values.size() == 0) {
                 return null;
             } else if (values.size() == 1) {
-                return (V)(values.get(0));
+                return (V) (values.get(0));
+            } else {
+                throw new IllegalStateException();
+            }
+        } else if (referenceValues.containsKey(linkName)) {
+            List<ReferenceValue> values = referenceValues.get(linkName);
+            if (values.size() == 0) {
+                return null;
+            } else if (values.size() == 1) {
+                return (V)(values.get(0).getReferred());
             } else {
                 throw new IllegalStateException();
             }
@@ -205,6 +214,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
     protected <V extends Node> List<V> getLinkMultipleValue(String linkName) {
         if (containmentValues.containsKey(linkName)) {
             List<V> values = (List<V>) containmentValues.get(linkName);
+            return values;
+        } else if (referenceValues.containsKey(linkName)) {
+            List<V> values = (List<V>) referenceValues.get(linkName).stream().map(rv -> rv.getReferred()).toList();
             return values;
         } else {
             return Collections.emptyList();

@@ -29,7 +29,7 @@ public class Book extends DynamicNode {
     }
 
     public void setAuthor(Writer author) {
-        this.addReferredNode(getConcept().getReferenceByName("author"), author, null);
+        this.addReferredNode(getConcept().getReferenceByName("author"), author, author.getName());
     }
 
     @Override

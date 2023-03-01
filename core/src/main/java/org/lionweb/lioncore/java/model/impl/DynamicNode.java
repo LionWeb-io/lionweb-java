@@ -72,53 +72,50 @@ public class DynamicNode implements Node {
             throw new IllegalArgumentException();
         }
         if (containment.isMultiple()) {
-            addLinkMultipleValue(containment, child);
+            addContainment(containment, child);
         } else {
-            setLinkSingleValue(containment, child);
+            setContainmentSingleValue(containment, child);
         }
     }
 
-    private void setLinkSingleValue(Link link, Node value) {
-        if (link instanceof Containment) {
-            List<Node> prevValue = containmentValues.get(link.getID());
-            if (prevValue != null) {
-                List<Node> copy = new LinkedList<>(prevValue);
-                copy.forEach(c -> this.removeChild(c));
-            }
+    private void setContainmentSingleValue(Containment link, Node value) {
+        List<Node> prevValue = containmentValues.get(link.getID());
+        if (prevValue != null) {
+            List<Node> copy = new LinkedList<>(prevValue);
+            copy.forEach(c -> this.removeChild(c));
         }
         if (value == null) {
-            if (link instanceof Containment) {
-                containmentValues.remove(link.getID());
-            } else {
-                referenceValues.remove(link.getID());
-            }
+            containmentValues.remove(link.getID());
         } else {
-            if (link instanceof Containment) {
-                ((DynamicNode)value).setParent(this);
-                containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
-            } else {
-                referenceValues.put(link.getID(), new ArrayList(Arrays.asList(new ReferenceValue(value, null))));
-            }
+            ((DynamicNode)value).setParent(this);
+            containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
         }
     }
 
-    private void addLinkMultipleValue(Link link, Node value) {
-        assert link.isMultiple();
-        if (link instanceof Containment) {
-            ((DynamicNode)value).setParent(this);
-        }
-        if (link instanceof Containment) {
-            if (containmentValues.containsKey(link.getID())) {
-                containmentValues.get(link.getID()).add(value);
-            } else {
-                containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
-            }
+    private void setReferenceSingleValue(Reference link, ReferenceValue value) {
+        if (value == null) {
+            referenceValues.remove(link.getID());
         } else {
-            if (referenceValues.containsKey(link.getID())) {
-                referenceValues.get(link.getID()).add(new ReferenceValue(value, null));
-            } else {
-                referenceValues.put(link.getID(), new ArrayList(Arrays.asList(new ReferenceValue(value, null))));
-            }
+            referenceValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+        }
+    }
+
+    private void addContainment(Containment link, Node value) {
+        assert link.isMultiple();
+        ((DynamicNode)value).setParent(this);
+        if (containmentValues.containsKey(link.getID())) {
+            containmentValues.get(link.getID()).add(value);
+        } else {
+            containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+        }
+    }
+
+    private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
+        assert link.isMultiple();
+        if (referenceValues.containsKey(link.getID())) {
+            referenceValues.get(link.getID()).add(referenceValue);
+        } else {
+            referenceValues.put(link.getID(), new ArrayList(Arrays.asList(referenceValue)));
         }
     }
 
@@ -138,19 +135,19 @@ public class DynamicNode implements Node {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        if (referenceValues.containsKey(reference.getSimpleName())) {
-            return referenceValues.get(reference.getSimpleName());
+        if (referenceValues.containsKey(reference.getID())) {
+            return referenceValues.get(reference.getID());
         } else {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public void addReferredNode(Reference reference, @Nullable  Node referredNode, @Nullable  String resolveInfo) {
+    public void addReferredNode(Reference reference, @Nullable Node referredNode, @Nullable  String resolveInfo) {
         if (reference.isMultiple()) {
-            addLinkMultipleValue(reference, referredNode);
+            addReferenceMultipleValue(reference, new ReferenceValue(referredNode, resolveInfo));
         } else {
-            setLinkSingleValue(reference, referredNode);
+            setReferenceSingleValue(reference, new ReferenceValue(referredNode, resolveInfo));
         }
     }
 

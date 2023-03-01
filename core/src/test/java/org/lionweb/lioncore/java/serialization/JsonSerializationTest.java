@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 public class JsonSerializationTest {
@@ -113,6 +114,10 @@ public class JsonSerializationTest {
         List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
         Node book = unserializedNodes.stream().filter(n -> n.getID().equals("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs")).findFirst().get();
         assertEquals("Book", book.getPropertyValueByName("simpleName"));
+
+        Concept guidedBookWriter = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("nNUEzZ7it7d2HoHPAtk5rGO4SsqVA3hAlBwkK1KP8QU")).findFirst().get();
+        assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
+        assertNotNull(guidedBookWriter.getExtendedConcept());
     }
 
     @Test
