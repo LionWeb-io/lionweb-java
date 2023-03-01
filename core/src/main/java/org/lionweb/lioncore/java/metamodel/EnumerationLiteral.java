@@ -29,7 +29,11 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements Na
     }
 
     public void setEnumeration(@Nullable Enumeration enumeration) {
-        this.setReferenceSingleValue("enumeration", new ReferenceValue(enumeration, enumeration.getSimpleName()));
+        if (enumeration == null) {
+            this.setReferenceSingleValue("enumeration", null);
+        } else {
+            this.setReferenceSingleValue("enumeration", new ReferenceValue(enumeration, enumeration.getSimpleName()));
+        }
     }
 
     @Override
