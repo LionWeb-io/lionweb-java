@@ -48,21 +48,21 @@ public class Concept extends FeaturesContainer<Concept> {
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return this.getLinkSingleValue("extended");
+        return this.getLinkSingleValue("extends");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
-        return this.getLinkMultipleValue("implemented");
+        return this.getLinkMultipleValue("implements");
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
         Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
-        this.addReferenceMultipleValue("implemented", conceptInterface);
+        this.addReferenceMultipleValue("implements", conceptInterface);
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(@Nullable Concept extended) {
-        this.setReferenceSingleValue("extended", extended);
+        this.setReferenceSingleValue("extends", extended);
     }
 
     @Override

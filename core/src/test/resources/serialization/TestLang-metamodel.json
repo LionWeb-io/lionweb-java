@@ -3,7 +3,7 @@
     "concept": "LIonCore_M3_Metamodel",
     "id": "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5",
     "properties": {
-      "LIonCore_M3_Metamodel_qualifiedName": "io.lionweb.mps.converter.TestLang"
+      "LIonCore_M3_Metamodel_name": "io.lionweb.mps.converter.TestLang"
     },
     "children": {
       "LIonCore_M3_Metamodel_elements": [
@@ -580,7 +580,7 @@
     "concept": "LIonCore_M3_Metamodel",
     "id": "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBj",
     "properties": {
-      "LIonCore_M3_Metamodel_qualifiedName": "jetbrains.mps.lang.core"
+      "LIonCore_M3_Metamodel_name": "jetbrains.mps.lang.core"
     },
     "children": {
       "LIonCore_M3_Metamodel_elements": [

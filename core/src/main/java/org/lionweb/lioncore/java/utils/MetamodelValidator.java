@@ -105,7 +105,7 @@ public class MetamodelValidator {
     public ValidationResult validateMetamodel(Metamodel metamodel) {
         ValidationResult result = new ValidationResult();
 
-        result.checkForError(metamodel.getQualifiedName() == null,
+        result.checkForError(metamodel.getName() == null,
                 "Qualified name not set", metamodel);
 
         validateNamesAreUnique(metamodel.getElements(), result);

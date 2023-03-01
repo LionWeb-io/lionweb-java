@@ -8,7 +8,7 @@ public class SimpleLanguageMetamodelTest {
 
     @Test public void emptyMetamodelDefinition() {
         Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
-        assertEquals("SimpleLanguage", metamodel.getQualifiedName());
+        assertEquals("SimpleLanguage", metamodel.getName());
         assertEquals("SimpleLanguage", metamodel.namespaceQualifier());
         assertEquals(0, metamodel.dependsOn().size());
         assertEquals(0, metamodel.getElements().size());

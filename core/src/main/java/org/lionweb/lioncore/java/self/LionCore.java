@@ -62,8 +62,8 @@ public class LionCore {
         return getInstance().requireConceptByName("MetamodelElement");
     }
 
-    public static ConceptInterface getNamespacedEntity() {
-        return getInstance().getConceptInterfaceByName("NamespacedEntity");
+    public static Concept getNamespacedEntity() {
+        return getInstance().getConceptByName("NamespacedEntity");
     }
 
     public static ConceptInterface getNamespaceProvider() {
@@ -110,11 +110,11 @@ public class LionCore {
 
             concept.setExtendedConcept(featuresContainer);
             concept.addFeature(Property.createRequired("abstract", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Concept_abstract"));
-            concept.addFeature(Reference.createOptional("extended", concept, "LIonCore_M3_Concept_extends"));
-            concept.addFeature(Reference.createMultiple("implemented", conceptInterface, "LIonCore_M3_Concept_implements"));
+            concept.addFeature(Reference.createOptional("extends", concept, "LIonCore_M3_Concept_extends"));
+            concept.addFeature(Reference.createMultiple("implements", conceptInterface, "LIonCore_M3_Concept_implements"));
 
             conceptInterface.setExtendedConcept(featuresContainer);
-            conceptInterface.addFeature(Reference.createMultiple("extended", conceptInterface, "LIonCore_M3_ConceptInterface_extends"));
+            conceptInterface.addFeature(Reference.createMultiple("extends", conceptInterface, "LIonCore_M3_ConceptInterface_extends"));
 
             containment.setExtendedConcept(link);
 
@@ -140,7 +140,8 @@ public class LionCore {
             link.addFeature(Reference.createRequired("type", featuresContainer, "LIonCore_M3_Link_type"));
 
             metamodel.addImplementedInterface(namespaceProvider);
-            metamodel.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_qualifiedName"));
+            metamodel.addFeature(Property.createRequired("name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
+            metamodel.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_id"));
             metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
 
@@ -148,6 +149,7 @@ public class LionCore {
             metamodel.setAbstract(true);
 
             namespacedEntity.setAbstract(true);
+            namespacedEntity.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_id"));
             namespacedEntity.addFeature(Property.createRequired("simpleName", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_simpleName"));
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(),
                     "LIonCore_M3_NamespacedEntity_qualifiedName").setDerived(true));

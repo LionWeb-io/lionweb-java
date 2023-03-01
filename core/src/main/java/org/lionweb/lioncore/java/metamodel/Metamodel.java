@@ -24,19 +24,19 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
     public Metamodel() {
     }
 
-    public Metamodel(@Nonnull String qualifiedName) {
-        Objects.requireNonNull(qualifiedName, "qualifiedName should not be null");
-        this.setQualifiedName(qualifiedName);
+    public Metamodel(@Nonnull String name) {
+        Objects.requireNonNull(name, "name should not be null");
+        this.setName(name);
     }
 
-    public Metamodel setQualifiedName(String qualifiedName) {
-        setPropertyValue("qualifiedName", qualifiedName);
+    public Metamodel setName(String name) {
+        setPropertyValue("name", name);
         return this;
     }
 
     @Override
     public String namespaceQualifier() {
-        return getQualifiedName();
+        return getName();
     }
 
     public @Nonnull List<Metamodel> dependsOn() {
@@ -83,8 +83,8 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
                 .orElse(null);
     }
 
-    public String getQualifiedName() {
-        return this.getPropertyValue("qualifiedName", String.class);
+    public String getName() {
+        return this.getPropertyValue("name", String.class);
     }
 
     public @Nullable MetamodelElement getElementByName(String name) {
