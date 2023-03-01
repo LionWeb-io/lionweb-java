@@ -9,6 +9,7 @@ import org.lionweb.lioncore.java.model.ReferenceValue;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose only homogeneous-APIs
@@ -129,7 +130,7 @@ public class DynamicNode implements Node {
 
     @Override
     public List<Node> getReferredNodes(Reference reference) {
-        return getReferenceValues(reference).stream().map(v -> v.getReferred()).toList();
+        return getReferenceValues(reference).stream().map(v -> v.getReferred()).collect(Collectors.toList());
     }
 
     @Nonnull

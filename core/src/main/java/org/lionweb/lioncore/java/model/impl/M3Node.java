@@ -152,7 +152,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
     @Override
     public List<Node> getReferredNodes(Reference reference) {
-        return getReferenceValues(reference).stream().map(v -> v.getReferred()).toList();
+        return getReferenceValues(reference).stream().map(v -> v.getReferred()).collect(Collectors.toList());
     }
 
     @Nonnull
@@ -229,7 +229,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
     protected <V extends Node> List<V> getReferenceMultipleValue(String linkName) {
         if (referenceValues.containsKey(linkName)) {
-            List<V> values = (List<V>) referenceValues.get(linkName).stream().map(rv -> rv.getReferred()).toList();
+            List<V> values = (List<V>) referenceValues.get(linkName).stream().map(rv -> rv.getReferred()).collect(Collectors.toList());
             return values;
         } else {
             return Collections.emptyList();
