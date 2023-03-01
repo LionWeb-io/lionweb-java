@@ -1,6 +1,8 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import javax.annotation.Nonnull;
+
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import javax.annotation.Nullable;
@@ -39,11 +41,15 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     }
 
     public @Nullable FeaturesContainer getType() {
-        return getLinkSingleValue("type");
+        return getReferenceSingleValue("type");
     }
 
     public T setType(@Nullable FeaturesContainer type) {
-        this.setReferenceSingleValue("type", type);
+        if (type == null) {
+            this.setReferenceSingleValue("type", null);
+        } else {
+            this.setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+        }
         return (T) this;
     }
 }

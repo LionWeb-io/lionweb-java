@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import java.util.Arrays;
@@ -62,7 +63,7 @@ public class AnnotationTest {
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
 
         Concept myConcept = new Concept();
-        annotation.addReferredNode(LionCore.getAnnotation().getReferenceByName("target"), myConcept);
+        annotation.addReferenceValue(LionCore.getAnnotation().getReferenceByName("target"), new ReferenceValue(myConcept, null));
         assertEquals(myConcept, annotation.getTarget());
     }
 

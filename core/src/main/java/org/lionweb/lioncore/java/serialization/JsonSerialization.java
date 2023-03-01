@@ -6,6 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
@@ -80,14 +81,20 @@ public class JsonSerialization {
     public JsonElement serialize(Node node) {
         JsonArray arrayOfNodes = new JsonArray();
         serialize(node, arrayOfNodes, new HashSet<>());
-        return arrayOfNodes;
+        JsonObject topLevel = new JsonObject();
+        topLevel.addProperty("serializationFormatVersion", "1");
+        topLevel.add("nodes", arrayOfNodes);
+        return topLevel;
     }
 
     public JsonElement serialize(List<Node> nodes) {
         JsonArray arrayOfNodes = new JsonArray();
         Set<String> encounteredIDs = new HashSet<>();
         nodes.forEach(node -> serialize(node, arrayOfNodes, encounteredIDs));
-        return arrayOfNodes;
+        JsonObject topLevel = new JsonObject();
+        topLevel.addProperty("serializationFormatVersion", "1");
+        topLevel.add("nodes", arrayOfNodes);
+        return topLevel;
     }
 
     public JsonElement serialize(Node... nodes) {
@@ -132,7 +139,16 @@ public class JsonSerialization {
         JsonObject references = new JsonObject();
         node.getConcept().allReferences().forEach(reference -> {
             JsonArray serializedValue = new JsonArray();
-            node.getReferredNodes(reference).forEach(c -> serializedValue.add(c.getID()));
+            node.getReferenceValues(reference).forEach(c -> {
+                    JsonObject referenceValueJson = new JsonObject();
+                    if (c.getReferred() == null) {
+                        referenceValueJson.add("reference", JsonNull.INSTANCE);
+                    } else {
+                        referenceValueJson.addProperty("reference", c.getReferred().getID());
+                    }
+                    referenceValueJson.addProperty("resolveInfo", c.getResolveInfo());
+                    serializedValue.add(referenceValueJson);
+            });
             references.add(reference.getID(), serializedValue);
         });
         jsonObject.add("references", references);
@@ -194,10 +210,15 @@ public class JsonSerialization {
                 }
                 JsonArray value = references.get(referenceID).getAsJsonArray();
                 for (JsonElement referredEl : value.asList()) {
-                    String referredId = referredEl.getAsString();
-                    Node referred = nodeIdToNode.get(referredId);
-                    node.addReferredNode(reference, referred);
-                    //throw new UnsupportedOperationException(containmentID);
+                    try {
+                        JsonObject referenceObj = referredEl.getAsJsonObject();
+                        String referredId = getAsStringOrNull(referenceObj.get("reference"));
+                        String resolveInfo = getAsStringOrNull(referenceObj.get("resolveInfo"));
+                        Node referred = nodeIdToNode.get(referredId);
+                        node.addReferenceValue(reference, new ReferenceValue(referred, resolveInfo));
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue deserializing reference " + referenceID, e);
+                    }
                 }
             }
         }
@@ -215,29 +236,56 @@ public class JsonSerialization {
         }
     }
 
-    public List<Node> unserialize(JsonElement jsonElement) {
-        if (jsonElement.isJsonArray()) {
-            List<Node> nodes = jsonElement.getAsJsonArray().asList().stream().map(element -> {
-                try {
-                    Node node = unserializeNode(element);
-                    if (node.getID() == null) {
-                        throw new IllegalStateException();
-                    }
-                    this.nodeIdToData.put(node.getID(), element.getAsJsonObject());
-                    this.nodeIdToNode.put(node.getID(), node);
-                    return node;
-                } catch (Exception e) {
-                    throw new RuntimeException("Issue while unserializing " + element, e);
-                }
-            }).collect(Collectors.toList());
-            for (Map.Entry<String, JsonObject> entry : nodeIdToData.entrySet()) {
-                populateLinks(nodeIdToNode.get(entry.getKey()), entry.getValue());
-            }
-            nodeIdToData.clear();
-            nodeIdToNode.clear();;
-            return nodes;
+    private String getAsStringOrNull(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return null;
         } else {
-            throw new IllegalArgumentException("We expected a Json Array, we got instead: " + jsonElement);
+            return element.getAsString();
+        }
+    }
+
+    public List<Node> unserialize(JsonElement jsonElement) {
+        if (jsonElement.isJsonObject()) {
+            JsonObject topLevel = jsonElement.getAsJsonObject();
+            if (!topLevel.has("serializationFormatVersion")) {
+                throw new IllegalArgumentException("serializationFormatVersion not specified");
+            }
+            String serializationFormatVersion = topLevel.get("serializationFormatVersion").getAsString();
+            if (!serializationFormatVersion.equals("1")) {
+                throw new IllegalArgumentException("Only serializationFormatVersion = '1' is supported");
+            }
+            if (!topLevel.has("nodes")) {
+                throw new IllegalArgumentException("nodes not specified");
+            }
+            if (topLevel.get("nodes").isJsonArray()) {
+                List<Node> nodes = topLevel.get("nodes").getAsJsonArray().asList().stream().map(element -> {
+                    try {
+                        Node node = unserializeNode(element);
+                        if (node.getID() == null) {
+                            throw new IllegalStateException();
+                        }
+                        this.nodeIdToData.put(node.getID(), element.getAsJsonObject());
+                        this.nodeIdToNode.put(node.getID(), node);
+                        return node;
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue while unserializing " + element, e);
+                    }
+                }).collect(Collectors.toList());
+                for (Map.Entry<String, JsonObject> entry : nodeIdToData.entrySet()) {
+                    try {
+                        populateLinks(nodeIdToNode.get(entry.getKey()), entry.getValue());
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue while unserializing " + entry, e);
+                    }
+                }
+                nodeIdToData.clear();
+                nodeIdToNode.clear();
+                return nodes;
+            } else {
+                throw new IllegalArgumentException("We expected a Json Array, we got instead: " + jsonElement);
+            }
+        } else {
+            throw new IllegalArgumentException("We expected a Json Object, we got instead: " + jsonElement);
         }
     }
 

@@ -4,10 +4,12 @@ import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose only homogeneous-APIs
@@ -19,7 +21,9 @@ public class DynamicNode implements Node {
     private Concept concept;
 
     private Map<String, Object> propertyValues = new HashMap<>();
-    private Map<String, List<Node>> linkValues = new HashMap<>();
+    private Map<String, List<Node>> containmentValues = new HashMap<>();
+
+    private Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
 
     public DynamicNode(String id, Concept concept) {
         this.id = id;
@@ -56,8 +60,8 @@ public class DynamicNode implements Node {
         if (!getConcept().allContainments().contains(containment)) {
             throw new IllegalArgumentException("Containment not belonging to this concept");
         }
-        if (linkValues.containsKey(containment.getID())) {
-            return linkValues.get(containment.getID());
+        if (containmentValues.containsKey(containment.getID())) {
+            return containmentValues.get(containment.getID());
         } else {
             return Collections.emptyList();
         }
@@ -69,39 +73,53 @@ public class DynamicNode implements Node {
             throw new IllegalArgumentException();
         }
         if (containment.isMultiple()) {
-            addLinkMultipleValue(containment, child);
+            addContainment(containment, child);
         } else {
-            setLinkSingleValue(containment, child);
+            setContainmentSingleValue(containment, child);
         }
     }
 
-    private void setLinkSingleValue(Link link, Node value) {
-        if (link instanceof Containment) {
-            List<Node> prevValue = linkValues.get(link.getID());
-            if (prevValue != null) {
-                List<Node> copy = new LinkedList<>(prevValue);
-                copy.forEach(c -> this.removeChild(c));
-            }
+    private void setContainmentSingleValue(Containment link, Node value) {
+        List<Node> prevValue = containmentValues.get(link.getID());
+        if (prevValue != null) {
+            List<Node> copy = new LinkedList<>(prevValue);
+            copy.forEach(c -> this.removeChild(c));
         }
         if (value == null) {
-            linkValues.remove(link.getID());
+            containmentValues.remove(link.getID());
         } else {
-            if (link instanceof Containment) {
-                ((DynamicNode)value).setParent(this);
-            }
-            linkValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+            ((DynamicNode)value).setParent(this);
+            containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
         }
     }
 
-    private void addLinkMultipleValue(Link link, Node value) {
-        assert link.isMultiple();
-        if (link instanceof Containment) {
-            ((DynamicNode)value).setParent(this);
-        }
-        if (linkValues.containsKey(link.getID())) {
-            linkValues.get(link.getID()).add(value);
+    private void setReferenceSingleValue(Reference link, ReferenceValue value) {
+        if (value == null) {
+            referenceValues.remove(link.getID());
         } else {
-            linkValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+            referenceValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+        }
+    }
+
+    private void addContainment(Containment link, Node value) {
+        assert link.isMultiple();
+        ((DynamicNode)value).setParent(this);
+        if (containmentValues.containsKey(link.getID())) {
+            containmentValues.get(link.getID()).add(value);
+        } else {
+            containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+        }
+    }
+
+    private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
+        assert link.isMultiple();
+        if (referenceValue == null) {
+            return;
+        }
+        if (referenceValues.containsKey(link.getID())) {
+            referenceValues.get(link.getID()).add(referenceValue);
+        } else {
+            referenceValues.put(link.getID(), new ArrayList(Arrays.asList(referenceValue)));
         }
     }
 
@@ -110,25 +128,32 @@ public class DynamicNode implements Node {
         throw new UnsupportedOperationException();
     }
 
-    @Nonnull
     @Override
     public List<Node> getReferredNodes(Reference reference) {
+        return getReferenceValues(reference).stream().map(v -> v.getReferred()).collect(Collectors.toList());
+    }
+
+    @Nonnull
+    @Override
+    public List<ReferenceValue> getReferenceValues(Reference reference) {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        if (linkValues.containsKey(reference.getID())) {
-            return linkValues.get(reference.getID());
+        if (referenceValues.containsKey(reference.getID())) {
+            return referenceValues.get(reference.getID());
         } else {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public void addReferredNode(Reference reference, Node referredNode) {
+    public void addReferenceValue(Reference reference, @Nullable ReferenceValue value) {
         if (reference.isMultiple()) {
-            addLinkMultipleValue(reference, referredNode);
+            if (value != null) {
+                addReferenceMultipleValue(reference, value);
+            }
         } else {
-            setLinkSingleValue(reference, referredNode);
+            setReferenceSingleValue(reference, value);
         }
     }
 
@@ -192,12 +217,15 @@ public class DynamicNode implements Node {
             return false;
         }
         DynamicNode that = (DynamicNode) o;
-        return Objects.equals(id, that.id) && Objects.equals(parent, that.parent) && Objects.equals(concept, that.concept) && Objects.equals(propertyValues, that.propertyValues) && Objects.equals(linkValues, that.linkValues);
+        return Objects.equals(id, that.id) && Objects.equals(parent, that.parent) && Objects.equals(concept, that.concept)
+                && Objects.equals(propertyValues, that.propertyValues)
+                && Objects.equals(containmentValues, that.containmentValues)
+                && Objects.equals(referenceValues, that.referenceValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, parent, concept, propertyValues, linkValues);
+        return Objects.hash(id, parent, concept, propertyValues, containmentValues, referenceValues);
     }
 }
 

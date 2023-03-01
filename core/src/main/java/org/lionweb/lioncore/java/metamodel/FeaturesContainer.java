@@ -54,7 +54,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     // TODO should this expose an immutable list to force users to use methods on this class
     //      to modify the collection?
     public @Nonnull List<Feature> getFeatures() {
-        return this.getLinkMultipleValue("features");
+        return this.getContainmentMultipleValue("features");
     }
 
     public T addFeature(@Nonnull Feature feature) {

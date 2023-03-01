@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import javax.annotation.Nonnull;
@@ -79,11 +80,15 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return getLinkSingleValue("container");
+        return getReferenceSingleValue("container");
     }
 
     public void setContainer(@Nullable FeaturesContainer container) {
-        this.setReferenceSingleValue("container", container);
+        if (container == null) {
+            this.setReferenceSingleValue("container", null);
+        } else {
+            this.setReferenceSingleValue("container", new ReferenceValue(container, container.getSimpleName()));
+        }
     }
 
 }

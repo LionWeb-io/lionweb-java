@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
@@ -40,12 +41,12 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
     }
 
     public @Nonnull List<ConceptInterface> getExtendedInterfaces() {
-        return getLinkMultipleValue("extended");
+        return getReferenceMultipleValue("extends");
     }
 
     public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
         Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
-        this.addReferenceMultipleValue("extended", extendedInterface);
+        this.addReferenceMultipleValue("extends", new ReferenceValue(extendedInterface, extendedInterface.getSimpleName()));
     }
 
     @Override

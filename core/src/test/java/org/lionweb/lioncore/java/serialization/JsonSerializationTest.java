@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 public class JsonSerializationTest {
@@ -113,6 +114,10 @@ public class JsonSerializationTest {
         List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
         Node book = unserializedNodes.stream().filter(n -> n.getID().equals("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs")).findFirst().get();
         assertEquals("Book", book.getPropertyValueByName("simpleName"));
+
+        Concept guidedBookWriter = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("nNUEzZ7it7d2HoHPAtk5rGO4SsqVA3hAlBwkK1KP8QU")).findFirst().get();
+        assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
+        assertNotNull(guidedBookWriter.getExtendedConcept());
     }
 
     @Test
@@ -122,7 +127,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
         JsonElement reserialized = jsonSerialization.serialize(unserializedNodes.get(0));
-        assertEquivalentLionWebJson(jsonElement.getAsJsonArray(), reserialized.getAsJsonArray());
+        assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
 
     @Test
@@ -140,9 +145,9 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonArray jsonSerialized = jsonSerialization.serialize(library).getAsJsonArray();
+        JsonObject jsonSerialized = jsonSerialization.serialize(library).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
-        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }
 
@@ -160,9 +165,9 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon).getAsJsonArray();
+        JsonObject jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
-        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }
 
@@ -179,9 +184,9 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonArray jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon, explorerBook).getAsJsonArray();
+        JsonObject jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon, explorerBook).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
-        JsonArray jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonArray();
+        JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }
 
@@ -190,7 +195,9 @@ public class JsonSerializationTest {
         MyNodeWithProperties node = new MyNodeWithProperties("n1");
         node.setP1(true);
 
-        JsonArray expected = JsonParser.parseString("[{\n" +
+        JsonObject expected = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -198,9 +205,9 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -209,7 +216,9 @@ public class JsonSerializationTest {
         MyNodeWithProperties node = new MyNodeWithProperties("n1");
         node.setP1(true);
 
-        JsonArray serialized = JsonParser.parseString("[{\n" +
+        JsonObject serialized = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -217,7 +226,7 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
@@ -230,7 +239,9 @@ public class JsonSerializationTest {
         MyNodeWithProperties node = new MyNodeWithProperties("n1");
         node.setP3("qwerty");
 
-        JsonArray expected = JsonParser.parseString("[{\n" +
+        JsonObject expected = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -238,9 +249,9 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -249,7 +260,9 @@ public class JsonSerializationTest {
         MyNodeWithProperties node = new MyNodeWithProperties("n1");
         node.setP3("qwerty");
 
-        JsonArray serialized = JsonParser.parseString("[{\n" +
+        JsonObject serialized = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -257,7 +270,7 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
@@ -270,7 +283,9 @@ public class JsonSerializationTest {
         MyNodeWithProperties node = new MyNodeWithProperties("n1");
         node.setP2(2904);
 
-        JsonArray expected = JsonParser.parseString("[{\n" +
+        JsonObject expected = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -278,9 +293,9 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -289,7 +304,9 @@ public class JsonSerializationTest {
         MyNodeWithProperties node = new MyNodeWithProperties("n1");
         node.setP2(2904);
 
-        JsonArray serialized = JsonParser.parseString("[{\n" +
+        JsonObject serialized = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -297,7 +314,7 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
@@ -313,7 +330,9 @@ public class JsonSerializationTest {
         ja.add("foo");
         node.setP4(ja);
 
-        JsonArray expected = JsonParser.parseString("[{\n" +
+        JsonObject expected = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -321,9 +340,9 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonArray serialized = jsonSerialization.serialize(node).getAsJsonArray();
+        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -335,7 +354,9 @@ public class JsonSerializationTest {
         ja.add("foo");
         node.setP4(ja);
 
-        JsonArray serialized = JsonParser.parseString("[{\n" +
+        JsonObject serialized = JsonParser.parseString("{\n" +
+                "  \"serializationFormatVersion\": \"1\",\n" +
+                "  \"nodes\": [{\n" +
                 "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
                 "    \"id\": \"n1\",\n" +
                 "    \"properties\": {\n" +
@@ -343,7 +364,7 @@ public class JsonSerializationTest {
                 "    },\n" +
                 "    \"children\": {},\n" +
                 "    \"references\": {}\n" +
-                "  }]").getAsJsonArray();
+                "  }]}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
@@ -375,15 +396,15 @@ public class JsonSerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
-        JsonArray reserialized = jsonSerialization.serialize(unserializedNodes).getAsJsonArray();
+        JsonObject reserialized = jsonSerialization.serialize(unserializedNodes).getAsJsonObject();
 
-        List<JsonObject> metamodels = getNodesByConcept(reserialized, "LIonCore_M3_Metamodel");
+        List<JsonObject> metamodels = getNodesByConcept(reserialized.get("nodes").getAsJsonArray(), "LIonCore_M3_Metamodel");
         assertEquals(2, metamodels.size());
 
-        List<JsonObject> concepts = getNodesByConcept(reserialized, "LIonCore_M3_Concept");
+        List<JsonObject> concepts = getNodesByConcept(reserialized.get("nodes").getAsJsonArray(), "LIonCore_M3_Concept");
         assertEquals(19, concepts.size());
 
-        assertEquivalentLionWebJson(jsonElement.getAsJsonArray(), reserialized);
+        assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized);
     }
 
     private List<JsonObject> getNodesByConcept(JsonArray nodes, String conceptID) {

@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
@@ -55,11 +56,15 @@ public class Property extends Feature<Property> {
     }
 
     public @Nullable DataType getType() {
-        return getLinkSingleValue("type");
+        return getReferenceSingleValue("type");
     }
 
     public Property setType(@Nullable DataType type) {
-        setReferenceSingleValue("type", type);
+        if (type == null) {
+            setReferenceSingleValue("type", null);
+        } else {
+            setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+        }
         return this;
     }
 

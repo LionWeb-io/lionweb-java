@@ -17,7 +17,7 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
     }
 
     public @Nonnull List<EnumerationLiteral> getLiterals() {
-        return getLinkMultipleValue("literals");
+        return getContainmentMultipleValue("literals");
     }
 
     public void addLiteral(@Nonnull EnumerationLiteral literal) {

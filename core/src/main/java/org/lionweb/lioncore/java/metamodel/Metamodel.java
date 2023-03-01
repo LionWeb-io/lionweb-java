@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
@@ -40,16 +41,16 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
     }
 
     public @Nonnull List<Metamodel> dependsOn() {
-        return this.getLinkMultipleValue("dependsOn");
+        return this.getReferenceMultipleValue("dependsOn");
     }
 
     public @Nonnull List<MetamodelElement> getElements() {
-        return this.getLinkMultipleValue("elements");
+        return this.getContainmentMultipleValue("elements");
     }
 
     public Metamodel addDependency(@Nonnull Metamodel dependency) {
         Objects.requireNonNull(dependency, "dependency should not be null");
-        this.addReferenceMultipleValue("dependsOn", dependency);
+        this.addReferenceMultipleValue("dependsOn", new ReferenceValue(dependency, dependency.getName()));
         return dependency;
     }
 
