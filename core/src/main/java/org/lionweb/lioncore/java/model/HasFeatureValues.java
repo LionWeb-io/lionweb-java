@@ -78,5 +78,5 @@ public interface HasFeatureValues {
      * IllegalArgumentException will be thrown.
      * If the Reference feature is derived, the exception IllegalArgumentException will be thrown.
      */
-    void addReferredNode(Reference reference, @Nullable Node referredNode, @Nullable  String resolveInfo);
+    void addReferenceValue(Reference reference, @Nullable ReferenceValue referredNode);
 }

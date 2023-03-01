@@ -143,11 +143,11 @@ public class DynamicNode implements Node {
     }
 
     @Override
-    public void addReferredNode(Reference reference, @Nullable Node referredNode, @Nullable  String resolveInfo) {
+    public void addReferenceValue(Reference reference, @Nullable ReferenceValue value) {
         if (reference.isMultiple()) {
-            addReferenceMultipleValue(reference, new ReferenceValue(referredNode, resolveInfo));
+            addReferenceMultipleValue(reference, value);
         } else {
-            setReferenceSingleValue(reference, new ReferenceValue(referredNode, resolveInfo));
+            setReferenceSingleValue(reference, value);
         }
     }
 

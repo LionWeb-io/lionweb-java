@@ -139,9 +139,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
     @Override
     public void addChild(Containment containment, Node child) {
         if (containment.isMultiple()) {
-            addLinkMultipleValue(containment.getSimpleName(), child, true);
+            addContainmentMultipleValue(containment.getSimpleName(), child);
         } else {
-            setLinkSingleValue(containment.getSimpleName(), child, true);
+            setContainmentSingleValue(containment.getSimpleName(), child);
         }
     }
 
@@ -169,15 +169,15 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
 
     @Override
-    public void addReferredNode(Reference reference, @Nullable Node referredNode, @Nullable  String resolveInfo) {
+    public void addReferenceValue(Reference reference, @Nullable ReferenceValue referenceValue) {
         Objects.requireNonNull(reference, "reference should not be null");
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
         }
         if (reference.isMultiple()) {
-            addLinkMultipleValue(reference.getSimpleName(), referredNode, false);
+            addReferenceMultipleValue(reference.getSimpleName(), referenceValue);
         } else {
-            setLinkSingleValue(reference.getSimpleName(), referredNode, false);
+            setReferenceSingleValue(reference.getSimpleName(), referenceValue);
         }
     }
 
@@ -187,7 +187,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
         return id;
     }
 
-    protected <V extends Node> V getLinkSingleValue(String linkName) {
+    protected <V extends Node> V getContainmentSingleValue(String linkName) {
         if (containmentValues.containsKey(linkName)) {
             List<Node> values = containmentValues.get(linkName);
             if (values.size() == 0) {
@@ -197,7 +197,13 @@ public abstract class M3Node<T extends M3Node> implements Node {
             } else {
                 throw new IllegalStateException();
             }
-        } else if (referenceValues.containsKey(linkName)) {
+        } else {
+            return null;
+        }
+    }
+
+    protected <V extends Node> V getReferenceSingleValue(String linkName) {
+        if (referenceValues.containsKey(linkName)) {
             List<ReferenceValue> values = referenceValues.get(linkName);
             if (values.size() == 0) {
                 return null;
@@ -211,11 +217,17 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
 
-    protected <V extends Node> List<V> getLinkMultipleValue(String linkName) {
+    protected <V extends Node> List<V> getContainmentMultipleValue(String linkName) {
         if (containmentValues.containsKey(linkName)) {
             List<V> values = (List<V>) containmentValues.get(linkName);
             return values;
-        } else if (referenceValues.containsKey(linkName)) {
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    protected <V extends Node> List<V> getReferenceMultipleValue(String linkName) {
+        if (referenceValues.containsKey(linkName)) {
             List<V> values = (List<V>) referenceValues.get(linkName).stream().map(rv -> rv.getReferred()).toList();
             return values;
         } else {
@@ -223,12 +235,23 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
 
-    protected void setContainmentSingleValue(String linkName, Node value) {
-        setLinkSingleValue(linkName, value, true);
-    }
-
-    protected void setReferenceSingleValue(String linkName, Node value) {
-        setLinkSingleValue(linkName, value, false);
+    /*
+     * This method could be invoked by the metamodel elements classes before the LionCore metamodel
+     * has been built, therefore we cannot look for the definition of the features to verify they
+     * exist. We instead just trust a link with that name to exist.
+     */
+    private void setContainmentSingleValue(String linkName, Node value) {
+        List<Node> prevValue = containmentValues.get(linkName);
+        if (prevValue != null) {
+            List<Node> copy = new LinkedList<>(prevValue);
+            copy.forEach(c -> this.removeChild(c));
+        }
+        if (value == null) {
+            containmentValues.remove(linkName);
+        } else {
+            ((M3Node)value).setParent(this);
+            containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+        }
     }
 
     /*
@@ -236,55 +259,27 @@ public abstract class M3Node<T extends M3Node> implements Node {
      * has been built, therefore we cannot look for the definition of the features to verify they
      * exist. We instead just trust a link with that name to exist.
      */
-    private void setLinkSingleValue(String linkName, Node value, boolean containment) {
-        if (containment) {
-            List<Node> prevValue = containmentValues.get(linkName);
-            if (prevValue != null) {
-                List<Node> copy = new LinkedList<>(prevValue);
-                copy.forEach(c -> this.removeChild(c));
-            }
-        }
+    protected void setReferenceSingleValue(String linkName, @Nullable ReferenceValue value) {
         if (value == null) {
-            if (containment) {
-                containmentValues.remove(linkName);
-            } else {
-                referenceValues.remove(linkName);
-            }
+            referenceValues.remove(linkName);
         } else {
-            if (containment) {
-                ((M3Node)value).setParent(this);
-                containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
-            } else {
-                referenceValues.put(linkName, new ArrayList(Arrays.asList(new ReferenceValue(value, null))));
-            }
+            referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
         }
     }
 
     protected void addContainmentMultipleValue(String linkName, Node value) {
-        addLinkMultipleValue(linkName, value, true);
-    }
-
-    protected void addReferenceMultipleValue(String linkName, Node value) {
-        addLinkMultipleValue(linkName, value, false);
-    }
-
-
-    private void addLinkMultipleValue(String linkName, Node value, boolean containment) {
-        if (containment) {
-            ((M3Node)value).setParent(this);
-        }
-        if (containment) {
-            if (containmentValues.containsKey(linkName)) {
-                containmentValues.get(linkName).add(value);
-            } else {
-                containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
-            }
+        ((M3Node)value).setParent(this);
+        if (containmentValues.containsKey(linkName)) {
+            containmentValues.get(linkName).add(value);
         } else {
-            if (referenceValues.containsKey(linkName)) {
-                referenceValues.get(linkName).add(new ReferenceValue(value, null));
-            } else {
-                referenceValues.put(linkName, new ArrayList(Arrays.asList(new ReferenceValue(value, null))));
-            }
+            containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+        }
+    }
+    protected void addReferenceMultipleValue(String linkName, ReferenceValue value) {
+        if (referenceValues.containsKey(linkName)) {
+            referenceValues.get(linkName).add(value);
+        } else {
+            referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
         }
     }
 }

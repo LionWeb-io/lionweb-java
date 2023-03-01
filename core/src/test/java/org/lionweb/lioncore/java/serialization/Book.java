@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.serialization;
 
 import org.lionweb.lioncore.java.metamodel.Concept;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class Book extends DynamicNode {
@@ -29,7 +30,7 @@ public class Book extends DynamicNode {
     }
 
     public void setAuthor(Writer author) {
-        this.addReferredNode(getConcept().getReferenceByName("author"), author, author.getName());
+        this.addReferenceValue(getConcept().getReferenceByName("author"), new ReferenceValue(author, author.getName()));
     }
 
     @Override

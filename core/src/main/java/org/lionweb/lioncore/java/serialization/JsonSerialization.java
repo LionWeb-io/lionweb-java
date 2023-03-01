@@ -6,6 +6,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
@@ -214,7 +215,7 @@ public class JsonSerialization {
                         String referredId = getAsStringOrNull(referenceObj.get("reference"));
                         String resolveInfo = getAsStringOrNull(referenceObj.get("resolveInfo"));
                         Node referred = nodeIdToNode.get(referredId);
-                        node.addReferredNode(reference, referred, resolveInfo);
+                        node.addReferenceValue(reference, new ReferenceValue(referred, resolveInfo));
                     } catch (Exception e) {
                         throw new RuntimeException("Issue deserializing reference " + referenceID, e);
                     }

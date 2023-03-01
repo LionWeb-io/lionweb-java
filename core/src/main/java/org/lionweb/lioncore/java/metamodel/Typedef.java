@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.Experimental;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 
 import javax.annotation.Nullable;
 
@@ -19,11 +20,11 @@ public class Typedef extends DataType<Typedef> {
     }
 
     public @Nullable PrimitiveType getPrimitiveType() {
-        return getLinkSingleValue("primitiveType");
+        return getReferenceSingleValue("primitiveType");
     }
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
-        this.setReferenceSingleValue("primitiveType", primitiveType);
+        this.setReferenceSingleValue("primitiveType", new ReferenceValue(primitiveType, primitiveType.getSimpleName()));
     }
 
     @Override

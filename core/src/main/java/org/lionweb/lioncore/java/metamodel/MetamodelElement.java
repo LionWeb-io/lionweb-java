@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.utils.Naming;
 
@@ -34,11 +35,15 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     // TODO consider making this a derived feature just casting the parent
     public @Nullable Metamodel getMetamodel() {
-        return this.getLinkSingleValue("metamodel");
+        return this.getReferenceSingleValue("metamodel");
     }
 
     public T setMetamodel(@Nullable Metamodel metamodel) {
-        this.setReferenceSingleValue("metamodel", metamodel);
+        if (metamodel == null) {
+            this.setReferenceSingleValue("metamodel", null);
+        } else {
+            this.setReferenceSingleValue("metamodel", new ReferenceValue(metamodel, metamodel.getName()));
+        }
         return (T)this;
     }
 

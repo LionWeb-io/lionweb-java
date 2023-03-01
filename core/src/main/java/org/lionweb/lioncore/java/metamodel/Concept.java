@@ -1,5 +1,6 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.self.LionCore;
 
 import javax.annotation.Nonnull;
@@ -48,21 +49,25 @@ public class Concept extends FeaturesContainer<Concept> {
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return this.getLinkSingleValue("extends");
+        return this.getReferenceSingleValue("extends");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
-        return this.getLinkMultipleValue("implements");
+        return this.getReferenceMultipleValue("implements");
     }
 
     public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
         Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
-        this.addReferenceMultipleValue("implements", conceptInterface);
+        this.addReferenceMultipleValue("implements", new ReferenceValue(conceptInterface, conceptInterface.getSimpleName()));
     }
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(@Nullable Concept extended) {
-        this.setReferenceSingleValue("extends", extended);
+        if (extended == null) {
+            this.setReferenceSingleValue("extends", null);
+        } else {
+            this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getSimpleName()));
+        }
     }
 
     @Override
