@@ -48,7 +48,7 @@ public class Concept extends FeaturesContainer<Concept> {
 
     // TODO should this return BaseConcept when extended is equal null?
     public @Nullable Concept getExtendedConcept() {
-        return this.getLinkSingleValue("extended");
+        return this.getLinkSingleValue("extends");
     }
 
     public @Nonnull List<ConceptInterface> getImplemented() {
@@ -62,7 +62,7 @@ public class Concept extends FeaturesContainer<Concept> {
 
     // TODO should we verify the Concept does not extend itself, even indirectly?
     public void setExtendedConcept(@Nullable Concept extended) {
-        this.setReferenceSingleValue("extended", extended);
+        this.setReferenceSingleValue("extends", extended);
     }
 
     @Override
