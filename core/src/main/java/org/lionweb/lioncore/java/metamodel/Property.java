@@ -60,7 +60,11 @@ public class Property extends Feature<Property> {
     }
 
     public Property setType(@Nullable DataType type) {
-        setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+        if (type == null) {
+            setReferenceSingleValue("type", null);
+        } else {
+            setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+        }
         return this;
     }
 
