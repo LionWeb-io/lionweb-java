@@ -112,6 +112,9 @@ public class DynamicNode implements Node {
 
     private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
         assert link.isMultiple();
+        if (referenceValue == null) {
+            return;
+        }
         if (referenceValues.containsKey(link.getID())) {
             referenceValues.get(link.getID()).add(referenceValue);
         } else {
@@ -145,7 +148,9 @@ public class DynamicNode implements Node {
     @Override
     public void addReferenceValue(Reference reference, @Nullable ReferenceValue value) {
         if (reference.isMultiple()) {
-            addReferenceMultipleValue(reference, value);
+            if (value != null) {
+                addReferenceMultipleValue(reference, value);
+            }
         } else {
             setReferenceSingleValue(reference, value);
         }
@@ -211,12 +216,15 @@ public class DynamicNode implements Node {
             return false;
         }
         DynamicNode that = (DynamicNode) o;
-        return Objects.equals(id, that.id) && Objects.equals(parent, that.parent) && Objects.equals(concept, that.concept) && Objects.equals(propertyValues, that.propertyValues) && Objects.equals(containmentValues, that.containmentValues);
+        return Objects.equals(id, that.id) && Objects.equals(parent, that.parent) && Objects.equals(concept, that.concept)
+                && Objects.equals(propertyValues, that.propertyValues)
+                && Objects.equals(containmentValues, that.containmentValues)
+                && Objects.equals(referenceValues, that.referenceValues);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, parent, concept, propertyValues, containmentValues);
+        return Objects.hash(id, parent, concept, propertyValues, containmentValues, referenceValues);
     }
 }
 
