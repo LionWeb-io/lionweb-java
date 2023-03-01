@@ -24,7 +24,10 @@
       "children": {},
       "references": {
         "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
-          "jl"
+          {
+            "resolveInfo": "Jack London",
+            "reference": "jl"
+          }
         ]
       },
       "parent": "bl"

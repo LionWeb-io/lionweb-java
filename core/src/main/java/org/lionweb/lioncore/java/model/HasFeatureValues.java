@@ -6,6 +6,7 @@ import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.metamodel.Reference;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 @Experimental
@@ -63,6 +64,8 @@ public interface HasFeatureValues {
      */
     @Nonnull List<Node> getReferredNodes(Reference reference);
 
+    @Nonnull List<ReferenceValue> getReferenceValues(Reference reference);
+
     /**
      * Add the Node to the list of Nodes referred to from this Node under the given Reference.
      *
@@ -75,5 +78,5 @@ public interface HasFeatureValues {
      * IllegalArgumentException will be thrown.
      * If the Reference feature is derived, the exception IllegalArgumentException will be thrown.
      */
-    void addReferredNode(Reference reference, Node referredNode);
+    void addReferredNode(Reference reference, @Nullable Node referredNode, @Nullable  String resolveInfo);
 }

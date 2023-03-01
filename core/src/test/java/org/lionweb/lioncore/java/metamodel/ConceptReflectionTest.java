@@ -65,9 +65,9 @@ public class ConceptReflectionTest {
         Concept concept = new Concept(metamodel, "MyConcept");
         Concept otherConcept = new Concept(metamodel, "OtherConcept");
         Reference reference = LionCore.getConcept().getReferenceByName("extends");
-        concept.addReferredNode(reference, null);
+        concept.addReferredNode(reference, null, null);
         assertEquals(null, concept.getExtendedConcept());
-        concept.addReferredNode(reference, otherConcept);
+        concept.addReferredNode(reference, otherConcept, null);
         assertEquals(otherConcept, concept.getExtendedConcept());
     }
 
@@ -93,9 +93,9 @@ public class ConceptReflectionTest {
         ConceptInterface i2 = new ConceptInterface(metamodel, "I2");
         Reference reference = LionCore.getConcept().getReferenceByName("implements");
         assertEquals(Collections.emptyList(), concept.getImplemented());
-        concept.addReferredNode(reference, i1);
+        concept.addReferredNode(reference, i1, null);
         assertEquals(Arrays.asList(i1), concept.getImplemented());
-        concept.addReferredNode(reference, i2);
+        concept.addReferredNode(reference, i2, null);
         assertEquals(Arrays.asList(i1, i2), concept.getImplemented());
     }
 }

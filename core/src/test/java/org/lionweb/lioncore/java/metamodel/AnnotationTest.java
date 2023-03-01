@@ -62,7 +62,7 @@ public class AnnotationTest {
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
 
         Concept myConcept = new Concept();
-        annotation.addReferredNode(LionCore.getAnnotation().getReferenceByName("target"), myConcept);
+        annotation.addReferredNode(LionCore.getAnnotation().getReferenceByName("target"), myConcept, null);
         assertEquals(myConcept, annotation.getTarget());
     }
 

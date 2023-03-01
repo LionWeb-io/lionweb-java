@@ -25,7 +25,10 @@
     "children": {},
     "references": {
       "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
-        "mv"
+        {
+          "resolveInfo": "Markus Voelter",
+          "reference": "mv"
+        }
       ]
     },
     "parent": "lib-1"
@@ -40,7 +43,10 @@
     "children": {},
     "references": {
       "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
-        "mb"
+        {
+          "resolveInfo": "Meinte Boersma",
+          "reference": "mb"
+        }
       ]
     },
     "parent": "lib-1"

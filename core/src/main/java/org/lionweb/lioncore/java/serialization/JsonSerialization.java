@@ -138,7 +138,16 @@ public class JsonSerialization {
         JsonObject references = new JsonObject();
         node.getConcept().allReferences().forEach(reference -> {
             JsonArray serializedValue = new JsonArray();
-            node.getReferredNodes(reference).forEach(c -> serializedValue.add(c.getID()));
+            node.getReferenceValues(reference).forEach(c -> {
+                    JsonObject referenceValueJson = new JsonObject();
+                    if (c.getReferred() == null) {
+                        referenceValueJson.add("reference", JsonNull.INSTANCE);
+                    } else {
+                        referenceValueJson.addProperty("reference", c.getReferred().getID());
+                    }
+                    referenceValueJson.addProperty("resolveInfo", c.getResolveInfo());
+                    serializedValue.add(referenceValueJson);
+            });
             references.add(reference.getID(), serializedValue);
         });
         jsonObject.add("references", references);
@@ -200,10 +209,11 @@ public class JsonSerialization {
                 }
                 JsonArray value = references.get(referenceID).getAsJsonArray();
                 for (JsonElement referredEl : value.asList()) {
-                    String referredId = referredEl.getAsString();
+                    JsonObject referenceObj = referredEl.getAsJsonObject();
+                    String referredId = getAsStringOrNull(referenceObj.get("reference"));
+                    String resolveInfo = getAsStringOrNull(referenceObj.get("resolveInfo"));
                     Node referred = nodeIdToNode.get(referredId);
-                    node.addReferredNode(reference, referred);
-                    //throw new UnsupportedOperationException(containmentID);
+                    node.addReferredNode(reference, referred, resolveInfo);
                 }
             }
         }
@@ -218,6 +228,14 @@ public class JsonSerialization {
             } else if (node instanceof DynamicNode) {
                 ((DynamicNode) node).setParent(parent);
             }
+        }
+    }
+
+    private String getAsStringOrNull(JsonElement element) {
+        if (element == null || element.isJsonNull()) {
+            return null;
+        } else {
+            return element.getAsString();
         }
     }
 

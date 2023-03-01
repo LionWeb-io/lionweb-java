@@ -4,7 +4,9 @@ import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.AnnotationInstance;
 import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.LinkedList;
 import java.util.List;
@@ -26,7 +28,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
     // The reason why we do that, is to avoid a circular dependency as the classes for defining metamodel
     // elements are inheriting from this class.
     private Map<String, Object> propertyValues = new HashMap<>();
-    private Map<String, List<Node>> linkValues = new HashMap<>();
+    private Map<String, List<Node>> containmentValues = new HashMap<>();
+    private Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
 
     private List<AnnotationInstance> annotationInstances = new LinkedList<>();
 
@@ -126,8 +129,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
         if (!getConcept().allContainments().contains(containment)) {
             throw new IllegalArgumentException("Containment not belonging to this concept");
         }
-        if (linkValues.containsKey(containment.getSimpleName())) {
-            return linkValues.get(containment.getSimpleName());
+        if (containmentValues.containsKey(containment.getSimpleName())) {
+            return containmentValues.get(containment.getSimpleName());
         } else {
             return Collections.emptyList();
         }
@@ -149,18 +152,24 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
     @Override
     public List<Node> getReferredNodes(Reference reference) {
+        return getReferenceValues(reference).stream().map(v -> v.getReferred()).toList();
+    }
+
+    @Nonnull
+    @Override
+    public List<ReferenceValue> getReferenceValues(Reference reference) {
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
-        if (linkValues.containsKey(reference.getSimpleName())) {
-            return linkValues.get(reference.getSimpleName());
+        if (referenceValues.containsKey(reference.getSimpleName())) {
+            return referenceValues.get(reference.getSimpleName());
         } else {
             return Collections.emptyList();
         }
     }
 
     @Override
-    public void addReferredNode(Reference reference, Node referredNode) {
+    public void addReferredNode(Reference reference, @Nullable Node referredNode, @Nullable  String resolveInfo) {
         Objects.requireNonNull(reference, "reference should not be null");
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
@@ -179,8 +188,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
 
     protected <V extends Node> V getLinkSingleValue(String linkName) {
-        if (linkValues.containsKey(linkName)) {
-            List<Node> values = linkValues.get(linkName);
+        if (containmentValues.containsKey(linkName)) {
+            List<Node> values = containmentValues.get(linkName);
             if (values.size() == 0) {
                 return null;
             } else if (values.size() == 1) {
@@ -194,8 +203,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
 
     protected <V extends Node> List<V> getLinkMultipleValue(String linkName) {
-        if (linkValues.containsKey(linkName)) {
-            List<V> values = (List<V>) linkValues.get(linkName);
+        if (containmentValues.containsKey(linkName)) {
+            List<V> values = (List<V>) containmentValues.get(linkName);
             return values;
         } else {
             return Collections.emptyList();
@@ -217,19 +226,25 @@ public abstract class M3Node<T extends M3Node> implements Node {
      */
     private void setLinkSingleValue(String linkName, Node value, boolean containment) {
         if (containment) {
-            List<Node> prevValue = linkValues.get(linkName);
+            List<Node> prevValue = containmentValues.get(linkName);
             if (prevValue != null) {
                 List<Node> copy = new LinkedList<>(prevValue);
                 copy.forEach(c -> this.removeChild(c));
             }
         }
         if (value == null) {
-            linkValues.remove(linkName);
+            if (containment) {
+                containmentValues.remove(linkName);
+            } else {
+                referenceValues.remove(linkName);
+            }
         } else {
             if (containment) {
                 ((M3Node)value).setParent(this);
+                containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+            } else {
+                referenceValues.put(linkName, new ArrayList(Arrays.asList(new ReferenceValue(value, null))));
             }
-            linkValues.put(linkName, new ArrayList(Arrays.asList(value)));
         }
     }
 
@@ -246,10 +261,18 @@ public abstract class M3Node<T extends M3Node> implements Node {
         if (containment) {
             ((M3Node)value).setParent(this);
         }
-        if (linkValues.containsKey(linkName)) {
-            linkValues.get(linkName).add(value);
+        if (containment) {
+            if (containmentValues.containsKey(linkName)) {
+                containmentValues.get(linkName).add(value);
+            } else {
+                containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+            }
         } else {
-            linkValues.put(linkName, new ArrayList(Arrays.asList(value)));
+            if (referenceValues.containsKey(linkName)) {
+                referenceValues.get(linkName).add(new ReferenceValue(value, null));
+            } else {
+                referenceValues.put(linkName, new ArrayList(Arrays.asList(new ReferenceValue(value, null))));
+            }
         }
     }
 }
