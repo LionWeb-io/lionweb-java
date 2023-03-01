@@ -64,9 +64,9 @@ public interface HasFeatureValues {
      *
      * Please note that it may contains null values in case of ReferenceValue with a null reference field.
      */
-    @Nonnull List<Node> getReferredNodes(Reference reference);
+    @Nonnull List<Node> getReferredNodes(@Nonnull Reference reference);
 
-    @Nonnull List<ReferenceValue> getReferenceValues(Reference reference);
+    @Nonnull List<ReferenceValue> getReferenceValues(@Nonnull Reference reference);
 
     /**
      * Add the Node to the list of Nodes referred to from this Node under the given Reference.
@@ -80,5 +80,5 @@ public interface HasFeatureValues {
      * IllegalArgumentException will be thrown.
      * If the Reference feature is derived, the exception IllegalArgumentException will be thrown.
      */
-    void addReferenceValue(Reference reference, @Nullable ReferenceValue referredNode);
+    void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
 }

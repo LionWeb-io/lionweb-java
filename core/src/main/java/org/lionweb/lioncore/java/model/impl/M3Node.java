@@ -157,7 +157,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
     @Nonnull
     @Override
-    public List<ReferenceValue> getReferenceValues(Reference reference) {
+    public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
+        Objects.requireNonNull(reference, "reference should not be null");
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept");
         }
@@ -169,7 +170,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
 
     @Override
-    public void addReferenceValue(Reference reference, @Nullable ReferenceValue referenceValue) {
+    public void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
         Objects.requireNonNull(reference, "reference should not be null");
         if (!getConcept().allReferences().contains(reference)) {
             throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
@@ -259,7 +260,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
      * has been built, therefore we cannot look for the definition of the features to verify they
      * exist. We instead just trust a link with that name to exist.
      */
-    protected void setReferenceSingleValue(String linkName, @Nullable ReferenceValue value) {
+    protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue value) {
         if (value == null) {
             referenceValues.remove(linkName);
         } else {
@@ -267,7 +268,10 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
 
-    protected void addContainmentMultipleValue(String linkName, Node value) {
+    protected void addContainmentMultipleValue(@Nonnull String linkName, Node value) {
+        if (value == null) {
+            return;
+        }
         ((M3Node)value).setParent(this);
         if (containmentValues.containsKey(linkName)) {
             containmentValues.get(linkName).add(value);
@@ -276,6 +280,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
         }
     }
     protected void addReferenceMultipleValue(String linkName, ReferenceValue value) {
+        if (value == null) {
+            return;
+        }
         if (referenceValues.containsKey(linkName)) {
             referenceValues.get(linkName).add(value);
         } else {
