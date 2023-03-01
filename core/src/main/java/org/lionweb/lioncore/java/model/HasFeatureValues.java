@@ -61,6 +61,8 @@ public interface HasFeatureValues {
      *
      * The Node returned is guaranteed to be either part of this Node's Model or of Models imported by this Node's
      * Model.
+     *
+     * Please note that it may contains null values in case of ReferenceValue with a null reference field.
      */
     @Nonnull List<Node> getReferredNodes(Reference reference);
 
