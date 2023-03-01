@@ -24,7 +24,11 @@ public class Typedef extends DataType<Typedef> {
     }
 
     public void setPrimitiveType(@Nullable PrimitiveType primitiveType) {
-        this.setReferenceSingleValue("primitiveType", new ReferenceValue(primitiveType, primitiveType.getSimpleName()));
+        if (primitiveType == null) {
+            this.setReferenceSingleValue("primitiveType", null);
+        } else {
+            this.setReferenceSingleValue("primitiveType", new ReferenceValue(primitiveType, primitiveType.getSimpleName()));
+        }
     }
 
     @Override
