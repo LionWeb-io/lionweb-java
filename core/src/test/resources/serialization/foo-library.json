@@ -1,0 +1,22 @@
+{
+  "serializationFormatVersion": "1",
+  "nodes": [
+    {
+      "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
+      "id": "foo123",
+      "properties": {
+        "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": null,
+        "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": null
+      },
+      "children": {},
+      "references": {
+        "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
+          {
+            "reference": "_Arthur_Foozillus_id_",
+            "resolveInfo": null
+          }
+        ]
+      }
+    }
+  ]
+}

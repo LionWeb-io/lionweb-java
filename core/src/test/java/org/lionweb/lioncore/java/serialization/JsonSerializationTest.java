@@ -11,6 +11,7 @@ import org.lionweb.lioncore.java.metamodel.Enumeration;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
 
@@ -147,6 +148,23 @@ public class JsonSerializationTest {
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
         JsonObject jsonSerialized = jsonSerialization.serialize(library).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
+        JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
+        assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+    }
+
+    @Test
+    public void serializeReferenceWithoutResolveInfo() {
+        Node book = new DynamicNode("foo123", LibraryMetamodel.BOOK);
+        Node writer = new DynamicNode("_Arthur_Foozillus_id_", LibraryMetamodel.WRITER);
+        book.addReferenceValue(LibraryMetamodel.BOOK.getReferenceByName("author"), new ReferenceValue(writer, null));
+
+        // The library MM is not using the standard primitive types but its own, so we need to specify how to serialize
+        // those values
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
+        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
+        JsonObject jsonSerialized = jsonSerialization.serialize(book).getAsJsonObject();
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/foo-library.json");
         JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }

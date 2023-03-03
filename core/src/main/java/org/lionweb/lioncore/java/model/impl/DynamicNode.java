@@ -147,7 +147,8 @@ public class DynamicNode implements Node {
     }
 
     @Override
-    public void addReferenceValue(Reference reference, @Nullable ReferenceValue value) {
+    public void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
+        Objects.requireNonNull(reference, "Reference should not be null");
         if (reference.isMultiple()) {
             if (value != null) {
                 addReferenceMultipleValue(reference, value);
