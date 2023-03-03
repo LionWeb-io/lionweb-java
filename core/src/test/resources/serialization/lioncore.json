@@ -26,7 +26,8 @@
           "LIonCore_M3_Enumeration",
           "LIonCore_M3_EnumerationLiteral"
         ]
-      }
+      },
+      "references": {}
     },
     {
       "concept": "LIonCore_M3_Concept",
