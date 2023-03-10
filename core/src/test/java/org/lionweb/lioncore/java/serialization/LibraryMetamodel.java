@@ -23,7 +23,7 @@ public class LibraryMetamodel {
         InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
         LIBRARY_MM  = unserializedNodes.stream().filter(e -> e instanceof Metamodel).map(e -> (Metamodel)e).findFirst().get();
         LIBRARY  = LIBRARY_MM.getConceptByName("Library");
         BOOK = LIBRARY_MM.getConceptByName("Book");

@@ -11,6 +11,7 @@ import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
 
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,6 +59,7 @@ public class JsonSerialization {
 
     private Map<String, JsonObject> nodeIdToData = new HashMap<>();
     private Map<String, Node> nodeIdToNode = new HashMap<>();
+    private Map<String, NodeData> nodeIdToNodeData = new HashMap<>();
 
     private JsonSerialization() {
         // prevent public access
@@ -182,6 +184,19 @@ public class JsonSerialization {
         return instance;
     }
 
+    private NodeData populateProperties(NodeData instance, JsonObject jsonObject) {
+        if (!jsonObject.has("properties") && jsonObject.get("properties").isJsonObject()) {
+            return instance;
+        }
+        JsonObject properties = jsonObject.getAsJsonObject("properties");
+        for (String propertyId : properties.keySet()) {
+            String serializedValue = properties.get(propertyId).getAsString();
+            instance.setPropertyValue(propertyId, serializedValue);
+        }
+
+        return instance;
+    }
+
     private void populateLinks(Node node, JsonObject data) {
         if (data.has("children")) {
             JsonObject children = data.get("children").getAsJsonObject();
@@ -236,6 +251,40 @@ public class JsonSerialization {
         }
     }
 
+    private void populateLinks(NodeData node, JsonObject data) {
+        if (data.has("children")) {
+            JsonObject children = data.get("children").getAsJsonObject();
+            for (String containmentID : children.keySet()) {
+                JsonArray value = children.get(containmentID).getAsJsonArray();
+                for (JsonElement childEl : value.asList()) {
+                    String childId = childEl.getAsString();
+                    node.addChild(containmentID, childId);
+                }
+            }
+        }
+        if (data.has("references")) {
+            JsonObject references = data.get("references").getAsJsonObject();
+            for (String referenceID : references.keySet()) {
+                JsonArray value = references.get(referenceID).getAsJsonArray();
+                for (JsonElement referredEl : value.asList()) {
+                    try {
+                        JsonObject referenceObj = referredEl.getAsJsonObject();
+                        String referredId = getAsStringOrNull(referenceObj.get("reference"));
+                        String resolveInfo = getAsStringOrNull(referenceObj.get("resolveInfo"));
+                        node.addReferenceValue(referenceID, new NodeData.RawReferenceValue(referredId, resolveInfo));
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue deserializing reference " + referenceID, e);
+                    }
+                }
+            }
+        }
+        if (data.has("parent")) {
+            JsonElement parentValue = data.get("parent");
+            String parentNodeID = parentValue instanceof JsonNull ? null : parentValue.getAsString();
+            node.setParentNodeID(parentNodeID);
+        }
+    }
+
     private String getAsStringOrNull(JsonElement element) {
         if (element == null || element.isJsonNull()) {
             return null;
@@ -244,7 +293,53 @@ public class JsonSerialization {
         }
     }
 
-    public List<Node> unserialize(JsonElement jsonElement) {
+    /**
+     * This will return a lower-level representation of the information stored in JSON.
+     * It is intended to load broken models.
+     *
+     * Possible usages: repair a broken model, extract a metamodel from the model (“model archeology”), etc.
+     *
+     * This method follows a "best-effort" approach, try to limit exception thrown and return data whenever is possible,
+     * in the measure that it is possible.
+     */
+    public List<NodeData> rawUnserialization(JsonElement jsonElement) {
+        if (jsonElement.isJsonObject()) {
+            JsonObject topLevel = jsonElement.getAsJsonObject();
+            if (!topLevel.has("nodes")) {
+                return Collections.emptyList();
+            }
+            if (topLevel.get("nodes").isJsonArray()) {
+                List<NodeData> nodes = topLevel.get("nodes").getAsJsonArray().asList().stream().map(element -> {
+                    try {
+                        NodeData nodeData = unserializeNodeData(element);
+                        if (nodeData != null && nodeData.getID() != null) {
+                            this.nodeIdToData.put(nodeData.getID(), element.getAsJsonObject());
+                            this.nodeIdToNodeData.put(nodeData.getID(), nodeData);
+                        }
+                        return nodeData;
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue while unserializing " + element, e);
+                    }
+                }).filter(e -> e != null).collect(Collectors.toList());
+                for (Map.Entry<String, JsonObject> entry : nodeIdToData.entrySet()) {
+                    try {
+                        populateLinks(nodeIdToNodeData.get(entry.getKey()), entry.getValue());
+                    } catch (Exception e) {
+                        throw new RuntimeException("Issue while unserializing " + entry, e);
+                    }
+                }
+                nodeIdToData.clear();
+                nodeIdToNodeData.clear();
+                return nodes;
+            } else {
+                return Collections.emptyList();
+            }
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public List<Node> unserializeToNode(JsonElement jsonElement) {
         if (jsonElement.isJsonObject()) {
             JsonObject topLevel = jsonElement.getAsJsonObject();
             if (!topLevel.has("serializationFormatVersion")) {
@@ -303,6 +398,20 @@ public class JsonSerialization {
         }
     }
 
+    @Nullable
+    private NodeData unserializeNodeData(JsonElement jsonElement) {
+        if (jsonElement.isJsonObject()) {
+            JsonObject jsonObject = jsonElement.getAsJsonObject();
+            String conceptID = tryToGetStringProperty(jsonObject, CONCEPT_LABEL);
+            String nodeID = tryToGetStringProperty(jsonObject, ID_LABEL);
+            NodeData nodeData = new NodeData(nodeID, conceptID);
+            populateProperties(nodeData, jsonObject);
+            return nodeData;
+        } else {
+            return null;
+        }
+    }
+
     private String getStringProperty(JsonObject jsonObject, String propertyName) {
         if (!jsonObject.has(propertyName)) {
             throw new IllegalArgumentException(propertyName + " property not found in " + jsonObject);
@@ -312,6 +421,19 @@ public class JsonSerialization {
             return value.getAsJsonPrimitive().getAsString();
         } else {
             throw new IllegalArgumentException(propertyName + " property expected to be a string while it is " + value);
+        }
+    }
+
+    @Nullable
+    private String tryToGetStringProperty(JsonObject jsonObject, String propertyName) {
+        if (!jsonObject.has(propertyName)) {
+            return null;
+        }
+        JsonElement value = jsonObject.get(propertyName);
+        if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+            return value.getAsJsonPrimitive().getAsString();
+        } else {
+            return null;
         }
     }
 
