@@ -32,7 +32,7 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
 
         Metamodel lioncore = (Metamodel) unserializedNodes.get(0);
         assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
@@ -57,6 +57,35 @@ public class JsonSerializationTest {
     }
 
     @Test
+    public void unserializeLionCoreToNodeData() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+        List<NodeData> unserializedNodeData = jsonSerialization.rawUnserialization(jsonElement);
+
+        NodeData lioncore = unserializedNodeData.get(0);
+        assertEquals(LionCore.getMetamodel().getID(), lioncore.getConceptID());
+        assertEquals("LIonCore_M3", lioncore.getID());
+        assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore_M3_Metamodel_name"));
+        assertEquals(16, lioncore.getChildren().size());
+        assertEquals(null, lioncore.getParentNodeID());
+
+        NodeData namespacedEntity = unserializedNodeData.get(1);
+        assertEquals(LionCore.getConcept().getID(), namespacedEntity.getConceptID());
+        assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
+        assertEquals("true", namespacedEntity.getPropertyValue("LIonCore_M3_Concept_abstract"));
+        assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+        assertEquals(2, namespacedEntity.getChildren().size());
+        assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
+
+        NodeData simpleName = unserializedNodeData.get(2);
+        assertEquals(LionCore.getProperty().getID(), simpleName.getConceptID());
+        assertEquals("simpleName", simpleName.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+        assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParentNodeID());
+        assertEquals(Arrays.asList(new NodeData.RawReferenceValue("LIonCore_M3_String", null)), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
+    }
+
+    @Test
     public void unserializeLionCoreToDynamicNodes() {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
@@ -64,7 +93,7 @@ public class JsonSerializationTest {
         jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
         jsonSerialization.getNodeInstantiator().enableDynamicNodes();
         jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
 
         DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
         assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
@@ -94,7 +123,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
         jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-        jsonSerialization.unserialize(jsonElement);
+        jsonSerialization.unserializeToNode(jsonElement);
     }
 
     @Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
@@ -112,7 +141,7 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
         Node book = unserializedNodes.stream().filter(n -> n.getID().equals("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs")).findFirst().get();
         assertEquals("Book", book.getPropertyValueByName("simpleName"));
 
@@ -126,7 +155,7 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
         JsonElement reserialized = jsonSerialization.serialize(unserializedNodes.get(0));
         assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
@@ -248,7 +277,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
         assertEquals(Arrays.asList(node), unserialized);
     }
 
@@ -292,7 +321,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
         assertEquals(Arrays.asList(node), unserialized);
     }
 
@@ -336,7 +365,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
         assertEquals(Arrays.asList(node), unserialized);
     }
 
@@ -386,7 +415,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserialize(serialized);
+        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
         assertEquals(Arrays.asList(node), unserialized);
     }
 
@@ -395,7 +424,7 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
 
         Enumeration testEnumeration1 = (Enumeration) unserializedNodes.stream().filter(n -> n.getID().equals("MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI")).findFirst().get();
         assertEquals("TestEnumeration1", testEnumeration1.getSimpleName());
@@ -413,7 +442,7 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserialize(jsonElement);
+        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
         JsonObject reserialized = jsonSerialization.serialize(unserializedNodes).getAsJsonObject();
 
         List<JsonObject> metamodels = getNodesByConcept(reserialized.get("nodes").getAsJsonArray(), "LIonCore_M3_Metamodel");
