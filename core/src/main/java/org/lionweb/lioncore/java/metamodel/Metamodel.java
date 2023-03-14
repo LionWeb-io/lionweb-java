@@ -35,6 +35,11 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
         return this;
     }
 
+    public Metamodel setVersion(@Nullable Integer version) {
+        setPropertyValue("version", version);
+        return this;
+    }
+
     @Override
     public String namespaceQualifier() {
         return getName();
@@ -86,6 +91,11 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
 
     public String getName() {
         return this.getPropertyValue("name", String.class);
+    }
+
+    @Nullable
+    public Integer getVersion() {
+        return this.getPropertyValue("version", Integer.class);
     }
 
     public @Nullable MetamodelElement getElementByName(String name) {

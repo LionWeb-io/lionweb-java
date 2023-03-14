@@ -142,6 +142,7 @@ public class LionCore {
             metamodel.addImplementedInterface(namespaceProvider);
             metamodel.addFeature(Property.createRequired("name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
             metamodel.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_id"));
+            metamodel.addFeature(Property.createRequired("version", LionCoreBuiltins.getInteger(), "LIonCore_M3_Metamodel_version"));
             metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
 
