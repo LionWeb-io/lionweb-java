@@ -124,7 +124,11 @@ public class JsonSerialization {
 
         JsonObject properties = new JsonObject();
         node.getConcept().allProperties().stream().filter(p -> !p.isDerived()).forEach(property -> {
-            properties.addProperty(property.getID(), serializePropertyValue(property.getType(), node.getPropertyValue(property)));
+            String propertyID = property.getID();
+            if (propertyID == null) {
+                throw new IllegalStateException("Property ID should not be null for " + property);
+            }
+            properties.addProperty(propertyID, serializePropertyValue(property.getType(), node.getPropertyValue(property)));
         });
         jsonObject.add("properties", properties);
 
@@ -132,7 +136,11 @@ public class JsonSerialization {
         node.getConcept().allContainments().forEach(containment -> {
             JsonArray serializedValue = new JsonArray();
             node.getChildren(containment).forEach(c -> serializedValue.add(c.getID()));
-            children.add(containment.getID(), serializedValue);
+            String containmentID = containment.getID();
+            if (containmentID == null) {
+                throw new IllegalStateException("Containment ID should not be null for " + containment);
+            }
+            children.add(containmentID, serializedValue);
         });
         jsonObject.add("children", children);
 
@@ -149,7 +157,11 @@ public class JsonSerialization {
                     referenceValueJson.addProperty("resolveInfo", c.getResolveInfo());
                     serializedValue.add(referenceValueJson);
             });
-            references.add(reference.getID(), serializedValue);
+            String referenceID = reference.getID();
+            if (referenceID == null) {
+                throw new IllegalStateException("Reference ID should not be null for " + reference);
+            }
+            references.add(referenceID, serializedValue);
         });
         jsonObject.add("references", references);
 
