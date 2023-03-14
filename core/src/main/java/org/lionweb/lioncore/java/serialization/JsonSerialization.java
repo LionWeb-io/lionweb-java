@@ -119,9 +119,17 @@ public class JsonSerialization {
         return primitiveValuesSerialization.serialize(dataType.getID(), value);
     }
 
+    private JsonObject serializeMetaPointer(MetamodelElement<?> metamodelElement) {
+        JsonObject metaPointer = new JsonObject();
+        metaPointer.addProperty("metamodel", metamodelElement.getMetamodel().getKey());
+        metaPointer.addProperty("version", metamodelElement.getMetamodel().getVersion());
+        metaPointer.addProperty("key", metamodelElement.getKey());
+        return metaPointer;
+    }
+
     private JsonObject serializeThisNode(Node node) {
         JsonObject jsonObject = new JsonObject();
-        jsonObject.addProperty(CONCEPT_LABEL, node.getConcept().getID());
+        jsonObject.add(CONCEPT_LABEL, serializeMetaPointer(node.getConcept()));
         jsonObject.addProperty(ID_LABEL, node.getID());
 
         JsonObject properties = new JsonObject();

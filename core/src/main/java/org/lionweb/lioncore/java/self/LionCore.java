@@ -97,6 +97,7 @@ public class LionCore {
             Concept enumerationLiteral = INSTANCE.addElement(new Concept("EnumerationLiteral"));
             Concept feature = INSTANCE.addElement(new Concept("Feature"));
             Concept featuresContainer = INSTANCE.addElement(new Concept("FeaturesContainer"));
+            ConceptInterface hasKey = INSTANCE.addElement(new ConceptInterface("HasKey"));
             Concept link = INSTANCE.addElement(new Concept("Link"));
             Concept metamodel = INSTANCE.addElement(new Concept("Metamodel"));
             Concept metamodelElement = INSTANCE.addElement(new Concept("MetamodelElement"));
@@ -135,11 +136,14 @@ public class LionCore {
             featuresContainer.addImplementedInterface(namespaceProvider);
             featuresContainer.addFeature(Containment.createMultiple("features", feature, "LIonCore_M3_FeaturesContainer_features"));
 
+            hasKey.addFeature(Property.createRequired("key", LionCoreBuiltins.getString(), "LIonCore_M3_HasKey_key"));
+
             link.setExtendedConcept(feature);
             link.addFeature(Property.createRequired("multiple", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Link_multiple"));
             link.addFeature(Reference.createRequired("type", featuresContainer, "LIonCore_M3_Link_type"));
 
             metamodel.addImplementedInterface(namespaceProvider);
+            metamodel.addImplementedInterface(hasKey);
             metamodel.addFeature(Property.createRequired("name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
             metamodel.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_id"));
             metamodel.addFeature(Property.createRequired("version", LionCoreBuiltins.getInteger(), "LIonCore_M3_Metamodel_version"));
@@ -147,6 +151,7 @@ public class LionCore {
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
 
             metamodelElement.setExtendedConcept(namespacedEntity);
+            metamodelElement.addImplementedInterface(hasKey);
             metamodel.setAbstract(true);
 
             namespacedEntity.setAbstract(true);
