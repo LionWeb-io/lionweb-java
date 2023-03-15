@@ -10,10 +10,7 @@ import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
-import org.lionweb.lioncore.java.serialization.data.MetaPointer;
-import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
-import org.lionweb.lioncore.java.serialization.data.SerializedNode;
-import org.lionweb.lioncore.java.serialization.data.SerializedPropertyValue;
+import org.lionweb.lioncore.java.serialization.data.*;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -101,13 +98,25 @@ public class JsonSerialization {
                 propertyValue.setValue(serializePropertyValue(property.getType(), node.getPropertyValue(property)));
                 serializedNode.addPropertyValue(propertyValue);
             });
+            node.getConcept().allContainments().forEach(containment -> {
+                SerializedContainmentValue containmentValue = new SerializedContainmentValue();
+                containmentValue.setMetaPointer(MetaPointer.from(containment, ((MetamodelElement)containment.getContainer()).getMetamodel() ));
+                containmentValue.setValue(node.getChildren(containment).stream().map(c -> c.getID()).collect(Collectors.toList()));
+                serializedNode.addContainmentValue(containmentValue);
+            });
+            node.getConcept().allReferences().forEach(reference -> {
+                SerializedReferenceValue referenceValue = new SerializedReferenceValue();
+                referenceValue.setMetaPointer(MetaPointer.from(reference, ((MetamodelElement)reference.getContainer()).getMetamodel() ));
+                referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> new SerializedReferenceValue.Entry(rv.getReferred().getID(), rv.getResolveInfo())).collect(Collectors.toList()));
+                serializedNode.addReferenceValue(referenceValue);
+            });
             // TODO add metamodel
         }
         return serializationBlock;
     }
 
     public JsonElement serialize(Node node) {
-        return serialize(Arrays.asList(node));
+        return serialize(node.thisAndAllDescendants());
     }
 
     public JsonElement serialize(List<Node> nodes) {

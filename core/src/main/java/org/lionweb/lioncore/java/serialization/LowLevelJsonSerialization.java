@@ -8,8 +8,7 @@ import org.lionweb.lioncore.java.serialization.data.*;
 
 import javax.annotation.Nullable;
 
-import static org.lionweb.lioncore.java.serialization.SerializationUtils.getAsStringOrNull;
-import static org.lionweb.lioncore.java.serialization.SerializationUtils.tryToGetStringProperty;
+import static org.lionweb.lioncore.java.serialization.SerializationUtils.*;
 
 public class LowLevelJsonSerialization {
     private static final String CONCEPT_LABEL = "concept";
@@ -112,8 +111,29 @@ public class LowLevelJsonSerialization {
             JsonArray properties = new JsonArray();
             for (SerializedPropertyValue propertyValue : node.getProperties()) {
                 JsonObject property = new JsonObject();
+                property.add("property", serializeToJson(propertyValue.getMetaPointer()));
+                property.addProperty("value", propertyValue.getValue());
+                properties.add(property);
             }
             nodeJson.add("properties", properties);
+
+            JsonArray children = new JsonArray();
+            for (SerializedContainmentValue childrenValue : node.getChildren()) {
+                JsonObject childrenJ = new JsonObject();
+                childrenJ.add("containment", serializeToJson(childrenValue.getMetaPointer()));
+                childrenJ.add("children", toJsonArray(childrenValue.getValue()));
+                children.add(childrenJ);
+            }
+            nodeJson.add("children", children);
+
+            JsonArray references = new JsonArray();
+            for (SerializedReferenceValue referenceValue : node.getReferences()) {
+                JsonObject reference = new JsonObject();
+                reference.add("reference", serializeToJson(referenceValue.getMetaPointer()));
+                reference.add("targets", toJsonArrayOfReferenceValues(referenceValue.getValue()));
+                references.add(reference);
+            }
+            nodeJson.add("references", references);
 
             nodes.add(nodeJson);
         }

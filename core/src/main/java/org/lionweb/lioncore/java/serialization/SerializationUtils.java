@@ -1,9 +1,12 @@
 package org.lionweb.lioncore.java.serialization;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.lionweb.lioncore.java.serialization.data.SerializedReferenceValue;
 
 import javax.annotation.Nullable;
+import java.util.List;
 
 class SerializationUtils {
 
@@ -26,5 +29,22 @@ class SerializationUtils {
         } else {
             return null;
         }
+    }
+
+    static JsonArray toJsonArray(List<String> stringList) {
+        JsonArray jsonArray = new JsonArray();
+        stringList.forEach(s -> jsonArray.add(s));
+        return jsonArray;
+    }
+
+    static JsonArray toJsonArrayOfReferenceValues(List<SerializedReferenceValue.Entry> entries) {
+        JsonArray jsonArray = new JsonArray();
+        entries.forEach(e -> {
+            JsonObject entryJson = new JsonObject();
+            entryJson.addProperty("resolveInfo", e.getResolveInfo());
+            entryJson.addProperty("reference", e.getReference());
+            jsonArray.add(entryJson);
+        });
+        return jsonArray;
     }
 }

@@ -25,13 +25,12 @@ public class SerializedNode {
         this.parentNodeID = parentNodeID;
     }
 
-    public List<String> getChildren() {
-//        List<String> children = new ArrayList<>();
-//        for (List<String> ch : containmentsValues.values()) {
-//            children.addAll(ch);
-//        }
-//        return children;
-        throw new UnsupportedOperationException();
+    public List<SerializedContainmentValue> getChildren() {
+        return this.containments;
+    }
+
+    public List<SerializedReferenceValue> getReferences() {
+        return this.references;
     }
 
     public List<SerializedPropertyValue> getProperties() {
@@ -40,6 +39,14 @@ public class SerializedNode {
 
     public void addPropertyValue(SerializedPropertyValue propertyValue) {
         this.properties.add(propertyValue);
+    }
+
+    public void addContainmentValue(SerializedContainmentValue containmentValue) {
+        this.containments.add(containmentValue);
+    }
+
+    public void addReferenceValue(SerializedReferenceValue referenceValue) {
+        this.references.add(referenceValue);
     }
 
     public static class RawReferenceValue {

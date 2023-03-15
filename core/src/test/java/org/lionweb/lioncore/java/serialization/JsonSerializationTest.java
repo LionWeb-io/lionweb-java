@@ -13,6 +13,7 @@ import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
+import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
 import org.lionweb.lioncore.java.serialization.data.SerializedNode;
 
 import java.io.InputStream;
@@ -26,6 +27,13 @@ import static org.junit.Assert.assertNotNull;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 public class JsonSerializationTest {
+
+    @Test
+    public void serializeLionCoreToSerializationBlock() {
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        SerializationBlock serializationBlock = jsonSerialization.serializeToSerializationBlock(LionCore.getMetamodel().thisAndAllDescendants());
+        System.out.println(serializationBlock);
+    }
 
     @Test
     public void unserializeLionCoreToConcreteClasses() {
