@@ -1,13 +1,12 @@
-package org.lionweb.lioncore.java.serialization;
+package org.lionweb.lioncore.java.serialization.data;
 
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Function;
 
 /**
  * Lower level representation of Node which is used to load broken nodes during serialization.
  */
-public class NodeData {
+public class SerializedNode {
     private String id;
     private String conceptId;
     private String parentNodeID;
@@ -70,11 +69,11 @@ public class NodeData {
         }
     }
 
-    public NodeData() {
+    public SerializedNode() {
 
     }
 
-    public NodeData(String id, String conceptId) {
+    public SerializedNode(String id, String conceptId) {
         setID(id);
         setConceptID(conceptId);
     }

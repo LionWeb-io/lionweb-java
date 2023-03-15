@@ -14,6 +14,7 @@ import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
+import org.lionweb.lioncore.java.serialization.data.SerializedNode;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -61,16 +62,16 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-        List<NodeData> unserializedNodeData = jsonSerialization.rawUnserialization(jsonElement);
+        List<SerializedNode> unserializedSerializedNodeData = jsonSerialization.rawUnserialization(jsonElement);
 
-        NodeData lioncore = unserializedNodeData.get(0);
+        SerializedNode lioncore = unserializedSerializedNodeData.get(0);
         assertEquals(LionCore.getMetamodel().getID(), lioncore.getConceptID());
         assertEquals("LIonCore_M3", lioncore.getID());
         assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore_M3_Metamodel_name"));
         assertEquals(16, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParentNodeID());
 
-        NodeData namespacedEntity = unserializedNodeData.get(1);
+        SerializedNode namespacedEntity = unserializedSerializedNodeData.get(1);
         assertEquals(LionCore.getConcept().getID(), namespacedEntity.getConceptID());
         assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
         assertEquals("true", namespacedEntity.getPropertyValue("LIonCore_M3_Concept_abstract"));
@@ -78,11 +79,11 @@ public class JsonSerializationTest {
         assertEquals(2, namespacedEntity.getChildren().size());
         assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
-        NodeData simpleName = unserializedNodeData.get(2);
+        SerializedNode simpleName = unserializedSerializedNodeData.get(2);
         assertEquals(LionCore.getProperty().getID(), simpleName.getConceptID());
         assertEquals("simpleName", simpleName.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParentNodeID());
-        assertEquals(Arrays.asList(new NodeData.RawReferenceValue("LIonCore_M3_String", null)), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
+        assertEquals(Arrays.asList(new SerializedNode.RawReferenceValue("LIonCore_M3_String", null)), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
     }
 
     @Test
@@ -126,7 +127,7 @@ public class JsonSerializationTest {
         jsonSerialization.unserializeToNode(jsonElement);
     }
 
-    @Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
+    //@Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
     @Test
     public void serializeLionCore() {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
