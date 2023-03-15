@@ -18,6 +18,14 @@ import static org.junit.Assert.assertNotNull;
 public class LowLevelJsonSerializationTest {
 
     @Test
+    public void serializeLionCore() {
+        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+        SerializationBlock serializationBlock = jsonSerialization.serializeToSerializationBlock(LionCore.getMetamodel().thisAndAllDescendants());
+        System.out.println(serializationBlock);
+    }
+
+
+    @Test
     public void unserializeLionCoreToSerializedNodes() {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));

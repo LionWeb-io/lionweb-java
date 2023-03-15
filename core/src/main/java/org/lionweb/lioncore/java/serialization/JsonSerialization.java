@@ -82,11 +82,12 @@ public class JsonSerialization {
         return primitiveValuesSerialization;
     }
 
-    private SerializationBlock serializeToSerializationBlock(List<Node> nodes) {
+    public SerializationBlock serializeToSerializationBlock(List<Node> nodes) {
         SerializationBlock serializationBlock = new SerializationBlock();
         serializationBlock.setSerializationFormatVersion("1");
         for (Node node: nodes) {
             SerializedNode serializedNode = new SerializedNode();
+            serializedNode.setID(node.getID());
             serializationBlock.addNode(serializedNode);
             // TODO add metamodel
         }

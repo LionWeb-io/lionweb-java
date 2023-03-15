@@ -5,6 +5,7 @@ import org.lionweb.lioncore.java.metamodel.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -100,5 +101,14 @@ public interface Node extends HasFeatureValues {
     default Object getPropertyValueByID(String propertyID) {
         Property property = this.getConcept().getPropertyByID(propertyID);
         return getPropertyValue(property);
+    }
+
+    default List<Node> thisAndAllDescendants() {
+        List<Node> nodes = new ArrayList<>();
+        nodes.add(this);
+        for (Node child: this.getChildren()) {
+            nodes.addAll(child.thisAndAllDescendants());
+        }
+        return nodes;
     }
 }

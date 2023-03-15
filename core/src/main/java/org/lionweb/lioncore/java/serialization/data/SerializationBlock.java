@@ -40,4 +40,13 @@ public class SerializationBlock {
     public void addMetamodel(MetamodelKeyVersion metamodel) {
         this.metamodels.add(metamodel);
     }
+
+    @Override
+    public String toString() {
+        return "SerializationBlock{" +
+                ", serializationFormatVersion='" + serializationFormatVersion + '\'' +
+                ", metamodels=" + metamodels +
+                ", nodes=" + nodes +
+                '}';
+    }
 }

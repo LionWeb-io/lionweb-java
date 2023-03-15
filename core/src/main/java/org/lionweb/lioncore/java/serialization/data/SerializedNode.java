@@ -117,4 +117,16 @@ public class SerializedNode {
     public List<RawReferenceValue> getReferenceValues(String referenceID) {
         return this.referencesValues.getOrDefault(referenceID, new ArrayList<>());
     }
+
+    @Override
+    public String toString() {
+        return "SerializedNode{" +
+                "id='" + id + '\'' +
+                ", conceptId='" + conceptId + '\'' +
+                ", parentNodeID='" + parentNodeID + '\'' +
+                ", propertyValues=" + propertyValues +
+                ", containmentsValues=" + containmentsValues +
+                ", referencesValues=" + referencesValues +
+                '}';
+    }
 }
