@@ -38,6 +38,10 @@ public class SerializedNode {
         return properties;
     }
 
+    public void addPropertyValue(SerializedPropertyValue propertyValue) {
+        this.properties.add(propertyValue);
+    }
+
     public static class RawReferenceValue {
         public String referredId;
         public String resolveInfo;

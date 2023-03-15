@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.serialization.data;
 
+import java.util.Objects;
+
 public class SerializedPropertyValue {
     private MetaPointer metaPointer;
     private String value;
@@ -18,5 +20,26 @@ public class SerializedPropertyValue {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return "SerializedPropertyValue{" +
+                "metaPointer=" + metaPointer +
+                ", value='" + value + '\'' +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SerializedPropertyValue)) return false;
+        SerializedPropertyValue that = (SerializedPropertyValue) o;
+        return Objects.equals(metaPointer, that.metaPointer) && Objects.equals(value, that.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(metaPointer, value);
     }
 }

@@ -18,7 +18,7 @@ import java.util.Objects;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature<T extends M3Node> extends M3Node<T> implements NamespacedEntity {
+public abstract class Feature<T extends M3Node> extends M3Node<T> implements NamespacedEntity, HasKey<T> {
     @Experimental
     private boolean derived;
 
@@ -91,4 +91,14 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
         }
     }
 
+    @Override
+    public String getKey() {
+        return this.getPropertyValue("key", String.class);
+    }
+
+    @Override
+    public T setKey(String key) {
+        setPropertyValue("key", key);
+        return (T) this;
+    }
 }

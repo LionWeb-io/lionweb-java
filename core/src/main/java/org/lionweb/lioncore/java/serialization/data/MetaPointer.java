@@ -1,6 +1,8 @@
 package org.lionweb.lioncore.java.serialization.data;
 
 import org.lionweb.lioncore.java.metamodel.Concept;
+import org.lionweb.lioncore.java.metamodel.HasKey;
+import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.metamodel.MetamodelElement;
 
 import java.util.Objects;
@@ -17,6 +19,18 @@ public class MetaPointer {
             metaPointer.setMetamodel(metamodelElement.getMetamodel().getKey());
             if (metamodelElement.getMetamodel().getVersion() != null) {
                 metaPointer.setVersion(Integer.toString(metamodelElement.getMetamodel().getVersion()));
+            }
+        }
+        return metaPointer;
+    }
+
+    public static MetaPointer from(HasKey<?> elementWithKey, Metamodel metamodel) {
+        MetaPointer metaPointer = new MetaPointer();
+        metaPointer.setKey(elementWithKey.getKey());
+        if (metamodel != null) {
+            metaPointer.setMetamodel(metamodel.getKey());
+            if (metamodel.getVersion() != null) {
+                metaPointer.setVersion(Integer.toString(metamodel.getVersion()));
             }
         }
         return metaPointer;

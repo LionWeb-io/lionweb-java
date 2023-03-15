@@ -13,6 +13,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
 import org.lionweb.lioncore.java.serialization.data.SerializedNode;
+import org.lionweb.lioncore.java.serialization.data.SerializedPropertyValue;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -91,6 +92,15 @@ public class JsonSerialization {
             serializedNode.setID(node.getID());
             serializedNode.setConcept(MetaPointer.from(node.getConcept()));
             serializationBlock.addNode(serializedNode);
+            if (node.getParent() != null) {
+                serializedNode.setParentNodeID(node.getParent().getID());
+            }
+            node.getConcept().allProperties().forEach(property -> {
+                SerializedPropertyValue propertyValue = new SerializedPropertyValue();
+                propertyValue.setMetaPointer(MetaPointer.from(property, ((MetamodelElement)property.getContainer()).getMetamodel() ));
+                propertyValue.setValue(serializePropertyValue(property.getType(), node.getPropertyValue(property)));
+                serializedNode.addPropertyValue(propertyValue);
+            });
             // TODO add metamodel
         }
         return serializationBlock;

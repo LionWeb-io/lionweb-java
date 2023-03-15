@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.self;
 
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.model.HasFeatureValues;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import java.util.Collections;
@@ -188,6 +189,11 @@ public class LionCore {
             } else {
                 throw new IllegalStateException(node.toString());
             }
+        }
+        if (node instanceof FeaturesContainer<?>) {
+            ((FeaturesContainer<?>) node).getFeatures().forEach(feature -> {
+                feature.setKey(feature.getID());
+            });
         }
 
         // TODO To be changed once getChildren is implemented correctly
