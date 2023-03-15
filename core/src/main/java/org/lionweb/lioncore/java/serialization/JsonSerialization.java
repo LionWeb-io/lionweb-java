@@ -10,6 +10,7 @@ import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 import org.lionweb.lioncore.java.self.LionCore;
+import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
 import org.lionweb.lioncore.java.serialization.data.SerializedNode;
 
@@ -88,6 +89,7 @@ public class JsonSerialization {
         for (Node node: nodes) {
             SerializedNode serializedNode = new SerializedNode();
             serializedNode.setID(node.getID());
+            serializedNode.setConcept(MetaPointer.from(node.getConcept()));
             serializationBlock.addNode(serializedNode);
             // TODO add metamodel
         }
@@ -438,16 +440,17 @@ public class JsonSerialization {
 
     @Nullable
     private SerializedNode unserializeNodeData(JsonElement jsonElement) {
-        if (jsonElement.isJsonObject()) {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            String conceptID = tryToGetStringProperty(jsonObject, CONCEPT_LABEL);
-            String nodeID = tryToGetStringProperty(jsonObject, ID_LABEL);
-            SerializedNode serializedNode = new SerializedNode(nodeID, conceptID);
-            populateProperties(serializedNode, jsonObject);
-            return serializedNode;
-        } else {
-            return null;
-        }
+        throw new UnsupportedOperationException();
+//        if (jsonElement.isJsonObject()) {
+//            JsonObject jsonObject = jsonElement.getAsJsonObject();
+//            String conceptID = tryToGetStringProperty(jsonObject, CONCEPT_LABEL);
+//            String nodeID = tryToGetStringProperty(jsonObject, ID_LABEL);
+//            SerializedNode serializedNode = new SerializedNode(nodeID, conceptID);
+//            populateProperties(serializedNode, jsonObject);
+//            return serializedNode;
+//        } else {
+//            return null;
+//        }
     }
 
     private String getStringProperty(JsonObject jsonObject, String propertyName) {

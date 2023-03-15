@@ -4,9 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import org.lionweb.lioncore.java.serialization.data.MetamodelKeyVersion;
-import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
-import org.lionweb.lioncore.java.serialization.data.SerializedNode;
+import org.lionweb.lioncore.java.serialization.data.*;
 
 import javax.annotation.Nullable;
 
@@ -109,11 +107,27 @@ public class LowLevelJsonSerialization {
         for (SerializedNode node: serializationBlock.getNodes()) {
             JsonObject nodeJson = new JsonObject();
             nodeJson.addProperty("id", node.getID());
+            nodeJson.add("concept", serializeToJson(node.getConcept()));
+
+            JsonArray properties = new JsonArray();
+            for (SerializedPropertyValue propertyValue : node.getProperties()) {
+                JsonObject property = new JsonObject();
+            }
+            nodeJson.add("properties", properties);
+
             nodes.add(nodeJson);
         }
         topLevel.add("nodes", nodes);
 
         return topLevel;
+    }
+
+    private JsonElement serializeToJson(MetaPointer metapointer) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("metamodel", metapointer.getMetamodel());
+        jsonObject.addProperty("version", metapointer.getVersion());
+        jsonObject.addProperty("key", metapointer.getKey());
+        return jsonObject;
     }
 
     private void populateLinks(SerializedNode node, JsonObject data) {
@@ -152,16 +166,17 @@ public class LowLevelJsonSerialization {
 
     @Nullable
     private SerializedNode unserializeNode(JsonElement jsonElement) {
-        if (jsonElement.isJsonObject()) {
-            JsonObject jsonObject = jsonElement.getAsJsonObject();
-            String conceptID = tryToGetStringProperty(jsonObject, CONCEPT_LABEL);
-            String nodeID = tryToGetStringProperty(jsonObject, ID_LABEL);
-            SerializedNode serializedNode = new SerializedNode(nodeID, conceptID);
-            populateProperties(serializedNode, jsonObject);
-            return serializedNode;
-        } else {
-            return null;
-        }
+        throw new UnsupportedOperationException();
+//        if (jsonElement.isJsonObject()) {
+//            JsonObject jsonObject = jsonElement.getAsJsonObject();
+//            String conceptID = tryToGetStringProperty(jsonObject, CONCEPT_LABEL);
+//            String nodeID = tryToGetStringProperty(jsonObject, ID_LABEL);
+//            SerializedNode serializedNode = new SerializedNode(nodeID, conceptID);
+//            populateProperties(serializedNode, jsonObject);
+//            return serializedNode;
+//        } else {
+//            return null;
+//        }
     }
 
     private SerializedNode populateProperties(SerializedNode instance, JsonObject jsonObject) {

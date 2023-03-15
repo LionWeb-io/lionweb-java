@@ -86,6 +86,7 @@ public class LionCore {
         if (INSTANCE == null) {
             INSTANCE = new Metamodel("LIonCore.M3");
             INSTANCE.setID("LIonCore_M3");
+            INSTANCE.setVersion(1);
 
             // We first instantiate all Concepts and ConceptInterfaces
             // we add features only after as the features will have references to these elements
@@ -172,6 +173,7 @@ public class LionCore {
             checkIDs(INSTANCE);
         }
         checkIDs(INSTANCE);
+        INSTANCE.setKey(INSTANCE.getID());
         return INSTANCE;
     }
 
@@ -180,10 +182,14 @@ public class LionCore {
             if (node instanceof NamespacedEntity) {
                 NamespacedEntity namespacedEntity = (NamespacedEntity) node;
                 node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
+                if (node instanceof HasKey<?>) {
+                    ((HasKey<?>) node).setKey(node.getID());
+                }
             } else {
                 throw new IllegalStateException(node.toString());
             }
         }
+
         // TODO To be changed once getChildren is implemented correctly
         getChildrenHelper(node).forEach(c -> checkIDs(c));
     }

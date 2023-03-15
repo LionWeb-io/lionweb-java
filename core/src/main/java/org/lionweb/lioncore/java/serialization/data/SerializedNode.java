@@ -1,5 +1,7 @@
 package org.lionweb.lioncore.java.serialization.data;
 
+import org.checkerframework.checker.units.qual.A;
+
 import javax.annotation.Nullable;
 import java.util.*;
 
@@ -8,11 +10,12 @@ import java.util.*;
  */
 public class SerializedNode {
     private String id;
-    private String conceptId;
+    private MetaPointer concept;
     private String parentNodeID;
-    private Map<String, String> propertyValues = new HashMap<>();
-    private Map<String, List<String>> containmentsValues = new HashMap<>();
-    private Map<String, List<RawReferenceValue>> referencesValues = new HashMap<>();
+
+    private List<SerializedPropertyValue> properties = new ArrayList<>();
+    private List<SerializedContainmentValue> containments = new ArrayList<>();
+    private List<SerializedReferenceValue> references = new ArrayList<>();
 
     public String getParentNodeID() {
         return parentNodeID;
@@ -23,11 +26,16 @@ public class SerializedNode {
     }
 
     public List<String> getChildren() {
-        List<String> children = new ArrayList<>();
-        for (List<String> ch : containmentsValues.values()) {
-            children.addAll(ch);
-        }
-        return children;
+//        List<String> children = new ArrayList<>();
+//        for (List<String> ch : containmentsValues.values()) {
+//            children.addAll(ch);
+//        }
+//        return children;
+        throw new UnsupportedOperationException();
+    }
+
+    public List<SerializedPropertyValue> getProperties() {
+        return properties;
     }
 
     public static class RawReferenceValue {
@@ -73,17 +81,17 @@ public class SerializedNode {
 
     }
 
-    public SerializedNode(String id, String conceptId) {
+    public SerializedNode(String id, MetaPointer concept) {
         setID(id);
-        setConceptID(conceptId);
+        setConcept(concept);
     }
 
-    public String getConceptID() {
-        return conceptId;
+    public MetaPointer getConcept() {
+        return concept;
     }
 
-    public void setConceptID(String conceptId) {
-        this.conceptId = conceptId;
+    public void setConcept(MetaPointer concept) {
+        this.concept = concept;
     }
 
     @Nullable
@@ -97,36 +105,54 @@ public class SerializedNode {
     }
 
     public void setPropertyValue(String propertyId, String serializedValue) {
-        this.propertyValues.put(propertyId, serializedValue);
+        //this.propertyValues.put(propertyId, serializedValue);
+        throw new UnsupportedOperationException();
     }
 
     public void addChild(String containmentID, String childId) {
-        this.containmentsValues.computeIfAbsent(containmentID, s -> new ArrayList<>()).add(childId);
+        //this.containmentsValues.computeIfAbsent(containmentID, s -> new ArrayList<>()).add(childId);
+        throw new UnsupportedOperationException();
     }
 
     public void addReferenceValue(String referenceID, RawReferenceValue referenceValue) {
-        this.referencesValues.computeIfAbsent(referenceID, s -> new ArrayList<>()).add(referenceValue);
+        //this.referencesValues.computeIfAbsent(referenceID, s -> new ArrayList<>()).add(referenceValue);
+        throw new UnsupportedOperationException();
     }
 
     @Nullable
     public String getPropertyValue(String propertyId) {
-        return this.propertyValues.get(propertyId);
+        //return this.propertyValues.get(propertyId);
+        throw new UnsupportedOperationException();
     }
 
     @Nullable
     public List<RawReferenceValue> getReferenceValues(String referenceID) {
-        return this.referencesValues.getOrDefault(referenceID, new ArrayList<>());
+        //return this.referencesValues.getOrDefault(referenceID, new ArrayList<>());
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SerializedNode)) return false;
+        SerializedNode that = (SerializedNode) o;
+        return Objects.equals(id, that.id) && Objects.equals(concept, that.concept) && Objects.equals(parentNodeID, that.parentNodeID) && Objects.equals(properties, that.properties) && Objects.equals(containments, that.containments) && Objects.equals(references, that.references);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, concept, parentNodeID, properties, containments, references);
     }
 
     @Override
     public String toString() {
         return "SerializedNode{" +
                 "id='" + id + '\'' +
-                ", conceptId='" + conceptId + '\'' +
+                ", concept=" + concept +
                 ", parentNodeID='" + parentNodeID + '\'' +
-                ", propertyValues=" + propertyValues +
-                ", containmentsValues=" + containmentsValues +
-                ", referencesValues=" + referencesValues +
+                ", properties=" + properties +
+                ", containments=" + containments +
+                ", references=" + references +
                 '}';
     }
 }
