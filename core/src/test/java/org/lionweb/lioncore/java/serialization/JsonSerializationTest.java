@@ -13,12 +13,12 @@ import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
-import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
-import org.lionweb.lioncore.java.serialization.data.SerializedNode;
+import org.lionweb.lioncore.java.serialization.data.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,8 +31,48 @@ public class JsonSerializationTest {
     @Test
     public void serializeLionCoreToSerializationBlock() {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        SerializationBlock serializationBlock = jsonSerialization.serializeToSerializationBlock(LionCore.getMetamodel().thisAndAllDescendants());
-        System.out.println(serializationBlock);
+        SerializationBlock serializationBlock = jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
+
+        assertEquals("1", serializationBlock.getSerializationFormatVersion());
+
+        assertEquals(1, serializationBlock.getMetamodels().size());
+        assertEquals(new MetamodelKeyVersion("LIonCore_M3", "1"), serializationBlock.getMetamodels().get(0));
+
+        SerializedNode LIonCore_M3 = serializationBlock.getNodes().stream().filter(n -> n.getID().equals("LIonCore_M3")).findFirst().get();
+        assertEquals("LIonCore_M3", LIonCore_M3.getID());
+        assertEquals(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel"), LIonCore_M3.getConcept());
+        assertEquals(Arrays.asList(
+                    new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_name"), "LIonCore.M3"),
+                    new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_version"), "1"),
+                    new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_HasKey_key"), "LIonCore_M3")),
+                LIonCore_M3.getProperties());
+        assertEquals(Arrays.asList(new SerializedContainmentValue(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_elements"),
+                Arrays.asList(
+                        "LIonCore_M3_Concept",
+                        "LIonCore_M3_ConceptInterface",
+                        "LIonCore_M3_Containment",
+                        "LIonCore_M3_DataType",
+                        "LIonCore_M3_Enumeration",
+                        "LIonCore_M3_EnumerationLiteral",
+                        "LIonCore_M3_Feature",
+                        "LIonCore_M3_FeaturesContainer",
+                        "LIonCore_M3_HasKey",
+                        "LIonCore_M3_Link",
+                        "LIonCore_M3_Metamodel",
+                        "LIonCore_M3_MetamodelElement",
+                        "LIonCore_M3_NamespacedEntity",
+                        "LIonCore_M3_NamespaceProvider",
+                        "LIonCore_M3_PrimitiveType",
+                        "LIonCore_M3_Property",
+                        "LIonCore_M3_Reference"
+                        ))), LIonCore_M3.getChildren());
+        assertEquals(Arrays.asList(
+                        new SerializedReferenceValue(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_dependsOn"), Collections.emptyList())),
+                LIonCore_M3.getReferences());
+
+        SerializedNode LIonCore_M3_NamespacedEntity = serializationBlock.getNodes().stream().filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity")).findFirst().get();
+        SerializedNode LIonCore_M3_NamespacedEntity_simpleName = serializationBlock.getNodes().stream().filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity_simpleName")).findFirst().get();
+        SerializedNode LIonCore_M3_ConceptInterface_extends = serializationBlock.getNodes().stream().filter(n -> n.getID().equals("LIonCore_M3_ConceptInterface_extends")).findFirst().get();
     }
 
     @Test

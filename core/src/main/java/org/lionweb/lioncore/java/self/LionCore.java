@@ -87,6 +87,7 @@ public class LionCore {
         if (INSTANCE == null) {
             INSTANCE = new Metamodel("LIonCore.M3");
             INSTANCE.setID("LIonCore_M3");
+            INSTANCE.setKey("LIonCore_M3");
             INSTANCE.setVersion(1);
 
             // We first instantiate all Concepts and ConceptInterfaces
@@ -147,7 +148,6 @@ public class LionCore {
             metamodel.addImplementedInterface(namespaceProvider);
             metamodel.addImplementedInterface(hasKey);
             metamodel.addFeature(Property.createRequired("name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
-            metamodel.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_id"));
             metamodel.addFeature(Property.createRequired("version", LionCoreBuiltins.getInteger(), "LIonCore_M3_Metamodel_version"));
             metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
@@ -162,7 +162,7 @@ public class LionCore {
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(),
                     "LIonCore_M3_NamespacedEntity_qualifiedName").setDerived(true));
 
-            namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString(), "LIonCore_M3_NamespaceProvider_namespaceQualifier").setDerived(true));
+            //namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString(), "LIonCore_M3_NamespaceProvider_namespaceQualifier").setDerived(true));
 
             primitiveType.setExtendedConcept(dataType);
 
@@ -174,7 +174,6 @@ public class LionCore {
             checkIDs(INSTANCE);
         }
         checkIDs(INSTANCE);
-        INSTANCE.setKey(INSTANCE.getID());
         return INSTANCE;
     }
 

@@ -81,6 +81,10 @@ public class JsonSerialization {
         return primitiveValuesSerialization;
     }
 
+    public SerializationBlock serializeTreeToSerializationBlock(Node root) {
+        return serializeToSerializationBlock(root.thisAndAllDescendants());
+    }
+
     public SerializationBlock serializeToSerializationBlock(List<Node> nodes) {
         SerializationBlock serializationBlock = new SerializationBlock();
         serializationBlock.setSerializationFormatVersion("1");
@@ -110,7 +114,10 @@ public class JsonSerialization {
                 referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> new SerializedReferenceValue.Entry(rv.getReferred().getID(), rv.getResolveInfo())).collect(Collectors.toList()));
                 serializedNode.addReferenceValue(referenceValue);
             });
-            // TODO add metamodel
+            MetamodelKeyVersion metamodelKeyVersion = MetamodelKeyVersion.fromMetamodel(node.getConcept().getMetamodel());
+            if (!serializationBlock.getMetamodels().contains(metamodelKeyVersion)){
+                serializationBlock.getMetamodels().add(metamodelKeyVersion);
+            }
         }
         return serializationBlock;
     }

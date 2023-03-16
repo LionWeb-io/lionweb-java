@@ -41,6 +41,18 @@ public class SerializationBlock {
         this.metamodels.add(metamodel);
     }
 
+    public Map<String, SerializedNode> getNodesByID() {
+        return nodesByID;
+    }
+
+    public void setNodesByID(Map<String, SerializedNode> nodesByID) {
+        this.nodesByID = nodesByID;
+    }
+
+    public List<MetamodelKeyVersion> getMetamodels() {
+        return metamodels;
+    }
+
     @Override
     public String toString() {
         return "SerializationBlock{" +

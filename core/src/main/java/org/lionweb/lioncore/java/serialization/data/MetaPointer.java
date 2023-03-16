@@ -12,6 +12,16 @@ public class MetaPointer {
     private String version;
     private String metamodel;
 
+    public MetaPointer(String metamodel, String version, String key) {
+        this.key = key;
+        this.version = version;
+        this.metamodel = metamodel;
+    }
+
+    public MetaPointer() {
+
+    }
+
     public static MetaPointer from(MetamodelElement<?> metamodelElement) {
         MetaPointer metaPointer = new MetaPointer();
         metaPointer.setKey(metamodelElement.getKey());

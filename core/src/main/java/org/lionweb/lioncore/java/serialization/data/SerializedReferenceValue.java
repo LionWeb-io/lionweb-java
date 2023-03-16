@@ -47,6 +47,15 @@ public class SerializedReferenceValue {
     private MetaPointer metaPointer;
     private List<Entry> value;
 
+    public SerializedReferenceValue() {
+
+    }
+
+    public SerializedReferenceValue(MetaPointer metaPointer, List<Entry> value) {
+        this.metaPointer = metaPointer;
+        this.value = value;
+    }
+
     public MetaPointer getMetaPointer() {
         return metaPointer;
     }

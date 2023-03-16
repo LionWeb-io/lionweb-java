@@ -7,6 +7,15 @@ public class SerializedContainmentValue {
     private MetaPointer metaPointer;
     private List<String> value;
 
+    public SerializedContainmentValue() {
+
+    }
+
+    public SerializedContainmentValue(MetaPointer metaPointer, List<String> value) {
+        this.metaPointer = metaPointer;
+        this.value = value;
+    }
+
     public MetaPointer getMetaPointer() {
         return metaPointer;
     }

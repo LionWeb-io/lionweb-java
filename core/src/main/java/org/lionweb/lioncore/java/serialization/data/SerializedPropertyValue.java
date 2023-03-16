@@ -6,6 +6,15 @@ public class SerializedPropertyValue {
     private MetaPointer metaPointer;
     private String value;
 
+    public SerializedPropertyValue() {
+
+    }
+
+    public SerializedPropertyValue(MetaPointer metaPointer, String value) {
+        this.metaPointer = metaPointer;
+        this.value = value;
+    }
+
     public MetaPointer getMetaPointer() {
         return metaPointer;
     }
