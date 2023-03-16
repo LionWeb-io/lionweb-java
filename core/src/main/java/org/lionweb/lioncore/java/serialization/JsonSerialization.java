@@ -122,7 +122,7 @@ public class JsonSerialization {
         return serializationBlock;
     }
 
-    public JsonElement serialize(Node node) {
+    public JsonElement serializeTree(Node node) {
         return serialize(node.thisAndAllDescendants());
     }
 

@@ -25,8 +25,14 @@ public class SerializedNode {
         this.parentNodeID = parentNodeID;
     }
 
-    public List<SerializedContainmentValue> getChildren() {
+    public List<SerializedContainmentValue> getContainments() {
         return this.containments;
+    }
+
+    public List<String> getChildren() {
+        List<String> children = new ArrayList<>();
+        this.containments.stream().forEach(c -> children.addAll(c.getValue()));
+        return children;
     }
 
     public List<SerializedReferenceValue> getReferences() {
@@ -131,9 +137,13 @@ public class SerializedNode {
     }
 
     @Nullable
-    public String getPropertyValue(String propertyId) {
-        //return this.propertyValues.get(propertyId);
-        throw new UnsupportedOperationException();
+    public String getPropertyValue(String propertyKey) {
+        for (SerializedPropertyValue pv: this.getProperties()) {
+            if (pv.getMetaPointer().getKey().equals(propertyKey)) {
+                return pv.getValue();
+            }
+        }
+        return null;
     }
 
     @Nullable

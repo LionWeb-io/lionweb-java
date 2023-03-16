@@ -180,7 +180,7 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement serializedElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonElement reserialized = jsonSerialization.serialize(LionCore.getMetamodel());
+        JsonElement reserialized = jsonSerialization.serializeTree(LionCore.getInstance());
         assertEquals(serializedElement, reserialized);
     }
 

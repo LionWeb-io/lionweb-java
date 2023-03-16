@@ -8,6 +8,9 @@ import org.lionweb.lioncore.java.serialization.data.*;
 
 import javax.annotation.Nullable;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.lionweb.lioncore.java.serialization.SerializationUtils.*;
 
 public class LowLevelJsonSerialization {
@@ -61,8 +64,6 @@ public class LowLevelJsonSerialization {
             topLevel.get("nodes").getAsJsonArray().asList().stream().forEach(element -> {
                 try {
                     SerializedNode node = unserializeNode(element);
-                    populateProperties(node, element.getAsJsonObject());
-                    populateLinks(node, element.getAsJsonObject());
                     serializationBlock.addNode(node);
                 } catch (Exception e) {
                     throw new RuntimeException("Issue while unserializing " + element, e);
@@ -118,7 +119,7 @@ public class LowLevelJsonSerialization {
             nodeJson.add("properties", properties);
 
             JsonArray children = new JsonArray();
-            for (SerializedContainmentValue childrenValue : node.getChildren()) {
+            for (SerializedContainmentValue childrenValue : node.getContainments()) {
                 JsonObject childrenJ = new JsonObject();
                 childrenJ.add("containment", serializeToJson(childrenValue.getMetaPointer()));
                 childrenJ.add("children", toJsonArray(childrenValue.getValue()));
@@ -134,6 +135,8 @@ public class LowLevelJsonSerialization {
                 references.add(reference);
             }
             nodeJson.add("references", references);
+
+            nodeJson.addProperty("parent", node.getParentNodeID());
 
             nodes.add(nodeJson);
         }
@@ -186,17 +189,44 @@ public class LowLevelJsonSerialization {
 
     @Nullable
     private SerializedNode unserializeNode(JsonElement jsonElement) {
-        throw new UnsupportedOperationException();
-//        if (jsonElement.isJsonObject()) {
-//            JsonObject jsonObject = jsonElement.getAsJsonObject();
-//            String conceptID = tryToGetStringProperty(jsonObject, CONCEPT_LABEL);
-//            String nodeID = tryToGetStringProperty(jsonObject, ID_LABEL);
-//            SerializedNode serializedNode = new SerializedNode(nodeID, conceptID);
-//            populateProperties(serializedNode, jsonObject);
-//            return serializedNode;
-//        } else {
-//            return null;
-//        }
+        if (!jsonElement.isJsonObject()) {
+            throw new IllegalArgumentException("Malformed JSON. Object expected but found " + jsonElement);
+        }
+        JsonObject jsonObject = jsonElement.getAsJsonObject();
+
+        SerializedNode serializedNode = new SerializedNode();
+        serializedNode.setID(tryToGetStringProperty(jsonObject, "id"));
+        serializedNode.setConcept(tryToGetMetaPointerProperty(jsonObject, "concept"));
+        serializedNode.setParentNodeID(tryToGetStringProperty(jsonObject, "parent"));
+
+        JsonArray properties = jsonObject.get("properties").getAsJsonArray();
+        properties.forEach(property -> {
+            JsonObject propertyJO = property.getAsJsonObject();
+            serializedNode.addPropertyValue(new SerializedPropertyValue(
+                    tryToGetMetaPointerProperty(propertyJO, "property"),
+                    tryToGetStringProperty(propertyJO, "value")
+            ));
+        });
+
+        JsonArray children = jsonObject.get("children").getAsJsonArray();
+        children.forEach(childrenEntry -> {
+            JsonObject childrenJO = childrenEntry.getAsJsonObject();
+            serializedNode.addContainmentValue(new SerializedContainmentValue(
+                    tryToGetMetaPointerProperty(childrenJO, "containment"),
+                    tryToGetArrayOfStringsProperty(childrenJO, "children")
+            ));
+        });
+
+        JsonArray references = jsonObject.get("references").getAsJsonArray();
+        references.forEach(referenceEntry -> {
+            JsonObject referenceJO = referenceEntry.getAsJsonObject();
+            serializedNode.addReferenceValue(new SerializedReferenceValue(
+                    tryToGetMetaPointerProperty(referenceJO, "reference"),
+                    tryToGetArrayOfReferencesProperty(referenceJO, "targets")
+            ));
+        });
+
+        return serializedNode;
     }
 
     private SerializedNode populateProperties(SerializedNode instance, JsonObject jsonObject) {

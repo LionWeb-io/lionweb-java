@@ -157,7 +157,7 @@ public class LionCore {
             metamodel.setAbstract(true);
 
             namespacedEntity.setAbstract(true);
-            namespacedEntity.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_id"));
+            //namespacedEntity.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_id"));
             namespacedEntity.addFeature(Property.createRequired("simpleName", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_simpleName"));
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(),
                     "LIonCore_M3_NamespacedEntity_qualifiedName").setDerived(true));

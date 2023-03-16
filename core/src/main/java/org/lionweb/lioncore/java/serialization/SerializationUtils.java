@@ -3,10 +3,13 @@ package org.lionweb.lioncore.java.serialization;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.lionweb.lioncore.java.model.ReferenceValue;
+import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 import org.lionweb.lioncore.java.serialization.data.SerializedReferenceValue;
 
 import javax.annotation.Nullable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 class SerializationUtils {
 
@@ -26,6 +29,51 @@ class SerializationUtils {
         JsonElement value = jsonObject.get(propertyName);
         if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
             return value.getAsJsonPrimitive().getAsString();
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static MetaPointer tryToGetMetaPointerProperty(JsonObject jsonObject, String propertyName) {
+        if (!jsonObject.has(propertyName)) {
+            return null;
+        }
+        JsonElement value = jsonObject.get(propertyName);
+        if (value.isJsonObject()) {
+            JsonObject valueJO = value.getAsJsonObject();
+            return new MetaPointer(tryToGetStringProperty(valueJO,"metamodel"), tryToGetStringProperty(valueJO,"version"), tryToGetStringProperty(valueJO,"key"));
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static List<String> tryToGetArrayOfStringsProperty(JsonObject jsonObject, String propertyName) {
+        if (!jsonObject.has(propertyName)) {
+            return null;
+        }
+        JsonElement value = jsonObject.get(propertyName);
+        if (value.isJsonArray()) {
+            JsonArray valueJA = value.getAsJsonArray();
+            return valueJA.asList().stream().map(e -> e.getAsString()).collect(Collectors.toList());
+        } else {
+            return null;
+        }
+    }
+
+    @Nullable
+    static List<SerializedReferenceValue.Entry> tryToGetArrayOfReferencesProperty(JsonObject jsonObject, String propertyName) {
+        if (!jsonObject.has(propertyName)) {
+            return null;
+        }
+        JsonElement value = jsonObject.get(propertyName);
+        if (value.isJsonArray()) {
+            JsonArray valueJA = value.getAsJsonArray();
+            return valueJA.asList().stream().map(e -> new SerializedReferenceValue.Entry(
+                    tryToGetStringProperty(e.getAsJsonObject(), "reference"),
+                    tryToGetStringProperty(e.getAsJsonObject(), "resolveInfo")
+            )).collect(Collectors.toList());
         } else {
             return null;
         }
