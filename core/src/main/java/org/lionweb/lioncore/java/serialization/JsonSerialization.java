@@ -2,6 +2,9 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import org.lionweb.lioncore.java.api.CascadeNodeResolver;
+import org.lionweb.lioncore.java.api.LocalNodeResolver;
+import org.lionweb.lioncore.java.api.NodeResolver;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
@@ -38,6 +41,8 @@ public class JsonSerialization {
         jsonSerialization.conceptResolver.registerMetamodel(LionCore.getInstance());
         jsonSerialization.nodeInstantiator.registerLionCoreCustomUnserializers();
         jsonSerialization.primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndUnserializers();
+        jsonSerialization.nodeResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
+        jsonSerialization.nodeResolver.addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
         return jsonSerialization;
     }
 
@@ -53,6 +58,8 @@ public class JsonSerialization {
     private NodeInstantiator nodeInstantiator;
     private PrimitiveValuesSerialization primitiveValuesSerialization;
 
+    private LocalNodeResolver nodeResolver;
+
     private Map<String, JsonObject> nodeIdToData = new HashMap<>();
     private Map<String, Node> nodeIdToNode = new HashMap<>();
     private Map<String, SerializedNode> nodeIdToNodeData = new HashMap<>();
@@ -62,6 +69,7 @@ public class JsonSerialization {
         conceptResolver = new ConceptResolver();
         nodeInstantiator = new NodeInstantiator();
         primitiveValuesSerialization = new PrimitiveValuesSerialization();
+        nodeResolver = new LocalNodeResolver();
     }
 
     //
@@ -470,7 +478,8 @@ public class JsonSerialization {
 
     private List<Node> unserializeSerializationBlock(SerializationBlock serializationBlock) {
         List<Node> nodes = serializationBlock.getNodes().stream().map(n -> instantiateNodeFromSerialized(n)).collect(Collectors.toList());
-        serializationBlock.getNodes().stream().forEach(n -> populateNode(n, nodes));
+        NodeResolver nodeResolver = new CascadeNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
+        serializationBlock.getNodes().stream().forEach(n -> populateNode(n, nodeResolver));
         return nodes;
     }
 
@@ -485,13 +494,19 @@ public class JsonSerialization {
         return node;
     }
 
-    private void populateNode(SerializedNode serializedNode, List<Node> nodes) {
-        Node node = nodes.stream().filter(n -> n.getID().equals(serializedNode.getID())).findFirst().get();
+    private void populateNode(SerializedNode serializedNode, NodeResolver nodeResolver) {
+        Node node = nodeResolver.resolve(serializedNode.getID());
+        if (node == null) {
+            throw new IllegalStateException();
+        }
         Concept concept = node.getConcept();
         serializedNode.getContainments().forEach(serializedContainmentValue ->{
             Containment containment = concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
             serializedContainmentValue.getValue().forEach(childNodeID -> {
-                Node child = nodes.stream().filter(n -> n.getID().equals(childNodeID)).findFirst().get();
+                Node child = nodeResolver.resolve(childNodeID);
+                if (child == null) {
+                    throw new IllegalStateException();
+                }
                 node.addChild(containment, child);
             });
         });
@@ -499,11 +514,10 @@ public class JsonSerialization {
         serializedNode.getReferences().forEach(serializedReferenceValue ->{
             Reference reference = concept.getReferenceByMetaPointer(serializedReferenceValue.getMetaPointer());
             serializedReferenceValue.getValue().forEach(entry -> {
-                Optional<Node> optReferred = nodes.stream().filter(n -> n.getID().equals(entry.getReference())).findFirst();
-                if (!optReferred.isPresent()) {
+                Node referred = nodeResolver.resolve(entry.getReference());
+                if (entry.getReference() != null && referred == null) {
                     throw new IllegalArgumentException("Unable to resolve reference to " + entry.getReference());
                 }
-                Node referred = optReferred.get();
                 ReferenceValue referenceValue = new ReferenceValue(referred, entry.getResolveInfo());
                 node.addReferenceValue(reference, referenceValue);
             });

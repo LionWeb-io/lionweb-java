@@ -83,7 +83,7 @@ public class JsonSerializationTest {
         assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
         assertEquals("LIonCore_M3", lioncore.getID());
         assertEquals("LIonCore.M3", lioncore.getName());
-        assertEquals(16, lioncore.getChildren().size());
+        assertEquals(17, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParent());
 
         Concept namespacedEntity = (Concept) unserializedNodes.get(1);
