@@ -32,7 +32,7 @@ public class SerializationBlock {
     public SerializedNode getNodeByID(String nodeID) {
         SerializedNode node = this.nodesByID.get(nodeID);
         if (node == null) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("Cannot find node with ID " + nodeID);
         }
         return node;
     }

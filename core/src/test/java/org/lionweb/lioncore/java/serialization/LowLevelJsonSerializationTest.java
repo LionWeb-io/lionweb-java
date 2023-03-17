@@ -16,6 +16,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 public class LowLevelJsonSerializationTest {
 
@@ -55,25 +56,22 @@ public class LowLevelJsonSerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
         SerializationBlock serializationBlock = jsonSerialization.readSerializationBlock(jsonElement);
-        SerializedNode book = serializationBlock.getNodeByID("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs");
-        //assertEquals("Book", book.getPropertyValueByName("simpleName"));
+        SerializedNode book = serializationBlock.getNodeByID("library-Book");
+        assertEquals("Book", book.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
 
-        SerializedNode guidedBookWriter = serializationBlock.getNodeByID("nNUEzZ7it7d2HoHPAtk5rGO4SsqVA3hAlBwkK1KP8QU");
-        //assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
-        //assertNotNull(guidedBookWriter.getExtendedConcept());
+        SerializedNode guidedBookWriter = serializationBlock.getNodeByID("library-GuideBookWriter");
+        assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+        assertEquals(Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")), guidedBookWriter.getReferenceValues("LIonCore_M3_Concept_extends"));
     }
 
-//    @Test
-//    public void reserializeLibrary() {
-//        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
-//        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-//        LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-//        SerializationBlock serializationBlock = jsonSerialization.readSerializationBlock(jsonElement);
-//        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-//        JsonElement reserialized = jsonSerialization.serialize(unserializedNodes.get(0));
-//        assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
-//    }
-
-
+    @Test
+    public void reserializeLibrary() {
+        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
+        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+        LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
+        SerializationBlock serializationBlock = jsonSerialization.readSerializationBlock(jsonElement);
+        JsonElement reserialized = jsonSerialization.serializeToJson(serializationBlock);
+        assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
+    }
 
 }
