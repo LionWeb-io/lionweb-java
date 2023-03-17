@@ -147,9 +147,13 @@ public class SerializedNode {
     }
 
     @Nullable
-    public List<RawReferenceValue> getReferenceValues(String referenceID) {
-        //return this.referencesValues.getOrDefault(referenceID, new ArrayList<>());
-        throw new UnsupportedOperationException();
+    public List<SerializedReferenceValue.Entry> getReferenceValues(String referenceKey) {
+        for (SerializedReferenceValue rv: this.getReferences()) {
+            if (rv.getMetaPointer().getKey().equals(referenceKey)) {
+                return rv.getValue();
+            }
+        }
+        return null;
     }
 
     @Override

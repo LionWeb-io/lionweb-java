@@ -1,9 +1,6 @@
 package org.lionweb.lioncore.java.serialization;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Enumeration;
@@ -205,6 +202,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
         JsonElement reserialized = jsonSerialization.serialize(unserializedNodes.get(0));
+        //System.out.println(new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(reserialized));
         assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
 

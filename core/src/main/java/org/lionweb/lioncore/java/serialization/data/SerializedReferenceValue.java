@@ -42,6 +42,19 @@ public class SerializedReferenceValue {
                     ", reference='" + reference + '\'' +
                     '}';
         }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (!(o instanceof Entry)) return false;
+            Entry entry = (Entry) o;
+            return Objects.equals(resolveInfo, entry.resolveInfo) && Objects.equals(reference, entry.reference);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(resolveInfo, reference);
+        }
     }
 
     private MetaPointer metaPointer;

@@ -1,7 +1,9 @@
 package org.lionweb.lioncore.java.emf;
 
+import com.google.gson.GsonBuilder;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.serialization.JsonSerialization;
 
 import java.io.IOException;
 import java.io.InputStream;

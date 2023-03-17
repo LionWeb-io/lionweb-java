@@ -7,6 +7,7 @@ import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
 import org.lionweb.lioncore.java.serialization.data.SerializedNode;
+import org.lionweb.lioncore.java.serialization.data.SerializedReferenceValue;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -45,7 +46,7 @@ public class LowLevelJsonSerializationTest {
         assertEquals(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Property"), simpleName.getConcept());
         assertEquals("simpleName", simpleName.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParentNodeID());
-        assertEquals(Arrays.asList(new SerializedNode.RawReferenceValue("LIonCore_M3_String", null)), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
+        assertEquals(Arrays.asList(new SerializedReferenceValue.Entry("LIonCore_M3_String", "String")), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
     }
 
     @Test

@@ -80,8 +80,16 @@ public abstract class M3Node<T extends M3Node> implements Node {
         annotationInstances.add(instance);
     }
 
+    protected Object getDerivedValue(Property property) {
+        return null;
+    }
+
     @Override
     public Object getPropertyValue(Property property) {
+        Object derivedValue = getDerivedValue(property);
+        if (derivedValue != null) {
+            return derivedValue;
+        }
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property not belonging to this concept: " + property);
         }

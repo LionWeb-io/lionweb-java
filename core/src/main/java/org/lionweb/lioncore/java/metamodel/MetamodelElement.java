@@ -72,4 +72,11 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
         setPropertyValue("key", key);
         return (T) this;
     }
+
+    protected Object getDerivedValue(Property property) {
+        if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
+            return qualifiedName();
+        }
+        return null;
+    }
 }
