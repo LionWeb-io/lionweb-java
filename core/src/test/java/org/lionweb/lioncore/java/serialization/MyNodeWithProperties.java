@@ -57,4 +57,6 @@ public class MyNodeWithProperties extends DynamicNode  {
     public void setP4(JsonElement value) {
         this.setPropertyValueByName("p4", value);
     }
+
+
 }

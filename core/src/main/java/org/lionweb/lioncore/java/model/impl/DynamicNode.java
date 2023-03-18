@@ -228,5 +228,17 @@ public class DynamicNode implements Node {
     public int hashCode() {
         return Objects.hash(id, parent, concept, propertyValues, containmentValues, referenceValues);
     }
+
+    @Override
+    public String toString() {
+        return "DynamicNode{" +
+                "id='" + id + '\'' +
+                ", parent=" + parent +
+                ", concept=" + concept +
+                ", propertyValues=" + propertyValues +
+                ", containmentValues=" + containmentValues +
+                ", referenceValues=" + referenceValues +
+                '}';
+    }
 }
 
