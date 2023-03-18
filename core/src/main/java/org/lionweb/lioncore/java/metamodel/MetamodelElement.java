@@ -35,9 +35,10 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     // TODO consider making this a derived feature just casting the parent
     public @Nullable Metamodel getMetamodel() {
-        return this.getReferenceSingleValue("metamodel");
+        return (Metamodel) getParent();
     }
 
+    // TODO remove me
     public T setMetamodel(@Nullable Metamodel metamodel) {
         if (metamodel == null) {
             this.setReferenceSingleValue("metamodel", null);

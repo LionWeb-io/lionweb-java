@@ -132,6 +132,7 @@ public class LionCore {
             enumerationLiteral.setExtendedConcept(namespacedEntity);
 
             feature.setExtendedConcept(namespacedEntity);
+            feature.addImplementedInterface(hasKey);
             feature.addFeature(Property.createRequired("optional", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Feature_optional"));
             feature.addFeature(Property.createRequired("derived", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Feature_derived"));
 

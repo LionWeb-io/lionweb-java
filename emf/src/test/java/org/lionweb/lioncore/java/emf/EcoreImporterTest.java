@@ -24,6 +24,8 @@ public class EcoreImporterTest {
         Metamodel metamodel = metamodels.get(0);
         assertEquals("library", metamodel.getName());
 
+        System.out.println(new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(JsonSerialization.getStandardSerialization().serializeTreeToJson(metamodel)));
+
         assertEquals(5, metamodel.getElements().size());
 
         Concept book = (Concept)metamodel.getElementByName("Book");
@@ -72,6 +74,7 @@ public class EcoreImporterTest {
         assertEquals(LionCoreBuiltins.getString(), libraryName.getType());
         assertSame(library, libraryName.getContainer());
         assertEquals("library.Library.name", libraryName.qualifiedName());
+        assertEquals("library-Library-name", libraryName.getKey());
         assertEquals(false, libraryName.isDerived());
         assertEquals(false, libraryName.isOptional());
         assertEquals(true, libraryName.isRequired());

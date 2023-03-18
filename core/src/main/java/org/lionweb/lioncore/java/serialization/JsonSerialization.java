@@ -130,6 +130,9 @@ public class JsonSerialization {
                 referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> new SerializedReferenceValue.Entry(rv.getReferred().getID(), rv.getResolveInfo())).collect(Collectors.toList()));
                 serializedNode.addReferenceValue(referenceValue);
             });
+            Objects.requireNonNull(node.getConcept(), "A node should have a concept in order to be serialized");
+            Objects.requireNonNull(node.getConcept().getMetamodel(),
+                    "A Concept should be part of a Metamodel in order to be serialized. Concept " + node.getConcept() + " is not");
             MetamodelKeyVersion metamodelKeyVersion = MetamodelKeyVersion.fromMetamodel(node.getConcept().getMetamodel());
             if (!serializationBlock.getMetamodels().contains(metamodelKeyVersion)){
                 serializationBlock.getMetamodels().add(metamodelKeyVersion);

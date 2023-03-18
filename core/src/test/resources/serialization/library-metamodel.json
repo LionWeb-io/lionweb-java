@@ -177,6 +177,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.Book.title"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-Book-title"
         }
       ],
       "children": [],
@@ -236,6 +244,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.Book.pages"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-Book-pages"
         }
       ],
       "children": [],
@@ -303,6 +319,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.Book.author"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-Book-author"
         }
       ],
       "children": [],
@@ -436,6 +460,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.Library.name"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-Library-name"
         }
       ],
       "children": [],
@@ -503,6 +535,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.Library.books"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-Library-books"
         }
       ],
       "children": [],
@@ -635,6 +675,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.Writer.name"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-Writer-name"
         }
       ],
       "children": [],
@@ -772,6 +820,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.GuideBookWriter.countries"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-GuideBookWriter-countries"
         }
       ],
       "children": [],
@@ -909,6 +965,14 @@
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
           "value": "library.SpecialistBookWriter.subject"
+        },
+        {
+          "property": {
+            "metamodel": "LIonCore_M3",
+            "version": "1",
+            "key": "LIonCore_M3_HasKey_key"
+          },
+          "value": "library-SpecialistBookWriter-subject"
         }
       ],
       "children": [],

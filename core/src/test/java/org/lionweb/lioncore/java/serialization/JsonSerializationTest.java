@@ -199,8 +199,14 @@ public class JsonSerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
+
+        Concept library = conceptByID(unserializedNodes, "library-Library");
+        Property libraryName = library.getPropertyByName("name");
+        assertNotNull(libraryName.getKey());
+
         Node book = unserializedNodes.stream().filter(n -> n.getID().equals("library-Book")).findFirst().get();
         assertEquals("Book", book.getPropertyValueByName("simpleName"));
+        assertEquals("library-Book", book.getPropertyValueByName("key"));
 
         Concept guidedBookWriter = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("library-GuideBookWriter")).findFirst().get();
         assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
@@ -233,9 +239,10 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonObject jsonSerialized = jsonSerialization.serializeNodesToJson(library).getAsJsonObject();
+        JsonObject jsonSerialized = jsonSerialization.serializeTreeToJson(library).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
         JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
+        System.out.println(new GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(jsonSerialized));
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
     }
 
