@@ -177,7 +177,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -244,7 +244,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -311,7 +311,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -456,7 +456,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -758,7 +758,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -972,7 +972,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -1031,7 +1031,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -1181,7 +1181,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -1987,7 +1987,7 @@
             "version": "1",
             "key": "LIonCore_M3_NamespacedEntity_qualifiedName"
           },
-          "value": null
+          "value": "LIonCore.M3.NamespacedEntity"
         },
         {
           "property": {
@@ -2053,7 +2053,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
@@ -2112,7 +2112,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "true"
         },
         {
           "property": {
@@ -2388,7 +2388,7 @@
             "version": "1",
             "key": "LIonCore_M3_Feature_derived"
           },
-          "value": null
+          "value": "false"
         },
         {
           "property": {
