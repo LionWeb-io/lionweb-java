@@ -81,7 +81,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return getReferenceSingleValue("container");
+        return (NamespaceProvider) this.getParent();
     }
 
     public void setContainer(@Nullable FeaturesContainer container) {

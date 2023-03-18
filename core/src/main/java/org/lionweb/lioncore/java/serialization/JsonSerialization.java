@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import jdk.vm.ci.meta.Local;
 import org.lionweb.lioncore.java.api.CascadeNodeResolver;
 import org.lionweb.lioncore.java.api.LocalNodeResolver;
 import org.lionweb.lioncore.java.api.NodeResolver;
@@ -522,6 +523,10 @@ public class JsonSerialization {
                 node.addReferenceValue(reference, referenceValue);
             });
         });
+    }
+
+    public LocalNodeResolver getNodeResolver() {
+        return nodeResolver;
     }
 
 //    private Node unserializeNode(JsonElement jsonElement) {

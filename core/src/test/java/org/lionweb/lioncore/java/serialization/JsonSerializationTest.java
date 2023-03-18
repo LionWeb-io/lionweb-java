@@ -2,10 +2,7 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.*;
 import org.junit.Test;
-import org.lionweb.lioncore.java.metamodel.Concept;
-import org.lionweb.lioncore.java.metamodel.Enumeration;
-import org.lionweb.lioncore.java.metamodel.Metamodel;
-import org.lionweb.lioncore.java.metamodel.Property;
+import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
@@ -62,7 +59,7 @@ public class JsonSerializationTest {
                         "LIonCore_M3_PrimitiveType",
                         "LIonCore_M3_Property",
                         "LIonCore_M3_Reference"
-                        ))), LIonCore_M3.getChildren());
+                        ))), LIonCore_M3.getContainments());
         assertEquals(Arrays.asList(
                         new SerializedReferenceValue(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_dependsOn"), Collections.emptyList())),
                 LIonCore_M3.getReferences());
@@ -86,7 +83,7 @@ public class JsonSerializationTest {
         assertEquals(17, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParent());
 
-        Concept namespacedEntity = (Concept) unserializedNodes.get(1);
+        Concept namespacedEntity = conceptByID(unserializedNodes, "LIonCore_M3_NamespacedEntity");
         assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
         assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
         assertEquals(true, namespacedEntity.isAbstract());
@@ -94,11 +91,23 @@ public class JsonSerializationTest {
         assertEquals(2, namespacedEntity.getChildren().size());
         assertEquals(lioncore, namespacedEntity.getParent());
 
-        Property simpleName = (Property) unserializedNodes.get(2);
+        Property simpleName = propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_simpleName");
         assertEquals(LionCore.getProperty(), simpleName.getConcept());
         assertEquals("simpleName", simpleName.getSimpleName());
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
         assertEquals("LIonCore_M3_String", simpleName.getType().getID());
+    }
+
+    private DynamicNode dynamicNodeByID(List<Node> nodes, String id) {
+        return (DynamicNode) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
+    }
+
+    private Concept conceptByID(List<Node> nodes, String id) {
+        return (Concept) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
+    }
+
+    private Property propertyByID(List<Node> nodes, String id) {
+        return (Property) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
     }
 
 //    @Test
@@ -135,6 +144,8 @@ public class JsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+        jsonSerialization.getNodeResolver().addAll(LionCore.getInstance().thisAndAllDescendants());
+        jsonSerialization.getNodeResolver().addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
         jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
         jsonSerialization.getNodeInstantiator().enableDynamicNodes();
         jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
@@ -144,10 +155,10 @@ public class JsonSerializationTest {
         assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
         assertEquals("LIonCore_M3", lioncore.getID());
         assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
-        assertEquals(16, lioncore.getChildren().size());
+        assertEquals(17, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParent());
 
-        DynamicNode namespacedEntity = (DynamicNode) unserializedNodes.get(1);
+        DynamicNode namespacedEntity = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity");
         assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
         assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
         assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
@@ -155,7 +166,7 @@ public class JsonSerializationTest {
         assertEquals(2, namespacedEntity.getChildren().size());
         assertEquals(lioncore, namespacedEntity.getParent());
 
-        DynamicNode simpleName = (DynamicNode) unserializedNodes.get(2);
+        DynamicNode simpleName = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_simpleName");
         assertEquals(LionCore.getProperty(), simpleName.getConcept());
         assertEquals("simpleName", simpleName.getPropertyValueByName("simpleName"));
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
@@ -178,7 +189,8 @@ public class JsonSerializationTest {
         JsonElement serializedElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         JsonElement reserialized = jsonSerialization.serializeTreeToJson(LionCore.getInstance());
-        assertEquals(serializedElement, reserialized);
+        System.out.println(new GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(reserialized));
+        assertEquivalentLionWebJson(serializedElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
 
     @Test
@@ -187,10 +199,10 @@ public class JsonSerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-        Node book = unserializedNodes.stream().filter(n -> n.getID().equals("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs")).findFirst().get();
+        Node book = unserializedNodes.stream().filter(n -> n.getID().equals("library-Book")).findFirst().get();
         assertEquals("Book", book.getPropertyValueByName("simpleName"));
 
-        Concept guidedBookWriter = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("nNUEzZ7it7d2HoHPAtk5rGO4SsqVA3hAlBwkK1KP8QU")).findFirst().get();
+        Concept guidedBookWriter = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("library-GuideBookWriter")).findFirst().get();
         assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
         assertNotNull(guidedBookWriter.getExtendedConcept());
     }
@@ -201,7 +213,7 @@ public class JsonSerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-        JsonElement reserialized = jsonSerialization.serializeNodesToJson(unserializedNodes.get(0));
+        JsonElement reserialized = jsonSerialization.serializeTreeToJson(unserializedNodes.get(0));
         System.out.println(new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(reserialized));
         assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
@@ -378,17 +390,58 @@ public class JsonSerializationTest {
 
         JsonObject expected = JsonParser.parseString("{\n" +
                 "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p2\": \"2904\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
+                "  \"metamodels\": [],\n" +
+                "  \"nodes\": [\n" +
+                "    {\n" +
+                "      \"id\": \"n1\",\n" +
+                "      \"concept\": {\n" +
+                "        \"metamodel\": \"mymetamodel\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"key\": \"concept-MyNodeWithProperties\"\n" +
+                "      },\n" +
+                "      \"properties\": [\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p1\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p2\"\n" +
+                "          },\n" +
+                "          \"value\": \"2904\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p3\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p4\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"children\": [],\n" +
+                "      \"references\": [],\n" +
+                "      \"parent\": null\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
+        System.out.println(new GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(serialized));
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -399,15 +452,55 @@ public class JsonSerializationTest {
 
         JsonObject serialized = JsonParser.parseString("{\n" +
                 "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p2\": \"2904\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
+                "  \"metamodels\": [],\n" +
+                "  \"nodes\": [\n" +
+                "    {\n" +
+                "      \"id\": \"n1\",\n" +
+                "      \"concept\": {\n" +
+                "        \"metamodel\": \"mymetamodel\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"key\": \"concept-MyNodeWithProperties\"\n" +
+                "      },\n" +
+                "      \"properties\": [\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p1\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p2\"\n" +
+                "          },\n" +
+                "          \"value\": \"2904\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p3\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p4\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"children\": [],\n" +
+                "      \"references\": [],\n" +
+                "      \"parent\": null\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));

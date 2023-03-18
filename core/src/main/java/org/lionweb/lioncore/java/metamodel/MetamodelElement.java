@@ -59,7 +59,7 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return this.getMetamodel();
+        return (NamespaceProvider) this.getParent();
     }
 
     @Override

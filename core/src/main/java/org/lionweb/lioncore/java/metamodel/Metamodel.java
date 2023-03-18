@@ -131,4 +131,8 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
         return LionCore.getMetamodel();
     }
 
+    @Override
+    public String toString() {
+        return "Metamodel(" + this.getName()+")";
+    }
 }
