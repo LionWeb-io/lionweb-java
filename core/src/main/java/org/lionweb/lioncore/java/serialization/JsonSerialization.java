@@ -149,6 +149,14 @@ public class JsonSerialization {
         return serializeNodesToJson(node.thisAndAllDescendants());
     }
 
+    public JsonElement serializeTreesToJson(Node... nodes) {
+        List<Node> allNodes = new ArrayList<>();
+        for (Node n : nodes) {
+            allNodes.addAll(n.thisAndAllDescendants());
+        }
+        return serializeNodesToJson(allNodes);
+    }
+
     public JsonElement serializeNodesToJson(List<Node> nodes) {
         SerializationBlock serializationBlock = serializeNodesToSerializationBlock(nodes);
         JsonElement json = new LowLevelJsonSerialization().serializeToJson(serializationBlock);
