@@ -309,15 +309,55 @@ public class JsonSerializationTest {
 
         JsonObject expected = JsonParser.parseString("{\n" +
                 "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p1\": \"true\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
+                "  \"metamodels\": [],\n" +
+                "  \"nodes\": [\n" +
+                "    {\n" +
+                "      \"id\": \"n1\",\n" +
+                "      \"concept\": {\n" +
+                "        \"metamodel\": \"mymetamodel\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"key\": \"concept-MyNodeWithProperties\"\n" +
+                "      },\n" +
+                "      \"properties\": [\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p1\"\n" +
+                "          },\n" +
+                "          \"value\": \"true\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p2\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p3\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p4\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"children\": [],\n" +
+                "      \"references\": [],\n" +
+                "      \"parent\": null\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
@@ -330,15 +370,55 @@ public class JsonSerializationTest {
 
         JsonObject serialized = JsonParser.parseString("{\n" +
                 "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p1\": \"true\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
+                "  \"metamodels\": [],\n" +
+                "  \"nodes\": [\n" +
+                "    {\n" +
+                "      \"id\": \"n1\",\n" +
+                "      \"concept\": {\n" +
+                "        \"metamodel\": \"mymetamodel\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"key\": \"concept-MyNodeWithProperties\"\n" +
+                "      },\n" +
+                "      \"properties\": [\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p1\"\n" +
+                "          },\n" +
+                "          \"value\": \"true\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p2\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p3\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p4\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"children\": [],\n" +
+                "      \"references\": [],\n" +
+                "      \"parent\": null\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));
@@ -353,15 +433,55 @@ public class JsonSerializationTest {
 
         JsonObject expected = JsonParser.parseString("{\n" +
                 "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p3\": \"qwerty\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
+                "  \"metamodels\": [],\n" +
+                "  \"nodes\": [\n" +
+                "    {\n" +
+                "      \"id\": \"n1\",\n" +
+                "      \"concept\": {\n" +
+                "        \"metamodel\": \"mymetamodel\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"key\": \"concept-MyNodeWithProperties\"\n" +
+                "      },\n" +
+                "      \"properties\": [\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p1\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p2\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p3\"\n" +
+                "          },\n" +
+                "          \"value\": \"qwerty\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p4\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"children\": [],\n" +
+                "      \"references\": [],\n" +
+                "      \"parent\": null\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
@@ -374,15 +494,55 @@ public class JsonSerializationTest {
 
         JsonObject serialized = JsonParser.parseString("{\n" +
                 "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p3\": \"qwerty\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
+                "  \"metamodels\": [],\n" +
+                "  \"nodes\": [\n" +
+                "    {\n" +
+                "      \"id\": \"n1\",\n" +
+                "      \"concept\": {\n" +
+                "        \"metamodel\": \"mymetamodel\",\n" +
+                "        \"version\": \"1\",\n" +
+                "        \"key\": \"concept-MyNodeWithProperties\"\n" +
+                "      },\n" +
+                "      \"properties\": [\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p1\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p2\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p3\"\n" +
+                "          },\n" +
+                "          \"value\": \"qwerty\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "          \"property\": {\n" +
+                "            \"metamodel\": \"mymetamodel\",\n" +
+                "            \"version\": \"1\",\n" +
+                "            \"key\": \"p4\"\n" +
+                "          },\n" +
+                "          \"value\": null\n" +
+                "        }\n" +
+                "      ],\n" +
+                "      \"children\": [],\n" +
+                "      \"references\": [],\n" +
+                "      \"parent\": null\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
         jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));
