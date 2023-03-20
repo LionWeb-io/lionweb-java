@@ -2,7 +2,6 @@ package org.lionweb.lioncore.java.metamodel;
 
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.self.LionCore;
-import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -153,15 +152,4 @@ public class Concept extends FeaturesContainer<Concept> {
                 .filter(c -> Objects.equals(c.getSimpleName(), linkName)).findFirst().orElse(null);
     }
 
-    public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
-        return this.allProperties().stream().filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer)).findFirst().orElse(null);
-    }
-
-    public @Nullable Containment getContainmentByMetaPointer(MetaPointer metaPointer) {
-        return this.allContainments().stream().filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer)).findFirst().orElse(null);
-    }
-
-    public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
-        return this.allReferences().stream().filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer)).findFirst().orElse(null);
-    }
 }
