@@ -36,14 +36,15 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
         setSimpleName(simpleName);
-        setContainer(container);
+        setParent(container);
     }
+
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
         setDerived(false);
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
         setSimpleName(simpleName);
-        setContainer(container);
+        setParent(container);
     }
 
     public boolean isOptional() {
@@ -79,16 +80,18 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
         this.setPropertyValue("simpleName", simpleName);
     }
 
+    /**
+     * The container is always the parent. It is just casted for convenience.
+     */
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return (NamespaceProvider) this.getParent();
-    }
-
-    public void setContainer(@Nullable FeaturesContainer container) {
-        if (container == null) {
-            this.setReferenceSingleValue("container", null);
+        if (this.getParent() == null) {
+            return null;
+        }
+        if (this.getParent() instanceof NamespaceProvider) {
+            return (NamespaceProvider) this.getParent();
         } else {
-            this.setReferenceSingleValue("container", new ReferenceValue(container, container.getSimpleName()));
+            throw new IllegalStateException("The parent is not a NamespaceProvider");
         }
     }
 
