@@ -81,7 +81,11 @@ public abstract class M3Node<T extends M3Node> implements Node {
         annotationInstances.add(instance);
     }
 
-    protected Object getDerivedValue(Property property) {
+    /**
+     * Nodes which have derived properties can specify the values of such properties by implementing this method and
+     * returning something different from null.
+     */
+    protected @Nonnull Object getDerivedValue(Property property) {
         return null;
     }
 
