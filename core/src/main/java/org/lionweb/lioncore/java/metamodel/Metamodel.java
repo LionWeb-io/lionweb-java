@@ -68,7 +68,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
     public <T extends MetamodelElement> T addElement(@Nonnull T element) {
         Objects.requireNonNull(element, "element should not be null");
         this.addContainmentMultipleValue("elements", element);
-        element.setMetamodel(this);
+        element.setParent(this);
         return element;
     }
 

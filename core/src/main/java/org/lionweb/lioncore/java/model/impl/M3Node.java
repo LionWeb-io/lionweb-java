@@ -38,8 +38,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
         return (T)this;
     }
 
-    public void setParent(Node parent) {
+    public T setParent(Node parent) {
         this.parent = parent;
+        return (T)this;
     }
 
     @Override
