@@ -45,7 +45,11 @@ public class DynamicNode implements Node {
         if (!getConcept().allProperties().contains(property)) {
             throw new IllegalArgumentException("Property " + property + " is not belonging to concept " + getConcept());
         }
-        propertyValues.put(property.getID(), value);
+        if (value == null || value == Boolean.FALSE) {
+            propertyValues.remove(property.getID());
+        } else {
+            propertyValues.put(property.getID(), value);
+        }
     }
 
     @Override
@@ -227,6 +231,18 @@ public class DynamicNode implements Node {
     @Override
     public int hashCode() {
         return Objects.hash(id, parent, concept, propertyValues, containmentValues, referenceValues);
+    }
+
+    @Override
+    public String toString() {
+        return "DynamicNode{" +
+                "id='" + id + '\'' +
+                ", parent=" + parent +
+                ", concept=" + concept +
+                ", propertyValues=" + propertyValues +
+                ", containmentValues=" + containmentValues +
+                ", referenceValues=" + referenceValues +
+                '}';
     }
 }
 

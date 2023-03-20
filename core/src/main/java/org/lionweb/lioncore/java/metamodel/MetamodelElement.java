@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1588368162880706270">MPS equivalent <i>IStructureElement</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
-public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> implements NamespacedEntity {
+public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> implements NamespacedEntity, HasKey<T> {
 
     public MetamodelElement() {
 
@@ -29,15 +29,17 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         // TODO enforce uniqueness of the name within the Metamodel
+        this.setParent(metamodel);
         this.setMetamodel(metamodel);
         this.setSimpleName(simpleName);
     }
 
     // TODO consider making this a derived feature just casting the parent
     public @Nullable Metamodel getMetamodel() {
-        return this.getReferenceSingleValue("metamodel");
+        return (Metamodel) getParent();
     }
 
+    // TODO remove me
     public T setMetamodel(@Nullable Metamodel metamodel) {
         if (metamodel == null) {
             this.setReferenceSingleValue("metamodel", null);
@@ -59,7 +61,24 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return this.getMetamodel();
+        return (NamespaceProvider) this.getParent();
     }
 
+    @Override
+    public String getKey() {
+        return this.getPropertyValue("key", String.class);
+    }
+
+    @Override
+    public T setKey(String key) {
+        setPropertyValue("key", key);
+        return (T) this;
+    }
+
+    protected Object getDerivedValue(Property property) {
+        if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
+            return qualifiedName();
+        }
+        return null;
+    }
 }

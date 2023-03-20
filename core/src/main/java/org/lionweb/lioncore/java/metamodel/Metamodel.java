@@ -21,7 +21,7 @@ import java.util.Objects;
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's structure aspect</i> in documentation</a>
  */
-public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
+public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, HasKey<Metamodel> {
     public Metamodel() {
     }
 
@@ -32,6 +32,17 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
 
     public Metamodel setName(String name) {
         setPropertyValue("name", name);
+        return this;
+    }
+
+    public Metamodel setVersion(@Nullable Integer version) {
+        setPropertyValue("version", version);
+        return this;
+    }
+
+    @Override
+    public Metamodel setKey(String key) {
+        setPropertyValue("key", key);
         return this;
     }
 
@@ -88,6 +99,16 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
         return this.getPropertyValue("name", String.class);
     }
 
+    @Override
+    public String getKey() {
+        return this.getPropertyValue("key", String.class);
+    }
+
+    @Nullable
+    public Integer getVersion() {
+        return this.getPropertyValue("version", Integer.class);
+    }
+
     public @Nullable MetamodelElement getElementByName(String name) {
         return getElements().stream().filter(element -> element.getSimpleName().equals(name)).findFirst()
                 .orElse(null);
@@ -110,4 +131,8 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider {
         return LionCore.getMetamodel();
     }
 
+    @Override
+    public String toString() {
+        return "Metamodel(" + this.getName()+")";
+    }
 }
