@@ -26,7 +26,7 @@ public class JsonSerializationTest {
     @Test
     public void serializeLionCoreToSerializationBlock() {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        SerializationBlock serializationBlock = jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
+        SerializedChunk serializationBlock = jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
 
         assertEquals("1", serializationBlock.getSerializationFormatVersion());
 

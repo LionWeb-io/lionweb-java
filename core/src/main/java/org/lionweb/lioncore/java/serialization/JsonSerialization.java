@@ -97,12 +97,12 @@ public class JsonSerialization {
     // Serialization - start
     //
 
-    public SerializationBlock serializeTreeToSerializationBlock(Node root) {
+    public SerializedChunk serializeTreeToSerializationBlock(Node root) {
         return serializeNodesToSerializationBlock(root.thisAndAllDescendants());
     }
 
-    public SerializationBlock serializeNodesToSerializationBlock(List<Node> nodes) {
-        SerializationBlock serializationBlock = new SerializationBlock();
+    public SerializedChunk serializeNodesToSerializationBlock(List<Node> nodes) {
+        SerializedChunk serializationBlock = new SerializedChunk();
         serializationBlock.setSerializationFormatVersion("1");
         for (Node node: nodes) {
             SerializedNode serializedNode = new SerializedNode();
@@ -141,7 +141,7 @@ public class JsonSerialization {
         return serializationBlock;
     }
 
-    public SerializationBlock serializeNodesToSerializationBlock(Node... nodes) {
+    public SerializedChunk serializeNodesToSerializationBlock(Node... nodes) {
         return serializeNodesToSerializationBlock(Arrays.asList(nodes));
     }
 
@@ -158,7 +158,7 @@ public class JsonSerialization {
     }
 
     public JsonElement serializeNodesToJson(List<Node> nodes) {
-        SerializationBlock serializationBlock = serializeNodesToSerializationBlock(nodes);
+        SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
         JsonElement json = new LowLevelJsonSerialization().serializeToJson(serializationBlock);
         return json;
     }
@@ -264,7 +264,7 @@ public class JsonSerialization {
 //    }
 
     public List<Node> unserializeToNode(JsonElement jsonElement) {
-        SerializationBlock serializationBlock = new LowLevelJsonSerialization().readSerializationBlock(jsonElement);
+        SerializedChunk serializationBlock = new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
         validateSerializationBlock(serializationBlock);
         return unserializeSerializationBlock(serializationBlock);
     }
@@ -480,7 +480,7 @@ public class JsonSerialization {
 
 
 
-    private void validateSerializationBlock(SerializationBlock serializationBlock) {
+    private void validateSerializationBlock(SerializedChunk serializationBlock) {
         if (!serializationBlock.getSerializationFormatVersion().equals("1")) {
             throw new IllegalArgumentException("Only serializationFormatVersion = '1' is supported");
         }
@@ -488,7 +488,7 @@ public class JsonSerialization {
 
 
 
-    private List<Node> unserializeSerializationBlock(SerializationBlock serializationBlock) {
+    private List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
         List<Node> nodes = serializationBlock.getNodes().stream().map(n -> instantiateNodeFromSerialized(n)).collect(Collectors.toList());
         NodeResolver nodeResolver = new CascadeNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
         serializationBlock.getNodes().stream().forEach(n -> populateNode(n, nodeResolver));
