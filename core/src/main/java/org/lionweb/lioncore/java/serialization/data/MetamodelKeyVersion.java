@@ -5,6 +5,9 @@ import org.lionweb.lioncore.java.metamodel.Metamodel;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+/**
+ * The pair Metamodel Key and Metamodel Version identify a specific version of a metamodel.
+ */
 public class MetamodelKeyVersion {
     private String key;
     private String version;

@@ -24,28 +24,28 @@ public class LowLevelJsonSerialization {
      * This method follows a "best-effort" approach, try to limit exception thrown and return data whenever is possible,
      * in the measure that it is possible.
      */
-    public SerializationBlock unserializeSerializationBlock(JsonElement jsonElement) {
-        SerializationBlock serializationBlock = new SerializationBlock();
+    public SerializedChunk unserializeSerializationBlock(JsonElement jsonElement) {
+        SerializedChunk serializedChunk = new SerializedChunk();
         if (jsonElement.isJsonObject()) {
             JsonObject topLevel = jsonElement.getAsJsonObject();
-            readSerializationFormatVersion(serializationBlock, topLevel);
-            readMetamodels(serializationBlock, topLevel);
-            unserializeNodes(serializationBlock, topLevel);
-            return serializationBlock;
+            readSerializationFormatVersion(serializedChunk, topLevel);
+            readMetamodels(serializedChunk, topLevel);
+            unserializeNodes(serializedChunk, topLevel);
+            return serializedChunk;
         } else {
             throw new IllegalArgumentException("We expected a Json Object, we got instead: " + jsonElement);
         }
     }
 
-    public JsonElement serializeToJson(SerializationBlock serializationBlock) {
+    public JsonElement serializeToJson(SerializedChunk serializedChunk) {
         JsonObject topLevel = new JsonObject();
-        topLevel.addProperty("serializationFormatVersion", serializationBlock.getSerializationFormatVersion());
+        topLevel.addProperty("serializationFormatVersion", serializedChunk.getSerializationFormatVersion());
 
         JsonArray metamodels = new JsonArray();
         topLevel.add("metamodels", metamodels);
 
         JsonArray nodes = new JsonArray();
-        for (SerializedNode node: serializationBlock.getNodes()) {
+        for (SerializedNode node: serializedChunk.getNodes()) {
             JsonObject nodeJson = new JsonObject();
             nodeJson.addProperty("id", node.getID());
             nodeJson.add("concept", serializeToJson(node.getConcept()));
@@ -86,15 +86,15 @@ public class LowLevelJsonSerialization {
         return topLevel;
     }
 
-    private void readSerializationFormatVersion(SerializationBlock serializationBlock, JsonObject topLevel) {
+    private void readSerializationFormatVersion(SerializedChunk serializedChunk, JsonObject topLevel) {
         if (!topLevel.has("serializationFormatVersion")) {
             throw new IllegalArgumentException("serializationFormatVersion not specified");
         }
         String serializationFormatVersion = topLevel.get("serializationFormatVersion").getAsString();
-        serializationBlock.setSerializationFormatVersion(serializationFormatVersion);
+        serializedChunk.setSerializationFormatVersion(serializationFormatVersion);
     }
 
-    private void readMetamodels(SerializationBlock serializationBlock, JsonObject topLevel) {
+    private void readMetamodels(SerializedChunk serializedChunk, JsonObject topLevel) {
         if (!topLevel.has("metamodels")) {
             throw new IllegalArgumentException("metamodels not specified");
         }
@@ -113,7 +113,7 @@ public class LowLevelJsonSerialization {
                     } else {
                         throw new IllegalArgumentException("Metamodel should be an object. Found: " + element);
                     }
-                    serializationBlock.addMetamodel(metamodelKeyVersion);
+                    serializedChunk.addMetamodel(metamodelKeyVersion);
                 } catch (Exception e) {
                     throw new RuntimeException("Issue while unserializing " + element, e);
                 }
@@ -124,7 +124,7 @@ public class LowLevelJsonSerialization {
         }
     }
 
-    private void unserializeNodes(SerializationBlock serializationBlock, JsonObject topLevel) {
+    private void unserializeNodes(SerializedChunk serializedChunk, JsonObject topLevel) {
         if (!topLevel.has("nodes")) {
             throw new IllegalArgumentException("nodes not specified");
         }
@@ -132,7 +132,7 @@ public class LowLevelJsonSerialization {
             topLevel.get("nodes").getAsJsonArray().asList().stream().forEach(element -> {
                 try {
                     SerializedNode node = unserializeNode(element);
-                    serializationBlock.addNode(node);
+                    serializedChunk.addNode(node);
                 } catch (Exception e) {
                     throw new RuntimeException("Issue while unserializing " + element, e);
                 }

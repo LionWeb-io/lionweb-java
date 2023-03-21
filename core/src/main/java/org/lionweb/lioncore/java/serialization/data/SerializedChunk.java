@@ -3,7 +3,12 @@ package org.lionweb.lioncore.java.serialization.data;
 import javax.annotation.Nonnull;
 import java.util.*;
 
-public class SerializationBlock {
+/**
+ * This represents a chunk of nodes which have been serialized. The serialization could be inconsistent.
+ * This is a low-level representation, intended to represent broken chunks or as an intermediate step during
+ * serialization or unserialization.
+ */
+public class SerializedChunk {
 
     private Map<String, SerializedNode> nodesByID = new HashMap<>();
 
@@ -45,10 +50,6 @@ public class SerializationBlock {
         return nodesByID;
     }
 
-    public void setNodesByID(Map<String, SerializedNode> nodesByID) {
-        this.nodesByID = nodesByID;
-    }
-
     public List<MetamodelKeyVersion> getMetamodels() {
         return metamodels;
     }
@@ -60,5 +61,18 @@ public class SerializationBlock {
                 ", metamodels=" + metamodels +
                 ", nodes=" + nodes +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof SerializedChunk)) return false;
+        SerializedChunk that = (SerializedChunk) o;
+        return serializationFormatVersion.equals(that.serializationFormatVersion) && metamodels.equals(that.metamodels) && nodes.equals(that.nodes);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(serializationFormatVersion, metamodels, nodes);
     }
 }
