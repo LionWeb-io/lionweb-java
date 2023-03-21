@@ -6,20 +6,23 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CascadeNodeResolver implements NodeResolver {
+/**
+ * This combines several NodeResolvers.
+ */
+public class CombinedNodeResolver implements NodeResolver {
     private List<NodeResolver> nodeResolvers = new ArrayList<>();
 
-    public CascadeNodeResolver() {
+    public CombinedNodeResolver() {
 
     }
 
-    public CascadeNodeResolver(NodeResolver... nodeResolvers) {
+    public CombinedNodeResolver(NodeResolver... nodeResolvers) {
         for (NodeResolver nodeResolver: nodeResolvers) {
             add(nodeResolver);
         }
     }
 
-    public CascadeNodeResolver add(NodeResolver nodeResolver) {
+    public CombinedNodeResolver add(NodeResolver nodeResolver) {
         nodeResolvers.add(nodeResolver);
         return this;
     }

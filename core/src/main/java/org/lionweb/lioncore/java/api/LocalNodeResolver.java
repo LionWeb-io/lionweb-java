@@ -2,11 +2,15 @@ package org.lionweb.lioncore.java.api;
 
 import org.lionweb.lioncore.java.model.Node;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This NodeResolver consult a given list of nodes to find the one with the requested ID.
+ */
 public class LocalNodeResolver implements NodeResolver {
     private Map<String, Node> nodes = new HashMap<>();
 
@@ -18,7 +22,7 @@ public class LocalNodeResolver implements NodeResolver {
         nodes.forEach(n -> add(n));
     }
 
-    public void add(Node node) {
+    public void add(@Nonnull Node node) {
         nodes.put(node.getID(), node);
     }
 
@@ -28,7 +32,7 @@ public class LocalNodeResolver implements NodeResolver {
         return nodes.get(nodeID);
     }
 
-    public void addAll(List<Node> nodes) {
+    public void addAll(@Nonnull List<Node> nodes) {
         nodes.forEach(n -> add(n));
     }
 }

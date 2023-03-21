@@ -2,8 +2,7 @@ package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import jdk.vm.ci.meta.Local;
-import org.lionweb.lioncore.java.api.CascadeNodeResolver;
+import org.lionweb.lioncore.java.api.CombinedNodeResolver;
 import org.lionweb.lioncore.java.api.LocalNodeResolver;
 import org.lionweb.lioncore.java.api.NodeResolver;
 import org.lionweb.lioncore.java.metamodel.*;
@@ -490,7 +489,7 @@ public class JsonSerialization {
 
     private List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
         List<Node> nodes = serializationBlock.getNodes().stream().map(n -> instantiateNodeFromSerialized(n)).collect(Collectors.toList());
-        NodeResolver nodeResolver = new CascadeNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
+        NodeResolver nodeResolver = new CombinedNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
         serializationBlock.getNodes().stream().forEach(n -> populateNode(n, nodeResolver));
         return nodes;
     }
