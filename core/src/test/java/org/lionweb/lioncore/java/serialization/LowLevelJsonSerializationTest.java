@@ -50,7 +50,7 @@ public class LowLevelJsonSerializationTest {
     }
 
     @Test
-    public void unserializeLibraryMetamodel() {
+    public void unserializeLibraryMetamodelToSerializedNodes() {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
@@ -64,8 +64,22 @@ public class LowLevelJsonSerializationTest {
     }
 
     @Test
-    public void reserializeLibrary() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
+    public void reserializeLibraryMetamodel() {
+        assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/library-metamodel.json");
+    }
+
+    @Test
+    public void reserializeBobsLibrary() {
+        assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/bobslibrary.json");
+    }
+
+    @Test
+    public void reserializeLanguageEngineeringLibrary() {
+        assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/langeng-library.json");
+    }
+
+    private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {
+        InputStream inputStream = this.getClass().getResourceAsStream(filePath);
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
         SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
