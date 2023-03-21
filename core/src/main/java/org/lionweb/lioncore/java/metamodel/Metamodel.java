@@ -35,7 +35,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
         return this;
     }
 
-    public Metamodel setVersion(@Nullable Integer version) {
+    public Metamodel setVersion(@Nullable String version) {
         setPropertyValue("version", version);
         return this;
     }
@@ -105,8 +105,8 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
     }
 
     @Nullable
-    public Integer getVersion() {
-        return this.getPropertyValue("version", Integer.class);
+    public String getVersion() {
+        return this.getPropertyValue("version", String.class);
     }
 
     public @Nullable MetamodelElement getElementByName(String name) {
