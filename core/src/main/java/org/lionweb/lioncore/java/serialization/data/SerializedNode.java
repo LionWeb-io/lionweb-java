@@ -1,9 +1,9 @@
 package org.lionweb.lioncore.java.serialization.data;
 
-import org.checkerframework.checker.units.qual.A;
-
 import javax.annotation.Nullable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Lower level representation of Node which is used to load broken nodes during serialization.
@@ -16,6 +16,15 @@ public class SerializedNode {
     private List<SerializedPropertyValue> properties = new ArrayList<>();
     private List<SerializedContainmentValue> containments = new ArrayList<>();
     private List<SerializedReferenceValue> references = new ArrayList<>();
+
+    public SerializedNode() {
+
+    }
+
+    public SerializedNode(String id, MetaPointer concept) {
+        setID(id);
+        setConcept(concept);
+    }
 
     public String getParentNodeID() {
         return parentNodeID;
@@ -31,7 +40,7 @@ public class SerializedNode {
 
     public List<String> getChildren() {
         List<String> children = new ArrayList<>();
-        this.containments.stream().forEach(c -> children.addAll(c.getValue()));
+        this.containments.forEach(c -> children.addAll(c.getValue()));
         return children;
     }
 
@@ -55,54 +64,6 @@ public class SerializedNode {
         this.references.add(referenceValue);
     }
 
-    public static class RawReferenceValue {
-        public String referredId;
-        public String resolveInfo;
-
-        public String getReferredId() {
-            return referredId;
-        }
-
-        public void setReferredId(String referredId) {
-            this.referredId = referredId;
-        }
-
-        public String getResolveInfo() {
-            return resolveInfo;
-        }
-
-        public void setResolveInfo(String resolveInfo) {
-            this.resolveInfo = resolveInfo;
-        }
-
-        public RawReferenceValue(String referredId, String resolveInfo) {
-            this.referredId = referredId;
-            this.resolveInfo = resolveInfo;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof RawReferenceValue)) return false;
-            RawReferenceValue that = (RawReferenceValue) o;
-            return Objects.equals(referredId, that.referredId) && Objects.equals(resolveInfo, that.resolveInfo);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(referredId, resolveInfo);
-        }
-    }
-
-    public SerializedNode() {
-
-    }
-
-    public SerializedNode(String id, MetaPointer concept) {
-        setID(id);
-        setConcept(concept);
-    }
-
     public MetaPointer getConcept() {
         return concept;
     }
@@ -116,24 +77,20 @@ public class SerializedNode {
         return id;
     }
 
-
     public void setID(String id) {
         this.id = id;
     }
 
-    public void setPropertyValue(String propertyId, String serializedValue) {
-        //this.propertyValues.put(propertyId, serializedValue);
-        throw new UnsupportedOperationException();
+    public void setPropertyValue(MetaPointer property, String serializedValue) {
+        this.properties.add(new SerializedPropertyValue(property, serializedValue));
     }
 
-    public void addChild(String containmentID, String childId) {
-        //this.containmentsValues.computeIfAbsent(containmentID, s -> new ArrayList<>()).add(childId);
-        throw new UnsupportedOperationException();
+    public void addChildren(MetaPointer containment, List<String> childrenIds) {
+        this.containments.add(new SerializedContainmentValue(containment, childrenIds));
     }
 
-    public void addReferenceValue(String referenceID, RawReferenceValue referenceValue) {
-        //this.referencesValues.computeIfAbsent(referenceID, s -> new ArrayList<>()).add(referenceValue);
-        throw new UnsupportedOperationException();
+    public void addReferenceValue(MetaPointer reference, List<SerializedReferenceValue.Entry> referenceValues) {
+        this.references.add(new SerializedReferenceValue(reference, referenceValues));
     }
 
     @Nullable

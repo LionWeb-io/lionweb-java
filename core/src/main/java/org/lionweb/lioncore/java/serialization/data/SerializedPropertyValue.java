@@ -2,6 +2,9 @@ package org.lionweb.lioncore.java.serialization.data;
 
 import java.util.Objects;
 
+/**
+ * This represents the serialization of the value of a property in a Node.
+ */
 public class SerializedPropertyValue {
     private MetaPointer metaPointer;
     private String value;

@@ -1,12 +1,15 @@
 package org.lionweb.lioncore.java.serialization.data;
 
-import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.HasKey;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.metamodel.MetamodelElement;
 
 import java.util.Objects;
 
+/**
+ * A MetaPointer is the combination of the pair Metamodel & Version with a Key, which identify one element within
+ * that metamodel.
+ */
 public class MetaPointer {
     private String key;
     private String version;

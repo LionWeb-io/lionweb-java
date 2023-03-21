@@ -11,8 +11,16 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Collection of utility methods to simplify serialization and unserialization to JSON.
+ */
 class SerializationUtils {
 
+    private SerializationUtils() {
+        // Prevent instantiation
+    }
+
+    @Nullable
     static String getAsStringOrNull(JsonElement element) {
         if (element == null || element.isJsonNull()) {
             return null;
@@ -42,7 +50,9 @@ class SerializationUtils {
         JsonElement value = jsonObject.get(propertyName);
         if (value.isJsonObject()) {
             JsonObject valueJO = value.getAsJsonObject();
-            return new MetaPointer(tryToGetStringProperty(valueJO,"metamodel"), tryToGetStringProperty(valueJO,"version"), tryToGetStringProperty(valueJO,"key"));
+            return new MetaPointer(tryToGetStringProperty(valueJO,"metamodel"),
+                    tryToGetStringProperty(valueJO,"version"),
+                    tryToGetStringProperty(valueJO,"key"));
         } else {
             return null;
         }
@@ -63,7 +73,8 @@ class SerializationUtils {
     }
 
     @Nullable
-    static List<SerializedReferenceValue.Entry> tryToGetArrayOfReferencesProperty(JsonObject jsonObject, String propertyName) {
+    static List<SerializedReferenceValue.Entry> tryToGetArrayOfReferencesProperty(JsonObject jsonObject,
+                                                                                  String propertyName) {
         if (!jsonObject.has(propertyName)) {
             return null;
         }
