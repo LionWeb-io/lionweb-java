@@ -1,55 +1,127 @@
 {
   "serializationFormatVersion": "1",
+  "metamodels": [],
   "nodes": [
     {
-      "concept": "Pk1NRJfHMt4eSja2kpXia7x8vj6Vzc6WQCUzT3aVeYY",
       "id": "lib-1",
-      "properties": {
-        "LdgCnVXNgZD7CLbBhBin2Rcdumx4qZUYz_jh2QnP5z8": "Language Engineering Library"
+      "concept": {
+        "metamodel": "library",
+        "version": "1",
+        "key": "library-Library"
       },
-      "children": {
-        "TFS1ME6sEyRbkRchsr8zaZCcj_uF1LM0LXK24gbnxZM": [
-          "de",
-          "bfd"
-        ]
-      },
-      "references": {}
+      "properties": [
+        {
+          "property": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Library-name"
+          },
+          "value": "Language Engineering Library"
+        }
+      ],
+      "children": [
+        {
+          "containment": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Library-books"
+          },
+          "children": [
+            "de",
+            "bfd"
+          ]
+        }
+      ],
+      "references": [],
+      "parent": null
     },
     {
-      "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
       "id": "de",
-      "properties": {
-        "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": "DSL Engineering",
-        "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": "558"
+      "concept": {
+        "metamodel": "library",
+        "version": "1",
+        "key": "library-Book"
       },
-      "children": {},
-      "references": {
-        "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
-          {
-            "resolveInfo": "Markus Völter",
-            "reference": "mv"
-          }
-        ]
-      },
+      "properties": [
+        {
+          "property": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Book-title"
+          },
+          "value": "DSL Engineering"
+        },
+        {
+          "property": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Book-pages"
+          },
+          "value": "558"
+        }
+      ],
+      "children": [],
+      "references": [
+        {
+          "reference": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Book-author"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Markus Völter",
+              "reference": "mv"
+            }
+          ]
+        }
+      ],
       "parent": "lib-1"
     },
     {
-      "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
       "id": "bfd",
-      "properties": {
-        "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": "Business-Friendly DSLs",
-        "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": "517"
+      "concept": {
+        "metamodel": "library",
+        "version": "1",
+        "key": "library-Book"
       },
-      "children": {},
-      "references": {
-        "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
-          {
-            "resolveInfo": "Meinte Boersma",
-            "reference": "mb"
-          }
-        ]
-      },
+      "properties": [
+        {
+          "property": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Book-title"
+          },
+          "value": "Business-Friendly DSLs"
+        },
+        {
+          "property": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Book-pages"
+          },
+          "value": "517"
+        }
+      ],
+      "children": [],
+      "references": [
+        {
+          "reference": {
+            "metamodel": "library",
+            "version": "1",
+            "key": "library-Book-author"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Meinte Boersma",
+              "reference": "mb"
+            }
+          ]
+        }
+      ],
       "parent": "lib-1"
     }
   ]
 }
+
+
