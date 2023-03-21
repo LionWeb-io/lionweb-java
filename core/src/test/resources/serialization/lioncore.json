@@ -1843,8 +1843,8 @@
           },
           "targets": [
             {
-              "resolveInfo": "Integer",
-              "reference": "LIonCore_M3_Integer"
+              "resolveInfo": "String",
+              "reference": "LIonCore_M3_String"
             }
           ]
         }

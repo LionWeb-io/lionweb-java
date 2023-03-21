@@ -81,7 +81,7 @@ public class EcoreImporter {
 
     public Metamodel importEPackage(EPackage ePackage) {
         Metamodel metamodel = new Metamodel(ePackage.getName());
-        metamodel.setVersion(1);
+        metamodel.setVersion("1");
         metamodel.setID(ePackage.getName());
         metamodel.setKey(ePackage.getName());
         packagesToMetamodels.put(ePackage, metamodel);
