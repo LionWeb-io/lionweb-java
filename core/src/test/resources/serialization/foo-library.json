@@ -1,22 +1,23 @@
 {
   "serializationFormatVersion": "1",
+  "metamodels": [],
   "nodes": [
     {
-      "concept": "OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs",
+      "concept": {"metamodel":"library","version":"1","key":"library-Book"},
       "id": "foo123",
-      "properties": {
-        "Ei9m_HbdmEYg_EwMLLVZ71ERRBZyXH8GHVyOVia8Sqg": null,
-        "OJhF8vB_qRMrA8A9a-H0LsByONdYtHGmQ-lk9rUHUc4": null
-      },
-      "children": {},
-      "references": {
-        "9ATCb8nXEuQAL3NOY-EUZwuThpIQnQ2C_2n97IRGA_g": [
+      "properties": [
+        {"property": {"metamodel":"library","version":"1","key":"library-Book-title"}, "value": null},
+        {"property": {"metamodel":"library","version":"1","key":"library-Book-pages"}, "value": null}
+      ],
+      "children": [],
+      "references": [
+        {"reference": {"metamodel":"library","version":"1","key":"library-Book-author"}, "targets": [
           {
             "reference": "_Arthur_Foozillus_id_",
             "resolveInfo": null
           }
         ]
-      }
+      }]
     }
   ]
 }

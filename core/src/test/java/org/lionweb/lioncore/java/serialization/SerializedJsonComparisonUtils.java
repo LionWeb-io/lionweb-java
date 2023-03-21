@@ -19,7 +19,7 @@ class SerializedJsonComparisonUtils {
     }
 
     static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
-        Set<String> keys = new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes"));
+        Set<String> keys = new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "metamodels"));
         if (!expected.keySet().equals(keys)) {
             throw new RuntimeException("The expected object has irregular keys: " + expected.keySet());
         }
@@ -85,14 +85,23 @@ class SerializedJsonComparisonUtils {
             } else if (key.equals("id")) {
                 assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
             } else if (key.equals("references")) {
-                assertEquivalentObjects(expected.getAsJsonObject("references"), actual.getAsJsonObject("references"), "References of " + context);
+                assertEquivalentArrays(expected.getAsJsonArray("references"), actual.getAsJsonArray("references"), "References of " + context);
             } else if (key.equals("children")) {
-                assertEquivalentObjects(expected.getAsJsonObject("children"), actual.getAsJsonObject("children"), "Children of " + context);
+                assertEquivalentArrays(expected.getAsJsonArray("children"), actual.getAsJsonArray("children"), "Children of " + context);
             } else if (key.equals("properties")) {
-                assertEquivalentObjects(expected.getAsJsonObject("properties"), actual.getAsJsonObject("properties"), "Properties of " + context);
+                assertEquivalentArrays(expected.getAsJsonArray("properties"), actual.getAsJsonArray("properties"), "Properties of " + context);
             } else {
                 throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
             }
+        }
+    }
+
+    private static void assertEquivalentArrays(JsonArray expected, JsonArray actual, String context) {
+        if (expected.size() != actual.size()) {
+            throw new AssertionError("(" + context + ") Arrays with different sizes: expected=" + expected.size()+ " and actual=" + actual.size());
+        }
+        for (int i=0;i<expected.size();i++) {
+            assertEquivalentObjects(expected.get(i).getAsJsonObject(), actual.get(i).getAsJsonObject(), context + " element " + i);
         }
     }
 
