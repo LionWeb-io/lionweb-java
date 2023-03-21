@@ -3,7 +3,6 @@ package org.lionweb.lioncore.java.serialization;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import org.junit.Test;
-import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 import org.lionweb.lioncore.java.serialization.data.SerializationBlock;
 import org.lionweb.lioncore.java.serialization.data.SerializedNode;
@@ -25,7 +24,7 @@ public class LowLevelJsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-        SerializationBlock serializationBlock = jsonSerialization.readSerializationBlock(jsonElement);
+        SerializationBlock serializationBlock = jsonSerialization.unserializeSerializationBlock(jsonElement);
         List<SerializedNode> unserializedSerializedNodeData = serializationBlock.getNodes();
 
         SerializedNode lioncore = unserializedSerializedNodeData.get(0);
@@ -55,7 +54,7 @@ public class LowLevelJsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-        SerializationBlock serializationBlock = jsonSerialization.readSerializationBlock(jsonElement);
+        SerializationBlock serializationBlock = jsonSerialization.unserializeSerializationBlock(jsonElement);
         SerializedNode book = serializationBlock.getNodeByID("library-Book");
         assertEquals("Book", book.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
 
@@ -69,7 +68,7 @@ public class LowLevelJsonSerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-        SerializationBlock serializationBlock = jsonSerialization.readSerializationBlock(jsonElement);
+        SerializationBlock serializationBlock = jsonSerialization.unserializeSerializationBlock(jsonElement);
         JsonElement reserialized = jsonSerialization.serializeToJson(serializationBlock);
         assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
