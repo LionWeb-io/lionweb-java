@@ -1,10 +1,11 @@
 package org.lionweb.lioncore.java.serialization.data;
 
-import org.lionweb.lioncore.java.model.ReferenceValue;
-
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * This represents the serialization of the values of a reference link in a Node.
+ */
 public class SerializedReferenceValue {
 
     public static class Entry {
