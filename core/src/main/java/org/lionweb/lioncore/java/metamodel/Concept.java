@@ -151,4 +151,5 @@ public class Concept extends FeaturesContainer<Concept> {
         return allFeatures().stream().filter(f -> f instanceof Link).map(f -> (Link)f)
                 .filter(c -> Objects.equals(c.getSimpleName(), linkName)).findFirst().orElse(null);
     }
+
 }

@@ -18,31 +18,33 @@ import java.util.Objects;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html#conceptmembers">MPS equivalent <i>Concept members</i> in documentation</a>
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in SModel
  */
-public abstract class Feature<T extends M3Node> extends M3Node<T> implements NamespacedEntity {
-    @Experimental
-    private boolean derived;
+public abstract class Feature<T extends M3Node> extends M3Node<T> implements NamespacedEntity, HasKey<T> {
 
     public Feature() {
-
+        setDerived(false);
     }
 
     public Feature(@Nullable String simpleName, @Nonnull String id) {
         this(simpleName, null, id);
+        setDerived(false);
     }
 
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container, @Nonnull String id) {
+        setDerived(false);
         Objects.requireNonNull(id, "id should not be null");
         this.setID(id);
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
         setSimpleName(simpleName);
-        setContainer(container);
+        setParent(container);
     }
+
     public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+        setDerived(false);
         // TODO verify that the container is also a NamespaceProvider
         // TODO enforce uniqueness of the name within the FeauturesContainer
         setSimpleName(simpleName);
-        setContainer(container);
+        setParent(container);
     }
 
     public boolean isOptional() {
@@ -60,12 +62,12 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
 
     @Experimental
     public boolean isDerived() {
-        return derived;
+        return getPropertyValue("derived", Boolean.class);
     }
 
     @Experimental
     public T setDerived(boolean derived) {
-        this.derived = derived;
+        setPropertyValue("derived", derived);
         return (T)this;
     }
 
@@ -78,17 +80,36 @@ public abstract class Feature<T extends M3Node> extends M3Node<T> implements Nam
         this.setPropertyValue("simpleName", simpleName);
     }
 
+    /**
+     * The container is always the parent. It is just casted for convenience.
+     */
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return getReferenceSingleValue("container");
-    }
-
-    public void setContainer(@Nullable FeaturesContainer container) {
-        if (container == null) {
-            this.setReferenceSingleValue("container", null);
+        if (this.getParent() == null) {
+            return null;
+        }
+        if (this.getParent() instanceof NamespaceProvider) {
+            return (NamespaceProvider) this.getParent();
         } else {
-            this.setReferenceSingleValue("container", new ReferenceValue(container, container.getSimpleName()));
+            throw new IllegalStateException("The parent is not a NamespaceProvider");
         }
     }
 
+    @Override
+    public String getKey() {
+        return this.getPropertyValue("key", String.class);
+    }
+
+    @Override
+    public T setKey(String key) {
+        setPropertyValue("key", key);
+        return (T) this;
+    }
+
+    protected Object getDerivedValue(Property property) {
+        if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
+            return qualifiedName();
+        }
+        return null;
+    }
 }

@@ -15,7 +15,7 @@ public class MyNodeWithProperties extends DynamicNode  {
             .addFeature(Property.createOptional("p2", LionCoreBuiltins.getInteger()).setID("p2"))
             .addFeature(Property.createOptional("p3", LionCoreBuiltins.getString()).setID("p3"))
             .addFeature(Property.createOptional("p4", LionCoreBuiltins.getJSON()).setID("p4"))
-            .setMetamodel(METAMODEL);
+            .setParent(METAMODEL);
 
     static {
         METAMODEL.addElement(CONCEPT);

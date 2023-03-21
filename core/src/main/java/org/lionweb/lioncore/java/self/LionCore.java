@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.self;
 
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.model.HasFeatureValues;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import java.util.Collections;
@@ -86,6 +87,8 @@ public class LionCore {
         if (INSTANCE == null) {
             INSTANCE = new Metamodel("LIonCore.M3");
             INSTANCE.setID("LIonCore_M3");
+            INSTANCE.setKey("LIonCore_M3");
+            INSTANCE.setVersion("1");
 
             // We first instantiate all Concepts and ConceptInterfaces
             // we add features only after as the features will have references to these elements
@@ -97,6 +100,7 @@ public class LionCore {
             Concept enumerationLiteral = INSTANCE.addElement(new Concept("EnumerationLiteral"));
             Concept feature = INSTANCE.addElement(new Concept("Feature"));
             Concept featuresContainer = INSTANCE.addElement(new Concept("FeaturesContainer"));
+            ConceptInterface hasKey = INSTANCE.addElement(new ConceptInterface("HasKey"));
             Concept link = INSTANCE.addElement(new Concept("Link"));
             Concept metamodel = INSTANCE.addElement(new Concept("Metamodel"));
             Concept metamodelElement = INSTANCE.addElement(new Concept("MetamodelElement"));
@@ -128,6 +132,7 @@ public class LionCore {
             enumerationLiteral.setExtendedConcept(namespacedEntity);
 
             feature.setExtendedConcept(namespacedEntity);
+            feature.addImplementedInterface(hasKey);
             feature.addFeature(Property.createRequired("optional", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Feature_optional"));
             feature.addFeature(Property.createRequired("derived", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Feature_derived"));
 
@@ -135,26 +140,27 @@ public class LionCore {
             featuresContainer.addImplementedInterface(namespaceProvider);
             featuresContainer.addFeature(Containment.createMultiple("features", feature, "LIonCore_M3_FeaturesContainer_features"));
 
+            hasKey.addFeature(Property.createRequired("key", LionCoreBuiltins.getString(), "LIonCore_M3_HasKey_key"));
+
             link.setExtendedConcept(feature);
             link.addFeature(Property.createRequired("multiple", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Link_multiple"));
             link.addFeature(Reference.createRequired("type", featuresContainer, "LIonCore_M3_Link_type"));
 
             metamodel.addImplementedInterface(namespaceProvider);
+            metamodel.addImplementedInterface(hasKey);
             metamodel.addFeature(Property.createRequired("name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
-            metamodel.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_id"));
+            metamodel.addFeature(Property.createRequired("version", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_version"));
             metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
 
             metamodelElement.setExtendedConcept(namespacedEntity);
+            metamodelElement.addImplementedInterface(hasKey);
             metamodel.setAbstract(true);
 
             namespacedEntity.setAbstract(true);
-            namespacedEntity.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_id"));
             namespacedEntity.addFeature(Property.createRequired("simpleName", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_simpleName"));
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(),
                     "LIonCore_M3_NamespacedEntity_qualifiedName").setDerived(true));
-
-            namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString(), "LIonCore_M3_NamespaceProvider_namespaceQualifier").setDerived(true));
 
             primitiveType.setExtendedConcept(dataType);
 
@@ -174,10 +180,19 @@ public class LionCore {
             if (node instanceof NamespacedEntity) {
                 NamespacedEntity namespacedEntity = (NamespacedEntity) node;
                 node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
+                if (node instanceof HasKey<?>) {
+                    ((HasKey<?>) node).setKey(node.getID());
+                }
             } else {
                 throw new IllegalStateException(node.toString());
             }
         }
+        if (node instanceof FeaturesContainer<?>) {
+            ((FeaturesContainer<?>) node).getFeatures().forEach(feature -> {
+                feature.setKey(feature.getID());
+            });
+        }
+
         // TODO To be changed once getChildren is implemented correctly
         getChildrenHelper(node).forEach(c -> checkIDs(c));
     }
