@@ -30,23 +30,21 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
     public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         // TODO enforce uniqueness of the name within the Metamodel
         this.setParent(metamodel);
-        this.setMetamodel(metamodel);
         this.setSimpleName(simpleName);
     }
 
-    // TODO consider making this a derived feature just casting the parent
+    /**
+     * This method returns the Metamodel containing this element. It is the parent, casted to Metamodel.
+     * @return
+     */
     public @Nullable Metamodel getMetamodel() {
-        return (Metamodel) getParent();
-    }
-
-    // TODO remove me
-    public T setMetamodel(@Nullable Metamodel metamodel) {
-        if (metamodel == null) {
-            this.setReferenceSingleValue("metamodel", null);
+        if (getParent() == null) {
+            return null;
+        } else if (getParent() instanceof Metamodel) {
+            return (Metamodel) getParent();
         } else {
-            this.setReferenceSingleValue("metamodel", new ReferenceValue(metamodel, metamodel.getName()));
+            throw new IllegalStateException("The parent of this MetamodelElement is not a Metamodel");
         }
-        return (T)this;
     }
 
     @Override
@@ -61,7 +59,14 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
 
     @Override
     public @Nullable NamespaceProvider getContainer() {
-        return (NamespaceProvider) this.getParent();
+        if (this.getParent() == null) {
+            return null;
+        }
+        if (this.getParent() instanceof NamespaceProvider) {
+            return (NamespaceProvider) this.getParent();
+        } else {
+            throw new IllegalStateException("The parent is not a NamespaceProvider");
+        }
     }
 
     @Override

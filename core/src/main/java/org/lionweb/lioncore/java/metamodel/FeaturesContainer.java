@@ -60,7 +60,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     public T addFeature(@Nonnull Feature feature) {
         Objects.requireNonNull(feature, "feature should not be null");
         this.addContainmentMultipleValue("features", feature);
-        feature.setContainer(this);
+        feature.setParent(this);
         return (T)this;
     }
 

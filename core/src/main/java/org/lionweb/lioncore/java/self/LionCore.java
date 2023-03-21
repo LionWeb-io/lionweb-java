@@ -88,7 +88,7 @@ public class LionCore {
             INSTANCE = new Metamodel("LIonCore.M3");
             INSTANCE.setID("LIonCore_M3");
             INSTANCE.setKey("LIonCore_M3");
-            INSTANCE.setVersion(1);
+            INSTANCE.setVersion("1");
 
             // We first instantiate all Concepts and ConceptInterfaces
             // we add features only after as the features will have references to these elements
@@ -149,7 +149,7 @@ public class LionCore {
             metamodel.addImplementedInterface(namespaceProvider);
             metamodel.addImplementedInterface(hasKey);
             metamodel.addFeature(Property.createRequired("name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
-            metamodel.addFeature(Property.createRequired("version", LionCoreBuiltins.getInteger(), "LIonCore_M3_Metamodel_version"));
+            metamodel.addFeature(Property.createRequired("version", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_version"));
             metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
             metamodel.addFeature(Containment.createMultiple("elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
 
@@ -158,12 +158,10 @@ public class LionCore {
             metamodel.setAbstract(true);
 
             namespacedEntity.setAbstract(true);
-            //namespacedEntity.addFeature(Property.createRequired("id", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_id"));
+
             namespacedEntity.addFeature(Property.createRequired("simpleName", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_simpleName"));
             namespacedEntity.addFeature(Property.createRequired("qualifiedName", LionCoreBuiltins.getString(),
                     "LIonCore_M3_NamespacedEntity_qualifiedName").setDerived(true));
-
-            //namespaceProvider.addFeature(Property.createRequired("namespaceQualifier", LionCoreBuiltins.getString(), "LIonCore_M3_NamespaceProvider_namespaceQualifier").setDerived(true));
 
             primitiveType.setExtendedConcept(dataType);
 

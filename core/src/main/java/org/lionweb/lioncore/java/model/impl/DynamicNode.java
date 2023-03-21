@@ -46,6 +46,8 @@ public class DynamicNode implements Node {
             throw new IllegalArgumentException("Property " + property + " is not belonging to concept " + getConcept());
         }
         if (value == null || value == Boolean.FALSE) {
+            // We remove values corresponding to default values, so that comparisons of instances of DynamicNode can be
+            // simplified
             propertyValues.remove(property.getID());
         } else {
             propertyValues.put(property.getID(), value);

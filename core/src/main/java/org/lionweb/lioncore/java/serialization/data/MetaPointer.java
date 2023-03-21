@@ -28,7 +28,7 @@ public class MetaPointer {
         if (metamodelElement.getMetamodel() != null) {
             metaPointer.setMetamodel(metamodelElement.getMetamodel().getKey());
             if (metamodelElement.getMetamodel().getVersion() != null) {
-                metaPointer.setVersion(Integer.toString(metamodelElement.getMetamodel().getVersion()));
+                metaPointer.setVersion(metamodelElement.getMetamodel().getVersion());
             }
         }
         return metaPointer;
@@ -40,7 +40,7 @@ public class MetaPointer {
         if (metamodel != null) {
             metaPointer.setMetamodel(metamodel.getKey());
             if (metamodel.getVersion() != null) {
-                metaPointer.setVersion(Integer.toString(metamodel.getVersion()));
+                metaPointer.setVersion(metamodel.getVersion());
             }
         }
         return metaPointer;

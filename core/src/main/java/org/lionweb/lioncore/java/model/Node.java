@@ -103,7 +103,10 @@ public interface Node extends HasFeatureValues {
         return getPropertyValue(property);
     }
 
-    default List<Node> thisAndAllDescendants() {
+    /**
+     * Return a list containing this node and all its descendants.
+     */
+    default @Nonnull List<Node> thisAndAllDescendants() {
         List<Node> nodes = new ArrayList<>();
         nodes.add(this);
         for (Node child: this.getChildren()) {

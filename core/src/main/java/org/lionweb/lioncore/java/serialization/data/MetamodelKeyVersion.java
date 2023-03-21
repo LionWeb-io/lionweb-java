@@ -21,7 +21,7 @@ public class MetamodelKeyVersion {
     public static MetamodelKeyVersion fromMetamodel(@Nonnull Metamodel metamodel) {
         Objects.requireNonNull(metamodel, "Metamodel parameter should not be null");
         Objects.requireNonNull(metamodel.getVersion(), "Metamodel version should not be null");
-        return new MetamodelKeyVersion(metamodel.getKey(), Integer.toString(metamodel.getVersion()));
+        return new MetamodelKeyVersion(metamodel.getKey(), metamodel.getVersion());
     }
 
     public String getKey() {
