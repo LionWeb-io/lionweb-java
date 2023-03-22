@@ -7,7 +7,7 @@ import org.lionweb.lioncore.java.metamodel.MetamodelElement;
 import java.util.Objects;
 
 /**
- * A MetaPointer is the combination of the pair Metamodel & Version with a Key, which identify one element within
+ * A MetaPointer is the combination of the pair Metamodel and Version with a Key, which identify one element within
  * that metamodel.
  */
 public class MetaPointer {
