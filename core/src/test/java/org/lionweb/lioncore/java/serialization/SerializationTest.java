@@ -11,6 +11,9 @@ import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Base class with some utility methods used by several tests.
+ */
 abstract class SerializationTest {
 
     protected List<JsonObject> getNodesByConcept(JsonArray nodes, String conceptKey) {

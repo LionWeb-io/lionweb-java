@@ -24,6 +24,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
+/**
+ * Specific tests of JsonSerialization using the LionCore example.
+ */
 public class SerializationOfLionCoreTest extends SerializationTest {
 
     @Test
