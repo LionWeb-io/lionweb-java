@@ -197,6 +197,7 @@ public class JsonSerialization {
         Node node = getNodeInstantiator().instantiate(concept, serializedNode);
         serializedNode.getProperties().forEach(serializedPropertyValue ->{
             Property property = concept.getPropertyByMetaPointer(serializedPropertyValue.getMetaPointer());
+            Objects.requireNonNull(property, "Property with metaPointer " + serializedPropertyValue.getMetaPointer() + " not found");
             Object unserializedValue = primitiveValuesSerialization.unserialize(property.getType().getID(), serializedPropertyValue.getValue());
             node.setPropertyValue(property, unserializedValue);
         });
@@ -211,6 +212,7 @@ public class JsonSerialization {
         Concept concept = node.getConcept();
         serializedNode.getContainments().forEach(serializedContainmentValue ->{
             Containment containment = concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
+            Objects.requireNonNull(serializedContainmentValue.getValue(), "The containment value should not be null");
             serializedContainmentValue.getValue().forEach(childNodeID -> {
                 Node child = nodeResolver.resolve(childNodeID);
                 if (child == null) {
