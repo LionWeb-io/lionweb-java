@@ -71,6 +71,7 @@ compileJava {
 
 release {
     buildTasks = ['publish']
+    versionPropertyFile = '../gradle.properties'
     git {
         requireBranch.set('master')
         pushToRemote.set('origin')
