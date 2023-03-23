@@ -30,7 +30,7 @@ publishing {
         maven(MavenPublication) {
             groupId = 'org.lionweb.lioncore-java'
             artifactId = 'emf'
-            version = lioncore_java_version
+            version = version
 
             from components.java
         }
