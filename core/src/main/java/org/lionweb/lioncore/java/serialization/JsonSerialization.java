@@ -96,31 +96,7 @@ public class JsonSerialization {
         SerializedChunk serializationBlock = new SerializedChunk();
         serializationBlock.setSerializationFormatVersion("1");
         for (Node node: nodes) {
-            SerializedNode serializedNode = new SerializedNode();
-            serializedNode.setID(node.getID());
-            serializedNode.setConcept(MetaPointer.from(node.getConcept()));
-            serializationBlock.addNode(serializedNode);
-            if (node.getParent() != null) {
-                serializedNode.setParentNodeID(node.getParent().getID());
-            }
-            node.getConcept().allProperties().forEach(property -> {
-                SerializedPropertyValue propertyValue = new SerializedPropertyValue();
-                propertyValue.setMetaPointer(MetaPointer.from(property, ((MetamodelElement)property.getContainer()).getMetamodel() ));
-                propertyValue.setValue(serializePropertyValue(property.getType(), node.getPropertyValue(property)));
-                serializedNode.addPropertyValue(propertyValue);
-            });
-            node.getConcept().allContainments().forEach(containment -> {
-                SerializedContainmentValue containmentValue = new SerializedContainmentValue();
-                containmentValue.setMetaPointer(MetaPointer.from(containment, ((MetamodelElement)containment.getContainer()).getMetamodel() ));
-                containmentValue.setValue(node.getChildren(containment).stream().map(c -> c.getID()).collect(Collectors.toList()));
-                serializedNode.addContainmentValue(containmentValue);
-            });
-            node.getConcept().allReferences().forEach(reference -> {
-                SerializedReferenceValue referenceValue = new SerializedReferenceValue();
-                referenceValue.setMetaPointer(MetaPointer.from(reference, ((MetamodelElement)reference.getContainer()).getMetamodel() ));
-                referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> new SerializedReferenceValue.Entry(rv.getReferred().getID(), rv.getResolveInfo())).collect(Collectors.toList()));
-                serializedNode.addReferenceValue(referenceValue);
-            });
+            serializationBlock.addNode(serializeNode(node));
             Objects.requireNonNull(node.getConcept(), "A node should have a concept in order to be serialized");
             Objects.requireNonNull(node.getConcept().getMetamodel(),
                     "A Concept should be part of a Metamodel in order to be serialized. Concept " + node.getConcept() + " is not");
@@ -130,6 +106,46 @@ public class JsonSerialization {
             }
         }
         return serializationBlock;
+    }
+
+    private SerializedNode serializeNode(Node node) {
+        SerializedNode serializedNode = new SerializedNode();
+        serializedNode.setID(node.getID());
+        serializedNode.setConcept(MetaPointer.from(node.getConcept()));
+        if (node.getParent() != null) {
+            serializedNode.setParentNodeID(node.getParent().getID());
+        }
+        serializeNodeProperties(node, serializedNode);
+        serializeNodeContainments(node, serializedNode);
+        serializeNodeReferences(node, serializedNode);
+        return serializedNode;
+    }
+
+    private static void serializeNodeReferences(Node node, SerializedNode serializedNode) {
+        node.getConcept().allReferences().forEach(reference -> {
+            SerializedReferenceValue referenceValue = new SerializedReferenceValue();
+            referenceValue.setMetaPointer(MetaPointer.from(reference, ((MetamodelElement)reference.getContainer()).getMetamodel() ));
+            referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> new SerializedReferenceValue.Entry(rv.getReferred().getID(), rv.getResolveInfo())).collect(Collectors.toList()));
+            serializedNode.addReferenceValue(referenceValue);
+        });
+    }
+
+    private static void serializeNodeContainments(Node node, SerializedNode serializedNode) {
+        node.getConcept().allContainments().forEach(containment -> {
+            SerializedContainmentValue containmentValue = new SerializedContainmentValue();
+            containmentValue.setMetaPointer(MetaPointer.from(containment, ((MetamodelElement)containment.getContainer()).getMetamodel() ));
+            containmentValue.setValue(node.getChildren(containment).stream().map(c -> c.getID()).collect(Collectors.toList()));
+            serializedNode.addContainmentValue(containmentValue);
+        });
+    }
+
+    private void serializeNodeProperties(Node node, SerializedNode serializedNode) {
+        node.getConcept().allProperties().forEach(property -> {
+            SerializedPropertyValue propertyValue = new SerializedPropertyValue();
+            propertyValue.setMetaPointer(MetaPointer.from(property, ((MetamodelElement)property.getContainer()).getMetamodel() ));
+            propertyValue.setValue(serializePropertyValue(property.getType(), node.getPropertyValue(property)));
+            serializedNode.addPropertyValue(propertyValue);
+        });
     }
 
     public SerializedChunk serializeNodesToSerializationBlock(Node... nodes) {
