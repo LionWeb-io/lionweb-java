@@ -2,6 +2,8 @@ plugins {
     // Apply the java-library plugin for API and implementation separation.
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
+    id 'net.researchgate.release' version '3.0.2'
 }
 
 repositories {
@@ -65,4 +67,12 @@ publishing {
 compileJava {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
+}
+
+release {
+    buildTasks = ['publish']
+    git {
+        requireBranch.set('master')
+        pushToRemote.set('origin')
+    }
 }
