@@ -72,7 +72,7 @@ compileJava {
 release {
     buildTasks = ['publish']
     git {
-        //requireBranch.set('master')
+        requireBranch.set('master')
         pushToRemote.set('origin')
     }
 }
