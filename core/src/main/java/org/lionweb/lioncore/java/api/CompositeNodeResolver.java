@@ -9,20 +9,20 @@ import java.util.List;
 /**
  * This combines several NodeResolvers.
  */
-public class CombinedNodeResolver implements NodeResolver {
+public class CompositeNodeResolver implements NodeResolver {
     private List<NodeResolver> nodeResolvers = new ArrayList<>();
 
-    public CombinedNodeResolver() {
+    public CompositeNodeResolver() {
 
     }
 
-    public CombinedNodeResolver(NodeResolver... nodeResolvers) {
+    public CompositeNodeResolver(NodeResolver... nodeResolvers) {
         for (NodeResolver nodeResolver: nodeResolvers) {
             add(nodeResolver);
         }
     }
 
-    public CombinedNodeResolver add(NodeResolver nodeResolver) {
+    public CompositeNodeResolver add(NodeResolver nodeResolver) {
         nodeResolvers.add(nodeResolver);
         return this;
     }
