@@ -55,7 +55,7 @@ javadoc {
 publishing {
     publications {
         maven(MavenPublication) {
-            groupId = 'org.lionweb.lioncore-java'
+            groupId = 'io.lionweb.lioncore-java'
             artifactId = 'core'
             version = version
 
