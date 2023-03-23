@@ -38,7 +38,7 @@ public class BuiltinIDsTest {
 
         assertEquals("LIonCore_M3_Metamodel", LionCore.getMetamodel().getID());
         assertEquals("LIonCore_M3_Metamodel_name", LionCore.getMetamodel().getPropertyByName("name").getID());
-        assertEquals("LIonCore_M3_Metamodel_id", LionCore.getMetamodel().getPropertyByName("id").getID());
+        assertEquals("LIonCore_M3_HasKey_key", LionCore.getMetamodel().getPropertyByName("key").getID());
         assertEquals("LIonCore_M3_Metamodel_dependsOn", LionCore.getMetamodel().getReferenceByName("dependsOn").getID());
         assertEquals("LIonCore_M3_Metamodel_elements", LionCore.getMetamodel().getContainmentByName("elements").getID());
 
@@ -46,7 +46,6 @@ public class BuiltinIDsTest {
 
         assertEquals("LIonCore_M3_NamespacedEntity", LionCore.getNamespacedEntity().getID());
         assertEquals("LIonCore_M3_NamespacedEntity_simpleName", LionCore.getNamespacedEntity().getPropertyByName("simpleName").getID());
-        assertEquals("LIonCore_M3_NamespacedEntity_id", LionCore.getNamespacedEntity().getPropertyByName("id").getID());
 
         assertEquals("LIonCore_M3_NamespaceProvider", LionCore.getNamespaceProvider().getID());
 

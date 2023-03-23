@@ -1,23 +1,19 @@
 package org.lionweb.lioncore.java.serialization;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.lionweb.lioncore.java.metamodel.Concept;
-import org.lionweb.lioncore.java.metamodel.Enumeration;
-import org.lionweb.lioncore.java.metamodel.Metamodel;
-import org.lionweb.lioncore.java.metamodel.Property;
+import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
+import org.lionweb.lioncore.java.serialization.data.*;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,161 +21,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
-public class JsonSerializationTest {
-
-    @Test
-    public void unserializeLionCoreToConcreteClasses() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-
-        Metamodel lioncore = (Metamodel) unserializedNodes.get(0);
-        assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
-        assertEquals("LIonCore_M3", lioncore.getID());
-        assertEquals("LIonCore.M3", lioncore.getName());
-        assertEquals(16, lioncore.getChildren().size());
-        assertEquals(null, lioncore.getParent());
-
-        Concept namespacedEntity = (Concept) unserializedNodes.get(1);
-        assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
-        assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-        assertEquals(true, namespacedEntity.isAbstract());
-        assertEquals("NamespacedEntity", namespacedEntity.getSimpleName());
-        assertEquals(2, namespacedEntity.getChildren().size());
-        assertEquals(lioncore, namespacedEntity.getParent());
-
-        Property simpleName = (Property) unserializedNodes.get(2);
-        assertEquals(LionCore.getProperty(), simpleName.getConcept());
-        assertEquals("simpleName", simpleName.getSimpleName());
-        assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
-        assertEquals("LIonCore_M3_String", simpleName.getType().getID());
-    }
-
-    @Test
-    public void unserializeLionCoreToNodeData() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-        List<NodeData> unserializedNodeData = jsonSerialization.rawUnserialization(jsonElement);
-
-        NodeData lioncore = unserializedNodeData.get(0);
-        assertEquals(LionCore.getMetamodel().getID(), lioncore.getConceptID());
-        assertEquals("LIonCore_M3", lioncore.getID());
-        assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore_M3_Metamodel_name"));
-        assertEquals(16, lioncore.getChildren().size());
-        assertEquals(null, lioncore.getParentNodeID());
-
-        NodeData namespacedEntity = unserializedNodeData.get(1);
-        assertEquals(LionCore.getConcept().getID(), namespacedEntity.getConceptID());
-        assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-        assertEquals("true", namespacedEntity.getPropertyValue("LIonCore_M3_Concept_abstract"));
-        assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
-        assertEquals(2, namespacedEntity.getChildren().size());
-        assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
-
-        NodeData simpleName = unserializedNodeData.get(2);
-        assertEquals(LionCore.getProperty().getID(), simpleName.getConceptID());
-        assertEquals("simpleName", simpleName.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
-        assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParentNodeID());
-        assertEquals(Arrays.asList(new NodeData.RawReferenceValue("LIonCore_M3_String", null)), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
-    }
-
-    @Test
-    public void unserializeLionCoreToDynamicNodes() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-        jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
-        jsonSerialization.getNodeInstantiator().enableDynamicNodes();
-        jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-
-        DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
-        assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
-        assertEquals("LIonCore_M3", lioncore.getID());
-        assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
-        assertEquals(16, lioncore.getChildren().size());
-        assertEquals(null, lioncore.getParent());
-
-        DynamicNode namespacedEntity = (DynamicNode) unserializedNodes.get(1);
-        assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
-        assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-        assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
-        assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("simpleName"));
-        assertEquals(2, namespacedEntity.getChildren().size());
-        assertEquals(lioncore, namespacedEntity.getParent());
-
-        DynamicNode simpleName = (DynamicNode) unserializedNodes.get(2);
-        assertEquals(LionCore.getProperty(), simpleName.getConcept());
-        assertEquals("simpleName", simpleName.getPropertyValueByName("simpleName"));
-        assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void unserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-        jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
-        jsonSerialization.getPrimitiveValuesSerialization().registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-        jsonSerialization.unserializeToNode(jsonElement);
-    }
-
-    @Ignore // Eventually we should have the same serialization. Right now there are differences in the LionCore M3 that we need to solve
-    @Test
-    public void serializeLionCore() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
-        JsonElement serializedElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonElement reserialized = jsonSerialization.serialize(LionCore.getMetamodel());
-        assertEquals(serializedElement, reserialized);
-    }
-
-    @Test
-    public void unserializeLibrary() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-        Node book = unserializedNodes.stream().filter(n -> n.getID().equals("OcDK2GESljInG-ApIqtkXUoA2UeviB97u0UuiZzM0Hs")).findFirst().get();
-        assertEquals("Book", book.getPropertyValueByName("simpleName"));
-
-        Concept guidedBookWriter = (Concept) unserializedNodes.stream().filter(n -> n.getID().equals("nNUEzZ7it7d2HoHPAtk5rGO4SsqVA3hAlBwkK1KP8QU")).findFirst().get();
-        assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
-        assertNotNull(guidedBookWriter.getExtendedConcept());
-    }
-
-    @Test
-    public void reserializeLibrary() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-        JsonElement reserialized = jsonSerialization.serialize(unserializedNodes.get(0));
-        assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
-    }
-
-    @Test
-    public void serializeLibraryInstance() {
-        Library library = new Library("lib-1", "Language Engineering Library");
-        Writer mv = new Writer("mv", "Markus Völter");
-        Writer mb = new Writer("mb", "Meinte Boersma");
-        Book de = new Book("de", "DSL Engineering", mv).setPages(558);
-        Book bfd = new Book("bfd", "Business-Friendly DSLs", mb).setPages(517);
-        library.addBook(de);
-        library.addBook(bfd);
-
-        // The library MM is not using the standard primitive types but its own, so we need to specify how to serialize
-        // those values
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
-        jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonObject jsonSerialized = jsonSerialization.serialize(library).getAsJsonObject();
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
-        JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
-        assertEquivalentLionWebJson(jsonRead, jsonSerialized);
-    }
+/**
+ * Testing various functionalities of JsonSerialization.
+ */
+public class JsonSerializationTest extends SerializationTest {
 
     @Test
     public void serializeReferenceWithoutResolveInfo() {
@@ -192,7 +37,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonObject jsonSerialized = jsonSerialization.serialize(book).getAsJsonObject();
+        JsonObject jsonSerialized = jsonSerialization.serializeNodesToJson(book).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/foo-library.json");
         JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
@@ -212,7 +57,7 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonObject jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon).getAsJsonObject();
+        JsonObject jsonSerialized = jsonSerialization.serializeTreesToJson(bobsLibrary, jackLondon).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
@@ -231,192 +76,10 @@ public class JsonSerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonObject jsonSerialized = jsonSerialization.serialize(bobsLibrary, jackLondon, explorerBook).getAsJsonObject();
+        JsonObject jsonSerialized = jsonSerialization.serializeNodesToJson(bobsLibrary, jackLondon, explorerBook).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/bobslibrary.json");
         JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);
-    }
-
-    @Test
-    public void serializeBoolean() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        node.setP1(true);
-
-        JsonObject expected = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p1\": \"true\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
-        assertEquivalentLionWebJson(expected, serialized);
-    }
-
-    @Test
-    public void unserializeBoolean() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        node.setP1(true);
-
-        JsonObject serialized = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p1\": \"true\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
-        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
-        assertEquals(Arrays.asList(node), unserialized);
-    }
-
-    @Test
-    public void serializeString() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        node.setP3("qwerty");
-
-        JsonObject expected = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p3\": \"qwerty\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
-        assertEquivalentLionWebJson(expected, serialized);
-    }
-
-    @Test
-    public void unserializeString() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        node.setP3("qwerty");
-
-        JsonObject serialized = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p3\": \"qwerty\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
-        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
-        assertEquals(Arrays.asList(node), unserialized);
-    }
-
-    @Test
-    public void serializeInteger() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        node.setP2(2904);
-
-        JsonObject expected = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p2\": \"2904\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
-        assertEquivalentLionWebJson(expected, serialized);
-    }
-
-    @Test
-    public void unserializeInteger() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        node.setP2(2904);
-
-        JsonObject serialized = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p2\": \"2904\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
-        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
-        assertEquals(Arrays.asList(node), unserialized);
-    }
-
-    @Test
-    public void serializeJSON() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        JsonArray ja = new JsonArray();
-        ja.add(1);
-        ja.add("foo");
-        node.setP4(ja);
-
-        JsonObject expected = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p4\": \"[1,\\\"foo\\\"]\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serialize(node).getAsJsonObject();
-        assertEquivalentLionWebJson(expected, serialized);
-    }
-
-    @Test
-    public void unserializeJSON() {
-        MyNodeWithProperties node = new MyNodeWithProperties("n1");
-        JsonArray ja = new JsonArray();
-        ja.add(1);
-        ja.add("foo");
-        node.setP4(ja);
-
-        JsonObject serialized = JsonParser.parseString("{\n" +
-                "  \"serializationFormatVersion\": \"1\",\n" +
-                "  \"nodes\": [{\n" +
-                "    \"concept\": \"concept-MyNodeWithProperties\",\n" +
-                "    \"id\": \"n1\",\n" +
-                "    \"properties\": {\n" +
-                "      \"p4\": \"[1,\\\"foo\\\"]\"\n" +
-                "    },\n" +
-                "    \"children\": {},\n" +
-                "    \"references\": {}\n" +
-                "  }]}").getAsJsonObject();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        jsonSerialization.getConceptResolver().registerMetamodel(MyNodeWithProperties.METAMODEL);
-        jsonSerialization.getNodeInstantiator().registerCustomUnserializer(MyNodeWithProperties.CONCEPT.getID(), (concept, data, id) -> new MyNodeWithProperties(id));
-        List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
-        assertEquals(Arrays.asList(node), unserialized);
     }
 
     @Test
@@ -435,27 +98,6 @@ public class JsonSerializationTest {
         assertEquals(false, sideTransformInfo.isAbstract());
         assertEquals(3, sideTransformInfo.getFeatures().size());
         assertEquals(3, sideTransformInfo.getChildren().size());
-    }
-
-    @Test
-    public void reserializeMetamodelWithEnumerations() {
-        InputStream inputStream = this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
-        JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-        JsonObject reserialized = jsonSerialization.serialize(unserializedNodes).getAsJsonObject();
-
-        List<JsonObject> metamodels = getNodesByConcept(reserialized.get("nodes").getAsJsonArray(), "LIonCore_M3_Metamodel");
-        assertEquals(2, metamodels.size());
-
-        List<JsonObject> concepts = getNodesByConcept(reserialized.get("nodes").getAsJsonArray(), "LIonCore_M3_Concept");
-        assertEquals(19, concepts.size());
-
-        assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized);
-    }
-
-    private List<JsonObject> getNodesByConcept(JsonArray nodes, String conceptID) {
-        return nodes.asList().stream().map(JsonElement::getAsJsonObject).filter(e -> e.get("concept").getAsString().equals(conceptID)).collect(Collectors.toList());
     }
 
 }

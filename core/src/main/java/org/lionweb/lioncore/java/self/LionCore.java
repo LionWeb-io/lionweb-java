@@ -130,6 +130,7 @@ public class LionCore {
             enumeration.addFeature(Containment.createMultiple("literals", enumerationLiteral));
 
             enumerationLiteral.setExtendedConcept(namespacedEntity);
+            enumerationLiteral.addImplementedInterface(hasKey);
 
             feature.setExtendedConcept(namespacedEntity);
             feature.addImplementedInterface(hasKey);
@@ -155,6 +156,7 @@ public class LionCore {
 
             metamodelElement.setExtendedConcept(namespacedEntity);
             metamodelElement.addImplementedInterface(hasKey);
+
             metamodel.setAbstract(true);
 
             namespacedEntity.setAbstract(true);

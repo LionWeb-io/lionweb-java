@@ -8,13 +8,15 @@ import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class MyNodeWithProperties extends DynamicNode  {
-    public static Metamodel METAMODEL = new Metamodel().setID("mm1").setName("MM1");
-    public static Concept CONCEPT = new Concept().setID("concept-MyNodeWithProperties")
+    public static Metamodel METAMODEL = new Metamodel().setID("mm1").setKey("mymetamodel").setName("MM1").setVersion("1");
+    public static Concept CONCEPT = new Concept()
+            .setID("concept-MyNodeWithProperties")
+            .setKey("concept-MyNodeWithProperties")
             .setSimpleName("MyNodeWithProperties")
-            .addFeature(Property.createOptional("p1", LionCoreBuiltins.getBoolean()).setID("p1"))
-            .addFeature(Property.createOptional("p2", LionCoreBuiltins.getInteger()).setID("p2"))
-            .addFeature(Property.createOptional("p3", LionCoreBuiltins.getString()).setID("p3"))
-            .addFeature(Property.createOptional("p4", LionCoreBuiltins.getJSON()).setID("p4"))
+            .addFeature(Property.createOptional("p1", LionCoreBuiltins.getBoolean()).setID("p1").setKey("p1"))
+            .addFeature(Property.createOptional("p2", LionCoreBuiltins.getInteger()).setID("p2").setKey("p2"))
+            .addFeature(Property.createOptional("p3", LionCoreBuiltins.getString()).setID("p3").setKey("p3"))
+            .addFeature(Property.createOptional("p4", LionCoreBuiltins.getJSON()).setID("p4").setKey("p4"))
             .setParent(METAMODEL);
 
     static {
@@ -55,4 +57,6 @@ public class MyNodeWithProperties extends DynamicNode  {
     public void setP4(JsonElement value) {
         this.setPropertyValueByName("p4", value);
     }
+
+
 }

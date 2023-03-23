@@ -906,7 +906,7 @@
             "version": "1",
             "key": "LIonCore_M3_Concept_implements"
           },
-          "targets": []
+          "targets": [{"resolveInfo":"HasKey","reference":"LIonCore_M3_HasKey"}]
         }
       ],
       "parent": "LIonCore_M3"

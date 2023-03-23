@@ -81,6 +81,9 @@ public class EcoreImporter {
 
     public Metamodel importEPackage(EPackage ePackage) {
         Metamodel metamodel = new Metamodel(ePackage.getName());
+        metamodel.setVersion("1");
+        metamodel.setID(ePackage.getName());
+        metamodel.setKey(ePackage.getName());
         packagesToMetamodels.put(ePackage, metamodel);
 
         // Initially we just create empty concepts, later we populate the features as they could refer to
@@ -92,6 +95,9 @@ public class EcoreImporter {
                     throw new UnsupportedOperationException();
                 } else {
                     Concept concept = new Concept(metamodel, eClass.getName());
+                    concept.setID(ePackage.getName()+ "-" + concept.getSimpleName());
+                    concept.setKey(ePackage.getName()+ "-" + concept.getSimpleName());
+                    concept.setAbstract(false);
                     metamodel.addElement(concept);
                     eClassesToConcepts.put(eClass, concept);
                 }
@@ -127,6 +133,8 @@ public class EcoreImporter {
                         if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
                             EAttribute eAttribute = (EAttribute)eFeature;
                             Property property = new Property(eFeature.getName(), concept);
+                            property.setID(ePackage.getName()+ "-" + concept.getSimpleName()+ "-"+eFeature.getName());
+                            property.setKey(ePackage.getName()+ "-" + concept.getSimpleName()+ "-"+eFeature.getName());
                             concept.addFeature(property);
                             property.setOptional(!eAttribute.isRequired());
                             property.setDerived(eAttribute.isDerived());
@@ -138,12 +146,16 @@ public class EcoreImporter {
                             EReference eReference = (EReference)eFeature;
                             if (eReference.isContainment()) {
                                 Containment containment = new Containment(eFeature.getName(), concept);
+                                containment.setID(ePackage.getName()+ "-" + concept.getSimpleName()+ "-"+eFeature.getName());
+                                containment.setKey(ePackage.getName()+ "-" + concept.getSimpleName()+ "-"+eFeature.getName());
                                 containment.setOptional(!eReference.isRequired());
                                 containment.setMultiple(eReference.isMany());
                                 concept.addFeature(containment);
                                 containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
                             } else {
                                 Reference reference = new Reference(eFeature.getName(), concept);
+                                reference.setID(ePackage.getName()+ "-" + concept.getSimpleName()+ "-"+eFeature.getName());
+                                reference.setKey(ePackage.getName()+ "-" + concept.getSimpleName()+ "-"+eFeature.getName());
                                 reference.setOptional(!eReference.isRequired());
                                 reference.setMultiple(eReference.isMany());
                                 concept.addFeature(reference);

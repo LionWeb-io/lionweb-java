@@ -9,6 +9,7 @@ import org.lionweb.lioncore.java.model.Node;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Objects;
 
 public class LibraryMetamodel {
 
@@ -29,5 +30,7 @@ public class LibraryMetamodel {
         BOOK = LIBRARY_MM.getConceptByName("Book");
         WRITER = LIBRARY_MM.getConceptByName("Writer");
         GUIDE_BOOK_WRITER = LIBRARY_MM.getConceptByName("GuideBookWriter");
+
+        LIBRARY.allFeatures().forEach(f -> Objects.requireNonNull(f.getKey(), "Feature " + f + " in " + f.getContainer()+ " should not have a null key"));
     }
 }

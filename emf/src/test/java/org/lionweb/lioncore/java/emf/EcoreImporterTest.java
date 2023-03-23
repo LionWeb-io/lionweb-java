@@ -1,7 +1,9 @@
 package org.lionweb.lioncore.java.emf;
 
+import com.google.gson.GsonBuilder;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.serialization.JsonSerialization;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +72,7 @@ public class EcoreImporterTest {
         assertEquals(LionCoreBuiltins.getString(), libraryName.getType());
         assertSame(library, libraryName.getContainer());
         assertEquals("library.Library.name", libraryName.qualifiedName());
+        assertEquals("library-Library-name", libraryName.getKey());
         assertEquals(false, libraryName.isDerived());
         assertEquals(false, libraryName.isOptional());
         assertEquals(true, libraryName.isRequired());

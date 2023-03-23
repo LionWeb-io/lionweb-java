@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.serialization;
 
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Metamodel;
+import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,13 +14,13 @@ import java.util.Map;
  * adopt more advanced resolution strategies.
  */
 public class ConceptResolver {
-    private Map<String, Concept> registeredConcepts = new HashMap<>();
+    private Map<MetaPointer, Concept> registeredConcepts = new HashMap<>();
 
-    public Concept resolveConcept(String conceptID) {
-        if (registeredConcepts.containsKey(conceptID)) {
-            return registeredConcepts.get(conceptID);
+    public Concept resolveConcept(MetaPointer conceptMetaPointer) {
+        if (registeredConcepts.containsKey(conceptMetaPointer)) {
+            return registeredConcepts.get(conceptMetaPointer);
         } else {
-            throw new RuntimeException("Unable to resolve concept with id " + conceptID);
+            throw new RuntimeException("Unable to resolve concept with metaPointer " + conceptMetaPointer);
         }
     }
 
@@ -33,6 +34,6 @@ public class ConceptResolver {
     }
 
     private void registerConcept(Concept concept) {
-        registeredConcepts.put(concept.getID(), concept);
+        registeredConcepts.put(MetaPointer.from(concept), concept);
     }
 }

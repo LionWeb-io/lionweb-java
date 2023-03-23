@@ -42,8 +42,18 @@ public class PrimitiveValuesSerialization {
     public void registerLionBuiltinsPrimitiveSerializersAndUnserializers() {
         primitiveUnserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
         primitiveUnserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
-        primitiveUnserializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveUnserializer<JsonElement>) serializedValue -> JsonParser.parseString(serializedValue));
-        primitiveUnserializers.put(LionCoreBuiltins.getInteger().getID(), (PrimitiveUnserializer<Integer>) serializedValue -> Integer.parseInt(serializedValue));
+        primitiveUnserializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveUnserializer<JsonElement>) serializedValue -> {
+            if (serializedValue == null) {
+                return null;
+            }
+            return JsonParser.parseString(serializedValue);
+        });
+        primitiveUnserializers.put(LionCoreBuiltins.getInteger().getID(), (PrimitiveUnserializer<Integer>) serializedValue -> {
+            if (serializedValue == null) {
+                return null;
+            }
+            return Integer.parseInt(serializedValue);
+        });
 
         primitiveSerializers.put(LionCoreBuiltins.getBoolean().getID(), (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
         primitiveSerializers.put(LionCoreBuiltins.getJSON().getID(), (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
