@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.api;
 
 import org.lionweb.lioncore.java.model.Node;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -14,4 +15,14 @@ public interface NodeResolver {
      */
     @Nullable
     Node resolve(String nodeID);
+
+    @Nonnull
+    default Node strictlyResolve(String nodeID) {
+        Node partial = resolve(nodeID);
+        if (partial == null) {
+            throw new UnresolvedNodeException(nodeID);
+        } else {
+            return partial;
+        }
+    }
 }

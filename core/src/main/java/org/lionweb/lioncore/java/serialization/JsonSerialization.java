@@ -204,19 +204,13 @@ public class JsonSerialization {
     }
 
     private void populateNode(SerializedNode serializedNode, NodeResolver nodeResolver) {
-        Node node = nodeResolver.resolve(serializedNode.getID());
-        if (node == null) {
-            throw new IllegalStateException();
-        }
+        Node node = nodeResolver.strictlyResolve(serializedNode.getID());
         Concept concept = node.getConcept();
         serializedNode.getContainments().forEach(serializedContainmentValue ->{
             Containment containment = concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
             Objects.requireNonNull(serializedContainmentValue.getValue(), "The containment value should not be null");
             serializedContainmentValue.getValue().forEach(childNodeID -> {
-                Node child = nodeResolver.resolve(childNodeID);
-                if (child == null) {
-                    throw new IllegalStateException();
-                }
+                Node child = nodeResolver.strictlyResolve(childNodeID);
                 node.addChild(containment, child);
             });
         });
