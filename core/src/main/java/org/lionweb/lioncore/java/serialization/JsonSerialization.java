@@ -221,6 +221,11 @@ public class JsonSerialization {
 
     private void populateNode(SerializedNode serializedNode, NodeResolver nodeResolver) {
         Node node = nodeResolver.strictlyResolve(serializedNode.getID());
+        populateNodeContainments(serializedNode, node, nodeResolver);
+        populateNodeReferences(serializedNode, node, nodeResolver);
+    }
+
+    private void populateNodeContainments(SerializedNode serializedNode, Node node, NodeResolver nodeResolver) {
         Concept concept = node.getConcept();
         serializedNode.getContainments().forEach(serializedContainmentValue ->{
             Containment containment = concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
@@ -230,6 +235,10 @@ public class JsonSerialization {
                 node.addChild(containment, child);
             });
         });
+    }
+
+    private void populateNodeReferences(SerializedNode serializedNode, Node node, NodeResolver nodeResolver) {
+        Concept concept = node.getConcept();
         // TODO resolve references to Nodes in different models
         serializedNode.getReferences().forEach(serializedReferenceValue ->{
             Reference reference = concept.getReferenceByMetaPointer(serializedReferenceValue.getMetaPointer());
