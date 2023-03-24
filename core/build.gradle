@@ -147,3 +147,11 @@ release {
         pushToRemote.set('origin')
     }
 }
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}
+
+signing {
+    sign publishing.publications.lioncore_java_core
+}
