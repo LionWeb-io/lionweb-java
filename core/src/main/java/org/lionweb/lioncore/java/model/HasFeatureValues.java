@@ -28,12 +28,12 @@ public interface HasFeatureValues {
     /**
      * This return all the Nodes directly contained into this Node.
      */
-    List<Node> getChildren();
+    List<? extends Node> getChildren();
 
     /**
      * This return all the Nodes directly contained into this Node under the specific Containment relation specified.
      */
-    List<Node> getChildren(Containment containment);
+    List<? extends Node> getChildren(Containment containment);
 
     /**
      * Add a child to the specified list of children associated with the given Containment relation.
