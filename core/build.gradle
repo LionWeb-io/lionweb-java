@@ -52,14 +52,65 @@ javadoc {
     }
 }
 
-publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = 'io.lionweb.lioncore-java'
-            artifactId = 'core'
-            version = version
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
+//task javadocJar(type: Jar) {
+//    archiveClassifier = 'javadoc'
+//    from "$buildDir/dokka/javadoc"
+//}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
+    // Without the closure, parent sources are used for children too
+    from { sourceSets.main.allSource }
+}
+
+publishing {
+
+    repositories {
+        maven {
+            def releaseRepo = "https://oss1.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotRepo = "https://oss1.sonatype.org/content/repositories/snapshots/"
+            url = isReleaseVersion ? releaseRepo : snapshotRepo
+            credentials {
+                username = project.hasProperty('ossrhUsername') ? ossrhUsername : "Unknown user"
+                password = project.hasProperty('ossrhPassword') ? ossrhPassword : "Unknown password"
+            }
+        }
+    }
+
+    publications {
+        lioncore_java_core(MavenPublication) {
             from components.java
+            groupId = 'io.lionweb.lioncore-java'
+            artifactId "lioncore-java-" + project.name
+            artifact sourcesJar
+            //artifact javadocJar
+            suppressPomMetadataWarningsFor('cliApiElements')
+            suppressPomMetadataWarningsFor('cliRuntimeElements')
+            pom {
+                name = "lioncore-java-" + project.name
+                description = "Java APIs for the LIonWeb system"
+                version = project.version
+                packaging = 'jar'
+                url = 'https://github.com/LIonWeb-org/lioncore-java'
+
+                scm {
+                    connection = 'scm:git:https://github.com/LIonWeb-org/lioncore-java.git'
+                    developerConnection = 'scm:git:git@github.com:LIonWeb-org/lioncore-java.git'
+                    url = 'https://github.com/LIonWeb-org/lioncore-java.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'Apache Licenve V2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0'
+                        distribution = 'repo'
+                    }
+                }
+
+            }
         }
     }
 }
