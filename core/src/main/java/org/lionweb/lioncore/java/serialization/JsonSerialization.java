@@ -10,6 +10,7 @@ import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.serialization.data.*;
 
+import javax.annotation.Nonnull;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -96,6 +97,7 @@ public class JsonSerialization {
         SerializedChunk serializationBlock = new SerializedChunk();
         serializationBlock.setSerializationFormatVersion("1");
         for (Node node: nodes) {
+            Objects.requireNonNull(node, "nodes should not contain null values");
             serializationBlock.addNode(serializeNode(node));
             Objects.requireNonNull(node.getConcept(), "A node should have a concept in order to be serialized");
             Objects.requireNonNull(node.getConcept().getMetamodel(),
@@ -108,7 +110,8 @@ public class JsonSerialization {
         return serializationBlock;
     }
 
-    private SerializedNode serializeNode(Node node) {
+    private SerializedNode serializeNode(@Nonnull Node node) {
+        Objects.requireNonNull(node, "Node should not be null");
         SerializedNode serializedNode = new SerializedNode();
         serializedNode.setID(node.getID());
         serializedNode.setConcept(MetaPointer.from(node.getConcept()));
@@ -121,16 +124,21 @@ public class JsonSerialization {
         return serializedNode;
     }
 
-    private static void serializeNodeReferences(Node node, SerializedNode serializedNode) {
+    private static void serializeNodeReferences(@Nonnull Node node, SerializedNode serializedNode) {
+        Objects.requireNonNull(node, "Node should not be null");
         node.getConcept().allReferences().forEach(reference -> {
             SerializedReferenceValue referenceValue = new SerializedReferenceValue();
             referenceValue.setMetaPointer(MetaPointer.from(reference, ((MetamodelElement)reference.getContainer()).getMetamodel() ));
-            referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> new SerializedReferenceValue.Entry(rv.getReferred().getID(), rv.getResolveInfo())).collect(Collectors.toList()));
+            referenceValue.setValue(node.getReferenceValues(reference).stream().map(rv -> {
+                String referredID = rv.getReferred() == null ? null : rv.getReferred().getID();
+                return new SerializedReferenceValue.Entry(referredID, rv.getResolveInfo());
+            }).collect(Collectors.toList()));
             serializedNode.addReferenceValue(referenceValue);
         });
     }
 
-    private static void serializeNodeContainments(Node node, SerializedNode serializedNode) {
+    private static void serializeNodeContainments(@Nonnull Node node, SerializedNode serializedNode) {
+        Objects.requireNonNull(node, "Node should not be null");
         node.getConcept().allContainments().forEach(containment -> {
             SerializedContainmentValue containmentValue = new SerializedContainmentValue();
             containmentValue.setMetaPointer(MetaPointer.from(containment, ((MetamodelElement)containment.getContainer()).getMetamodel() ));
