@@ -19,7 +19,7 @@ public class LowLevelJsonSerialization {
      * This will return a lower-level representation of the information stored in JSON.
      * It is intended to load broken models.
      * <p>
-     * Possible usages: repair a broken model, extract a metamodel from the model (“model archeology”), etc.
+     * Possible usages: repair a broken model, extract a metamodel from the model ("model archeology"), etc.
      * <p>
      * This method follows a "best-effort" approach, try to limit exception thrown and return data whenever is possible,
      * in the measure that it is possible.
