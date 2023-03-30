@@ -4,6 +4,7 @@ import org.lionweb.lioncore.java.model.impl.M3Node;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,6 +37,17 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
         return allFeatures().stream().filter(feature -> feature.getSimpleName().equals(simpleName)).findFirst()
                 .orElse(null);
     }
+
+    public abstract @Nonnull List<FeaturesContainer<?>> directAncestors();
+
+    public @Nonnull List<FeaturesContainer<?>> allAncestors() {
+        List<FeaturesContainer<?>> ancestors = new ArrayList<>();
+        for (FeaturesContainer<?> ancestor : directAncestors()) {
+
+        }
+        return ancestors;
+    }
+
 
     public abstract @Nonnull List<Feature> allFeatures();
 

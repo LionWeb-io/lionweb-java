@@ -6,6 +6,7 @@ import org.lionweb.lioncore.java.serialization.data.MetaPointer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -34,6 +35,18 @@ public class Concept extends FeaturesContainer<Concept> {
 
     public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
         super(metamodel, simpleName);
+    }
+
+    @Nonnull
+    @Override
+    public List<FeaturesContainer<?>> directAncestors() {
+        List<FeaturesContainer<?>> directAncestors = new ArrayList<>();
+        // TODO add base ancestor common to all Concepts
+        if (this.getExtendedConcept() != null) {
+            directAncestors.add(this.getExtendedConcept());
+        }
+        directAncestors.addAll(this.getImplemented());
+        return directAncestors;
     }
 
     public Concept(@Nullable String simpleName) {

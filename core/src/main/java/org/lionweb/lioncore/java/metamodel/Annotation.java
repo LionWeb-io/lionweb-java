@@ -30,6 +30,12 @@ public class Annotation extends FeaturesContainer<Annotation> {
         super(metamodel, simpleName);
     }
 
+    @Nonnull
+    @Override
+    public List<FeaturesContainer<?>> directAncestors() {
+        throw new UnsupportedOperationException();
+    }
+
     @Override
     public @Nonnull List<Feature> allFeatures() {
         throw new UnsupportedOperationException();

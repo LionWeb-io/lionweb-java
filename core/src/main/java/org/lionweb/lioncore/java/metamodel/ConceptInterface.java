@@ -66,4 +66,9 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
         return LionCore.getConceptInterface();
     }
 
+    @Nonnull
+    @Override
+    public List<FeaturesContainer<?>> directAncestors() {
+        return (List<FeaturesContainer<?>>) (Object)this.getExtendedInterfaces();
+    }
 }
