@@ -86,4 +86,22 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T> imple
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        String qualifier = "<no metamodel>";
+        if (this.getContainer() != null) {
+            if (this.getContainer().namespaceQualifier() != null) {
+                qualifier = this.getContainer().namespaceQualifier();
+            } else {
+                qualifier = "<unnamed metamodel>";
+            }
+        };
+        String qualified = "<unnamed>";
+        if (this.getSimpleName() != null) {
+            qualified = this.getSimpleName();
+        };
+        String qn = qualifier + "." + qualified;
+        return this.getClass().getSimpleName() + "(" + qn + ")";
+    }
 }

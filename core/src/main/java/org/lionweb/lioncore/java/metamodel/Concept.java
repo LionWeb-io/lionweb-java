@@ -85,24 +85,6 @@ public class Concept extends FeaturesContainer<Concept> {
     }
 
     @Override
-    public String toString() {
-        String qualifier = "<no metamodel>";
-        if (this.getContainer() != null) {
-            if (this.getContainer().namespaceQualifier() != null) {
-                qualifier = this.getContainer().namespaceQualifier();
-            } else {
-                qualifier = "<unnamed metamodel>";
-            }
-        };
-        String qualified = "<unnamed>";
-        if (this.getSimpleName() != null) {
-            qualified = this.getSimpleName();
-        };
-        String qn = qualifier + "." + qualified;
-        return "Concept(" + qn + ")";
-    }
-
-    @Override
     public @Nonnull List<Feature> allFeatures() {
         // TODO Should this return features which are overriden?
         // TODO Should features be returned in a particular order?
