@@ -17,12 +17,12 @@ public class MetamodelValidatorTest {
         Annotation annotation = new Annotation();
         metamodel.addElement(annotation);
 
-        assertFalse(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
-        assertFalse(new MetamodelValidator().isMetamodelValid(metamodel));
-        assertEquals(2, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
-        assertTrue(new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().allMatch(issue -> issue.isError()));
+        assertFalse(new MetamodelValidator().validate(metamodel).isSuccessful());
+        assertFalse(new MetamodelValidator().isValid(metamodel));
+        assertEquals(2, new MetamodelValidator().validate(metamodel).getIssues().size());
+        assertTrue(new MetamodelValidator().validate(metamodel).getIssues().stream().allMatch(issue -> issue.isError()));
         assertEquals(new HashSet<>(Arrays.asList("Simple name not set", "Qualified name not set")),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().map(issue -> issue.getMessage()).collect(Collectors.toSet()));
+                new MetamodelValidator().validate(metamodel).getIssues().stream().map(issue -> issue.getMessage()).collect(Collectors.toSet()));
     }
 
     @Test
@@ -31,9 +31,9 @@ public class MetamodelValidatorTest {
         Annotation annotation = new Annotation(metamodel, "MyAnnotation");
         metamodel.addElement(annotation);
 
-        assertTrue(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
-        assertTrue(new MetamodelValidator().isMetamodelValid(metamodel));
-        assertEquals(0, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
+        assertTrue(new MetamodelValidator().validate(metamodel).isSuccessful());
+        assertTrue(new MetamodelValidator().isValid(metamodel));
+        assertEquals(0, new MetamodelValidator().validate(metamodel).getIssues().size());
     }
 
     @Test
@@ -42,12 +42,12 @@ public class MetamodelValidatorTest {
         PrimitiveType primitiveType = new PrimitiveType();
         metamodel.addElement(primitiveType);
 
-        assertFalse(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
-        assertFalse(new MetamodelValidator().isMetamodelValid(metamodel));
-        assertEquals(1, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
-        assertTrue(new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().allMatch(issue -> issue.isError()));
+        assertFalse(new MetamodelValidator().validate(metamodel).isSuccessful());
+        assertFalse(new MetamodelValidator().isValid(metamodel));
+        assertEquals(1, new MetamodelValidator().validate(metamodel).getIssues().size());
+        assertTrue(new MetamodelValidator().validate(metamodel).getIssues().stream().allMatch(issue -> issue.isError()));
         assertEquals(new HashSet<>(Arrays.asList("Simple name not set")),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues().stream().map(issue -> issue.getMessage()).collect(Collectors.toSet()));
+                new MetamodelValidator().validate(metamodel).getIssues().stream().map(issue -> issue.getMessage()).collect(Collectors.toSet()));
     }
 
     @Test
@@ -56,9 +56,9 @@ public class MetamodelValidatorTest {
         PrimitiveType primitiveType = new PrimitiveType(metamodel, "PrimitiveType");
         metamodel.addElement(primitiveType);
 
-        assertTrue(new MetamodelValidator().validateMetamodel(metamodel).isSuccessful());
-        assertTrue(new MetamodelValidator().isMetamodelValid(metamodel));
-        assertEquals(0, new MetamodelValidator().validateMetamodel(metamodel).getIssues().size());
+        assertTrue(new MetamodelValidator().validate(metamodel).isSuccessful());
+        assertTrue(new MetamodelValidator().isValid(metamodel));
+        assertEquals(0, new MetamodelValidator().validate(metamodel).getIssues().size());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class MetamodelValidatorTest {
         metamodel.addElement(a);
 
         assertEquals(new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a))),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+                new MetamodelValidator().validate(metamodel).getIssues());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class MetamodelValidatorTest {
         assertEquals(new HashSet<>(Arrays.asList(
                 new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a),
                         new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+                new MetamodelValidator().validate(metamodel).getIssues());
     }
 
     @Test
@@ -101,7 +101,7 @@ public class MetamodelValidatorTest {
         assertEquals(new HashSet<>(Arrays.asList(
                         new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a),
                         new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+                new MetamodelValidator().validate(metamodel).getIssues());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class MetamodelValidatorTest {
         metamodel.addElement(i);
 
         assertEquals(new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "The same interface has been implemented multiple times", a))),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+                new MetamodelValidator().validate(metamodel).getIssues());
     }
     @Test
     public void multipleIndirectImplementationsOfTheSameInterfaceAreAllowed() {
@@ -135,6 +135,6 @@ public class MetamodelValidatorTest {
         metamodel.addElement(i);
 
         assertEquals(new HashSet<>(Arrays.asList()),
-                new MetamodelValidator().validateMetamodel(metamodel).getIssues());
+                new MetamodelValidator().validate(metamodel).getIssues());
     }
 }

@@ -9,30 +9,54 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class MetamodelValidator {
+public class MetamodelValidator extends Validator<Metamodel> {
 
-    final class ValidationResult {
-        private final Set<Issue> issues = new HashSet<>();
+    @Override
+    public ValidationResult validate(Metamodel metamodel) {
+        ValidationResult result = new ValidationResult();
 
-        public Set<Issue> getIssues() {
-            return issues;
-        }
+        result.checkForError(metamodel.getName() == null,
+                "Qualified name not set", metamodel);
 
-        public boolean isSuccessful() {
-            return issues.stream().noneMatch(issue -> issue.getSeverity() == IssueSeverity.Error);
-        }
+        validateNamesAreUnique(metamodel.getElements(), result);
 
-        public ValidationResult addError(String message, Object subject) {
-            issues.add(new Issue(IssueSeverity.Error, message, subject));
-            return this;
-        }
+        // TODO once we implement the Node interface we could navigate the tree differently
 
-        public <S> ValidationResult checkForError(boolean check, String message, S subject) {
-            if (check) {
-                issues.add(new Issue(IssueSeverity.Error, message, subject));
+        metamodel.getElements().forEach((MetamodelElement el) -> {
+            result
+                    .checkForError(el.getSimpleName() == null, "Simple name not set", el)
+                    .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
+                    .checkForError(el.getMetamodel() != null && el.getMetamodel() != metamodel,
+                            "Metamodel not set correctly", el);
+
+            if (el instanceof Enumeration) {
+                Enumeration enumeration = (Enumeration) el;
+                enumeration.getLiterals().forEach((EnumerationLiteral lit) ->
+                        result.checkForError(lit.getSimpleName() == null, "Simple name not set", lit));
+                validateNamesAreUnique(enumeration.getLiterals(), result);
             }
-            return this;
-        }
+            if (el instanceof FeaturesContainer) {
+                FeaturesContainer<M3Node> featuresContainer = (FeaturesContainer) el;
+                featuresContainer.getFeatures().forEach((Feature feature)->
+                        result
+                                .checkForError(feature.getSimpleName() == null, "Simple name not set", feature)
+                                .checkForError(feature.getContainer() == null, "Container not set", feature)
+                                .checkForError(feature.getContainer() != null && feature.getContainer() != featuresContainer,
+                                        "Features container not set correctly", feature));
+                validateNamesAreUnique(featuresContainer.getFeatures(), result);
+            }
+            if (el instanceof Concept) {
+                Concept concept = (Concept) el;
+                checkAncestors(concept, result);
+                result.checkForError(concept.getImplemented().size() != concept.getImplemented().stream().distinct().count(),
+                        "The same interface has been implemented multiple times", concept);
+            }
+            if (el instanceof ConceptInterface) {
+                checkAncestors((ConceptInterface) el, result);
+            }
+        });
+
+        return result;
     }
 
     private void validateNamesAreUnique(List<? extends NamespacedEntity> elements, ValidationResult result) {
@@ -46,9 +70,6 @@ public class MetamodelValidator {
         });
     }
 
-    public boolean isMetamodelValid(Metamodel metamodel) {
-        return validateMetamodel(metamodel).isSuccessful();
-    }
 
     private void checkAncestors(Concept concept, ValidationResult validationResult) {
         checkAncestorsHelper(new HashSet<>(), concept, validationResult, true);
@@ -102,50 +123,4 @@ public class MetamodelValidator {
         }
     }
 
-    public ValidationResult validateMetamodel(Metamodel metamodel) {
-        ValidationResult result = new ValidationResult();
-
-        result.checkForError(metamodel.getName() == null,
-                "Qualified name not set", metamodel);
-
-        validateNamesAreUnique(metamodel.getElements(), result);
-
-        // TODO once we implement the Node interface we could navigate the tree differently
-
-        metamodel.getElements().forEach((MetamodelElement el) -> {
-            result
-                    .checkForError(el.getSimpleName() == null, "Simple name not set", el)
-                    .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
-                    .checkForError(el.getMetamodel() != null && el.getMetamodel() != metamodel,
-                            "Metamodel not set correctly", el);
-
-            if (el instanceof Enumeration) {
-                Enumeration enumeration = (Enumeration) el;
-                enumeration.getLiterals().forEach((EnumerationLiteral lit) ->
-                        result.checkForError(lit.getSimpleName() == null, "Simple name not set", lit));
-                validateNamesAreUnique(enumeration.getLiterals(), result);
-            }
-            if (el instanceof FeaturesContainer) {
-                FeaturesContainer<M3Node> featuresContainer = (FeaturesContainer) el;
-                featuresContainer.getFeatures().forEach((Feature feature)->
-                        result
-                                .checkForError(feature.getSimpleName() == null, "Simple name not set", feature)
-                                .checkForError(feature.getContainer() == null, "Container not set", feature)
-                                .checkForError(feature.getContainer() != null && feature.getContainer() != featuresContainer,
-                                        "Features container not set correctly", feature));
-                validateNamesAreUnique(featuresContainer.getFeatures(), result);
-            }
-            if (el instanceof Concept) {
-                Concept concept = (Concept) el;
-                checkAncestors(concept, result);
-                result.checkForError(concept.getImplemented().size() != concept.getImplemented().stream().distinct().count(),
-                    "The same interface has been implemented multiple times", concept);
-            }
-            if (el instanceof ConceptInterface) {
-                checkAncestors((ConceptInterface) el, result);
-            }
-        });
-
-        return result;
-    }
 }

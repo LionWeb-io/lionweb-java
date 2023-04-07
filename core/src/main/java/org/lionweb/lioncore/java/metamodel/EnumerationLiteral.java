@@ -45,4 +45,5 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements Na
     public Concept getConcept() {
         return LionCore.getEnumerationLiteral();
     }
+
 }
