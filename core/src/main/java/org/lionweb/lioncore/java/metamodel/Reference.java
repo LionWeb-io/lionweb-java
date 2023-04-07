@@ -1,124 +1,132 @@
 package org.lionweb.lioncore.java.metamodel;
 
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.lionweb.lioncore.java.Experimental;
 import org.lionweb.lioncore.java.self.LionCore;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.util.Objects;
-
 /**
- * This represents a relation between an {@link FeaturesContainer} and referred {@link FeaturesContainer}.
+ * This represents a relation between an {@link FeaturesContainer} and referred {@link
+ * FeaturesContainer}.
  *
- * A VariableReference may have a Reference to a VariableDeclaration.
+ * <p>A VariableReference may have a Reference to a VariableDeclaration.
  *
- * @see org.eclipse.emf.ecore.EReference Ecore equivalent <i>EReference</i> (with the <code>containment</code> flag set to <code>false</code>)
- * @see <a href="https://www.jetbrains.com/help/mps/structure.html#references">MPS equivalent <i>Reference</i> in documentation</a>
- * @see <a href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">MPS equivalent <i>LinkDeclaration</i> in local MPS (with <code>metaClass</code> having value <code>reference</code>)</a>
- * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in SModel
+ * @see org.eclipse.emf.ecore.EReference Ecore equivalent <i>EReference</i> (with the <code>
+ *     containment</code> flag set to <code>false</code>)
+ * @see <a href="https://www.jetbrains.com/help/mps/structure.html#references">MPS equivalent
+ *     <i>Reference</i> in documentation</a>
+ * @see <a
+ *     href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590292%28jetbrains.mps.lang.structure.structure%29%2F1071489288298">MPS
+ *     equivalent <i>LinkDeclaration</i> in local MPS (with <code>metaClass</code> having value
+ *     <code>reference</code>)</a>
+ * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in
+ *     SModel
  */
 public class Reference extends Link<Reference> {
 
-    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type) {
-        Reference reference = new Reference(simpleName);
-        reference.setOptional(true);
-        reference.setMultiple(false);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createOptional(
+      @Nullable String simpleName, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(simpleName);
+    reference.setOptional(true);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
 
-    public static Reference createOptional(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
-        Objects.requireNonNull(id, "id should not be null");
-        Reference reference = new Reference(simpleName, id);
-        reference.setOptional(true);
-        reference.setMultiple(false);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createOptional(
+      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+    Objects.requireNonNull(id, "id should not be null");
+    Reference reference = new Reference(simpleName, id);
+    reference.setOptional(true);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
 
-    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
-        Reference reference = new Reference(simpleName);
-        reference.setOptional(false);
-        reference.setMultiple(false);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createRequired(
+      @Nullable String simpleName, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(simpleName);
+    reference.setOptional(false);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
 
-    public static Reference createRequired(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
-        Objects.requireNonNull(id, "id should not be null");
-        Reference reference = new Reference(simpleName, id);
-        reference.setOptional(false);
-        reference.setMultiple(false);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createRequired(
+      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+    Objects.requireNonNull(id, "id should not be null");
+    Reference reference = new Reference(simpleName, id);
+    reference.setOptional(false);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
 
-    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type) {
-        Reference reference = new Reference(simpleName);
-        reference.setOptional(true);
-        reference.setMultiple(true);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createMultiple(
+      @Nullable String simpleName, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(simpleName);
+    reference.setOptional(true);
+    reference.setMultiple(true);
+    reference.setType(type);
+    return reference;
+  }
 
-    public static Reference createMultiple(@Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
-        Objects.requireNonNull(id, "id should not be null");
-        Reference reference = new Reference(simpleName, id);
-        reference.setOptional(true);
-        reference.setMultiple(true);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createMultiple(
+      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+    Objects.requireNonNull(id, "id should not be null");
+    Reference reference = new Reference(simpleName, id);
+    reference.setOptional(true);
+    reference.setMultiple(true);
+    reference.setType(type);
+    return reference;
+  }
 
-    public static Reference createMultipleAndRequired(@Nullable String simpleName, @Nullable FeaturesContainer type) {
-        Reference reference = new Reference(simpleName);
-        reference.setOptional(false);
-        reference.setMultiple(true);
-        reference.setType(type);
-        return reference;
-    }
+  public static Reference createMultipleAndRequired(
+      @Nullable String simpleName, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(simpleName);
+    reference.setOptional(false);
+    reference.setMultiple(true);
+    reference.setType(type);
+    return reference;
+  }
 
-    @Experimental
-    private Reference specialized;
+  @Experimental private Reference specialized;
 
-    public Reference() {
-        super();
-    }
+  public Reference() {
+    super();
+  }
 
-    public Reference(@Nullable String simpleName, @Nullable FeaturesContainer container) {
-        // TODO verify that the container is also a NamespaceProvider
-        super(simpleName, container);
-    }
+  public Reference(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+    // TODO verify that the container is also a NamespaceProvider
+    super(simpleName, container);
+  }
 
-    public Reference(@Nullable String simpleName) {
-        super(simpleName, (FeaturesContainer) null);
-    }
+  public Reference(@Nullable String simpleName) {
+    super(simpleName, (FeaturesContainer) null);
+  }
 
-    public Reference(@Nullable String simpleName, @Nonnull String id) {
-        super(simpleName, id);
-    }
+  public Reference(@Nullable String simpleName, @Nonnull String id) {
+    super(simpleName, id);
+  }
 
-    public @Nullable Reference getSpecialized() {
-        return specialized;
-    }
+  public @Nullable Reference getSpecialized() {
+    return specialized;
+  }
 
-    public void setSpecialized(@Nullable Reference specialized) {
-        // TODO check which limitations there are: should have the same name? Should it belong
-        //      to an ancestor of the FeaturesContainer holding this Containment?
-        this.specialized = specialized;
-    }
+  public void setSpecialized(@Nullable Reference specialized) {
+    // TODO check which limitations there are: should have the same name? Should it belong
+    //      to an ancestor of the FeaturesContainer holding this Containment?
+    this.specialized = specialized;
+  }
 
-    @Override
-    public String toString() {
-        return "Reference{" +
-                "simpleName=" + getSimpleName() + ", " +
-                "type=" + getType() +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return "Reference{" + "simpleName=" + getSimpleName() + ", " + "type=" + getType() + '}';
+  }
 
-    @Override
-    public Concept getConcept() {
-        return LionCore.getReference();
-    }
-
+  @Override
+  public Concept getConcept() {
+    return LionCore.getReference();
+  }
 }
