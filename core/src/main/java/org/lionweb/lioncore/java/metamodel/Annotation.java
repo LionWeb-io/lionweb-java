@@ -48,7 +48,7 @@ public class Annotation extends FeaturesContainer<Annotation> {
 
   public void setPlatformSpecific(@Nullable String platformSpecific) {
     if (platformSpecific != null) {
-      Naming.validatename(platformSpecific);
+      Naming.validateName(platformSpecific);
     }
     this.platformSpecific = platformSpecific;
   }

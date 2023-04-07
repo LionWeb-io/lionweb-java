@@ -9,7 +9,7 @@ public class Naming {
     }
   }
 
-  public static void validatename(String name) {
+  public static void validateName(String name) {
     if (name == null) {
       throw new IllegalArgumentException("The name should not be null");
     }

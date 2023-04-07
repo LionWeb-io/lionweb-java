@@ -29,7 +29,7 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
   public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String name) {
     // TODO enforce uniqueness of the name within the Metamodel
     this.setParent(metamodel);
-    this.setname(name);
+    this.setName(name);
   }
 
   /**
@@ -53,7 +53,7 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
     return this.getPropertyValue("name", String.class);
   }
 
-  public T setname(String name) {
+  public T setName(String name) {
     this.setPropertyValue("name", name);
     return (T) this;
   }
@@ -105,6 +105,6 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
     }
     ;
     String qn = qualifier + "." + qualified;
-    return this.getClass().getname() + "(" + qn + ")";
+    return this.getClass().getName() + "(" + qn + ")";
   }
 }
