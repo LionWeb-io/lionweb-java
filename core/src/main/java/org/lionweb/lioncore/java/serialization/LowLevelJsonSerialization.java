@@ -1,8 +1,6 @@
 package org.lionweb.lioncore.java.serialization;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import org.lionweb.lioncore.java.serialization.data.*;
 
 import javax.annotation.Nullable;
@@ -37,7 +35,20 @@ public class LowLevelJsonSerialization {
         }
     }
 
-    public JsonElement serializeToJson(SerializedChunk serializedChunk) {
+    /**
+     * This will return a lower-level representation of the information stored in JSON.
+     * It is intended to load broken models.
+     * <p>
+     * Possible usages: repair a broken model, extract a metamodel from the model ("model archeology"), etc.
+     * <p>
+     * This method follows a "best-effort" approach, try to limit exception thrown and return data whenever is possible,
+     * in the measure that it is possible.
+     */
+    public SerializedChunk unserializeSerializationBlock(String json) {
+        return unserializeSerializationBlock(JsonParser.parseString(json));
+    }
+
+    public JsonElement serializeToJsonElement(SerializedChunk serializedChunk) {
         JsonObject topLevel = new JsonObject();
         topLevel.addProperty("serializationFormatVersion", serializedChunk.getSerializationFormatVersion());
 
@@ -48,12 +59,12 @@ public class LowLevelJsonSerialization {
         for (SerializedNode node: serializedChunk.getNodes()) {
             JsonObject nodeJson = new JsonObject();
             nodeJson.addProperty("id", node.getID());
-            nodeJson.add("concept", serializeToJson(node.getConcept()));
+            nodeJson.add("concept", serializeToJsonElement(node.getConcept()));
 
             JsonArray properties = new JsonArray();
             for (SerializedPropertyValue propertyValue : node.getProperties()) {
                 JsonObject property = new JsonObject();
-                property.add("property", serializeToJson(propertyValue.getMetaPointer()));
+                property.add("property", serializeToJsonElement(propertyValue.getMetaPointer()));
                 property.addProperty("value", propertyValue.getValue());
                 properties.add(property);
             }
@@ -62,7 +73,7 @@ public class LowLevelJsonSerialization {
             JsonArray children = new JsonArray();
             for (SerializedContainmentValue childrenValue : node.getContainments()) {
                 JsonObject childrenJ = new JsonObject();
-                childrenJ.add("containment", serializeToJson(childrenValue.getMetaPointer()));
+                childrenJ.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
                 childrenJ.add("children", toJsonArray(childrenValue.getValue()));
                 children.add(childrenJ);
             }
@@ -71,7 +82,7 @@ public class LowLevelJsonSerialization {
             JsonArray references = new JsonArray();
             for (SerializedReferenceValue referenceValue : node.getReferences()) {
                 JsonObject reference = new JsonObject();
-                reference.add("reference", serializeToJson(referenceValue.getMetaPointer()));
+                reference.add("reference", serializeToJsonElement(referenceValue.getMetaPointer()));
                 reference.add("targets", toJsonArrayOfReferenceValues(referenceValue.getValue()));
                 references.add(reference);
             }
@@ -85,6 +96,14 @@ public class LowLevelJsonSerialization {
 
         return topLevel;
     }
+
+    public String serializeToJsonString(SerializedChunk serializedChunk) {
+        return new GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(serializeToJsonElement(serializedChunk));
+    }
+
+    //
+    // Private methods
+    //
 
     private void readSerializationFormatVersion(SerializedChunk serializedChunk, JsonObject topLevel) {
         if (!topLevel.has("serializationFormatVersion")) {
@@ -142,7 +161,7 @@ public class LowLevelJsonSerialization {
         }
     }
 
-    private JsonElement serializeToJson(MetaPointer metapointer) {
+    private JsonElement serializeToJsonElement(MetaPointer metapointer) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("metamodel", metapointer.getMetamodel());
         jsonObject.addProperty("version", metapointer.getVersion());

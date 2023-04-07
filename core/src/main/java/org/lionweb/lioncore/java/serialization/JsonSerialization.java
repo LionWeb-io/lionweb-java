@@ -130,7 +130,7 @@ public class JsonSerialization {
 
     public JsonElement serializeNodesToJsonElement(List<Node> nodes) {
         SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
-        return new LowLevelJsonSerialization().serializeToJson(serializationBlock);
+        return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
     }
 
     public JsonElement serializeNodesToJsonElement(Node... nodes) {
