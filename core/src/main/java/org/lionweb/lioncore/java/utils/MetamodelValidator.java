@@ -52,6 +52,41 @@ public class MetamodelValidator {
             });
   }
 
+  private void validateKeysAreNotNull(Metamodel metamodel, ValidationResult result) {
+    metamodel
+        .thisAndAllDescendants()
+        .forEach(
+            n -> {
+              if (n instanceof HasKey<?>) {
+                HasKey<?> hasKey = (HasKey<?>) n;
+                String key = hasKey.getKey();
+                if (key == null) {
+                  result.addError("Key should not be null", n);
+                }
+              }
+            });
+  }
+
+  private void validateKeysAreUnique(Metamodel metamodel, ValidationResult result) {
+    Set<String> uniqueKeys = new HashSet<>();
+    metamodel
+        .thisAndAllDescendants()
+        .forEach(
+            n -> {
+              if (n instanceof HasKey<?>) {
+                HasKey<?> hasKey = (HasKey<?>) n;
+                String key = hasKey.getKey();
+                if (key != null) {
+                  if (uniqueKeys.contains(key)) {
+                    result.addError("Key " + key + " is duplicate", n);
+                  } else {
+                    uniqueKeys.add(key);
+                  }
+                }
+              }
+            });
+  }
+
   public boolean isMetamodelValid(Metamodel metamodel) {
     return validateMetamodel(metamodel).isSuccessful();
   }
@@ -140,6 +175,8 @@ public class MetamodelValidator {
     result.checkForError(metamodel.getName() == null, "Qualified name not set", metamodel);
 
     validateNamesAreUnique(metamodel.getElements(), result);
+    validateKeysAreNotNull(metamodel, result);
+    validateKeysAreUnique(metamodel, result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
