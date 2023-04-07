@@ -28,25 +28,25 @@ public class LowLevelJsonSerializationTest {
         List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
 
         SerializedNode lioncore = unserializedSerializedNodeData.get(0);
-        assertEquals(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel"), lioncore.getConcept());
+        assertEquals(new MetaPointer("LIonCore_M3", "1", "Metamodel"), lioncore.getConcept());
         assertEquals("LIonCore_M3", lioncore.getID());
-        assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore_M3_Metamodel_name"));
+        assertEquals("LIonCore.M3", lioncore.getPropertyValue("Metamodel_name"));
         assertEquals(17, lioncore.getChildren().size());
         assertEquals(null, lioncore.getParentNodeID());
 
         SerializedNode namespacedEntity = unserializedSerializedNodeData.stream().filter(e -> e.getID().equals("LIonCore_M3_NamespacedEntity")).findFirst().get();
-        assertEquals(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Concept"), namespacedEntity.getConcept());
+        assertEquals(new MetaPointer("LIonCore_M3", "1", "Concept"), namespacedEntity.getConcept());
         assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-        assertEquals("true", namespacedEntity.getPropertyValue("LIonCore_M3_Concept_abstract"));
-        assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+        assertEquals("true", namespacedEntity.getPropertyValue("Concept_abstract"));
+        assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_simpleName"));
         assertEquals(2, namespacedEntity.getChildren().size());
         assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
         SerializedNode simpleName = unserializedSerializedNodeData.stream().filter(e -> e.getID().equals("LIonCore_M3_NamespacedEntity_simpleName")).findFirst().get();
-        assertEquals(new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Property"), simpleName.getConcept());
-        assertEquals("simpleName", simpleName.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+        assertEquals(new MetaPointer("LIonCore_M3", "1", "Property"), simpleName.getConcept());
+        assertEquals("simpleName", simpleName.getPropertyValue("NamespacedEntity_simpleName"));
         assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParentNodeID());
-        assertEquals(Arrays.asList(new SerializedReferenceValue.Entry("LIonCore_M3_String", "String")), simpleName.getReferenceValues("LIonCore_M3_Property_type"));
+        assertEquals(Arrays.asList(new SerializedReferenceValue.Entry("LIonCore_M3_String", "String")), simpleName.getReferenceValues("Property_type"));
     }
 
     @Test
@@ -56,11 +56,11 @@ public class LowLevelJsonSerializationTest {
         LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
         SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
         SerializedNode book = serializedChunk.getNodeByID("library-Book");
-        assertEquals("Book", book.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+        assertEquals("Book", book.getPropertyValue("NamespacedEntity_simpleName"));
 
         SerializedNode guidedBookWriter = serializedChunk.getNodeByID("library-GuideBookWriter");
-        assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
-        assertEquals(Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")), guidedBookWriter.getReferenceValues("LIonCore_M3_Concept_extends"));
+        assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValue("NamespacedEntity_simpleName"));
+        assertEquals(Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")), guidedBookWriter.getReferenceValues("Concept_extends"));
     }
 
     @Test
