@@ -343,7 +343,7 @@ public class JsonSerialization {
                         Node referred = nodeResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
                           throw new IllegalArgumentException(
-                              "Unable to resolve reference to " + entry.getReference());
+                              "Unable to resolve reference to " + entry.getReference()+ " for feature " + serializedReferenceValue.getMetaPointer());
                         }
                         ReferenceValue referenceValue =
                             new ReferenceValue(referred, entry.getResolveInfo());

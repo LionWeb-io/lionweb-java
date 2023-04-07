@@ -212,19 +212,15 @@ public class LionCore {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
         node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
         if (node instanceof HasKey<?>) {
-          ((HasKey<?>) node).setKey(node.getID());
+          ((HasKey<?>) node).setKey(namespacedEntity.getSimpleName());
         }
       } else {
         throw new IllegalStateException(node.toString());
       }
     }
     if (node instanceof FeaturesContainer<?>) {
-      ((FeaturesContainer<?>) node)
-          .getFeatures()
-          .forEach(
-              feature -> {
-                feature.setKey(feature.getID());
-              });
+      FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
+      featuresContainer.getFeatures().forEach(feature -> feature.setKey(featuresContainer.getSimpleName() + "_" + feature.getSimpleName()));
     }
 
     // TODO To be changed once getChildren is implemented correctly
