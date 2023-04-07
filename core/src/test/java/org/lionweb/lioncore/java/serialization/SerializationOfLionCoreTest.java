@@ -100,7 +100,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement serializedElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    JsonElement reserialized = jsonSerialization.serializeTreeToJson(LionCore.getInstance());
+    JsonElement reserialized = jsonSerialization.serializeTreeToJsonElement(LionCore.getInstance());
     assertEquivalentLionWebJson(
         serializedElement.getAsJsonObject(), reserialized.getAsJsonObject());
   }

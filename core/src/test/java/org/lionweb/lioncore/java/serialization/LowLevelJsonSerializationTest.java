@@ -96,7 +96,7 @@ public class LowLevelJsonSerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    JsonElement reserialized = jsonSerialization.serializeToJson(serializedChunk);
+    JsonElement reserialized = jsonSerialization.serializeToJsonElement(serializedChunk);
     assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
   }
 }
