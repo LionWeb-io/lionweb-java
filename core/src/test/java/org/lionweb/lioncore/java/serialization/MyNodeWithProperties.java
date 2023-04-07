@@ -14,7 +14,7 @@ public class MyNodeWithProperties extends DynamicNode {
       new Concept()
           .setID("concept-MyNodeWithProperties")
           .setKey("concept-MyNodeWithProperties")
-          .setSimpleName("MyNodeWithProperties")
+          .setName("MyNodeWithProperties")
           .addFeature(
               Property.createOptional("p1", LionCoreBuiltins.getBoolean()).setID("p1").setKey("p1"))
           .addFeature(

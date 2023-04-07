@@ -21,24 +21,24 @@ import org.lionweb.lioncore.java.self.LionCore;
  */
 public class Property extends Feature<Property> {
 
-  public static Property createOptional(@Nullable String simpleName, @Nullable DataType type) {
-    Property property = new Property(simpleName, null);
+  public static Property createOptional(@Nullable String name, @Nullable DataType type) {
+    Property property = new Property(name, null);
     property.setOptional(true);
     property.setType(type);
     return property;
   }
 
-  public static Property createRequired(@Nullable String simpleName, @Nullable DataType type) {
-    Property property = new Property(simpleName, null);
+  public static Property createRequired(@Nullable String name, @Nullable DataType type) {
+    Property property = new Property(name, null);
     property.setOptional(false);
     property.setType(type);
     return property;
   }
 
   public static Property createRequired(
-      @Nullable String simpleName, @Nullable DataType type, @Nonnull String id) {
+      @Nullable String name, @Nullable DataType type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
-    Property property = new Property(simpleName, null, id);
+    Property property = new Property(name, null, id);
     property.setOptional(false);
     property.setType(type);
     return property;
@@ -49,14 +49,14 @@ public class Property extends Feature<Property> {
   }
 
   public Property(
-      @Nullable String simpleName, @Nullable FeaturesContainer container, @Nonnull String id) {
+      @Nullable String name, @Nullable FeaturesContainer container, @Nonnull String id) {
     // TODO verify that the container is also a NamespaceProvider
-    super(simpleName, container, id);
+    super(name, container, id);
   }
 
-  public Property(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+  public Property(@Nullable String name, @Nullable FeaturesContainer container) {
     // TODO verify that the container is also a NamespaceProvider
-    super(simpleName, container);
+    super(name, container);
   }
 
   public @Nullable DataType getType() {
@@ -67,14 +67,14 @@ public class Property extends Feature<Property> {
     if (type == null) {
       setReferenceSingleValue("type", null);
     } else {
-      setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+      setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
     }
     return this;
   }
 
   @Override
   public String toString() {
-    return "Property{" + "simpleName=" + getSimpleName() + ", " + "type=" + getType() + '}';
+    return "Property{" + "name=" + getName() + ", " + "type=" + getType() + '}';
   }
 
   @Override

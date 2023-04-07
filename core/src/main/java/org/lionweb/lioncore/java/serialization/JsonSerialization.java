@@ -289,7 +289,10 @@ public class JsonSerialization {
                   property,
                   "Property with metaPointer "
                       + serializedPropertyValue.getMetaPointer()
-                      + " not found");
+                      + " not found in concept "
+                      + concept
+                      + ". SerializedNode: "
+                      + serializedNode);
               Object unserializedValue =
                   primitiveValuesSerialization.unserialize(
                       property.getType().getID(), serializedPropertyValue.getValue());
@@ -314,6 +317,9 @@ public class JsonSerialization {
               Containment containment =
                   concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
               Objects.requireNonNull(
+                  containment,
+                  "Unable to resolve containment " + serializedContainmentValue.getMetaPointer());
+              Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
               serializedContainmentValue
@@ -336,6 +342,15 @@ public class JsonSerialization {
             serializedReferenceValue -> {
               Reference reference =
                   concept.getReferenceByMetaPointer(serializedReferenceValue.getMetaPointer());
+              if (reference == null) {
+                throw new IllegalStateException(
+                    "Unable to solve reference "
+                        + serializedReferenceValue.getMetaPointer()
+                        + ". Concept "
+                        + concept
+                        + ". SerializedNode "
+                        + serializedNode);
+              }
               serializedReferenceValue
                   .getValue()
                   .forEach(
@@ -343,7 +358,10 @@ public class JsonSerialization {
                         Node referred = nodeResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
                           throw new IllegalArgumentException(
-                              "Unable to resolve reference to " + entry.getReference());
+                              "Unable to resolve reference to "
+                                  + entry.getReference()
+                                  + " for feature "
+                                  + serializedReferenceValue.getMetaPointer());
                         }
                         ReferenceValue referenceValue =
                             new ReferenceValue(referred, entry.getResolveInfo());

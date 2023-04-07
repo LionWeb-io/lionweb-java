@@ -32,7 +32,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
 
     Node book =
         unserializedNodes.stream().filter(n -> n.getID().equals("library-Book")).findFirst().get();
-    assertEquals("Book", book.getPropertyValueByName("simpleName"));
+    assertEquals("Book", book.getPropertyValueByName("name"));
     assertEquals("library-Book", book.getPropertyValueByName("key"));
 
     Concept guidedBookWriter =
@@ -41,7 +41,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
                 .filter(n -> n.getID().equals("library-GuideBookWriter"))
                 .findFirst()
                 .get();
-    assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("simpleName"));
+    assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("name"));
     assertNotNull(guidedBookWriter.getExtendedConcept());
   }
 

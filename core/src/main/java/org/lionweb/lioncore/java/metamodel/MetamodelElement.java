@@ -21,15 +21,15 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
   public MetamodelElement() {}
 
   public MetamodelElement(
-      @Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
-    this(metamodel, simpleName);
+      @Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
+    this(metamodel, name);
     this.setID(id);
   }
 
-  public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String simpleName) {
+  public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String name) {
     // TODO enforce uniqueness of the name within the Metamodel
     this.setParent(metamodel);
-    this.setSimpleName(simpleName);
+    this.setName(name);
   }
 
   /**
@@ -49,12 +49,12 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
   }
 
   @Override
-  public @Nullable String getSimpleName() {
-    return this.getPropertyValue("simpleName", String.class);
+  public @Nullable String getName() {
+    return this.getPropertyValue("name", String.class);
   }
 
-  public T setSimpleName(String simpleName) {
-    this.setPropertyValue("simpleName", simpleName);
+  public T setName(String name) {
+    this.setPropertyValue("name", name);
     return (T) this;
   }
 
@@ -100,11 +100,11 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
     }
     ;
     String qualified = "<unnamed>";
-    if (this.getSimpleName() != null) {
-      qualified = this.getSimpleName();
+    if (this.getName() != null) {
+      qualified = this.getName();
     }
     ;
     String qn = qualifier + "." + qualified;
-    return this.getClass().getSimpleName() + "(" + qn + ")";
+    return this.getClass().getName() + "(" + qn + ")";
   }
 }

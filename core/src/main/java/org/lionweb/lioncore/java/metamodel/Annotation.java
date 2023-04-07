@@ -27,8 +27,8 @@ public class Annotation extends FeaturesContainer<Annotation> {
     super();
   }
 
-  public Annotation(Metamodel metamodel, String simpleName) {
-    super(metamodel, simpleName);
+  public Annotation(Metamodel metamodel, String name) {
+    super(metamodel, name);
   }
 
   @Nonnull
@@ -48,7 +48,7 @@ public class Annotation extends FeaturesContainer<Annotation> {
 
   public void setPlatformSpecific(@Nullable String platformSpecific) {
     if (platformSpecific != null) {
-      Naming.validateSimpleName(platformSpecific);
+      Naming.validateName(platformSpecific);
     }
     this.platformSpecific = platformSpecific;
   }

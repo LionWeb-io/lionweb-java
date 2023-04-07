@@ -28,8 +28,8 @@ import org.lionweb.lioncore.java.self.LionCore;
 public class Containment extends Link<Containment> {
 
   public static Containment createOptional(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Containment containment = new Containment(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Containment containment = new Containment(name);
     containment.setOptional(true);
     containment.setMultiple(false);
     containment.setType(type);
@@ -37,8 +37,8 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createRequired(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Containment containment = new Containment(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Containment containment = new Containment(name);
     containment.setOptional(false);
     containment.setMultiple(false);
     containment.setType(type);
@@ -46,8 +46,8 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createMultiple(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Containment containment = new Containment(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Containment containment = new Containment(name);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
@@ -55,9 +55,9 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createMultiple(
-      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
-    Containment containment = new Containment(simpleName, id);
+    Containment containment = new Containment(name, id);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
@@ -65,8 +65,8 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createMultipleAndRequired(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Containment containment = new Containment(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Containment containment = new Containment(name);
     containment.setOptional(false);
     containment.setMultiple(true);
     containment.setType(type);
@@ -79,17 +79,17 @@ public class Containment extends Link<Containment> {
     super();
   }
 
-  public Containment(String simpleName, @Nullable FeaturesContainer container) {
+  public Containment(String name, @Nullable FeaturesContainer container) {
     // TODO verify that the container is also a NamespaceProvider
-    super(simpleName, container);
+    super(name, container);
   }
 
-  public Containment(String simpleName) {
-    super(simpleName, (FeaturesContainer) null);
+  public Containment(String name) {
+    super(name, (FeaturesContainer) null);
   }
 
-  public Containment(String simpleName, @Nonnull String id) {
-    super(simpleName, id);
+  public Containment(String name, @Nonnull String id) {
+    super(name, id);
   }
 
   public @Nullable Containment getSpecialized() {
@@ -104,7 +104,7 @@ public class Containment extends Link<Containment> {
 
   @Override
   public String toString() {
-    return "Containment{" + "simpleName=" + getSimpleName() + ", " + "type=" + getType() + '}';
+    return "Containment{" + "name=" + getName() + ", " + "type=" + getType() + '}';
   }
 
   @Override

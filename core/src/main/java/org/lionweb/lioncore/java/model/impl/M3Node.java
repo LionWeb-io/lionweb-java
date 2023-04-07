@@ -101,7 +101,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     if (!getConcept().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept: " + property);
     }
-    return propertyValues.get(property.getSimpleName());
+    return propertyValues.get(property.getName());
   }
 
   /**
@@ -126,7 +126,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     if (!getConcept().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
-    setPropertyValue(property.getSimpleName(), value);
+    setPropertyValue(property.getName(), value);
   }
 
   protected void setPropertyValue(String propertyName, Object value) {
@@ -147,8 +147,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
     if (!getConcept().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
-    if (containmentValues.containsKey(containment.getSimpleName())) {
-      return containmentValues.get(containment.getSimpleName());
+    if (containmentValues.containsKey(containment.getName())) {
+      return containmentValues.get(containment.getName());
     } else {
       return Collections.emptyList();
     }
@@ -157,9 +157,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
   @Override
   public void addChild(Containment containment, Node child) {
     if (containment.isMultiple()) {
-      addContainmentMultipleValue(containment.getSimpleName(), child);
+      addContainmentMultipleValue(containment.getName(), child);
     } else {
-      setContainmentSingleValue(containment.getSimpleName(), child);
+      setContainmentSingleValue(containment.getName(), child);
     }
   }
 
@@ -182,8 +182,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
     if (!getConcept().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (referenceValues.containsKey(reference.getSimpleName())) {
-      return referenceValues.get(reference.getSimpleName());
+    if (referenceValues.containsKey(reference.getName())) {
+      return referenceValues.get(reference.getName());
     } else {
       return Collections.emptyList();
     }
@@ -197,9 +197,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
       throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
     }
     if (reference.isMultiple()) {
-      addReferenceMultipleValue(reference.getSimpleName(), referenceValue);
+      addReferenceMultipleValue(reference.getName(), referenceValue);
     } else {
-      setReferenceSingleValue(reference.getSimpleName(), referenceValue);
+      setReferenceSingleValue(reference.getName(), referenceValue);
     }
   }
 

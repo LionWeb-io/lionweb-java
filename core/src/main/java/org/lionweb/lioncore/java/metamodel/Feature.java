@@ -25,27 +25,26 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setDerived(false);
   }
 
-  public Feature(@Nullable String simpleName, @Nonnull String id) {
-    this(simpleName, null, id);
+  public Feature(@Nullable String name, @Nonnull String id) {
+    this(name, null, id);
     setDerived(false);
   }
 
-  public Feature(
-      @Nullable String simpleName, @Nullable FeaturesContainer container, @Nonnull String id) {
+  public Feature(@Nullable String name, @Nullable FeaturesContainer container, @Nonnull String id) {
     setDerived(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);
     // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
-    setSimpleName(simpleName);
+    setname(name);
     setParent(container);
   }
 
-  public Feature(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+  public Feature(@Nullable String name, @Nullable FeaturesContainer container) {
     setDerived(false);
     // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
-    setSimpleName(simpleName);
+    setname(name);
     setParent(container);
   }
 
@@ -74,12 +73,12 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   @Override
-  public @Nullable String getSimpleName() {
-    return getPropertyValue("simpleName", String.class);
+  public @Nullable String getName() {
+    return getPropertyValue("name", String.class);
   }
 
-  public void setSimpleName(@Nullable String simpleName) {
-    this.setPropertyValue("simpleName", simpleName);
+  public void setname(@Nullable String name) {
+    this.setPropertyValue("name", name);
   }
 
   /** The container is always the parent. It is just casted for convenience. */

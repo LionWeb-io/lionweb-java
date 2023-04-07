@@ -11,21 +11,19 @@ import org.lionweb.lioncore.java.self.LionCore;
 public class ConceptReflectionTest {
 
   @Test
-  public void getPropertyValueSimpleName() {
+  public void getPropertyValuename() {
     Metamodel metamodel = new Metamodel();
     Concept concept = new Concept(metamodel, "MyConcept");
     assertEquals(
-        "MyConcept",
-        concept.getPropertyValue(LionCore.getConcept().getPropertyByName("simpleName")));
+        "MyConcept", concept.getPropertyValue(LionCore.getConcept().getPropertyByName("name")));
   }
 
   @Test
-  public void setPropertyValueSimpleName() {
+  public void setPropertyValuename() {
     Metamodel metamodel = new Metamodel();
     Concept concept = new Concept(metamodel, "MyConcept");
-    concept.setPropertyValue(
-        LionCore.getConcept().getPropertyByName("simpleName"), "MyAmazingConcept");
-    assertEquals("MyAmazingConcept", concept.getSimpleName());
+    concept.setPropertyValue(LionCore.getConcept().getPropertyByName("name"), "MyAmazingConcept");
+    assertEquals("MyAmazingConcept", concept.getName());
   }
 
   @Test

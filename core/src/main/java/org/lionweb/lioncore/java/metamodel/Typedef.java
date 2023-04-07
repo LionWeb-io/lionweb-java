@@ -17,8 +17,8 @@ public class Typedef extends DataType<Typedef> {
     super();
   }
 
-  public Typedef(@Nullable Metamodel metamodel, @Nullable String simpleName) {
-    super(metamodel, simpleName);
+  public Typedef(@Nullable Metamodel metamodel, @Nullable String name) {
+    super(metamodel, name);
   }
 
   public @Nullable PrimitiveType getPrimitiveType() {
@@ -30,7 +30,7 @@ public class Typedef extends DataType<Typedef> {
       this.setReferenceSingleValue("primitiveType", null);
     } else {
       this.setReferenceSingleValue(
-          "primitiveType", new ReferenceValue(primitiveType, primitiveType.getSimpleName()));
+          "primitiveType", new ReferenceValue(primitiveType, primitiveType.getName()));
     }
   }
 
