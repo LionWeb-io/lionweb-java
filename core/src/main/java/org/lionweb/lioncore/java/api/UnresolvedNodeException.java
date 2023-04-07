@@ -1,13 +1,13 @@
 package org.lionweb.lioncore.java.api;
 
 public class UnresolvedNodeException extends RuntimeException {
-    private String nodeID;
+  private String nodeID;
 
-    public String getNodeID() {
-        return nodeID;
-    }
+  public String getNodeID() {
+    return nodeID;
+  }
 
-    public UnresolvedNodeException(String nodeID) {
-        super("Unable to resolve node with ID=" + nodeID);
-    }
+  public UnresolvedNodeException(String nodeID) {
+    super("Unable to resolve node with ID=" + nodeID);
+  }
 }
