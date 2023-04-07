@@ -121,10 +121,19 @@ public class JsonSerialization {
     return serializeNodesToJsonElement(node.thisAndAllDescendants());
   }
 
-  public JsonElement serializeTreesToJsonElement(Node... nodes) {
+  public JsonElement serializeTreesToJsonElement(Node... roots) {
+    Set<String> nodesIDs = new HashSet<>();
     List<Node> allNodes = new ArrayList<>();
-    for (Node n : nodes) {
-      allNodes.addAll(n.thisAndAllDescendants());
+    for (Node root : roots) {
+      root.thisAndAllDescendants().forEach(n -> {
+        // We support serialization of incorrect nodes, so we allow nodes without ID to be serialized
+        if (n.getID() != null) {
+          if (!nodesIDs.contains(n.getID())) {
+            allNodes.add(n);
+            nodesIDs.add(n.getID());
+          }
+        }
+      });
     }
     return serializeNodesToJsonElement(allNodes);
   }
