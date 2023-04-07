@@ -18,15 +18,15 @@
           },
           "value": "io.lionweb.mps.converter.TestLang"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Metamodel_version"},"value":null},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "version"},"value":null},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Metamodel_elements"
+            "key": "elements"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQxMTI",
@@ -51,7 +51,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Metamodel_dependsOn"
+            "key": "dependsOn"
           },
           "targets": []
         }
@@ -70,7 +70,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -88,7 +88,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -111,7 +111,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -130,7 +130,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -148,7 +148,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -166,7 +166,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -185,7 +185,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -203,7 +203,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDY0NTEvMjU4NTM3ODE2NTk3MzIwNjk1OQ",
@@ -239,7 +239,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -258,7 +258,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -301,11 +301,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -314,8 +314,8 @@
           },
           "value": "booleanProp"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.booleanProp"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.booleanProp"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -347,11 +347,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -360,8 +360,8 @@
           },
           "value": "integerProp"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.integerProp"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.integerProp"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -393,7 +393,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -436,11 +436,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -449,8 +449,8 @@
           },
           "value": "constrainedProp"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.constrainedProp"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.constrainedProp"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -482,7 +482,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -525,7 +525,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -533,11 +533,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -546,8 +546,8 @@
           },
           "value": "refZeroToOne"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.refZeroToOne"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.refZeroToOne"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -579,7 +579,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -587,11 +587,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "false"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -600,8 +600,8 @@
           },
           "value": "refOne"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.refOne"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.refOne"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -633,7 +633,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -641,11 +641,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -654,8 +654,8 @@
           },
           "value": "zeroToOne"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.zeroToOne"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.zeroToOne"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -687,7 +687,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -695,11 +695,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "false"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -708,8 +708,8 @@
           },
           "value": "one"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.one"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.one"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -741,7 +741,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "true"
         },
@@ -749,11 +749,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -762,8 +762,8 @@
           },
           "value": "zeroToMany"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.zeroToMany"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptBase.zeroToMany"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -795,7 +795,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "true"
         },
@@ -803,7 +803,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "false"
         },
@@ -846,7 +846,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -858,15 +858,15 @@
           },
           "value": "TestConceptExtends1"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptExtends1"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptExtends1"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -889,7 +889,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -913,7 +913,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -925,15 +925,15 @@
           },
           "value": "TestConceptExtends2"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptExtends2"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConceptExtends2"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -956,7 +956,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -990,7 +990,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -1023,15 +1023,15 @@
           },
           "value": "TestInterfaceBase"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceBase"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceBase"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMTQzODUvMjU4NTM3ODE2NTk3MzIxNzc4Mg"
@@ -1062,11 +1062,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -1075,8 +1075,8 @@
           },
           "value": "testInterfaceBaseProp"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceBase.testInterfaceBaseProp"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceBase.testInterfaceBaseProp"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -1118,7 +1118,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMTUzODcvMjU4NTM3ODE2NTk3MzIxODUzOA"
@@ -1154,11 +1154,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -1167,8 +1167,8 @@
           },
           "value": "testInterfaceExtends1Prop"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends1.testInterfaceExtends1Prop"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends1.testInterfaceExtends1Prop"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -1210,7 +1210,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMTU4NzEvMjU4NTM3ODE2NTk3MzIxOTExMg",
@@ -1248,11 +1248,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -1261,8 +1261,8 @@
           },
           "value": "testInterfaceExtends2Prop"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends2.testInterfaceExtends2Prop"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends2.testInterfaceExtends2Prop"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -1294,7 +1294,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "true"
         },
@@ -1302,7 +1302,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -1345,7 +1345,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -1353,7 +1353,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -1406,7 +1406,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMTYzMjkvMjU4NTM3ODE2NTk3MzIyMDEyOA"
@@ -1446,11 +1446,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -1459,8 +1459,8 @@
           },
           "value": "testInterfaceExtends3Prop"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -1496,8 +1496,8 @@
           },
           "value": "TestConstrainedDatatype"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConstrainedDatatype"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestConstrainedDatatype"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": []
@@ -1525,7 +1525,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Enumeration_literals"
+            "key": "literals"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODIvMjU4NTM3ODE2NTk3MzIwNDU4Mw",
@@ -1573,8 +1573,8 @@
           },
           "value": "TestLiteral2"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": []
@@ -1596,15 +1596,15 @@
           },
           "value": "TestEnumeration2"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestEnumeration2"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestEnumeration2"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Enumeration_literals"
+            "key": "literals"
           },
           "children": [
             "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ2MjYvMjU4NTM3ODE2NTk3MzIwNDYyNw"
@@ -1630,8 +1630,8 @@
           },
           "value": "TestLiteral3"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": []
@@ -1653,8 +1653,8 @@
           },
           "value": "TestPrimitiveDatatype"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestPrimitiveDatatype"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestPrimitiveDatatype"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": []
@@ -1681,7 +1681,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Metamodel_elements"
+            "key": "elements"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzExMzM5MjA2NDE2MjY",
@@ -1735,7 +1735,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Metamodel_dependsOn"
+            "key": "dependsOn"
           },
           "targets": []
         }
@@ -1754,7 +1754,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "true"
         },
@@ -1772,7 +1772,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzExMzM5MjA2NDE2MjYvMTE1NjIzNDk2NjM4OA",
@@ -1794,7 +1794,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -1813,7 +1813,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -1856,7 +1856,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -1899,7 +1899,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "true"
         },
@@ -1907,7 +1907,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -1950,7 +1950,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "true"
         },
@@ -1962,15 +1962,15 @@
           },
           "value": "Attribute"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.Attribute"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.Attribute"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -1993,7 +1993,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -2012,7 +2012,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2030,7 +2030,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzMzNjQ2NjA2MzgwNDgwNDk3NDUvMTc1NzY5OTQ3NjY5MTIzNjExNg",
@@ -2056,7 +2056,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -2075,11 +2075,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2088,8 +2088,8 @@
           },
           "value": "role_DebugInfo"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.LinkAttribute.role_DebugInfo"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.LinkAttribute.role_DebugInfo"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2121,11 +2121,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2134,8 +2134,8 @@
           },
           "value": "linkId"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.LinkAttribute.linkId"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.LinkAttribute.linkId"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2167,7 +2167,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2185,7 +2185,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -2208,7 +2208,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -2227,7 +2227,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2239,15 +2239,15 @@
           },
           "value": "PropertyAttribute"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.PropertyAttribute"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.PropertyAttribute"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzMzNjQ2NjA2MzgwNDgwNDk3NTAvMTc1NzY5OTQ3NjY5MTIzNjExNw",
@@ -2274,7 +2274,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -2293,7 +2293,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -2336,11 +2336,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2349,8 +2349,8 @@
           },
           "value": "propertyId"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.PropertyAttribute.propertyId"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.PropertyAttribute.propertyId"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2382,11 +2382,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2395,8 +2395,8 @@
           },
           "value": "enumUsageMigrated"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.PropertyAttribute.enumUsageMigrated"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.PropertyAttribute.enumUsageMigrated"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2428,7 +2428,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2446,7 +2446,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzQyMjIzMTg4MDY4MDI0MjUyOTgvMjQyMzQxNzM0NTY2OTc1NTYyOQ",
@@ -2473,7 +2473,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -2497,11 +2497,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2510,8 +2510,8 @@
           },
           "value": "filter"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.SuppressErrorsAnnotation.filter"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.SuppressErrorsAnnotation.filter"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2543,7 +2543,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -2586,11 +2586,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2599,8 +2599,8 @@
           },
           "value": "comment"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.SuppressErrorsAnnotation.comment"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.SuppressErrorsAnnotation.comment"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2632,7 +2632,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2644,15 +2644,15 @@
           },
           "value": "SideTransformInfo"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformInfo"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformInfo"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NS83NzkxMjg0OTI4NTM2OTkzNjE",
@@ -2679,7 +2679,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -2698,7 +2698,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -2741,11 +2741,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2754,8 +2754,8 @@
           },
           "value": "cellId"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformInfo.cellId"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformInfo.cellId"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2787,11 +2787,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2800,8 +2800,8 @@
           },
           "value": "anchorTag"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformInfo.anchorTag"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformInfo.anchorTag"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2833,7 +2833,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2851,7 +2851,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzQ0NTI5NjE5MDgyMDI1NTY5MDcvMzA3ODY2NjY5OTA0MzAzOTM4OQ"
@@ -2876,7 +2876,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -2908,7 +2908,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -2916,11 +2916,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "false"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -2929,8 +2929,8 @@
           },
           "value": "commentedNode"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.BaseCommentAttribute.commentedNode"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.BaseCommentAttribute.commentedNode"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -2962,7 +2962,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -2980,7 +2980,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzcwOTc0NjkzNjAyNjQ2NjM5NC83MDk3NDY5MzYwMjY2MDkwMjk",
@@ -3006,7 +3006,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -3025,7 +3025,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -3068,11 +3068,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3081,8 +3081,8 @@
           },
           "value": "linkId"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ChildAttribute.linkId"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ChildAttribute.linkId"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3114,7 +3114,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -3132,7 +3132,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzI0ODI2MTEwNzQzNDY2NjEwNjUvMjQ4MjYxMTA3NDM0NjY2MTA3OA",
@@ -3159,7 +3159,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -3183,7 +3183,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -3226,7 +3226,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -3269,11 +3269,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3282,8 +3282,8 @@
           },
           "value": "readableId"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration_old.readableId"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration_old.readableId"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3315,7 +3315,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -3327,15 +3327,15 @@
           },
           "value": "BasePlaceholder"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.BasePlaceholder"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.BasePlaceholder"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzM3MTczMDExNTYxOTc2MjYyNzkvMzcxNzMwMTE1NjE5NzYyNjMwMQ"
@@ -3360,7 +3360,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -3379,7 +3379,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -3387,11 +3387,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3400,8 +3400,8 @@
           },
           "value": "content"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.BasePlaceholder.content"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.BasePlaceholder.content"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3433,7 +3433,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -3451,7 +3451,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzg3MDMxNzk0MzY5Nzg2Njg5NDUvNjgwNzkzMzQ0ODQ3MDMzMDU3NA"
@@ -3476,7 +3476,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -3500,7 +3500,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -3508,7 +3508,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "false"
         },
@@ -3551,7 +3551,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -3569,7 +3569,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzg3MDMxNzk0MzY5NzkzNTkyMzgvODcwMzE3OTQzNjk3OTM1OTIzOQ",
@@ -3596,7 +3596,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": [
             {
@@ -3620,11 +3620,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3633,8 +3633,8 @@
           },
           "value": "reasonShort"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration.reasonShort"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration.reasonShort"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3666,11 +3666,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3679,8 +3679,8 @@
           },
           "value": "todo"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration.todo"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration.todo"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3712,11 +3712,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3725,8 +3725,8 @@
           },
           "value": "readableId"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration.readableId"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ReviewMigration.readableId"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3758,7 +3758,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_abstract"
+            "key": "abstract"
           },
           "value": "false"
         },
@@ -3776,7 +3776,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzUyNTk2MzA5MjM1MDU3NzA2NjUvNTI1OTYzMDkyMzUwNTc3MDY2Ng"
@@ -3801,7 +3801,7 @@
           "reference": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Concept_implements"
+            "key": "implements"
           },
           "targets": []
         }
@@ -3820,7 +3820,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Link_multiple"
+            "key": "multiple"
           },
           "value": "false"
         },
@@ -3828,11 +3828,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3841,8 +3841,8 @@
           },
           "value": "annotation"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.TypeAnnotated.annotation"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.TypeAnnotated.annotation"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3884,7 +3884,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzExNjkxOTQ2NTg0NjgvMTE2OTE5NDY2NDAwMQ"
@@ -3915,11 +3915,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -3928,8 +3928,8 @@
           },
           "value": "name"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.INamedConcept.name"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.INamedConcept.name"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -3965,15 +3965,15 @@
           },
           "value": "IResolveInfo"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IResolveInfo"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IResolveInfo"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzExOTY5Nzg2MzAyMTQvMTE5Njk3ODY1NjI3Nw"
@@ -4004,7 +4004,7 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
@@ -4051,15 +4051,15 @@
           },
           "value": "IWrapper"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IWrapper"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IWrapper"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4092,15 +4092,15 @@
           },
           "value": "IDeprecatable"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IDeprecatable"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IDeprecatable"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4139,7 +4139,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4172,15 +4172,15 @@
           },
           "value": "IType"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IType"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IType"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4213,15 +4213,15 @@
           },
           "value": "IMetaLevelChanger"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IMetaLevelChanger"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IMetaLevelChanger"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4254,15 +4254,15 @@
           },
           "value": "ScopeProvider"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ScopeProvider"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ScopeProvider"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4295,15 +4295,15 @@
           },
           "value": "IAntisuppressErrors"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IAntisuppressErrors"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IAntisuppressErrors"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4342,7 +4342,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4381,7 +4381,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4420,7 +4420,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4459,7 +4459,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4498,7 +4498,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4542,7 +4542,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4581,7 +4581,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4614,15 +4614,15 @@
           },
           "value": "ImplementationWithStubPart"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ImplementationWithStubPart"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ImplementationWithStubPart"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4660,15 +4660,15 @@
           },
           "value": "IStubForAnotherConcept"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.IStubForAnotherConcept"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.IStubForAnotherConcept"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4706,15 +4706,15 @@
           },
           "value": "ISkipConstraintsChecking"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.ISkipConstraintsChecking"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.ISkipConstraintsChecking"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4753,7 +4753,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4792,7 +4792,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4831,7 +4831,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4870,7 +4870,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4909,7 +4909,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": []
         }
@@ -4948,7 +4948,7 @@
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "FeaturesContainer_features"
+            "key": "features"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzg3MDMxNzk0MzY5NzkzNTkyNTEvODcwMzE3OTQzNjk3OTM1OTI1Mg"
@@ -4984,11 +4984,11 @@
           "property": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Feature_optional"
+            "key": "optional"
           },
           "value": "true"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "Feature_derived"},"value":"false"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "derived"},"value":"false"},
         {
           "property": {
             "metamodel": "LIonCore_M3",
@@ -4997,8 +4997,8 @@
           },
           "value": "createdByScript"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.MigrationAnnotation.createdByScript"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.MigrationAnnotation.createdByScript"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": [
@@ -5034,15 +5034,15 @@
           },
           "value": "SideTransformSide"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformSide"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"jetbrains.mps.lang.core.SideTransformSide"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [
         {
           "containment": {
             "metamodel": "LIonCore_M3",
             "version": "1",
-            "key": "Enumeration_literals"
+            "key": "literals"
           },
           "children": [
             "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzcwMDA3Ni83NzkxMjg0OTI4NTM3MDAwNzc",
@@ -5069,8 +5069,8 @@
           },
           "value": "right"
         },
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "NamespacedEntity_qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
-        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "HasKey_key"},"value":null}
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "qualifiedName"},"value":"io.lionweb.mps.converter.TestLang.TestInterfaceExtends3.testInterfaceExtends3Prop"},
+        {"property":{"metamodel":"LIonCore_M3","version":"1","key": "key"},"value":null}
       ],
       "children": [],
       "references": []

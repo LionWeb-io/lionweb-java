@@ -39,7 +39,7 @@ public class LowLevelJsonSerializationTest {
             .get();
     assertEquals(new MetaPointer("LIonCore_M3", "1", "Concept"), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-    assertEquals("true", namespacedEntity.getPropertyValue("Concept_abstract"));
+    assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());

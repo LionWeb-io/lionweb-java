@@ -43,15 +43,13 @@ public class SerializationOfLionCoreTest extends SerializationTest {
         Arrays.asList(
             new SerializedPropertyValue(
                 new MetaPointer("LIonCore_M3", "1", "Metamodel_name"), "LIonCore.M3"),
-            new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "Metamodel_version"), "1"),
-            new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "HasKey_key"), "LIonCore_M3")),
+            new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "version"), "1"),
+            new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "key"), "LIonCore_M3")),
         LIonCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
             new SerializedContainmentValue(
-                new MetaPointer("LIonCore_M3", "1", "Metamodel_elements"),
+                new MetaPointer("LIonCore_M3", "1", "elements"),
                 Arrays.asList(
                     "LIonCore_M3_Concept",
                     "LIonCore_M3_ConceptInterface",
@@ -74,8 +72,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(
         Arrays.asList(
             new SerializedReferenceValue(
-                new MetaPointer("LIonCore_M3", "1", "Metamodel_dependsOn"),
-                Collections.emptyList())),
+                new MetaPointer("LIonCore_M3", "1", "dependsOn"), Collections.emptyList())),
         LIonCore_M3.getReferences());
 
     SerializedNode LIonCore_M3_NamespacedEntity =
@@ -123,7 +120,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     SerializedNode namespacedEntity = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity");
     assertEquals(MetaPointer.from(LionCore.getConcept()), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-    assertEquals("true", namespacedEntity.getPropertyValue("Concept_abstract"));
+    assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());

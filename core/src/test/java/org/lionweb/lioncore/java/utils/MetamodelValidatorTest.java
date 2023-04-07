@@ -168,6 +168,7 @@ public class MetamodelValidatorTest {
 
   @Test
   public void ensuringLionCoreIsValidated() {
+    ;
     assertEquals(
         new HashSet<>(Arrays.asList()),
         new MetamodelValidator().validateMetamodel(LionCore.getInstance()).getIssues());

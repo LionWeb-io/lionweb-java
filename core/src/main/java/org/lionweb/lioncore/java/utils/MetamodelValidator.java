@@ -1,11 +1,9 @@
 package org.lionweb.lioncore.java.utils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.metamodel.Enumeration;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 public class MetamodelValidator {
@@ -68,7 +66,7 @@ public class MetamodelValidator {
   }
 
   private void validateKeysAreUnique(Metamodel metamodel, ValidationResult result) {
-    Set<String> uniqueKeys = new HashSet<>();
+    Map<String, String> uniqueKeys = new HashMap<>();
     metamodel
         .thisAndAllDescendants()
         .forEach(
@@ -77,10 +75,12 @@ public class MetamodelValidator {
                 HasKey<?> hasKey = (HasKey<?>) n;
                 String key = hasKey.getKey();
                 if (key != null) {
-                  if (uniqueKeys.contains(key)) {
-                    result.addError("Key " + key + " is duplicate", n);
+                  if (uniqueKeys.containsKey(key)) {
+                    result.addError(
+                        "Key " + key + " is duplicate. It is also used by " + uniqueKeys.get(key),
+                        n);
                   } else {
-                    uniqueKeys.add(key);
+                    uniqueKeys.put(key, n.getID());
                   }
                 }
               }

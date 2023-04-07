@@ -1,7 +1,6 @@
 package org.lionweb.lioncore.java.self;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
@@ -205,6 +204,7 @@ public class LionCore {
   }
 
   private static void checkIDs(M3Node node) {
+    Set<String> clashingKeys = new HashSet<>(Arrays.asList("type", "extends", "name"));
     if (node.getID() == null) {
       if (node instanceof NamespacedEntity) {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
@@ -218,10 +218,19 @@ public class LionCore {
     }
     if (node instanceof FeaturesContainer<?>) {
       FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
+      // we know that there some clashes:
+      // - type
+
       featuresContainer
           .getFeatures()
           .forEach(
-              feature -> feature.setKey(featuresContainer.getName() + "_" + feature.getName()));
+              feature -> {
+                if (clashingKeys.contains(feature.getName())) {
+                  feature.setKey(featuresContainer.getName() + "_" + feature.getName());
+                } else {
+                  feature.setKey(feature.getName());
+                }
+              });
     }
 
     // TODO To be changed once getChildren is implemented correctly
