@@ -30,8 +30,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setDerived(false);
   }
 
-  public Feature(
-      @Nullable String name, @Nullable FeaturesContainer container, @Nonnull String id) {
+  public Feature(@Nullable String name, @Nullable FeaturesContainer container, @Nonnull String id) {
     setDerived(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);

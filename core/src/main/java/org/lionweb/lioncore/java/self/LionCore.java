@@ -183,9 +183,7 @@ public class LionCore {
       namespacedEntity.setAbstract(true);
       namespacedEntity.addFeature(
           Property.createRequired(
-              "name",
-              LionCoreBuiltins.getString(),
-              "LIonCore_M3_NamespacedEntity_name"));
+              "name", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_name"));
       namespacedEntity.addFeature(
           Property.createRequired(
                   "qualifiedName",
@@ -223,9 +221,7 @@ public class LionCore {
       featuresContainer
           .getFeatures()
           .forEach(
-              feature ->
-                  feature.setKey(
-                      featuresContainer.getName() + "_" + feature.getName()));
+              feature -> feature.setKey(featuresContainer.getName() + "_" + feature.getName()));
     }
 
     // TODO To be changed once getChildren is implemented correctly

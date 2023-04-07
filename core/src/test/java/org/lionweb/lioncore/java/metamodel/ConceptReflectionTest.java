@@ -15,16 +15,14 @@ public class ConceptReflectionTest {
     Metamodel metamodel = new Metamodel();
     Concept concept = new Concept(metamodel, "MyConcept");
     assertEquals(
-        "MyConcept",
-        concept.getPropertyValue(LionCore.getConcept().getPropertyByName("name")));
+        "MyConcept", concept.getPropertyValue(LionCore.getConcept().getPropertyByName("name")));
   }
 
   @Test
   public void setPropertyValuename() {
     Metamodel metamodel = new Metamodel();
     Concept concept = new Concept(metamodel, "MyConcept");
-    concept.setPropertyValue(
-        LionCore.getConcept().getPropertyByName("name"), "MyAmazingConcept");
+    concept.setPropertyValue(LionCore.getConcept().getPropertyByName("name"), "MyAmazingConcept");
     assertEquals("MyAmazingConcept", concept.getName());
   }
 

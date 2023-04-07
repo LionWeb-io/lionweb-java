@@ -86,8 +86,7 @@ public class Concept extends FeaturesContainer<Concept> {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
-      this.setReferenceSingleValue(
-          "extends", new ReferenceValue(extended, extended.getName()));
+      this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
     }
   }
 

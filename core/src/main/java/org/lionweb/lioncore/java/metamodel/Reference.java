@@ -25,8 +25,7 @@ import org.lionweb.lioncore.java.self.LionCore;
  */
 public class Reference extends Link<Reference> {
 
-  public static Reference createOptional(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+  public static Reference createOptional(@Nullable String name, @Nullable FeaturesContainer type) {
     Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(false);
@@ -44,8 +43,7 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createRequired(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+  public static Reference createRequired(@Nullable String name, @Nullable FeaturesContainer type) {
     Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(false);
@@ -63,8 +61,7 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createMultiple(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+  public static Reference createMultiple(@Nullable String name, @Nullable FeaturesContainer type) {
     Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(true);

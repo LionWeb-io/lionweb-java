@@ -124,13 +124,11 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(MetaPointer.from(LionCore.getConcept()), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("Concept_abstract"));
-    assertEquals(
-        "NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
+    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
-    SerializedNode name =
-        serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_name");
+    SerializedNode name = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_name");
     assertEquals(MetaPointer.from(LionCore.getProperty()), name.getConcept());
     assertEquals("name", name.getPropertyValue("NamespacedEntity_name"));
     assertEquals("LIonCore_M3_NamespacedEntity", name.getParentNodeID());
@@ -161,8 +159,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
-    Property name =
-        propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
+    Property name = propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
     assertEquals(LionCore.getProperty(), name.getConcept());
     assertEquals("name", name.getName());
     assertEquals("LIonCore_M3_NamespacedEntity", name.getParent().getID());
@@ -201,8 +198,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
-    DynamicNode name =
-        dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
+    DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
     assertEquals(LionCore.getProperty(), name.getConcept());
     assertEquals("name", name.getPropertyValueByName("name"));
     assertEquals("LIonCore_M3_NamespacedEntity", name.getParent().getID());

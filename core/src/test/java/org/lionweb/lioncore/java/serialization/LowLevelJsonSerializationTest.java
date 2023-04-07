@@ -40,8 +40,7 @@ public class LowLevelJsonSerializationTest {
     assertEquals(new MetaPointer("LIonCore_M3", "1", "Concept"), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("Concept_abstract"));
-    assertEquals(
-        "NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
+    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
@@ -69,8 +68,7 @@ public class LowLevelJsonSerializationTest {
     assertEquals("Book", book.getPropertyValue("NamespacedEntity_name"));
 
     SerializedNode guidedBookWriter = serializedChunk.getNodeByID("library-GuideBookWriter");
-    assertEquals(
-        "GuideBookWriter", guidedBookWriter.getPropertyValue("NamespacedEntity_name"));
+    assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValue("NamespacedEntity_name"));
     assertEquals(
         Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")),
         guidedBookWriter.getReferenceValues("Concept_extends"));
