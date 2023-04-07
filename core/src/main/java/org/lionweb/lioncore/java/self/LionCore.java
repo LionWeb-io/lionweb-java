@@ -220,7 +220,12 @@ public class LionCore {
     }
     if (node instanceof FeaturesContainer<?>) {
       FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
-      featuresContainer.getFeatures().forEach(feature -> feature.setKey(featuresContainer.getSimpleName() + "_" + feature.getSimpleName()));
+      featuresContainer
+          .getFeatures()
+          .forEach(
+              feature ->
+                  feature.setKey(
+                      featuresContainer.getSimpleName() + "_" + feature.getSimpleName()));
     }
 
     // TODO To be changed once getChildren is implemented correctly
