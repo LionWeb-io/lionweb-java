@@ -206,28 +206,30 @@ public class LionCore {
     return INSTANCE;
   }
 
-    private static void checkIDs(M3Node node) {
-        if (node.getID() == null) {
-            if (node instanceof NamespacedEntity) {
-                NamespacedEntity namespacedEntity = (NamespacedEntity) node;
-                node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
-                if (node instanceof HasKey<?>) {
-                    ((HasKey<?>) node).setKey(namespacedEntity.getSimpleName());
-                }
-            } else {
-                throw new IllegalStateException(node.toString());
-            }
+  private static void checkIDs(M3Node node) {
+    if (node.getID() == null) {
+      if (node instanceof NamespacedEntity) {
+        NamespacedEntity namespacedEntity = (NamespacedEntity) node;
+        node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
+        if (node instanceof HasKey<?>) {
+          ((HasKey<?>) node).setKey(namespacedEntity.getSimpleName());
         }
-        if (node instanceof FeaturesContainer<?>) {
-            FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
-            featuresContainer.getFeatures().forEach(feature -> {
+      } else {
+        throw new IllegalStateException(node.toString());
+      }
+    }
+    if (node instanceof FeaturesContainer<?>) {
+      FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
+      featuresContainer
+          .getFeatures()
+          .forEach(
+              feature -> {
                 feature.setKey(featuresContainer.getSimpleName() + "_" + feature.getSimpleName());
-            });
-        }
+              });
+    }
 
-        // TODO To be changed once getChildren is implemented correctly
-        getChildrenHelper(node).forEach(c -> checkIDs(c));
-
+    // TODO To be changed once getChildren is implemented correctly
+    getChildrenHelper(node).forEach(c -> checkIDs(c));
   }
 
   private static List<? extends M3Node> getChildrenHelper(M3Node node) {
