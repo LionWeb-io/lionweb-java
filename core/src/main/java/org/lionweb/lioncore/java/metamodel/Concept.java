@@ -34,12 +34,12 @@ public class Concept extends FeaturesContainer<Concept> {
     super();
   }
 
-  public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
-    super(metamodel, simpleName, id);
+  public Concept(@Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
+    super(metamodel, name, id);
   }
 
-  public Concept(@Nullable Metamodel metamodel, @Nullable String simpleName) {
-    super(metamodel, simpleName);
+  public Concept(@Nullable Metamodel metamodel, @Nullable String name) {
+    super(metamodel, name);
   }
 
   @Nonnull
@@ -54,8 +54,8 @@ public class Concept extends FeaturesContainer<Concept> {
     return directAncestors;
   }
 
-  public Concept(@Nullable String simpleName) {
-    super(null, simpleName);
+  public Concept(@Nullable String name) {
+    super(null, name);
   }
 
   public boolean isAbstract() {
@@ -78,7 +78,7 @@ public class Concept extends FeaturesContainer<Concept> {
   public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
     Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
     this.addReferenceMultipleValue(
-        "implements", new ReferenceValue(conceptInterface, conceptInterface.getSimpleName()));
+        "implements", new ReferenceValue(conceptInterface, conceptInterface.getName()));
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?
@@ -87,7 +87,7 @@ public class Concept extends FeaturesContainer<Concept> {
       this.setReferenceSingleValue("extends", null);
     } else {
       this.setReferenceSingleValue(
-          "extends", new ReferenceValue(extended, extended.getSimpleName()));
+          "extends", new ReferenceValue(extended, extended.getName()));
     }
   }
 
@@ -128,7 +128,7 @@ public class Concept extends FeaturesContainer<Concept> {
     return allFeatures().stream()
         .filter(f -> f instanceof Property)
         .map(f -> (Property) f)
-        .filter(p -> Objects.equals(p.getSimpleName(), propertyName))
+        .filter(p -> Objects.equals(p.getName(), propertyName))
         .findFirst()
         .orElse(null);
   }
@@ -138,7 +138,7 @@ public class Concept extends FeaturesContainer<Concept> {
     return allFeatures().stream()
         .filter(f -> f instanceof Containment)
         .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getSimpleName(), containmentName))
+        .filter(c -> Objects.equals(c.getName(), containmentName))
         .findFirst()
         .orElse(null);
   }
@@ -148,7 +148,7 @@ public class Concept extends FeaturesContainer<Concept> {
     return allFeatures().stream()
         .filter(f -> f instanceof Reference)
         .map(f -> (Reference) f)
-        .filter(c -> Objects.equals(c.getSimpleName(), referenceName))
+        .filter(c -> Objects.equals(c.getName(), referenceName))
         .findFirst()
         .orElse(null);
   }
@@ -178,7 +178,7 @@ public class Concept extends FeaturesContainer<Concept> {
     return allFeatures().stream()
         .filter(f -> f instanceof Link)
         .map(f -> (Link) f)
-        .filter(c -> Objects.equals(c.getSimpleName(), linkName))
+        .filter(c -> Objects.equals(c.getName(), linkName))
         .findFirst()
         .orElse(null);
   }

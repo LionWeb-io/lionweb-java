@@ -13,21 +13,21 @@ import org.lionweb.lioncore.java.self.LionCore;
 public class AnnotationTest {
 
   @Test
-  public void getPropertyValueSimpleName() {
+  public void getPropertyValuename() {
     Metamodel metamodel = new Metamodel();
     Annotation annotation = new Annotation(metamodel, "MyAnnotation");
     assertEquals(
         "MyAnnotation",
-        annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("simpleName")));
+        annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("name")));
   }
 
   @Test
-  public void setPropertyValueSimpleName() {
+  public void setPropertyValuename() {
     Metamodel metamodel = new Metamodel();
     Annotation annotation = new Annotation(metamodel, "MyAnnotation");
     annotation.setPropertyValue(
-        LionCore.getAnnotation().getPropertyByName("simpleName"), "MyAmazingAnnotation");
-    assertEquals("MyAmazingAnnotation", annotation.getSimpleName());
+        LionCore.getAnnotation().getPropertyByName("name"), "MyAmazingAnnotation");
+    assertEquals("MyAmazingAnnotation", annotation.getName());
   }
 
   @Test

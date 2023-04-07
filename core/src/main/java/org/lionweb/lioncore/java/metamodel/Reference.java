@@ -26,8 +26,8 @@ import org.lionweb.lioncore.java.self.LionCore;
 public class Reference extends Link<Reference> {
 
   public static Reference createOptional(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Reference reference = new Reference(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(false);
     reference.setType(type);
@@ -35,9 +35,9 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createOptional(
-      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
-    Reference reference = new Reference(simpleName, id);
+    Reference reference = new Reference(name, id);
     reference.setOptional(true);
     reference.setMultiple(false);
     reference.setType(type);
@@ -45,8 +45,8 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createRequired(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Reference reference = new Reference(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(false);
     reference.setType(type);
@@ -54,9 +54,9 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createRequired(
-      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
-    Reference reference = new Reference(simpleName, id);
+    Reference reference = new Reference(name, id);
     reference.setOptional(false);
     reference.setMultiple(false);
     reference.setType(type);
@@ -64,8 +64,8 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultiple(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Reference reference = new Reference(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(true);
     reference.setType(type);
@@ -73,9 +73,9 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultiple(
-      @Nullable String simpleName, @Nullable FeaturesContainer type, @Nonnull String id) {
+      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
-    Reference reference = new Reference(simpleName, id);
+    Reference reference = new Reference(name, id);
     reference.setOptional(true);
     reference.setMultiple(true);
     reference.setType(type);
@@ -83,8 +83,8 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultipleAndRequired(
-      @Nullable String simpleName, @Nullable FeaturesContainer type) {
-    Reference reference = new Reference(simpleName);
+      @Nullable String name, @Nullable FeaturesContainer type) {
+    Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(true);
     reference.setType(type);
@@ -97,17 +97,17 @@ public class Reference extends Link<Reference> {
     super();
   }
 
-  public Reference(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+  public Reference(@Nullable String name, @Nullable FeaturesContainer container) {
     // TODO verify that the container is also a NamespaceProvider
-    super(simpleName, container);
+    super(name, container);
   }
 
-  public Reference(@Nullable String simpleName) {
-    super(simpleName, (FeaturesContainer) null);
+  public Reference(@Nullable String name) {
+    super(name, (FeaturesContainer) null);
   }
 
-  public Reference(@Nullable String simpleName, @Nonnull String id) {
-    super(simpleName, id);
+  public Reference(@Nullable String name, @Nonnull String id) {
+    super(name, id);
   }
 
   public @Nullable Reference getSpecialized() {
@@ -122,7 +122,7 @@ public class Reference extends Link<Reference> {
 
   @Override
   public String toString() {
-    return "Reference{" + "simpleName=" + getSimpleName() + ", " + "type=" + getType() + '}';
+    return "Reference{" + "name=" + getName() + ", " + "type=" + getType() + '}';
   }
 
   @Override

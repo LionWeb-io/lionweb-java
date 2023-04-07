@@ -14,8 +14,8 @@ public class LionCoreBuiltins extends Metamodel {
     this.getElements()
         .forEach(
             e -> {
-              e.setID("LIonCore_M3_" + e.getSimpleName());
-              e.setKey(e.getSimpleName());
+              e.setID("LIonCore_M3_" + e.getName());
+              e.setKey(e.getName());
             });
   }
 

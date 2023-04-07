@@ -183,9 +183,9 @@ public class LionCore {
       namespacedEntity.setAbstract(true);
       namespacedEntity.addFeature(
           Property.createRequired(
-              "simpleName",
+              "name",
               LionCoreBuiltins.getString(),
-              "LIonCore_M3_NamespacedEntity_simpleName"));
+              "LIonCore_M3_NamespacedEntity_name"));
       namespacedEntity.addFeature(
           Property.createRequired(
                   "qualifiedName",
@@ -212,7 +212,7 @@ public class LionCore {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
         node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
         if (node instanceof HasKey<?>) {
-          ((HasKey<?>) node).setKey(namespacedEntity.getSimpleName());
+          ((HasKey<?>) node).setKey(namespacedEntity.getName());
         }
       } else {
         throw new IllegalStateException(node.toString());
@@ -225,7 +225,7 @@ public class LionCore {
           .forEach(
               feature ->
                   feature.setKey(
-                      featuresContainer.getSimpleName() + "_" + feature.getSimpleName()));
+                      featuresContainer.getName() + "_" + feature.getName()));
     }
 
     // TODO To be changed once getChildren is implemented correctly

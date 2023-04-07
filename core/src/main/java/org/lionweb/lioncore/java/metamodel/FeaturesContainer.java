@@ -29,18 +29,18 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
   }
 
   public FeaturesContainer(
-      @Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
-    super(metamodel, simpleName, id);
+      @Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
+    super(metamodel, name, id);
   }
 
-  public FeaturesContainer(@Nullable Metamodel metamodel, @Nullable String simpleName) {
-    super(metamodel, simpleName);
+  public FeaturesContainer(@Nullable Metamodel metamodel, @Nullable String name) {
+    super(metamodel, name);
   }
 
-  public @Nullable Feature getFeatureByName(@Nonnull String simpleName) {
-    Objects.requireNonNull(simpleName, "simpleName should not be null");
+  public @Nullable Feature getFeatureByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     return allFeatures().stream()
-        .filter(feature -> feature.getSimpleName().equals(simpleName))
+        .filter(feature -> feature.getName().equals(name))
         .findFirst()
         .orElse(null);
   }
@@ -110,7 +110,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     return allFeatures().stream()
         .filter(f -> f instanceof Property)
         .map(f -> (Property) f)
-        .filter(p -> Objects.equals(p.getSimpleName(), propertyName))
+        .filter(p -> Objects.equals(p.getName(), propertyName))
         .findFirst()
         .orElse(null);
   }
@@ -130,7 +130,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     return allFeatures().stream()
         .filter(f -> f instanceof Containment)
         .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getSimpleName(), containmentName))
+        .filter(c -> Objects.equals(c.getName(), containmentName))
         .findFirst()
         .orElse(null);
   }
@@ -150,7 +150,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends MetamodelEleme
     return allFeatures().stream()
         .filter(f -> f instanceof Reference)
         .map(f -> (Reference) f)
-        .filter(c -> Objects.equals(c.getSimpleName(), referenceName))
+        .filter(c -> Objects.equals(c.getName(), referenceName))
         .findFirst()
         .orElse(null);
   }

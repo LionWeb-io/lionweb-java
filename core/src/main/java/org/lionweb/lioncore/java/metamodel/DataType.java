@@ -24,7 +24,7 @@ public abstract class DataType<T extends M3Node> extends MetamodelElement<T> {
     super(null, null, id);
   }
 
-  public DataType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
-    super(metamodel, simpleName);
+  public DataType(@Nullable Metamodel metamodel, @Nullable String name) {
+    super(metamodel, name);
   }
 }

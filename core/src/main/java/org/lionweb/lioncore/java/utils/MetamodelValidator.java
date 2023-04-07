@@ -38,8 +38,8 @@ public class MetamodelValidator {
       List<? extends NamespacedEntity> elements, ValidationResult result) {
     Map<String, List<NamespacedEntity>> elementsByName =
         elements.stream()
-            .filter(namespacedEntity -> namespacedEntity.getSimpleName() != null)
-            .collect(Collectors.groupingBy((NamespacedEntity::getSimpleName)));
+            .filter(namespacedEntity -> namespacedEntity.getName() != null)
+            .collect(Collectors.groupingBy((NamespacedEntity::getName)));
     elementsByName
         .entrySet()
         .forEach(
@@ -148,7 +148,7 @@ public class MetamodelValidator {
         .forEach(
             (MetamodelElement el) -> {
               result
-                  .checkForError(el.getSimpleName() == null, "Simple name not set", el)
+                  .checkForError(el.getName() == null, "Simple name not set", el)
                   .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
                   .checkForError(
                       el.getMetamodel() != null && el.getMetamodel() != metamodel,
@@ -162,7 +162,7 @@ public class MetamodelValidator {
                     .forEach(
                         (EnumerationLiteral lit) ->
                             result.checkForError(
-                                lit.getSimpleName() == null, "Simple name not set", lit));
+                                lit.getName() == null, "Simple name not set", lit));
                 validateNamesAreUnique(enumeration.getLiterals(), result);
               }
               if (el instanceof FeaturesContainer) {
@@ -173,7 +173,7 @@ public class MetamodelValidator {
                         (Feature feature) ->
                             result
                                 .checkForError(
-                                    feature.getSimpleName() == null, "Simple name not set", feature)
+                                    feature.getName() == null, "Simple name not set", feature)
                                 .checkForError(
                                     feature.getContainer() == null, "Container not set", feature)
                                 .checkForError(

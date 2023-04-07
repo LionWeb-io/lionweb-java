@@ -26,18 +26,18 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     super(id);
   }
 
-  public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName) {
-    super(metamodel, simpleName);
+  public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String name) {
+    super(metamodel, name);
   }
 
-  public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String simpleName, String id) {
-    super(metamodel, simpleName);
+  public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String name, String id) {
+    super(metamodel, name);
     setID(id);
   }
 
   @Override
   public String toString() {
-    return "PrimitiveType(" + getSimpleName() + ")";
+    return "PrimitiveType(" + getName() + ")";
   }
 
   @Override

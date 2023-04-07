@@ -19,7 +19,7 @@ public class SimpleLanguageMetamodelTest {
   public void emptyConceptDefinition() {
     Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
     Concept expression = new Concept(metamodel, "Expression");
-    assertEquals("Expression", expression.getSimpleName());
+    assertEquals("Expression", expression.getName());
     assertSame(metamodel, expression.getContainer());
     assertSame(metamodel, expression.getMetamodel());
     assertEquals("SimpleLanguage.Expression", expression.qualifiedName());
@@ -34,7 +34,7 @@ public class SimpleLanguageMetamodelTest {
   public void emptyConceptInterfaceDefinition() {
     Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
     ConceptInterface deprecated = new ConceptInterface(metamodel, "Deprecated");
-    assertEquals("Deprecated", deprecated.getSimpleName());
+    assertEquals("Deprecated", deprecated.getName());
     assertSame(metamodel, deprecated.getContainer());
     assertSame(metamodel, deprecated.getMetamodel());
     assertEquals("SimpleLanguage.Deprecated", deprecated.qualifiedName());
