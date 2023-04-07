@@ -1,14 +1,10 @@
 package org.lionweb.lioncore.java.serialization;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
-import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.self.LionCore;
 import org.lionweb.lioncore.java.serialization.data.*;
@@ -18,7 +14,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -81,7 +76,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
         JsonElement serializedElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonElement reserialized = jsonSerialization.serializeTreeToJson(LionCore.getInstance());
+        JsonElement reserialized = jsonSerialization.serializeTreeToJsonElement(LionCore.getInstance());
         assertEquivalentLionWebJson(serializedElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
 

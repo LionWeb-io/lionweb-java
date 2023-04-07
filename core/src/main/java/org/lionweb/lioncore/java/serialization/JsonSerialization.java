@@ -1,6 +1,8 @@
 package org.lionweb.lioncore.java.serialization;
 
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.lionweb.lioncore.java.api.CompositeNodeResolver;
 import org.lionweb.lioncore.java.api.LocalNodeResolver;
 import org.lionweb.lioncore.java.api.NodeResolver;
@@ -110,6 +112,55 @@ public class JsonSerialization {
         return serializationBlock;
     }
 
+    public SerializedChunk serializeNodesToSerializationBlock(Node... nodes) {
+        return serializeNodesToSerializationBlock(Arrays.asList(nodes));
+    }
+
+    public JsonElement serializeTreeToJsonElement(Node node) {
+        return serializeNodesToJsonElement(node.thisAndAllDescendants());
+    }
+
+    public JsonElement serializeTreesToJsonElement(Node... nodes) {
+        List<Node> allNodes = new ArrayList<>();
+        for (Node n : nodes) {
+            allNodes.addAll(n.thisAndAllDescendants());
+        }
+        return serializeNodesToJsonElement(allNodes);
+    }
+
+    public JsonElement serializeNodesToJsonElement(List<Node> nodes) {
+        SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
+        return new LowLevelJsonSerialization().serializeToJson(serializationBlock);
+    }
+
+    public JsonElement serializeNodesToJsonElement(Node... nodes) {
+        return serializeNodesToJsonElement(Arrays.asList(nodes));
+    }
+
+    public String serializeTreeToJsonString(Node node) {
+        return jsonElementToString(serializeTreeToJsonElement(node));
+    }
+
+    public String serializeTreesToJsonString(Node... nodes) {
+        return jsonElementToString(serializeTreesToJsonElement(nodes));
+    }
+
+    public String serializeNodesToJsonString(List<Node> nodes) {
+        return jsonElementToString(serializeNodesToJsonElement(nodes));
+    }
+
+    public String serializeNodesToJsonString(Node... nodes) {
+        return jsonElementToString(serializeNodesToJsonElement(nodes));
+    }
+
+    //
+    // Serialization - Private
+    //
+
+    private String jsonElementToString(JsonElement element) {
+        return new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(element);
+    }
+
     private SerializedNode serializeNode(@Nonnull Node node) {
         Objects.requireNonNull(node, "Node should not be null");
         SerializedNode serializedNode = new SerializedNode();
@@ -156,31 +207,6 @@ public class JsonSerialization {
         });
     }
 
-    public SerializedChunk serializeNodesToSerializationBlock(Node... nodes) {
-        return serializeNodesToSerializationBlock(Arrays.asList(nodes));
-    }
-
-    public JsonElement serializeTreeToJson(Node node) {
-        return serializeNodesToJson(node.thisAndAllDescendants());
-    }
-
-    public JsonElement serializeTreesToJson(Node... nodes) {
-        List<Node> allNodes = new ArrayList<>();
-        for (Node n : nodes) {
-            allNodes.addAll(n.thisAndAllDescendants());
-        }
-        return serializeNodesToJson(allNodes);
-    }
-
-    public JsonElement serializeNodesToJson(List<Node> nodes) {
-        SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
-        return new LowLevelJsonSerialization().serializeToJson(serializationBlock);
-    }
-
-    public JsonElement serializeNodesToJson(Node... nodes) {
-        return serializeNodesToJson(Arrays.asList(nodes));
-    }
-
     //
     // Unserialization
     //
@@ -191,8 +217,12 @@ public class JsonSerialization {
         return unserializeSerializationBlock(serializationBlock);
     }
 
+    public List<Node> unserializeToNode(String json) {
+        return unserializeToNode(JsonParser.parseString(json));
+    }
+
     //
-    // Private
+    // Unserialization - Private
     //
 
     private String serializePropertyValue(DataType dataType, Object value) {

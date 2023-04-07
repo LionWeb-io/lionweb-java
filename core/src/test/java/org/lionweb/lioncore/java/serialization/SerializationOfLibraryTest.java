@@ -47,7 +47,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
         JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
-        JsonElement reserialized = jsonSerialization.serializeTreeToJson(unserializedNodes.get(0));
+        JsonElement reserialized = jsonSerialization.serializeTreeToJsonElement(unserializedNodes.get(0));
         assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
     }
 
@@ -66,7 +66,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0", (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
         jsonSerialization.getPrimitiveValuesSerialization().registerSerializer("gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4", (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
-        JsonObject jsonSerialized = jsonSerialization.serializeTreeToJson(library).getAsJsonObject();
+        JsonObject jsonSerialized = jsonSerialization.serializeTreeToJsonElement(library).getAsJsonObject();
         InputStream inputStream = this.getClass().getResourceAsStream("/serialization/langeng-library.json");
         JsonObject jsonRead = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
         assertEquivalentLionWebJson(jsonRead, jsonSerialized);

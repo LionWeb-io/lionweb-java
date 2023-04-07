@@ -1,16 +1,11 @@
 package org.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.junit.Test;
-import org.lionweb.lioncore.java.metamodel.Concept;
-import org.lionweb.lioncore.java.metamodel.Property;
 import org.lionweb.lioncore.java.model.Node;
 
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 
@@ -80,7 +75,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                 "  ]\n" +
                 "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
+        JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -204,7 +199,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                 "  ]\n" +
                 "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
+        JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -328,7 +323,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                 "  ]\n" +
                 "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
+        JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
@@ -455,7 +450,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                 "  ]\n" +
                 "}").getAsJsonObject();
         JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        JsonObject serialized = jsonSerialization.serializeNodesToJson(node).getAsJsonObject();
+        JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
         assertEquivalentLionWebJson(expected, serialized);
     }
 
