@@ -15,6 +15,17 @@ public class MetamodelValidator extends Validator<Metamodel> {
     public ValidationResult validate(Metamodel metamodel) {
         ValidationResult result = new ValidationResult();
 
+        metamodel.thisAndAllDescendants().forEach(n ->
+                result.checkForError(!ModelValidator.isValidID(n.getID()),
+                        "Node IDs should respect the format for IDs", n));
+
+        metamodel.thisAndAllDescendants().forEach(n -> {
+                if (n instanceof HasKey<?>) {
+                    HasKey<?> hk = (HasKey<?>) n;
+                    result.checkForError(!ModelValidator.isValidID(hk.getKey()),
+                            "Keys should respect the format for IDs", n);
+                }});
+
         result.checkForError(metamodel.getName() == null,
                 "Qualified name not set", metamodel);
 
