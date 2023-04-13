@@ -1,9 +1,6 @@
 package org.lionweb.lioncore.java.utils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.lionweb.lioncore.java.metamodel.*;
