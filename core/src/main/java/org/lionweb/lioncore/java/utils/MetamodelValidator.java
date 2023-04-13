@@ -1,35 +1,100 @@
 package org.lionweb.lioncore.java.utils;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.metamodel.Enumeration;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
-public class MetamodelValidator {
+public class MetamodelValidator extends Validator<Metamodel> {
 
-  final class ValidationResult {
-    private final Set<Issue> issues = new HashSet<>();
+  @Override
+  public ValidationResult validate(Metamodel metamodel) {
+    ValidationResult result = new ValidationResult();
 
-    public Set<Issue> getIssues() {
-      return issues;
-    }
+    metamodel
+        .thisAndAllDescendants()
+        .forEach(
+            n ->
+                result.checkForError(
+                    !isValidID(n.getID()), "Node IDs should respect the format for IDs", n));
 
-    public boolean isSuccessful() {
-      return issues.stream().noneMatch(issue -> issue.getSeverity() == IssueSeverity.Error);
-    }
+    metamodel
+        .thisAndAllDescendants()
+        .forEach(
+            n -> {
+              if (n instanceof HasKey<?>) {
+                HasKey<?> hk = (HasKey<?>) n;
+                result.checkForError(
+                    !isValidID(hk.getKey()), "Keys should respect the format for IDs", n);
+              }
+            });
 
-    public ValidationResult addError(String message, Object subject) {
-      issues.add(new Issue(IssueSeverity.Error, message, subject));
-      return this;
-    }
+    result.checkForError(metamodel.getName() == null, "Qualified name not set", metamodel);
 
-    public <S> ValidationResult checkForError(boolean check, String message, S subject) {
-      if (check) {
-        issues.add(new Issue(IssueSeverity.Error, message, subject));
-      }
-      return this;
-    }
+    validateNamesAreUnique(metamodel.getElements(), result);
+
+    // TODO once we implement the Node interface we could navigate the tree differently
+
+    metamodel
+        .getElements()
+        .forEach(
+            (MetamodelElement el) -> {
+              result
+                  .checkForError(el.getName() == null, "Simple name not set", el)
+                  .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
+                  .checkForError(
+                      el.getMetamodel() != null && el.getMetamodel() != metamodel,
+                      "Metamodel not set correctly",
+                      el);
+
+              if (el instanceof Enumeration) {
+                Enumeration enumeration = (Enumeration) el;
+                enumeration
+                    .getLiterals()
+                    .forEach(
+                        (EnumerationLiteral lit) ->
+                            result.checkForError(
+                                lit.getName() == null, "Simple name not set", lit));
+                validateNamesAreUnique(enumeration.getLiterals(), result);
+              }
+              if (el instanceof FeaturesContainer) {
+                FeaturesContainer<M3Node> featuresContainer = (FeaturesContainer) el;
+                featuresContainer
+                    .getFeatures()
+                    .forEach(
+                        (Feature feature) ->
+                            result
+                                .checkForError(
+                                    feature.getName() == null, "Simple name not set", feature)
+                                .checkForError(
+                                    feature.getContainer() == null, "Container not set", feature)
+                                .checkForError(
+                                    feature.getContainer() != null
+                                        && feature.getContainer() != featuresContainer,
+                                    "Features container not set correctly",
+                                    feature));
+                validateNamesAreUnique(featuresContainer.getFeatures(), result);
+              }
+              if (el instanceof Concept) {
+                Concept concept = (Concept) el;
+                checkAncestors(concept, result);
+                result.checkForError(
+                    concept.getImplemented().size()
+                        != concept.getImplemented().stream().distinct().count(),
+                    "The same interface has been implemented multiple times",
+                    concept);
+              }
+              if (el instanceof ConceptInterface) {
+                checkAncestors((ConceptInterface) el, result);
+              }
+            });
+
+    return result;
   }
 
   private void validateNamesAreUnique(
@@ -235,5 +300,9 @@ public class MetamodelValidator {
             });
 
     return result;
+  }
+
+  public static boolean isValidID(String id) {
+    return Pattern.matches("[a-zA-Z0-9_-]+", id);
   }
 }
