@@ -7,11 +7,17 @@ public class LionCoreBuiltins extends Metamodel {
   private LionCoreBuiltins() {
     super("org.lionweb.Builtins");
     setID("lioncore_builtins");
+    setKey("lioncore_builtins");
     this.addElement(new PrimitiveType(this, "String"));
     this.addElement(new PrimitiveType(this, "Boolean"));
     this.addElement(new PrimitiveType(this, "Integer"));
     this.addElement(new PrimitiveType(this, "JSON"));
-    this.getElements().forEach(e -> e.setID("LIonCore_M3_" + e.getSimpleName()));
+    this.getElements()
+        .forEach(
+            e -> {
+              e.setID("LIonCore_M3_" + e.getName());
+              e.setKey(e.getName());
+            });
   }
 
   public static LionCoreBuiltins getInstance() {

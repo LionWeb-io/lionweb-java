@@ -6,12 +6,12 @@ public class NamingTest {
 
   @Test
   public void validSimpleName() {
-    Naming.validateSimpleName("myID123");
+    Naming.validateName("myID123");
   }
 
   @Test(expected = InvalidName.class)
   public void invalidSimpleNameStartingWithDigits() {
-    Naming.validateSimpleName("1myID");
+    Naming.validateName("1myID");
   }
 
   @Test

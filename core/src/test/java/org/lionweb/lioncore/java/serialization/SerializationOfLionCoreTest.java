@@ -38,21 +38,18 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             .findFirst()
             .get();
     assertEquals("LIonCore_M3", LIonCore_M3.getID());
-    assertEquals(
-        new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel"), LIonCore_M3.getConcept());
+    assertEquals(new MetaPointer("LIonCore_M3", "1", "Metamodel"), LIonCore_M3.getConcept());
     assertEquals(
         Arrays.asList(
             new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_name"), "LIonCore.M3"),
-            new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_version"), "1"),
-            new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_HasKey_key"), "LIonCore_M3")),
+                new MetaPointer("LIonCore_M3", "1", "Metamodel_name"), "LIonCore.M3"),
+            new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "version"), "1"),
+            new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "key"), "LIonCore_M3")),
         LIonCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
             new SerializedContainmentValue(
-                new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_elements"),
+                new MetaPointer("LIonCore_M3", "1", "elements"),
                 Arrays.asList(
                     "LIonCore_M3_Concept",
                     "LIonCore_M3_ConceptInterface",
@@ -75,8 +72,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(
         Arrays.asList(
             new SerializedReferenceValue(
-                new MetaPointer("LIonCore_M3", "1", "LIonCore_M3_Metamodel_dependsOn"),
-                Collections.emptyList())),
+                new MetaPointer("LIonCore_M3", "1", "dependsOn"), Collections.emptyList())),
         LIonCore_M3.getReferences());
 
     SerializedNode LIonCore_M3_NamespacedEntity =
@@ -84,9 +80,9 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             .filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity"))
             .findFirst()
             .get();
-    SerializedNode LIonCore_M3_NamespacedEntity_simpleName =
+    SerializedNode LIonCore_M3_NamespacedEntity_name =
         serializedChunk.getNodes().stream()
-            .filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity_simpleName"))
+            .filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity_name"))
             .findFirst()
             .get();
     SerializedNode LIonCore_M3_ConceptInterface_extends =
@@ -117,29 +113,25 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     SerializedNode lioncore = serializedChunk.getNodeByID("LIonCore_M3");
     assertEquals(MetaPointer.from(LionCore.getMetamodel()), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
-    assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore_M3_Metamodel_name"));
+    assertEquals("LIonCore.M3", lioncore.getPropertyValue("Metamodel_name"));
     assertEquals(17, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
 
     SerializedNode namespacedEntity = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity");
     assertEquals(MetaPointer.from(LionCore.getConcept()), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
-    assertEquals("true", namespacedEntity.getPropertyValue("LIonCore_M3_Concept_abstract"));
-    assertEquals(
-        "NamespacedEntity",
-        namespacedEntity.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
+    assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
+    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
-    SerializedNode simpleName =
-        serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_simpleName");
-    assertEquals(MetaPointer.from(LionCore.getProperty()), simpleName.getConcept());
-    assertEquals(
-        "simpleName", simpleName.getPropertyValue("LIonCore_M3_NamespacedEntity_simpleName"));
-    assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParentNodeID());
+    SerializedNode name = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_name");
+    assertEquals(MetaPointer.from(LionCore.getProperty()), name.getConcept());
+    assertEquals("name", name.getPropertyValue("NamespacedEntity_name"));
+    assertEquals("LIonCore_M3_NamespacedEntity", name.getParentNodeID());
     assertEquals(
         Arrays.asList(new SerializedReferenceValue.Entry("LIonCore_M3_String", "String")),
-        simpleName.getReferenceValues("LIonCore_M3_Property_type"));
+        name.getReferenceValues("Property_type"));
   }
 
   @Test
@@ -160,16 +152,15 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.isAbstract());
-    assertEquals("NamespacedEntity", namespacedEntity.getSimpleName());
+    assertEquals("NamespacedEntity", namespacedEntity.getName());
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
-    Property simpleName =
-        propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_simpleName");
-    assertEquals(LionCore.getProperty(), simpleName.getConcept());
-    assertEquals("simpleName", simpleName.getSimpleName());
-    assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
-    assertEquals("LIonCore_M3_String", simpleName.getType().getID());
+    Property name = propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
+    assertEquals(LionCore.getProperty(), name.getConcept());
+    assertEquals("name", name.getName());
+    assertEquals("LIonCore_M3_NamespacedEntity", name.getParent().getID());
+    assertEquals("LIonCore_M3_String", name.getType().getID());
   }
 
   @Test
@@ -200,15 +191,14 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
-    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("simpleName"));
+    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
-    DynamicNode simpleName =
-        dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_simpleName");
-    assertEquals(LionCore.getProperty(), simpleName.getConcept());
-    assertEquals("simpleName", simpleName.getPropertyValueByName("simpleName"));
-    assertEquals("LIonCore_M3_NamespacedEntity", simpleName.getParent().getID());
+    DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
+    assertEquals(LionCore.getProperty(), name.getConcept());
+    assertEquals("name", name.getPropertyValueByName("name"));
+    assertEquals("LIonCore_M3_NamespacedEntity", name.getParent().getID());
   }
 
   @Test(expected = RuntimeException.class)

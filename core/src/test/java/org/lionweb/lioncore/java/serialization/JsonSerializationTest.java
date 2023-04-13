@@ -130,7 +130,7 @@ public class JsonSerializationTest extends SerializationTest {
                                 "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"))
                 .findFirst()
                 .get();
-    assertEquals("TestEnumeration1", testEnumeration1.getSimpleName());
+    assertEquals("TestEnumeration1", testEnumeration1.getName());
     assertEquals(2, testEnumeration1.getLiterals().size());
 
     Concept sideTransformInfo =
@@ -143,7 +143,7 @@ public class JsonSerializationTest extends SerializationTest {
                                 "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"))
                 .findFirst()
                 .get();
-    assertEquals("SideTransformInfo", sideTransformInfo.getSimpleName());
+    assertEquals("SideTransformInfo", sideTransformInfo.getName());
     assertEquals(false, sideTransformInfo.isAbstract());
     assertEquals(3, sideTransformInfo.getFeatures().size());
     assertEquals(3, sideTransformInfo.getChildren().size());

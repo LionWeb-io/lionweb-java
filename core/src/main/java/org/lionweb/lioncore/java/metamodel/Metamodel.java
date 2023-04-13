@@ -76,7 +76,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
     return getElements().stream()
         .filter(element -> element instanceof Concept)
         .map(element -> (Concept) element)
-        .filter(element -> element.getSimpleName().equals(name))
+        .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);
   }
@@ -94,7 +94,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
     return getElements().stream()
         .filter(element -> element instanceof ConceptInterface)
         .map(element -> (ConceptInterface) element)
-        .filter(element -> element.getSimpleName().equals(name))
+        .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);
   }
@@ -115,7 +115,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
 
   public @Nullable MetamodelElement getElementByName(String name) {
     return getElements().stream()
-        .filter(element -> element.getSimpleName().equals(name))
+        .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);
   }

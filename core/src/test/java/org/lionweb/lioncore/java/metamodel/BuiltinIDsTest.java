@@ -66,8 +66,8 @@ public class BuiltinIDsTest {
 
     assertEquals("LIonCore_M3_NamespacedEntity", LionCore.getNamespacedEntity().getID());
     assertEquals(
-        "LIonCore_M3_NamespacedEntity_simpleName",
-        LionCore.getNamespacedEntity().getPropertyByName("simpleName").getID());
+        "LIonCore_M3_NamespacedEntity_name",
+        LionCore.getNamespacedEntity().getPropertyByName("name").getID());
 
     assertEquals("LIonCore_M3_NamespaceProvider", LionCore.getNamespaceProvider().getID());
 

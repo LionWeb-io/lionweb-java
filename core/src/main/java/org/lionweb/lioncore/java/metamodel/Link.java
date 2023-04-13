@@ -22,14 +22,14 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     super();
   }
 
-  public Link(@Nullable String simpleName, @Nonnull String id) {
+  public Link(@Nullable String name, @Nonnull String id) {
     // TODO verify that the container is also a NamespaceProvider
-    super(simpleName, id);
+    super(name, id);
   }
 
-  public Link(@Nullable String simpleName, @Nullable FeaturesContainer container) {
+  public Link(@Nullable String name, @Nullable FeaturesContainer container) {
     // TODO verify that the container is also a NamespaceProvider
-    super(simpleName, container);
+    super(name, container);
   }
 
   public boolean isMultiple() {
@@ -49,7 +49,7 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     if (type == null) {
       this.setReferenceSingleValue("type", null);
     } else {
-      this.setReferenceSingleValue("type", new ReferenceValue(type, type.getSimpleName()));
+      this.setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
     }
     return (T) this;
   }

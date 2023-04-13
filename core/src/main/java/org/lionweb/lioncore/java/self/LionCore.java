@@ -1,7 +1,6 @@
 package org.lionweb.lioncore.java.self;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
@@ -183,9 +182,7 @@ public class LionCore {
       namespacedEntity.setAbstract(true);
       namespacedEntity.addFeature(
           Property.createRequired(
-              "simpleName",
-              LionCoreBuiltins.getString(),
-              "LIonCore_M3_NamespacedEntity_simpleName"));
+              "name", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_name"));
       namespacedEntity.addFeature(
           Property.createRequired(
                   "qualifiedName",
@@ -207,23 +204,29 @@ public class LionCore {
   }
 
   private static void checkIDs(M3Node node) {
+    Set<String> clashingKeys = new HashSet<>(Arrays.asList("type", "extends", "name"));
     if (node.getID() == null) {
       if (node instanceof NamespacedEntity) {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
         node.setID(namespacedEntity.qualifiedName().replaceAll("\\.", "_"));
         if (node instanceof HasKey<?>) {
-          ((HasKey<?>) node).setKey(node.getID());
+          ((HasKey<?>) node).setKey(namespacedEntity.getName());
         }
       } else {
         throw new IllegalStateException(node.toString());
       }
     }
     if (node instanceof FeaturesContainer<?>) {
-      ((FeaturesContainer<?>) node)
+      FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
+      featuresContainer
           .getFeatures()
           .forEach(
               feature -> {
-                feature.setKey(feature.getID());
+                if (clashingKeys.contains(feature.getName())) {
+                  feature.setKey(featuresContainer.getName() + "_" + feature.getName());
+                } else {
+                  feature.setKey(feature.getName());
+                }
               });
     }
 

@@ -29,20 +29,20 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
   }
 
   public ConceptInterface(
-      @Nullable Metamodel metamodel, @Nullable String simpleName, @Nonnull String id) {
-    super(metamodel, simpleName, id);
+      @Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
+    super(metamodel, name, id);
   }
 
-  public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String simpleName) {
-    super(metamodel, simpleName);
+  public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String name) {
+    super(metamodel, name);
   }
 
-  public ConceptInterface(@Nullable String simpleName) {
-    super(null, simpleName);
+  public ConceptInterface(@Nullable String name) {
+    super(null, name);
   }
 
-  public ConceptInterface(@Nullable String simpleName, @Nonnull String id) {
-    super(null, simpleName, id);
+  public ConceptInterface(@Nullable String name, @Nonnull String id) {
+    super(null, name, id);
   }
 
   public @Nonnull List<ConceptInterface> getExtendedInterfaces() {
@@ -52,7 +52,7 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
   public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
     Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
     this.addReferenceMultipleValue(
-        "extends", new ReferenceValue(extendedInterface, extendedInterface.getSimpleName()));
+        "extends", new ReferenceValue(extendedInterface, extendedInterface.getName()));
   }
 
   @Override

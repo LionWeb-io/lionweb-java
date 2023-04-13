@@ -1,12 +1,10 @@
 package org.lionweb.lioncore.java.utils;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.lionweb.lioncore.java.metamodel.*;
+import org.lionweb.lioncore.java.metamodel.Enumeration;
 import org.lionweb.lioncore.java.model.impl.M3Node;
 
 public class MetamodelValidator extends Validator<Metamodel> {
@@ -44,7 +42,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
         .forEach(
             (MetamodelElement el) -> {
               result
-                  .checkForError(el.getSimpleName() == null, "Simple name not set", el)
+                  .checkForError(el.getName() == null, "Simple name not set", el)
                   .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
                   .checkForError(
                       el.getMetamodel() != null && el.getMetamodel() != metamodel,
@@ -58,7 +56,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
                     .forEach(
                         (EnumerationLiteral lit) ->
                             result.checkForError(
-                                lit.getSimpleName() == null, "Simple name not set", lit));
+                                lit.getName() == null, "Simple name not set", lit));
                 validateNamesAreUnique(enumeration.getLiterals(), result);
               }
               if (el instanceof FeaturesContainer) {
@@ -69,7 +67,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
                         (Feature feature) ->
                             result
                                 .checkForError(
-                                    feature.getSimpleName() == null, "Simple name not set", feature)
+                                    feature.getName() == null, "Simple name not set", feature)
                                 .checkForError(
                                     feature.getContainer() == null, "Container not set", feature)
                                 .checkForError(
@@ -100,8 +98,8 @@ public class MetamodelValidator extends Validator<Metamodel> {
       List<? extends NamespacedEntity> elements, ValidationResult result) {
     Map<String, List<NamespacedEntity>> elementsByName =
         elements.stream()
-            .filter(namespacedEntity -> namespacedEntity.getSimpleName() != null)
-            .collect(Collectors.groupingBy((NamespacedEntity::getSimpleName)));
+            .filter(namespacedEntity -> namespacedEntity.getName() != null)
+            .collect(Collectors.groupingBy((NamespacedEntity::getName)));
     elementsByName
         .entrySet()
         .forEach(
@@ -110,6 +108,43 @@ public class MetamodelValidator extends Validator<Metamodel> {
                 entry
                     .getValue()
                     .forEach((NamespacedEntity el) -> result.addError("Duplicate name", el));
+              }
+            });
+  }
+
+  private void validateKeysAreNotNull(Metamodel metamodel, ValidationResult result) {
+    metamodel
+        .thisAndAllDescendants()
+        .forEach(
+            n -> {
+              if (n instanceof HasKey<?>) {
+                HasKey<?> hasKey = (HasKey<?>) n;
+                String key = hasKey.getKey();
+                if (key == null) {
+                  result.addError("Key should not be null", n);
+                }
+              }
+            });
+  }
+
+  private void validateKeysAreUnique(Metamodel metamodel, ValidationResult result) {
+    Map<String, String> uniqueKeys = new HashMap<>();
+    metamodel
+        .thisAndAllDescendants()
+        .forEach(
+            n -> {
+              if (n instanceof HasKey<?>) {
+                HasKey<?> hasKey = (HasKey<?>) n;
+                String key = hasKey.getKey();
+                if (key != null) {
+                  if (uniqueKeys.containsKey(key)) {
+                    result.addError(
+                        "Key " + key + " is duplicate. It is also used by " + uniqueKeys.get(key),
+                        n);
+                  } else {
+                    uniqueKeys.put(key, n.getID());
+                  }
+                }
               }
             });
   }
@@ -202,6 +237,8 @@ public class MetamodelValidator extends Validator<Metamodel> {
     result.checkForError(metamodel.getName() == null, "Qualified name not set", metamodel);
 
     validateNamesAreUnique(metamodel.getElements(), result);
+    validateKeysAreNotNull(metamodel, result);
+    validateKeysAreUnique(metamodel, result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
@@ -210,7 +247,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
         .forEach(
             (MetamodelElement el) -> {
               result
-                  .checkForError(el.getSimpleName() == null, "Simple name not set", el)
+                  .checkForError(el.getName() == null, "Simple name not set", el)
                   .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
                   .checkForError(
                       el.getMetamodel() != null && el.getMetamodel() != metamodel,
@@ -224,7 +261,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
                     .forEach(
                         (EnumerationLiteral lit) ->
                             result.checkForError(
-                                lit.getSimpleName() == null, "Simple name not set", lit));
+                                lit.getName() == null, "Simple name not set", lit));
                 validateNamesAreUnique(enumeration.getLiterals(), result);
               }
               if (el instanceof FeaturesContainer) {
@@ -235,7 +272,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
                         (Feature feature) ->
                             result
                                 .checkForError(
-                                    feature.getSimpleName() == null, "Simple name not set", feature)
+                                    feature.getName() == null, "Simple name not set", feature)
                                 .checkForError(
                                     feature.getContainer() == null, "Container not set", feature)
                                 .checkForError(

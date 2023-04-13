@@ -14,7 +14,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.lionweb.lioncore.java.*;
 import org.lionweb.lioncore.java.metamodel.*;
 
 public class EcoreImporter {
@@ -99,8 +98,8 @@ public class EcoreImporter {
           throw new UnsupportedOperationException();
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
-          concept.setID(ePackage.getName() + "-" + concept.getSimpleName());
-          concept.setKey(ePackage.getName() + "-" + concept.getSimpleName());
+          concept.setID(ePackage.getName() + "-" + concept.getName());
+          concept.setKey(ePackage.getName() + "-" + concept.getName());
           concept.setAbstract(false);
           metamodel.addElement(concept);
           eClassesToConcepts.put(eClass, concept);
@@ -138,9 +137,9 @@ public class EcoreImporter {
               EAttribute eAttribute = (EAttribute) eFeature;
               Property property = new Property(eFeature.getName(), concept);
               property.setID(
-                  ePackage.getName() + "-" + concept.getSimpleName() + "-" + eFeature.getName());
+                  ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
               property.setKey(
-                  ePackage.getName() + "-" + concept.getSimpleName() + "-" + eFeature.getName());
+                  ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
               concept.addFeature(property);
               property.setOptional(!eAttribute.isRequired());
               property.setDerived(eAttribute.isDerived());
@@ -157,9 +156,9 @@ public class EcoreImporter {
               if (eReference.isContainment()) {
                 Containment containment = new Containment(eFeature.getName(), concept);
                 containment.setID(
-                    ePackage.getName() + "-" + concept.getSimpleName() + "-" + eFeature.getName());
+                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
                 containment.setKey(
-                    ePackage.getName() + "-" + concept.getSimpleName() + "-" + eFeature.getName());
+                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
                 containment.setOptional(!eReference.isRequired());
                 containment.setMultiple(eReference.isMany());
                 concept.addFeature(containment);
@@ -167,9 +166,9 @@ public class EcoreImporter {
               } else {
                 Reference reference = new Reference(eFeature.getName(), concept);
                 reference.setID(
-                    ePackage.getName() + "-" + concept.getSimpleName() + "-" + eFeature.getName());
+                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
                 reference.setKey(
-                    ePackage.getName() + "-" + concept.getSimpleName() + "-" + eFeature.getName());
+                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
                 reference.setOptional(!eReference.isRequired());
                 reference.setMultiple(eReference.isMany());
                 concept.addFeature(reference);
