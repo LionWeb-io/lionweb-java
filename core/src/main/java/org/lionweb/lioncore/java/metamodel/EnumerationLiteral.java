@@ -10,7 +10,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements Na
   public EnumerationLiteral() {}
 
   public EnumerationLiteral(@Nullable String name) {
-    setname(name);
+    setName(name);
   }
 
   @Override
@@ -18,7 +18,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements Na
     return getPropertyValue("name", String.class);
   }
 
-  public void setname(@Nullable String name) {
+  public void setName(@Nullable String name) {
     this.setPropertyValue("name", name);
   }
 

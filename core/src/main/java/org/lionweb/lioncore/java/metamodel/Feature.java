@@ -36,7 +36,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     this.setID(id);
     // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
-    setname(name);
+    setName(name);
     setParent(container);
   }
 
@@ -44,7 +44,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setDerived(false);
     // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
-    setname(name);
+    setName(name);
     setParent(container);
   }
 
@@ -77,7 +77,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     return getPropertyValue("name", String.class);
   }
 
-  public void setname(@Nullable String name) {
+  public void setName(@Nullable String name) {
     this.setPropertyValue("name", name);
   }
 
