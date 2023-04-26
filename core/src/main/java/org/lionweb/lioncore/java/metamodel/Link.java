@@ -20,16 +20,19 @@ import org.lionweb.lioncore.java.model.impl.M3Node;
 public abstract class Link<T extends M3Node> extends Feature<T> {
   public Link() {
     super();
+    setMultiple(false);
   }
 
   public Link(@Nullable String name, @Nonnull String id) {
     // TODO verify that the container is also a NamespaceProvider
     super(name, id);
+    setMultiple(false);
   }
 
   public Link(@Nullable String name, @Nullable FeaturesContainer container) {
     // TODO verify that the container is also a NamespaceProvider
     super(name, container);
+    setMultiple(false);
   }
 
   public boolean isMultiple() {
