@@ -32,14 +32,17 @@ public class Concept extends FeaturesContainer<Concept> {
 
   public Concept() {
     super();
+    setAbstract(false);
   }
 
   public Concept(@Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
     super(metamodel, name, id);
+    setAbstract(false);
   }
 
   public Concept(@Nullable Metamodel metamodel, @Nullable String name) {
     super(metamodel, name);
+    setAbstract(false);
   }
 
   @Nonnull

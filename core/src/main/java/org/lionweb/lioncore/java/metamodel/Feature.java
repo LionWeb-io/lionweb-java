@@ -23,15 +23,18 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
 
   public Feature() {
     setDerived(false);
+    setOptional(false);
   }
 
   public Feature(@Nullable String name, @Nonnull String id) {
     this(name, null, id);
     setDerived(false);
+    setOptional(false);
   }
 
   public Feature(@Nullable String name, @Nullable FeaturesContainer container, @Nonnull String id) {
     setDerived(false);
+    setOptional(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);
     // TODO verify that the container is also a NamespaceProvider
@@ -42,6 +45,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
 
   public Feature(@Nullable String name, @Nullable FeaturesContainer container) {
     setDerived(false);
+    setOptional(false);
     // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
