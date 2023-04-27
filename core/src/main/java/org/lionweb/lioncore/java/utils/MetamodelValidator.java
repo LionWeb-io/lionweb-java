@@ -1,7 +1,8 @@
 package org.lionweb.lioncore.java.utils;
 
+import static org.lionweb.lioncore.java.utils.CommonChecks.isValidID;
+
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.metamodel.Enumeration;
@@ -297,9 +298,5 @@ public class MetamodelValidator extends Validator<Metamodel> {
             });
 
     return result;
-  }
-
-  public static boolean isValidID(String id) {
-    return Pattern.matches("[a-zA-Z0-9_-]+", id);
   }
 }

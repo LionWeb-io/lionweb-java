@@ -1,6 +1,7 @@
 package org.lionweb.lioncore.java.utils;
 
 import static org.junit.Assert.assertEquals;
+import static org.lionweb.lioncore.java.utils.CommonChecks.isValidID;
 
 import org.junit.Test;
 
@@ -8,22 +9,22 @@ public class IDsCheckTest {
 
   @Test
   public void positiveCase() {
-    assertEquals(true, MetamodelValidator.isValidID("foo"));
+    assertEquals(true, isValidID("foo"));
   }
 
   @Test
   public void emptyIDIsInvalid() {
-    assertEquals(false, MetamodelValidator.isValidID(""));
+    assertEquals(false, isValidID(""));
   }
 
   @Test
   public void idsWithUmlautsAreInvalid() {
-    assertEquals(false, MetamodelValidator.isValidID("foö"));
+    assertEquals(false, isValidID("foö"));
   }
 
   @Test
   public void idsWithAccentsAreInvalid() {
-    assertEquals(false, MetamodelValidator.isValidID("foò"));
-    assertEquals(false, MetamodelValidator.isValidID("foó"));
+    assertEquals(false, isValidID("foò"));
+    assertEquals(false, isValidID("foó"));
   }
 }
