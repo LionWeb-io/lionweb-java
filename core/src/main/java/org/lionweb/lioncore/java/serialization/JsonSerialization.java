@@ -277,102 +277,129 @@ public class JsonSerialization {
     }
   }
 
+    /**
+     * This method returned a sorted version of the original list, so that leaves nodes comes first, or in other
+     * words that a parent never precedes its children.
+     */
   private List<SerializedNode> sortLeavesFirst(List<SerializedNode> originalList) {
-      List<SerializedNode> sortedList = new ArrayList<>();
-      List<SerializedNode> nodesToSort = new ArrayList<>(originalList);
-      // We create the list going from the roots, to their children and so on, and then we will revert the list
+    List<SerializedNode> sortedList = new ArrayList<>();
+    List<SerializedNode> nodesToSort = new ArrayList<>(originalList);
+    // We create the list going from the roots, to their children and so on, and then we will revert
+    // the list
 
-      // We can start by putting at the start all the elements which either have no parent,
-      // or had a parent already added to the list
-      while (sortedList.size() < originalList.size()) {
-          int initialLength = sortedList.size();
-          for (int i=0;i<nodesToSort.size();i++) {
-            SerializedNode n = nodesToSort.get(i);
-            if (n.getParentNodeID() == null || sortedList.stream().anyMatch(sn -> Objects.equals(sn.getID(), n.getParentNodeID()))) {
-                sortedList.add(n);
-                nodesToSort.remove(i);
-                i--;
-            }
+    // We can start by putting at the start all the elements which either have no parent,
+    // or had a parent already added to the list
+    while (sortedList.size() < originalList.size()) {
+      int initialLength = sortedList.size();
+      for (int i = 0; i < nodesToSort.size(); i++) {
+        SerializedNode n = nodesToSort.get(i);
+        if (n.getParentNodeID() == null
+            || sortedList.stream()
+                .anyMatch(sn -> Objects.equals(sn.getID(), n.getParentNodeID()))) {
+          sortedList.add(n);
+          nodesToSort.remove(i);
+          i--;
         }
-          if (initialLength == sortedList.size()) {
-              throw new IllegalStateException("Something is not right");
-          }
       }
+      if (initialLength == sortedList.size()) {
+        throw new IllegalStateException("Something is not right: we are unable to complete sorting the list "
+                + originalList);
+      }
+    }
 
-      Collections.reverse(sortedList);
-      return sortedList;
+    Collections.reverse(sortedList);
+    return sortedList;
   }
 
   private List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
     return unserializeNodes(serializationBlock.getNodes());
   }
 
-    private List<Node> unserializeNodes(List<SerializedNode> serializedNodes) {
-        // We want to unserialize them starting from the leaves. This is useful because in certain
-        // cases we may want to use the children as constructor parameters of the parent
-        List<SerializedNode> sortedSerializedNodes = sortLeavesFirst(serializedNodes);
-        System.out.println("unserializeNodes. sortedSerializedNodes: " + sortedSerializedNodes);
-        Map<String, Node> unserializedNodesByID = new HashMap<>();
-        List<Node> nodes =
-                sortedSerializedNodes.stream()
-                        .map(n -> {
-                            Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
-                            unserializedNodesByID.put(n.getID(), instantiatedNode);
-                            return instantiatedNode;
-                        })
-                        .collect(Collectors.toList());
-        System.out.println("unserializeNodes. Nodes: " + nodes);
-        System.out.println("unserializeNodes. Nodes IDS: " + nodes.stream().map(n -> n.getID()).collect(Collectors.joining(", ")));
-        NodeResolver nodeResolver =
-                new CompositeNodeResolver(new MapBasedResolver(unserializedNodesByID), this.nodeResolver);
-        serializedNodes.stream().forEach(n -> populateNode(n, nodeResolver));
+  private List<Node> unserializeNodes(List<SerializedNode> serializedNodes) {
+    // We want to unserialize the nodes starting from the leaves. This is useful because in certain
+    // cases we may want to use the children as constructor parameters of the parent
+    List<SerializedNode> sortedSerializedNodes = sortLeavesFirst(serializedNodes);
+      if (sortedSerializedNodes.size() != serializedNodes.size()) {
+          throw new IllegalStateException();
+      }
+    Map<String, Node> unserializedNodesByID = new HashMap<>();
+   sortedSerializedNodes.stream()
+            .forEach(
+                n -> {
+                  Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
+                  unserializedNodesByID.put(n.getID(), instantiatedNode);
+                });
+    if (sortedSerializedNodes.size() != unserializedNodesByID.size()) {
+        throw new IllegalStateException();
+    }
+    NodeResolver nodeResolver =
+        new CompositeNodeResolver(new MapBasedResolver(unserializedNodesByID), this.nodeResolver);
+    serializedNodes.stream().forEach(n -> populateNode(n, nodeResolver));
 
-        // We want the nodes returned to be sorted as the original serializedNodes
-        List<Node> nodesWithOriginalSorting = new LinkedList<>();
-        serializedNodes.forEach(sn -> {
-            Optional<Node> node = nodes.stream().filter(n -> n.getID().equals(sn.getID())).findFirst();
-            if (!node.isPresent()) {
-                throw new IllegalStateException("Unable to find node with ID " + sn.getID()+". Known IDs: " + nodes.stream().map(n -> n.getID()).collect(Collectors.joining(", ")));
-            }
-            nodesWithOriginalSorting.add(node.get());
+    // We want the nodes returned to be sorted as the original serializedNodes
+    List<Node> nodesWithOriginalSorting = new LinkedList<>();
+    serializedNodes.forEach(
+        sn -> {
+            Node node = unserializedNodesByID.get(sn.getID());
+          if (node == null) {
+            throw new IllegalStateException(
+                "Unable to find node with ID "
+                    + sn.getID()
+                    + ". Known IDs: "
+                    + unserializedNodesByID.keySet());
+          }
+          nodesWithOriginalSorting.add(node);
         });
 
-        return nodesWithOriginalSorting;
-    }
+    return nodesWithOriginalSorting;
+  }
 
-  private Node instantiateNodeFromSerialized(SerializedNode serializedNode, Map<String, Node> unserializedNodesByID) {
+  private Node instantiateNodeFromSerialized(
+      SerializedNode serializedNode, Map<String, Node> unserializedNodesByID) {
     Concept concept = getConceptResolver().resolveConcept(serializedNode.getConcept());
-    Map<Property, Object> propertiesValues = new HashMap<>();
-      serializedNode
-              .getProperties()
-              .forEach(
-                      serializedPropertyValue -> {
-                          Property property =
-                                  concept.getPropertyByMetaPointer(serializedPropertyValue.getMetaPointer());
-                          Objects.requireNonNull(
-                                  property,
-                                  "Property with metaPointer "
-                                          + serializedPropertyValue.getMetaPointer()
-                                          + " not found in concept "
-                                          + concept
-                                          + ". SerializedNode: "
-                                          + serializedNode);
-                          Object unserializedValue =
-                                  primitiveValuesSerialization.unserialize(
-                                          property.getType().getID(), serializedPropertyValue.getValue());
-                          propertiesValues.put(property, unserializedValue);
-                      });
-    Node node = getNodeInstantiator().instantiate(concept, serializedNode, unserializedNodesByID, propertiesValues);
-    propertiesValues.entrySet().forEach(pv -> {
-        Object unserializedValue = pv.getValue();
-        Property property = pv.getKey();
-      // Avoiding calling setters, in case the value has been already set at construction time
 
-      if (!property.isDerived() && !Objects.equals(unserializedValue, node.getPropertyValue(property))) {
-          node.setPropertyValue(property, unserializedValue);
-      }
-    });
-    nodeResolver.add(node);
+    // We prepare all the properties values and pass them to instantiator, as it could use them to build the node
+    Map<Property, Object> propertiesValues = new HashMap<>();
+    serializedNode
+        .getProperties()
+        .forEach(
+            serializedPropertyValue -> {
+              Property property =
+                  concept.getPropertyByMetaPointer(serializedPropertyValue.getMetaPointer());
+              Objects.requireNonNull(
+                  property,
+                  "Property with metaPointer "
+                      + serializedPropertyValue.getMetaPointer()
+                      + " not found in concept "
+                      + concept
+                      + ". SerializedNode: "
+                      + serializedNode);
+              Object unserializedValue =
+                  primitiveValuesSerialization.unserialize(
+                      property.getType().getID(), serializedPropertyValue.getValue());
+              propertiesValues.put(property, unserializedValue);
+            });
+    Node node =
+        getNodeInstantiator()
+            .instantiate(concept, serializedNode, unserializedNodesByID, propertiesValues);
+
+    // We ensure that the properties values are set correctly. They could already have been set
+    // while instantiating the node. If that is the case, we have nothing to do, otherwise we set
+    // the values
+    propertiesValues
+        .entrySet()
+        .forEach(
+            pv -> {
+              Object unserializedValue = pv.getValue();
+              Property property = pv.getKey();
+              // Avoiding calling setters, in case the value has been already set at construction
+              // time
+
+              if (!property.isDerived()
+                  && !Objects.equals(unserializedValue, node.getPropertyValue(property))) {
+                node.setPropertyValue(property, unserializedValue);
+              }
+            });
 
     return node;
   }
@@ -398,10 +425,14 @@ public class JsonSerialization {
               Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
-              List<Node> unserializedValue = serializedContainmentValue.getValue().stream().map(childNodeID -> nodeResolver.strictlyResolve(childNodeID)).collect(Collectors.toList());
-            if (!containment.isDerived() && !Objects.equals(unserializedValue, node.getChildren(containment))) {
+              List<Node> unserializedValue =
+                  serializedContainmentValue.getValue().stream()
+                      .map(childNodeID -> nodeResolver.strictlyResolve(childNodeID))
+                      .collect(Collectors.toList());
+              if (!containment.isDerived()
+                  && !Objects.equals(unserializedValue, node.getChildren(containment))) {
                 unserializedValue.forEach(child -> node.addChild(containment, child));
-            }
+              }
             });
   }
 

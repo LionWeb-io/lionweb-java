@@ -15,7 +15,6 @@ public interface NodeResolver {
   default Node strictlyResolve(String nodeID) {
     Node partial = resolve(nodeID);
     if (partial == null) {
-      System.out.println("RESOLVER " + this);
       throw new UnresolvedNodeException(nodeID);
     } else {
       return partial;
