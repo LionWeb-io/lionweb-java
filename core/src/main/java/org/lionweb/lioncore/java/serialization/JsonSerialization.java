@@ -277,10 +277,10 @@ public class JsonSerialization {
     }
   }
 
-    /**
-     * This method returned a sorted version of the original list, so that leaves nodes comes first, or in other
-     * words that a parent never precedes its children.
-     */
+  /**
+   * This method returned a sorted version of the original list, so that leaves nodes comes first,
+   * or in other words that a parent never precedes its children.
+   */
   private List<SerializedNode> sortLeavesFirst(List<SerializedNode> originalList) {
     List<SerializedNode> sortedList = new ArrayList<>();
     List<SerializedNode> nodesToSort = new ArrayList<>(originalList);
@@ -302,8 +302,8 @@ public class JsonSerialization {
         }
       }
       if (initialLength == sortedList.size()) {
-        throw new IllegalStateException("Something is not right: we are unable to complete sorting the list "
-                + originalList);
+        throw new IllegalStateException(
+            "Something is not right: we are unable to complete sorting the list " + originalList);
       }
     }
 
@@ -319,18 +319,18 @@ public class JsonSerialization {
     // We want to unserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
     List<SerializedNode> sortedSerializedNodes = sortLeavesFirst(serializedNodes);
-      if (sortedSerializedNodes.size() != serializedNodes.size()) {
-          throw new IllegalStateException();
-      }
+    if (sortedSerializedNodes.size() != serializedNodes.size()) {
+      throw new IllegalStateException();
+    }
     Map<String, Node> unserializedNodesByID = new HashMap<>();
-   sortedSerializedNodes.stream()
-            .forEach(
-                n -> {
-                  Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
-                  unserializedNodesByID.put(n.getID(), instantiatedNode);
-                });
+    sortedSerializedNodes.stream()
+        .forEach(
+            n -> {
+              Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
+              unserializedNodesByID.put(n.getID(), instantiatedNode);
+            });
     if (sortedSerializedNodes.size() != unserializedNodesByID.size()) {
-        throw new IllegalStateException();
+      throw new IllegalStateException();
     }
     NodeResolver nodeResolver =
         new CompositeNodeResolver(new MapBasedResolver(unserializedNodesByID), this.nodeResolver);
@@ -340,7 +340,7 @@ public class JsonSerialization {
     List<Node> nodesWithOriginalSorting = new LinkedList<>();
     serializedNodes.forEach(
         sn -> {
-            Node node = unserializedNodesByID.get(sn.getID());
+          Node node = unserializedNodesByID.get(sn.getID());
           if (node == null) {
             throw new IllegalStateException(
                 "Unable to find node with ID "
@@ -358,7 +358,8 @@ public class JsonSerialization {
       SerializedNode serializedNode, Map<String, Node> unserializedNodesByID) {
     Concept concept = getConceptResolver().resolveConcept(serializedNode.getConcept());
 
-    // We prepare all the properties values and pass them to instantiator, as it could use them to build the node
+    // We prepare all the properties values and pass them to instantiator, as it could use them to
+    // build the node
     Map<Property, Object> propertiesValues = new HashMap<>();
     serializedNode
         .getProperties()
