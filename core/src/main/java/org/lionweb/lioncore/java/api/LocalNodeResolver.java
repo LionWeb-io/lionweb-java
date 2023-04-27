@@ -30,4 +30,9 @@ public class LocalNodeResolver implements NodeResolver {
   public void addAll(@Nonnull List<Node> nodes) {
     nodes.forEach(n -> add(n));
   }
+
+  @Override
+  public String toString() {
+    return "LocalNodeResolver(" + nodes.keySet() + ")";
+  }
 }

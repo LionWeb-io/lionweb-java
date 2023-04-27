@@ -118,7 +118,7 @@ public class JsonSerializationTest extends SerializationTest {
         this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
+    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
     Enumeration testEnumeration1 =
         (Enumeration)

@@ -24,7 +24,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
         this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
+    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
     Concept library = conceptByID(unserializedNodes, "library-Library");
     Property libraryName = library.getPropertyByName("name");
@@ -51,7 +51,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
         this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
+    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
     JsonElement reserialized =
         jsonSerialization.serializeTreeToJsonElement(unserializedNodes.get(0));
     assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());

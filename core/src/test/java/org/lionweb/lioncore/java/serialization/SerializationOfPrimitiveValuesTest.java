@@ -146,8 +146,8 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         .getNodeInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
+            (concept, serializedNode, unserializedNodesByID, propertiesValue) -> new MyNodeWithProperties(serializedNode.getID()));
+    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
     assertEquals(Arrays.asList(node), unserialized);
   }
 
@@ -280,8 +280,8 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         .getNodeInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
+            (concept, serializedNode, unserializedNodesByID, propertiesValue) -> new MyNodeWithProperties(serializedNode.getID()));
+    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
     assertEquals(Arrays.asList(node), unserialized);
   }
 
@@ -414,8 +414,8 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         .getNodeInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
+            (concept, serializedNode, unserializedNodesByID, propertiesValue) -> new MyNodeWithProperties(serializedNode.getID()));
+    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
     assertEquals(Arrays.asList(node), unserialized);
   }
 
@@ -554,8 +554,8 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         .getNodeInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode) -> new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNode(serialized);
+            (concept, serializedNode, unserializedNodesByID, propertiesValue) -> new MyNodeWithProperties(serializedNode.getID()));
+    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
     assertEquals(Arrays.asList(node), unserialized);
   }
 }
