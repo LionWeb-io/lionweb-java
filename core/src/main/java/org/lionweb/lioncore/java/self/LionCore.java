@@ -3,6 +3,8 @@ package org.lionweb.lioncore.java.self;
 import java.util.*;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.impl.M3Node;
+import org.lionweb.lioncore.java.utils.MetamodelValidator;
+import org.lionweb.lioncore.java.utils.ValidationResult;
 
 public class LionCore {
 
@@ -200,6 +202,10 @@ public class LionCore {
       checkIDs(INSTANCE);
     }
     checkIDs(INSTANCE);
+    ValidationResult vr = new MetamodelValidator().validate(INSTANCE);
+    if (!vr.isSuccessful()) {
+      throw new RuntimeException("LionCore Metamodel is not valid: " + vr);
+    }
     return INSTANCE;
   }
 
