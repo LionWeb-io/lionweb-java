@@ -3,6 +3,8 @@ package org.lionweb.lioncore.java.serialization;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -260,6 +262,10 @@ public class JsonSerialization {
     return unserializeToNodes(JsonParser.parseString(json));
   }
 
+  public List<Node> unserializeToNodes(InputStream inputStream) {
+    return unserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
+  }
+
   //
   // Unserialization - Private
   //
@@ -327,6 +333,9 @@ public class JsonSerialization {
         .forEach(
             n -> {
               Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
+              if (unserializedNodesByID.containsKey(n.getID())) {
+                throw new IllegalStateException("Duplicate ID found: " + n.getID());
+              }
               unserializedNodesByID.put(n.getID(), instantiatedNode);
             });
     if (sortedSerializedNodes.size() != unserializedNodesByID.size()) {

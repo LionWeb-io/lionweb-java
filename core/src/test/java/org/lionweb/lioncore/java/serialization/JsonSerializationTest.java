@@ -13,6 +13,7 @@ import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
+import org.lionweb.lioncore.java.utils.MetamodelValidator;
 
 /** Testing various functionalities of JsonSerialization. */
 public class JsonSerializationTest extends SerializationTest {
@@ -147,5 +148,25 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(false, sideTransformInfo.isAbstract());
     assertEquals(3, sideTransformInfo.getFeatures().size());
     assertEquals(3, sideTransformInfo.getChildren().size());
+  }
+
+  @Test
+  public void unserializeMetamodelWithDependencies() {
+    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    Metamodel starlasu =
+        (Metamodel)
+            jsonSerialization
+                .unserializeToNodes(
+                    this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json"))
+                .get(0);
+    jsonSerialization.getNodeResolver().addTree(starlasu);
+    Metamodel properties =
+        (Metamodel)
+            jsonSerialization
+                .unserializeToNodes(
+                    this.getClass().getResourceAsStream("/properties-example/properties.lmm.json"))
+                .get(0);
+    MetamodelValidator.ensureIsValid(starlasu);
+    MetamodelValidator.ensureIsValid(properties);
   }
 }
