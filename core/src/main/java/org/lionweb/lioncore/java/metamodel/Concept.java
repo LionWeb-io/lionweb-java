@@ -200,8 +200,10 @@ public class Concept extends FeaturesContainer<Concept> {
   }
 
   public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
+    //getMetamodel().dependsOn()
     return this.allReferences().stream()
-        .filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer))
+        .filter(p ->
+                MetaPointer.from(p, this.getMetamodel()).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }

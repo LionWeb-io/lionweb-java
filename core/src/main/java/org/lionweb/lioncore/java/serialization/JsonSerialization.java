@@ -289,6 +289,9 @@ public class JsonSerialization {
         serializationBlock.getNodes().stream()
             .map(n -> instantiateNodeFromSerialized(n))
             .collect(Collectors.toList());
+    if (nodes.stream().map(n -> n.getID()).distinct().count() != nodes.size()) {
+        throw new IllegalStateException("Duplicate IDs found");
+    }
     NodeResolver nodeResolver =
         new CompositeNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
     serializationBlock.getNodes().stream().forEach(n -> populateNode(n, nodeResolver));
