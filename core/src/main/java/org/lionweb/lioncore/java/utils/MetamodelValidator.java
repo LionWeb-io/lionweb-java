@@ -12,7 +12,8 @@ public class MetamodelValidator extends Validator<Metamodel> {
 
   @Override
   public ValidationResult validate(Metamodel metamodel) {
-    ValidationResult result = new ValidationResult();
+    // Given metamodels are also valid node trees, we check against errors for node trees
+    ValidationResult result = new NodeTreeValidator().validate(metamodel);
 
     metamodel
         .thisAndAllDescendants()
