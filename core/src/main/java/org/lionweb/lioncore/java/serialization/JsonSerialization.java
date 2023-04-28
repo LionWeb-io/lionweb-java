@@ -288,8 +288,15 @@ public class JsonSerialization {
         serializationBlock.getNodes().stream()
             .map(n -> instantiateNodeFromSerialized(n))
             .collect(Collectors.toList());
-    if (nodes.stream().map(n -> n.getID()).distinct().count() != nodes.size()) {
-      throw new IllegalStateException("Duplicate IDs found");
+    Map<String, List<Node>> nodesByID =
+        nodes.stream().collect(Collectors.groupingBy(n -> n.getID()));
+    List<String> duplicateIDs =
+        nodesByID.entrySet().stream()
+            .filter(e -> e.getValue().size() > 1)
+            .map(e -> e.getKey())
+            .collect(Collectors.toList());
+    if (!duplicateIDs.isEmpty()) {
+      throw new IllegalStateException("Duplicate IDs found: " + duplicateIDs);
     }
     NodeResolver nodeResolver =
         new CompositeNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
