@@ -9,7 +9,7 @@ public class NodeTreeValidator extends Validator<Node> {
   public ValidationResult validate(Node element) {
     ValidationResult validationResult = new ValidationResult();
     validateNodeAndDescendants(element, validationResult);
-    validateNodeAndDescendants(element, validationResult);
+    validateIDsAreUnique(element, validationResult);
     return validationResult;
   }
 
@@ -19,17 +19,17 @@ public class NodeTreeValidator extends Validator<Node> {
   }
 
   private void validateIDsAreUnique(Node node, ValidationResult result) {
-    Map<String, String> uniqueIDs = new HashMap<>();
+    Map<String, Node> uniqueIDs = new HashMap<>();
     node.thisAndAllDescendants()
         .forEach(
             n -> {
-              String id = node.getID();
+              String id = n.getID();
               if (id != null) {
                 if (uniqueIDs.containsKey(id)) {
                   result.addError(
                       "ID " + id + " is duplicate. It is also used by " + uniqueIDs.get(id), n);
                 } else {
-                  uniqueIDs.put(id, n.getID());
+                  uniqueIDs.put(id, n);
                 }
               }
             });
