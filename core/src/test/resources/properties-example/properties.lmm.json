@@ -119,7 +119,7 @@
             "key": "features"
           },
           "children": [
-            "props"
+            "io_lionweb_Properties-PropertiesFile-props"
           ]
         }
       ],
@@ -149,7 +149,7 @@
       "parent": "io_lionweb_Properties"
     },
     {
-      "id": "props",
+      "id": "io_lionweb_Properties-PropertiesFile-props",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -272,8 +272,8 @@
             "key": "features"
           },
           "children": [
-            "name",
-            "value"
+            "io_lionweb_Properties-Property-name",
+            "io_lionweb_Properties-Property-value"
           ]
         }
       ],
@@ -303,7 +303,7 @@
       "parent": "io_lionweb_Properties"
     },
     {
-      "id": "name",
+      "id": "io_lionweb_Properties-Property-name",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -370,7 +370,7 @@
       "parent": "io_lionweb_Properties-Property"
     },
     {
-      "id": "value",
+      "id": "io_lionweb_Properties-Property-value",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -569,7 +569,7 @@
             "key": "features"
           },
           "children": [
-            "value"
+            "io_lionweb_Properties-BooleanValue-value"
           ]
         }
       ],
@@ -599,7 +599,7 @@
       "parent": "io_lionweb_Properties"
     },
     {
-      "id": "value",
+      "id": "io_lionweb_Properties-BooleanValue-value",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -714,7 +714,7 @@
             "key": "features"
           },
           "children": [
-            "value"
+            "io_lionweb_Properties-DecValue-value"
           ]
         }
       ],
@@ -744,7 +744,7 @@
       "parent": "io_lionweb_Properties"
     },
     {
-      "id": "value",
+      "id": "io_lionweb_Properties-DecValue-value",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -859,7 +859,7 @@
             "key": "features"
           },
           "children": [
-            "value"
+            "io_lionweb_Properties-IntValue-value"
           ]
         }
       ],
@@ -889,7 +889,7 @@
       "parent": "io_lionweb_Properties"
     },
     {
-      "id": "value",
+      "id": "io_lionweb_Properties-IntValue-value",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -1004,7 +1004,7 @@
             "key": "features"
           },
           "children": [
-            "value"
+            "io_lionweb_Properties-StringValue-value"
           ]
         }
       ],
@@ -1034,7 +1034,7 @@
       "parent": "io_lionweb_Properties"
     },
     {
-      "id": "value",
+      "id": "io_lionweb_Properties-StringValue-value",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
