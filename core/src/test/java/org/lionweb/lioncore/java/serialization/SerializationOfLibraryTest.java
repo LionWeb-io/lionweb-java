@@ -89,4 +89,12 @@ public class SerializationOfLibraryTest extends SerializationTest {
         JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
     assertEquivalentLionWebJson(jsonRead, jsonSerialized);
   }
+
+  @Test(expected = IllegalStateException.class)
+  public void unserializeMetamodelWithDuplicateIDs() {
+    InputStream inputStream =
+        this.getClass().getResourceAsStream("/serialization/library-metamodel-with-duplicate.json");
+    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    jsonSerialization.unserializeToNodes(inputStream);
+  }
 }

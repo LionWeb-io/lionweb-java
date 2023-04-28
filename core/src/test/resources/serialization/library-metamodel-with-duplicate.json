@@ -113,7 +113,6 @@
           },
           "children": [
             "library-Book-title",
-            "library-Book-pages",
             "library-Book-author"
           ]
         }
@@ -206,7 +205,7 @@
       "parent": "library-Book"
     },
     {
-      "id": "library-Book-pages",
+      "id": "library-Book-title",
       "concept": {
         "metamodel": "LIonCore_M3",
         "version": "1",
@@ -251,7 +250,7 @@
             "version": "1",
             "key": "key"
           },
-          "value": "library-Book-pages"
+          "value": "library-Book-title"
         }
       ],
       "children": [],
