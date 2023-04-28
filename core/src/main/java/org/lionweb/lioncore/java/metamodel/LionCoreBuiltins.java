@@ -1,8 +1,5 @@
 package org.lionweb.lioncore.java.metamodel;
 
-import org.lionweb.lioncore.java.utils.MetamodelValidator;
-import org.lionweb.lioncore.java.utils.ValidationResult;
-
 public class LionCoreBuiltins extends Metamodel {
   private static LionCoreBuiltins INSTANCE = new LionCoreBuiltins();
 
@@ -11,20 +8,16 @@ public class LionCoreBuiltins extends Metamodel {
     super("org.lionweb.Builtins");
     setID("lioncore_builtins");
     setKey("lioncore_builtins");
-    this.addElement(new PrimitiveType(this, "String"));
-    this.addElement(new PrimitiveType(this, "Boolean"));
-    this.addElement(new PrimitiveType(this, "Integer"));
-    this.addElement(new PrimitiveType(this, "JSON"));
+    new PrimitiveType(this, "String");
+    new PrimitiveType(this, "Boolean");
+    new PrimitiveType(this, "Integer");
+    new PrimitiveType(this, "JSON");
     this.getElements()
         .forEach(
             e -> {
               e.setID("LIonCore_M3_" + e.getName());
               e.setKey(e.getName());
             });
-    ValidationResult vr = new MetamodelValidator().validate(this);
-    if (!vr.isSuccessful()) {
-      throw new RuntimeException("LionCoreBuiltins Metamodel is not valid: " + vr);
-    }
   }
 
   public static LionCoreBuiltins getInstance() {

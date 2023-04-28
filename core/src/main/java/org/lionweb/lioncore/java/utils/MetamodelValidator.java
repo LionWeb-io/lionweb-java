@@ -108,7 +108,9 @@ public class MetamodelValidator extends Validator<Metamodel> {
               if (entry.getValue().size() > 1) {
                 entry
                     .getValue()
-                    .forEach((NamespacedEntity el) -> result.addError("Duplicate name", el));
+                    .forEach(
+                        (NamespacedEntity el) ->
+                            result.addError("Duplicate name " + el.getName(), el));
               }
             });
   }

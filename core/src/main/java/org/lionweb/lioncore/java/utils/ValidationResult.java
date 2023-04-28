@@ -2,6 +2,7 @@ package org.lionweb.lioncore.java.utils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ValidationResult {
   private final Set<Issue> issues = new HashSet<>();
@@ -24,5 +25,12 @@ public class ValidationResult {
       issues.add(new Issue(IssueSeverity.Error, message, subject));
     }
     return this;
+  }
+
+  @Override
+  public String toString() {
+    return "ValidationResult("
+        + issues.stream().map(Issue::toString).collect(Collectors.joining(", "))
+        + ")";
   }
 }
