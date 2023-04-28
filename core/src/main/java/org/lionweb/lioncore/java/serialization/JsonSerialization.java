@@ -3,6 +3,9 @@ package org.lionweb.lioncore.java.serialization;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -258,6 +261,10 @@ public class JsonSerialization {
 
   public List<Node> unserializeToNode(String json) {
     return unserializeToNode(JsonParser.parseString(json));
+  }
+
+  public List<Node> unserializeToNodes(InputStream inputStream) {
+      return unserializeToNode(JsonParser.parseReader(new InputStreamReader(inputStream)));
   }
 
   //

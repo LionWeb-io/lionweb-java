@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import org.lionweb.lioncore.java.metamodel.Metamodel;
 import org.lionweb.lioncore.java.model.Node;
 
 /** This NodeResolver consult a given list of nodes to find the one with the requested ID. */
@@ -29,5 +31,10 @@ public class LocalNodeResolver implements NodeResolver {
 
   public void addAll(@Nonnull List<Node> nodes) {
     nodes.forEach(n -> add(n));
+  }
+
+  public void addTree(@Nonnull Node root) {
+    add(root);
+    root.getChildren().forEach(c -> addTree(c));
   }
 }

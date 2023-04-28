@@ -4,6 +4,8 @@ import static org.junit.Assert.assertEquals;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 import com.google.gson.*;
+
+import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -147,5 +149,13 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(false, sideTransformInfo.isAbstract());
     assertEquals(3, sideTransformInfo.getFeatures().size());
     assertEquals(3, sideTransformInfo.getChildren().size());
+  }
+
+  @Test
+  public void unserializeMetamodelWithDependencies() {
+    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    Metamodel starlasu = (Metamodel) jsonSerialization.unserializeToNodes(this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json")).get(0);
+    jsonSerialization.getNodeResolver().addTree(starlasu);
+    Metamodel properties = (Metamodel) jsonSerialization.unserializeToNodes(this.getClass().getResourceAsStream("/properties-example/properties.lmm.json")).get(0);
   }
 }
