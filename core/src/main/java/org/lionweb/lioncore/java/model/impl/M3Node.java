@@ -293,9 +293,17 @@ public abstract class M3Node<T extends M3Node> implements Node {
     }
   }
 
-  protected void addContainmentMultipleValue(@Nonnull String linkName, Node value) {
+  /**
+   * Adding a null value or a value already contained, do not produce any change.
+   *
+   * @return return true if the addition produced a change
+   */
+  protected boolean addContainmentMultipleValue(@Nonnull String linkName, Node value) {
     if (value == null) {
-      return;
+      return false;
+    }
+    if (getContainmentMultipleValue(linkName).contains(value)) {
+      return false;
     }
     ((M3Node) value).setParent(this);
     if (containmentValues.containsKey(linkName)) {
@@ -303,6 +311,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     } else {
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
+    return true;
   }
 
   protected void addReferenceMultipleValue(String linkName, ReferenceValue value) {

@@ -3,6 +3,8 @@ package org.lionweb.lioncore.java.metamodel;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.lionweb.lioncore.java.utils.MetamodelValidator;
+import org.lionweb.lioncore.java.utils.ValidationResult;
 
 public class LionCoreBuiltinsTest {
 
@@ -20,5 +22,13 @@ public class LionCoreBuiltinsTest {
     assertEquals("LIonCore_M3_Boolean", LionCoreBuiltins.getBoolean().getID());
     assertEquals("LIonCore_M3_Integer", LionCoreBuiltins.getInteger().getID());
     assertEquals("LIonCore_M3_JSON", LionCoreBuiltins.getJSON().getID());
+  }
+
+  @Test
+  public void lionCoreBuiltinsIsValid() {
+    ValidationResult vr = new MetamodelValidator().validate(LionCoreBuiltins.getInstance());
+    if (!vr.isSuccessful()) {
+      throw new RuntimeException("LionCoreBuiltins Metamodel is not valid: " + vr);
+    }
   }
 }

@@ -30,4 +30,9 @@ public class LocalNodeResolver implements NodeResolver {
   public void addAll(@Nonnull List<Node> nodes) {
     nodes.forEach(n -> add(n));
   }
+
+  public void addTree(@Nonnull Node root) {
+    add(root);
+    root.getChildren().forEach(c -> addTree(c));
+  }
 }

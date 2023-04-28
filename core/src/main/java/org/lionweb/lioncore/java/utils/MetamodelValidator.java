@@ -10,9 +10,17 @@ import org.lionweb.lioncore.java.model.impl.M3Node;
 
 public class MetamodelValidator extends Validator<Metamodel> {
 
+  public static void ensureIsValid(Metamodel metamodel) {
+    ValidationResult vr = new MetamodelValidator().validate(metamodel);
+    if (!vr.isSuccessful()) {
+      throw new RuntimeException("Invalid metamodel: " + vr.getIssues());
+    }
+  }
+
   @Override
   public ValidationResult validate(Metamodel metamodel) {
-    ValidationResult result = new ValidationResult();
+    // Given metamodels are also valid node trees, we check against errors for node trees
+    ValidationResult result = new NodeTreeValidator().validate(metamodel);
 
     metamodel
         .thisAndAllDescendants()
@@ -108,7 +116,9 @@ public class MetamodelValidator extends Validator<Metamodel> {
               if (entry.getValue().size() > 1) {
                 entry
                     .getValue()
-                    .forEach((NamespacedEntity el) -> result.addError("Duplicate name", el));
+                    .forEach(
+                        (NamespacedEntity el) ->
+                            result.addError("Duplicate name " + el.getName(), el));
               }
             });
   }

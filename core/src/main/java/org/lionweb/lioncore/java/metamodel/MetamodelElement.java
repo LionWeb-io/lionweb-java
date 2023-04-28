@@ -28,8 +28,12 @@ public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
 
   public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String name) {
     // TODO enforce uniqueness of the name within the Metamodel
-    this.setParent(metamodel);
     this.setName(name);
+    if (metamodel != null) {
+      metamodel.addElement(this);
+    } else {
+      this.setParent(null);
+    }
   }
 
   /**
