@@ -1,13 +1,9 @@
 package org.lionweb.lioncore.java.serialization.simplemath;
 
-import org.lionweb.lioncore.java.metamodel.*;
-import org.lionweb.lioncore.java.model.AnnotationInstance;
-import org.lionweb.lioncore.java.model.Model;
+import org.lionweb.lioncore.java.metamodel.Concept;
+import org.lionweb.lioncore.java.metamodel.Containment;
 import org.lionweb.lioncore.java.model.Node;
-import org.lionweb.lioncore.java.model.ReferenceValue;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;

@@ -295,6 +295,12 @@ public class JsonSerialization {
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list
 
+    // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can just
+    // be parent of other nodes, so we put all of them at the start (so they end up at the end when we reverse
+    // the list)
+    nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
+    nodesToSort.removeAll(sortedList);
+
     // We can start by putting at the start all the elements which either have no parent,
     // or had a parent already added to the list
     while (sortedList.size() < originalList.size()) {

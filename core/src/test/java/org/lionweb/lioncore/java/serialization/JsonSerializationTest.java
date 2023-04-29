@@ -246,6 +246,6 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement serialized = js.serializeNodesToJsonElement(il4, il1, sum1, il2, sum2, il3);
     prepareUnserializationOfSimpleMath(js);
     List<Node> unserialized = js.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(sum1, il1, il2, sum2, il3, il4), unserialized);
+    assertEquals(Arrays.asList(il4, il1, sum1, il2, sum2, il3), unserialized);
   }
 }
