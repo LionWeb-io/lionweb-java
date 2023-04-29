@@ -331,37 +331,26 @@ public class JsonSerialization {
       throw new IllegalStateException();
     }
     Map<String, Node> unserializedNodesByID = new HashMap<>();
+    IdentityHashMap<SerializedNode, Node> serializedToNodeMap = new IdentityHashMap<>();
     sortedSerializedNodes.stream()
         .forEach(
             n -> {
               Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
-              if (unserializedNodesByID.containsKey(n.getID())) {
+              if (n.getID() != null && unserializedNodesByID.containsKey(n.getID())) {
                 throw new IllegalStateException("Duplicate ID found: " + n.getID());
               }
               unserializedNodesByID.put(n.getID(), instantiatedNode);
+              serializedToNodeMap.put(n, instantiatedNode);
             });
-    if (sortedSerializedNodes.size() != unserializedNodesByID.size()) {
-      throw new IllegalStateException();
+    if (sortedSerializedNodes.size() != serializedToNodeMap.size()) {
+      throw new IllegalStateException("We got " + sortedSerializedNodes.size() + " nodes to unserialize, but we unserialized " + serializedToNodeMap.size());
     }
     NodeResolver nodeResolver =
         new CompositeNodeResolver(new MapBasedResolver(unserializedNodesByID), this.nodeResolver);
-    serializedNodes.stream().forEach(n -> populateNode(n, nodeResolver));
+    serializedNodes.stream().forEach(n -> populateNode(n, serializedToNodeMap.get(n), nodeResolver));
 
     // We want the nodes returned to be sorted as the original serializedNodes
-    List<Node> nodesWithOriginalSorting = new LinkedList<>();
-    serializedNodes.forEach(
-        sn -> {
-          Node node = unserializedNodesByID.get(sn.getID());
-          if (node == null) {
-            throw new IllegalStateException(
-                "Unable to find node with ID "
-                    + sn.getID()
-                    + ". Known IDs: "
-                    + unserializedNodesByID.keySet());
-          }
-          nodesWithOriginalSorting.add(node);
-        });
-
+    List<Node> nodesWithOriginalSorting = serializedNodes.stream().map(sn -> serializedToNodeMap.get(sn)).collect(Collectors.toList());
     return nodesWithOriginalSorting;
   }
 
@@ -416,8 +405,7 @@ public class JsonSerialization {
     return node;
   }
 
-  private void populateNode(SerializedNode serializedNode, NodeResolver nodeResolver) {
-    Node node = nodeResolver.strictlyResolve(serializedNode.getID());
+  private void populateNode(SerializedNode serializedNode, Node node, NodeResolver nodeResolver) {
     populateNodeContainments(serializedNode, node, nodeResolver);
     populateNodeReferences(serializedNode, node, nodeResolver);
   }
