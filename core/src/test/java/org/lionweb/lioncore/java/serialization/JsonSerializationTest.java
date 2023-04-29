@@ -269,7 +269,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(Arrays.asList(il4, il1, sum1, il2, sum2, il3), unserialized);
   }
 
-  // We should get a RuntimeException as we are unable to reassign the child with null ID
+  // We should get a UnserializationException as we are unable to reassign the child with null ID
   @Test(expected = UnserializationException.class)
   public void deserializeChildrenWithNullID() {
     IntLiteral il1 = new IntLiteral(1, "int_1");
