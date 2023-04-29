@@ -137,6 +137,8 @@ public class JsonSerialization {
                     allNodes.add(n);
                     nodesIDs.add(n.getID());
                   }
+                } else {
+                    allNodes.add(n);
                 }
               });
     }

@@ -8,11 +8,16 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
+import org.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
+import org.lionweb.lioncore.java.serialization.simplemath.SimpleMathMetamodel;
+import org.lionweb.lioncore.java.serialization.simplemath.Sum;
 import org.lionweb.lioncore.java.utils.MetamodelValidator;
 
 /** Testing various functionalities of JsonSerialization. */
@@ -168,5 +173,20 @@ public class JsonSerializationTest extends SerializationTest {
                 .get(0);
     MetamodelValidator.ensureIsValid(starlasu);
     MetamodelValidator.ensureIsValid(properties);
+  }
+
+  @Test
+  public void unserializeMultipleRoots() {
+    Sum sum1 = new Sum(new IntLiteral(1), new IntLiteral(2));
+    Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
+    System.out.println(new GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(serialized));
+    assertEquals(1, serialized.getAsJsonObject().get("metamodels").getAsJsonArray().size());
+    assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
+    js.getConceptResolver().registerMetamodel(SimpleMathMetamodel.INSTANCE);
+    //js.getNodeInstantiator().registerCustomUnserializer(SimpleMathMetamodel.SUM)
+    List<Sum> unserialized = js.unserializeToNodes(serialized).stream().filter(n -> n instanceof Sum).map(n -> (Sum)n).collect(Collectors.toList());
+    assertEquals(Arrays.asList(sum1, sum2), unserialized);
   }
 }
