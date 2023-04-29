@@ -166,6 +166,8 @@ public class LowLevelJsonSerialization {
                 try {
                   SerializedNode node = unserializeNode(element);
                   serializedChunk.addNode(node);
+                } catch (UnserializationException e) {
+                  throw new UnserializationException("Issue while unserializing nodes", e);
                 } catch (Exception e) {
                   throw new RuntimeException("Issue while unserializing " + element, e);
                 }
@@ -221,7 +223,7 @@ public class LowLevelJsonSerialization {
           serializedNode.addContainmentValue(
               new SerializedContainmentValue(
                   tryToGetMetaPointerProperty(childrenJO, "containment"),
-                  tryToGetArrayOfStringsProperty(childrenJO, "children")));
+                  tryToGetArrayOfIDs(childrenJO, "children")));
         });
 
     JsonArray references = jsonObject.get("references").getAsJsonArray();

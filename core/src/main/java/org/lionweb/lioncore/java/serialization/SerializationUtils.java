@@ -56,14 +56,23 @@ class SerializationUtils {
   }
 
   @Nullable
-  static List<String> tryToGetArrayOfStringsProperty(JsonObject jsonObject, String propertyName) {
+  static List<String> tryToGetArrayOfIDs(JsonObject jsonObject, String propertyName) {
     if (!jsonObject.has(propertyName)) {
       return null;
     }
     JsonElement value = jsonObject.get(propertyName);
     if (value.isJsonArray()) {
       JsonArray valueJA = value.getAsJsonArray();
-      return valueJA.asList().stream().map(e -> e.getAsString()).collect(Collectors.toList());
+      return valueJA.asList().stream()
+          .map(
+              e -> {
+                if (e.isJsonNull()) {
+                  throw new UnserializationException(
+                      "Unable to unserialize child identified by Null ID");
+                }
+                return e.getAsString();
+              })
+          .collect(Collectors.toList());
     } else {
       return null;
     }

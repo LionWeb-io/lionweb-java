@@ -268,4 +268,17 @@ public class JsonSerializationTest extends SerializationTest {
     List<Node> unserialized = js.unserializeToNodes(serialized);
     assertEquals(Arrays.asList(il4, il1, sum1, il2, sum2, il3), unserialized);
   }
+
+  // We should get a RuntimeException as we are unable to reassign the child with null ID
+  @Test(expected = UnserializationException.class)
+  public void deserializeChildrenWithNullID() {
+    IntLiteral il1 = new IntLiteral(1, "int_1");
+    IntLiteral il2 = new IntLiteral(2, null);
+    Sum sum1 = new Sum(il1, il2, null);
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonElement serialized = js.serializeNodesToJsonElement(sum1, il1, il2);
+    prepareUnserializationOfSimpleMath(js);
+    List<Node> unserialized = js.unserializeToNodes(serialized);
+    assertEquals(Arrays.asList(sum1, il1, il2), unserialized);
+  }
 }
