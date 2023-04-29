@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -15,6 +16,8 @@ import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
+import org.lionweb.lioncore.java.serialization.data.SerializedContainmentValue;
+import org.lionweb.lioncore.java.serialization.data.SerializedNode;
 import org.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
 import org.lionweb.lioncore.java.serialization.simplemath.SimpleMathMetamodel;
 import org.lionweb.lioncore.java.serialization.simplemath.Sum;
@@ -181,11 +184,20 @@ public class JsonSerializationTest extends SerializationTest {
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
-    System.out.println(new GsonBuilder().serializeNulls().setPrettyPrinting().create().toJson(serialized));
     assertEquals(1, serialized.getAsJsonObject().get("metamodels").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
     js.getConceptResolver().registerMetamodel(SimpleMathMetamodel.INSTANCE);
-    //js.getNodeInstantiator().registerCustomUnserializer(SimpleMathMetamodel.SUM)
+    js.getNodeInstantiator().registerCustomUnserializer(SimpleMathMetamodel.INT_LITERAL.getID(),
+            (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
+                    new IntLiteral((Integer)propertiesValues.get(concept.getPropertyByName("value")), serializedNode.getID()));
+    js.getNodeInstantiator().registerCustomUnserializer(SimpleMathMetamodel.SUM.getID(),
+            (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
+              SerializedContainmentValue leftSCV = serializedNode.getContainments().stream().filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_left")).findFirst().get();
+              IntLiteral left = (IntLiteral) unserializedNodesByID.get(leftSCV.getValue().get(0));
+              SerializedContainmentValue rightSCV = serializedNode.getContainments().stream().filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_right")).findFirst().get();
+              IntLiteral right = (IntLiteral) unserializedNodesByID.get(rightSCV.getValue().get(0));
+              return new Sum(left, right, serializedNode.getID());
+            });
     List<Sum> unserialized = js.unserializeToNodes(serialized).stream().filter(n -> n instanceof Sum).map(n -> (Sum)n).collect(Collectors.toList());
     assertEquals(Arrays.asList(sum1, sum2), unserialized);
   }
