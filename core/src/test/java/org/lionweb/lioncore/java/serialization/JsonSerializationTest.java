@@ -8,16 +8,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
 import org.junit.Test;
 import org.lionweb.lioncore.java.metamodel.*;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.serialization.data.SerializedContainmentValue;
-import org.lionweb.lioncore.java.serialization.data.SerializedNode;
 import org.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
 import org.lionweb.lioncore.java.serialization.simplemath.SimpleMathMetamodel;
 import org.lionweb.lioncore.java.serialization.simplemath.Sum;
@@ -180,14 +177,28 @@ public class JsonSerializationTest extends SerializationTest {
 
   private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
     js.getConceptResolver().registerMetamodel(SimpleMathMetamodel.INSTANCE);
-    js.getNodeInstantiator().registerCustomUnserializer(SimpleMathMetamodel.INT_LITERAL.getID(),
+    js.getNodeInstantiator()
+        .registerCustomUnserializer(
+            SimpleMathMetamodel.INT_LITERAL.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-                    new IntLiteral((Integer)propertiesValues.get(concept.getPropertyByName("value")), serializedNode.getID()));
-    js.getNodeInstantiator().registerCustomUnserializer(SimpleMathMetamodel.SUM.getID(),
+                new IntLiteral(
+                    (Integer) propertiesValues.get(concept.getPropertyByName("value")),
+                    serializedNode.getID()));
+    js.getNodeInstantiator()
+        .registerCustomUnserializer(
+            SimpleMathMetamodel.SUM.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
-              SerializedContainmentValue leftSCV = serializedNode.getContainments().stream().filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_left")).findFirst().get();
+              SerializedContainmentValue leftSCV =
+                  serializedNode.getContainments().stream()
+                      .filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_left"))
+                      .findFirst()
+                      .get();
               IntLiteral left = (IntLiteral) unserializedNodesByID.get(leftSCV.getValue().get(0));
-              SerializedContainmentValue rightSCV = serializedNode.getContainments().stream().filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_right")).findFirst().get();
+              SerializedContainmentValue rightSCV =
+                  serializedNode.getContainments().stream()
+                      .filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_right"))
+                      .findFirst()
+                      .get();
               IntLiteral right = (IntLiteral) unserializedNodesByID.get(rightSCV.getValue().get(0));
               return new Sum(left, right, serializedNode.getID());
             });
@@ -202,7 +213,11 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(1, serialized.getAsJsonObject().get("metamodels").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
     prepareUnserializationOfSimpleMath(js);
-    List<Sum> unserialized = js.unserializeToNodes(serialized).stream().filter(n -> n instanceof Sum).map(n -> (Sum)n).collect(Collectors.toList());
+    List<Sum> unserialized =
+        js.unserializeToNodes(serialized).stream()
+            .filter(n -> n instanceof Sum)
+            .map(n -> (Sum) n)
+            .collect(Collectors.toList());
     assertEquals(Arrays.asList(sum1, sum2), unserialized);
   }
 
@@ -215,7 +230,10 @@ public class JsonSerializationTest extends SerializationTest {
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(il1, il2, il3, il4);
     prepareUnserializationOfSimpleMath(js);
-    List<IntLiteral> unserialized = js.unserializeToNodes(serialized).stream().map(n -> (IntLiteral)n).collect(Collectors.toList());
+    List<IntLiteral> unserialized =
+        js.unserializeToNodes(serialized).stream()
+            .map(n -> (IntLiteral) n)
+            .collect(Collectors.toList());
     assertEquals(Arrays.asList(il1, il2, il3, il4), unserialized);
   }
 
@@ -236,6 +254,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void unserializeTreesWithArbitraryOrderAndNullIDsInTheRightOrder() {
+    // handling multiple parents with null IDs require special care as they
+    // are ambiguous (i.e., they cannot be distinguished by looking at their ID)
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, "int_2");
     Sum sum1 = new Sum(il1, il2, null);

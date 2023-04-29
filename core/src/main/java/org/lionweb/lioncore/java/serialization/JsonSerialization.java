@@ -138,7 +138,7 @@ public class JsonSerialization {
                     nodesIDs.add(n.getID());
                   }
                 } else {
-                    allNodes.add(n);
+                  allNodes.add(n);
                 }
               });
     }
@@ -296,7 +296,8 @@ public class JsonSerialization {
     // the list
 
     // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can just
-    // be parent of other nodes, so we put all of them at the start (so they end up at the end when we reverse
+    // be parent of other nodes, so we put all of them at the start (so they end up at the end when
+    // we reverse
     // the list)
     nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
     nodesToSort.removeAll(sortedList);
@@ -349,14 +350,22 @@ public class JsonSerialization {
               serializedToNodeMap.put(n, instantiatedNode);
             });
     if (sortedSerializedNodes.size() != serializedToNodeMap.size()) {
-      throw new IllegalStateException("We got " + sortedSerializedNodes.size() + " nodes to unserialize, but we unserialized " + serializedToNodeMap.size());
+      throw new IllegalStateException(
+          "We got "
+              + sortedSerializedNodes.size()
+              + " nodes to unserialize, but we unserialized "
+              + serializedToNodeMap.size());
     }
     NodeResolver nodeResolver =
         new CompositeNodeResolver(new MapBasedResolver(unserializedNodesByID), this.nodeResolver);
-    serializedNodes.stream().forEach(n -> populateNode(n, serializedToNodeMap.get(n), nodeResolver));
+    serializedNodes.stream()
+        .forEach(n -> populateNode(n, serializedToNodeMap.get(n), nodeResolver));
 
     // We want the nodes returned to be sorted as the original serializedNodes
-    List<Node> nodesWithOriginalSorting = serializedNodes.stream().map(sn -> serializedToNodeMap.get(sn)).collect(Collectors.toList());
+    List<Node> nodesWithOriginalSorting =
+        serializedNodes.stream()
+            .map(sn -> serializedToNodeMap.get(sn))
+            .collect(Collectors.toList());
     return nodesWithOriginalSorting;
   }
 
