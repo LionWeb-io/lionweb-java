@@ -317,8 +317,10 @@ public class JsonSerialization {
         }
       }
       if (initialLength == sortedList.size()) {
-        throw new IllegalStateException(
-            "Something is not right: we are unable to complete sorting the list " + originalList);
+        throw new UnserializationException(
+            "Something is not right: we are unable to complete sorting the list "
+                + originalList
+                + ". Probably there is a containment loop");
       }
     }
 
@@ -476,7 +478,7 @@ public class JsonSerialization {
                       entry -> {
                         Node referred = nodeResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          throw new IllegalArgumentException(
+                          throw new UnserializationException(
                               "Unable to resolve reference to "
                                   + entry.getReference()
                                   + " for feature "

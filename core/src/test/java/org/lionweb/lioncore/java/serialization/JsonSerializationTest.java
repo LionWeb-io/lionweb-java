@@ -15,6 +15,9 @@ import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 import org.lionweb.lioncore.java.model.impl.DynamicNode;
 import org.lionweb.lioncore.java.serialization.data.SerializedContainmentValue;
+import org.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
+import org.lionweb.lioncore.java.serialization.refsmm.RefNode;
+import org.lionweb.lioncore.java.serialization.refsmm.RefsMetamodel;
 import org.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
 import org.lionweb.lioncore.java.serialization.simplemath.SimpleMathMetamodel;
 import org.lionweb.lioncore.java.serialization.simplemath.Sum;
@@ -280,5 +283,68 @@ public class JsonSerializationTest extends SerializationTest {
     prepareUnserializationOfSimpleMath(js);
     List<Node> unserialized = js.unserializeToNodes(serialized);
     assertEquals(Arrays.asList(sum1, il1, il2), unserialized);
+  }
+
+  private void prepareUnserializationOfRefMM(JsonSerialization js) {
+    js.getConceptResolver().registerMetamodel(RefsMetamodel.INSTANCE);
+    js.getNodeInstantiator()
+        .registerCustomUnserializer(
+            RefsMetamodel.CONTAINER_NODE.getID(),
+            (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
+                new ContainerNode(
+                    (ContainerNode) propertiesValues.get(concept.getContainmentByName("contained")),
+                    serializedNode.getID()));
+    js.getNodeInstantiator()
+        .registerCustomUnserializer(
+            RefsMetamodel.REF_NODE.getID(),
+            (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
+              return new RefNode(serializedNode.getID());
+            });
+  }
+
+  @Test(expected = UnserializationException.class)
+  public void deadReferences() {
+    RefNode r1 = new RefNode();
+    RefNode r2 = new RefNode();
+    r1.setReferred(r2);
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonElement serialized = js.serializeNodesToJsonElement(r1);
+    prepareUnserializationOfRefMM(js);
+    List<Node> unserialized = js.unserializeToNodes(serialized);
+  }
+
+  @Test
+  public void referencesLoop() {
+    RefNode r1 = new RefNode();
+    RefNode r2 = new RefNode();
+    RefNode r3 = new RefNode();
+    r1.setReferred(r2);
+    r2.setReferred(r3);
+    r3.setReferred(r1);
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonElement serialized = js.serializeNodesToJsonElement(r1, r2, r3);
+    prepareUnserializationOfRefMM(js);
+    List<Node> unserialized = js.unserializeToNodes(serialized);
+    assertEquals(Arrays.asList(r1, r2, r3), unserialized);
+  }
+
+  @Test(expected = UnserializationException.class)
+  public void containmentsLoop() {
+    ContainerNode c1 = new ContainerNode();
+    ContainerNode c2 = new ContainerNode();
+    c1.setContained(c2);
+    c2.setContained(c1);
+    c2.setParent(c1);
+    c1.setParent(c2);
+
+    assertEquals(c2, c1.getParent());
+    assertEquals(c1, c2.getParent());
+    assertEquals(Arrays.asList(c2), c1.getChildren());
+    assertEquals(Arrays.asList(c1), c2.getChildren());
+
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonElement serialized = js.serializeNodesToJsonElement(c1, c2);
+    prepareUnserializationOfRefMM(js);
+    List<Node> unserialized = js.unserializeToNodes(serialized);
   }
 }

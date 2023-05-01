@@ -3,8 +3,9 @@ package org.lionweb.lioncore.java.serialization.simplemath;
 import java.util.Objects;
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Property;
+import org.lionweb.lioncore.java.serialization.SimpleNode;
 
-public class IntLiteral extends SimpleMathNode {
+public class IntLiteral extends SimpleNode {
   private int value;
 
   public IntLiteral(int value) {

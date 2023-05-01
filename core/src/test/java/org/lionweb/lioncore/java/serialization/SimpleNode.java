@@ -1,4 +1,4 @@
-package org.lionweb.lioncore.java.serialization.simplemath;
+package org.lionweb.lioncore.java.serialization;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +11,7 @@ import org.lionweb.lioncore.java.model.Model;
 import org.lionweb.lioncore.java.model.Node;
 import org.lionweb.lioncore.java.model.ReferenceValue;
 
-public abstract class SimpleMathNode implements Node {
+public abstract class SimpleNode implements Node {
 
   private String id;
   private Node parent;
@@ -129,13 +129,28 @@ public abstract class SimpleMathNode implements Node {
   @Nonnull
   @Override
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
-    throw new UnsupportedOperationException();
+    if (!getConcept().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    return concreteGetReferenceValues(reference);
+  }
+
+  protected List<ReferenceValue> concreteGetReferenceValues(Reference reference) {
+    throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
   }
 
   @Override
   public void addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
-    throw new UnsupportedOperationException();
+    if (!getConcept().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    concreteAddReferenceValue(reference, referredNode);
+  }
+
+  public void concreteAddReferenceValue(
+      @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
+    throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
   }
 
   @Override

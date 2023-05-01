@@ -6,8 +6,9 @@ import java.util.Objects;
 import org.lionweb.lioncore.java.metamodel.Concept;
 import org.lionweb.lioncore.java.metamodel.Containment;
 import org.lionweb.lioncore.java.model.Node;
+import org.lionweb.lioncore.java.serialization.SimpleNode;
 
-public class Sum extends SimpleMathNode {
+public class Sum extends SimpleNode {
   private IntLiteral left;
   private IntLiteral right;
 
