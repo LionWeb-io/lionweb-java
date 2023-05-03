@@ -139,7 +139,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
+    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
     Metamodel lioncore = (Metamodel) unserializedNodes.get(0);
     assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
@@ -177,7 +177,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNode(jsonElement);
+    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
     DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
     assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
@@ -210,6 +210,6 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-    jsonSerialization.unserializeToNode(jsonElement);
+    jsonSerialization.unserializeToNodes(jsonElement);
   }
 }

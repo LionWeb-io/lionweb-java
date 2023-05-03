@@ -56,6 +56,7 @@ public class LowLevelJsonSerialization {
         "serializationFormatVersion", serializedChunk.getSerializationFormatVersion());
 
     JsonArray metamodels = new JsonArray();
+    serializedChunk.getMetamodels().forEach(m -> metamodels.add(serializeToJsonElement(m)));
     topLevel.add("metamodels", metamodels);
 
     JsonArray nodes = new JsonArray();
@@ -165,6 +166,8 @@ public class LowLevelJsonSerialization {
                 try {
                   SerializedNode node = unserializeNode(element);
                   serializedChunk.addNode(node);
+                } catch (UnserializationException e) {
+                  throw new UnserializationException("Issue while unserializing nodes", e);
                 } catch (Exception e) {
                   throw new RuntimeException("Issue while unserializing " + element, e);
                 }
@@ -180,6 +183,13 @@ public class LowLevelJsonSerialization {
     jsonObject.addProperty("metamodel", metapointer.getMetamodel());
     jsonObject.addProperty("version", metapointer.getVersion());
     jsonObject.addProperty("key", metapointer.getKey());
+    return jsonObject;
+  }
+
+  private JsonElement serializeToJsonElement(MetamodelKeyVersion metamodelKeyVersion) {
+    JsonObject jsonObject = new JsonObject();
+    jsonObject.addProperty("version", metamodelKeyVersion.getVersion());
+    jsonObject.addProperty("key", metamodelKeyVersion.getKey());
     return jsonObject;
   }
 
@@ -213,7 +223,7 @@ public class LowLevelJsonSerialization {
           serializedNode.addContainmentValue(
               new SerializedContainmentValue(
                   tryToGetMetaPointerProperty(childrenJO, "containment"),
-                  tryToGetArrayOfStringsProperty(childrenJO, "children")));
+                  tryToGetArrayOfIDs(childrenJO, "children")));
         });
 
     JsonArray references = jsonObject.get("references").getAsJsonArray();

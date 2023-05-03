@@ -137,6 +137,8 @@ public class JsonSerialization {
                     allNodes.add(n);
                     nodesIDs.add(n.getID());
                   }
+                } else {
+                  allNodes.add(n);
                 }
               });
     }
@@ -251,19 +253,19 @@ public class JsonSerialization {
   // Unserialization
   //
 
-  public List<Node> unserializeToNode(JsonElement jsonElement) {
+  public List<Node> unserializeToNodes(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
     return unserializeSerializationBlock(serializationBlock);
   }
 
-  public List<Node> unserializeToNode(String json) {
-    return unserializeToNode(JsonParser.parseString(json));
+  public List<Node> unserializeToNodes(String json) {
+    return unserializeToNodes(JsonParser.parseString(json));
   }
 
   public List<Node> unserializeToNodes(InputStream inputStream) {
-    return unserializeToNode(JsonParser.parseReader(new InputStreamReader(inputStream)));
+    return unserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
   }
 
   //
@@ -283,30 +285,99 @@ public class JsonSerialization {
     }
   }
 
-  private List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
-    List<Node> nodes =
-        serializationBlock.getNodes().stream()
-            .map(n -> instantiateNodeFromSerialized(n))
-            .collect(Collectors.toList());
-    Map<String, List<Node>> nodesByID =
-        nodes.stream().collect(Collectors.groupingBy(n -> n.getID()));
-    List<String> duplicateIDs =
-        nodesByID.entrySet().stream()
-            .filter(e -> e.getValue().size() > 1)
-            .map(e -> e.getKey())
-            .collect(Collectors.toList());
-    if (!duplicateIDs.isEmpty()) {
-      throw new IllegalStateException("Duplicate IDs found: " + duplicateIDs);
+  /**
+   * This method returned a sorted version of the original list, so that leaves nodes comes first,
+   * or in other words that a parent never precedes its children.
+   */
+  private List<SerializedNode> sortLeavesFirst(List<SerializedNode> originalList) {
+    List<SerializedNode> sortedList = new ArrayList<>();
+    List<SerializedNode> nodesToSort = new ArrayList<>(originalList);
+    // We create the list going from the roots, to their children and so on, and then we will revert
+    // the list
+
+    // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can just
+    // be parent of other nodes, so we put all of them at the start (so they end up at the end when
+    // we reverse
+    // the list)
+    nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
+    nodesToSort.removeAll(sortedList);
+
+    // We can start by putting at the start all the elements which either have no parent,
+    // or had a parent already added to the list
+    while (sortedList.size() < originalList.size()) {
+      int initialLength = sortedList.size();
+      for (int i = 0; i < nodesToSort.size(); i++) {
+        SerializedNode n = nodesToSort.get(i);
+        if (n.getParentNodeID() == null
+            || sortedList.stream()
+                .anyMatch(sn -> Objects.equals(sn.getID(), n.getParentNodeID()))) {
+          sortedList.add(n);
+          nodesToSort.remove(i);
+          i--;
+        }
+      }
+      if (initialLength == sortedList.size()) {
+        throw new UnserializationException(
+            "Something is not right: we are unable to complete sorting the list "
+                + originalList
+                + ". Probably there is a containment loop");
+      }
     }
-    NodeResolver nodeResolver =
-        new CompositeNodeResolver(new LocalNodeResolver(nodes), this.nodeResolver);
-    serializationBlock.getNodes().stream().forEach(n -> populateNode(n, nodeResolver));
-    return nodes;
+
+    Collections.reverse(sortedList);
+    return sortedList;
   }
 
-  private Node instantiateNodeFromSerialized(SerializedNode serializedNode) {
+  private List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
+    return unserializeNodes(serializationBlock.getNodes());
+  }
+
+  private List<Node> unserializeNodes(List<SerializedNode> serializedNodes) {
+    // We want to unserialize the nodes starting from the leaves. This is useful because in certain
+    // cases we may want to use the children as constructor parameters of the parent
+    List<SerializedNode> sortedSerializedNodes = sortLeavesFirst(serializedNodes);
+    if (sortedSerializedNodes.size() != serializedNodes.size()) {
+      throw new IllegalStateException();
+    }
+    Map<String, Node> unserializedNodesByID = new HashMap<>();
+    IdentityHashMap<SerializedNode, Node> serializedToNodeMap = new IdentityHashMap<>();
+    sortedSerializedNodes.stream()
+        .forEach(
+            n -> {
+              Node instantiatedNode = instantiateNodeFromSerialized(n, unserializedNodesByID);
+              if (n.getID() != null && unserializedNodesByID.containsKey(n.getID())) {
+                throw new IllegalStateException("Duplicate ID found: " + n.getID());
+              }
+              unserializedNodesByID.put(n.getID(), instantiatedNode);
+              serializedToNodeMap.put(n, instantiatedNode);
+            });
+    if (sortedSerializedNodes.size() != serializedToNodeMap.size()) {
+      throw new IllegalStateException(
+          "We got "
+              + sortedSerializedNodes.size()
+              + " nodes to unserialize, but we unserialized "
+              + serializedToNodeMap.size());
+    }
+    NodeResolver nodeResolver =
+        new CompositeNodeResolver(new MapBasedResolver(unserializedNodesByID), this.nodeResolver);
+    serializedNodes.stream()
+        .forEach(n -> populateNode(n, serializedToNodeMap.get(n), nodeResolver));
+
+    // We want the nodes returned to be sorted as the original serializedNodes
+    List<Node> nodesWithOriginalSorting =
+        serializedNodes.stream()
+            .map(sn -> serializedToNodeMap.get(sn))
+            .collect(Collectors.toList());
+    return nodesWithOriginalSorting;
+  }
+
+  private Node instantiateNodeFromSerialized(
+      SerializedNode serializedNode, Map<String, Node> unserializedNodesByID) {
     Concept concept = getConceptResolver().resolveConcept(serializedNode.getConcept());
-    Node node = getNodeInstantiator().instantiate(concept, serializedNode);
+
+    // We prepare all the properties values and pass them to instantiator, as it could use them to
+    // build the node
+    Map<Property, Object> propertiesValues = new HashMap<>();
     serializedNode
         .getProperties()
         .forEach(
@@ -324,13 +395,34 @@ public class JsonSerialization {
               Object unserializedValue =
                   primitiveValuesSerialization.unserialize(
                       property.getType().getID(), serializedPropertyValue.getValue());
-              node.setPropertyValue(property, unserializedValue);
+              propertiesValues.put(property, unserializedValue);
             });
+    Node node =
+        getNodeInstantiator()
+            .instantiate(concept, serializedNode, unserializedNodesByID, propertiesValues);
+
+    // We ensure that the properties values are set correctly. They could already have been set
+    // while instantiating the node. If that is the case, we have nothing to do, otherwise we set
+    // the values
+    propertiesValues
+        .entrySet()
+        .forEach(
+            pv -> {
+              Object unserializedValue = pv.getValue();
+              Property property = pv.getKey();
+              // Avoiding calling setters, in case the value has been already set at construction
+              // time
+
+              if (!property.isDerived()
+                  && !Objects.equals(unserializedValue, node.getPropertyValue(property))) {
+                node.setPropertyValue(property, unserializedValue);
+              }
+            });
+
     return node;
   }
 
-  private void populateNode(SerializedNode serializedNode, NodeResolver nodeResolver) {
-    Node node = nodeResolver.strictlyResolve(serializedNode.getID());
+  private void populateNode(SerializedNode serializedNode, Node node, NodeResolver nodeResolver) {
     populateNodeContainments(serializedNode, node, nodeResolver);
     populateNodeReferences(serializedNode, node, nodeResolver);
   }
@@ -350,13 +442,14 @@ public class JsonSerialization {
               Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
-              serializedContainmentValue
-                  .getValue()
-                  .forEach(
-                      childNodeID -> {
-                        Node child = nodeResolver.strictlyResolve(childNodeID);
-                        node.addChild(containment, child);
-                      });
+              List<Node> unserializedValue =
+                  serializedContainmentValue.getValue().stream()
+                      .map(childNodeID -> nodeResolver.strictlyResolve(childNodeID))
+                      .collect(Collectors.toList());
+              if (!containment.isDerived()
+                  && !Objects.equals(unserializedValue, node.getChildren(containment))) {
+                unserializedValue.forEach(child -> node.addChild(containment, child));
+              }
             });
   }
 
@@ -385,7 +478,7 @@ public class JsonSerialization {
                       entry -> {
                         Node referred = nodeResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          throw new IllegalArgumentException(
+                          throw new UnserializationException(
                               "Unable to resolve reference to "
                                   + entry.getReference()
                                   + " for feature "

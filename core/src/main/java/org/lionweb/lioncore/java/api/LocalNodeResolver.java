@@ -31,6 +31,11 @@ public class LocalNodeResolver implements NodeResolver {
     nodes.forEach(n -> add(n));
   }
 
+  @Override
+  public String toString() {
+    return "LocalNodeResolver(" + nodes.keySet() + ")";
+  }
+
   public void addTree(@Nonnull Node root) {
     add(root);
     root.getChildren().forEach(c -> addTree(c));

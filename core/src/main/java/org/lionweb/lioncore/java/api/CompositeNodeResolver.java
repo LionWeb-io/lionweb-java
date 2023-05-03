@@ -33,4 +33,9 @@ public class CompositeNodeResolver implements NodeResolver {
     }
     return null;
   }
+
+  @Override
+  public String toString() {
+    return "CompositeNodeResolver(" + nodeResolvers + ")";
+  }
 }
