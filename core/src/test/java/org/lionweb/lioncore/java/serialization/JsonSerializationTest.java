@@ -347,4 +347,12 @@ public class JsonSerializationTest extends SerializationTest {
     prepareUnserializationOfRefMM(js);
     List<Node> unserialized = js.unserializeToNodes(serialized);
   }
+
+  @Test(expected = UnserializationException.class)
+  public void unserializeTreeWithoutRoot() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    List<Node> nodes =
+        js.unserializeToNodes(
+            this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
+  }
 }
