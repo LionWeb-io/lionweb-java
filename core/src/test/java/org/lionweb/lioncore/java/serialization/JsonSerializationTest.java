@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 
 import com.google.gson.*;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -352,7 +351,8 @@ public class JsonSerializationTest extends SerializationTest {
   @Test(expected = UnserializationException.class)
   public void unserializeTreeWithoutRoot() {
     JsonSerialization js = JsonSerialization.getStandardSerialization();
-    List<Node> nodes = js.unserializeToNodes(this.getClass()
-            .getResourceAsStream("/mpsMeetup-issue10/example1.json"));
+    List<Node> nodes =
+        js.unserializeToNodes(
+            this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
   }
 }

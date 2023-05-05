@@ -317,15 +317,15 @@ public class JsonSerialization {
         }
       }
       if (initialLength == sortedList.size()) {
-          if (sortedList.size() == 0) {
-              throw new UnserializationException("No root found, we cannot unserialize this tree. Original list: "
-                      + originalList);
-          } else {
-              throw new UnserializationException(
-                      "Something is not right: we are unable to complete sorting the list "
-                              + originalList
-                              + ". Probably there is a containment loop");
-          }
+        if (sortedList.size() == 0) {
+          throw new UnserializationException(
+              "No root found, we cannot unserialize this tree. Original list: " + originalList);
+        } else {
+          throw new UnserializationException(
+              "Something is not right: we are unable to complete sorting the list "
+                  + originalList
+                  + ". Probably there is a containment loop");
+        }
       }
     }
 
