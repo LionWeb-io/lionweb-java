@@ -5,7 +5,6 @@ import static org.lionweb.lioncore.java.serialization.SerializedJsonComparisonUt
 
 import com.google.gson.*;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -350,9 +349,10 @@ public class JsonSerializationTest extends SerializationTest {
     List<Node> unserialized = js.unserializeToNodes(serialized);
   }
 
-  @Test
-  public void mpsMeetupIssue10() {
+  @Test(expected = UnserializationException.class)
+  public void unserializeTreeWithoutRoot() {
     JsonSerialization js = JsonSerialization.getStandardSerialization();
-    List<Node> nodes = js.unserializeToNodes(this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
+    List<Node> nodes = js.unserializeToNodes(this.getClass()
+            .getResourceAsStream("/mpsMeetup-issue10/example1.json"));
   }
 }
