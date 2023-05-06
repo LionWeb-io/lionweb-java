@@ -24,6 +24,8 @@ public class EcoreImporter {
   private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
   private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
 
+  private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
+
   public List<Metamodel> importEcoreFile(File ecoreFile) {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -91,6 +93,12 @@ public class EcoreImporter {
     if (eClassifier.equals(EcorePackage.Literals.ESTRING)) {
       return LionCoreBuiltins.getString();
     }
+    if (eClassifier.equals(EcorePackage.Literals.EINT)) {
+      return LionCoreBuiltins.getInteger();
+    }
+    if (eClassifier.eClass().equals(EcorePackage.Literals.EENUM)) {
+      return eEnumsToEnumerations.get((EEnum) eClassifier);
+    }
     if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
       if (eClassifier.getName().equals("String")) {
         return LionCoreBuiltins.getString();
@@ -138,6 +146,13 @@ public class EcoreImporter {
           metamodel.addElement(concept);
           eClassesToConcepts.put(eClass, concept);
         }
+      } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
+        EEnum eEnum = (EEnum) eClassifier;
+        Enumeration enumeration = new Enumeration(metamodel, eEnum.getName());
+        enumeration.setID(ePackage.getName() + "-" + eEnum.getName());
+        enumeration.setKey(ePackage.getName() + "-" + eEnum.getName());
+        metamodel.addElement(enumeration);
+        eEnumsToEnumerations.put(eEnum, enumeration);
       } else {
         throw new UnsupportedOperationException(eClassifier.toString());
       }
@@ -149,7 +164,19 @@ public class EcoreImporter {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          throw new UnsupportedOperationException();
+          ConceptInterface conceptInterface = eClassesToConceptInterfacess.get(eClass);
+
+          for (EClass supertype : eClass.getESuperTypes()) {
+            if (supertype.isInterface()) {
+              ConceptInterface superConceptInterface = eClassesToConceptInterfacess.get(supertype);
+              conceptInterface.addExtendedInterface(superConceptInterface);
+            } else {
+              throw new UnsupportedOperationException();
+            }
+          }
+
+          processStructuralFeatures(ePackage, eClass, conceptInterface);
+
         } else {
           Concept concept = eClassesToConcepts.get(eClass);
 
@@ -166,57 +193,69 @@ public class EcoreImporter {
             }
           }
 
-          for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
-            if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
-              EAttribute eAttribute = (EAttribute) eFeature;
-              Property property = new Property(eFeature.getName(), concept);
-              property.setID(
-                  ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
-              property.setKey(
-                  ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
-              concept.addFeature(property);
-              property.setOptional(!eAttribute.isRequired());
-              property.setDerived(eAttribute.isDerived());
-              property.setType(convertEClassifierToDataType(eFeature.getEType()));
-              if (eAttribute.isMany()) {
-                throw new IllegalArgumentException(
-                    "EAttributes with upper bound > 1 are not supported");
-              }
-            } else if (eFeature
-                .eClass()
-                .getName()
-                .equals(EcorePackage.Literals.EREFERENCE.getName())) {
-              EReference eReference = (EReference) eFeature;
-              if (eReference.isContainment()) {
-                Containment containment = new Containment(eFeature.getName(), concept);
-                containment.setID(
-                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
-                containment.setKey(
-                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
-                containment.setOptional(!eReference.isRequired());
-                containment.setMultiple(eReference.isMany());
-                concept.addFeature(containment);
-                containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
-              } else {
-                Reference reference = new Reference(eFeature.getName(), concept);
-                reference.setID(
-                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
-                reference.setKey(
-                    ePackage.getName() + "-" + concept.getName() + "-" + eFeature.getName());
-                reference.setOptional(!eReference.isRequired());
-                reference.setMultiple(eReference.isMany());
-                concept.addFeature(reference);
-                reference.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
-              }
-            } else {
-              throw new UnsupportedOperationException();
-            }
-          }
+          processStructuralFeatures(ePackage, eClass, concept);
+        }
+      } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
+        EEnum eEnum = (EEnum) eClassifier;
+        Enumeration enumeration = eEnumsToEnumerations.get(eEnum);
+        for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
+          EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
+          enumerationLiteral.setID(enumeration.getID()+"-"+enumLiteral.getName());
+          enumeration.addLiteral(enumerationLiteral);
         }
       } else {
         throw new UnsupportedOperationException();
       }
     }
     return metamodel;
+  }
+
+  private void processStructuralFeatures(EPackage ePackage, EClass eClass, FeaturesContainer<?> featuresContainer) {
+    for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
+      if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
+        EAttribute eAttribute = (EAttribute) eFeature;
+        Property property = new Property(eFeature.getName(), featuresContainer);
+        property.setID(
+                ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+        property.setKey(
+                ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+        featuresContainer.addFeature(property);
+        property.setOptional(!eAttribute.isRequired());
+        property.setDerived(eAttribute.isDerived());
+        property.setType(convertEClassifierToDataType(eFeature.getEType()));
+        if (eAttribute.isMany()) {
+          throw new IllegalArgumentException(
+                  "EAttributes with upper bound > 1 are not supported");
+        }
+      } else if (eFeature
+              .eClass()
+              .getName()
+              .equals(EcorePackage.Literals.EREFERENCE.getName())) {
+        EReference eReference = (EReference) eFeature;
+        if (eReference.isContainment()) {
+          Containment containment = new Containment(eFeature.getName(), featuresContainer);
+          containment.setID(
+                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+          containment.setKey(
+                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+          containment.setOptional(!eReference.isRequired());
+          containment.setMultiple(eReference.isMany());
+          featuresContainer.addFeature(containment);
+          containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
+        } else {
+          Reference reference = new Reference(eFeature.getName(), featuresContainer);
+          reference.setID(
+                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+          reference.setKey(
+                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+          reference.setOptional(!eReference.isRequired());
+          reference.setMultiple(eReference.isMany());
+          featuresContainer.addFeature(reference);
+          reference.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
+        }
+      } else {
+        throw new UnsupportedOperationException();
+      }
+    }
   }
 }
