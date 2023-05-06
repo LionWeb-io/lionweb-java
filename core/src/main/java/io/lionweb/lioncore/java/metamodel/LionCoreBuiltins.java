@@ -5,9 +5,9 @@ public class LionCoreBuiltins extends Metamodel {
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins() {
-    super("org.lionweb.Builtins");
-    setID("lioncore_builtins");
-    setKey("lioncore_builtins");
+    super("LIonCore.Builtins");
+    setID("LIonCore_Builtins");
+    setKey("LIonCore_Builtins");
     new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
