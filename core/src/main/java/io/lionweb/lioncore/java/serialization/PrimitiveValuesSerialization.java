@@ -7,7 +7,6 @@ import io.lionweb.lioncore.java.metamodel.Enumeration;
 import io.lionweb.lioncore.java.metamodel.EnumerationLiteral;
 import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
 import io.lionweb.lioncore.java.metamodel.Metamodel;
-
 import java.util.*;
 
 /**
@@ -17,9 +16,11 @@ import java.util.*;
 public class PrimitiveValuesSerialization {
 
   private Map<String, Enumeration> enumerationsByID = new HashMap<>();
+
   public void registerMetamodel(Metamodel metamodel) {
-    metamodel.getElements().stream().filter(e -> e instanceof Enumeration)
-            .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
+    metamodel.getElements().stream()
+        .filter(e -> e instanceof Enumeration)
+        .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
   }
 
   public interface PrimitiveSerializer<V> {
@@ -90,8 +91,10 @@ public class PrimitiveValuesSerialization {
       if (serializedValue == null) {
         return null;
       }
-      Optional<EnumerationLiteral> enumerationLiteral = enumerationsByID.get(primitiveTypeID).getLiterals().stream().filter(l ->
-              Objects.equals(l.getKey(), serializedValue)).findFirst();
+      Optional<EnumerationLiteral> enumerationLiteral =
+          enumerationsByID.get(primitiveTypeID).getLiterals().stream()
+              .filter(l -> Objects.equals(l.getKey(), serializedValue))
+              .findFirst();
       if (enumerationLiteral.isPresent()) {
         return enumerationLiteral.get();
       } else {
@@ -106,7 +109,7 @@ public class PrimitiveValuesSerialization {
   public String serialize(String primitiveTypeID, Object value) {
     if (primitiveSerializers.containsKey(primitiveTypeID)) {
       return ((PrimitiveSerializer<Object>) primitiveSerializers.get(primitiveTypeID))
-              .serialize(value);
+          .serialize(value);
     } else if (isEnum(primitiveTypeID)) {
       if (value == null) {
         return null;

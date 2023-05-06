@@ -3,7 +3,6 @@ package io.lionweb.lioncore.java.metamodel;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
