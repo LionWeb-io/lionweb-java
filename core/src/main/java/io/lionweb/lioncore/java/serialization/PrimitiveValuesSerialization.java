@@ -3,15 +3,25 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.metamodel.Enumeration;
+import io.lionweb.lioncore.java.metamodel.EnumerationLiteral;
 import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import java.util.HashMap;
-import java.util.Map;
+import io.lionweb.lioncore.java.metamodel.Metamodel;
+
+import java.util.*;
 
 /**
  * This class is responsible for serialization and unserializing primitive values, based on the type
  * of the primitive value.
  */
 public class PrimitiveValuesSerialization {
+
+  private Map<String, Enumeration> enumerationsByID = new HashMap<>();
+  public void registerMetamodel(Metamodel metamodel) {
+    metamodel.getElements().stream().filter(e -> e instanceof Enumeration)
+            .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
+  }
+
   public interface PrimitiveSerializer<V> {
     String serialize(V value);
   }
@@ -76,6 +86,17 @@ public class PrimitiveValuesSerialization {
   public Object unserialize(String primitiveTypeID, String serializedValue) {
     if (primitiveUnserializers.containsKey(primitiveTypeID)) {
       return primitiveUnserializers.get(primitiveTypeID).unserialize(serializedValue);
+    } else if (enumerationsByID.containsKey(primitiveTypeID)) {
+      if (serializedValue == null) {
+        return null;
+      }
+      Optional<EnumerationLiteral> enumerationLiteral = enumerationsByID.get(primitiveTypeID).getLiterals().stream().filter(l ->
+              Objects.equals(l.getKey(), serializedValue)).findFirst();
+      if (enumerationLiteral.isPresent()) {
+        return enumerationLiteral.get();
+      } else {
+        throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
+      }
     } else {
       throw new IllegalArgumentException(
           "Unable to unserialize primitive values of type " + primitiveTypeID);
@@ -85,7 +106,12 @@ public class PrimitiveValuesSerialization {
   public String serialize(String primitiveTypeID, Object value) {
     if (primitiveSerializers.containsKey(primitiveTypeID)) {
       return ((PrimitiveSerializer<Object>) primitiveSerializers.get(primitiveTypeID))
-          .serialize(value);
+              .serialize(value);
+    } else if (isEnum(primitiveTypeID)) {
+      if (value == null) {
+        return null;
+      }
+      return ((EnumerationLiteral) value).getKey();
     } else {
       throw new IllegalArgumentException(
           "Unable to serialize primitive values of type "
@@ -94,5 +120,9 @@ public class PrimitiveValuesSerialization {
               + value.getClass()
               + ")");
     }
+  }
+
+  private boolean isEnum(String primitiveTypeID) {
+    return enumerationsByID.containsKey(primitiveTypeID);
   }
 }

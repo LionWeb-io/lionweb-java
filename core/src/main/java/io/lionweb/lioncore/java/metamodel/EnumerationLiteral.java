@@ -3,6 +3,8 @@ package io.lionweb.lioncore.java.metamodel;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class EnumerationLiteral extends M3Node<EnumerationLiteral>
@@ -11,6 +13,12 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
   public EnumerationLiteral() {}
 
   public EnumerationLiteral(@Nullable String name) {
+    setName(name);
+  }
+
+  public EnumerationLiteral(@Nonnull Enumeration enumeration, @Nullable String name) {
+    enumeration.addLiteral(this);
+    setParent(enumeration);
     setName(name);
   }
 

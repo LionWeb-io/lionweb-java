@@ -495,4 +495,9 @@ public class JsonSerialization {
                       });
             });
   }
+
+    public void registerMetamodel(Metamodel metamodel) {
+      getConceptResolver().registerMetamodel(metamodel);
+      getPrimitiveValuesSerialization().registerMetamodel(metamodel);
+    }
 }
