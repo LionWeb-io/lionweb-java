@@ -14,7 +14,8 @@ import java.util.*;
  * of the primitive value.
  */
 public class PrimitiveValuesSerialization {
-
+  // We use the ID, and not the key, to classify the enumerations internally within PrimitiveValuesSerialization
+  // because that is unique
   private Map<String, Enumeration> enumerationsByID = new HashMap<>();
 
   public void registerMetamodel(Metamodel metamodel) {
@@ -91,6 +92,9 @@ public class PrimitiveValuesSerialization {
       if (serializedValue == null) {
         return null;
       }
+      // In this case, where we are dealing with primitive values, we want to use the literal _key_ (and not the ID)
+      // This is at least the default behavior, but the user can register specialized primitiveUnserializers,
+      // if a different behavior is needed
       Optional<EnumerationLiteral> enumerationLiteral =
           enumerationsByID.get(primitiveTypeID).getLiterals().stream()
               .filter(l -> Objects.equals(l.getKey(), serializedValue))
@@ -114,6 +118,9 @@ public class PrimitiveValuesSerialization {
       if (value == null) {
         return null;
       }
+      // In this case, where we are dealing with primitive values, we want to use the literal _key_ (and not the ID)
+      // This is at least the default behavior, but the user can register specialized primitiveSerializers,
+      // if a different behavior is needed
       return ((EnumerationLiteral) value).getKey();
     } else {
       throw new IllegalArgumentException(
