@@ -5,7 +5,8 @@ import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nullable;
 
-public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements NamespacedEntity {
+public class EnumerationLiteral extends M3Node<EnumerationLiteral>
+    implements NamespacedEntity, HasKey<EnumerationLiteral> {
 
   public EnumerationLiteral() {}
 
@@ -43,5 +44,16 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral> implements Na
   @Override
   public Concept getConcept() {
     return LionCore.getEnumerationLiteral();
+  }
+
+  @Override
+  public String getKey() {
+    return this.getPropertyValue("key", String.class);
+  }
+
+  @Override
+  public EnumerationLiteral setKey(String key) {
+    setPropertyValue("key", key);
+    return this;
   }
 }
