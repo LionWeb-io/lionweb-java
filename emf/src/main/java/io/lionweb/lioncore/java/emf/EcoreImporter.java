@@ -96,6 +96,9 @@ public class EcoreImporter {
     if (eClassifier.equals(EcorePackage.Literals.EINT)) {
       return LionCoreBuiltins.getInteger();
     }
+    if (eClassifier.equals(EcorePackage.Literals.EBOOLEAN)) {
+      return LionCoreBuiltins.getBoolean();
+    }
     if (eClassifier.eClass().equals(EcorePackage.Literals.EENUM)) {
       return eEnumsToEnumerations.get((EEnum) eClassifier);
     }

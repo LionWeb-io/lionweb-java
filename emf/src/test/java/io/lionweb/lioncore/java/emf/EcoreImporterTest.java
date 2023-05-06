@@ -157,5 +157,6 @@ public class EcoreImporterTest {
     EcoreImporter importer = new EcoreImporter();
 
     List<Metamodel> metamodels = importer.importEcoreInputStream(is, EcoreImporter.ResourceType.JSON);
+    assertEquals(2, metamodels.size());
   }
 }
