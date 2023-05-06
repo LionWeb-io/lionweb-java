@@ -150,4 +150,12 @@ public class EcoreImporterTest {
     assertEquals(false, specialistBookWriterName.isOptional());
     assertEquals(true, specialistBookWriterName.isRequired());
   }
+
+  @Test
+  public void importKotlinLangExample() throws IOException {
+    InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
+    EcoreImporter importer = new EcoreImporter();
+
+    List<Metamodel> metamodels = importer.importEcoreInputStream(is, EcoreImporter.ResourceType.JSON);
+  }
 }

@@ -10,11 +10,14 @@ import java.util.List;
 import java.util.Map;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.impl.EcoreFactoryImpl;
+import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 
 public class EcoreImporter {
   private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
@@ -34,15 +37,42 @@ public class EcoreImporter {
     return importResource(resource);
   }
 
+  enum ResourceType {
+    XML,
+    JSON,
+    ECORE
+  }
+
   public List<Metamodel> importEcoreInputStream(InputStream inputStream) throws IOException {
+    return importEcoreInputStream(inputStream, ResourceType.ECORE);
+  }
+
+  public List<Metamodel> importEcoreInputStream(InputStream inputStream, ResourceType resourceType) throws IOException {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
     extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
+    extensionsToFactoryMap.put("json", new JsonResourceFactory());
 
     ResourceSet resourceSet = new ResourceSetImpl();
 
-    Resource resource = resourceSet.createResource(URI.createFileURI("dummy.ecore"));
+    URI uri;
+    switch (resourceType) {
+      case ECORE:
+        uri = URI.createFileURI("dummy.ecore");
+        break;
+      case XML:
+        uri = URI.createFileURI("dummy.xml");
+        break;
+      case JSON:
+        uri = URI.createFileURI("dummy.json");
+        break;
+      default:
+        throw new UnsupportedOperationException();
+    }
+
+    Resource resource = resourceSet.createResource(uri);
+    resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
     resource.load(inputStream, new HashMap<>());
     return importResource(resource);
   }
@@ -95,7 +125,11 @@ public class EcoreImporter {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          throw new UnsupportedOperationException();
+          ConceptInterface conceptInterface = new ConceptInterface(metamodel, eClass.getName());
+          conceptInterface.setID(ePackage.getName() + "-" + conceptInterface.getName());
+          conceptInterface.setKey(ePackage.getName() + "-" + conceptInterface.getName());
+          metamodel.addElement(conceptInterface);
+          eClassesToConceptInterfacess.put(eClass, conceptInterface);
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
           concept.setID(ePackage.getName() + "-" + concept.getName());
@@ -105,7 +139,7 @@ public class EcoreImporter {
           eClassesToConcepts.put(eClass, concept);
         }
       } else {
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException(eClassifier.toString());
       }
     }
 

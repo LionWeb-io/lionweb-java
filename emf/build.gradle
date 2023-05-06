@@ -19,6 +19,8 @@ dependencies {
     api group: 'org.eclipse.emf', name: 'org.eclipse.emf.ecore', version: '2.25.0'
     api group: 'org.eclipse.emf', name: 'org.eclipse.emf.ecore.xmi', version: '2.16.0'
 
+    api group: 'org.eclipse.emfcloud', name: 'emfjson-jackson', version: '2.0.0'
+
     // Use JUnit test framework.
     testImplementation 'junit:junit:4.13'
     testImplementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
