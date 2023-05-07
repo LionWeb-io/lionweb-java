@@ -18,6 +18,9 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 public class EmfImporterTest {
 
   private List<EPackage> loadKotlinEPackages() throws IOException {
@@ -35,12 +38,23 @@ public class EmfImporterTest {
     // We should first load the packages
     List<EPackage> ePackages = loadKotlinEPackages();
 
-
     InputStream is = this.getClass().getResourceAsStream("/KotlinPrinterAST.json");
     EmfImporter importer = new EmfImporter();
+
+    importer.getNodeInstantiator().enableDynamicNodes();
 
     List<Node> nodes = importer.importInputStream(is, AbstractEmfImporter.ResourceType.JSON, (Consumer<EPackage.Registry>) registry -> {
       ePackages.forEach(ep -> registry.put(ep.getNsURI(), ep));
     });
+    assertEquals(1, nodes.size());
+
+    Node result = nodes.get(0);
+    assertEquals("Result", result.getConcept().getName());
+
+    Node root = result.getOnlyChildByContainmentName("root");
+    assertNotNull(root);
+
+    Node rootPosition = result.getOnlyChildByContainmentName("position");
+    assertNotNull(rootPosition);
   }
 }
