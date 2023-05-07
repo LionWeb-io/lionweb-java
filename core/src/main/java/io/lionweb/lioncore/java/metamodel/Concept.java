@@ -145,6 +145,14 @@ public class Concept extends FeaturesContainer<Concept> {
         .orElse(null);
   }
 
+  public @Nonnull Containment requireContainmentByName(@Nonnull String containmentName) {
+    Containment containment = getContainmentByName(containmentName);
+    if (containment == null) {
+      throw new IllegalArgumentException("Containment " + containmentName + " not found in Concept " + getName());
+    }
+    return containment;
+  }
+
   public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
     Objects.requireNonNull(referenceName, "referenceName should not be null");
     return allFeatures().stream()

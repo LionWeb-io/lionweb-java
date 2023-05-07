@@ -119,4 +119,19 @@ public interface Node extends HasFeatureValues {
     }
     return nodes;
   }
+
+  default List<? extends Node> getChildrenByContainmentName(String containmentName) {
+    return getChildren(getConcept().requireContainmentByName(containmentName));
+  }
+
+  default @Nullable Node getOnlyChildByContainmentName(String containmentName) {
+    List<? extends Node> children = getChildrenByContainmentName(containmentName);
+    if (children.size() > 1) {
+      throw new IllegalStateException();
+    } else if (children.size() == 0) {
+      return null;
+    } else {
+      return children.get(0);
+    }
+  }
 }

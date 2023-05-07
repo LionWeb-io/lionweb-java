@@ -65,7 +65,8 @@ public class DynamicNode implements Node {
   }
 
   @Override
-  public List<Node> getChildren(Containment containment) {
+  public List<Node> getChildren(@Nonnull Containment containment) {
+    Objects.requireNonNull(containment, "Containment should not be null");
     if (!getConcept().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
@@ -77,10 +78,8 @@ public class DynamicNode implements Node {
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
-    if (containment == null) {
-      throw new IllegalArgumentException();
-    }
+  public void addChild(@Nonnull Containment containment, Node child) {
+    Objects.requireNonNull(containment);
     if (containment.isMultiple()) {
       addContainment(containment, child);
     } else {
