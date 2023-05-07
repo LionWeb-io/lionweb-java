@@ -19,66 +19,14 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 
-public class EcoreImporter {
+public class EcoreImporter extends AbstractEmfImporter {
   private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
   private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
   private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
 
   private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
 
-  public List<Metamodel> importEcoreFile(File ecoreFile) {
-    Map<String, Object> extensionsToFactoryMap =
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
-    extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
-
-    ResourceSet resourceSet = new ResourceSetImpl();
-
-    Resource resource =
-        resourceSet.getResource(URI.createFileURI(ecoreFile.getAbsolutePath()), true);
-    return importResource(resource);
-  }
-
-  enum ResourceType {
-    XML,
-    JSON,
-    ECORE
-  }
-
-  public List<Metamodel> importEcoreInputStream(InputStream inputStream) throws IOException {
-    return importEcoreInputStream(inputStream, ResourceType.ECORE);
-  }
-
-  public List<Metamodel> importEcoreInputStream(InputStream inputStream, ResourceType resourceType) throws IOException {
-    Map<String, Object> extensionsToFactoryMap =
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
-    extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
-    extensionsToFactoryMap.put("json", new JsonResourceFactory());
-
-    ResourceSet resourceSet = new ResourceSetImpl();
-
-    URI uri;
-    switch (resourceType) {
-      case ECORE:
-        uri = URI.createFileURI("dummy.ecore");
-        break;
-      case XML:
-        uri = URI.createFileURI("dummy.xml");
-        break;
-      case JSON:
-        uri = URI.createFileURI("dummy.json");
-        break;
-      default:
-        throw new UnsupportedOperationException();
-    }
-
-    Resource resource = resourceSet.createResource(uri);
-    resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
-    resource.load(inputStream, new HashMap<>());
-    return importResource(resource);
-  }
-
+  @Override
   public List<Metamodel> importResource(Resource resource) {
     List<Metamodel> metamodels = new LinkedList<>();
     for (EObject content : resource.getContents()) {

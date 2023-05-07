@@ -5,7 +5,11 @@ import static org.junit.Assert.*;
 import io.lionweb.lioncore.java.metamodel.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.junit.Test;
 
 public class EcoreImporterTest {
@@ -15,7 +19,7 @@ public class EcoreImporterTest {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
     EcoreImporter importer = new EcoreImporter();
 
-    List<Metamodel> metamodels = importer.importEcoreInputStream(is);
+    List<Metamodel> metamodels = importer.importInputStream(is);
     assertEquals(1, metamodels.size());
 
     Metamodel metamodel = metamodels.get(0);
@@ -156,7 +160,22 @@ public class EcoreImporterTest {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
     EcoreImporter importer = new EcoreImporter();
 
-    List<Metamodel> metamodels = importer.importEcoreInputStream(is, EcoreImporter.ResourceType.JSON);
+    List<Metamodel> metamodels = importer.importInputStream(is, EcoreImporter.ResourceType.JSON);
     assertEquals(2, metamodels.size());
+
+    Concept point = metamodels.get(0).getConceptByName("Point");
+    assertEquals(2, point.allFeatures().size());
+
+    Property pointLine = point.getPropertyByName("line");
+    assertEquals(LionCoreBuiltins.getInteger(), pointLine.getType());
+    assertEquals(true, pointLine.isRequired());
+
+    Property pointColumn = point.getPropertyByName("column");
+    assertEquals(LionCoreBuiltins.getInteger(), pointColumn.getType());
+    assertEquals(true, pointColumn.isRequired());
+
+    Enumeration issueType = metamodels.get(0).getEnumerationByName("IssueType");
+    assertEquals(3, issueType.getLiterals().size());
+    assertEquals(new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")), issueType.getLiterals().stream().map(l -> l.getName()).collect(Collectors.toSet()));
   }
 }
