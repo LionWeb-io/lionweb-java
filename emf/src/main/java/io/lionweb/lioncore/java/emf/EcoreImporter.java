@@ -1,23 +1,12 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.metamodel.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
-import org.eclipse.emf.ecore.impl.EcoreFactoryImpl;
-import org.eclipse.emf.ecore.impl.EcorePackageImpl;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.eclipse.emf.ecore.resource.ResourceSet;
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
-import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 
 public class EcoreImporter extends AbstractEmfImporter {
   private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
@@ -151,7 +140,7 @@ public class EcoreImporter extends AbstractEmfImporter {
         Enumeration enumeration = eEnumsToEnumerations.get(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
-          enumerationLiteral.setID(enumeration.getID()+"-"+enumLiteral.getName());
+          enumerationLiteral.setID(enumeration.getID() + "-" + enumLiteral.getName());
           enumeration.addLiteral(enumerationLiteral);
         }
       } else {
@@ -161,34 +150,31 @@ public class EcoreImporter extends AbstractEmfImporter {
     return metamodel;
   }
 
-  private void processStructuralFeatures(EPackage ePackage, EClass eClass, FeaturesContainer<?> featuresContainer) {
+  private void processStructuralFeatures(
+      EPackage ePackage, EClass eClass, FeaturesContainer<?> featuresContainer) {
     for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
         Property property = new Property(eFeature.getName(), featuresContainer);
         property.setID(
-                ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+            ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
         property.setKey(
-                ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+            ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
         featuresContainer.addFeature(property);
         property.setOptional(!eAttribute.isRequired());
         property.setDerived(eAttribute.isDerived());
         property.setType(convertEClassifierToDataType(eFeature.getEType()));
         if (eAttribute.isMany()) {
-          throw new IllegalArgumentException(
-                  "EAttributes with upper bound > 1 are not supported");
+          throw new IllegalArgumentException("EAttributes with upper bound > 1 are not supported");
         }
-      } else if (eFeature
-              .eClass()
-              .getName()
-              .equals(EcorePackage.Literals.EREFERENCE.getName())) {
+      } else if (eFeature.eClass().getName().equals(EcorePackage.Literals.EREFERENCE.getName())) {
         EReference eReference = (EReference) eFeature;
         if (eReference.isContainment()) {
           Containment containment = new Containment(eFeature.getName(), featuresContainer);
           containment.setID(
-                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
           containment.setKey(
-                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
           containment.setOptional(!eReference.isRequired());
           containment.setMultiple(eReference.isMany());
           featuresContainer.addFeature(containment);
@@ -196,9 +182,9 @@ public class EcoreImporter extends AbstractEmfImporter {
         } else {
           Reference reference = new Reference(eFeature.getName(), featuresContainer);
           reference.setID(
-                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
           reference.setKey(
-                  ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
           reference.setOptional(!eReference.isRequired());
           reference.setMultiple(eReference.isMany());
           featuresContainer.addFeature(reference);

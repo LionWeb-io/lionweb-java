@@ -148,7 +148,8 @@ public class Concept extends FeaturesContainer<Concept> {
   public @Nonnull Containment requireContainmentByName(@Nonnull String containmentName) {
     Containment containment = getContainmentByName(containmentName);
     if (containment == null) {
-      throw new IllegalArgumentException("Containment " + containmentName + " not found in Concept " + getName());
+      throw new IllegalArgumentException(
+          "Containment " + containmentName + " not found in Concept " + getName());
     }
     return containment;
   }

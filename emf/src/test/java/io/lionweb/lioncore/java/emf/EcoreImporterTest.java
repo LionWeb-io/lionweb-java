@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.junit.Test;
 
 public class EcoreImporterTest {
@@ -176,6 +175,8 @@ public class EcoreImporterTest {
 
     Enumeration issueType = metamodels.get(0).getEnumerationByName("IssueType");
     assertEquals(3, issueType.getLiterals().size());
-    assertEquals(new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")), issueType.getLiterals().stream().map(l -> l.getName()).collect(Collectors.toSet()));
+    assertEquals(
+        new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")),
+        issueType.getLiterals().stream().map(l -> l.getName()).collect(Collectors.toSet()));
   }
 }
