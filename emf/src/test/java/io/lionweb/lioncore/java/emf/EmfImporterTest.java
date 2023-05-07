@@ -54,7 +54,7 @@ public class EmfImporterTest {
     Node root = result.getOnlyChildByContainmentName("root");
     assertNotNull(root);
 
-    Node rootPosition = result.getOnlyChildByContainmentName("position");
+    Node rootPosition = root.getOnlyChildByContainmentName("position");
     assertNotNull(rootPosition);
   }
 }
