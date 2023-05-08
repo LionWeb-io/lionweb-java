@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf.support;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -15,10 +16,22 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 public class EMFJsonLoader {
   public List<EObject> load(InputStream inputStream, Resource resource) {
-    JsonObject json = JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
-    List<EObject> nodes = Collections.singletonList(readEObject(json, resource, null));
-    resource.getContents().addAll(nodes);
-    return nodes;
+    JsonElement json = JsonParser.parseReader(new InputStreamReader(inputStream));
+    if (json.isJsonObject()) {
+      List<EObject> nodes = Collections.singletonList(readEObject(json.getAsJsonObject(), resource, null));
+      resource.getContents().addAll(nodes);
+      return nodes;
+    } else if (json.isJsonArray()) {
+      List<EObject> nodes = new ArrayList<>();
+      json.getAsJsonArray().forEach(jsonElement -> nodes.add(readEObject(jsonElement.getAsJsonObject(), resource, null)));
+      resource.getContents().addAll(nodes);
+      return nodes;
+    } else {
+      throw new UnsupportedOperationException();
+    }
+
+
+
   }
 
   private EObject readEObject(JsonObject jsonObject, Resource resource, EClass expectedEClass) {
@@ -101,7 +114,7 @@ public class EMFJsonLoader {
                       eObject.eSet(eStructuralFeature, child);
                     }
                   } else {
-                    throw new UnsupportedOperationException();
+                    throw new UnsupportedOperationException("Non-containment EReferences are not yet supported");
                   }
                 } else {
                   throw new IllegalStateException();

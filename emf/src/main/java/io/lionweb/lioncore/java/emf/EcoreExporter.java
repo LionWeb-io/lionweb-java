@@ -61,74 +61,78 @@ public class EcoreExporter {
         });
     }
 
+    private void considerMultiplicity(Link<?> link, EReference eReference) {
+        if (link.isMultiple()) {
+            eReference.setUpperBound(-1);
+        } else {
+            eReference.setUpperBound(1);
+        }
+        if (link.isOptional()) {
+            eReference.setLowerBound(0);
+        } else {
+            eReference.setLowerBound(1);
+        }
+    }
+
+    private EStructuralFeature convertFeatureToEStructuralFeature(Feature<?> feature) {
+        if (feature instanceof Property) {
+            Property property = (Property) feature;
+
+            EAttribute eAttribute = EcoreFactory.eINSTANCE.createEAttribute();
+            eAttribute.setName(property.getName());
+            if (property.isOptional()) {
+                eAttribute.setLowerBound(0);
+            } else {
+                eAttribute.setLowerBound(1);
+            }
+            eAttribute.setUpperBound(1);
+            eAttribute.setEType(dataTypeMapping.toEDataType(property.getType()));
+            return eAttribute;
+        } else if (feature instanceof Containment) {
+            Containment containment = (Containment) feature;
+
+            EReference eReference = EcoreFactory.eINSTANCE.createEReference();
+            eReference.setName(containment.getName());
+            eReference.setContainment(true);
+            considerMultiplicity(containment, eReference);
+            eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(containment.getType()));
+
+            return eReference;
+        } else if (feature instanceof Reference) {
+            Reference reference = (Reference) feature;
+
+            EReference eReference = EcoreFactory.eINSTANCE.createEReference();
+            eReference.setName(reference.getName());
+            eReference.setContainment(false);
+            considerMultiplicity(reference, eReference);
+            eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(reference.getType()));
+
+            return eReference;
+        } else {
+            throw new IllegalStateException();
+        }
+    }
+
+    private void populateEClassFromConcept(Concept concept) {
+        EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept);
+
+        if (concept.getExtendedConcept() != null) {
+            EClass superEClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept.getExtendedConcept());
+            eClass.getESuperTypes().add(superEClass);
+        }
+        concept.getImplemented().forEach(implemented -> {
+            throw new UnsupportedOperationException();
+        });
+
+        concept.getFeatures().forEach(f -> {
+            eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f));
+        });
+    }
+
     private void populateEClasses(Metamodel metamodel) {
         metamodel.getElements().forEach(e -> {
             if (e instanceof Concept) {
-                Concept concept = (Concept) e;
-
-                EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept);
-
-                if (concept.getExtendedConcept() != null) {
-                    EClass superEClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept.getExtendedConcept());
-                    eClass.getESuperTypes().add(superEClass);
-                }
-                concept.getImplemented().forEach(implemented -> {
-                    throw new UnsupportedOperationException();
-                });
-
-
-                concept.getFeatures().forEach(f -> {
-                    if (f instanceof Property) {
-                        Property property = (Property) f;
-
-                        EAttribute eAttribute = EcoreFactory.eINSTANCE.createEAttribute();
-                        eAttribute.setName(property.getName());
-                        if (property.isOptional()) {
-                            eAttribute.setLowerBound(0);
-                        } else {
-                            eAttribute.setLowerBound(1);
-                        }
-                        eAttribute.setUpperBound(1);
-                        eAttribute.setEType(dataTypeMapping.toEDataType(property.getType()));
-                        eClass.getEStructuralFeatures().add(eAttribute);
-                    } else if (f instanceof Containment) {
-                        Containment containment = (Containment) f;
-                        EReference eReference = EcoreFactory.eINSTANCE.createEReference();
-                        eReference.setName(containment.getName());
-                        eReference.setContainment(true);
-                        if (containment.isMultiple()) {
-                            eReference.setUpperBound(-1);
-                        } else {
-                            eReference.setUpperBound(1);
-                        }
-                        if (containment.isOptional()) {
-                            eReference.setLowerBound(0);
-                        } else {
-                            eReference.setLowerBound(1);
-                        }
-                        eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(containment.getType()));
-                        eClass.getEStructuralFeatures().add(eReference);
-                    } else if (f instanceof Reference) {
-                        Reference reference = (Reference) f;
-                        EReference eReference = EcoreFactory.eINSTANCE.createEReference();
-                        eReference.setName(reference.getName());
-                        eReference.setContainment(false);
-                        if (reference.isMultiple()) {
-                            eReference.setUpperBound(-1);
-                        } else {
-                            eReference.setUpperBound(1);
-                        }
-                        if (reference.isOptional()) {
-                            eReference.setLowerBound(0);
-                        } else {
-                            eReference.setLowerBound(1);
-                        }
-                        eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(reference.getType()));
-                        eClass.getEStructuralFeatures().add(eReference);
-                    } else {
-                        throw new IllegalStateException();
-                    }
-                });
+                populateEClassFromConcept((Concept) e);
             } else if (e instanceof ConceptInterface) {
                 throw new UnsupportedOperationException();
             } else if (e instanceof Enumeration) {

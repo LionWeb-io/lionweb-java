@@ -87,12 +87,12 @@ public abstract class AbstractEmfImporter<E> {
     }
 
     Resource resource = resourceSet.createResource(uri);
+    resourceSet
+            .getPackageRegistry()
+            .put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
     if (resourceType == ResourceType.JSON) {
       new EMFJsonLoader().load(inputStream, resource);
     } else {
-      resourceSet
-          .getPackageRegistry()
-          .put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
       resource.load(inputStream, new HashMap<>());
     }
 

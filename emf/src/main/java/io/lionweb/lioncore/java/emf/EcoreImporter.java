@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.metamodel.*;
 import java.util.HashMap;
@@ -10,13 +11,17 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
 public class EcoreImporter extends AbstractEmfImporter {
-  private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
-  private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
-  private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
-
+  //private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
+  private ConceptsToEClassesMapping conceptsToEClassesMapping;
 
-  //private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
+  public EcoreImporter() {
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+  }
+
+  public EcoreImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+  }
 
   @Override
   public List<Metamodel> importResource(Resource resource) {
@@ -34,7 +39,7 @@ public class EcoreImporter extends AbstractEmfImporter {
     metamodel.setVersion("1");
     metamodel.setID(ePackage.getName());
     metamodel.setKey(ePackage.getName());
-    packagesToMetamodels.put(ePackage, metamodel);
+    //packagesToMetamodels.put(ePackage, metamodel);
 
     // Initially we just create empty concepts, later we populate the features as they could refer
     // to
@@ -47,14 +52,14 @@ public class EcoreImporter extends AbstractEmfImporter {
           conceptInterface.setID(ePackage.getName() + "-" + conceptInterface.getName());
           conceptInterface.setKey(ePackage.getName() + "-" + conceptInterface.getName());
           metamodel.addElement(conceptInterface);
-          eClassesToConceptInterfacess.put(eClass, conceptInterface);
+          conceptsToEClassesMapping.registerMapping(conceptInterface, eClass);
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
           concept.setID(ePackage.getName() + "-" + concept.getName());
           concept.setKey(ePackage.getName() + "-" + concept.getName());
           concept.setAbstract(false);
           metamodel.addElement(concept);
-          eClassesToConcepts.put(eClass, concept);
+          conceptsToEClassesMapping.registerMapping(concept, eClass);
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
@@ -74,11 +79,11 @@ public class EcoreImporter extends AbstractEmfImporter {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          ConceptInterface conceptInterface = eClassesToConceptInterfacess.get(eClass);
+          ConceptInterface conceptInterface = conceptsToEClassesMapping.getCorrespondingConceptInterface(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
-              ConceptInterface superConceptInterface = eClassesToConceptInterfacess.get(supertype);
+              ConceptInterface superConceptInterface = conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
               conceptInterface.addExtendedInterface(superConceptInterface);
             } else {
               throw new UnsupportedOperationException();
@@ -88,14 +93,14 @@ public class EcoreImporter extends AbstractEmfImporter {
           processStructuralFeatures(ePackage, eClass, conceptInterface);
 
         } else {
-          Concept concept = eClassesToConcepts.get(eClass);
+          Concept concept = conceptsToEClassesMapping.getCorrespondingConcept(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
-              ConceptInterface superConceptInterface = eClassesToConceptInterfacess.get(supertype);
+              ConceptInterface superConceptInterface = conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
               concept.addImplementedInterface(superConceptInterface);
             } else {
-              Concept superConcept = eClassesToConcepts.get(supertype);
+              Concept superConcept = conceptsToEClassesMapping.getCorrespondingConcept(supertype);
               if (concept.getExtendedConcept() != null) {
                 throw new IllegalStateException("Cannot set more than one extended concept");
               }
@@ -121,8 +126,8 @@ public class EcoreImporter extends AbstractEmfImporter {
   }
 
   private FeaturesContainer convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
-    if (eClassesToConcepts.containsKey(eClassifier)) {
-      return eClassesToConcepts.get(eClassifier);
+    if (conceptsToEClassesMapping.knows(eClassifier)) {
+      return conceptsToEClassesMapping.getCorrespondingFeaturesContainer(eClassifier);
     } else {
       throw new IllegalArgumentException(
           "Reference to an EClassifier we did not met: " + eClassifier);
