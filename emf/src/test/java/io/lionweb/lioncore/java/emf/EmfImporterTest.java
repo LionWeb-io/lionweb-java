@@ -62,5 +62,22 @@ public class EmfImporterTest {
 
     Node rootPosition = root.getOnlyChildByContainmentName("position");
     assertNotNull(rootPosition);
+
+    assertEquals("Position", rootPosition.getConcept().getName());
+
+    Node rootPositionStart = rootPosition.getOnlyChildByContainmentName("start");
+    assertEquals(1, rootPositionStart.getPropertyValueByName("line"));
+    assertEquals(0, rootPositionStart.getPropertyValueByName("column"));
+
+    Node rootPositionEnd = rootPosition.getOnlyChildByContainmentName("end");
+    assertEquals(280, rootPositionEnd.getPropertyValueByName("line"));
+    assertEquals(0, rootPositionEnd.getPropertyValueByName("column"));
+
+    Node rootElement = root.getOnlyChildByContainmentName("elements");
+    assertEquals("KClassDeclaration", rootElement.getConcept().getName());
+    assertEquals("KotlinPrinter", rootElement.getPropertyValueByName("name"));
+
+    Node rootElementPrimaryConstructor = rootElement.getOnlyChildByContainmentName("primaryConstructor");
+    assertEquals("KPrimaryConstructor", rootElementPrimaryConstructor.getConcept().getName());
   }
 }
