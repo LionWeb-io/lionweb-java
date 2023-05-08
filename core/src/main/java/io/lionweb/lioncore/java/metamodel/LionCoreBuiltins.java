@@ -8,6 +8,7 @@ public class LionCoreBuiltins extends Metamodel {
     super("LIonCore.Builtins");
     setID("LIonCore_Builtins");
     setKey("LIonCore_Builtins");
+    setVersion("1");
     new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
