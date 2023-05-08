@@ -3,31 +3,33 @@ package io.lionweb.lioncore.java.emf.support;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.eclipse.emf.ecore.*;
-import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
-import org.eclipse.emf.ecore.resource.Resource;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
+import org.eclipse.emf.ecore.resource.Resource;
 
 /**
- * We have issues using the JSON resource factory part of EMF-Cloud, so we provide our own implementation
- * of the logic to load Resources stored as JSON.
+ * We have issues using the JSON resource factory part of EMF-Cloud, so we provide our own
+ * implementation of the logic to load Resources stored as JSON.
  */
 public class EMFJsonLoader {
   public List<EObject> load(InputStream inputStream, Resource resource) {
     JsonElement json = JsonParser.parseReader(new InputStreamReader(inputStream));
     if (json.isJsonObject()) {
-      List<EObject> nodes = Collections.singletonList(readEObject(json.getAsJsonObject(), resource, null));
+      List<EObject> nodes =
+          Collections.singletonList(readEObject(json.getAsJsonObject(), resource, null));
       resource.getContents().addAll(nodes);
       return nodes;
     } else if (json.isJsonArray()) {
       List<EObject> nodes = new ArrayList<>();
-      json.getAsJsonArray().forEach(jsonElement -> nodes.add(readEObject(jsonElement.getAsJsonObject(), resource, null)));
+      json.getAsJsonArray()
+          .forEach(
+              jsonElement -> nodes.add(readEObject(jsonElement.getAsJsonObject(), resource, null)));
       resource.getContents().addAll(nodes);
       return nodes;
     } else {
@@ -115,7 +117,8 @@ public class EMFJsonLoader {
                       eObject.eSet(eStructuralFeature, child);
                     }
                   } else {
-                    throw new UnsupportedOperationException("Non-containment EReferences are not yet supported");
+                    throw new UnsupportedOperationException(
+                        "Non-containment EReferences are not yet supported");
                   }
                 } else {
                   throw new IllegalStateException();

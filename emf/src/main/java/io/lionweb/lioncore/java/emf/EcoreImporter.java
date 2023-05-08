@@ -3,10 +3,8 @@ package io.lionweb.lioncore.java.emf;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.metamodel.*;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -76,11 +74,13 @@ public class EcoreImporter extends AbstractEmfImporter {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          ConceptInterface conceptInterface = conceptsToEClassesMapping.getCorrespondingConceptInterface(eClass);
+          ConceptInterface conceptInterface =
+              conceptsToEClassesMapping.getCorrespondingConceptInterface(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
-              ConceptInterface superConceptInterface = conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
+              ConceptInterface superConceptInterface =
+                  conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
               conceptInterface.addExtendedInterface(superConceptInterface);
             } else {
               throw new UnsupportedOperationException();
@@ -94,7 +94,8 @@ public class EcoreImporter extends AbstractEmfImporter {
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
-              ConceptInterface superConceptInterface = conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
+              ConceptInterface superConceptInterface =
+                  conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
               concept.addImplementedInterface(superConceptInterface);
             } else {
               Concept superConcept = conceptsToEClassesMapping.getCorrespondingConcept(supertype);
@@ -130,7 +131,6 @@ public class EcoreImporter extends AbstractEmfImporter {
           "Reference to an EClassifier we did not met: " + eClassifier);
     }
   }
-
 
   private void processStructuralFeatures(
       EPackage ePackage, EClass eClass, FeaturesContainer<?> featuresContainer) {

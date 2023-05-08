@@ -77,7 +77,8 @@ public class EmfImporterTest {
     assertEquals("KClassDeclaration", rootElement.getConcept().getName());
     assertEquals("KotlinPrinter", rootElement.getPropertyValueByName("name"));
 
-    Node rootElementPrimaryConstructor = rootElement.getOnlyChildByContainmentName("primaryConstructor");
+    Node rootElementPrimaryConstructor =
+        rootElement.getOnlyChildByContainmentName("primaryConstructor");
     assertEquals("KPrimaryConstructor", rootElementPrimaryConstructor.getConcept().getName());
   }
 }

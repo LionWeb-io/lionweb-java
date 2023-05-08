@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.emf.support.EMFJsonLoader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -7,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
-
-import io.lionweb.lioncore.java.emf.support.EMFJsonLoader;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -26,9 +25,7 @@ public abstract class AbstractEmfImporter<E> {
     ECORE
   }
 
-  /**
-   * Import the file. The resource type is derived from the extension.
-   */
+  /** Import the file. The resource type is derived from the extension. */
   public List<E> importFile(File ecoreFile) {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -96,9 +93,7 @@ public abstract class AbstractEmfImporter<E> {
     }
 
     Resource resource = resourceSet.createResource(uri);
-    resourceSet
-            .getPackageRegistry()
-            .put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
+    resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
     if (resourceType == ResourceType.JSON) {
       new EMFJsonLoader().load(inputStream, resource);
     } else {
