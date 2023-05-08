@@ -5,10 +5,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.impl.DynamicEObjectImpl;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -32,6 +30,30 @@ public class EMFJsonLoader {
               jsonElement -> nodes.add(readEObject(jsonElement.getAsJsonObject(), resource, null)));
       resource.getContents().addAll(nodes);
       return nodes;
+    } else {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private EObject resolveReference(String ref, Resource resource) {
+    String[] parts = ref.split("#//");
+    if (parts.length == 2) {
+      EPackage ePackage = resource.getResourceSet().getPackageRegistry().getEPackage(parts[0]);
+      if (ePackage == null) {
+        throw new IllegalStateException("Unable to resolve package " + parts[0]);
+      } else {
+        if (parts[1].contains("/")) {
+          throw new UnsupportedOperationException();
+        } else {
+          Optional<EClassifier> resolved = ePackage.getEClassifiers().stream().filter(e -> e.getName().equals(parts[1])).findFirst();
+          if (resolved.isPresent()) {
+            return resolved.get();
+          } else {
+            throw new IllegalStateException("Cannot find " + parts[1] + " in package " + ePackage);
+          }
+        }
+      }
+
     } else {
       throw new UnsupportedOperationException();
     }
@@ -66,7 +88,7 @@ public class EMFJsonLoader {
       }
       eClass = (EClass) eClassifier;
     }
-    EObject eObject = new DynamicEObjectImpl(eClass);
+    EObject eObject = eClass.getEPackage().getEFactoryInstance().create(eClass);
     eClass
         .getEAllStructuralFeatures()
         .forEach(
@@ -117,8 +139,18 @@ public class EMFJsonLoader {
                       eObject.eSet(eStructuralFeature, child);
                     }
                   } else {
-                    throw new UnsupportedOperationException(
-                        "Non-containment EReferences are not yet supported");
+                    if (eStructuralFeature.isMany()) {
+                      throw new UnsupportedOperationException();
+                    } else {
+                      if (jsonFeatureValue.isJsonObject()) {
+                        String ref = jsonFeatureValue.getAsJsonObject().get("$ref").getAsString();
+                        EObject referred = resolveReference(ref, resource);
+                        eObject.eSet(eStructuralFeature, referred);
+                      } else {
+                        throw new UnsupportedOperationException(
+                                "Non-containment EReferences are not yet supported");
+                      }
+                    }
                   }
                 } else {
                   throw new IllegalStateException();
