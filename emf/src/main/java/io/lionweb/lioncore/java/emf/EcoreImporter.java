@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.metamodel.*;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,7 +14,9 @@ public class EcoreImporter extends AbstractEmfImporter {
   private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
   private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
 
-  private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
+  private DataTypeMapping dataTypeMapping = new DataTypeMapping();
+
+  //private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
 
   @Override
   public List<Metamodel> importResource(Resource resource) {
@@ -59,7 +62,7 @@ public class EcoreImporter extends AbstractEmfImporter {
         enumeration.setID(ePackage.getName() + "-" + eEnum.getName());
         enumeration.setKey(ePackage.getName() + "-" + eEnum.getName());
         metamodel.addElement(enumeration);
-        eEnumsToEnumerations.put(eEnum, enumeration);
+        dataTypeMapping.registerMapping(eEnum, enumeration);
       } else {
         throw new UnsupportedOperationException(eClassifier.toString());
       }
@@ -104,7 +107,7 @@ public class EcoreImporter extends AbstractEmfImporter {
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
-        Enumeration enumeration = eEnumsToEnumerations.get(eEnum);
+        Enumeration enumeration = dataTypeMapping.getEnumeratorForEEnum(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
           enumerationLiteral.setID(enumeration.getID() + "-" + enumLiteral.getName());
@@ -115,30 +118,6 @@ public class EcoreImporter extends AbstractEmfImporter {
       }
     }
     return metamodel;
-  }
-
-  private DataType convertEClassifierToDataType(EClassifier eClassifier) {
-    if (eClassifier.equals(EcorePackage.Literals.ESTRING)) {
-      return LionCoreBuiltins.getString();
-    }
-    if (eClassifier.equals(EcorePackage.Literals.EINT)) {
-      return LionCoreBuiltins.getInteger();
-    }
-    if (eClassifier.equals(EcorePackage.Literals.EBOOLEAN)) {
-      return LionCoreBuiltins.getBoolean();
-    }
-    if (eClassifier.eClass().equals(EcorePackage.Literals.EENUM)) {
-      return eEnumsToEnumerations.get((EEnum) eClassifier);
-    }
-    if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
-      if (eClassifier.getName().equals("String")) {
-        return LionCoreBuiltins.getString();
-      }
-      if (eClassifier.getName().equals("Int")) {
-        return LionCoreBuiltins.getInteger();
-      }
-    }
-    throw new UnsupportedOperationException();
   }
 
   private FeaturesContainer convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
@@ -164,7 +143,7 @@ public class EcoreImporter extends AbstractEmfImporter {
         featuresContainer.addFeature(property);
         property.setOptional(!eAttribute.isRequired());
         property.setDerived(eAttribute.isDerived());
-        property.setType(convertEClassifierToDataType(eFeature.getEType()));
+        property.setType(dataTypeMapping.convertEClassifierToDataType(eFeature.getEType()));
         if (eAttribute.isMany()) {
           throw new IllegalArgumentException("EAttributes with upper bound > 1 are not supported");
         }

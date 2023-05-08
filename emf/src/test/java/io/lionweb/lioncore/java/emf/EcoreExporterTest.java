@@ -29,6 +29,7 @@ public class EcoreExporterTest {
     assertEquals(5, libraryPkg.getEClassifiers().size());
 
     EClass writer = (EClass) libraryPkg.getEClassifiers().stream().filter(e -> e.getName().equals("Writer")).findFirst().get();
+    assertEquals(Arrays.asList(), writer.getESuperTypes());
 
     EClass book = (EClass) libraryPkg.getEClassifiers().stream().filter(e -> e.getName().equals("Book")).findFirst().get();
     assertEquals("Book", book.getName());
@@ -51,16 +52,18 @@ public class EcoreExporterTest {
     EReference bookAuthor = (EReference)book.getEStructuralFeature("author");
     assertEquals("author", bookAuthor.getName());
     assertEquals(false, bookAuthor.isContainment());
-    assertEquals(1, bookPages.getLowerBound());
-    assertEquals(-1, bookPages.getUpperBound());
-    assertEquals(writer, bookPages.getEType());
+    assertEquals(1, bookAuthor.getLowerBound());
+    assertEquals(1, bookAuthor.getUpperBound());
+    assertEquals(writer, bookAuthor.getEType());
 
     EClass library = (EClass) libraryPkg.getEClassifiers().stream().filter(e -> e.getName().equals("Library")).findFirst().get();
 
-
     EClass specialistBookWriter = (EClass) libraryPkg.getEClassifiers().stream().filter(e -> e.getName().equals("SpecialistBookWriter")).findFirst().get();
+    assertEquals(Arrays.asList(writer), specialistBookWriter.getESuperTypes());
+
 
     EClass guideBookWriter = (EClass) libraryPkg.getEClassifiers().stream().filter(e -> e.getName().equals("GuideBookWriter")).findFirst().get();
+    assertEquals(Arrays.asList(writer), guideBookWriter.getESuperTypes());
   }
 
 }

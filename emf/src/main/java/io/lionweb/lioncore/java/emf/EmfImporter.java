@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.emf.support.NodeInstantiator;
 import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.*;
@@ -9,7 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 public class EmfImporter extends AbstractEmfImporter {
 
   private NodeInstantiator nodeInstantiator;
-  private EClassMapper eClassMapper;
+  private ConceptsToEClassesMapping eClassMapper;
 
   public NodeInstantiator getNodeInstantiator() {
     return nodeInstantiator;
@@ -17,7 +19,7 @@ public class EmfImporter extends AbstractEmfImporter {
 
   public EmfImporter() {
     nodeInstantiator = new NodeInstantiator();
-    eClassMapper = new EClassMapper();
+    eClassMapper = new ConceptsToEClassesMapping();
   }
 
   @Override

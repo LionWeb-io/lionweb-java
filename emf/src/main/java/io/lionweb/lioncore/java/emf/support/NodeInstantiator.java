@@ -1,4 +1,4 @@
-package io.lionweb.lioncore.java.emf;
+package io.lionweb.lioncore.java.emf.support;
 
 import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.model.Node;

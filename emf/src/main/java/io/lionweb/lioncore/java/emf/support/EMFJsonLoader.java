@@ -1,4 +1,4 @@
-package io.lionweb.lioncore.java.emf;
+package io.lionweb.lioncore.java.emf.support;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
