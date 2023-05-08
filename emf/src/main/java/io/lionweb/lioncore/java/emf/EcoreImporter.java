@@ -11,7 +11,6 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
 public class EcoreImporter extends AbstractEmfImporter {
-  //private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
   private ConceptsToEClassesMapping conceptsToEClassesMapping;
 
@@ -39,11 +38,9 @@ public class EcoreImporter extends AbstractEmfImporter {
     metamodel.setVersion("1");
     metamodel.setID(ePackage.getName());
     metamodel.setKey(ePackage.getName());
-    //packagesToMetamodels.put(ePackage, metamodel);
 
     // Initially we just create empty concepts, later we populate the features as they could refer
-    // to
-    // EClasses which we meet later on in the EPackage
+    // to EClasses which we meet later on in the EPackage
     for (EClassifier eClassifier : ePackage.getEClassifiers()) {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;

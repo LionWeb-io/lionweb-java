@@ -56,43 +56,4 @@ public class NodeInstantiator {
     customUnserializers.put(conceptID, conceptSpecificNodeInstantiator);
     return this;
   }
-
-  //  public void registerLionCoreCustomUnserializers() {
-  //    customUnserializers.put(
-  //        LionCore.getMetamodel().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new Metamodel().setID(serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getConcept().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new Concept((String) null).setID(serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getConceptInterface().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new ConceptInterface((String) null).setID(serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getProperty().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new Property(null, null, serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getReference().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new Reference(null, serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getContainment().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new Containment(null, serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getPrimitiveType().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new PrimitiveType(serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getEnumeration().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new Enumeration().setID(serializedNode.getID()));
-  //    customUnserializers.put(
-  //        LionCore.getEnumerationLiteral().getID(),
-  //        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-  //            new EnumerationLiteral().setID(serializedNode.getID()));
-  //  }
 }

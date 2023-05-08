@@ -9,7 +9,6 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
 public class EmfImporter extends AbstractEmfImporter {
-
   private NodeInstantiator nodeInstantiator;
   private ConceptsToEClassesMapping eClassMapper;
 

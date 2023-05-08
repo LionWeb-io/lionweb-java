@@ -26,6 +26,9 @@ public abstract class AbstractEmfImporter<E> {
     ECORE
   }
 
+  /**
+   * Import the file. The resource type is derived from the extension.
+   */
   public List<E> importFile(File ecoreFile) {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
@@ -40,11 +43,17 @@ public abstract class AbstractEmfImporter<E> {
     return importResource(resource);
   }
 
+  /**
+   * Load the resource from the given InputStream. The Resource is considered to be of type Ecore.
+   */
   public List<E> importInputStream(
       InputStream inputStream, Consumer<EPackage.Registry> packageRegistryInit) throws IOException {
     return importInputStream(inputStream, ResourceType.ECORE, packageRegistryInit);
   }
 
+  /**
+   * Load the resource from the given InputStream. The Resource is considered to be of type Ecore.
+   */
   public List<E> importInputStream(InputStream inputStream) throws IOException {
     return importInputStream(inputStream, ResourceType.ECORE, null);
   }
