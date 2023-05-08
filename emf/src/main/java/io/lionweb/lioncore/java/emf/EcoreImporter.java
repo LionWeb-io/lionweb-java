@@ -26,39 +26,6 @@ public class EcoreImporter extends AbstractEmfImporter {
     return metamodels;
   }
 
-  private DataType convertEClassifierToDataType(EClassifier eClassifier) {
-    if (eClassifier.equals(EcorePackage.Literals.ESTRING)) {
-      return LionCoreBuiltins.getString();
-    }
-    if (eClassifier.equals(EcorePackage.Literals.EINT)) {
-      return LionCoreBuiltins.getInteger();
-    }
-    if (eClassifier.equals(EcorePackage.Literals.EBOOLEAN)) {
-      return LionCoreBuiltins.getBoolean();
-    }
-    if (eClassifier.eClass().equals(EcorePackage.Literals.EENUM)) {
-      return eEnumsToEnumerations.get((EEnum) eClassifier);
-    }
-    if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
-      if (eClassifier.getName().equals("String")) {
-        return LionCoreBuiltins.getString();
-      }
-      if (eClassifier.getName().equals("Int")) {
-        return LionCoreBuiltins.getInteger();
-      }
-    }
-    throw new UnsupportedOperationException();
-  }
-
-  private FeaturesContainer convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
-    if (eClassesToConcepts.containsKey(eClassifier)) {
-      return eClassesToConcepts.get(eClassifier);
-    } else {
-      throw new IllegalArgumentException(
-          "Reference to an EClassifier we did not met: " + eClassifier);
-    }
-  }
-
   public Metamodel importEPackage(EPackage ePackage) {
     Metamodel metamodel = new Metamodel(ePackage.getName());
     metamodel.setVersion("1");
@@ -149,6 +116,40 @@ public class EcoreImporter extends AbstractEmfImporter {
     }
     return metamodel;
   }
+
+  private DataType convertEClassifierToDataType(EClassifier eClassifier) {
+    if (eClassifier.equals(EcorePackage.Literals.ESTRING)) {
+      return LionCoreBuiltins.getString();
+    }
+    if (eClassifier.equals(EcorePackage.Literals.EINT)) {
+      return LionCoreBuiltins.getInteger();
+    }
+    if (eClassifier.equals(EcorePackage.Literals.EBOOLEAN)) {
+      return LionCoreBuiltins.getBoolean();
+    }
+    if (eClassifier.eClass().equals(EcorePackage.Literals.EENUM)) {
+      return eEnumsToEnumerations.get((EEnum) eClassifier);
+    }
+    if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
+      if (eClassifier.getName().equals("String")) {
+        return LionCoreBuiltins.getString();
+      }
+      if (eClassifier.getName().equals("Int")) {
+        return LionCoreBuiltins.getInteger();
+      }
+    }
+    throw new UnsupportedOperationException();
+  }
+
+  private FeaturesContainer convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
+    if (eClassesToConcepts.containsKey(eClassifier)) {
+      return eClassesToConcepts.get(eClassifier);
+    } else {
+      throw new IllegalArgumentException(
+          "Reference to an EClassifier we did not met: " + eClassifier);
+    }
+  }
+
 
   private void processStructuralFeatures(
       EPackage ePackage, EClass eClass, FeaturesContainer<?> featuresContainer) {
