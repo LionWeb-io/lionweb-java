@@ -50,4 +50,9 @@ public class MetamodelKeyVersion {
   public int hashCode() {
     return Objects.hash(key, version);
   }
+
+  @Override
+  public String toString() {
+    return "MetamodelKeyVersion{" + "key='" + key + '\'' + ", version='" + version + '\'' + '}';
+  }
 }
