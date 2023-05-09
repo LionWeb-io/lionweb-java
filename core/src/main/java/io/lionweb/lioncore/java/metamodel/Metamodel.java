@@ -134,7 +134,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
 
   @Override
   public Concept getConcept() {
-    return LionCore.getMetamodel();
+    return LionCore.getLanguage();
   }
 
   @Override

@@ -60,7 +60,7 @@ public class NodeInstantiator {
 
   public void registerLionCoreCustomUnserializers() {
     customUnserializers.put(
-        LionCore.getMetamodel().getID(),
+        LionCore.getLanguage().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
             new Metamodel().setID(serializedNode.getID()));
     customUnserializers.put(

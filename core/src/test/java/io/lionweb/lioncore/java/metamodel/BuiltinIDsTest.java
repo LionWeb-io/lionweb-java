@@ -41,8 +41,8 @@ public class BuiltinIDsTest {
 
     Assert.assertEquals("LIonCore_M3_FeaturesContainer", LionCore.getFeaturesContainer().getID());
     Assert.assertEquals(
-        "LIonCore_M3_FeaturesContainer_features",
-        LionCore.getFeaturesContainer().getContainmentByName("features").getID());
+        "LIonCore_M3_FeaturesContainer_allFeatures",
+        LionCore.getFeaturesContainer().getContainmentByName("allFeatures").getID());
 
     Assert.assertEquals("LIonCore_M3_Link", LionCore.getLink().getID());
     Assert.assertEquals(
@@ -50,19 +50,19 @@ public class BuiltinIDsTest {
     Assert.assertEquals(
         "LIonCore_M3_Link_type", LionCore.getLink().getReferenceByName("type").getID());
 
-    Assert.assertEquals("LIonCore_M3_Metamodel", LionCore.getMetamodel().getID());
+    Assert.assertEquals("LIonCore_M3_Language", LionCore.getLanguage().getID());
     Assert.assertEquals(
-        "LIonCore_M3_Metamodel_name", LionCore.getMetamodel().getPropertyByName("name").getID());
+        "LIonCore_M3_Metamodel_name", LionCore.getLanguage().getPropertyByName("name").getID());
     Assert.assertEquals(
-        "LIonCore_M3_HasKey_key", LionCore.getMetamodel().getPropertyByName("key").getID());
+        "LIonCore_M3_HasKey_key", LionCore.getLanguage().getPropertyByName("key").getID());
     Assert.assertEquals(
-        "LIonCore_M3_Metamodel_dependsOn",
-        LionCore.getMetamodel().getReferenceByName("dependsOn").getID());
+        "LIonCore_M3_Language_dependsOn",
+        LionCore.getLanguage().getReferenceByName("dependsOn").getID());
     Assert.assertEquals(
         "LIonCore_M3_Metamodel_elements",
-        LionCore.getMetamodel().getContainmentByName("elements").getID());
+        LionCore.getLanguage().getContainmentByName("elements").getID());
 
-    Assert.assertEquals("LIonCore_M3_MetamodelElement", LionCore.getMetamodelElement().getID());
+    Assert.assertEquals("LIonCore_M3_LanguageElement", LionCore.getLanguageElement().getID());
 
     Assert.assertEquals("LIonCore_M3_NamespacedEntity", LionCore.getNamespacedEntity().getID());
     Assert.assertEquals(

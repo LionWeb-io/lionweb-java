@@ -52,12 +52,12 @@ public class LionCore {
     return getInstance().requireConceptByName("Link");
   }
 
-  public static Concept getMetamodel() {
-    return getInstance().requireConceptByName("Metamodel");
+  public static Concept getLanguage() {
+    return getInstance().requireConceptByName("Language");
   }
 
-  public static Concept getMetamodelElement() {
-    return getInstance().requireConceptByName("MetamodelElement");
+  public static Concept getLanguageElement() {
+    return getInstance().requireConceptByName("LanguageElement");
   }
 
   public static Concept getNamespacedEntity() {
@@ -150,7 +150,7 @@ public class LionCore {
       featuresContainer.addImplementedInterface(namespaceProvider);
       featuresContainer.addFeature(
           Containment.createMultiple(
-              "allFeatures", feature, "LIonCore_M3_FeaturesContainer_features"));
+              "allFeatures", feature, "LIonCore_M3_FeaturesContainer_allFeatures"));
 
       hasKey.addFeature(
           Property.createRequired("key", LionCoreBuiltins.getString(), "LIonCore_M3_HasKey_key"));

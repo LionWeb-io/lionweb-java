@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
 import io.lionweb.lioncore.java.metamodel.Metamodel;
@@ -116,7 +115,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
 
     SerializedNode lioncore = serializedChunk.getNodeByID("LIonCore_M3");
-    assertEquals(MetaPointer.from(LionCore.getMetamodel()), lioncore.getConcept());
+    assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("Metamodel_name"));
     assertEquals(17, lioncore.getChildren().size());
@@ -147,7 +146,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
     Metamodel lioncore = (Metamodel) unserializedNodes.get(0);
-    assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
+    assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getName());
     assertEquals(17, lioncore.getChildren().size());
@@ -185,7 +184,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
     DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
-    assertEquals(LionCore.getMetamodel(), lioncore.getConcept());
+    assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
     assertEquals(17, lioncore.getChildren().size());

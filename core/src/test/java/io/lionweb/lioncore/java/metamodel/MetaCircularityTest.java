@@ -18,8 +18,8 @@ public class MetaCircularityTest {
     assertSame(LionCore.getConcept(), LionCore.getFeature().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getFeaturesContainer().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getLink().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getMetamodel().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getMetamodelElement().getConcept());
+    assertSame(LionCore.getConcept(), LionCore.getLanguage().getConcept());
+    assertSame(LionCore.getConcept(), LionCore.getLanguageElement().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getPrimitiveType().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getProperty().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getReference().getConcept());
@@ -32,7 +32,7 @@ public class MetaCircularityTest {
     assertSame(LionCore.getContainment(), new Containment().getConcept());
     assertSame(LionCore.getEnumeration(), new Enumeration().getConcept());
     assertSame(LionCore.getEnumerationLiteral(), new EnumerationLiteral().getConcept());
-    assertSame(LionCore.getMetamodel(), new Metamodel().getConcept());
+    assertSame(LionCore.getLanguage(), new Metamodel().getConcept());
     assertSame(LionCore.getPrimitiveType(), new PrimitiveType().getConcept());
     assertSame(LionCore.getProperty(), new Property().getConcept());
     assertSame(LionCore.getReference(), new Reference().getConcept());
