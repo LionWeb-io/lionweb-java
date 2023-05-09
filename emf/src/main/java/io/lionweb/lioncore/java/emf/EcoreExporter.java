@@ -11,7 +11,15 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 public class EcoreExporter {
 
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
-  private ConceptsToEClassesMapping conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+  private ConceptsToEClassesMapping conceptsToEClassesMapping;
+
+  public EcoreExporter() {
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+  }
+
+  public EcoreExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+  }
 
   /** This export all the metamodels received to a single Resource. */
   public Resource exportResource(List<Metamodel> metamodels) {

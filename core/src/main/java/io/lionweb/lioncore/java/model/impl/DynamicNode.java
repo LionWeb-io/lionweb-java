@@ -238,7 +238,7 @@ public class DynamicNode implements Node {
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, parent, concept, propertyValues, containmentValues, referenceValues);
+    return Objects.hash(id);
   }
 
   @Override
