@@ -20,7 +20,7 @@ public class IntLiteral extends SimpleNode {
 
   @Override
   public Concept getConcept() {
-    return SimpleMathMetamodel.INT_LITERAL;
+    return SimpleMathLanguage.INT_LITERAL;
   }
 
   @Override

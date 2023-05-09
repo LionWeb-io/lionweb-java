@@ -1,17 +1,16 @@
 package io.lionweb.lioncore.java.serialization.refsmm;
 
-import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.Containment;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import io.lionweb.lioncore.java.metamodel.Reference;
 
-public class RefsMetamodel extends Metamodel {
-  public static final RefsMetamodel INSTANCE = new RefsMetamodel();
+public class RefsLanguage extends Language {
+  public static final RefsLanguage INSTANCE = new RefsLanguage();
   public static Concept CONTAINER_NODE;
   public static Concept REF_NODE;
 
-  private RefsMetamodel() {
+  private RefsLanguage() {
     setID("Refs");
     setKey("Refs");
     setName("Refs");

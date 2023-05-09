@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.serialization.data;
 
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -16,10 +16,10 @@ public class MetamodelKeyVersion {
     this.version = version;
   }
 
-  public static MetamodelKeyVersion fromMetamodel(@Nonnull Metamodel metamodel) {
-    Objects.requireNonNull(metamodel, "Metamodel parameter should not be null");
-    Objects.requireNonNull(metamodel.getVersion(), "Metamodel version should not be null");
-    return new MetamodelKeyVersion(metamodel.getKey(), metamodel.getVersion());
+  public static MetamodelKeyVersion fromMetamodel(@Nonnull Language language) {
+    Objects.requireNonNull(language, "Metamodel parameter should not be null");
+    Objects.requireNonNull(language.getVersion(), "Metamodel version should not be null");
+    return new MetamodelKeyVersion(language.getKey(), language.getVersion());
   }
 
   public String getKey() {

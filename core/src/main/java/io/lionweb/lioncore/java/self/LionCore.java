@@ -10,7 +10,7 @@ public class LionCore {
     // prevent instantiation of instances outside of this class
   }
 
-  private static Metamodel INSTANCE;
+  private static Language INSTANCE;
 
   public static Concept getAnnotation() {
     return getInstance().requireConceptByName("Annotation");
@@ -80,9 +80,9 @@ public class LionCore {
     return getInstance().requireConceptByName("Reference");
   }
 
-  public static Metamodel getInstance() {
+  public static Language getInstance() {
     if (INSTANCE == null) {
-      INSTANCE = new Metamodel("LIonCore.M3");
+      INSTANCE = new Language("LIonCore.M3");
       INSTANCE.setID("LIonCore_M3");
       INSTANCE.setKey("LIonCore_M3");
       INSTANCE.setVersion("1");
@@ -229,8 +229,8 @@ public class LionCore {
   }
 
   private static List<? extends M3Node> getChildrenHelper(M3Node node) {
-    if (node instanceof Metamodel) {
-      return ((Metamodel) node).getElements();
+    if (node instanceof Language) {
+      return ((Language) node).getElements();
     } else if (node instanceof FeaturesContainer) {
       return ((FeaturesContainer) node).getFeatures();
     } else if (node instanceof Feature) {

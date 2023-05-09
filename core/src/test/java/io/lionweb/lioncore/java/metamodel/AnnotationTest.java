@@ -14,8 +14,8 @@ public class AnnotationTest {
 
   @Test
   public void getPropertyValuename() {
-    Metamodel metamodel = new Metamodel();
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language();
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         "MyAnnotation",
         annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("name")));
@@ -23,8 +23,8 @@ public class AnnotationTest {
 
   @Test
   public void setPropertyValuename() {
-    Metamodel metamodel = new Metamodel();
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language();
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     annotation.setPropertyValue(
         LionCore.getAnnotation().getPropertyByName("name"), "MyAmazingAnnotation");
     assertEquals("MyAmazingAnnotation", annotation.getName());
@@ -32,8 +32,8 @@ public class AnnotationTest {
 
   @Test
   public void getPropertyValuePlatformSpecific() {
-    Metamodel metamodel = new Metamodel();
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language();
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         null,
         annotation.getPropertyValue(
@@ -48,8 +48,8 @@ public class AnnotationTest {
 
   @Test
   public void setPropertyValuePlatformSpecific() {
-    Metamodel metamodel = new Metamodel();
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language();
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     annotation.setPropertyValue(
         LionCore.getAnnotation().getPropertyByName("platformSpecific"), "java");
     assertEquals("java", annotation.getPlatformSpecific());
@@ -57,13 +57,13 @@ public class AnnotationTest {
 
   @Test
   public void getReferenceValueTarget() {
-    Metamodel metamodel = new Metamodel("mymm");
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language("mymm");
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         Arrays.asList(),
         annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
 
-    Concept myConcept = new Concept(metamodel, "myc");
+    Concept myConcept = new Concept(language, "myc");
     annotation.setTarget(myConcept);
     assertEquals(
         Arrays.asList(myConcept),
@@ -72,8 +72,8 @@ public class AnnotationTest {
 
   @Test
   public void setReferenceValueTarget() {
-    Metamodel metamodel = new Metamodel();
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language();
+    Annotation annotation = new Annotation(language, "MyAnnotation");
 
     Concept myConcept = new Concept();
     annotation.addReferenceValue(
@@ -83,8 +83,8 @@ public class AnnotationTest {
 
   @Test
   public void getPropertyValueFeatures() {
-    Metamodel metamodel = new Metamodel();
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language();
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         Arrays.asList(),
         annotation.getChildren(LionCore.getAnnotation().getContainmentByName("features")));
@@ -98,8 +98,8 @@ public class AnnotationTest {
 
   @Test
   public void getPropertyValueQualifiedName() {
-    Metamodel metamodel = new Metamodel("my.amazing.metamodel");
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language("my.amazing.metamodel");
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         "my.amazing.metamodel.MyAnnotation",
         annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("qualifiedName")));
@@ -107,8 +107,8 @@ public class AnnotationTest {
 
   @Test
   public void getPropertyValueNamespaceQualifier() {
-    Metamodel metamodel = new Metamodel("my.amazing.metamodel");
-    Annotation annotation = new Annotation(metamodel, "MyAnnotation");
+    Language language = new Language("my.amazing.metamodel");
+    Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         "my.amazing.metamodel.MyAnnotation",
         annotation.getPropertyValue(

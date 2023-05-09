@@ -26,12 +26,12 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     super(id);
   }
 
-  public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String name) {
-    super(metamodel, name);
+  public PrimitiveType(@Nullable Language language, @Nullable String name) {
+    super(language, name);
   }
 
-  public PrimitiveType(@Nullable Metamodel metamodel, @Nullable String name, String id) {
-    super(metamodel, name);
+  public PrimitiveType(@Nullable Language language, @Nullable String name, String id) {
+    super(language, name);
     setID(id);
   }
 

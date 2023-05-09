@@ -179,7 +179,7 @@ public class LowLevelJsonSerialization {
 
   private JsonElement serializeToJsonElement(MetaPointer metapointer) {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("metamodel", metapointer.getMetamodel());
+    jsonObject.addProperty("metamodel", metapointer.getLanguage());
     jsonObject.addProperty("version", metapointer.getVersion());
     jsonObject.addProperty("key", metapointer.getKey());
     return jsonObject;

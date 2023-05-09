@@ -32,7 +32,7 @@ public class MetaCircularityTest {
     assertSame(LionCore.getContainment(), new Containment().getConcept());
     assertSame(LionCore.getEnumeration(), new Enumeration().getConcept());
     assertSame(LionCore.getEnumerationLiteral(), new EnumerationLiteral().getConcept());
-    assertSame(LionCore.getLanguage(), new Metamodel().getConcept());
+    assertSame(LionCore.getLanguage(), new Language().getConcept());
     assertSame(LionCore.getPrimitiveType(), new PrimitiveType().getConcept());
     assertSame(LionCore.getProperty(), new Property().getConcept());
     assertSame(LionCore.getReference(), new Reference().getConcept());

@@ -26,7 +26,7 @@ public class Sum extends SimpleNode {
 
   @Override
   public Concept getConcept() {
-    return SimpleMathMetamodel.SUM;
+    return SimpleMathLanguage.SUM;
   }
 
   @Override

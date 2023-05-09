@@ -7,7 +7,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import io.lionweb.lioncore.java.metamodel.Property;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
@@ -145,7 +145,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
 
-    Metamodel lioncore = (Metamodel) unserializedNodes.get(0);
+    Language lioncore = (Language) unserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getName());

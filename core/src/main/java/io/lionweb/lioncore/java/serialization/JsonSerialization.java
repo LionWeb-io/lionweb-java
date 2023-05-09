@@ -102,12 +102,12 @@ public class JsonSerialization {
       Objects.requireNonNull(
           node.getConcept(), "A node should have a concept in order to be serialized");
       Objects.requireNonNull(
-          node.getConcept().getMetamodel(),
+          node.getConcept().getLanguage(),
           "A Concept should be part of a Metamodel in order to be serialized. Concept "
               + node.getConcept()
               + " is not");
       MetamodelKeyVersion metamodelKeyVersion =
-          MetamodelKeyVersion.fromMetamodel(node.getConcept().getMetamodel());
+          MetamodelKeyVersion.fromMetamodel(node.getConcept().getLanguage());
       if (!serializationBlock.getMetamodels().contains(metamodelKeyVersion)) {
         serializationBlock.getMetamodels().add(metamodelKeyVersion);
       }
@@ -201,7 +201,7 @@ public class JsonSerialization {
               SerializedReferenceValue referenceValue = new SerializedReferenceValue();
               referenceValue.setMetaPointer(
                   MetaPointer.from(
-                      reference, ((MetamodelElement) reference.getContainer()).getMetamodel()));
+                      reference, ((LanguageElement) reference.getContainer()).getLanguage()));
               referenceValue.setValue(
                   node.getReferenceValues(reference).stream()
                       .map(
@@ -225,7 +225,7 @@ public class JsonSerialization {
               SerializedContainmentValue containmentValue = new SerializedContainmentValue();
               containmentValue.setMetaPointer(
                   MetaPointer.from(
-                      containment, ((MetamodelElement) containment.getContainer()).getMetamodel()));
+                      containment, ((LanguageElement) containment.getContainer()).getLanguage()));
               containmentValue.setValue(
                   node.getChildren(containment).stream()
                       .map(c -> c.getID())
@@ -242,7 +242,7 @@ public class JsonSerialization {
               SerializedPropertyValue propertyValue = new SerializedPropertyValue();
               propertyValue.setMetaPointer(
                   MetaPointer.from(
-                      property, ((MetamodelElement) property.getContainer()).getMetamodel()));
+                      property, ((LanguageElement) property.getContainer()).getLanguage()));
               propertyValue.setValue(
                   serializePropertyValue(property.getType(), node.getPropertyValue(property)));
               serializedNode.addPropertyValue(propertyValue);
@@ -496,8 +496,8 @@ public class JsonSerialization {
             });
   }
 
-  public void registerMetamodel(Metamodel metamodel) {
-    getConceptResolver().registerMetamodel(metamodel);
-    getPrimitiveValuesSerialization().registerMetamodel(metamodel);
+  public void registerMetamodel(Language language) {
+    getConceptResolver().registerMetamodel(language);
+    getPrimitiveValuesSerialization().registerMetamodel(language);
   }
 }

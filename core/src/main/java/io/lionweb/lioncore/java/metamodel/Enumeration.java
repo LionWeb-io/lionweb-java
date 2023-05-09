@@ -11,8 +11,8 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
     super();
   }
 
-  public Enumeration(@Nullable Metamodel metamodel, @Nullable String name) {
-    super(metamodel, name);
+  public Enumeration(@Nullable Language language, @Nullable String name) {
+    super(language, name);
   }
 
   public @Nonnull List<EnumerationLiteral> getLiterals() {

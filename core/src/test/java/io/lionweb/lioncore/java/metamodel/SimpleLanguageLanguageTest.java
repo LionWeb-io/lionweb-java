@@ -4,24 +4,24 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class SimpleLanguageMetamodelTest {
+public class SimpleLanguageLanguageTest {
 
   @Test
   public void emptyMetamodelDefinition() {
-    Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
-    assertEquals("SimpleLanguage", metamodel.getName());
-    assertEquals("SimpleLanguage", metamodel.namespaceQualifier());
-    assertEquals(0, metamodel.dependsOn().size());
-    assertEquals(0, metamodel.getElements().size());
+    Language language = new Language("SimpleLanguage").setID("myM3ID");
+    assertEquals("SimpleLanguage", language.getName());
+    assertEquals("SimpleLanguage", language.namespaceQualifier());
+    assertEquals(0, language.dependsOn().size());
+    assertEquals(0, language.getElements().size());
   }
 
   @Test
   public void emptyConceptDefinition() {
-    Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
-    Concept expression = new Concept(metamodel, "Expression");
+    Language language = new Language("SimpleLanguage").setID("myM3ID");
+    Concept expression = new Concept(language, "Expression");
     assertEquals("Expression", expression.getName());
-    assertSame(metamodel, expression.getContainer());
-    assertSame(metamodel, expression.getMetamodel());
+    assertSame(language, expression.getContainer());
+    assertSame(language, expression.getLanguage());
     assertEquals("SimpleLanguage.Expression", expression.qualifiedName());
     assertEquals("SimpleLanguage.Expression", expression.namespaceQualifier());
     assertNull(expression.getExtendedConcept());
@@ -32,11 +32,11 @@ public class SimpleLanguageMetamodelTest {
 
   @Test
   public void emptyConceptInterfaceDefinition() {
-    Metamodel metamodel = new Metamodel("SimpleLanguage").setID("myM3ID");
-    ConceptInterface deprecated = new ConceptInterface(metamodel, "Deprecated");
+    Language language = new Language("SimpleLanguage").setID("myM3ID");
+    ConceptInterface deprecated = new ConceptInterface(language, "Deprecated");
     assertEquals("Deprecated", deprecated.getName());
-    assertSame(metamodel, deprecated.getContainer());
-    assertSame(metamodel, deprecated.getMetamodel());
+    assertSame(language, deprecated.getContainer());
+    assertSame(language, deprecated.getLanguage());
     assertEquals("SimpleLanguage.Deprecated", deprecated.qualifiedName());
     assertEquals("SimpleLanguage.Deprecated", deprecated.namespaceQualifier());
     assertEquals(0, deprecated.getExtendedInterfaces().size());

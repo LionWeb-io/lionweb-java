@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public interface Model {
    *
    * <p>TODO: consider versioning of metamodels
    */
-  List<Metamodel> getUsedMetamodels();
+  List<Language> getUsedMetamodels();
 
   /** Return the list of top level nodes contained in the model. */
   List<Node> getRoots();

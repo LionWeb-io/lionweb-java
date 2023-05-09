@@ -35,13 +35,13 @@ public class Concept extends FeaturesContainer<Concept> {
     setAbstract(false);
   }
 
-  public Concept(@Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
-    super(metamodel, name, id);
+  public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
     setAbstract(false);
   }
 
-  public Concept(@Nullable Metamodel metamodel, @Nullable String name) {
-    super(metamodel, name);
+  public Concept(@Nullable Language language, @Nullable String name) {
+    super(language, name);
     setAbstract(false);
   }
 
@@ -187,21 +187,21 @@ public class Concept extends FeaturesContainer<Concept> {
 
   public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
     return this.allProperties().stream()
-        .filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer))
+        .filter(p -> MetaPointer.from(p, this.getLanguage()).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }
 
   public @Nullable Containment getContainmentByMetaPointer(MetaPointer metaPointer) {
     return this.allContainments().stream()
-        .filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer))
+        .filter(p -> MetaPointer.from(p, this.getLanguage()).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }
 
   public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
     return this.allReferences().stream()
-        .filter(p -> MetaPointer.from(p, this.getMetamodel()).equals(metaPointer))
+        .filter(p -> MetaPointer.from(p, this.getLanguage()).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }

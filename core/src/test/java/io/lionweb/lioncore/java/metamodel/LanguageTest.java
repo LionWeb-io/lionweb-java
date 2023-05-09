@@ -6,13 +6,13 @@ import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
 
-public class MetamodelTest {
+public class LanguageTest {
 
   @Test
   public void addDependency() {
-    Metamodel m1 = new Metamodel("m1");
-    Metamodel m2 = new Metamodel("m2");
-    Metamodel m3 = new Metamodel("m3");
+    Language m1 = new Language("m1");
+    Language m2 = new Language("m2");
+    Language m3 = new Language("m3");
 
     assertEquals(Collections.emptyList(), m1.dependsOn());
     m1.addDependency(m2);

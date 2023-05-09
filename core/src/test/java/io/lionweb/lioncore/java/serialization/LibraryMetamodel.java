@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ import java.util.Objects;
 
 public class LibraryMetamodel {
 
-  public static Metamodel LIBRARY_MM;
+  public static Language LIBRARY_MM;
   public static Concept LIBRARY;
   public static Concept BOOK;
   public static Concept WRITER;
@@ -27,8 +27,8 @@ public class LibraryMetamodel {
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
     LIBRARY_MM =
         unserializedNodes.stream()
-            .filter(e -> e instanceof Metamodel)
-            .map(e -> (Metamodel) e)
+            .filter(e -> e instanceof Language)
+            .map(e -> (Language) e)
             .findFirst()
             .get();
     LIBRARY = LIBRARY_MM.getConceptByName("Library");

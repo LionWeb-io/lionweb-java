@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.metamodel.Enumeration;
 import io.lionweb.lioncore.java.metamodel.EnumerationLiteral;
 import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import java.util.*;
 
 /**
@@ -19,8 +19,8 @@ public class PrimitiveValuesSerialization {
   // because that is unique
   private Map<String, Enumeration> enumerationsByID = new HashMap<>();
 
-  public void registerMetamodel(Metamodel metamodel) {
-    metamodel.getElements().stream()
+  public void registerMetamodel(Language language) {
+    language.getElements().stream()
         .filter(e -> e instanceof Enumeration)
         .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
   }

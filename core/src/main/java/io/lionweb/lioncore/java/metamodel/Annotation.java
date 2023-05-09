@@ -27,8 +27,8 @@ public class Annotation extends FeaturesContainer<Annotation> {
     super();
   }
 
-  public Annotation(Metamodel metamodel, String name) {
-    super(metamodel, name);
+  public Annotation(Language language, String name) {
+    super(language, name);
   }
 
   @Nonnull

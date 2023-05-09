@@ -17,8 +17,8 @@ public class Typedef extends DataType<Typedef> {
     super();
   }
 
-  public Typedef(@Nullable Metamodel metamodel, @Nullable String name) {
-    super(metamodel, name);
+  public Typedef(@Nullable Language language, @Nullable String name) {
+    super(language, name);
   }
 
   public @Nullable PrimitiveType getPrimitiveType() {

@@ -29,12 +29,12 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
   }
 
   public ConceptInterface(
-      @Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
-    super(metamodel, name, id);
+          @Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
   }
 
-  public ConceptInterface(@Nullable Metamodel metamodel, @Nullable String name) {
-    super(metamodel, name);
+  public ConceptInterface(@Nullable Language language, @Nullable String name) {
+    super(language, name);
   }
 
   public ConceptInterface(@Nullable String name) {

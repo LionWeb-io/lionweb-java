@@ -22,19 +22,19 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i>
  *     in SModel
  */
-public abstract class FeaturesContainer<T extends M3Node> extends MetamodelElement<T>
+public abstract class FeaturesContainer<T extends M3Node> extends LanguageElement<T>
     implements NamespaceProvider {
   public FeaturesContainer() {
     super();
   }
 
   public FeaturesContainer(
-      @Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
-    super(metamodel, name, id);
+          @Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
   }
 
-  public FeaturesContainer(@Nullable Metamodel metamodel, @Nullable String name) {
-    super(metamodel, name);
+  public FeaturesContainer(@Nullable Language language, @Nullable String name) {
+    super(language, name);
   }
 
   public @Nullable Feature getFeatureByName(@Nonnull String name) {

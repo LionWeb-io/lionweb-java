@@ -7,18 +7,18 @@ import com.google.gson.*;
 import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.Enumeration;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.SerializedContainmentValue;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
 import io.lionweb.lioncore.java.serialization.refsmm.RefNode;
-import io.lionweb.lioncore.java.serialization.refsmm.RefsMetamodel;
+import io.lionweb.lioncore.java.serialization.refsmm.RefsLanguage;
 import io.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
-import io.lionweb.lioncore.java.serialization.simplemath.SimpleMathMetamodel;
+import io.lionweb.lioncore.java.serialization.simplemath.SimpleMathLanguage;
 import io.lionweb.lioncore.java.serialization.simplemath.Sum;
-import io.lionweb.lioncore.java.utils.MetamodelValidator;
+import io.lionweb.lioncore.java.utils.LanguageValidator;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -165,35 +165,35 @@ public class JsonSerializationTest extends SerializationTest {
   @Test
   public void unserializeMetamodelWithDependencies() {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    Metamodel starlasu =
-        (Metamodel)
+    Language starlasu =
+        (Language)
             jsonSerialization
                 .unserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json"))
                 .get(0);
     jsonSerialization.getNodeResolver().addTree(starlasu);
-    Metamodel properties =
-        (Metamodel)
+    Language properties =
+        (Language)
             jsonSerialization
                 .unserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/properties.lmm.json"))
                 .get(0);
-    MetamodelValidator.ensureIsValid(starlasu);
-    MetamodelValidator.ensureIsValid(properties);
+    LanguageValidator.ensureIsValid(starlasu);
+    LanguageValidator.ensureIsValid(properties);
   }
 
   private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
-    js.getConceptResolver().registerMetamodel(SimpleMathMetamodel.INSTANCE);
+    js.getConceptResolver().registerMetamodel(SimpleMathLanguage.INSTANCE);
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            SimpleMathMetamodel.INT_LITERAL.getID(),
+            SimpleMathLanguage.INT_LITERAL.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new IntLiteral(
                     (Integer) propertiesValues.get(concept.getPropertyByName("value")),
                     serializedNode.getID()));
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            SimpleMathMetamodel.SUM.getID(),
+            SimpleMathLanguage.SUM.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
               SerializedContainmentValue leftSCV =
                   serializedNode.getContainments().stream()
@@ -290,17 +290,17 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   private void prepareUnserializationOfRefMM(JsonSerialization js) {
-    js.getConceptResolver().registerMetamodel(RefsMetamodel.INSTANCE);
+    js.getConceptResolver().registerMetamodel(RefsLanguage.INSTANCE);
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            RefsMetamodel.CONTAINER_NODE.getID(),
+            RefsLanguage.CONTAINER_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new ContainerNode(
                     (ContainerNode) propertiesValues.get(concept.getContainmentByName("contained")),
                     serializedNode.getID()));
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            RefsMetamodel.REF_NODE.getID(),
+            RefsLanguage.REF_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
               return new RefNode(serializedNode.getID());
             });
@@ -362,7 +362,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void serializationOfEnumLiteral() {
-    Metamodel mm = new Metamodel("my.metamodel").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.metamodel").setID("mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
         new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
@@ -478,7 +478,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }]\n"
                 + "}");
-    Metamodel mm = new Metamodel("my.metamodel").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.metamodel").setID("mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
         new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");

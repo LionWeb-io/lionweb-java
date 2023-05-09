@@ -21,26 +21,26 @@ import javax.annotation.Nullable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's
  *     structure aspect</i> in documentation</a>
  */
-public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, HasKey<Metamodel> {
-  public Metamodel() {}
+public class Language extends M3Node<Language> implements NamespaceProvider, HasKey<Language> {
+  public Language() {}
 
-  public Metamodel(@Nonnull String name) {
+  public Language(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     this.setName(name);
   }
 
-  public Metamodel setName(String name) {
+  public Language setName(String name) {
     setPropertyValue("name", name);
     return this;
   }
 
-  public Metamodel setVersion(@Nullable String version) {
+  public Language setVersion(@Nullable String version) {
     setPropertyValue("version", version);
     return this;
   }
 
   @Override
-  public Metamodel setKey(String key) {
+  public Language setKey(String key) {
     setPropertyValue("key", key);
     return this;
   }
@@ -50,22 +50,22 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
     return getName();
   }
 
-  public @Nonnull List<Metamodel> dependsOn() {
+  public @Nonnull List<Language> dependsOn() {
     return this.getReferenceMultipleValue("dependsOn");
   }
 
-  public @Nonnull List<MetamodelElement> getElements() {
+  public @Nonnull List<LanguageElement> getElements() {
     return this.getContainmentMultipleValue("elements");
   }
 
-  public Metamodel addDependency(@Nonnull Metamodel dependency) {
+  public Language addDependency(@Nonnull Language dependency) {
     Objects.requireNonNull(dependency, "dependency should not be null");
     this.addReferenceMultipleValue(
         "dependsOn", new ReferenceValue(dependency, dependency.getName()));
     return dependency;
   }
 
-  public <T extends MetamodelElement> T addElement(@Nonnull T element) {
+  public <T extends LanguageElement> T addElement(@Nonnull T element) {
     Objects.requireNonNull(element, "element should not be null");
     this.addContainmentMultipleValue("elements", element);
     element.setParent(this);
@@ -113,7 +113,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
     return this.getPropertyValue("version", String.class);
   }
 
-  public @Nullable MetamodelElement getElementByName(String name) {
+  public @Nullable LanguageElement getElementByName(String name) {
     return getElements().stream()
         .filter(element -> element.getName().equals(name))
         .findFirst()
@@ -121,7 +121,7 @@ public class Metamodel extends M3Node<Metamodel> implements NamespaceProvider, H
   }
 
   public @Nullable PrimitiveType getPrimitiveTypeByName(String name) {
-    MetamodelElement element = this.getElementByName(name);
+    LanguageElement element = this.getElementByName(name);
     if (element == null) {
       return null;
     }

@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.metamodel;
 
-public class LionCoreBuiltins extends Metamodel {
+public class LionCoreBuiltins extends Language {
   private static LionCoreBuiltins INSTANCE = new LionCoreBuiltins();
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */

@@ -27,7 +27,7 @@ public class RefNode extends SimpleNode {
 
   @Override
   public Concept getConcept() {
-    return RefsMetamodel.REF_NODE;
+    return RefsLanguage.REF_NODE;
   }
 
   @Override

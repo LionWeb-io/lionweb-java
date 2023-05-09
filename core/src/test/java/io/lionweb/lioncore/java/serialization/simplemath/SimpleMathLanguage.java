@@ -2,12 +2,12 @@ package io.lionweb.lioncore.java.serialization.simplemath;
 
 import io.lionweb.lioncore.java.metamodel.*;
 
-public class SimpleMathMetamodel extends Metamodel {
-  public static final SimpleMathMetamodel INSTANCE = new SimpleMathMetamodel();
+public class SimpleMathLanguage extends Language {
+  public static final SimpleMathLanguage INSTANCE = new SimpleMathLanguage();
   public static Concept INT_LITERAL;
   public static Concept SUM;
 
-  private SimpleMathMetamodel() {
+  private SimpleMathLanguage() {
     setID("SimpleMath");
     setKey("SimpleMath");
     setName("SimpleMath");

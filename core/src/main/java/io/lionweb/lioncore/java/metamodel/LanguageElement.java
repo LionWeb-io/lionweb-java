@@ -5,7 +5,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A MetamodelElement is an element with an identity within a {@link Metamodel}.
+ * A MetamodelElement is an element with an identity within a {@link Language}.
  *
  * <p>For example, Invoice, Currency, Named, or String could be MetamodelElements.
  *
@@ -15,40 +15,40 @@ import javax.annotation.Nullable;
  *     equivalent <i>IStructureElement</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
-public abstract class MetamodelElement<T extends M3Node> extends M3Node<T>
+public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
     implements NamespacedEntity, HasKey<T> {
 
-  public MetamodelElement() {}
+  public LanguageElement() {}
 
-  public MetamodelElement(
-      @Nullable Metamodel metamodel, @Nullable String name, @Nonnull String id) {
-    this(metamodel, name);
+  public LanguageElement(
+          @Nullable Language language, @Nullable String name, @Nonnull String id) {
+    this(language, name);
     this.setID(id);
   }
 
-  public MetamodelElement(@Nullable Metamodel metamodel, @Nullable String name) {
+  public LanguageElement(@Nullable Language language, @Nullable String name) {
     // TODO enforce uniqueness of the name within the Metamodel
     this.setName(name);
-    if (metamodel != null) {
-      metamodel.addElement(this);
+    if (language != null) {
+      language.addElement(this);
     } else {
       this.setParent(null);
     }
   }
 
   /**
-   * This method returns the Metamodel containing this element. It is the parent, casted to
-   * Metamodel.
+   * This method returns the Language containing this element. It is the parent, casted to
+   * Language.
    *
    * @return
    */
-  public @Nullable Metamodel getMetamodel() {
+  public @Nullable Language getLanguage() {
     if (getParent() == null) {
       return null;
-    } else if (getParent() instanceof Metamodel) {
-      return (Metamodel) getParent();
+    } else if (getParent() instanceof Language) {
+      return (Language) getParent();
     } else {
-      throw new IllegalStateException("The parent of this MetamodelElement is not a Metamodel");
+      throw new IllegalStateException("The parent of this LanguageElement is not a Metamodel");
     }
   }
 

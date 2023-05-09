@@ -6,21 +6,21 @@ import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class MetamodelValidator extends Validator<Metamodel> {
+public class LanguageValidator extends Validator<Language> {
 
-  public static void ensureIsValid(Metamodel metamodel) {
-    ValidationResult vr = new MetamodelValidator().validate(metamodel);
+  public static void ensureIsValid(Language language) {
+    ValidationResult vr = new LanguageValidator().validate(language);
     if (!vr.isSuccessful()) {
-      throw new RuntimeException("Invalid metamodel: " + vr.getIssues());
+      throw new RuntimeException("Invalid language: " + vr.getIssues());
     }
   }
 
   @Override
-  public ValidationResult validate(Metamodel metamodel) {
+  public ValidationResult validate(Language language) {
     // Given metamodels are also valid node trees, we check against errors for node trees
-    ValidationResult result = new NodeTreeValidator().validate(metamodel);
+    ValidationResult result = new NodeTreeValidator().validate(language);
 
-    metamodel
+    language
         .thisAndAllDescendants()
         .forEach(
             n ->
@@ -29,7 +29,7 @@ public class MetamodelValidator extends Validator<Metamodel> {
                     "Node IDs should respect the format for IDs",
                     n));
 
-    metamodel
+    language
         .thisAndAllDescendants()
         .forEach(
             n -> {
@@ -42,21 +42,21 @@ public class MetamodelValidator extends Validator<Metamodel> {
               }
             });
 
-    result.checkForError(metamodel.getName() == null, "Qualified name not set", metamodel);
+    result.checkForError(language.getName() == null, "Qualified name not set", language);
 
-    validateNamesAreUnique(metamodel.getElements(), result);
+    validateNamesAreUnique(language.getElements(), result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
-    metamodel
+    language
         .getElements()
         .forEach(
-            (MetamodelElement el) -> {
+            (LanguageElement el) -> {
               result
                   .checkForError(el.getName() == null, "Simple name not set", el)
-                  .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
+                  .checkForError(el.getLanguage() == null, "Metamodel not set", el)
                   .checkForError(
-                      el.getMetamodel() != null && el.getMetamodel() != metamodel,
+                      el.getLanguage() != null && el.getLanguage() != language,
                       "Metamodel not set correctly",
                       el);
 
@@ -126,8 +126,8 @@ public class MetamodelValidator extends Validator<Metamodel> {
             });
   }
 
-  private void validateKeysAreNotNull(Metamodel metamodel, ValidationResult result) {
-    metamodel
+  private void validateKeysAreNotNull(Language language, ValidationResult result) {
+    language
         .thisAndAllDescendants()
         .forEach(
             n -> {
@@ -141,9 +141,9 @@ public class MetamodelValidator extends Validator<Metamodel> {
             });
   }
 
-  private void validateKeysAreUnique(Metamodel metamodel, ValidationResult result) {
+  private void validateKeysAreUnique(Language language, ValidationResult result) {
     Map<String, String> uniqueKeys = new HashMap<>();
-    metamodel
+    language
         .thisAndAllDescendants()
         .forEach(
             n -> {
@@ -163,8 +163,8 @@ public class MetamodelValidator extends Validator<Metamodel> {
             });
   }
 
-  public boolean isMetamodelValid(Metamodel metamodel) {
-    return validateMetamodel(metamodel).isSuccessful();
+  public boolean isMetamodelValid(Language language) {
+    return validateMetamodel(language).isSuccessful();
   }
 
   private void checkAncestors(Concept concept, ValidationResult validationResult) {
@@ -245,26 +245,26 @@ public class MetamodelValidator extends Validator<Metamodel> {
     }
   }
 
-  public ValidationResult validateMetamodel(Metamodel metamodel) {
+  public ValidationResult validateMetamodel(Language language) {
     ValidationResult result = new ValidationResult();
 
-    result.checkForError(metamodel.getName() == null, "Qualified name not set", metamodel);
+    result.checkForError(language.getName() == null, "Qualified name not set", language);
 
-    validateNamesAreUnique(metamodel.getElements(), result);
-    validateKeysAreNotNull(metamodel, result);
-    validateKeysAreUnique(metamodel, result);
+    validateNamesAreUnique(language.getElements(), result);
+    validateKeysAreNotNull(language, result);
+    validateKeysAreUnique(language, result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
-    metamodel
+    language
         .getElements()
         .forEach(
-            (MetamodelElement el) -> {
+            (LanguageElement el) -> {
               result
                   .checkForError(el.getName() == null, "Simple name not set", el)
-                  .checkForError(el.getMetamodel() == null, "Metamodel not set", el)
+                  .checkForError(el.getLanguage() == null, "Metamodel not set", el)
                   .checkForError(
-                      el.getMetamodel() != null && el.getMetamodel() != metamodel,
+                      el.getLanguage() != null && el.getLanguage() != language,
                       "Metamodel not set correctly",
                       el);
 

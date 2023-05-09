@@ -17,11 +17,11 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 public class EcoreImporter {
-  private Map<EPackage, Metamodel> packagesToMetamodels = new HashMap<>();
+  private Map<EPackage, Language> packagesToMetamodels = new HashMap<>();
   private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
   private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
 
-  public List<Metamodel> importEcoreFile(File ecoreFile) {
+  public List<Language> importEcoreFile(File ecoreFile) {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
@@ -34,7 +34,7 @@ public class EcoreImporter {
     return importResource(resource);
   }
 
-  public List<Metamodel> importEcoreInputStream(InputStream inputStream) throws IOException {
+  public List<Language> importEcoreInputStream(InputStream inputStream) throws IOException {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
@@ -47,14 +47,14 @@ public class EcoreImporter {
     return importResource(resource);
   }
 
-  public List<Metamodel> importResource(Resource resource) {
-    List<Metamodel> metamodels = new LinkedList<>();
+  public List<Language> importResource(Resource resource) {
+    List<Language> languages = new LinkedList<>();
     for (EObject content : resource.getContents()) {
       if (content.eClass().getName().equals(EcorePackage.Literals.EPACKAGE.getName())) {
-        metamodels.add(importEPackage((EPackage) content));
+        languages.add(importEPackage((EPackage) content));
       }
     }
-    return metamodels;
+    return languages;
   }
 
   private DataType convertEClassifierToDataType(EClassifier eClassifier) {
@@ -81,12 +81,12 @@ public class EcoreImporter {
     }
   }
 
-  public Metamodel importEPackage(EPackage ePackage) {
-    Metamodel metamodel = new Metamodel(ePackage.getName());
-    metamodel.setVersion("1");
-    metamodel.setID(ePackage.getName());
-    metamodel.setKey(ePackage.getName());
-    packagesToMetamodels.put(ePackage, metamodel);
+  public Language importEPackage(EPackage ePackage) {
+    Language language = new Language(ePackage.getName());
+    language.setVersion("1");
+    language.setID(ePackage.getName());
+    language.setKey(ePackage.getName());
+    packagesToMetamodels.put(ePackage, language);
 
     // Initially we just create empty concepts, later we populate the features as they could refer
     // to
@@ -97,11 +97,11 @@ public class EcoreImporter {
         if (eClass.isInterface()) {
           throw new UnsupportedOperationException();
         } else {
-          Concept concept = new Concept(metamodel, eClass.getName());
+          Concept concept = new Concept(language, eClass.getName());
           concept.setID(ePackage.getName() + "-" + concept.getName());
           concept.setKey(ePackage.getName() + "-" + concept.getName());
           concept.setAbstract(false);
-          metamodel.addElement(concept);
+          language.addElement(concept);
           eClassesToConcepts.put(eClass, concept);
         }
       } else {
@@ -183,6 +183,6 @@ public class EcoreImporter {
         throw new UnsupportedOperationException();
       }
     }
-    return metamodel;
+    return language;
   }
 }

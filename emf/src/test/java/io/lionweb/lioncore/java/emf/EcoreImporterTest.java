@@ -15,15 +15,15 @@ public class EcoreImporterTest {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
     EcoreImporter importer = new EcoreImporter();
 
-    List<Metamodel> metamodels = importer.importEcoreInputStream(is);
-    assertEquals(1, metamodels.size());
+    List<Language> languages = importer.importEcoreInputStream(is);
+    assertEquals(1, languages.size());
 
-    Metamodel metamodel = metamodels.get(0);
-    assertEquals("library", metamodel.getName());
+    Language language = languages.get(0);
+    assertEquals("library", language.getName());
 
-    assertEquals(5, metamodel.getElements().size());
+    assertEquals(5, language.getElements().size());
 
-    Concept book = (Concept) metamodel.getElementByName("Book");
+    Concept book = (Concept) language.getElementByName("Book");
     assertNull(book.getExtendedConcept());
     assertEquals(0, book.getImplemented().size());
     assertFalse(book.isAbstract());
@@ -48,7 +48,7 @@ public class EcoreImporterTest {
     assertEquals(true, bookPages.isRequired());
 
     Reference bookAuthor = (Reference) book.getFeatureByName("author");
-    assertSame(metamodel.getElementByName("Writer"), bookAuthor.getType());
+    assertSame(language.getElementByName("Writer"), bookAuthor.getType());
     assertSame(book, bookAuthor.getContainer());
     assertEquals("library.Book.author", bookAuthor.qualifiedName());
     assertEquals(false, bookAuthor.isDerived());
@@ -57,7 +57,7 @@ public class EcoreImporterTest {
     assertEquals(false, bookAuthor.isMultiple());
     assertEquals(null, bookAuthor.getSpecialized());
 
-    Concept library = (Concept) metamodel.getElementByName("Library");
+    Concept library = (Concept) language.getElementByName("Library");
     assertNull(library.getExtendedConcept());
     assertEquals(0, library.getImplemented().size());
     assertFalse(library.isAbstract());
@@ -75,7 +75,7 @@ public class EcoreImporterTest {
     assertEquals(true, libraryName.isRequired());
 
     Containment libraryBooks = (Containment) library.getFeatureByName("books");
-    assertSame(metamodel.getElementByName("Book"), libraryBooks.getType());
+    assertSame(language.getElementByName("Book"), libraryBooks.getType());
     assertSame(library, libraryBooks.getContainer());
     assertEquals("library.Library.books", libraryBooks.qualifiedName());
     assertEquals(false, libraryBooks.isDerived());
@@ -84,7 +84,7 @@ public class EcoreImporterTest {
     assertEquals(true, libraryBooks.isMultiple());
     assertEquals(null, libraryBooks.getSpecialized());
 
-    Concept writer = (Concept) metamodel.getElementByName("Writer");
+    Concept writer = (Concept) language.getElementByName("Writer");
     assertNull(writer.getExtendedConcept());
     assertEquals(0, writer.getImplemented().size());
     assertFalse(writer.isAbstract());
@@ -100,7 +100,7 @@ public class EcoreImporterTest {
     assertEquals(false, writerName.isOptional());
     assertEquals(true, writerName.isRequired());
 
-    Concept guideBookWriter = (Concept) metamodel.getElementByName("GuideBookWriter");
+    Concept guideBookWriter = (Concept) language.getElementByName("GuideBookWriter");
     assertSame(writer, guideBookWriter.getExtendedConcept());
     assertEquals(0, guideBookWriter.getImplemented().size());
     assertFalse(guideBookWriter.isAbstract());
@@ -124,7 +124,7 @@ public class EcoreImporterTest {
     assertEquals(false, guideBookWriterName.isOptional());
     assertEquals(true, guideBookWriterName.isRequired());
 
-    Concept specialistBookWriter = (Concept) metamodel.getElementByName("SpecialistBookWriter");
+    Concept specialistBookWriter = (Concept) language.getElementByName("SpecialistBookWriter");
     assertSame(writer, specialistBookWriter.getExtendedConcept());
     assertEquals(0, specialistBookWriter.getImplemented().size());
     assertFalse(specialistBookWriter.isAbstract());

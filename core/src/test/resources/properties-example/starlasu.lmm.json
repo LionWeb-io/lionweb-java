@@ -5,22 +5,22 @@
     {
       "id": "com_strumenta_StarLasu",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
-        "key": "Metamodel"
+        "key": "Language"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
-            "key": "Metamodel_name"
+            "key": "Language_name"
           },
           "value": "com.strumenta.StarLasu"
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "version"
           },
@@ -28,7 +28,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -38,7 +38,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "elements"
           },
@@ -55,7 +55,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "dependsOn"
           },
@@ -67,14 +67,14 @@
     {
       "id": "StarLasu-ASTNode",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -82,7 +82,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -90,15 +90,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.ASTNode"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -108,7 +100,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -118,7 +110,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -126,7 +118,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -138,14 +130,14 @@
     {
       "id": "StarLasu-GenericErrorNode",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -153,7 +145,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -161,15 +153,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.GenericErrorNode"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -179,7 +163,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -189,7 +173,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -197,7 +181,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -209,14 +193,14 @@
     {
       "id": "StarLasu-Named",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "ConceptInterface"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -224,15 +208,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.Named"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -242,7 +218,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -252,7 +228,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "ConceptInterface_extends"
           },
@@ -269,14 +245,14 @@
     {
       "id": "StarLasu-PossiblyNamed",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "ConceptInterface"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -284,15 +260,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.PossiblyNamed"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -302,7 +270,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -314,7 +282,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "ConceptInterface_extends"
           },
@@ -326,14 +294,14 @@
     {
       "id": "StarLasu-PossiblyNamed-name",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -341,7 +309,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -349,7 +317,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -357,15 +325,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.PossiblyNamed.name"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -376,7 +336,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Property_type"
           },
@@ -393,14 +353,14 @@
     {
       "id": "StarLasu-Position",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "PrimitiveType"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -408,15 +368,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.Position"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -430,14 +382,14 @@
     {
       "id": "StarLasu-Char",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "PrimitiveType"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -445,15 +397,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
-            "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.Char"
-        },
-        {
-          "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },

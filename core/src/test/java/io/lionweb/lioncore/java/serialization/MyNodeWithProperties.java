@@ -3,13 +3,13 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.JsonElement;
 import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.metamodel.Language;
 import io.lionweb.lioncore.java.metamodel.Property;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class MyNodeWithProperties extends DynamicNode {
-  public static Metamodel METAMODEL =
-      new Metamodel().setID("mm1").setKey("mymetamodel").setName("MM1").setVersion("1");
+  public static Language Language =
+      new Language().setID("mm1").setKey("mymetamodel").setName("MM1").setVersion("1");
   public static Concept CONCEPT =
       new Concept()
           .setID("concept-MyNodeWithProperties")
@@ -23,10 +23,10 @@ public class MyNodeWithProperties extends DynamicNode {
               Property.createOptional("p3", LionCoreBuiltins.getString()).setID("p3").setKey("p3"))
           .addFeature(
               Property.createOptional("p4", LionCoreBuiltins.getJSON()).setID("p4").setKey("p4"))
-          .setParent(METAMODEL);
+          .setParent(Language);
 
   static {
-    METAMODEL.addElement(CONCEPT);
+    Language.addElement(CONCEPT);
   }
 
   public MyNodeWithProperties(String id) {
