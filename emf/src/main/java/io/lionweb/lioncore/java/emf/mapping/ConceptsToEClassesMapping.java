@@ -9,7 +9,6 @@ import io.lionweb.lioncore.java.metamodel.Metamodel;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.eclipse.emf.ecore.EClass;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EPackage;
@@ -50,16 +49,16 @@ public class ConceptsToEClassesMapping {
     ePackagesToMetamodels.put(ePackage, metamodel);
     metamodelEPackages.put(metamodel, ePackage);
     ePackage
-            .eAllContents()
-            .forEachRemaining(
-                    eObject -> {
-                      if (eObject instanceof EClass) {
-                        EClass eClass = (EClass) eObject;
-                        if (!eClass.isInterface()) {
-                          registerMapping(metamodel.getConceptByName(eClass.getName()), eClass);
-                        }
-                      }
-                    });
+        .eAllContents()
+        .forEachRemaining(
+            eObject -> {
+              if (eObject instanceof EClass) {
+                EClass eClass = (EClass) eObject;
+                if (!eClass.isInterface()) {
+                  registerMapping(metamodel.getConceptByName(eClass.getName()), eClass);
+                }
+              }
+            });
   }
 
   public Concept getCorrespondingConcept(EClass eClass) {
@@ -102,7 +101,6 @@ public class ConceptsToEClassesMapping {
     } else {
       throw new IllegalStateException();
     }
-
   }
 
   public void registerMapping(Concept concept, EClass eClass) {

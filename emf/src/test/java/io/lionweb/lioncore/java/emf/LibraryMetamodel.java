@@ -6,7 +6,6 @@ import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.Metamodel;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -22,8 +21,7 @@ public class LibraryMetamodel {
   public static Concept GUIDE_BOOK_WRITER;
 
   static {
-    InputStream inputStream =
-        LibraryMetamodel.class.getResourceAsStream("/library-metamodel.json");
+    InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/library-metamodel.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);

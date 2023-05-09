@@ -1,18 +1,15 @@
 package io.lionweb.lioncore.java.emf;
 
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import static org.junit.Assert.assertEquals;
+
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Test;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
 
 public class EmfExporterTest {
 
@@ -21,8 +18,11 @@ public class EmfExporterTest {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.registerMetamodel(LibraryMetamodel.LIBRARY_MM);
     jsonSerialization.getNodeInstantiator().enableDynamicNodes();
-    List<Node> nodes = jsonSerialization.unserializeToNodes(this.getClass().getResourceAsStream("/langeng-library.json"));
-    List<Node> roots = nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
+    List<Node> nodes =
+        jsonSerialization.unserializeToNodes(
+            this.getClass().getResourceAsStream("/langeng-library.json"));
+    List<Node> roots =
+        nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
 
     EmfExporter emfExporter = new EmfExporter();
     Resource resource = emfExporter.exportResource(roots);
@@ -41,20 +41,23 @@ public class EmfExporterTest {
 
     EObject library = resource.getContents().get(2);
     assertEquals("Library", library.eClass().getName());
-    assertEquals("Language Engineering Library", library.eGet(library.eClass().getEStructuralFeature("name")));
+    assertEquals(
+        "Language Engineering Library",
+        library.eGet(library.eClass().getEStructuralFeature("name")));
     assertEquals(2, library.eContents().size());
-    List<EObject> books = (List<EObject>) library.eGet(library.eClass().getEStructuralFeature("books"));
+    List<EObject> books =
+        (List<EObject>) library.eGet(library.eClass().getEStructuralFeature("books"));
     assertEquals(2, books.size());
 
     EObject de = books.get(0);
     assertEquals("Book", de.eClass().getName());
-    assertEquals("DSL Engineering", de.eGet(de.eClass().getEStructuralFeature("name")));
+    assertEquals("DSL Engineering", de.eGet(de.eClass().getEStructuralFeature("title")));
     assertEquals(558, de.eGet(de.eClass().getEStructuralFeature("pages")));
     assertEquals(mv, de.eGet(de.eClass().getEStructuralFeature("author")));
 
     EObject bfd = books.get(1);
     assertEquals("Book", bfd.eClass().getName());
-    assertEquals("Business-Friendly DSLs", bfd.eGet(de.eClass().getEStructuralFeature("name")));
+    assertEquals("Business-Friendly DSLs", bfd.eGet(de.eClass().getEStructuralFeature("title")));
     assertEquals(517, bfd.eGet(bfd.eClass().getEStructuralFeature("pages")));
     assertEquals(mb, bfd.eGet(bfd.eClass().getEStructuralFeature("author")));
   }

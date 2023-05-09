@@ -1,25 +1,20 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
-import io.lionweb.lioncore.java.emf.support.NodeInstantiator;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Containment;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
 import io.lionweb.lioncore.java.metamodel.Reference;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import java.util.*;
+import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class EmfExporter {
 
   private ConceptsToEClassesMapping eClassMapper = new ConceptsToEClassesMapping();
-  public EmfExporter() {
-  }
+
+  public EmfExporter() {}
 
   private class ReferencesPostponer {
 
@@ -30,7 +25,9 @@ public class EmfExporter {
     }
 
     class PostponedReference {
-      Node node; EObject eObject; EReference eReference;
+      Node node;
+      EObject eObject;
+      EReference eReference;
 
       public PostponedReference(Node node, EObject eObject, EReference eReference) {
         this.node = node;
@@ -52,25 +49,34 @@ public class EmfExporter {
     }
 
     public void addLinks() {
-      postponedReferences.forEach(postponedReference -> {
-        Reference reference = postponedReference.node.getConcept().getReferenceByName(postponedReference.eReference.getName());
-        List<ReferenceValue> referenceValues = postponedReference.node.getReferenceValues(reference);
-        if (postponedReference.eReference.isMany()) {
-          List<EObject> referredEObjects = referenceValues.stream().map(rv -> nodeToEObject(rv.getReferred())).collect(Collectors.toList());
-          postponedReference.eObject.eSet(postponedReference.eReference, referredEObjects);
-        } else {
-          EObject referredEObject;
-          if (referenceValues.size() == 0) {
-            referredEObject = null;
-          } else if (referenceValues.size() == 1) {
-            referredEObject = nodeToEObject(referenceValues.get(0).getReferred());
-          } else {
-            throw new IllegalStateException();
-          }
+      postponedReferences.forEach(
+          postponedReference -> {
+            Reference reference =
+                postponedReference
+                    .node
+                    .getConcept()
+                    .getReferenceByName(postponedReference.eReference.getName());
+            List<ReferenceValue> referenceValues =
+                postponedReference.node.getReferenceValues(reference);
+            if (postponedReference.eReference.isMany()) {
+              List<EObject> referredEObjects =
+                  referenceValues.stream()
+                      .map(rv -> nodeToEObject(rv.getReferred()))
+                      .collect(Collectors.toList());
+              postponedReference.eObject.eSet(postponedReference.eReference, referredEObjects);
+            } else {
+              EObject referredEObject;
+              if (referenceValues.size() == 0) {
+                referredEObject = null;
+              } else if (referenceValues.size() == 1) {
+                referredEObject = nodeToEObject(referenceValues.get(0).getReferred());
+              } else {
+                throw new IllegalStateException();
+              }
 
-          postponedReference.eObject.eSet(postponedReference.eReference, referredEObject);
-        }
-      });
+              postponedReference.eObject.eSet(postponedReference.eReference, referredEObject);
+            }
+          });
     }
 
     public void recordReference(Node node, EObject eObject, EReference eReference) {
@@ -100,29 +106,37 @@ public class EmfExporter {
     EObject eObject = eClass.getEPackage().getEFactoryInstance().create(eClass);
     referencesPostponer.trackMapping(root, eObject);
 
-    eObject.eClass().getEAllStructuralFeatures().forEach(eStructuralFeature -> {
-      if (eStructuralFeature instanceof EAttribute) {
-        EAttribute eAttribute = (EAttribute) eStructuralFeature;
-        Object propertyValue = root.getPropertyValueByName(eAttribute.getName());
-        Object attributeValue = convertAttributeValue(propertyValue);
-        eObject.eSet(eAttribute, attributeValue);
-      } else if (eStructuralFeature instanceof EReference) {
-        EReference eReference = (EReference) eStructuralFeature;
-        if (eReference.isContainment()) {
-          if (eReference.isMany()) {
-            List<? extends Node> childrenInLW = root.getChildrenByContainmentName(eReference.getName());
-            List<EObject> childrenInEmf = childrenInLW.stream().map(clw -> exportTree(clw, referencesPostponer)).collect(Collectors.toList());
-            eObject.eSet(eReference, childrenInEmf);
-          } else {
-            throw new UnsupportedOperationException();
-          }
-        } else {
-          referencesPostponer.recordReference(root, eObject, eReference);
-        }
-      } else {
-        throw new IllegalStateException();
-      }
-    });
+    eObject
+        .eClass()
+        .getEAllStructuralFeatures()
+        .forEach(
+            eStructuralFeature -> {
+              if (eStructuralFeature instanceof EAttribute) {
+                EAttribute eAttribute = (EAttribute) eStructuralFeature;
+                Object propertyValue = root.getPropertyValueByName(eAttribute.getName());
+                Object attributeValue = convertAttributeValue(propertyValue);
+                eObject.eSet(eAttribute, attributeValue);
+              } else if (eStructuralFeature instanceof EReference) {
+                EReference eReference = (EReference) eStructuralFeature;
+                if (eReference.isContainment()) {
+                  if (eReference.isMany()) {
+                    List<? extends Node> childrenInLW =
+                        root.getChildrenByContainmentName(eReference.getName());
+                    List<EObject> childrenInEmf =
+                        childrenInLW.stream()
+                            .map(clw -> exportTree(clw, referencesPostponer))
+                            .collect(Collectors.toList());
+                    eObject.eSet(eReference, childrenInEmf);
+                  } else {
+                    throw new UnsupportedOperationException();
+                  }
+                } else {
+                  referencesPostponer.recordReference(root, eObject, eReference);
+                }
+              } else {
+                throw new IllegalStateException();
+              }
+            });
 
     return eObject;
   }

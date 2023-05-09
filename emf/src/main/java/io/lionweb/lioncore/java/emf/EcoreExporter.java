@@ -138,7 +138,9 @@ public class EcoreExporter {
         .getFeatures()
         .forEach(
             f -> {
-              eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f));
+              EStructuralFeature eStructuralFeature = convertFeatureToEStructuralFeature(f);
+              // eStructuralFeature.getFeatureID()
+              eClass.getEStructuralFeatures().add(eStructuralFeature);
             });
   }
 
