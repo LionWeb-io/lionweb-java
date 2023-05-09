@@ -99,8 +99,8 @@ public class LionCore {
       Concept featuresContainer = INSTANCE.addElement(new Concept("FeaturesContainer"));
       ConceptInterface hasKey = INSTANCE.addElement(new ConceptInterface("HasKey"));
       Concept link = INSTANCE.addElement(new Concept("Link"));
-      Concept metamodel = INSTANCE.addElement(new Concept("Metamodel"));
-      Concept metamodelElement = INSTANCE.addElement(new Concept("MetamodelElement"));
+      Concept language = INSTANCE.addElement(new Concept("Language"));
+      Concept languageElement = INSTANCE.addElement(new Concept("LanguageElement"));
       Concept namespacedEntity = INSTANCE.addElement(new Concept("NamespacedEntity"));
       ConceptInterface namespaceProvider =
           INSTANCE.addElement(new ConceptInterface("NamespaceProvider"));
@@ -127,7 +127,7 @@ public class LionCore {
 
       containment.setExtendedConcept(link);
 
-      dataType.setExtendedConcept(metamodelElement);
+      dataType.setExtendedConcept(languageElement);
       dataType.setAbstract(true);
 
       enumeration.setExtendedConcept(dataType);
@@ -146,11 +146,11 @@ public class LionCore {
           Property.createRequired(
               "derived", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Feature_derived"));
 
-      featuresContainer.setExtendedConcept(metamodelElement);
+      featuresContainer.setExtendedConcept(languageElement);
       featuresContainer.addImplementedInterface(namespaceProvider);
       featuresContainer.addFeature(
           Containment.createMultiple(
-              "features", feature, "LIonCore_M3_FeaturesContainer_features"));
+              "allFeatures", feature, "LIonCore_M3_FeaturesContainer_features"));
 
       hasKey.addFeature(
           Property.createRequired("key", LionCoreBuiltins.getString(), "LIonCore_M3_HasKey_key"));
@@ -161,34 +161,28 @@ public class LionCore {
               "multiple", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Link_multiple"));
       link.addFeature(Reference.createRequired("type", featuresContainer, "LIonCore_M3_Link_type"));
 
-      metamodel.addImplementedInterface(namespaceProvider);
-      metamodel.addImplementedInterface(hasKey);
-      metamodel.addFeature(
+      language.addImplementedInterface(namespaceProvider);
+      language.addImplementedInterface(hasKey);
+      language.addFeature(
           Property.createRequired(
               "name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
-      metamodel.addFeature(
+      language.addFeature(
           Property.createRequired(
               "version", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_version"));
-      metamodel.addFeature(Reference.createMultiple("dependsOn", metamodel));
-      metamodel.addFeature(
+      language.addFeature(Reference.createMultiple("dependsOn", language));
+      language.addFeature(
           Containment.createMultiple(
-              "elements", metamodelElement, "LIonCore_M3_Metamodel_elements"));
+              "elements", languageElement, "LIonCore_M3_Metamodel_elements"));
 
-      metamodelElement.setExtendedConcept(namespacedEntity);
-      metamodelElement.addImplementedInterface(hasKey);
+      languageElement.setExtendedConcept(namespacedEntity);
+      languageElement.addImplementedInterface(hasKey);
 
-      metamodel.setAbstract(true);
+      language.setAbstract(true);
 
       namespacedEntity.setAbstract(true);
       namespacedEntity.addFeature(
           Property.createRequired(
               "name", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_name"));
-      namespacedEntity.addFeature(
-          Property.createRequired(
-                  "qualifiedName",
-                  LionCoreBuiltins.getString(),
-                  "LIonCore_M3_NamespacedEntity_qualifiedName")
-              .setDerived(true));
 
       primitiveType.setExtendedConcept(dataType);
 
