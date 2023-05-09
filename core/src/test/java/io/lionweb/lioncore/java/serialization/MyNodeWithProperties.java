@@ -2,8 +2,8 @@ package io.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonElement;
 import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 

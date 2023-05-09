@@ -20,8 +20,7 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
 
   public LanguageElement() {}
 
-  public LanguageElement(
-          @Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public LanguageElement(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     this(language, name);
     this.setID(id);
   }
@@ -37,8 +36,7 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
   }
 
   /**
-   * This method returns the Language containing this element. It is the parent, casted to
-   * Language.
+   * This method returns the Language containing this element. It is the parent, casted to Language.
    *
    * @return
    */

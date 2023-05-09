@@ -28,8 +28,7 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
     super();
   }
 
-  public ConceptInterface(
-          @Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public ConceptInterface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 

@@ -171,8 +171,7 @@ public class LionCore {
               "version", LionCoreBuiltins.getString(), "LIonCore_M3_Language_version"));
       language.addFeature(Reference.createMultiple("dependsOn", language));
       language.addFeature(
-          Containment.createMultiple(
-              "elements", languageElement, "LIonCore_M3_Language_elements"));
+          Containment.createMultiple("elements", languageElement, "LIonCore_M3_Language_elements"));
 
       languageElement.setExtendedConcept(namespacedEntity);
       languageElement.addImplementedInterface(hasKey);

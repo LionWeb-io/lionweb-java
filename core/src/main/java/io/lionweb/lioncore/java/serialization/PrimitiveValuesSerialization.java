@@ -5,8 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.EnumerationLiteral;
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import java.util.*;
 
 /**

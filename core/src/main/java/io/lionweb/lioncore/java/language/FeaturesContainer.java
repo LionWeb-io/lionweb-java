@@ -28,8 +28,7 @@ public abstract class FeaturesContainer<T extends M3Node> extends LanguageElemen
     super();
   }
 
-  public FeaturesContainer(
-          @Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public FeaturesContainer(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
