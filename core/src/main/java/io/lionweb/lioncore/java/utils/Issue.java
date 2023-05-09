@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.utils;
 
 import io.lionweb.lioncore.java.model.Node;
-
 import java.util.Objects;
 
 public class Issue {

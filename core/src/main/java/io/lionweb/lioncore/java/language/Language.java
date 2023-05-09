@@ -13,8 +13,8 @@ import javax.annotation.Nullable;
  * together with supporting elements necessary for the definition of those Concepts.
  *
  * <p>It also represents the namespace within which Concepts and other supporting elements are
- * organized. For example, a Language for accounting could collect several Concepts such as
- * Invoice, Customer, InvoiceLine, Product. It could also contain related elements necessary for the
+ * organized. For example, a Language for accounting could collect several Concepts such as Invoice,
+ * Customer, InvoiceLine, Product. It could also contain related elements necessary for the
  * definitions of the concepts. For example, a {@link DataType} named Currency.
  *
  * @see org.eclipse.emf.ecore.EPackage Ecore equivalent <i>EPackage</i>
