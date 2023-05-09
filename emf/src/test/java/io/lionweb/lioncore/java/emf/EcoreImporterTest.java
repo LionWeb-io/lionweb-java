@@ -2,7 +2,7 @@ package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;

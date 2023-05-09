@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

@@ -2,7 +2,7 @@ package io.lionweb.lioncore.java.utils;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
 import java.util.HashSet;

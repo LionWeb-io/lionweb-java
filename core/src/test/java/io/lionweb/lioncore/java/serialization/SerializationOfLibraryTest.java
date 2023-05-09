@@ -6,8 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Property;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,7 +20,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
   @Test
   public void unserializeLibraryToConcreteClasses() {
     InputStream inputStream =
-        this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
+        this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
@@ -47,7 +47,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
   @Test
   public void reserializeLibrary() {
     InputStream inputStream =
-        this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
+        this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
@@ -93,7 +93,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
   @Test(expected = IllegalStateException.class)
   public void unserializeMetamodelWithDuplicateIDs() {
     InputStream inputStream =
-        this.getClass().getResourceAsStream("/serialization/library-metamodel-with-duplicate.json");
+        this.getClass().getResourceAsStream("/serialization/library-language-with-duplicate.json");
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.unserializeToNodes(inputStream);
   }

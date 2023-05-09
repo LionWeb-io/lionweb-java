@@ -5,10 +5,10 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import io.lionweb.lioncore.java.metamodel.Language;
-import io.lionweb.lioncore.java.metamodel.Property;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -32,9 +32,9 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     assertEquals("1", serializedChunk.getSerializationFormatVersion());
 
-    assertEquals(1, serializedChunk.getMetamodels().size());
+    assertEquals(1, serializedChunk.getLanguages().size());
     Assert.assertEquals(
-        new MetamodelKeyVersion("LIonCore_M3", "1"), serializedChunk.getMetamodels().get(0));
+        new LanguageKeyVersion("LIonCore_M3", "1"), serializedChunk.getLanguages().get(0));
 
     SerializedNode LIonCore_M3 =
         serializedChunk.getNodes().stream()
@@ -42,11 +42,11 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             .findFirst()
             .get();
     assertEquals("LIonCore_M3", LIonCore_M3.getID());
-    assertEquals(new MetaPointer("LIonCore_M3", "1", "Metamodel"), LIonCore_M3.getConcept());
+    assertEquals(new MetaPointer("LIonCore_M3", "1", "Language"), LIonCore_M3.getConcept());
     assertEquals(
         Arrays.asList(
             new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "Metamodel_name"), "LIonCore.M3"),
+                new MetaPointer("LIonCore_M3", "1", "Language_name"), "LIonCore.M3"),
             new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "version"), "1"),
             new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "key"), "LIonCore_M3")),
         LIonCore_M3.getProperties());
@@ -65,8 +65,8 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "LIonCore_M3_FeaturesContainer",
                     "LIonCore_M3_HasKey",
                     "LIonCore_M3_Link",
-                    "LIonCore_M3_Metamodel",
-                    "LIonCore_M3_MetamodelElement",
+                    "LIonCore_M3_Language",
+                    "LIonCore_M3_LanguageElement",
                     "LIonCore_M3_NamespacedEntity",
                     "LIonCore_M3_NamespaceProvider",
                     "LIonCore_M3_PrimitiveType",
@@ -117,7 +117,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     SerializedNode lioncore = serializedChunk.getNodeByID("LIonCore_M3");
     assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
-    assertEquals("LIonCore.M3", lioncore.getPropertyValue("Metamodel_name"));
+    assertEquals("LIonCore.M3", lioncore.getPropertyValue("Language_name"));
     assertEquals(17, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
 
@@ -126,7 +126,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
-    assertEquals(2, namespacedEntity.getChildren().size());
+    assertEquals(1, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
     SerializedNode name = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_name");
@@ -157,7 +157,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.isAbstract());
     assertEquals("NamespacedEntity", namespacedEntity.getName());
-    assertEquals(2, namespacedEntity.getChildren().size());
+    assertEquals(1, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
     Property name = propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
@@ -176,7 +176,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization
         .getNodeResolver()
         .addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
-    jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
+    jsonSerialization.getConceptResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization.getNodeInstantiator().enableDynamicNodes();
     jsonSerialization
         .getPrimitiveValuesSerialization()
@@ -196,7 +196,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("name"));
-    assertEquals(2, namespacedEntity.getChildren().size());
+    assertEquals(1, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
     DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
@@ -210,7 +210,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-    jsonSerialization.getConceptResolver().registerMetamodel(LionCore.getInstance());
+    jsonSerialization.getConceptResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();

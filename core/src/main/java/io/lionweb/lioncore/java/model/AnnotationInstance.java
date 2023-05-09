@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.metamodel.Annotation;
+import io.lionweb.lioncore.java.language.Annotation;
 
 /**
  * While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any Containment

@@ -1,9 +1,9 @@
 package io.lionweb.lioncore.java.serialization.refsmm;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Containment;
-import io.lionweb.lioncore.java.metamodel.Language;
-import io.lionweb.lioncore.java.metamodel.Reference;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.Reference;
 
 public class RefsLanguage extends Language {
   public static final RefsLanguage INSTANCE = new RefsLanguage();

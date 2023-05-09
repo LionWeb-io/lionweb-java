@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.serialization.simplemath;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 
 public class SimpleMathLanguage extends Language {
   public static final SimpleMathLanguage INSTANCE = new SimpleMathLanguage();

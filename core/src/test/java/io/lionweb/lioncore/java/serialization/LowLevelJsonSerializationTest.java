@@ -26,9 +26,9 @@ public class LowLevelJsonSerializationTest {
     List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
 
     SerializedNode lioncore = unserializedSerializedNodeData.get(0);
-    assertEquals(new MetaPointer("LIonCore_M3", "1", "Metamodel"), lioncore.getConcept());
+    assertEquals(new MetaPointer("LIonCore_M3", "1", "Language"), lioncore.getConcept());
     assertEquals("LIonCore_M3", lioncore.getID());
-    assertEquals("LIonCore.M3", lioncore.getPropertyValue("Metamodel_name"));
+    assertEquals("LIonCore.M3", lioncore.getPropertyValue("Language_name"));
     assertEquals(17, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
 
@@ -41,7 +41,7 @@ public class LowLevelJsonSerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
-    assertEquals(2, namespacedEntity.getChildren().size());
+    assertEquals(1, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
     SerializedNode name =
@@ -58,9 +58,9 @@ public class LowLevelJsonSerializationTest {
   }
 
   @Test
-  public void unserializeLibraryMetamodelToSerializedNodes() {
+  public void unserializeLibraryLanguageToSerializedNodes() {
     InputStream inputStream =
-        this.getClass().getResourceAsStream("/serialization/library-metamodel.json");
+        this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
@@ -75,8 +75,8 @@ public class LowLevelJsonSerializationTest {
   }
 
   @Test
-  public void reserializeLibraryMetamodel() {
-    assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/library-metamodel.json");
+  public void reserializeLibraryLanguage() {
+    assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/library-language.json");
   }
 
   @Test

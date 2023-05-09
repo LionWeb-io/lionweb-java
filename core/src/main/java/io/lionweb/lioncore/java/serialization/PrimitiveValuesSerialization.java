@@ -3,10 +3,10 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.metamodel.Enumeration;
-import io.lionweb.lioncore.java.metamodel.EnumerationLiteral;
-import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import io.lionweb.lioncore.java.metamodel.Language;
+import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.language.EnumerationLiteral;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.language.Language;
 import java.util.*;
 
 /**
@@ -19,7 +19,7 @@ public class PrimitiveValuesSerialization {
   // because that is unique
   private Map<String, Enumeration> enumerationsByID = new HashMap<>();
 
-  public void registerMetamodel(Language language) {
+  public void registerLanguage(Language language) {
     language.getElements().stream()
         .filter(e -> e instanceof Enumeration)
         .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));

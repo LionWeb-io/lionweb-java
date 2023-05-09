@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.metamodel.Language;
+import io.lionweb.lioncore.java.language.Language;
 import java.util.List;
 
 /**

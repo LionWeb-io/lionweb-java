@@ -1,15 +1,15 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonElement;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
-import io.lionweb.lioncore.java.metamodel.Language;
-import io.lionweb.lioncore.java.metamodel.Property;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class MyNodeWithProperties extends DynamicNode {
   public static Language Language =
-      new Language().setID("mm1").setKey("mymetamodel").setName("MM1").setVersion("1");
+      new Language().setID("mm1").setKey("mylanguage").setName("MM1").setVersion("1");
   public static Concept CONCEPT =
       new Concept()
           .setID("concept-MyNodeWithProperties")

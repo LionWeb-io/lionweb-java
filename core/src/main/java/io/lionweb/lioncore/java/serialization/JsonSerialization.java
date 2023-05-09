@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.api.CompositeNodeResolver;
 import io.lionweb.lioncore.java.api.LocalNodeResolver;
 import io.lionweb.lioncore.java.api.NodeResolver;
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -36,7 +36,7 @@ public class JsonSerialization {
   /** This has specific support for LionCore or LionCoreBuiltins. */
   public static JsonSerialization getStandardSerialization() {
     JsonSerialization jsonSerialization = new JsonSerialization();
-    jsonSerialization.conceptResolver.registerMetamodel(LionCore.getInstance());
+    jsonSerialization.conceptResolver.registerLanguage(LionCore.getInstance());
     jsonSerialization.nodeInstantiator.registerLionCoreCustomUnserializers();
     jsonSerialization.primitiveValuesSerialization
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
@@ -103,13 +103,13 @@ public class JsonSerialization {
           node.getConcept(), "A node should have a concept in order to be serialized");
       Objects.requireNonNull(
           node.getConcept().getLanguage(),
-          "A Concept should be part of a Metamodel in order to be serialized. Concept "
+          "A Concept should be part of a Language in order to be serialized. Concept "
               + node.getConcept()
               + " is not");
-      MetamodelKeyVersion metamodelKeyVersion =
-          MetamodelKeyVersion.fromMetamodel(node.getConcept().getLanguage());
-      if (!serializationBlock.getMetamodels().contains(metamodelKeyVersion)) {
-        serializationBlock.getMetamodels().add(metamodelKeyVersion);
+      LanguageKeyVersion languageKeyVersion =
+          LanguageKeyVersion.fromLanguage(node.getConcept().getLanguage());
+      if (!serializationBlock.getLanguages().contains(languageKeyVersion)) {
+        serializationBlock.getLanguages().add(languageKeyVersion);
       }
     }
     return serializationBlock;
@@ -496,8 +496,8 @@ public class JsonSerialization {
             });
   }
 
-  public void registerMetamodel(Language language) {
-    getConceptResolver().registerMetamodel(language);
-    getPrimitiveValuesSerialization().registerMetamodel(language);
+  public void registerLanguage(Language language) {
+    getConceptResolver().registerLanguage(language);
+    getPrimitiveValuesSerialization().registerLanguage(language);
   }
 }

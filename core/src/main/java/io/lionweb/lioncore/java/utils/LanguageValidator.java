@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.utils;
 
-import io.lionweb.lioncore.java.metamodel.*;
-import io.lionweb.lioncore.java.metamodel.Enumeration;
+import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -60,9 +60,9 @@ public class LanguageValidator extends Validator<Language> {
                       "Metamodel not set correctly",
                       el);
 
-              if (el instanceof io.lionweb.lioncore.java.metamodel.Enumeration) {
-                io.lionweb.lioncore.java.metamodel.Enumeration enumeration =
-                    (io.lionweb.lioncore.java.metamodel.Enumeration) el;
+              if (el instanceof io.lionweb.lioncore.java.language.Enumeration) {
+                io.lionweb.lioncore.java.language.Enumeration enumeration =
+                    (io.lionweb.lioncore.java.language.Enumeration) el;
                 enumeration
                     .getLiterals()
                     .forEach(
@@ -268,8 +268,8 @@ public class LanguageValidator extends Validator<Language> {
                       "Metamodel not set correctly",
                       el);
 
-              if (el instanceof io.lionweb.lioncore.java.metamodel.Enumeration) {
-                io.lionweb.lioncore.java.metamodel.Enumeration enumeration = (Enumeration) el;
+              if (el instanceof io.lionweb.lioncore.java.language.Enumeration) {
+                io.lionweb.lioncore.java.language.Enumeration enumeration = (Enumeration) el;
                 enumeration
                     .getLiterals()
                     .forEach(

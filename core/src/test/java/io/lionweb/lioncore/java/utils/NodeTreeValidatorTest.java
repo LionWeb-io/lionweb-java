@@ -2,8 +2,7 @@ package io.lionweb.lioncore.java.utils;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.metamodel.*;
-import io.lionweb.lioncore.java.metamodel.Concept;
+import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import java.util.Arrays;
 import java.util.Collections;

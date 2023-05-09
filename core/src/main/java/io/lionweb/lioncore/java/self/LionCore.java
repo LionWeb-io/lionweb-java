@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.self;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;
 
@@ -165,14 +165,14 @@ public class LionCore {
       language.addImplementedInterface(hasKey);
       language.addFeature(
           Property.createRequired(
-              "name", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_name"));
+              "name", LionCoreBuiltins.getString(), "LIonCore_M3_Language_name"));
       language.addFeature(
           Property.createRequired(
-              "version", LionCoreBuiltins.getString(), "LIonCore_M3_Metamodel_version"));
+              "version", LionCoreBuiltins.getString(), "LIonCore_M3_Language_version"));
       language.addFeature(Reference.createMultiple("dependsOn", language));
       language.addFeature(
           Containment.createMultiple(
-              "elements", languageElement, "LIonCore_M3_Metamodel_elements"));
+              "elements", languageElement, "LIonCore_M3_Language_elements"));
 
       languageElement.setExtendedConcept(namespacedEntity);
       languageElement.addImplementedInterface(hasKey);

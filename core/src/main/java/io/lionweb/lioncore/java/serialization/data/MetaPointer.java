@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.java.serialization.data;
 
-import io.lionweb.lioncore.java.metamodel.HasKey;
-import io.lionweb.lioncore.java.metamodel.Language;
-import io.lionweb.lioncore.java.metamodel.LanguageElement;
+import io.lionweb.lioncore.java.language.HasKey;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.LanguageElement;
 import java.util.Objects;
 
 /**
@@ -94,7 +94,7 @@ public class MetaPointer {
         + ", version='"
         + version
         + '\''
-        + ", metamodel='"
+        + ", language='"
         + language
         + '\''
         + '}';

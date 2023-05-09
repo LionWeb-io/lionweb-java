@@ -17,7 +17,7 @@ class SerializedJsonComparisonUtils {
 
   static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
     Set<String> keys =
-        new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "metamodels"));
+        new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "languages"));
     if (!expected.keySet().equals(keys)) {
       throw new RuntimeException("The expected object has irregular keys: " + expected.keySet());
     }

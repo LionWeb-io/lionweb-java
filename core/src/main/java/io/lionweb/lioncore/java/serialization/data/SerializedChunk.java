@@ -13,7 +13,7 @@ public class SerializedChunk {
   private Map<String, SerializedNode> nodesByID = new HashMap<>();
 
   private String serializationFormatVersion;
-  private List<MetamodelKeyVersion> metamodels = new ArrayList<>();
+  private List<LanguageKeyVersion> languages = new ArrayList<>();
   private List<SerializedNode> nodes = new ArrayList<>();
 
   public void setSerializationFormatVersion(String value) {
@@ -42,16 +42,16 @@ public class SerializedChunk {
     return node;
   }
 
-  public void addMetamodel(MetamodelKeyVersion metamodel) {
-    this.metamodels.add(metamodel);
+  public void addMetamodel(LanguageKeyVersion metamodel) {
+    this.languages.add(metamodel);
   }
 
   public Map<String, SerializedNode> getNodesByID() {
     return nodesByID;
   }
 
-  public List<MetamodelKeyVersion> getMetamodels() {
-    return metamodels;
+  public List<LanguageKeyVersion> getLanguages() {
+    return languages;
   }
 
   @Override
@@ -61,7 +61,7 @@ public class SerializedChunk {
         + serializationFormatVersion
         + '\''
         + ", metamodels="
-        + metamodels
+        + languages
         + ", nodes="
         + nodes
         + '}';
@@ -73,12 +73,12 @@ public class SerializedChunk {
     if (!(o instanceof SerializedChunk)) return false;
     SerializedChunk that = (SerializedChunk) o;
     return serializationFormatVersion.equals(that.serializationFormatVersion)
-        && metamodels.equals(that.metamodels)
+        && languages.equals(that.languages)
         && nodes.equals(that.nodes);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(serializationFormatVersion, metamodels, nodes);
+    return Objects.hash(serializationFormatVersion, languages, nodes);
   }
 }
