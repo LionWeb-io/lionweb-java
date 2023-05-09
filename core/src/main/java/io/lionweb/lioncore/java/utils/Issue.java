@@ -1,14 +1,16 @@
 package io.lionweb.lioncore.java.utils;
 
+import io.lionweb.lioncore.java.model.Node;
+
 import java.util.Objects;
 
 public class Issue {
   private String message;
   private IssueSeverity severity;
 
-  private Object subject;
+  private Node subject;
 
-  public Issue(IssueSeverity severity, String message, Object subject) {
+  public Issue(IssueSeverity severity, String message, Node subject) {
     this.message = message;
     this.severity = severity;
     this.subject = subject;
@@ -22,9 +24,9 @@ public class Issue {
     return severity;
   }
 
-  // TODO once each element of the Metamodel implement the Node interface this method could return a
+  // TODO once each element of the Language implement the Node interface this method could return a
   // Node
-  public Object getSubject() {
+  public Node getSubject() {
     return subject;
   }
 

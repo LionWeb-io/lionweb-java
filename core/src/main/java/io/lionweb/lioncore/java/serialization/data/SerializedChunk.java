@@ -42,8 +42,8 @@ public class SerializedChunk {
     return node;
   }
 
-  public void addMetamodel(LanguageKeyVersion metamodel) {
-    this.languages.add(metamodel);
+  public void addLanguage(LanguageKeyVersion language) {
+    this.languages.add(language);
   }
 
   public Map<String, SerializedNode> getNodesByID() {
@@ -60,7 +60,7 @@ public class SerializedChunk {
         + ", serializationFormatVersion='"
         + serializationFormatVersion
         + '\''
-        + ", metamodels="
+        + ", languages="
         + languages
         + ", nodes="
         + nodes

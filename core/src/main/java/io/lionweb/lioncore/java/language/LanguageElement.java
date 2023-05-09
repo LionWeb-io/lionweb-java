@@ -5,9 +5,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A MetamodelElement is an element with an identity within a {@link Language}.
+ * A LanguageElement is an element with an identity within a {@link Language}.
  *
- * <p>For example, Invoice, Currency, Named, or String could be MetamodelElements.
+ * <p>For example, Invoice, Currency, Named, or String could be LanguageElements.
  *
  * @see org.eclipse.emf.ecore.EClassifier Ecore equivalent <i>EClassifier</i>
  * @see <a
@@ -26,7 +26,7 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
   }
 
   public LanguageElement(@Nullable Language language, @Nullable String name) {
-    // TODO enforce uniqueness of the name within the Metamodel
+    // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {
       language.addElement(this);
@@ -46,7 +46,7 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
     } else if (getParent() instanceof Language) {
       return (Language) getParent();
     } else {
-      throw new IllegalStateException("The parent of this LanguageElement is not a Metamodel");
+      throw new IllegalStateException("The parent of this LanguageElement is not a Language");
     }
   }
 
@@ -89,12 +89,12 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
 
   @Override
   public String toString() {
-    String qualifier = "<no metamodel>";
+    String qualifier = "<no language>";
     if (this.getContainer() != null) {
       if (this.getContainer().namespaceQualifier() != null) {
         qualifier = this.getContainer().namespaceQualifier();
       } else {
-        qualifier = "<unnamed metamodel>";
+        qualifier = "<unnamed language>";
       }
     }
     ;

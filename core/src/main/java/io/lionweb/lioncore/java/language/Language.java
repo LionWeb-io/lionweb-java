@@ -9,11 +9,11 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A Metamodel will provide the {@link Concept}s necessary to describe data in a particular domain
+ * A Language will provide the {@link Concept}s necessary to describe data in a particular domain
  * together with supporting elements necessary for the definition of those Concepts.
  *
  * <p>It also represents the namespace within which Concepts and other supporting elements are
- * organized. For example, a Metamodel for accounting could collect several Concepts such as
+ * organized. For example, a Language for accounting could collect several Concepts such as
  * Invoice, Customer, InvoiceLine, Product. It could also contain related elements necessary for the
  * definitions of the concepts. For example, a {@link DataType} named Currency.
  *
@@ -139,6 +139,6 @@ public class Language extends M3Node<Language> implements NamespaceProvider, Has
 
   @Override
   public String toString() {
-    return "Metamodel(" + this.getName() + ")";
+    return "Language(" + this.getName() + ")";
   }
 }

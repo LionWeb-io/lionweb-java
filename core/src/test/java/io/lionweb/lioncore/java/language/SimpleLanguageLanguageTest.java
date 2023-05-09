@@ -7,7 +7,7 @@ import org.junit.Test;
 public class SimpleLanguageLanguageTest {
 
   @Test
-  public void emptyMetamodelDefinition() {
+  public void emptyLanguageDefinition() {
     Language language = new Language("SimpleLanguage").setID("myM3ID");
     assertEquals("SimpleLanguage", language.getName());
     assertEquals("SimpleLanguage", language.namespaceQualifier());

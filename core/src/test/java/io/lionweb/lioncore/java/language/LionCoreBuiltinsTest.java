@@ -28,7 +28,7 @@ public class LionCoreBuiltinsTest {
   public void lionCoreBuiltinsIsValid() {
     ValidationResult vr = new LanguageValidator().validate(LionCoreBuiltins.getInstance());
     if (!vr.isSuccessful()) {
-      throw new RuntimeException("LionCoreBuiltins Metamodel is not valid: " + vr);
+      throw new RuntimeException("LionCoreBuiltins Language is not valid: " + vr);
     }
   }
 }

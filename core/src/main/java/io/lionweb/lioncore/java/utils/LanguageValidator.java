@@ -17,7 +17,7 @@ public class LanguageValidator extends Validator<Language> {
 
   @Override
   public ValidationResult validate(Language language) {
-    // Given metamodels are also valid node trees, we check against errors for node trees
+    // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
     language
@@ -54,10 +54,10 @@ public class LanguageValidator extends Validator<Language> {
             (LanguageElement el) -> {
               result
                   .checkForError(el.getName() == null, "Simple name not set", el)
-                  .checkForError(el.getLanguage() == null, "Metamodel not set", el)
+                  .checkForError(el.getLanguage() == null, "Language not set", el)
                   .checkForError(
                       el.getLanguage() != null && el.getLanguage() != language,
-                      "Metamodel not set correctly",
+                      "Language not set correctly",
                       el);
 
               if (el instanceof io.lionweb.lioncore.java.language.Enumeration) {
@@ -163,8 +163,8 @@ public class LanguageValidator extends Validator<Language> {
             });
   }
 
-  public boolean isMetamodelValid(Language language) {
-    return validateMetamodel(language).isSuccessful();
+  public boolean isLanguageValid(Language language) {
+    return validateLanguage(language).isSuccessful();
   }
 
   private void checkAncestors(Concept concept, ValidationResult validationResult) {
@@ -245,7 +245,7 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
-  public ValidationResult validateMetamodel(Language language) {
+  public ValidationResult validateLanguage(Language language) {
     ValidationResult result = new ValidationResult();
 
     result.checkForError(language.getName() == null, "Qualified name not set", language);
@@ -262,10 +262,10 @@ public class LanguageValidator extends Validator<Language> {
             (LanguageElement el) -> {
               result
                   .checkForError(el.getName() == null, "Simple name not set", el)
-                  .checkForError(el.getLanguage() == null, "Metamodel not set", el)
+                  .checkForError(el.getLanguage() == null, "Language not set", el)
                   .checkForError(
                       el.getLanguage() != null && el.getLanguage() != language,
-                      "Metamodel not set correctly",
+                      "Language not set correctly",
                       el);
 
               if (el instanceof io.lionweb.lioncore.java.language.Enumeration) {

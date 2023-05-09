@@ -91,7 +91,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void unserializeMetamodelWithDuplicateIDs() {
+  public void unserializeLanguageWithDuplicateIDs() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language-with-duplicate.json");
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();

@@ -143,7 +143,7 @@ public class LowLevelJsonSerialization {
                     throw new IllegalArgumentException(
                         "Language should be an object. Found: " + element);
                   }
-                  serializedChunk.addMetamodel(languageKeyVersion);
+                  serializedChunk.addLanguage(languageKeyVersion);
                 } catch (Exception e) {
                   throw new RuntimeException("Issue while unserializing " + element, e);
                 }

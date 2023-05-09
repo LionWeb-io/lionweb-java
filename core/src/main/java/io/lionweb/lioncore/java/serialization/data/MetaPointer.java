@@ -6,8 +6,8 @@ import io.lionweb.lioncore.java.language.LanguageElement;
 import java.util.Objects;
 
 /**
- * A MetaPointer is the combination of the pair Metamodel and Version with a Key, which identify one
- * element within that metamodel.
+ * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
+ * element within that language.
  */
 public class MetaPointer {
   private String key;

@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.language;
 /**
  * Something with a name and contained in a Namespace.
  *
- * <p>A Concept Invoice, contained in a Metamodel com.foo.Accounting. Therefore, Invoice will have
+ * <p>A Concept Invoice, contained in a Language com.foo.Accounting. Therefore, Invoice will have
  * the qualifiedName com.foo.Accounting.Invoice.
  */
 public interface NamespacedEntity {

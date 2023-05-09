@@ -17,7 +17,7 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
 public class EcoreImporter {
-  private Map<EPackage, Language> packagesToMetamodels = new HashMap<>();
+  private Map<EPackage, Language> packagesToLanguages = new HashMap<>();
   private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
   private Map<EClass, ConceptInterface> eClassesToConceptInterfacess = new HashMap<>();
 
@@ -86,7 +86,7 @@ public class EcoreImporter {
     language.setVersion("1");
     language.setID(ePackage.getName());
     language.setKey(ePackage.getName());
-    packagesToMetamodels.put(ePackage, language);
+    packagesToLanguages.put(ePackage, language);
 
     // Initially we just create empty concepts, later we populate the features as they could refer
     // to

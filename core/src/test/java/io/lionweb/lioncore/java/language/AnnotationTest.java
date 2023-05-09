@@ -98,19 +98,19 @@ public class AnnotationTest {
 
   @Test
   public void getPropertyValueQualifiedName() {
-    Language language = new Language("my.amazing.metamodel");
+    Language language = new Language("my.amazing.language");
     Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
-        "my.amazing.metamodel.MyAnnotation",
+        "my.amazing.language.MyAnnotation",
         annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("qualifiedName")));
   }
 
   @Test
   public void getPropertyValueNamespaceQualifier() {
-    Language language = new Language("my.amazing.metamodel");
+    Language language = new Language("my.amazing.language");
     Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
-        "my.amazing.metamodel.MyAnnotation",
+        "my.amazing.language.MyAnnotation",
         annotation.getPropertyValue(
             LionCore.getAnnotation().getPropertyByName("namespaceQualifier")));
   }

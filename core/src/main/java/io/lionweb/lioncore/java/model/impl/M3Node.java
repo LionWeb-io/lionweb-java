@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Base class to help implements Node in the metamodel package.
+ * Base class to help implements Node in the language package.
  *
  * <p>Other libraries could implement Node differently, for example based on reflection. However
  * this is outside the scope of this library. This library should provide a solid, basic dependency
@@ -29,7 +29,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
-  // metamodel
+  // language
   // elements are inheriting from this class.
   private Map<String, Object> propertyValues = new HashMap<>();
   private Map<String, List<Node>> containmentValues = new HashMap<>();
@@ -265,7 +265,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
   }
 
   /*
-   * This method could be invoked by the metamodel elements classes before the LionCore metamodel
+   * This method could be invoked by the language elements classes before the LionCore language
    * has been built, therefore we cannot look for the definition of the features to verify they
    * exist. We instead just trust a link with that name to exist.
    */
@@ -284,7 +284,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
   }
 
   /*
-   * This method could be invoked by the metamodel elements classes before the LionCore metamodel
+   * This method could be invoked by the language elements classes before the LionCore language
    * has been built, therefore we cannot look for the definition of the features to verify they
    * exist. We instead just trust a link with that name to exist.
    */

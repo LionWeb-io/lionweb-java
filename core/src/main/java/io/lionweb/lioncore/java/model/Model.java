@@ -28,12 +28,12 @@ public interface Model {
   List<Model> getImportedModels();
 
   /**
-   * Return the list of metamodels used by this model. All nodes contained in the Model could use
-   * concepts defined in the listed metamodels.
+   * Return the list of languages used by this model. All nodes contained in the Model could use
+   * concepts defined in the listed languages.
    *
-   * <p>TODO: consider versioning of metamodels
+   * <p>TODO: consider versioning of languages
    */
-  List<Language> getUsedMetamodels();
+  List<Language> getUsedLanguages();
 
   /** Return the list of top level nodes contained in the model. */
   List<Node> getRoots();

@@ -4,7 +4,7 @@ import io.lionweb.lioncore.java.language.Language;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
-/** The pair Language Key and Metamodel Version identify a specific version of a metamodel. */
+/** The pair Language Key and Language Version identify a specific version of a language. */
 public class LanguageKeyVersion {
   private String key;
   private String version;
