@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.utils;
 
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -121,7 +122,7 @@ public class LanguageValidator extends Validator<Language> {
                     .getValue()
                     .forEach(
                         (NamespacedEntity el) ->
-                            result.addError("Duplicate name " + el.getName(), el));
+                            result.addError("Duplicate name " + el.getName(), (Node) el));
               }
             });
   }
