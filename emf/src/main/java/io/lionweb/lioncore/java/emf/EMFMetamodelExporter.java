@@ -8,16 +8,16 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
-public class EcoreExporter {
+public class EMFMetamodelExporter {
 
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
   private ConceptsToEClassesMapping conceptsToEClassesMapping;
 
-  public EcoreExporter() {
+  public EMFMetamodelExporter() {
     this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
   }
 
-  public EcoreExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+  public EMFMetamodelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
     this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }
 

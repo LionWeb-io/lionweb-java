@@ -3,18 +3,30 @@ package io.lionweb.lioncore.java.emf.support;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
 /**
  * We have issues using the JSON resource factory part of EMF-Cloud, so we provide our own
  * implementation of the logic to load Resources stored as JSON.
  */
-public class EMFJsonLoader {
+public class JSONResourceFactory implements Resource.Factory {
+  @Override
+  public Resource createResource(URI uri) {
+    return new ResourceImpl() {
+      @Override
+      protected void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
+        loadIntoResource(inputStream, this);
+      }
+    };
+  }
 
   // private JsonElement jsonRoot;
 
@@ -128,7 +140,7 @@ public class EMFJsonLoader {
     }
   }
 
-  public List<EObject> load(InputStream inputStream, Resource resource) {
+  private List<EObject> loadIntoResource(InputStream inputStream, Resource resource) {
     JsonElement jsonRoot = JsonParser.parseReader(new InputStreamReader(inputStream));
     ReferencePostponer referencePostponer =
         new ReferencePostponer(resource.getResourceSet().getPackageRegistry());

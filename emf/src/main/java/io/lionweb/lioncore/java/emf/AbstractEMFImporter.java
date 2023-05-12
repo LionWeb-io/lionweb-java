@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
-import io.lionweb.lioncore.java.emf.support.EMFJsonLoader;
+import io.lionweb.lioncore.java.emf.support.JSONResourceFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,12 +18,12 @@ import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 
-public abstract class AbstractEmfImporter<E> {
-  enum ResourceType {
-    XML,
-    JSON,
-    ECORE
-  }
+/**
+ * Importer that given an EMF Resource imports something out of it.
+ *
+ * @param <E> kind of imported element
+ */
+public abstract class AbstractEMFImporter<E> {
 
   /** Import the file. The resource type is derived from the extension. */
   public List<E> importFile(File ecoreFile) {
@@ -60,6 +60,7 @@ public abstract class AbstractEmfImporter<E> {
     return importInputStream(inputStream, resourceType, null);
   }
 
+  /** Import a given resource as a list of elements. */
   public List<E> importInputStream(
       InputStream inputStream,
       ResourceType resourceType,
@@ -69,7 +70,7 @@ public abstract class AbstractEmfImporter<E> {
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
     extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
-    extensionsToFactoryMap.put("json", new JsonResourceFactory());
+    extensionsToFactoryMap.put("json", new JSONResourceFactory());
 
     ResourceSet resourceSet = new ResourceSetImpl();
 
@@ -94,11 +95,7 @@ public abstract class AbstractEmfImporter<E> {
 
     Resource resource = resourceSet.createResource(uri);
     resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
-    if (resourceType == ResourceType.JSON) {
-      new EMFJsonLoader().load(inputStream, resource);
-    } else {
-      resource.load(inputStream, new HashMap<>());
-    }
+    resource.load(inputStream, new HashMap<>());
 
     return importResource(resource);
   }

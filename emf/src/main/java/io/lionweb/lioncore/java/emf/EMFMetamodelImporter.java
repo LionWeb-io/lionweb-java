@@ -8,15 +8,16 @@ import java.util.List;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
-public class EcoreImporter extends AbstractEmfImporter {
+/** EMF importer which produces LionWeb's Metamodels. */
+public class EMFMetamodelImporter extends AbstractEMFImporter<Metamodel> {
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
   private ConceptsToEClassesMapping conceptsToEClassesMapping;
 
-  public EcoreImporter() {
+  public EMFMetamodelImporter() {
     this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
   }
 
-  public EcoreImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+  public EMFMetamodelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
     this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }
 

@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
-import io.lionweb.lioncore.java.emf.EcoreExporter;
-import io.lionweb.lioncore.java.emf.EcoreImporter;
+import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
+import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.metamodel.Concept;
 import io.lionweb.lioncore.java.metamodel.ConceptInterface;
 import io.lionweb.lioncore.java.metamodel.FeaturesContainer;
@@ -25,8 +25,8 @@ public class ConceptsToEClassesMapping {
 
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
-    EcoreImporter ecoreImporter = new EcoreImporter(this);
-    Metamodel metamodel = ecoreImporter.importEPackage(ePackage);
+    EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(this);
+    Metamodel metamodel = EMFMetamodelImporter.importEPackage(ePackage);
     ePackagesToMetamodels.put(ePackage, metamodel);
     metamodelEPackages.put(metamodel, ePackage);
     ePackage
@@ -44,7 +44,7 @@ public class ConceptsToEClassesMapping {
 
   private void processMetamodel(Metamodel metamodel) {
     Objects.requireNonNull(metamodel, "metamodel should not be null");
-    EcoreExporter ecoreExporter = new EcoreExporter(this);
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(this);
     EPackage ePackage = ecoreExporter.exportMetamodel(metamodel);
     ePackagesToMetamodels.put(ePackage, metamodel);
     metamodelEPackages.put(metamodel, ePackage);

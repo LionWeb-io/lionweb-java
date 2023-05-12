@@ -11,12 +11,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class EcoreImporterTest {
+public class EMFMetamodelImporterTest {
 
   @Test
   public void importLibraryExample() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
-    EcoreImporter importer = new EcoreImporter();
+    EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
     List<Metamodel> metamodels = importer.importInputStream(is);
     assertEquals(1, metamodels.size());
@@ -157,9 +157,9 @@ public class EcoreImporterTest {
   @Test
   public void importKotlinLangExample() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
-    EcoreImporter importer = new EcoreImporter();
+    EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Metamodel> metamodels = importer.importInputStream(is, EcoreImporter.ResourceType.JSON);
+    List<Metamodel> metamodels = importer.importInputStream(is, ResourceType.JSON);
     assertEquals(2, metamodels.size());
 
     Concept point = metamodels.get(0).getConceptByName("Point");

@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.junit.Test;
 
-public class EmfExporterTest {
+public class EMFModelExporterTest {
 
   @Test
   public void exportLibraryInstance() throws IOException {
@@ -24,7 +24,7 @@ public class EmfExporterTest {
     List<Node> roots =
         nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
 
-    EmfExporter emfExporter = new EmfExporter();
+    EMFModelExporter emfExporter = new EMFModelExporter();
     Resource resource = emfExporter.exportResource(roots);
 
     assertEquals(3, resource.getContents().size());

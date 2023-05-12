@@ -19,7 +19,7 @@ public class EcoreExporterTest {
                 .unserializeToNodes(this.getClass().getResourceAsStream("/library-metamodel.json"))
                 .get(0);
 
-    EcoreExporter ecoreExporter = new EcoreExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
     EPackage libraryPkg = ecoreExporter.exportMetamodel(libraryMM);
 
     assertEquals("library", libraryPkg.getName());

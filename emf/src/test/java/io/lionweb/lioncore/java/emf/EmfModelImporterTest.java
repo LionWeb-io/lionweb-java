@@ -3,7 +3,6 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.IOException;
 import java.io.InputStream;
@@ -20,7 +19,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 import org.junit.Test;
 
-public class EmfImporterTest {
+public class EmfModelImporterTest {
 
   private List<EPackage> loadKotlinEPackages() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
@@ -40,14 +39,14 @@ public class EmfImporterTest {
     List<EPackage> ePackages = loadKotlinEPackages();
 
     InputStream is = this.getClass().getResourceAsStream("/KotlinPrinterAST.json");
-    EmfImporter importer = new EmfImporter();
+    EMFModelImporter importer = new EMFModelImporter();
 
     importer.getNodeInstantiator().enableDynamicNodes();
 
     List<Node> nodes =
         importer.importInputStream(
             is,
-            AbstractEmfImporter.ResourceType.JSON,
+            ResourceType.JSON,
             (Consumer<EPackage.Registry>)
                 registry -> {
                   ePackages.forEach(ep -> registry.put(ep.getNsURI(), ep));
