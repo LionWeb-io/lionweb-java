@@ -8,6 +8,9 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
+/**
+ * Export LionWeb's metamodels into EMF's metamodels.
+ */
 public class EMFMetamodelExporter {
 
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
@@ -67,7 +70,7 @@ public class EMFMetamodelExporter {
             });
   }
 
-  private void considerMultiplicity(Link<?> link, EReference eReference) {
+  private void considerLinkMultiplicity(Link<?> link, EReference eReference) {
     if (link.isMultiple()) {
       eReference.setUpperBound(-1);
     } else {
@@ -100,7 +103,7 @@ public class EMFMetamodelExporter {
       EReference eReference = EcoreFactory.eINSTANCE.createEReference();
       eReference.setName(containment.getName());
       eReference.setContainment(true);
-      considerMultiplicity(containment, eReference);
+      considerLinkMultiplicity(containment, eReference);
       eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(containment.getType()));
 
       return eReference;
@@ -110,7 +113,7 @@ public class EMFMetamodelExporter {
       EReference eReference = EcoreFactory.eINSTANCE.createEReference();
       eReference.setName(reference.getName());
       eReference.setContainment(false);
-      considerMultiplicity(reference, eReference);
+      considerLinkMultiplicity(reference, eReference);
       eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(reference.getType()));
 
       return eReference;
