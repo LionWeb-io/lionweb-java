@@ -136,10 +136,7 @@ public class EcoreExporter {
 
     concept
         .getFeatures()
-        .forEach(
-            f ->
-              eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f))
-            );
+        .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
   }
 
   private void populateEClasses(Metamodel metamodel) {
