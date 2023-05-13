@@ -41,7 +41,7 @@ public class LowLevelJsonSerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
-    assertEquals(1, namespacedEntity.getChildren().size());
+    assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
     SerializedNode name =
