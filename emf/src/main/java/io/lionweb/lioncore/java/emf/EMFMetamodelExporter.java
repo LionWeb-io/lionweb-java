@@ -8,20 +8,18 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
-/**
- * Export LionWeb's metamodels into EMF's metamodels.
- */
-public class EMFMetamodelExporter {
+/** Export LionWeb's metamodels into EMF's metamodels. */
+public class EMFMetamodelExporter extends AbstractEMFExporter {
 
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
-  private ConceptsToEClassesMapping conceptsToEClassesMapping;
+
 
   public EMFMetamodelExporter() {
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+    super();
   }
 
   public EMFMetamodelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+    super(conceptsToEClassesMapping);
   }
 
   /** This export all the metamodels received to a single Resource. */
@@ -57,13 +55,28 @@ public class EMFMetamodelExporter {
 
                 EClass eClass = EcoreFactory.eINSTANCE.createEClass();
                 eClass.setName(concept.getName());
+                eClass.setInterface(false);
+                eClass.setAbstract(concept.isAbstract());
 
                 ePackage.getEClassifiers().add(eClass);
                 conceptsToEClassesMapping.registerMapping(concept, eClass);
               } else if (e instanceof ConceptInterface) {
-                throw new UnsupportedOperationException();
+                ConceptInterface conceptInterface = (ConceptInterface) e;
+
+                EClass eClass = EcoreFactory.eINSTANCE.createEClass();
+                eClass.setName(conceptInterface.getName());
+                eClass.setInterface(true);
+
+                ePackage.getEClassifiers().add(eClass);
+                conceptsToEClassesMapping.registerMapping(conceptInterface, eClass);
               } else if (e instanceof Enumeration) {
-                throw new UnsupportedOperationException();
+                Enumeration enumeration = (Enumeration) e;
+
+                EEnum eEnum = EcoreFactory.eINSTANCE.createEEnum();
+                eEnum.setName(enumeration.getName());
+
+                ePackage.getEClassifiers().add(eEnum);
+                dataTypeMapping.registerMapping(eEnum, enumeration);
               } else {
                 throw new UnsupportedOperationException();
               }
@@ -142,6 +155,31 @@ public class EMFMetamodelExporter {
         .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
   }
 
+  private void populateEClassFromConceptInterface(ConceptInterface conceptInterface) {
+    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(conceptInterface);
+
+    conceptInterface
+            .getExtendedInterfaces()
+            .forEach(
+                    extended -> {
+                      throw new UnsupportedOperationException();
+                    });
+
+    conceptInterface
+            .getFeatures()
+            .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
+  }
+
+  private void populateEEnumFromEnumerration(Enumeration enumeration) {
+    EEnum eEnum = dataTypeMapping.getEEnumForEnumeration(enumeration);
+
+    enumeration.getLiterals().forEach(literal -> {
+      EEnumLiteral eEnumLiteral = EcoreFactory.eINSTANCE.createEEnumLiteral();
+      eEnumLiteral.setName(literal.getName());
+      eEnum.getELiterals().add(eEnumLiteral);
+    });
+  }
+
   private void populateEClasses(Metamodel metamodel) {
     metamodel
         .getElements()
@@ -150,9 +188,9 @@ public class EMFMetamodelExporter {
               if (e instanceof Concept) {
                 populateEClassFromConcept((Concept) e);
               } else if (e instanceof ConceptInterface) {
-                throw new UnsupportedOperationException();
+                populateEClassFromConceptInterface((ConceptInterface) e);
               } else if (e instanceof Enumeration) {
-                throw new UnsupportedOperationException();
+                populateEEnumFromEnumerration((Enumeration)e);
               } else {
                 throw new UnsupportedOperationException();
               }

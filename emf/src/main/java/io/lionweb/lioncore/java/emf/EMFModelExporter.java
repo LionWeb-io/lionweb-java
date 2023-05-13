@@ -10,11 +10,17 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
-public class EMFModelExporter {
+public class EMFModelExporter extends AbstractEMFExporter {
 
   private ConceptsToEClassesMapping eClassMapper = new ConceptsToEClassesMapping();
 
-  public EMFModelExporter() {}
+  public EMFModelExporter() {
+    super();
+  }
+
+  public EMFModelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+    super(conceptsToEClassesMapping);
+  }
 
   public Resource exportResource(List<Node> roots) {
     Resource resource = new ResourceImpl();

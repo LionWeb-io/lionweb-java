@@ -19,7 +19,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 import org.junit.Test;
 
-public class EmfModelImporterTest {
+public class EMFModelImporterTest {
 
   private List<EPackage> loadKotlinEPackages() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");

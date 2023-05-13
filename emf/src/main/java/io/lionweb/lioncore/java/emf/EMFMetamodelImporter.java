@@ -111,7 +111,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Metamodel> {
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
-        Enumeration enumeration = dataTypeMapping.getEnumeratorForEEnum(eEnum);
+        Enumeration enumeration = dataTypeMapping.getEnumerationForEEnum(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
           enumerationLiteral.setID(enumeration.getID() + "-" + enumLiteral.getName());

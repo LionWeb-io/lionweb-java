@@ -13,13 +13,19 @@ import org.eclipse.emf.ecore.EcorePackage;
 public class DataTypeMapping {
 
   private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
+  private Map<Enumeration, EEnum> enumerationsToEEnums = new HashMap<>();
 
   public void registerMapping(EEnum eEnum, Enumeration enumeration) {
     eEnumsToEnumerations.put(eEnum, enumeration);
+    enumerationsToEEnums.put(enumeration, eEnum);
   }
 
-  public Enumeration getEnumeratorForEEnum(EEnum eEnum) {
+  public Enumeration getEnumerationForEEnum(EEnum eEnum) {
     return eEnumsToEnumerations.get(eEnum);
+  }
+
+  public EEnum getEEnumForEnumeration(Enumeration enumeration) {
+    return enumerationsToEEnums.get(enumeration);
   }
 
   public EDataType toEDataType(DataType dataType) {
@@ -29,8 +35,14 @@ public class DataTypeMapping {
       return EcorePackage.eINSTANCE.getEInt();
     } else if (dataType.equals(LionCoreBuiltins.getString())) {
       return EcorePackage.eINSTANCE.getEString();
+    } else if (dataType instanceof Enumeration) {
+      Enumeration enumeration = (Enumeration) dataType;
+      if (!enumerationsToEEnums.containsKey(enumeration)) {
+        throw new IllegalStateException("Unable to convert Enumeration " + enumeration);
+      }
+      return enumerationsToEEnums.get(enumeration);
     } else {
-      throw new UnsupportedOperationException();
+      throw new UnsupportedOperationException("Unable to map data type " + dataType);
     }
   }
 

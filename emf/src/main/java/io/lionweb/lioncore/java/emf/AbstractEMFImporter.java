@@ -26,17 +26,11 @@ import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 public abstract class AbstractEMFImporter<E> {
 
   /** Import the file. The resource type is derived from the extension. */
-  public List<E> importFile(File ecoreFile) {
-    Map<String, Object> extensionsToFactoryMap =
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
-    extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
-    extensionsToFactoryMap.put("json", new JsonResourceFactory());
-
+  public List<E> importFile(File emfFile) {
+    recordFactoriesForExtensions();
     ResourceSet resourceSet = new ResourceSetImpl();
-
     Resource resource =
-        resourceSet.getResource(URI.createFileURI(ecoreFile.getAbsolutePath()), true);
+        resourceSet.getResource(URI.createFileURI(emfFile.getAbsolutePath()), true);
     return importResource(resource);
   }
 
@@ -66,32 +60,12 @@ public abstract class AbstractEMFImporter<E> {
       ResourceType resourceType,
       Consumer<EPackage.Registry> packageRegistryInit)
       throws IOException {
-    Map<String, Object> extensionsToFactoryMap =
-        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
-    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
-    extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
-    extensionsToFactoryMap.put("json", new JSONResourceFactory());
-
+    recordFactoriesForExtensions();
     ResourceSet resourceSet = new ResourceSetImpl();
-
     if (packageRegistryInit != null) {
       packageRegistryInit.accept(resourceSet.getPackageRegistry());
     }
-
-    URI uri;
-    switch (resourceType) {
-      case ECORE:
-        uri = URI.createFileURI("dummy.ecore");
-        break;
-      case XML:
-        uri = URI.createFileURI("dummy.xml");
-        break;
-      case JSON:
-        uri = URI.createFileURI("dummy.json");
-        break;
-      default:
-        throw new UnsupportedOperationException();
-    }
+    URI uri = URI.createFileURI("dummy." + resourceType.getExtension());;
 
     Resource resource = resourceSet.createResource(uri);
     resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
@@ -101,4 +75,12 @@ public abstract class AbstractEMFImporter<E> {
   }
 
   public abstract List<E> importResource(Resource resource);
+
+  private void recordFactoriesForExtensions() {
+    Map<String, Object> extensionsToFactoryMap =
+            Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
+    extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
+    extensionsToFactoryMap.put("json", new JSONResourceFactory());
+  }
 }

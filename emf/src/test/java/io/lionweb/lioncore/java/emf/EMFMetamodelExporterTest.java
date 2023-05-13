@@ -9,10 +9,10 @@ import java.util.Arrays;
 import org.eclipse.emf.ecore.*;
 import org.junit.Test;
 
-public class EcoreExporterTest {
+public class EMFMetamodelExporterTest {
 
   @Test
-  public void exportLibraryMetamodel() throws IOException {
+  public void exportLibraryMetamodel() {
     Metamodel libraryMM =
         (Metamodel)
             JsonSerialization.getStandardSerialization()
@@ -87,5 +87,46 @@ public class EcoreExporterTest {
                 .findFirst()
                 .get();
     assertEquals(Arrays.asList(writer), guideBookWriter.getESuperTypes());
+  }
+
+  @Test
+  public void exportConceptInterfaceAndEnumeration() {
+    Metamodel simpleMM = new Metamodel("SimpleMM").setKey("simkey").setID("simid");
+    Enumeration color = new Enumeration(simpleMM, "Color");
+    new EnumerationLiteral(color, "red");
+    new EnumerationLiteral(color, "white");
+    new EnumerationLiteral(color, "green");
+    ConceptInterface coloredCI = new ConceptInterface(simpleMM, "Colored");
+    coloredCI.addFeature(Property.createRequired("color", color));
+
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EPackage simplePkg = ecoreExporter.exportMetamodel(simpleMM);
+
+    assertEquals("SimpleMM", simplePkg.getName());
+    assertEquals("https://lionweb.io/simkey", simplePkg.getNsURI());
+    assertEquals("SimpleMM", simplePkg.getNsPrefix());
+    assertEquals(2, simplePkg.getEClassifiers().size());
+
+    EEnum colorDT = (EEnum) simplePkg.getEClassifiers().stream().filter(e -> e.getName().equals("Color")).findFirst().get();
+    assertEquals(3, colorDT.getELiterals().size());
+    assertEquals("red", colorDT.getELiterals().get(0).getName());
+    assertEquals("red", colorDT.getELiterals().get(0).getLiteral());
+    assertEquals("white", colorDT.getELiterals().get(1).getName());
+    assertEquals("white", colorDT.getELiterals().get(1).getLiteral());
+    assertEquals("green", colorDT.getELiterals().get(2).getName());
+    assertEquals("green", colorDT.getELiterals().get(2).getLiteral());
+
+    EClass coloredEC = (EClass) simplePkg.getEClassifiers().stream().filter(e -> e.getName().equals("Colored")).findFirst().get();
+    assertEquals("Colored", coloredEC.getName());
+    assertEquals(true, coloredEC.isInterface());
+    assertEquals(1, coloredEC.getEStructuralFeatures().size());
+
+    EAttribute colorAttr = coloredEC.getEAllAttributes().get(0);
+    assertEquals("color", colorAttr.getName());
+    assertEquals(colorDT, colorAttr.getEAttributeType());
+    assertEquals(1, colorAttr.getLowerBound());
+    assertEquals(1, colorAttr.getUpperBound());
+
+
   }
 }
