@@ -13,7 +13,6 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
 
-
   public EMFMetamodelExporter() {
     super();
   }
@@ -159,25 +158,28 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(conceptInterface);
 
     conceptInterface
-            .getExtendedInterfaces()
-            .forEach(
-                    extended -> {
-                      throw new UnsupportedOperationException();
-                    });
+        .getExtendedInterfaces()
+        .forEach(
+            extended -> {
+              throw new UnsupportedOperationException();
+            });
 
     conceptInterface
-            .getFeatures()
-            .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
+        .getFeatures()
+        .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
   }
 
   private void populateEEnumFromEnumerration(Enumeration enumeration) {
     EEnum eEnum = dataTypeMapping.getEEnumForEnumeration(enumeration);
 
-    enumeration.getLiterals().forEach(literal -> {
-      EEnumLiteral eEnumLiteral = EcoreFactory.eINSTANCE.createEEnumLiteral();
-      eEnumLiteral.setName(literal.getName());
-      eEnum.getELiterals().add(eEnumLiteral);
-    });
+    enumeration
+        .getLiterals()
+        .forEach(
+            literal -> {
+              EEnumLiteral eEnumLiteral = EcoreFactory.eINSTANCE.createEEnumLiteral();
+              eEnumLiteral.setName(literal.getName());
+              eEnum.getELiterals().add(eEnumLiteral);
+            });
   }
 
   private void populateEClasses(Metamodel metamodel) {
@@ -190,7 +192,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
               } else if (e instanceof ConceptInterface) {
                 populateEClassFromConceptInterface((ConceptInterface) e);
               } else if (e instanceof Enumeration) {
-                populateEEnumFromEnumerration((Enumeration)e);
+                populateEEnumFromEnumerration((Enumeration) e);
               } else {
                 throw new UnsupportedOperationException();
               }

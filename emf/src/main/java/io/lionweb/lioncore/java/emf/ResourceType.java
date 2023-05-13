@@ -6,6 +6,7 @@ public enum ResourceType {
   JSON("json"),
   ECORE("ecore");
   private String extension;
+
   ResourceType(String extension) {
     this.extension = extension;
   }

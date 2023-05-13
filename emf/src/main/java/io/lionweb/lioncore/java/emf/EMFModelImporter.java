@@ -11,11 +11,15 @@ import org.eclipse.emf.ecore.resource.Resource;
 /** Importer which produces LionWeb's Nodes. */
 public class EMFModelImporter extends AbstractEMFImporter<Node> {
   private NodeInstantiator nodeInstantiator;
-  private ConceptsToEClassesMapping eClassMapper;
 
   public EMFModelImporter() {
+    super();
     nodeInstantiator = new NodeInstantiator();
-    eClassMapper = new ConceptsToEClassesMapping();
+  }
+
+  public EMFModelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+    super(conceptsToEClassesMapping);
+    nodeInstantiator = new NodeInstantiator();
   }
 
   public NodeInstantiator getNodeInstantiator() {
@@ -32,7 +36,7 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
   }
 
   private Node eObjectToNode(EObject eObject) {
-    Concept concept = eClassMapper.getCorrespondingConcept(eObject.eClass());
+    Concept concept = conceptsToEClassesMapping.getCorrespondingConcept(eObject.eClass());
     Node node =
         nodeInstantiator.instantiate(
             concept, eObject, Collections.emptyMap(), Collections.emptyMap());

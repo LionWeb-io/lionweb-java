@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.support.JSONResourceFactory;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
 
 /**
  * Importer that given an EMF Resource imports something out of it.
@@ -25,12 +25,21 @@ import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
  */
 public abstract class AbstractEMFImporter<E> {
 
+  protected ConceptsToEClassesMapping conceptsToEClassesMapping;
+
+  public AbstractEMFImporter() {
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+  }
+
+  public AbstractEMFImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+  }
+
   /** Import the file. The resource type is derived from the extension. */
   public List<E> importFile(File emfFile) {
     recordFactoriesForExtensions();
     ResourceSet resourceSet = new ResourceSetImpl();
-    Resource resource =
-        resourceSet.getResource(URI.createFileURI(emfFile.getAbsolutePath()), true);
+    Resource resource = resourceSet.getResource(URI.createFileURI(emfFile.getAbsolutePath()), true);
     return importResource(resource);
   }
 
@@ -65,7 +74,8 @@ public abstract class AbstractEMFImporter<E> {
     if (packageRegistryInit != null) {
       packageRegistryInit.accept(resourceSet.getPackageRegistry());
     }
-    URI uri = URI.createFileURI("dummy." + resourceType.getExtension());;
+    URI uri = URI.createFileURI("dummy." + resourceType.getExtension());
+    ;
 
     Resource resource = resourceSet.createResource(uri);
     resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);
@@ -78,7 +88,7 @@ public abstract class AbstractEMFImporter<E> {
 
   private void recordFactoriesForExtensions() {
     Map<String, Object> extensionsToFactoryMap =
-            Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
     extensionsToFactoryMap.put("xmi", new XMIResourceFactoryImpl());
     extensionsToFactoryMap.put("json", new JSONResourceFactory());

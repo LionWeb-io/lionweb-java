@@ -4,7 +4,6 @@ import static org.junit.Assert.*;
 
 import io.lionweb.lioncore.java.metamodel.*;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import java.io.IOException;
 import java.util.Arrays;
 import org.eclipse.emf.ecore.*;
 import org.junit.Test;
@@ -107,7 +106,12 @@ public class EMFMetamodelExporterTest {
     assertEquals("SimpleMM", simplePkg.getNsPrefix());
     assertEquals(2, simplePkg.getEClassifiers().size());
 
-    EEnum colorDT = (EEnum) simplePkg.getEClassifiers().stream().filter(e -> e.getName().equals("Color")).findFirst().get();
+    EEnum colorDT =
+        (EEnum)
+            simplePkg.getEClassifiers().stream()
+                .filter(e -> e.getName().equals("Color"))
+                .findFirst()
+                .get();
     assertEquals(3, colorDT.getELiterals().size());
     assertEquals("red", colorDT.getELiterals().get(0).getName());
     assertEquals("red", colorDT.getELiterals().get(0).getLiteral());
@@ -116,7 +120,12 @@ public class EMFMetamodelExporterTest {
     assertEquals("green", colorDT.getELiterals().get(2).getName());
     assertEquals("green", colorDT.getELiterals().get(2).getLiteral());
 
-    EClass coloredEC = (EClass) simplePkg.getEClassifiers().stream().filter(e -> e.getName().equals("Colored")).findFirst().get();
+    EClass coloredEC =
+        (EClass)
+            simplePkg.getEClassifiers().stream()
+                .filter(e -> e.getName().equals("Colored"))
+                .findFirst()
+                .get();
     assertEquals("Colored", coloredEC.getName());
     assertEquals(true, coloredEC.isInterface());
     assertEquals(1, coloredEC.getEStructuralFeatures().size());
@@ -126,7 +135,5 @@ public class EMFMetamodelExporterTest {
     assertEquals(colorDT, colorAttr.getEAttributeType());
     assertEquals(1, colorAttr.getLowerBound());
     assertEquals(1, colorAttr.getUpperBound());
-
-
   }
 }

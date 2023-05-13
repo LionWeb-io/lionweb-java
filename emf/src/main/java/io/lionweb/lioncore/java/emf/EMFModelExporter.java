@@ -12,8 +12,6 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
 public class EMFModelExporter extends AbstractEMFExporter {
 
-  private ConceptsToEClassesMapping eClassMapper = new ConceptsToEClassesMapping();
-
   public EMFModelExporter() {
     super();
   }
@@ -37,7 +35,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
 
   /** This export the root received to a single EObject tree. */
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
-    EClass eClass = (EClass) eClassMapper.getCorrespondingEClass(root.getConcept());
+    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(root.getConcept());
     if (eClass == null) {
       throw new IllegalStateException();
     }

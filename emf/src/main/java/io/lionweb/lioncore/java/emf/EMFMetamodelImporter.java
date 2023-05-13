@@ -11,14 +11,13 @@ import org.eclipse.emf.ecore.resource.Resource;
 /** EMF importer which produces LionWeb's Metamodels. */
 public class EMFMetamodelImporter extends AbstractEMFImporter<Metamodel> {
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
-  private ConceptsToEClassesMapping conceptsToEClassesMapping;
 
   public EMFMetamodelImporter() {
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+    super();
   }
 
   public EMFMetamodelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+    super(conceptsToEClassesMapping);
   }
 
   @Override
