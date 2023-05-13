@@ -41,8 +41,8 @@ public class BuiltinIDsTest {
 
     Assert.assertEquals("LIonCore_M3_FeaturesContainer", LionCore.getFeaturesContainer().getID());
     Assert.assertEquals(
-        "LIonCore_M3_FeaturesContainer_allFeatures",
-        LionCore.getFeaturesContainer().getContainmentByName("allFeatures").getID());
+        "LIonCore_M3_FeaturesContainer_features",
+        LionCore.getFeaturesContainer().getContainmentByName("features").getID());
 
     Assert.assertEquals("LIonCore_M3_Link", LionCore.getLink().getID());
     Assert.assertEquals(

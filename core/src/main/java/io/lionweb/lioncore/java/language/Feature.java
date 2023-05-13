@@ -110,6 +110,9 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   protected Object getDerivedValue(Property property) {
+    if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
+      return qualifiedName();
+    }
     return null;
   }
 }

@@ -108,7 +108,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "io_lionweb_Properties-PropertiesFile-props"
@@ -245,7 +245,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "io_lionweb_Properties-Property-name",
@@ -442,7 +442,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": []
         }
@@ -510,7 +510,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "io_lionweb_Properties-BooleanValue-value"
@@ -639,7 +639,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "io_lionweb_Properties-DecValue-value"
@@ -768,7 +768,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "io_lionweb_Properties-IntValue-value"
@@ -897,7 +897,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "io_lionweb_Properties-StringValue-value"

@@ -102,7 +102,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": []
         }
@@ -165,7 +165,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": []
         }
@@ -220,7 +220,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": []
         }
@@ -272,7 +272,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "StarLasu-PossiblyNamed-name"

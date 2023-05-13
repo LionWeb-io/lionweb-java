@@ -150,7 +150,7 @@ public class LionCore {
       featuresContainer.addImplementedInterface(namespaceProvider);
       featuresContainer.addFeature(
           Containment.createMultiple(
-              "allFeatures", feature, "LIonCore_M3_FeaturesContainer_allFeatures"));
+              "features", feature, "LIonCore_M3_FeaturesContainer_features"));
 
       hasKey.addFeature(
           Property.createRequired("key", LionCoreBuiltins.getString(), "LIonCore_M3_HasKey_key"));
@@ -182,6 +182,12 @@ public class LionCore {
       namespacedEntity.addFeature(
           Property.createRequired(
               "name", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_name"));
+      namespacedEntity.addFeature(
+          Property.createRequired(
+                  "qualifiedName",
+                  LionCoreBuiltins.getString(),
+                  "LIonCore_M3_NamespacedEntity_qualifiedName")
+              .setDerived(true));
 
       primitiveType.setExtendedConcept(dataType);
 

@@ -101,7 +101,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "library-Book-title",
@@ -352,7 +352,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "library-Library-name",
@@ -544,7 +544,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "library-Writer-name"
@@ -668,7 +668,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "library-GuideBookWriter-countries"
@@ -797,7 +797,7 @@
           "containment": {
             "language": "LIonCore_M3",
             "version": "1",
-            "key": "allFeatures"
+            "key": "features"
           },
           "children": [
             "library-SpecialistBookWriter-subject"

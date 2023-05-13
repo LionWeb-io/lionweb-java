@@ -79,12 +79,12 @@ public abstract class FeaturesContainer<T extends M3Node> extends LanguageElemen
   // TODO should this expose an immutable list to force users to use methods on this class
   //      to modify the collection?
   public @Nonnull List<Feature> getFeatures() {
-    return this.getContainmentMultipleValue("allFeatures");
+    return this.getContainmentMultipleValue("features");
   }
 
   public T addFeature(@Nonnull Feature feature) {
     Objects.requireNonNull(feature, "feature should not be null");
-    this.addContainmentMultipleValue("allFeatures", feature);
+    this.addContainmentMultipleValue("features", feature);
     feature.setParent(this);
     return (T) this;
   }
