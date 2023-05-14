@@ -98,6 +98,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.PropertiesFile"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-PropertiesFile"
@@ -184,6 +192,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.PropertiesFile.props"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-PropertiesFile-props"
@@ -230,6 +246,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "Property"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.Property"
         },
         {
           "property": {
@@ -314,6 +338,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.Property.name"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-Property-name"
@@ -381,6 +413,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.Property.value"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-Property-value"
@@ -427,6 +467,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "Value"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.Value"
         },
         {
           "property": {
@@ -495,6 +543,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "BooleanValue"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.BooleanValue"
         },
         {
           "property": {
@@ -578,6 +634,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.BooleanValue.value"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-BooleanValue-value"
@@ -624,6 +688,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "DecValue"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.DecValue"
         },
         {
           "property": {
@@ -707,6 +779,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.DecValue.value"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-DecValue-value"
@@ -753,6 +833,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "IntValue"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.IntValue"
         },
         {
           "property": {
@@ -836,6 +924,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.IntValue.value"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "io_lionweb_Properties-IntValue-value"
@@ -882,6 +978,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "StringValue"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.StringValue"
         },
         {
           "property": {
@@ -960,6 +1064,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "value"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "io.lionweb.Properties.StringValue.value"
         },
         {
           "property": {
