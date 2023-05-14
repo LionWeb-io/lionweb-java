@@ -92,6 +92,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.ASTNode"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "StarLasu-ASTNode"
@@ -155,6 +163,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.GenericErrorNode"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "StarLasu-GenericErrorNode"
@@ -210,6 +226,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.Named"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "StarLasu-Named"
@@ -257,6 +281,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "PossiblyNamed"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.PossiblyNamed"
         },
         {
           "property": {
@@ -327,6 +359,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.PossiblyNamed.name"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "StarLasu-PossiblyNamed-name"
@@ -370,6 +410,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.Position"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "StarLasu-Position"
@@ -394,6 +442,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "Char"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "com.strumenta.StarLasu.Char"
         },
         {
           "property": {
