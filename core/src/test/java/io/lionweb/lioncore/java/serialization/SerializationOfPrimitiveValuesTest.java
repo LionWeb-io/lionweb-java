@@ -140,7 +140,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.Language);
+    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getNodeInstantiator()
         .registerCustomUnserializer(
@@ -275,7 +275,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.Language);
+    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getNodeInstantiator()
         .registerCustomUnserializer(
@@ -410,7 +410,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.Language);
+    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getNodeInstantiator()
         .registerCustomUnserializer(
@@ -551,7 +551,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.Language);
+    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getNodeInstantiator()
         .registerCustomUnserializer(

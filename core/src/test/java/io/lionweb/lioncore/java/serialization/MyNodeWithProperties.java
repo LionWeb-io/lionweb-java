@@ -8,7 +8,7 @@ import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class MyNodeWithProperties extends DynamicNode {
-  public static Language Language =
+  public static Language LANGUAGE =
       new Language().setID("mm1").setKey("mylanguage").setName("MM1").setVersion("1");
   public static Concept CONCEPT =
       new Concept()
@@ -23,10 +23,10 @@ public class MyNodeWithProperties extends DynamicNode {
               Property.createOptional("p3", LionCoreBuiltins.getString()).setID("p3").setKey("p3"))
           .addFeature(
               Property.createOptional("p4", LionCoreBuiltins.getJSON()).setID("p4").setKey("p4"))
-          .setParent(Language);
+          .setParent(LANGUAGE);
 
   static {
-    Language.addElement(CONCEPT);
+    LANGUAGE.addElement(CONCEPT);
   }
 
   public MyNodeWithProperties(String id) {
