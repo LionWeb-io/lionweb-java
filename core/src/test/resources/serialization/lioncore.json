@@ -1659,7 +1659,7 @@
             "version": "1",
             "key": "NamespacedEntity_name"
           },
-          "value": "language"
+          "value": "Language"
         },
         {
           "property": {
@@ -1667,7 +1667,7 @@
             "version": "1",
             "key": "qualifiedName"
           },
-          "value": "LIonCore.M3.Metamodel"
+          "value": "LIonCore.M3.Language"
         },
         {
           "property": {
@@ -1760,7 +1760,7 @@
             "version": "1",
             "key": "qualifiedName"
           },
-          "value": "LIonCore.M3.Metamodel.name"
+          "value": "LIonCore.M3.Language.name"
         },
         {
           "property": {
@@ -1827,7 +1827,7 @@
             "version": "1",
             "key": "qualifiedName"
           },
-          "value": "LIonCore.M3.Metamodel.version"
+          "value": "LIonCore.M3.Language.version"
         },
         {
           "property": {
@@ -1902,7 +1902,7 @@
             "version": "1",
             "key": "qualifiedName"
           },
-          "value": "LIonCore.M3.Metamodel.dependsOn"
+          "value": "LIonCore.M3.Language.dependsOn"
         },
         {
           "property": {
@@ -1977,7 +1977,7 @@
             "version": "1",
             "key": "qualifiedName"
           },
-          "value": "LIonCore.M3.Metamodel.elements"
+          "value": "LIonCore.M3.Language.elements"
         },
         {
           "property": {
@@ -2028,7 +2028,7 @@
             "version": "1",
             "key": "NamespacedEntity_name"
           },
-          "value": "MetamodelElement"
+          "value": "LanguageElement"
         },
         {
           "property": {
@@ -2036,7 +2036,7 @@
             "version": "1",
             "key": "qualifiedName"
           },
-          "value": "LIonCore.M3.MetamodelElement"
+          "value": "LIonCore.M3.LanguageElement"
         },
         {
           "property": {

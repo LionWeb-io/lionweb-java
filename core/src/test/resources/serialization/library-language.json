@@ -91,6 +91,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.Book"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "library-Book"
@@ -233,6 +241,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.Book.pages"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "library-Book-pages"
@@ -359,6 +375,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.Library"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "library-Library"
@@ -433,6 +457,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.Library.name"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "library-Library-name"
@@ -495,6 +527,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "books"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.Library.books"
         },
         {
           "property": {
@@ -691,6 +731,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.GuideBookWriter"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "library-GuideBookWriter"
@@ -828,6 +876,14 @@
           "property": {
             "language": "LIonCore_M3",
             "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.SpecialistBookWriter"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
             "key": "key"
           },
           "value": "library-SpecialistBookWriter"
@@ -901,6 +957,14 @@
             "key": "NamespacedEntity_name"
           },
           "value": "subject"
+        },
+        {
+          "property": {
+            "language": "LIonCore_M3",
+            "version": "1",
+            "key": "qualifiedName"
+          },
+          "value": "library.SpecialistBookWriter.subject"
         },
         {
           "property": {

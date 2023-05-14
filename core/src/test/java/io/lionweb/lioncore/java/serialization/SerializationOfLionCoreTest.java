@@ -126,7 +126,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
-    assertEquals(1, namespacedEntity.getChildren().size());
+    assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
     SerializedNode name = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_name");
@@ -157,7 +157,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.isAbstract());
     assertEquals("NamespacedEntity", namespacedEntity.getName());
-    assertEquals(1, namespacedEntity.getChildren().size());
+    assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
     Property name = propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
@@ -196,7 +196,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("name"));
-    assertEquals(1, namespacedEntity.getChildren().size());
+    assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
     DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
