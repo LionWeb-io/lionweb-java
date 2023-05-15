@@ -1,7 +1,8 @@
 plugins {
-    // Apply the java-library plugin for API and implementation separation.
     id "java-library"
     id "maven-publish"
+    id 'signing'
+    id 'net.researchgate.release' version '3.0.2'
 }
 
 repositories {
@@ -29,15 +30,112 @@ dependencies {
     testImplementation group: "com.google.code.gson", name: "gson", version: "2.10.1"
 }
 
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.javadocConfig
+    options {
+        links 'https://docs.oracle.com/javase/8/docs/api/'
+        links 'https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/'
+        links 'https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/'
+    }
+}
+
+ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
+
+task javadocJar(type: Jar, dependsOn: 'javadoc') {
+    from javadoc.destinationDir
+    classifier = 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier = 'sources'
+    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
+    // Without the closure, parent sources are used for children too
+    from { sourceSets.main.allSource }
+}
+
 
 publishing {
-    publications {
-        maven(MavenPublication) {
-            groupId = "io.lionweb.lioncore-java"
-            artifactId = "emf"
-            version = version
 
-            from components.java
+    repositories {
+        maven {
+            def releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            def snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = isReleaseVersion ? releaseRepo : snapshotRepo
+            credentials {
+                username = project.hasProperty('ossrhUsername') ? ossrhUsername : "Unknown user"
+                password = project.hasProperty('ossrhPassword') ? ossrhPassword : "Unknown password"
+            }
         }
     }
+
+    publications {
+        lioncore_java_emf(MavenPublication) {
+            from components.java
+            groupId = 'io.lionweb.lioncore-java'
+            artifactId "lioncore-java-" + project.name
+            artifact sourcesJar
+            artifact javadocJar
+            suppressPomMetadataWarningsFor('cliApiElements')
+            suppressPomMetadataWarningsFor('cliRuntimeElements')
+            pom {
+                name = "lioncore-java-" + project.name
+                description = "EMF compatibility layer for LIonWeb"
+                version = project.version
+                packaging = 'jar'
+                url = 'https://github.com/LIonWeb-org/lioncore-java'
+
+                scm {
+                    connection = 'scm:git:https://github.com/LIonWeb-org/lioncore-java.git'
+                    developerConnection = 'scm:git:git@github.com:LIonWeb-org/lioncore-java.git'
+                    url = 'https://github.com/LIonWeb-org/lioncore-java.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'Apache Licenve V2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0'
+                        distribution = 'repo'
+                    }
+                }
+
+                // The developers entry is strictly required by Maven Central
+                developers {
+                    developer {
+                        id = 'ftomassetti'
+                        name = 'Federico Tomassetti'
+                        email = 'federico@strumenta.com'
+                    }
+                    developer {
+                        id = 'dslmeinte'
+                        name = 'Meinte Boersma'
+                        email = 'meinte.boersma@gmail.com'
+                    }
+                    developer {
+                        id = 'enikao'
+                        name = 'Niko Stotz'
+                        email = 'niko.stotz@nikostotz.de'
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+release {
+    buildTasks = ['publish']
+    versionPropertyFile = '../gradle.properties'
+    git {
+        requireBranch.set('master')
+        pushToRemote.set('origin')
+    }
+}
+
+tasks.withType(Sign) {
+    onlyIf { isReleaseVersion }
+}
+
+signing {
+    sign publishing.publications.lioncore_java_emf
 }
