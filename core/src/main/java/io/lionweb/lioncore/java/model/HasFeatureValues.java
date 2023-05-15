@@ -1,9 +1,9 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.metamodel.Containment;
-import io.lionweb.lioncore.java.metamodel.Property;
-import io.lionweb.lioncore.java.metamodel.Reference;
+import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.Property;
+import io.lionweb.lioncore.java.language.Reference;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

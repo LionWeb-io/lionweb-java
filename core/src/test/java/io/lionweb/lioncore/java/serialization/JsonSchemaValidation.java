@@ -82,28 +82,28 @@ public class JsonSchemaValidation {
 
   @Test
   public void validateTestLangJsonAgainstGenericSchema() throws IOException {
-    JsonNode json = loadJson("serialization/TestLang-metamodel.json");
+    JsonNode json = loadJson("serialization/TestLang-language.json");
     JsonSchema schema = getGenericSerializationSchema();
     validateJson(json, schema);
   }
 
   @Test
   public void validateTestLangJsonAgainstLionCoreSchema() throws IOException {
-    JsonNode json = loadJson("serialization/TestLang-metamodel.json");
+    JsonNode json = loadJson("serialization/TestLang-language.json");
     JsonSchema schema = getLioncoreSerializationSchema();
     validateJson(json, schema);
   }
 
   @Test
   public void validateLibraryM3JsonAgainstGenericSchema() throws IOException {
-    JsonNode json = loadJson("serialization/library-metamodel.json");
+    JsonNode json = loadJson("serialization/library-language.json");
     JsonSchema schema = getGenericSerializationSchema();
     validateJson(json, schema);
   }
 
   @Test
   public void validateLibraryM3JsonAgainstLionCoreSchema() throws IOException {
-    JsonNode json = loadJson("serialization/library-metamodel.json");
+    JsonNode json = loadJson("serialization/library-language.json");
     JsonSchema schema = getLioncoreSerializationSchema();
     validateJson(json, schema);
   }

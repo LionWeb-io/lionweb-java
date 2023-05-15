@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import java.util.HashMap;
 import java.util.Map;
@@ -24,8 +24,8 @@ public class ConceptResolver {
     }
   }
 
-  public ConceptResolver registerMetamodel(Metamodel metamodel) {
-    metamodel
+  public ConceptResolver registerLanguage(Language language) {
+    language
         .getElements()
         .forEach(
             e -> {

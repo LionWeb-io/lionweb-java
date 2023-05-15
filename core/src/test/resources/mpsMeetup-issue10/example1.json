@@ -1,18 +1,18 @@
 {
   "serializationFormatVersion": "1",
-  "metamodels": [],
+  "languages": [],
   "nodes": [
     {
       "id": "file_properties-parser-examples-example1-props--props0",
       "concept": {
-        "metamodel": "io_lionweb_Properties",
+        "language": "io_lionweb_Properties",
         "version": "1",
         "key": "io_lionweb_Properties-Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-Property-name"
           },
@@ -22,7 +22,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-Property-value"
           },
@@ -37,14 +37,14 @@
     {
       "id": "file_properties-parser-examples-example1-props--props0-value0",
       "concept": {
-        "metamodel": "io_lionweb_Properties",
+        "language": "io_lionweb_Properties",
         "version": "1",
         "key": "io_lionweb_Properties-IntValue"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-IntValue-value"
           },
@@ -58,14 +58,14 @@
     {
       "id": "file_properties-parser-examples-example1-props--props1",
       "concept": {
-        "metamodel": "io_lionweb_Properties",
+        "language": "io_lionweb_Properties",
         "version": "1",
         "key": "io_lionweb_Properties-Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-Property-name"
           },
@@ -75,7 +75,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-Property-value"
           },
@@ -90,14 +90,14 @@
     {
       "id": "file_properties-parser-examples-example1-props--props1-value0",
       "concept": {
-        "metamodel": "io_lionweb_Properties",
+        "language": "io_lionweb_Properties",
         "version": "1",
         "key": "io_lionweb_Properties-BooleanValue"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-BooleanValue-value"
           },
@@ -111,14 +111,14 @@
     {
       "id": "file_properties-parser-examples-example1-props--props2",
       "concept": {
-        "metamodel": "io_lionweb_Properties",
+        "language": "io_lionweb_Properties",
         "version": "1",
         "key": "io_lionweb_Properties-Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-Property-name"
           },
@@ -128,7 +128,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-Property-value"
           },
@@ -143,14 +143,14 @@
     {
       "id": "file_properties-parser-examples-example1-props--props2-value0",
       "concept": {
-        "metamodel": "io_lionweb_Properties",
+        "language": "io_lionweb_Properties",
         "version": "1",
         "key": "io_lionweb_Properties-StringValue"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "io_lionweb_Properties",
+            "language": "io_lionweb_Properties",
             "version": "1",
             "key": "io_lionweb_Properties-StringValue-value"
           },

@@ -1,10 +1,10 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
+import io.lionweb.lioncore.java.language.Concept;
 
 public class GuideBookWriter extends Writer {
   public GuideBookWriter(String id, String name) {
-    super(id, name, LibraryMetamodel.GUIDE_BOOK_WRITER);
+    super(id, name, LibraryLanguage.GUIDE_BOOK_WRITER);
   }
 
   public void setCountries(String countries) {
@@ -13,6 +13,6 @@ public class GuideBookWriter extends Writer {
 
   @Override
   public Concept getConcept() {
-    return LibraryMetamodel.GUIDE_BOOK_WRITER;
+    return LibraryLanguage.GUIDE_BOOK_WRITER;
   }
 }

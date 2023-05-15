@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization.simplemath;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Property;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.serialization.SimpleNode;
 import java.util.Objects;
 
@@ -20,7 +20,7 @@ public class IntLiteral extends SimpleNode {
 
   @Override
   public Concept getConcept() {
-    return SimpleMathMetamodel.INT_LITERAL;
+    return SimpleMathLanguage.INT_LITERAL;
   }
 
   @Override

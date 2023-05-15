@@ -47,7 +47,7 @@ class SerializationUtils {
     if (value.isJsonObject()) {
       JsonObject valueJO = value.getAsJsonObject();
       return new MetaPointer(
-          tryToGetStringProperty(valueJO, "metamodel"),
+          tryToGetStringProperty(valueJO, "language"),
           tryToGetStringProperty(valueJO, "version"),
           tryToGetStringProperty(valueJO, "key"));
     } else {

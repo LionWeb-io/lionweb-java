@@ -1,57 +1,57 @@
 package io.lionweb.lioncore.java.serialization.data;
 
-import io.lionweb.lioncore.java.metamodel.HasKey;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
-import io.lionweb.lioncore.java.metamodel.MetamodelElement;
+import io.lionweb.lioncore.java.language.HasKey;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.LanguageElement;
 import java.util.Objects;
 
 /**
- * A MetaPointer is the combination of the pair Metamodel and Version with a Key, which identify one
- * element within that metamodel.
+ * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
+ * element within that language.
  */
 public class MetaPointer {
   private String key;
   private String version;
-  private String metamodel;
+  private String language;
 
-  public MetaPointer(String metamodel, String version, String key) {
+  public MetaPointer(String language, String version, String key) {
     this.key = key;
     this.version = version;
-    this.metamodel = metamodel;
+    this.language = language;
   }
 
   public MetaPointer() {}
 
-  public static MetaPointer from(MetamodelElement<?> metamodelElement) {
+  public static MetaPointer from(LanguageElement<?> languageElement) {
     MetaPointer metaPointer = new MetaPointer();
-    metaPointer.setKey(metamodelElement.getKey());
-    if (metamodelElement.getMetamodel() != null) {
-      metaPointer.setMetamodel(metamodelElement.getMetamodel().getKey());
-      if (metamodelElement.getMetamodel().getVersion() != null) {
-        metaPointer.setVersion(metamodelElement.getMetamodel().getVersion());
+    metaPointer.setKey(languageElement.getKey());
+    if (languageElement.getLanguage() != null) {
+      metaPointer.setLanguage(languageElement.getLanguage().getKey());
+      if (languageElement.getLanguage().getVersion() != null) {
+        metaPointer.setVersion(languageElement.getLanguage().getVersion());
       }
     }
     return metaPointer;
   }
 
-  public static MetaPointer from(HasKey<?> elementWithKey, Metamodel metamodel) {
+  public static MetaPointer from(HasKey<?> elementWithKey, Language language) {
     MetaPointer metaPointer = new MetaPointer();
     metaPointer.setKey(elementWithKey.getKey());
-    if (metamodel != null) {
-      metaPointer.setMetamodel(metamodel.getKey());
-      if (metamodel.getVersion() != null) {
-        metaPointer.setVersion(metamodel.getVersion());
+    if (language != null) {
+      metaPointer.setLanguage(language.getKey());
+      if (language.getVersion() != null) {
+        metaPointer.setVersion(language.getVersion());
       }
     }
     return metaPointer;
   }
 
-  public String getMetamodel() {
-    return metamodel;
+  public String getLanguage() {
+    return language;
   }
 
-  public void setMetamodel(String metamodel) {
-    this.metamodel = metamodel;
+  public void setLanguage(String language) {
+    this.language = language;
   }
 
   public String getKey() {
@@ -73,12 +73,12 @@ public class MetaPointer {
     MetaPointer that = (MetaPointer) o;
     return Objects.equals(key, that.key)
         && Objects.equals(version, that.version)
-        && Objects.equals(metamodel, that.metamodel);
+        && Objects.equals(language, that.language);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(key, version, metamodel);
+    return Objects.hash(key, version, language);
   }
 
   public void setVersion(String version) {
@@ -94,8 +94,8 @@ public class MetaPointer {
         + ", version='"
         + version
         + '\''
-        + ", metamodel='"
-        + metamodel
+        + ", language='"
+        + language
         + '\''
         + '}';
   }

@@ -14,7 +14,7 @@ public class LowLevelJsonSerialization {
    * This will return a lower-level representation of the information stored in JSON. It is intended
    * to load broken models.
    *
-   * <p>Possible usages: repair a broken model, extract a metamodel from the model ("model
+   * <p>Possible usages: repair a broken model, extract a language from the model ("model
    * archeology"), etc.
    *
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
@@ -25,7 +25,7 @@ public class LowLevelJsonSerialization {
     if (jsonElement.isJsonObject()) {
       JsonObject topLevel = jsonElement.getAsJsonObject();
       readSerializationFormatVersion(serializedChunk, topLevel);
-      readMetamodels(serializedChunk, topLevel);
+      readLanguages(serializedChunk, topLevel);
       unserializeNodes(serializedChunk, topLevel);
       return serializedChunk;
     } else {
@@ -38,7 +38,7 @@ public class LowLevelJsonSerialization {
    * This will return a lower-level representation of the information stored in JSON. It is intended
    * to load broken models.
    *
-   * <p>Possible usages: repair a broken model, extract a metamodel from the model ("model
+   * <p>Possible usages: repair a broken model, extract a language from the model ("model
    * archeology"), etc.
    *
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
@@ -53,9 +53,9 @@ public class LowLevelJsonSerialization {
     topLevel.addProperty(
         "serializationFormatVersion", serializedChunk.getSerializationFormatVersion());
 
-    JsonArray metamodels = new JsonArray();
-    serializedChunk.getMetamodels().forEach(m -> metamodels.add(serializeToJsonElement(m)));
-    topLevel.add("metamodels", metamodels);
+    JsonArray languages = new JsonArray();
+    serializedChunk.getLanguages().forEach(m -> languages.add(serializeToJsonElement(m)));
+    topLevel.add("languages", languages);
 
     JsonArray nodes = new JsonArray();
     for (SerializedNode node : serializedChunk.getNodes()) {
@@ -121,36 +121,36 @@ public class LowLevelJsonSerialization {
     serializedChunk.setSerializationFormatVersion(serializationFormatVersion);
   }
 
-  private void readMetamodels(SerializedChunk serializedChunk, JsonObject topLevel) {
-    if (!topLevel.has("metamodels")) {
-      throw new IllegalArgumentException("metamodels not specified");
+  private void readLanguages(SerializedChunk serializedChunk, JsonObject topLevel) {
+    if (!topLevel.has("languages")) {
+      throw new IllegalArgumentException("languages not specified");
     }
-    if (topLevel.get("metamodels").isJsonArray()) {
-      topLevel.get("metamodels").getAsJsonArray().asList().stream()
+    if (topLevel.get("languages").isJsonArray()) {
+      topLevel.get("languages").getAsJsonArray().asList().stream()
           .forEach(
               element -> {
                 try {
-                  MetamodelKeyVersion metamodelKeyVersion = new MetamodelKeyVersion();
+                  LanguageKeyVersion languageKeyVersion = new LanguageKeyVersion();
                   if (element.isJsonObject()) {
                     JsonObject jsonObject = element.getAsJsonObject();
                     if (!jsonObject.has("key") || !jsonObject.has("version")) {
                       throw new IllegalArgumentException(
-                          "Metamodel should have keys key and version. Found: " + element);
+                          "Language should have keys key and version. Found: " + element);
                     }
-                    metamodelKeyVersion.setKey(jsonObject.get("key").getAsString());
-                    metamodelKeyVersion.setVersion(jsonObject.get("version").getAsString());
+                    languageKeyVersion.setKey(jsonObject.get("key").getAsString());
+                    languageKeyVersion.setVersion(jsonObject.get("version").getAsString());
                   } else {
                     throw new IllegalArgumentException(
-                        "Metamodel should be an object. Found: " + element);
+                        "Language should be an object. Found: " + element);
                   }
-                  serializedChunk.addMetamodel(metamodelKeyVersion);
+                  serializedChunk.addLanguage(languageKeyVersion);
                 } catch (Exception e) {
                   throw new RuntimeException("Issue while unserializing " + element, e);
                 }
               });
     } else {
       throw new IllegalArgumentException(
-          "We expected a Json Array, we got instead: " + topLevel.get("metamodels"));
+          "We expected a Json Array, we got instead: " + topLevel.get("languages"));
     }
   }
 
@@ -179,16 +179,16 @@ public class LowLevelJsonSerialization {
 
   private JsonElement serializeToJsonElement(MetaPointer metapointer) {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("metamodel", metapointer.getMetamodel());
+    jsonObject.addProperty("language", metapointer.getLanguage());
     jsonObject.addProperty("version", metapointer.getVersion());
     jsonObject.addProperty("key", metapointer.getKey());
     return jsonObject;
   }
 
-  private JsonElement serializeToJsonElement(MetamodelKeyVersion metamodelKeyVersion) {
+  private JsonElement serializeToJsonElement(LanguageKeyVersion languageKeyVersion) {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("version", metamodelKeyVersion.getVersion());
-    jsonObject.addProperty("key", metamodelKeyVersion.getKey());
+    jsonObject.addProperty("version", languageKeyVersion.getVersion());
+    jsonObject.addProperty("key", languageKeyVersion.getKey());
     return jsonObject;
   }
 

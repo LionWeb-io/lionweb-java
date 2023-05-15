@@ -1,26 +1,26 @@
 {
   "serializationFormatVersion": "1",
-  "metamodels": [],
+  "languages": [],
   "nodes": [
     {
       "id": "io_lionweb_Properties",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
-        "key": "Metamodel"
+        "key": "Language"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
-            "key": "Metamodel_name"
+            "key": "Language_name"
           },
           "value": "io.lionweb.Properties"
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "version"
           },
@@ -28,7 +28,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -38,7 +38,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "elements"
           },
@@ -56,7 +56,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "dependsOn"
           },
@@ -73,14 +73,14 @@
     {
       "id": "io_lionweb_Properties-PropertiesFile",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -88,7 +88,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -96,7 +96,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -104,7 +104,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -114,7 +114,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -126,7 +126,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -139,7 +139,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -151,14 +151,14 @@
     {
       "id": "io_lionweb_Properties-PropertiesFile-props",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Containment"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "multiple"
           },
@@ -166,7 +166,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -174,7 +174,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -182,7 +182,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -190,7 +190,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -198,7 +198,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -209,7 +209,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Link_type"
           },
@@ -226,14 +226,14 @@
     {
       "id": "io_lionweb_Properties-Property",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -241,7 +241,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -249,7 +249,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -257,7 +257,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -267,7 +267,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -280,7 +280,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -293,7 +293,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -305,14 +305,14 @@
     {
       "id": "io_lionweb_Properties-Property-name",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -320,7 +320,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -328,7 +328,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -336,7 +336,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -344,7 +344,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -355,7 +355,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Property_type"
           },
@@ -372,14 +372,14 @@
     {
       "id": "io_lionweb_Properties-Property-value",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Containment"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "multiple"
           },
@@ -387,7 +387,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -395,7 +395,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -403,7 +403,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -411,7 +411,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -419,7 +419,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -430,7 +430,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Link_type"
           },
@@ -447,14 +447,14 @@
     {
       "id": "io_lionweb_Properties-Value",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -462,7 +462,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -470,7 +470,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -478,7 +478,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -488,7 +488,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -498,7 +498,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -511,7 +511,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -523,14 +523,14 @@
     {
       "id": "io_lionweb_Properties-BooleanValue",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -538,7 +538,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -546,7 +546,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -554,7 +554,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -564,7 +564,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -576,7 +576,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -589,7 +589,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -601,14 +601,14 @@
     {
       "id": "io_lionweb_Properties-BooleanValue-value",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -616,7 +616,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -624,7 +624,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -632,7 +632,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -640,7 +640,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -651,7 +651,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Property_type"
           },
@@ -668,14 +668,14 @@
     {
       "id": "io_lionweb_Properties-DecValue",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -683,7 +683,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -691,7 +691,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -699,7 +699,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -709,7 +709,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -721,7 +721,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -734,7 +734,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -746,14 +746,14 @@
     {
       "id": "io_lionweb_Properties-DecValue-value",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -761,7 +761,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -769,7 +769,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -777,7 +777,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -785,7 +785,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -796,7 +796,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Property_type"
           },
@@ -813,14 +813,14 @@
     {
       "id": "io_lionweb_Properties-IntValue",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -828,7 +828,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -836,7 +836,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -844,7 +844,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -854,7 +854,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -866,7 +866,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -879,7 +879,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -891,14 +891,14 @@
     {
       "id": "io_lionweb_Properties-IntValue-value",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -906,7 +906,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -914,7 +914,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -922,7 +922,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -930,7 +930,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -941,7 +941,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Property_type"
           },
@@ -958,14 +958,14 @@
     {
       "id": "io_lionweb_Properties-StringValue",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "abstract"
           },
@@ -973,7 +973,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -981,7 +981,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -989,7 +989,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -999,7 +999,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "features"
           },
@@ -1011,7 +1011,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Concept_extends"
           },
@@ -1024,7 +1024,7 @@
         },
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "implements"
           },
@@ -1036,14 +1036,14 @@
     {
       "id": "io_lionweb_Properties-StringValue-value",
       "concept": {
-        "metamodel": "LIonCore_M3",
+        "language": "LIonCore_M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "optional"
           },
@@ -1051,7 +1051,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "derived"
           },
@@ -1059,7 +1059,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "NamespacedEntity_name"
           },
@@ -1067,7 +1067,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "qualifiedName"
           },
@@ -1075,7 +1075,7 @@
         },
         {
           "property": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "key"
           },
@@ -1086,7 +1086,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "LIonCore_M3",
+            "language": "LIonCore_M3",
             "version": "1",
             "key": "Property_type"
           },

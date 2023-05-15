@@ -1,11 +1,10 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.metamodel.*;
-import io.lionweb.lioncore.java.metamodel.Annotation;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Containment;
-import io.lionweb.lioncore.java.metamodel.Property;
+import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.Property;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;

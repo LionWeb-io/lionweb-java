@@ -1,16 +1,16 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
+import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class Writer extends DynamicNode {
 
   public Writer(String id) {
-    super(id, LibraryMetamodel.WRITER);
+    super(id, LibraryLanguage.WRITER);
   }
 
   public Writer(String id, String name) {
-    super(id, LibraryMetamodel.WRITER);
+    super(id, LibraryLanguage.WRITER);
     setName(name);
   }
 
@@ -29,6 +29,6 @@ public class Writer extends DynamicNode {
 
   @Override
   public Concept getConcept() {
-    return LibraryMetamodel.WRITER;
+    return LibraryLanguage.WRITER;
   }
 }

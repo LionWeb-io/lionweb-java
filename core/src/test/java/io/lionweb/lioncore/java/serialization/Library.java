@@ -1,18 +1,18 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
+import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class Library extends DynamicNode {
 
   public Library(String id, String name) {
-    super(id, LibraryMetamodel.LIBRARY);
+    super(id, LibraryLanguage.LIBRARY);
     setName(name);
   }
 
   @Override
   public Concept getConcept() {
-    return LibraryMetamodel.LIBRARY;
+    return LibraryLanguage.LIBRARY;
   }
 
   public void addBook(Book book) {
