@@ -1,10 +1,9 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.*;
-import io.lionweb.lioncore.java.metamodel.Annotation;
-import io.lionweb.lioncore.java.metamodel.Containment;
-import io.lionweb.lioncore.java.metamodel.Property;
-import io.lionweb.lioncore.java.metamodel.Reference;
+import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.Property;
+import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;

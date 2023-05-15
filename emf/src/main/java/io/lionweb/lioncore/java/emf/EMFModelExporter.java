@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
-import io.lionweb.lioncore.java.metamodel.Reference;
+import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;

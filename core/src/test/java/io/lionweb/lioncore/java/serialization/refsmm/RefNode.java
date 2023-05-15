@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization.refsmm;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Reference;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.SimpleNode;
 import java.util.Collections;
@@ -27,7 +27,7 @@ public class RefNode extends SimpleNode {
 
   @Override
   public Concept getConcept() {
-    return RefsMetamodel.REF_NODE;
+    return RefsLanguage.REF_NODE;
   }
 
   @Override

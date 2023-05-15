@@ -2,7 +2,7 @@ package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.support.NodeInstantiator;
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.*;
 import org.eclipse.emf.ecore.*;

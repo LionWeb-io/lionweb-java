@@ -1,18 +1,18 @@
 {
   "serializationFormatVersion": "1",
-  "metamodels": [],
+  "languages": [],
   "nodes": [
     {
       "id": "bl",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Library"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Library-name"
           },
@@ -22,7 +22,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Library-books"
           },
@@ -37,14 +37,14 @@
     {
       "id": "jl",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-GuideBookWriter"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-GuideBookWriter-countries"
           },
@@ -52,7 +52,7 @@
         },
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Writer-name"
           },
@@ -66,14 +66,14 @@
     {
       "id": "eb",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Book"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-title"
           },
@@ -81,7 +81,7 @@
         },
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-pages"
           },
@@ -92,7 +92,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-author"
           },

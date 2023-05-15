@@ -4,21 +4,21 @@ import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUti
 import static org.junit.Assert.assertEquals;
 
 import com.google.gson.*;
-import io.lionweb.lioncore.java.metamodel.*;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Enumeration;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.SerializedContainmentValue;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
 import io.lionweb.lioncore.java.serialization.refsmm.RefNode;
-import io.lionweb.lioncore.java.serialization.refsmm.RefsMetamodel;
+import io.lionweb.lioncore.java.serialization.refsmm.RefsLanguage;
 import io.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
-import io.lionweb.lioncore.java.serialization.simplemath.SimpleMathMetamodel;
+import io.lionweb.lioncore.java.serialization.simplemath.SimpleMathLanguage;
 import io.lionweb.lioncore.java.serialization.simplemath.Sum;
-import io.lionweb.lioncore.java.utils.MetamodelValidator;
+import io.lionweb.lioncore.java.utils.LanguageValidator;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -32,10 +32,10 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void serializeReferenceWithoutResolveInfo() {
-    Node book = new DynamicNode("foo123", LibraryMetamodel.BOOK);
-    Node writer = new DynamicNode("_Arthur_Foozillus_id_", LibraryMetamodel.WRITER);
+    Node book = new DynamicNode("foo123", LibraryLanguage.BOOK);
+    Node writer = new DynamicNode("_Arthur_Foozillus_id_", LibraryLanguage.WRITER);
     book.addReferenceValue(
-        LibraryMetamodel.BOOK.getReferenceByName("author"), new ReferenceValue(writer, null));
+        LibraryLanguage.BOOK.getReferenceByName("author"), new ReferenceValue(writer, null));
 
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
@@ -126,9 +126,9 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeMetamodelWithEnumerations() {
+  public void unserializeLanguageWithEnumerations() {
     InputStream inputStream =
-        this.getClass().getResourceAsStream("/serialization/TestLang-metamodel.json");
+        this.getClass().getResourceAsStream("/serialization/TestLang-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
@@ -163,37 +163,37 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeMetamodelWithDependencies() {
+  public void unserializeLanguageWithDependencies() {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    Metamodel starlasu =
-        (Metamodel)
+    Language starlasu =
+        (Language)
             jsonSerialization
                 .unserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json"))
                 .get(0);
     jsonSerialization.getNodeResolver().addTree(starlasu);
-    Metamodel properties =
-        (Metamodel)
+    Language properties =
+        (Language)
             jsonSerialization
                 .unserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/properties.lmm.json"))
                 .get(0);
-    MetamodelValidator.ensureIsValid(starlasu);
-    MetamodelValidator.ensureIsValid(properties);
+    LanguageValidator.ensureIsValid(starlasu);
+    LanguageValidator.ensureIsValid(properties);
   }
 
   private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
-    js.getConceptResolver().registerMetamodel(SimpleMathMetamodel.INSTANCE);
+    js.getConceptResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            SimpleMathMetamodel.INT_LITERAL.getID(),
+            SimpleMathLanguage.INT_LITERAL.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new IntLiteral(
                     (Integer) propertiesValues.get(concept.getPropertyByName("value")),
                     serializedNode.getID()));
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            SimpleMathMetamodel.SUM.getID(),
+            SimpleMathLanguage.SUM.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
               SerializedContainmentValue leftSCV =
                   serializedNode.getContainments().stream()
@@ -217,7 +217,7 @@ public class JsonSerializationTest extends SerializationTest {
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
-    assertEquals(1, serialized.getAsJsonObject().get("metamodels").getAsJsonArray().size());
+    assertEquals(1, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
     prepareUnserializationOfSimpleMath(js);
     List<Sum> unserialized =
@@ -290,17 +290,17 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   private void prepareUnserializationOfRefMM(JsonSerialization js) {
-    js.getConceptResolver().registerMetamodel(RefsMetamodel.INSTANCE);
+    js.getConceptResolver().registerLanguage(RefsLanguage.INSTANCE);
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            RefsMetamodel.CONTAINER_NODE.getID(),
+            RefsLanguage.CONTAINER_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new ContainerNode(
                     (ContainerNode) propertiesValues.get(concept.getContainmentByName("contained")),
                     serializedNode.getID()));
     js.getNodeInstantiator()
         .registerCustomUnserializer(
-            RefsMetamodel.REF_NODE.getID(),
+            RefsLanguage.REF_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
               return new RefNode(serializedNode.getID());
             });
@@ -362,7 +362,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void serializationOfEnumLiteral() {
-    Metamodel mm = new Metamodel("my.metamodel").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
         new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
@@ -378,27 +378,27 @@ public class JsonSerializationTest extends SerializationTest {
     DynamicNode n2 = new DynamicNode("node2", c);
     n2.setPropertyValue(p, el2);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
-    js.registerMetamodel(mm);
+    js.registerLanguage(mm);
 
     JsonElement je = js.serializeNodesToJsonElement(n1, n2);
     assertEquals(
         JsonParser.parseString(
             "{\n"
                 + "    \"serializationFormatVersion\": \"1\",\n"
-                + "    \"metamodels\": [{\n"
+                + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
                 + "    }],\n"
                 + "    \"nodes\": [{\n"
                 + "        \"id\": \"node1\",\n"
                 + "        \"concept\": {\n"
-                + "            \"metamodel\": \"mm_key\",\n"
+                + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
                 + "        },\n"
                 + "        \"properties\": [{\n"
                 + "            \"property\": {\n"
-                + "                \"metamodel\": \"mm_key\",\n"
+                + "                \"language\": \"mm_key\",\n"
                 + "                \"version\": \"1\",\n"
                 + "                \"key\": \"property_key\"\n"
                 + "            },\n"
@@ -410,13 +410,13 @@ public class JsonSerializationTest extends SerializationTest {
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
                 + "        \"concept\": {\n"
-                + "            \"metamodel\": \"mm_key\",\n"
+                + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
                 + "        },\n"
                 + "        \"properties\": [{\n"
                 + "            \"property\": {\n"
-                + "                \"metamodel\": \"mm_key\",\n"
+                + "                \"language\": \"mm_key\",\n"
                 + "                \"version\": \"1\",\n"
                 + "                \"key\": \"property_key\"\n"
                 + "            },\n"
@@ -436,20 +436,20 @@ public class JsonSerializationTest extends SerializationTest {
         JsonParser.parseString(
             "{\n"
                 + "    \"serializationFormatVersion\": \"1\",\n"
-                + "    \"metamodels\": [{\n"
+                + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
                 + "    }],\n"
                 + "    \"nodes\": [{\n"
                 + "        \"id\": \"node1\",\n"
                 + "        \"concept\": {\n"
-                + "            \"metamodel\": \"mm_key\",\n"
+                + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
                 + "        },\n"
                 + "        \"properties\": [{\n"
                 + "            \"property\": {\n"
-                + "                \"metamodel\": \"mm_key\",\n"
+                + "                \"language\": \"mm_key\",\n"
                 + "                \"version\": \"1\",\n"
                 + "                \"key\": \"property_key\"\n"
                 + "            },\n"
@@ -461,13 +461,13 @@ public class JsonSerializationTest extends SerializationTest {
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
                 + "        \"concept\": {\n"
-                + "            \"metamodel\": \"mm_key\",\n"
+                + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
                 + "        },\n"
                 + "        \"properties\": [{\n"
                 + "            \"property\": {\n"
-                + "                \"metamodel\": \"mm_key\",\n"
+                + "                \"language\": \"mm_key\",\n"
                 + "                \"version\": \"1\",\n"
                 + "                \"key\": \"property_key\"\n"
                 + "            },\n"
@@ -478,7 +478,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }]\n"
                 + "}");
-    Metamodel mm = new Metamodel("my.metamodel").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
         new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
@@ -494,7 +494,7 @@ public class JsonSerializationTest extends SerializationTest {
     DynamicNode n2 = new DynamicNode("node2", c);
     n2.setPropertyValue(p, el2);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
-    js.registerMetamodel(mm);
+    js.registerLanguage(mm);
     js.getNodeInstantiator().enableDynamicNodes();
 
     List<Node> unserializedNodes = js.unserializeToNodes(je);

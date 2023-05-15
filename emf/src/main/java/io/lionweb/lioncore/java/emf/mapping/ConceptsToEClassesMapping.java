@@ -2,10 +2,10 @@ package io.lionweb.lioncore.java.emf.mapping;
 
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.ConceptInterface;
-import io.lionweb.lioncore.java.metamodel.FeaturesContainer;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.ConceptInterface;
+import io.lionweb.lioncore.java.language.FeaturesContainer;
+import io.lionweb.lioncore.java.language.Language;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -16,8 +16,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ConceptsToEClassesMapping {
 
-  private Map<EPackage, Metamodel> ePackagesToMetamodels = new HashMap<>();
-  private Map<Metamodel, EPackage> metamodelEPackages = new HashMap<>();
+  private Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
+  private Map<Language, EPackage> languagesToEPackages = new HashMap<>();
   private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
   private Map<EClass, ConceptInterface> eClassesToConceptInterfaces = new HashMap<>();
   private Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
@@ -26,9 +26,9 @@ public class ConceptsToEClassesMapping {
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
     EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(this);
-    Metamodel metamodel = EMFMetamodelImporter.importEPackage(ePackage);
-    ePackagesToMetamodels.put(ePackage, metamodel);
-    metamodelEPackages.put(metamodel, ePackage);
+    Language language = EMFMetamodelImporter.importEPackage(ePackage);
+    ePackagesToLanguages.put(ePackage, language);
+    languagesToEPackages.put(language, ePackage);
     ePackage
         .eAllContents()
         .forEachRemaining(
@@ -36,18 +36,18 @@ public class ConceptsToEClassesMapping {
               if (eObject instanceof EClass) {
                 EClass eClass = (EClass) eObject;
                 if (!eClass.isInterface()) {
-                  registerMapping(metamodel.getConceptByName(eClass.getName()), eClass);
+                  registerMapping(language.getConceptByName(eClass.getName()), eClass);
                 }
               }
             });
   }
 
-  private void processMetamodel(Metamodel metamodel) {
-    Objects.requireNonNull(metamodel, "metamodel should not be null");
+  private void processMetamodel(Language language) {
+    Objects.requireNonNull(language, "Language should not be null");
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(this);
-    EPackage ePackage = ecoreExporter.exportMetamodel(metamodel);
-    ePackagesToMetamodels.put(ePackage, metamodel);
-    metamodelEPackages.put(metamodel, ePackage);
+    EPackage ePackage = ecoreExporter.exportLanguage(language);
+    ePackagesToLanguages.put(ePackage, language);
+    languagesToEPackages.put(language, ePackage);
     ePackage
         .eAllContents()
         .forEachRemaining(
@@ -55,7 +55,7 @@ public class ConceptsToEClassesMapping {
               if (eObject instanceof EClass) {
                 EClass eClass = (EClass) eObject;
                 if (!eClass.isInterface()) {
-                  registerMapping(metamodel.getConceptByName(eClass.getName()), eClass);
+                  registerMapping(language.getConceptByName(eClass.getName()), eClass);
                 }
               }
             });
@@ -63,7 +63,7 @@ public class ConceptsToEClassesMapping {
 
   public Concept getCorrespondingConcept(EClass eClass) {
     if (!eClassesToConcepts.containsKey(eClass)) {
-      if (ePackagesToMetamodels.containsKey(eClass.getEPackage())) {
+      if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
         throw new IllegalStateException();
       }
       processEPackage(eClass.getEPackage());
@@ -76,7 +76,7 @@ public class ConceptsToEClassesMapping {
 
   public ConceptInterface getCorrespondingConceptInterface(EClass eClass) {
     if (!eClassesToConceptInterfaces.containsKey(eClass)) {
-      if (ePackagesToMetamodels.containsKey(eClass.getEPackage())) {
+      if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
         throw new IllegalStateException();
       }
       processEPackage(eClass.getEPackage());
@@ -89,10 +89,10 @@ public class ConceptsToEClassesMapping {
 
   public EClassifier getCorrespondingEClass(FeaturesContainer type) {
     if (!conceptsToEClasses.containsKey(type) && !conceptInterfacesToEClasses.containsKey(type)) {
-      if (metamodelEPackages.containsKey(type.getMetamodel())) {
+      if (languagesToEPackages.containsKey(type.getLanguage())) {
         throw new IllegalStateException();
       }
-      processMetamodel(type.getMetamodel());
+      processMetamodel(type.getLanguage());
     }
     if (conceptsToEClasses.containsKey(type)) {
       return conceptsToEClasses.get(type);

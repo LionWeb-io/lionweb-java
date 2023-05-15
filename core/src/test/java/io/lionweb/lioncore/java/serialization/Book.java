@@ -1,17 +1,17 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
+import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class Book extends DynamicNode {
 
   public Book(String id) {
-    super(id, LibraryMetamodel.BOOK);
+    super(id, LibraryLanguage.BOOK);
   }
 
   public Book(String id, String title, Writer author) {
-    super(id, LibraryMetamodel.BOOK);
+    super(id, LibraryLanguage.BOOK);
     setTitle(title);
     setAuthor(author);
   }
@@ -36,6 +36,6 @@ public class Book extends DynamicNode {
 
   @Override
   public Concept getConcept() {
-    return LibraryMetamodel.BOOK;
+    return LibraryLanguage.BOOK;
   }
 }

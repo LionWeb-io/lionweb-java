@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.utils;
 
+import io.lionweb.lioncore.java.model.Node;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,12 +16,12 @@ public class ValidationResult {
     return issues.stream().noneMatch(issue -> issue.getSeverity() == IssueSeverity.Error);
   }
 
-  public ValidationResult addError(String message, Object subject) {
+  public ValidationResult addError(String message, Node subject) {
     issues.add(new Issue(IssueSeverity.Error, message, subject));
     return this;
   }
 
-  public <S> ValidationResult checkForError(boolean check, String message, S subject) {
+  public <S extends Node> ValidationResult checkForError(boolean check, String message, S subject) {
     if (check) {
       issues.add(new Issue(IssueSeverity.Error, message, subject));
     }

@@ -1,18 +1,18 @@
 {
   "serializationFormatVersion": "1",
-  "metamodels": [],
+  "languages": [],
   "nodes": [
     {
       "id": "mv",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Writer"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Writer-name"
           },
@@ -26,14 +26,14 @@
     {
       "id": "mb",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Writer"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Writer-name"
           },
@@ -47,14 +47,14 @@
     {
       "id": "lib-1",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Library"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Library-name"
           },
@@ -64,7 +64,7 @@
       "children": [
         {
           "containment": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Library-books"
           },
@@ -80,14 +80,14 @@
     {
       "id": "de",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Book"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-title"
           },
@@ -95,7 +95,7 @@
         },
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-pages"
           },
@@ -106,7 +106,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-author"
           },
@@ -123,14 +123,14 @@
     {
       "id": "bfd",
       "concept": {
-        "metamodel": "library",
+        "language": "library",
         "version": "1",
         "key": "library-Book"
       },
       "properties": [
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-title"
           },
@@ -138,7 +138,7 @@
         },
         {
           "property": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-pages"
           },
@@ -149,7 +149,7 @@
       "references": [
         {
           "reference": {
-            "metamodel": "library",
+            "language": "library",
             "version": "1",
             "key": "library-Book-author"
           },

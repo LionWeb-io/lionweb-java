@@ -2,14 +2,14 @@ package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import java.util.LinkedList;
 import java.util.List;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /** EMF importer which produces LionWeb's Metamodels. */
-public class EMFMetamodelImporter extends AbstractEMFImporter<Metamodel> {
+public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   private DataTypeMapping dataTypeMapping = new DataTypeMapping();
 
   public EMFMetamodelImporter() {
@@ -21,8 +21,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Metamodel> {
   }
 
   @Override
-  public List<Metamodel> importResource(Resource resource) {
-    List<Metamodel> metamodels = new LinkedList<>();
+  public List<Language> importResource(Resource resource) {
+    List<Language> metamodels = new LinkedList<>();
     for (EObject content : resource.getContents()) {
       if (content.eClass().getName().equals(EcorePackage.Literals.EPACKAGE.getName())) {
         metamodels.add(importEPackage((EPackage) content));
@@ -31,8 +31,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Metamodel> {
     return metamodels;
   }
 
-  public Metamodel importEPackage(EPackage ePackage) {
-    Metamodel metamodel = new Metamodel(ePackage.getName());
+  public Language importEPackage(EPackage ePackage) {
+    Language metamodel = new Language(ePackage.getName());
     metamodel.setVersion("1");
     metamodel.setID(ePackage.getName());
     metamodel.setKey(ePackage.getName());

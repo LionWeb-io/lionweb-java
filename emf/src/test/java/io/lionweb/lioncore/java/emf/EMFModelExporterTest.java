@@ -16,7 +16,7 @@ public class EMFModelExporterTest {
   @Test
   public void exportLibraryInstance() throws IOException {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.registerMetamodel(LibraryMetamodel.LIBRARY_MM);
+    jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
     jsonSerialization.getNodeInstantiator().enableDynamicNodes();
     List<Node> nodes =
         jsonSerialization.unserializeToNodes(

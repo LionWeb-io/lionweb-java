@@ -2,7 +2,7 @@ package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.util.Arrays;
 import org.eclipse.emf.ecore.*;
@@ -12,14 +12,14 @@ public class EMFMetamodelExporterTest {
 
   @Test
   public void exportLibraryMetamodel() {
-    Metamodel libraryMM =
-        (Metamodel)
+    Language libraryLang =
+        (Language)
             JsonSerialization.getStandardSerialization()
                 .unserializeToNodes(this.getClass().getResourceAsStream("/library-metamodel.json"))
                 .get(0);
 
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
-    EPackage libraryPkg = ecoreExporter.exportMetamodel(libraryMM);
+    EPackage libraryPkg = ecoreExporter.exportLanguage(libraryLang);
 
     assertEquals("library", libraryPkg.getName());
     assertEquals("https://lionweb.io/library", libraryPkg.getNsURI());
@@ -90,16 +90,16 @@ public class EMFMetamodelExporterTest {
 
   @Test
   public void exportConceptInterfaceAndEnumeration() {
-    Metamodel simpleMM = new Metamodel("SimpleMM").setKey("simkey").setID("simid");
-    Enumeration color = new Enumeration(simpleMM, "Color");
+    Language simpleLang = new Language("SimpleMM").setKey("simkey").setID("simid");
+    Enumeration color = new Enumeration(simpleLang, "Color");
     new EnumerationLiteral(color, "red");
     new EnumerationLiteral(color, "white");
     new EnumerationLiteral(color, "green");
-    ConceptInterface coloredCI = new ConceptInterface(simpleMM, "Colored");
+    ConceptInterface coloredCI = new ConceptInterface(simpleLang, "Colored");
     coloredCI.addFeature(Property.createRequired("color", color));
 
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
-    EPackage simplePkg = ecoreExporter.exportMetamodel(simpleMM);
+    EPackage simplePkg = ecoreExporter.exportLanguage(simpleLang);
 
     assertEquals("SimpleMM", simplePkg.getName());
     assertEquals("https://lionweb.io/simkey", simplePkg.getNsURI());

@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization.refsmm;
 
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Containment;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.SimpleNode;
 import java.util.Arrays;
@@ -28,7 +28,7 @@ public class ContainerNode extends SimpleNode {
 
   @Override
   public Concept getConcept() {
-    return RefsMetamodel.CONTAINER_NODE;
+    return RefsLanguage.CONTAINER_NODE;
   }
 
   @Override

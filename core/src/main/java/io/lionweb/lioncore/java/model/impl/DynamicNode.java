@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.model.impl;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;

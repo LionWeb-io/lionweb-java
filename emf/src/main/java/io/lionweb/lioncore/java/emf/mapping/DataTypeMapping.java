@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
-import io.lionweb.lioncore.java.metamodel.DataType;
-import io.lionweb.lioncore.java.metamodel.Enumeration;
-import io.lionweb.lioncore.java.metamodel.LionCoreBuiltins;
+import io.lionweb.lioncore.java.language.DataType;
+import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import java.util.HashMap;
 import java.util.Map;
 import org.eclipse.emf.ecore.EClassifier;

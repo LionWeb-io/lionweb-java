@@ -2,8 +2,8 @@ package io.lionweb.lioncore.java.emf;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.metamodel.Concept;
-import io.lionweb.lioncore.java.metamodel.Metamodel;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.io.InputStream;
@@ -13,7 +13,7 @@ import java.util.Objects;
 
 public class LibraryMetamodel {
 
-  public static Metamodel LIBRARY_MM;
+  public static Language LIBRARY_LANG;
   public static Concept LIBRARY;
   public static Concept BOOK;
   public static Concept WRITER;
@@ -25,16 +25,16 @@ public class LibraryMetamodel {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
-    LIBRARY_MM =
+    LIBRARY_LANG =
         unserializedNodes.stream()
-            .filter(e -> e instanceof Metamodel)
-            .map(e -> (Metamodel) e)
+            .filter(e -> e instanceof Language)
+            .map(e -> (Language) e)
             .findFirst()
             .get();
-    LIBRARY = LIBRARY_MM.getConceptByName("Library");
-    BOOK = LIBRARY_MM.getConceptByName("Book");
-    WRITER = LIBRARY_MM.getConceptByName("Writer");
-    GUIDE_BOOK_WRITER = LIBRARY_MM.getConceptByName("GuideBookWriter");
+    LIBRARY = LIBRARY_LANG.getConceptByName("Library");
+    BOOK = LIBRARY_LANG.getConceptByName("Book");
+    WRITER = LIBRARY_LANG.getConceptByName("Writer");
+    GUIDE_BOOK_WRITER = LIBRARY_LANG.getConceptByName("GuideBookWriter");
 
     LIBRARY
         .allFeatures()

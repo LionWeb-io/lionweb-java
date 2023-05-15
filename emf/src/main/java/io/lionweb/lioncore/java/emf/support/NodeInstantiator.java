@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.emf.support;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import java.util.HashMap;

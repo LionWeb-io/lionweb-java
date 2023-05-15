@@ -2,7 +2,7 @@ package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -18,15 +18,15 @@ public class EMFMetamodelImporterTest {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Metamodel> metamodels = importer.importInputStream(is);
-    assertEquals(1, metamodels.size());
+    List<Language> languages = importer.importInputStream(is);
+    assertEquals(1, languages.size());
 
-    Metamodel metamodel = metamodels.get(0);
-    assertEquals("library", metamodel.getName());
+    Language language = languages.get(0);
+    assertEquals("library", language.getName());
 
-    assertEquals(5, metamodel.getElements().size());
+    assertEquals(5, language.getElements().size());
 
-    Concept book = (Concept) metamodel.getElementByName("Book");
+    Concept book = (Concept) language.getElementByName("Book");
     assertNull(book.getExtendedConcept());
     assertEquals(0, book.getImplemented().size());
     assertFalse(book.isAbstract());
@@ -51,7 +51,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, bookPages.isRequired());
 
     Reference bookAuthor = (Reference) book.getFeatureByName("author");
-    assertSame(metamodel.getElementByName("Writer"), bookAuthor.getType());
+    assertSame(language.getElementByName("Writer"), bookAuthor.getType());
     assertSame(book, bookAuthor.getContainer());
     assertEquals("library.Book.author", bookAuthor.qualifiedName());
     assertEquals(false, bookAuthor.isDerived());
@@ -60,7 +60,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(false, bookAuthor.isMultiple());
     assertEquals(null, bookAuthor.getSpecialized());
 
-    Concept library = (Concept) metamodel.getElementByName("Library");
+    Concept library = (Concept) language.getElementByName("Library");
     assertNull(library.getExtendedConcept());
     assertEquals(0, library.getImplemented().size());
     assertFalse(library.isAbstract());
@@ -78,7 +78,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, libraryName.isRequired());
 
     Containment libraryBooks = (Containment) library.getFeatureByName("books");
-    assertSame(metamodel.getElementByName("Book"), libraryBooks.getType());
+    assertSame(language.getElementByName("Book"), libraryBooks.getType());
     assertSame(library, libraryBooks.getContainer());
     assertEquals("library.Library.books", libraryBooks.qualifiedName());
     assertEquals(false, libraryBooks.isDerived());
@@ -87,7 +87,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, libraryBooks.isMultiple());
     assertEquals(null, libraryBooks.getSpecialized());
 
-    Concept writer = (Concept) metamodel.getElementByName("Writer");
+    Concept writer = (Concept) language.getElementByName("Writer");
     assertNull(writer.getExtendedConcept());
     assertEquals(0, writer.getImplemented().size());
     assertFalse(writer.isAbstract());
@@ -103,7 +103,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(false, writerName.isOptional());
     assertEquals(true, writerName.isRequired());
 
-    Concept guideBookWriter = (Concept) metamodel.getElementByName("GuideBookWriter");
+    Concept guideBookWriter = (Concept) language.getElementByName("GuideBookWriter");
     assertSame(writer, guideBookWriter.getExtendedConcept());
     assertEquals(0, guideBookWriter.getImplemented().size());
     assertFalse(guideBookWriter.isAbstract());
@@ -127,7 +127,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(false, guideBookWriterName.isOptional());
     assertEquals(true, guideBookWriterName.isRequired());
 
-    Concept specialistBookWriter = (Concept) metamodel.getElementByName("SpecialistBookWriter");
+    Concept specialistBookWriter = (Concept) language.getElementByName("SpecialistBookWriter");
     assertSame(writer, specialistBookWriter.getExtendedConcept());
     assertEquals(0, specialistBookWriter.getImplemented().size());
     assertFalse(specialistBookWriter.isAbstract());
@@ -159,10 +159,10 @@ public class EMFMetamodelImporterTest {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Metamodel> metamodels = importer.importInputStream(is, ResourceType.JSON);
-    assertEquals(2, metamodels.size());
+    List<Language> languages = importer.importInputStream(is, ResourceType.JSON);
+    assertEquals(2, languages.size());
 
-    Concept point = metamodels.get(0).getConceptByName("Point");
+    Concept point = languages.get(0).getConceptByName("Point");
     assertEquals(2, point.allFeatures().size());
 
     Property pointLine = point.getPropertyByName("line");
@@ -173,7 +173,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getInteger(), pointColumn.getType());
     assertEquals(true, pointColumn.isRequired());
 
-    Enumeration issueType = metamodels.get(0).getEnumerationByName("IssueType");
+    Enumeration issueType = languages.get(0).getEnumerationByName("IssueType");
     assertEquals(3, issueType.getLiterals().size());
     assertEquals(
         new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")),

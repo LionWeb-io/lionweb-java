@@ -2,7 +2,8 @@ package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Language;
 import java.util.List;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -21,31 +22,31 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     super(conceptsToEClassesMapping);
   }
 
-  /** This export all the metamodels received to a single Resource. */
-  public Resource exportResource(List<Metamodel> metamodels) {
+  /** This export all the languages received to a single Resource. */
+  public Resource exportResource(List<Language> languages) {
     Resource resource = new ResourceImpl();
-    metamodels.forEach(m -> resource.getContents().add(exportMetamodel(m)));
+    languages.forEach(m -> resource.getContents().add(exportLanguage(m)));
     return resource;
   }
 
-  /** This export the Metamodel received to a single EPackage. */
-  public EPackage exportMetamodel(Metamodel metamodel) {
+  /** This export the Language received to a single EPackage. */
+  public EPackage exportLanguage(Language language) {
     EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
 
-    ePackage.setName(metamodel.getName());
-    ePackage.setNsURI("https://lionweb.io/" + metamodel.getKey());
-    ePackage.setNsPrefix(metamodel.getName());
+    ePackage.setName(language.getName());
+    ePackage.setNsURI("https://lionweb.io/" + language.getKey());
+    ePackage.setNsPrefix(language.getName());
 
     // We first create all EClasses and only later we draw relationships
     // among them
-    createEClasses(metamodel, ePackage);
-    populateEClasses(metamodel);
+    createEClasses(language, ePackage);
+    populateEClasses(language);
 
     return ePackage;
   }
 
-  private void createEClasses(Metamodel metamodel, EPackage ePackage) {
-    metamodel
+  private void createEClasses(Language language, EPackage ePackage) {
+    language
         .getElements()
         .forEach(
             e -> {
@@ -182,8 +183,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
             });
   }
 
-  private void populateEClasses(Metamodel metamodel) {
-    metamodel
+  private void populateEClasses(Language language) {
+    language
         .getElements()
         .forEach(
             e -> {

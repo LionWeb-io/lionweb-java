@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.metamodel.*;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -60,9 +60,9 @@ public class NodeInstantiator {
 
   public void registerLionCoreCustomUnserializers() {
     customUnserializers.put(
-        LionCore.getMetamodel().getID(),
+        LionCore.getLanguage().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-            new Metamodel().setID(serializedNode.getID()));
+            new Language().setID(serializedNode.getID()));
     customUnserializers.put(
         LionCore.getConcept().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
