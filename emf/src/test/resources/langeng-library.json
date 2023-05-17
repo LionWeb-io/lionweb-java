@@ -1,0 +1,169 @@
+{
+  "serializationFormatVersion": "1",
+  "languages": [],
+  "nodes": [
+    {
+      "id": "mv",
+      "concept": {
+        "language": "library",
+        "version": "1",
+        "key": "library-Writer"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Writer-name"
+          },
+          "value": "Markus Voelter"
+        }
+      ],
+      "children": [],
+      "references": [],
+      "parent": null
+    },
+    {
+      "id": "mb",
+      "concept": {
+        "language": "library",
+        "version": "1",
+        "key": "library-Writer"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Writer-name"
+          },
+          "value": "Meinte Boersma"
+        }
+      ],
+      "children": [],
+      "references": [],
+      "parent": null
+    },
+    {
+      "id": "lib-1",
+      "concept": {
+        "language": "library",
+        "version": "1",
+        "key": "library-Library"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Library-name"
+          },
+          "value": "Language Engineering Library"
+        }
+      ],
+      "children": [
+        {
+          "containment": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Library-books"
+          },
+          "children": [
+            "de",
+            "bfd"
+          ]
+        }
+      ],
+      "references": [],
+      "parent": null
+    },
+    {
+      "id": "de",
+      "concept": {
+        "language": "library",
+        "version": "1",
+        "key": "library-Book"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Book-title"
+          },
+          "value": "DSL Engineering"
+        },
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Book-pages"
+          },
+          "value": "558"
+        }
+      ],
+      "children": [],
+      "references": [
+        {
+          "reference": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Book-author"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Markus Völter",
+              "reference": "mv"
+            }
+          ]
+        }
+      ],
+      "parent": "lib-1"
+    },
+    {
+      "id": "bfd",
+      "concept": {
+        "language": "library",
+        "version": "1",
+        "key": "library-Book"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Book-title"
+          },
+          "value": "Business-Friendly DSLs"
+        },
+        {
+          "property": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Book-pages"
+          },
+          "value": "517"
+        }
+      ],
+      "children": [],
+      "references": [
+        {
+          "reference": {
+            "language": "library",
+            "version": "1",
+            "key": "library-Book-author"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Meinte Boersma",
+              "reference": "mb"
+            }
+          ]
+        }
+      ],
+      "parent": "lib-1"
+    }
+  ]
+}
+
+

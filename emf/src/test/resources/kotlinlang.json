@@ -1,0 +1,2060 @@
+[ {
+  "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EPackage",
+  "name" : "StrumentaLanguageSupport",
+  "nsURI" : "https://strumenta.com/starlasu/v2",
+  "eClassifiers" : [ {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "LocalDate",
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "year",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "month",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "dayOfMonth",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "LocalTime",
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "hour",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "minute",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "second",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "nanosecond",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "LocalDateTime",
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "date",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/LocalDate"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "time",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/LocalTime"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Point",
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "line",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "column",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EInt"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Position",
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "start",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Point"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "end",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Point"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Origin",
+    "abstract" : true
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Destination",
+    "abstract" : true
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "NodeDestination",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Destination"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "node",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/ASTNode"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "TextFileDestination",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Destination"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "position",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Position"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "ASTNode",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Origin"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "position",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Position"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "origin",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Origin"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "destination",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Destination"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "ParseTreeOrigin",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Origin"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "position",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Position"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "NodeOrigin",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Origin"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "node",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/ASTNode"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "SimpleOrigin",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Origin"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "sourceText",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "position",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Position"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Statement",
+    "interface" : true
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Expression",
+    "interface" : true
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "EntityDeclaration",
+    "interface" : true
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "PlaceholderElement",
+    "interface" : true,
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "placeholderName",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+    "name" : "IssueType",
+    "eLiterals" : [ {
+      "name" : "LEXICAL"
+    }, {
+      "name" : "SYNTACTIC",
+      "value" : 1
+    }, {
+      "name" : "SEMANTIC",
+      "value" : 2
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+    "name" : "IssueSeverity",
+    "eLiterals" : [ {
+      "name" : "ERROR"
+    }, {
+      "name" : "WARNING",
+      "value" : 1
+    }, {
+      "name" : "INFO",
+      "value" : 2
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Issue",
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "type",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+        "$ref" : "/0/IssueType"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "message",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "severity",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+        "$ref" : "/0/IssueSeverity"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "position",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Position"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "PossiblyNamed",
+    "interface" : true,
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Named",
+    "interface" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/PossiblyNamed"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "ReferenceByName",
+    "eTypeParameters" : [ {
+      "name" : "N",
+      "eBounds" : [ {
+        "eClassifier" : {
+          "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+          "$ref" : "/0/ASTNode"
+        }
+      } ]
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "referenced",
+      "eGenericType" : {
+        "eTypeParameter" : {
+          "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//ETypeParameter",
+          "$ref" : "/0/ReferenceByName/N"
+        }
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "ErrorNode",
+    "interface" : true,
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "message",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "GenericErrorNode",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ErrorNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "GenericNode",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "Result",
+    "eTypeParameters" : [ {
+      "name" : "CU",
+      "eBounds" : [ {
+        "eClassifier" : {
+          "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+          "$ref" : "/0/ASTNode"
+        }
+      } ]
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "root",
+      "eGenericType" : {
+        "eTypeParameter" : {
+          "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//ETypeParameter",
+          "$ref" : "/0/Result/CU"
+        }
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "issues",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/0/Issue"
+      },
+      "containment" : true
+    } ]
+  } ]
+}, {
+  "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EPackage",
+  "name" : "com.strumenta.kotlinlangmod",
+  "nsURI" : "https://strumenta.com/kotlinlang",
+  "nsPrefix" : "kotlin",
+  "eClassifiers" : [ {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTopLevelDeclaration",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KStatement",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KExpression",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Expression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KElseClause",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KWhenClause",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "condition",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KWhenStatement",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "elseClause",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KElseClause"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "subject",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "whenClauses",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KWhenClause"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KType",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KRefType",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KType"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "args",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KOptionalType",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KType"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "base",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KUniIsExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "ktype",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KThrowExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "value",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KThisExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KReturnExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "value",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KReferenceExpr",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "symbol",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KQuotedExpr",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KParameterValue",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "value",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTypeProjection",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSimpleTypeProjection",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTypeProjection"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "baseType",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KMemberCallExpr",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "args",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterValue"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "memberName",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "qualifier",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "typeArguments",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KTypeProjection"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KMemberAccessExpr",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "memberName",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "qualifier",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KLiteral",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTrue",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KLiteral"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KStringLiteral",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KLiteral"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "value",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KIntegerLiteral",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KLiteral"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "value",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KFalse",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KLiteral"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KLambdaParamDecl",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KLambda",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "params",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KLambdaParamDecl"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KInvokeExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "args",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterValue"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "invoked",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "lambda",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KLambda"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KInstantiationExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "args",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterValue"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "type",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KIfExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "condition",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "elseBody",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "thenBody",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KFunctionSymbol",
+    "abstract" : true,
+    "interface" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KFunctionCall",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "args",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterValue"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "function",
+      "eGenericType" : {
+        "eTypeArguments" : [ {
+          "eClassifier" : {
+            "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+            "$ref" : "/1/KFunctionSymbol"
+          }
+        } ],
+        "eClassifier" : {
+          "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+          "$ref" : "/0/ReferenceByName"
+        }
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KCastExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "baseExpression",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "tentative",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "type",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KBinaryExpression",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KExpression"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "left",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "right",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KEqualityExpression",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KBinaryExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KStandardEqualityExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KEqualityExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KStandardDifferentThanExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KEqualityExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KIdentityEqualityExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KEqualityExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KIdentityDifferentThanExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KEqualityExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KComparisonExpression",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KBinaryExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KLessThanExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KComparisonExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KLessOrEqualToExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KComparisonExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KGreaterThanExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KComparisonExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KGreaterOrEqualToExpression",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KComparisonExpression"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+    "name" : "KPersistence",
+    "eLiterals" : [ {
+      "name" : "VAL"
+    }, {
+      "name" : "VAR",
+      "value" : 1
+    }, {
+      "name" : "NONE",
+      "value" : 2
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KVariableDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KStatement"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "initialValue",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "persistence",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+        "$ref" : "/1/KPersistence"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "type",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KThrowStatement",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KStatement"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "exception",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KExpressionStatement",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KStatement"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "expression",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KBlock",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KStatement"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "statements",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTyped",
+    "abstract" : true,
+    "interface" : true,
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "type",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KParameterDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTyped"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "defaultValue",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "persistence",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+        "$ref" : "/1/KPersistence"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTopLevelFunction",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTopLevelDeclaration"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "params",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterDeclaration"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "returnType",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KClassMemberDeclaration",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KDelegate",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KGetter",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KBlock"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "type",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "value",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KModifier",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KOverride",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KModifier"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KLateInit",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KModifier"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KInfix",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KModifier"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSetter",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+    "name" : "KPropertyType",
+    "eLiterals" : [ {
+      "name" : "VAL"
+    }, {
+      "name" : "VAR",
+      "value" : 1
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTypeConstraint",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KTypeParameter",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KVariableDeclarator",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KAnnotationDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KAnnotation",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "annotationDeclaration",
+      "eGenericType" : {
+        "eTypeArguments" : [ {
+          "eClassifier" : {
+            "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+            "$ref" : "/1/KAnnotationDeclaration"
+          }
+        } ],
+        "eClassifier" : {
+          "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+          "$ref" : "/0/ReferenceByName"
+        }
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KAnnotable",
+    "abstract" : true,
+    "interface" : true,
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "annotations",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KAnnotation"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSingleVariableDeclarator",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KVariableDeclarator"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KAnnotable"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "type",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KMultipleVariableDeclarator",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KVariableDeclarator"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KPropertyDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KClassMemberDeclaration"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "delegate",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KDelegate"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "getter",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KGetter"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "initializer",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "modifiers",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KModifier"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "receiverType",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "setter",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KSetter"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "type",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EEnum",
+        "$ref" : "/1/KPropertyType"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "typeConstraints",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KTypeConstraint"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "typeParameters",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KTypeParameter"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "variableDeclarator",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KVariableDeclarator"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KFunctionLike",
+    "abstract" : true,
+    "interface" : true,
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "params",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterDeclaration"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "returnType",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KMethodDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KClassMemberDeclaration"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KFunctionLike"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "modifiers",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KModifier"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "value",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KExpression"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KAnonymousInitializer",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KClassMemberDeclaration"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "statements",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KClassBody",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "members",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KClassMemberDeclaration"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KDelegationSpecifier",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSuperType",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KDelegationSpecifier"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSuperTypeInvocation",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KSuperType"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "args",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterValue"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSimpleSuperType",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KSuperType"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KObjectDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTopLevelDeclaration"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KClassBody"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "delegationSpecifiers",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KDelegationSpecifier"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KFunctionDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTopLevelDeclaration"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KName",
+    "abstract" : true,
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KSimpleName",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KName"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KQualifiedName",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KName"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "container",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KName"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KExtensionMethod",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTopLevelDeclaration"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "body",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KStatement"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "extendedClass",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KName"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "params",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterDeclaration"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "returnType",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KPrimaryConstructor",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "params",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KParameterDeclaration"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KClassDeclaration",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/1/KTopLevelDeclaration"
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/Named"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "dataClass",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "isAbstract",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "isSealed",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "members",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KClassMemberDeclaration"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "primaryConstructor",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KPrimaryConstructor"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "superTypes",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KSuperType"
+      },
+      "containment" : true
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KImport",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "all",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EBoolean"
+      }
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "imported",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KPackageDecl",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EAttribute",
+      "name" : "name",
+      "lowerBound" : 1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EDataType",
+        "$ref" : "http://www.eclipse.org/emf/2002/Ecore#//EString"
+      }
+    } ]
+  }, {
+    "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+    "name" : "KCompilationUnit",
+    "eSuperTypes" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+      "$ref" : "/0/ASTNode"
+    } ],
+    "eStructuralFeatures" : [ {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "elements",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KTopLevelDeclaration"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "imports",
+      "upperBound" : -1,
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KImport"
+      },
+      "containment" : true
+    }, {
+      "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EReference",
+      "name" : "packageDecl",
+      "eType" : {
+        "eClass" : "http://www.eclipse.org/emf/2002/Ecore#//EClass",
+        "$ref" : "/1/KPackageDecl"
+      },
+      "containment" : true
+    } ]
+  } ]
+} ]

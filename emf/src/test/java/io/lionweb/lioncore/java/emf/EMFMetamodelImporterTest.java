@@ -5,17 +5,20 @@ import static org.junit.Assert.*;
 import io.lionweb.lioncore.java.language.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Test;
 
-public class EcoreImporterTest {
+public class EMFMetamodelImporterTest {
 
   @Test
   public void importLibraryExample() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
-    EcoreImporter importer = new EcoreImporter();
+    EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Language> languages = importer.importEcoreInputStream(is);
+    List<Language> languages = importer.importInputStream(is);
     assertEquals(1, languages.size());
 
     Language language = languages.get(0);
@@ -149,5 +152,31 @@ public class EcoreImporterTest {
     assertEquals(false, specialistBookWriterName.isDerived());
     assertEquals(false, specialistBookWriterName.isOptional());
     assertEquals(true, specialistBookWriterName.isRequired());
+  }
+
+  @Test
+  public void importKotlinLangExample() throws IOException {
+    InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
+    EMFMetamodelImporter importer = new EMFMetamodelImporter();
+
+    List<Language> languages = importer.importInputStream(is, ResourceType.JSON);
+    assertEquals(2, languages.size());
+
+    Concept point = languages.get(0).getConceptByName("Point");
+    assertEquals(2, point.allFeatures().size());
+
+    Property pointLine = point.getPropertyByName("line");
+    assertEquals(LionCoreBuiltins.getInteger(), pointLine.getType());
+    assertEquals(true, pointLine.isRequired());
+
+    Property pointColumn = point.getPropertyByName("column");
+    assertEquals(LionCoreBuiltins.getInteger(), pointColumn.getType());
+    assertEquals(true, pointColumn.isRequired());
+
+    Enumeration issueType = languages.get(0).getEnumerationByName("IssueType");
+    assertEquals(3, issueType.getLiterals().size());
+    assertEquals(
+        new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")),
+        issueType.getLiterals().stream().map(l -> l.getName()).collect(Collectors.toSet()));
   }
 }

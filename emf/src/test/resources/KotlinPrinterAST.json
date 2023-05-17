@@ -1,0 +1,89 @@
+{
+  "eClass" : "https://strumenta.com/starlasu/v2#//Result",
+  "root" : {
+    "eClass" : "https://strumenta.com/kotlinlang#//KCompilationUnit",
+    "position" : {
+      "start" : {
+        "line" : 1
+      },
+      "end" : {
+        "line" : 280
+      }
+    },
+    "elements" : [ {
+      "eClass" : "https://strumenta.com/kotlinlang#//KClassDeclaration",
+      "position" : {
+        "start" : {
+          "line" : 14
+        },
+        "end" : {
+          "line" : 280
+        }
+      },
+      "name" : "KotlinPrinter",
+      "primaryConstructor" : { }
+    } ],
+    "imports" : [ {
+      "position" : {
+        "start" : {
+          "line" : 3
+        },
+        "end" : {
+          "line" : 4
+        }
+      },
+      "imported" : "com.strumenta.kolasu.codegen.NodePrinter"
+    }, {
+      "position" : {
+        "start" : {
+          "line" : 4
+        },
+        "end" : {
+          "line" : 5
+        }
+      },
+      "imported" : "com.strumenta.kolasu.codegen.PrinterOutput"
+    }, {
+      "position" : {
+        "start" : {
+          "line" : 5
+        },
+        "end" : {
+          "line" : 6
+        }
+      },
+      "imported" : "com.strumenta.kolasu.model.Node"
+    }, {
+      "position" : {
+        "start" : {
+          "line" : 6
+        },
+        "end" : {
+          "line" : 7
+        }
+      },
+      "imported" : "java.io.File"
+    }, {
+      "position" : {
+        "start" : {
+          "line" : 7
+        },
+        "end" : {
+          "line" : 14
+        }
+      },
+      "imported" : "kotlin.reflect.KClass"
+    } ],
+    "packageDecl" : {
+      "position" : {
+        "start" : {
+          "line" : 1
+        },
+        "end" : {
+          "line" : 3
+        }
+      },
+      "name" : "com.strumenta.kotlinlangmod"
+    }
+  }
+}

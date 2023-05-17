@@ -81,6 +81,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, Has
         .orElse(null);
   }
 
+  public @Nullable Enumeration getEnumerationByName(String name) {
+    return getElements().stream()
+        .filter(element -> element instanceof Enumeration)
+        .map(element -> (Enumeration) element)
+        .filter(element -> element.getName().equals(name))
+        .findFirst()
+        .orElse(null);
+  }
+
   public Concept requireConceptByName(String name) {
     Concept concept = getConceptByName(name);
     if (concept == null) {
