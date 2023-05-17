@@ -2,7 +2,6 @@ plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
-    id 'net.researchgate.release' version '3.0.2'
 }
 
 repositories {
@@ -136,15 +135,6 @@ publishing {
 compileJava {
     sourceCompatibility = '1.8'
     targetCompatibility = '1.8'
-}
-
-release {
-    buildTasks = ['publish']
-    versionPropertyFile = '../gradle.properties'
-    git {
-        requireBranch.set('master')
-        pushToRemote.set('origin')
-    }
 }
 
 tasks.withType(Sign) {

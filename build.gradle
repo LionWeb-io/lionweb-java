@@ -1,6 +1,7 @@
 plugins {
     id "com.diffplug.spotless" version "5.1.0"
     id "java"
+    id 'net.researchgate.release' version '3.0.2'
 }
 
 repositories {
@@ -13,5 +14,14 @@ subprojects {
         java {
             googleJavaFormat()
         }
+    }
+}
+
+release {
+    buildTasks = [':core:publish', ":emf:publish"]
+    versionPropertyFile = './gradle.properties'
+    git {
+        requireBranch.set('master')
+        pushToRemote.set('origin')
     }
 }
