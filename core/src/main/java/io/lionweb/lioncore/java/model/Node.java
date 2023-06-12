@@ -2,7 +2,6 @@ package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.language.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -136,10 +135,10 @@ public interface Node extends HasFeatureValues {
     Reference reference = this.getConcept().getReferenceByName(referenceName);
     if (reference == null) {
       throw new IllegalArgumentException(
-              "Concept "
-                      + this.getConcept().qualifiedName()
-                      + " does not contained a property named "
-                      + referenceName);
+          "Concept "
+              + this.getConcept().qualifiedName()
+              + " does not contained a property named "
+              + referenceName);
     }
     return getReferenceValues(reference);
   }
