@@ -1,10 +1,8 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.language.Annotation;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.Property;
+import io.lionweb.lioncore.java.language.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -132,5 +130,17 @@ public interface Node extends HasFeatureValues {
     } else {
       return children.get(0);
     }
+  }
+
+  default List<ReferenceValue> getReferenceValueByName(String referenceName) {
+    Reference reference = this.getConcept().getReferenceByName(referenceName);
+    if (reference == null) {
+      throw new IllegalArgumentException(
+              "Concept "
+                      + this.getConcept().qualifiedName()
+                      + " does not contained a property named "
+                      + referenceName);
+    }
+    return getReferenceValues(reference);
   }
 }
