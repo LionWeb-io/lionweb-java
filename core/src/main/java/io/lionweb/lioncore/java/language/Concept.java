@@ -195,22 +195,23 @@ public class Concept extends FeaturesContainer<Concept> {
   }
 
   public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
+
     return this.allProperties().stream()
-        .filter(p -> MetaPointer.from(p, this.getLanguage()).equals(metaPointer))
+        .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }
 
   public @Nullable Containment getContainmentByMetaPointer(MetaPointer metaPointer) {
     return this.allContainments().stream()
-        .filter(p -> MetaPointer.from(p, this.getLanguage()).equals(metaPointer))
+        .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }
 
   public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
     return this.allReferences().stream()
-        .filter(p -> MetaPointer.from(p, this.getLanguage()).equals(metaPointer))
+        .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }

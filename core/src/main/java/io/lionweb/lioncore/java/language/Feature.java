@@ -109,6 +109,10 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     return (T) this;
   }
 
+  public Language getDeclaringLanguage() {
+    return (Language) ((FeaturesContainer<?>) this.getContainer()).getContainer();
+  }
+
   protected Object getDerivedValue(Property property) {
     if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
       return qualifiedName();

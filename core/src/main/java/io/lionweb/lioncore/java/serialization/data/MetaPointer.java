@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.serialization.data;
 
+import io.lionweb.lioncore.java.language.Feature;
 import io.lionweb.lioncore.java.language.HasKey;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LanguageElement;
@@ -21,6 +22,10 @@ public class MetaPointer {
   }
 
   public MetaPointer() {}
+
+  public static MetaPointer from(Feature<?> feature) {
+    return from(feature, feature.getDeclaringLanguage());
+  }
 
   public static MetaPointer from(LanguageElement<?> languageElement) {
     MetaPointer metaPointer = new MetaPointer();
