@@ -31,6 +31,8 @@ public class NodeTreeValidator extends Validator<Node> {
                 } else {
                   uniqueIDs.put(id, n);
                 }
+              } else {
+                result.addError("ID null found", n);
               }
             });
   }

@@ -154,7 +154,7 @@ public class LanguageValidator extends Validator<Language> {
                 if (key != null) {
                   if (uniqueKeys.containsKey(key)) {
                     result.addError(
-                        "Key " + key + " is duplicate. It is also used by " + uniqueKeys.get(key),
+                        "Key '" + key + "' is duplicate. It is also used by " + uniqueKeys.get(key),
                         n);
                   } else {
                     uniqueKeys.put(key, n.getID());

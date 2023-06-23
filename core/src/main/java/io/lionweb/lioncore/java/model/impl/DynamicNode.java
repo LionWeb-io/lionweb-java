@@ -248,15 +248,26 @@ public class DynamicNode implements Node {
         + id
         + '\''
         + ", parent="
-        + parent
+        + parent.getID()
         + ", concept="
-        + concept
-        + ", propertyValues="
-        + propertyValues
-        + ", containmentValues="
-        + containmentValues
-        + ", referenceValues="
-        + referenceValues
-        + '}';
+        + concept.qualifiedName()
+        + ", propertyValues={"
+        + propertyValues.entrySet().stream()
+            .map(e -> e.getKey() + "=" + e.getValue())
+            .collect(Collectors.joining(", "))
+        + "}, containmentValues={"
+        + containmentValues.entrySet().stream()
+            .map(
+                e -> {
+                  String childrenRepr =
+                      e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
+                  return e.getKey() + "=" + childrenRepr;
+                })
+            .collect(Collectors.joining(", "))
+        + "}, referenceValues={"
+        + referenceValues.entrySet().stream()
+            .map(e -> e.getKey() + "=" + e.getValue())
+            .collect(Collectors.joining(", "))
+        + "} }";
   }
 }

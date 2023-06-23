@@ -198,44 +198,48 @@ public class LowLevelJsonSerialization {
       throw new IllegalArgumentException(
           "Malformed JSON. Object expected but found " + jsonElement);
     }
-    JsonObject jsonObject = jsonElement.getAsJsonObject();
+    try {
+      JsonObject jsonObject = jsonElement.getAsJsonObject();
 
-    SerializedNode serializedNode = new SerializedNode();
-    serializedNode.setID(SerializationUtils.tryToGetStringProperty(jsonObject, "id"));
-    serializedNode.setConcept(
-        SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
-    serializedNode.setParentNodeID(SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
+      SerializedNode serializedNode = new SerializedNode();
+      serializedNode.setID(SerializationUtils.tryToGetStringProperty(jsonObject, "id"));
+      serializedNode.setConcept(
+              SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
+      serializedNode.setParentNodeID(SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
 
-    JsonArray properties = jsonObject.get("properties").getAsJsonArray();
-    properties.forEach(
-        property -> {
-          JsonObject propertyJO = property.getAsJsonObject();
-          serializedNode.addPropertyValue(
-              new SerializedPropertyValue(
-                  SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
-                  SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
-        });
+      JsonArray properties = jsonObject.get("properties").getAsJsonArray();
+      properties.forEach(
+              property -> {
+                JsonObject propertyJO = property.getAsJsonObject();
+                serializedNode.addPropertyValue(
+                        new SerializedPropertyValue(
+                                SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
+                                SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
+              });
 
-    JsonArray children = jsonObject.get("children").getAsJsonArray();
-    children.forEach(
-        childrenEntry -> {
-          JsonObject childrenJO = childrenEntry.getAsJsonObject();
-          serializedNode.addContainmentValue(
-              new SerializedContainmentValue(
-                  SerializationUtils.tryToGetMetaPointerProperty(childrenJO, "containment"),
-                  SerializationUtils.tryToGetArrayOfIDs(childrenJO, "children")));
-        });
+      JsonArray children = jsonObject.get("children").getAsJsonArray();
+      children.forEach(
+              childrenEntry -> {
+                JsonObject childrenJO = childrenEntry.getAsJsonObject();
+                serializedNode.addContainmentValue(
+                        new SerializedContainmentValue(
+                                SerializationUtils.tryToGetMetaPointerProperty(childrenJO, "containment"),
+                                SerializationUtils.tryToGetArrayOfIDs(childrenJO, "children")));
+              });
 
-    JsonArray references = jsonObject.get("references").getAsJsonArray();
-    references.forEach(
-        referenceEntry -> {
-          JsonObject referenceJO = referenceEntry.getAsJsonObject();
-          serializedNode.addReferenceValue(
-              new SerializedReferenceValue(
-                  SerializationUtils.tryToGetMetaPointerProperty(referenceJO, "reference"),
-                  SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));
-        });
+      JsonArray references = jsonObject.get("references").getAsJsonArray();
+      references.forEach(
+              referenceEntry -> {
+                JsonObject referenceJO = referenceEntry.getAsJsonObject();
+                serializedNode.addReferenceValue(
+                        new SerializedReferenceValue(
+                                SerializationUtils.tryToGetMetaPointerProperty(referenceJO, "reference"),
+                                SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));
+              });
 
-    return serializedNode;
+      return serializedNode;
+    } catch (UnserializationException e) {
+      throw new UnserializationException("Issue occurred while unserializing " + jsonElement, e);
+    }
   }
 }
