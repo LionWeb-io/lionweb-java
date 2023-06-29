@@ -63,6 +63,13 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         enumeration.setKey(ePackage.getName() + "-" + eEnum.getName());
         metamodel.addElement(enumeration);
         dataTypeMapping.registerMapping(eEnum, enumeration);
+      } else if (eClassifier instanceof EDataType) {
+        EDataType eDataType = (EDataType) eClassifier;
+        PrimitiveType primitiveType = new PrimitiveType(metamodel, eDataType.getName());
+        primitiveType.setID(ePackage.getName() + "-" + eDataType.getName());
+        primitiveType.setKey(ePackage.getName() + "-" + eDataType.getName());
+        metamodel.addElement(primitiveType);
+        dataTypeMapping.registerMapping(eDataType, primitiveType);
       } else {
         throw new UnsupportedOperationException(eClassifier.toString());
       }
@@ -116,6 +123,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           enumerationLiteral.setID(enumeration.getID() + "-" + enumLiteral.getName());
           enumeration.addLiteral(enumerationLiteral);
         }
+      } else if (eClassifier instanceof EDataType) {
+        // Nothing to do here
       } else {
         throw new UnsupportedOperationException();
       }

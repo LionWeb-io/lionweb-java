@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.eclipse.emf.ecore.EcorePackage;
 import org.junit.Test;
 
 public class EMFMetamodelImporterTest {
@@ -178,5 +180,27 @@ public class EMFMetamodelImporterTest {
     assertEquals(
         new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")),
         issueType.getLiterals().stream().map(l -> l.getName()).collect(Collectors.toSet()));
+  }
+
+  @Test
+  public void importOCCI() throws IOException {
+    InputStream is = this.getClass().getResourceAsStream("/OCCI.ecore");
+    EMFMetamodelImporter importer = new EMFMetamodelImporter();
+    importer.importEPackage(EcorePackage.eINSTANCE);
+
+    List<Language> languages = importer.importInputStream(is);
+    assertEquals(1, languages.size());
+
+    Language occiLanguage = languages.get(0);
+
+    assertEquals(4, occiLanguage.getPrimitiveTypes().size());
+    PrimitiveType URI = occiLanguage.getPrimitiveTypes().get(0);
+    assertEquals("URI", URI.getName());
+    PrimitiveType String = occiLanguage.getPrimitiveTypes().get(1);
+    assertEquals("String", String.getName());
+    PrimitiveType Number = occiLanguage.getPrimitiveTypes().get(2);
+    assertEquals("Number", Number.getName());
+    PrimitiveType Boolean = occiLanguage.getPrimitiveTypes().get(3);
+    assertEquals("Boolean", Boolean.getName());
   }
 }

@@ -5,6 +5,8 @@ import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.lionweb.lioncore.java.language.PrimitiveType;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
@@ -15,9 +17,17 @@ public class DataTypeMapping {
   private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
   private Map<Enumeration, EEnum> enumerationsToEEnums = new HashMap<>();
 
+  private Map<EDataType, PrimitiveType> eDataTypesToPrimitiveTypes = new HashMap<>();
+  private Map<PrimitiveType, EDataType> primitiveTypesToEDataTypes = new HashMap<>();
+
   public void registerMapping(EEnum eEnum, Enumeration enumeration) {
     eEnumsToEnumerations.put(eEnum, enumeration);
     enumerationsToEEnums.put(enumeration, eEnum);
+  }
+
+  public void registerMapping(EDataType eDataType, PrimitiveType primitiveType) {
+    eDataTypesToPrimitiveTypes.put(eDataType, primitiveType);
+    primitiveTypesToEDataTypes.put(primitiveType, eDataType);
   }
 
   public Enumeration getEnumerationForEEnum(EEnum eEnum) {
@@ -58,6 +68,9 @@ public class DataTypeMapping {
     }
     if (eClassifier.eClass().equals(EcorePackage.Literals.EENUM)) {
       return eEnumsToEnumerations.get((EEnum) eClassifier);
+    }
+    if (eClassifier instanceof EDataType) {
+      return eDataTypesToPrimitiveTypes.get((EDataType) eClassifier);
     }
     if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
       if (eClassifier.getName().equals("String")) {
