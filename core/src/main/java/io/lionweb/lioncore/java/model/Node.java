@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.model;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.language.*;
 import java.util.ArrayList;
 import java.util.List;

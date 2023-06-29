@@ -3,10 +3,9 @@ package io.lionweb.lioncore.java.emf.mapping;
 import io.lionweb.lioncore.java.language.DataType;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.language.PrimitiveType;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.lionweb.lioncore.java.language.PrimitiveType;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;

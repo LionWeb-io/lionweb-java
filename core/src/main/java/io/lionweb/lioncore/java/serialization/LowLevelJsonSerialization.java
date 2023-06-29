@@ -204,38 +204,39 @@ public class LowLevelJsonSerialization {
       SerializedNode serializedNode = new SerializedNode();
       serializedNode.setID(SerializationUtils.tryToGetStringProperty(jsonObject, "id"));
       serializedNode.setConcept(
-              SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
-      serializedNode.setParentNodeID(SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
+          SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
+      serializedNode.setParentNodeID(
+          SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
 
       JsonArray properties = jsonObject.get("properties").getAsJsonArray();
       properties.forEach(
-              property -> {
-                JsonObject propertyJO = property.getAsJsonObject();
-                serializedNode.addPropertyValue(
-                        new SerializedPropertyValue(
-                                SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
-                                SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
-              });
+          property -> {
+            JsonObject propertyJO = property.getAsJsonObject();
+            serializedNode.addPropertyValue(
+                new SerializedPropertyValue(
+                    SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
+                    SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
+          });
 
       JsonArray children = jsonObject.get("children").getAsJsonArray();
       children.forEach(
-              childrenEntry -> {
-                JsonObject childrenJO = childrenEntry.getAsJsonObject();
-                serializedNode.addContainmentValue(
-                        new SerializedContainmentValue(
-                                SerializationUtils.tryToGetMetaPointerProperty(childrenJO, "containment"),
-                                SerializationUtils.tryToGetArrayOfIDs(childrenJO, "children")));
-              });
+          childrenEntry -> {
+            JsonObject childrenJO = childrenEntry.getAsJsonObject();
+            serializedNode.addContainmentValue(
+                new SerializedContainmentValue(
+                    SerializationUtils.tryToGetMetaPointerProperty(childrenJO, "containment"),
+                    SerializationUtils.tryToGetArrayOfIDs(childrenJO, "children")));
+          });
 
       JsonArray references = jsonObject.get("references").getAsJsonArray();
       references.forEach(
-              referenceEntry -> {
-                JsonObject referenceJO = referenceEntry.getAsJsonObject();
-                serializedNode.addReferenceValue(
-                        new SerializedReferenceValue(
-                                SerializationUtils.tryToGetMetaPointerProperty(referenceJO, "reference"),
-                                SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));
-              });
+          referenceEntry -> {
+            JsonObject referenceJO = referenceEntry.getAsJsonObject();
+            serializedNode.addReferenceValue(
+                new SerializedReferenceValue(
+                    SerializationUtils.tryToGetMetaPointerProperty(referenceJO, "reference"),
+                    SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));
+          });
 
       return serializedNode;
     } catch (UnserializationException e) {

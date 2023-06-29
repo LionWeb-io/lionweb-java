@@ -3,8 +3,6 @@ package io.lionweb.lioncore.java.language;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
-
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -155,7 +153,9 @@ public class Language extends M3Node<Language> implements NamespaceProvider, Has
   }
 
   public List<PrimitiveType> getPrimitiveTypes() {
-    return this.getElements().stream().filter(e -> e instanceof PrimitiveType)
-            .map(e -> (PrimitiveType)e).collect(Collectors.toList());
+    return this.getElements().stream()
+        .filter(e -> e instanceof PrimitiveType)
+        .map(e -> (PrimitiveType) e)
+        .collect(Collectors.toList());
   }
 }

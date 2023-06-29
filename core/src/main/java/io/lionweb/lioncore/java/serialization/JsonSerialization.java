@@ -11,7 +11,6 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
-
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -33,11 +32,11 @@ import javax.annotation.Nonnull;
  */
 public class JsonSerialization {
   public static void saveLanguageToFile(Language language, File file) throws IOException {
-      String content = getStandardSerialization().serializeTreesToJsonString(language);
-      file.getParentFile().mkdirs();
-      BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-      writer.write(content);
-      writer.close();
+    String content = getStandardSerialization().serializeTreesToJsonString(language);
+    file.getParentFile().mkdirs();
+    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+    writer.write(content);
+    writer.close();
   }
 
   /** This has specific support for LionCore or LionCoreBuiltins. */
