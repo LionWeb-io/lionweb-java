@@ -48,7 +48,7 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 task javadocJar(type: Jar, dependsOn: 'javadoc') {
     from javadoc.destinationDir
-    classifier = 'javadoc'
+    archiveClassifier = 'javadoc'
 }
 
 task sourcesJar(type: Jar) {

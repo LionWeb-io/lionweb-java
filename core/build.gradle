@@ -1,7 +1,11 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ConfigureShadowRelocation
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id 'java-library'
     id 'maven-publish'
     id 'signing'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 repositories {
@@ -35,7 +39,7 @@ dependencies {
 
     javadocConfig 'org.modelix:model-api:1.3.2'
 
-    implementation group: 'com.google.code.gson', name: 'gson', version: '2.10.1'
+    implementation("com.google.code.gson:gson:2.10.1")
 
     implementation group: 'com.networknt', name: 'json-schema-validator', version: '1.0.77'
 }
@@ -54,7 +58,7 @@ ext.isReleaseVersion = !version.endsWith("SNAPSHOT")
 
 task javadocJar(type: Jar, dependsOn: 'javadoc') {
     from javadoc.destinationDir
-    classifier = 'javadoc'
+    archiveClassifier = "javadoc"
 }
 
 task sourcesJar(type: Jar) {
@@ -129,6 +133,52 @@ publishing {
 
             }
         }
+        lioncore_java_core_fat(MavenPublication) {
+            groupId = 'io.lionweb.lioncore-java'
+            artifactId "lioncore-java-" + project.name + "-fat"
+            artifact new File(buildDir, "libs/core-${version}-all.jar")
+            pom {
+                name = "lioncore-java-" + project.name + "-fat"
+                description = "Java APIs for the LIonWeb system"
+                version = project.version
+                packaging = 'jar'
+                url = 'https://github.com/LIonWeb-org/lioncore-java'
+
+                scm {
+                    connection = 'scm:git:https://github.com/LIonWeb-org/lioncore-java.git'
+                    developerConnection = 'scm:git:git@github.com:LIonWeb-org/lioncore-java.git'
+                    url = 'https://github.com/LIonWeb-org/lioncore-java.git'
+                }
+
+                licenses {
+                    license {
+                        name = 'Apache Licenve V2.0'
+                        url = 'https://www.apache.org/licenses/LICENSE-2.0'
+                        distribution = 'repo'
+                    }
+                }
+
+                // The developers entry is strictly required by Maven Central
+                developers {
+                    developer {
+                        id = 'ftomassetti'
+                        name = 'Federico Tomassetti'
+                        email = 'federico@strumenta.com'
+                    }
+                    developer {
+                        id = 'dslmeinte'
+                        name = 'Meinte Boersma'
+                        email = 'meinte.boersma@gmail.com'
+                    }
+                    developer {
+                        id = 'enikao'
+                        name = 'Niko Stotz'
+                        email = 'niko.stotz@nikostotz.de'
+                    }
+                }
+
+            }
+        }
     }
 }
 
@@ -143,4 +193,20 @@ tasks.withType(Sign) {
 
 signing {
     sign publishing.publications.lioncore_java_core
+}
+
+task relocateShadowJar(type: ConfigureShadowRelocation) {
+    target = tasks.shadowJar
+}
+
+tasks.withType(ShadowJar) {
+    dependsOn relocateShadowJar
+//    configurations = [
+//            project.configurations.shadow
+//    ]
+    relocate 'com.google.gson', 'relocated.lionweb.com.google.gson'
+}
+
+tasks.named("publishLioncore_java_core_fatPublicationToMavenLocal") {
+    dependsOn("shadowJar")
 }
