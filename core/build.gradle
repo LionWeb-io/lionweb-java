@@ -213,6 +213,7 @@ tasks.named("publishLioncore_java_core_fatPublicationToMavenLocal") {
 
 tasks.named("publishLioncore_java_core_fatPublicationToMavenRepository") {
     dependsOn("shadowJar")
+    dependsOn("signLioncore_java_corePublication")
 }
 
 tasks.named("signLioncore_java_corePublication") {
