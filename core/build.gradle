@@ -222,3 +222,7 @@ tasks.named("signLioncore_java_corePublication") {
 tasks.named("signLioncore_java_core_fatPublication") {
     dependsOn("shadowJar")
 }
+
+tasks.named("publishLioncore_java_corePublicationToMavenRepository") {
+    dependsOn("signLioncore_java_core_fatPublication")
+}
