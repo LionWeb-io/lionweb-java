@@ -243,14 +243,21 @@ public class DynamicNode implements Node {
 
   @Override
   public String toString() {
+    String qualifiedName;
+    try {
+      qualifiedName = concept.qualifiedName();
+    } catch(Throwable t) {
+      qualifiedName = "<cannot be calculated>";
+    }
+
     return "DynamicNode{"
         + "id='"
         + id
         + '\''
         + ", parent="
-        + parent.getID()
+        + (parent == null? "null" : parent.getID())
         + ", concept="
-        + concept.qualifiedName()
+        + qualifiedName
         + ", propertyValues={"
         + propertyValues.entrySet().stream()
             .map(e -> e.getKey() + "=" + e.getValue())

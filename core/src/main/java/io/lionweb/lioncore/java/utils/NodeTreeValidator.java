@@ -14,7 +14,10 @@ public class NodeTreeValidator extends Validator<Node> {
   }
 
   private void validateNodeAndDescendants(Node node, ValidationResult validationResult) {
-    validationResult.checkForError(!CommonChecks.isValidID(node.getID()), "Invalid ID", node);
+    if (node.getID() != null) {
+      // It does not make sense to make the same ID as null and invalid
+      validationResult.checkForError(!CommonChecks.isValidID(node.getID()), "Invalid ID", node);
+    }
     node.getChildren().forEach(child -> validateNodeAndDescendants(child, validationResult));
   }
 
