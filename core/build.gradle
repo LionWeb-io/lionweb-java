@@ -195,6 +195,7 @@ tasks.withType(Sign) {
 
 signing {
     sign publishing.publications.lioncore_java_core
+    sign publishing.publications.lioncore_java_core_fat
 }
 
 task relocateShadowJar(type: ConfigureShadowRelocation) {
@@ -203,9 +204,6 @@ task relocateShadowJar(type: ConfigureShadowRelocation) {
 
 tasks.withType(ShadowJar) {
     dependsOn relocateShadowJar
-//    configurations = [
-//            project.configurations.shadow
-//    ]
     relocate 'com.google.gson', 'relocated.lionweb.com.google.gson'
 }
 
