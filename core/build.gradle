@@ -210,3 +210,7 @@ tasks.withType(ShadowJar) {
 tasks.named("publishLioncore_java_core_fatPublicationToMavenLocal") {
     dependsOn("shadowJar")
 }
+
+tasks.named("publishLioncore_java_core_fatPublicationToMavenRepository'") {
+    dependsOn("shadowJar")
+}
