@@ -136,6 +136,8 @@ publishing {
         lioncore_java_core_fat(MavenPublication) {
             groupId = 'io.lionweb.lioncore-java'
             artifactId "lioncore-java-" + project.name + "-fat"
+            artifact sourcesJar
+            artifact javadocJar
             artifact new File(buildDir, "libs/core-${version}-all.jar")
             pom {
                 name = "lioncore-java-" + project.name + "-fat"
