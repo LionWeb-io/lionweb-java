@@ -83,8 +83,8 @@ public class LionCore {
   public static Language getInstance() {
     if (INSTANCE == null) {
       INSTANCE = new Language("LIonCore.M3");
-      INSTANCE.setID("LIonCore_M3");
-      INSTANCE.setKey("LIonCore_M3");
+      INSTANCE.setID("-id-LIonCore-M3");
+      INSTANCE.setKey("LIonCore-M3");
       INSTANCE.setVersion("1");
 
       // We first instantiate all Concepts and ConceptInterfaces
@@ -114,6 +114,9 @@ public class LionCore {
       concept.addFeature(
           Property.createRequired(
               "abstract", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Concept_abstract"));
+      concept.addFeature(
+              Property.createRequired(
+                      "partition", LionCoreBuiltins.getBoolean(), "LIonCore_M3_Concept_partition"));
       concept.addFeature(
           Reference.createOptional("extends", concept, "LIonCore_M3_Concept_extends"));
       concept.addFeature(
@@ -179,9 +182,7 @@ public class LionCore {
       language.setAbstract(true);
 
       namespacedEntity.setAbstract(true);
-      namespacedEntity.addFeature(
-          Property.createRequired(
-              "name", LionCoreBuiltins.getString(), "LIonCore_M3_NamespacedEntity_name"));
+      namespacedEntity.addImplementedInterface(LionCoreBuiltins.getINamed());
       namespacedEntity.addFeature(
           Property.createRequired(
                   "qualifiedName",
@@ -203,7 +204,6 @@ public class LionCore {
   }
 
   private static void checkIDs(M3Node node) {
-    Set<String> clashingKeys = new HashSet<>(Arrays.asList("type", "extends", "name"));
     if (node.getID() == null) {
       if (node instanceof NamespacedEntity) {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
@@ -221,11 +221,7 @@ public class LionCore {
           .getFeatures()
           .forEach(
               feature -> {
-                if (clashingKeys.contains(feature.getName())) {
-                  feature.setKey(featuresContainer.getName() + "_" + feature.getName());
-                } else {
-                  feature.setKey(feature.getName());
-                }
+                feature.setKey(featuresContainer.getName() + "-" + feature.getName());
               });
     }
 

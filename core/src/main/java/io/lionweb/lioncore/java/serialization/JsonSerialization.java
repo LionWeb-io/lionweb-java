@@ -259,6 +259,10 @@ public class JsonSerialization {
   // Unserialization
   //
 
+public List<Node> unserializeToNodes(File file) throws FileNotFoundException {
+    return unserializeToNodes(new FileInputStream(file));
+}
+
   public List<Node> unserializeToNodes(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);

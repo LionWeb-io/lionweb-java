@@ -7,14 +7,14 @@ public class LionCoreBuiltins extends Language {
   private LionCoreBuiltins() {
     super("LIonCore.Builtins");
     setID("LIonCore_Builtins");
-    setKey("LIonCore_Builtins");
+    setKey("LIonCore-builtins");
     setVersion("1");
     PrimitiveType string = new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
     new PrimitiveType(this, "JSON");
     ConceptInterface iNamed = new ConceptInterface(this, "INamed");
-    iNamed.addFeature(Property.createRequired("name", string));
+    iNamed.addFeature(Property.createRequired("name", string).setKey("LIonCore-builtins-INamed-name"));
     this.getElements()
         .forEach(
             e -> {
