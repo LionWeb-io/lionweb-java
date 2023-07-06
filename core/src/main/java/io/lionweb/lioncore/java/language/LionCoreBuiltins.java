@@ -9,10 +9,12 @@ public class LionCoreBuiltins extends Language {
     setID("LIonCore_Builtins");
     setKey("LIonCore_Builtins");
     setVersion("1");
-    new PrimitiveType(this, "String");
+    PrimitiveType string = new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
     new PrimitiveType(this, "JSON");
+    ConceptInterface iNamed = new ConceptInterface(this, "INamed");
+    iNamed.addFeature(Property.createRequired("name", string));
     this.getElements()
         .forEach(
             e -> {
@@ -39,5 +41,9 @@ public class LionCoreBuiltins extends Language {
 
   public static PrimitiveType getJSON() {
     return INSTANCE.getPrimitiveTypeByName("JSON");
+  }
+
+  public static ConceptInterface getINamed() {
+    return INSTANCE.getConceptInterfaceByName("INamed");
   }
 }
