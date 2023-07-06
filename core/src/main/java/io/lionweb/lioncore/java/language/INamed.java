@@ -1,2 +1,5 @@
-package io.lionweb.lioncore.java.language;public interface INamed {
+package io.lionweb.lioncore.java.language;
+
+public interface INamed {
+    public String getName();
 }
