@@ -69,6 +69,14 @@ public class Concept extends FeaturesContainer<Concept> {
     this.setPropertyValue("abstract", value);
   }
 
+  public boolean isPartition() {
+    return this.getPropertyValue("partition", Boolean.class, false);
+  }
+
+  public void setPartition(boolean value) {
+    this.setPropertyValue("partition", value);
+  }
+
   // TODO should this return BaseConcept when extended is equal null?
   public @Nullable Concept getExtendedConcept() {
     return this.getReferenceSingleValue("extends");
