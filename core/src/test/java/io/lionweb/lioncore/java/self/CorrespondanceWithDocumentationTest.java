@@ -84,12 +84,19 @@ public class CorrespondanceWithDocumentationTest {
         File file = new File("/Users/ftomassetti/Downloads/lioncore.json");
         List<Node> nodes = jsonSer.unserializeToNodes(file);
 
-
         Language unserializedLioncore = (Language) nodes.get(0);
     }
 
     @Test
-    public void builtInIsTheSameAsInTheOrganizationRepo() {
-        String url = "https://github.com/LIonWeb-org/organization/blob/niko/update-docs-june2/lioncore/metametamodel/lioncore.json";
+    public void builtInIsTheSameAsInTheOrganizationRepo() throws FileNotFoundException {
+        JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
+
+        //URL url = new URL("https://raw.githubusercontent.com/LIonWeb-org/organization/niko/update-docs-june2/lioncore/metametamodel/builtins.json");
+        //String content = getStringFromUrl(url);
+        // List<Node> nodes = jsonSer.unserializeToNodes(content);
+        File file = new File("/Users/ftomassetti/Downloads/builtins.json");
+        List<Node> nodes = jsonSer.unserializeToNodes(file);
+
+        Language unserializedBuiltins = (Language) nodes.get(0);
     }
 }
