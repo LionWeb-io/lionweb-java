@@ -54,9 +54,12 @@ public class ReferenceValue {
 
   @Override
   public String toString() {
-    return "ReferenceValue{" +
-            "referred=" + referred +
-            ", resolveInfo='" + resolveInfo + '\'' +
-            '}';
+    return "ReferenceValue{"
+        + "referred="
+        + referred
+        + ", resolveInfo='"
+        + resolveInfo
+        + '\''
+        + '}';
   }
 }

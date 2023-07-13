@@ -17,8 +17,12 @@ public class LionCoreBuiltins extends Language {
     Concept node = new Concept(this, "Node").setID("LIonCore-builtins-Node");
     node.setAbstract(true);
 
-    ConceptInterface iNamed = new ConceptInterface(this, "INamed").setID("LIonCore-builtins-INamed");
-    iNamed.addFeature(Property.createRequired("name", string).setID("LIonCore-builtins-INamed-name").setKey("LIonCore-builtins-INamed-name"));
+    ConceptInterface iNamed =
+        new ConceptInterface(this, "INamed").setID("LIonCore-builtins-INamed");
+    iNamed.addFeature(
+        Property.createRequired("name", string)
+            .setID("LIonCore-builtins-INamed-name")
+            .setKey("LIonCore-builtins-INamed-name"));
 
     this.getElements()
         .forEach(

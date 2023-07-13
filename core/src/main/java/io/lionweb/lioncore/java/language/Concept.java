@@ -66,7 +66,6 @@ public class Concept extends FeaturesContainer<Concept> {
     return directAncestors;
   }
 
-
   public boolean isAbstract() {
     return this.getPropertyValue("abstract", Boolean.class, false);
   }

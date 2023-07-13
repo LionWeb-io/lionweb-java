@@ -12,16 +12,11 @@ import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.utils.NetworkUtils;
-
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 /**
  * This class is responsible for unserializing models.
@@ -266,9 +261,9 @@ public class JsonSerialization {
   // Unserialization
   //
 
-public List<Node> unserializeToNodes(File file) throws FileNotFoundException {
+  public List<Node> unserializeToNodes(File file) throws FileNotFoundException {
     return unserializeToNodes(new FileInputStream(file));
-}
+  }
 
   public List<Node> unserializeToNodes(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
@@ -277,10 +272,10 @@ public List<Node> unserializeToNodes(File file) throws FileNotFoundException {
     return unserializeSerializationBlock(serializationBlock);
   }
 
-    public List<Node> unserializeToNodes(URL url) throws IOException {
-        String content = NetworkUtils.getStringFromUrl(url);
-        return unserializeToNodes(content);
-    }
+  public List<Node> unserializeToNodes(URL url) throws IOException {
+    String content = NetworkUtils.getStringFromUrl(url);
+    return unserializeToNodes(content);
+  }
 
   public List<Node> unserializeToNodes(String json) {
     return unserializeToNodes(JsonParser.parseString(json));

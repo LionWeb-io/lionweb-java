@@ -97,13 +97,13 @@ public class LionCore {
       Concept enumerationLiteral = INSTANCE.addElement(new Concept("EnumerationLiteral"));
       Concept feature = INSTANCE.addElement(new Concept("Feature"));
       Concept classifier = INSTANCE.addElement(new Concept("Classifier"));
-      //ConceptInterface hasKey = INSTANCE.addElement(new ConceptInterface("HasKey"));
+      // ConceptInterface hasKey = INSTANCE.addElement(new ConceptInterface("HasKey"));
       Concept link = INSTANCE.addElement(new Concept("Link"));
       Concept language = INSTANCE.addElement(new Concept("Language"));
       Concept languageEntity = INSTANCE.addElement(new Concept("LanguageEntity"));
-//      Concept namespacedEntity = INSTANCE.addElement(new Concept("NamespacedEntity"));
-//      ConceptInterface namespaceProvider =
-//          INSTANCE.addElement(new ConceptInterface("NamespaceProvider"));
+      //      Concept namespacedEntity = INSTANCE.addElement(new Concept("NamespacedEntity"));
+      //      ConceptInterface namespaceProvider =
+      //          INSTANCE.addElement(new ConceptInterface("NamespaceProvider"));
       ConceptInterface iKeyed = INSTANCE.addElement(new ConceptInterface("IKeyed"));
       Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
       Concept property = INSTANCE.addElement(new Concept("Property"));
@@ -111,25 +111,22 @@ public class LionCore {
 
       // Now we start adding the features to all the Concepts and ConceptInterfaces
 
-//      concept.setAbstract(false);
-//      concept.setPartition(false);
+      //      concept.setAbstract(false);
+      //      concept.setPartition(false);
       concept.setExtendedConcept(classifier);
       concept.addFeature(
           Property.createRequired(
               "abstract", LionCoreBuiltins.getBoolean(), "-id-Concept-abstract"));
       concept.addFeature(
-              Property.createRequired(
-                      "partition", LionCoreBuiltins.getBoolean(), "-id-Concept-partition"));
+          Property.createRequired(
+              "partition", LionCoreBuiltins.getBoolean(), "-id-Concept-partition"));
+      concept.addFeature(Reference.createOptional("extends", concept, "-id-Concept-extends"));
       concept.addFeature(
-          Reference.createOptional("extends", concept, "-id-Concept-extends"));
-      concept.addFeature(
-          Reference.createMultiple(
-              "implements", conceptInterface, "-id-Concept-implements"));
+          Reference.createMultiple("implements", conceptInterface, "-id-Concept-implements"));
 
       conceptInterface.setExtendedConcept(classifier);
       conceptInterface.addFeature(
-          Reference.createMultiple(
-              "extends", conceptInterface, "-id-ConceptInterface-extends"));
+          Reference.createMultiple("extends", conceptInterface, "-id-ConceptInterface-extends"));
 
       containment.setExtendedConcept(link);
 
@@ -137,13 +134,15 @@ public class LionCore {
       dataType.setAbstract(true);
 
       enumeration.setExtendedConcept(dataType);
-      //enumeration.addImplementedInterface(namespaceProvider);
-      enumeration.addFeature(Containment.createMultiple("literals", enumerationLiteral).setID("-id-Enumeration-literals"));
+      // enumeration.addImplementedInterface(namespaceProvider);
+      enumeration.addFeature(
+          Containment.createMultiple("literals", enumerationLiteral)
+              .setID("-id-Enumeration-literals"));
 
-      //enumerationLiteral.setExtendedConcept(namespacedEntity);
+      // enumerationLiteral.setExtendedConcept(namespacedEntity);
       enumerationLiteral.addImplementedInterface(iKeyed);
 
-      //feature.setExtendedConcept(namespacedEntity);
+      // feature.setExtendedConcept(namespacedEntity);
       feature.setAbstract(true);
       feature.addImplementedInterface(iKeyed);
       feature.addFeature(
@@ -153,44 +152,44 @@ public class LionCore {
       classifier.setAbstract(true);
       classifier.setExtendedConcept(languageEntity);
       classifier.addFeature(
-          Containment.createMultiple(
-              "features", feature, "-id-Classifier-features"));
+          Containment.createMultiple("features", feature, "-id-Classifier-features"));
 
-//      hasKey.addFeature(
-//          Property.createRequired("key", LionCoreBuiltins.getString(), "LIonCore_M3_HasKey_key"));
+      //      hasKey.addFeature(
+      //          Property.createRequired("key", LionCoreBuiltins.getString(),
+      // "LIonCore_M3_HasKey_key"));
 
       link.setAbstract(true);
       link.setExtendedConcept(feature);
       link.addFeature(
-          Property.createRequired(
-              "multiple", LionCoreBuiltins.getBoolean(), "-id-Link-multiple"));
+          Property.createRequired("multiple", LionCoreBuiltins.getBoolean(), "-id-Link-multiple"));
       link.addFeature(Reference.createRequired("type", classifier, "-id-Link-type"));
 
-      //language.addImplementedInterface(namespaceProvider);
+      // language.addImplementedInterface(namespaceProvider);
       language.setPartition(true);
       language.addImplementedInterface(iKeyed);
-//      language.addFeature(
-//          Property.createRequired(
-//              "name", LionCoreBuiltins.getString(), "LIonCore_M3_Language_name"));
+      //      language.addFeature(
+      //          Property.createRequired(
+      //              "name", LionCoreBuiltins.getString(), "LIonCore_M3_Language_name"));
       language.addFeature(
-          Property.createRequired(
-              "version", LionCoreBuiltins.getString(), "-id-Language-version"));
-      language.addFeature(Reference.createMultiple("dependsOn", language).setID("-id-Language-dependsOn"));
+          Property.createRequired("version", LionCoreBuiltins.getString(), "-id-Language-version"));
       language.addFeature(
-          Containment.createMultiple("entities", languageEntity, "-id-Language-entities").setKey("Language-entities"));
+          Reference.createMultiple("dependsOn", language).setID("-id-Language-dependsOn"));
+      language.addFeature(
+          Containment.createMultiple("entities", languageEntity, "-id-Language-entities")
+              .setKey("Language-entities"));
 
-      //languageEntity.setExtendedConcept(namespacedEntity);
+      // languageEntity.setExtendedConcept(namespacedEntity);
       languageEntity.setAbstract(true);
       languageEntity.addImplementedInterface(iKeyed);
 
-//      namespacedEntity.setAbstract(true);
-//      namespacedEntity.addImplementedInterface(LionCoreBuiltins.getINamed());
-//      namespacedEntity.addFeature(
-//          Property.createRequired(
-//                  "qualifiedName",
-//                  LionCoreBuiltins.getString(),
-//                  "LIonCore_M3_NamespacedEntity_qualifiedName")
-//              .setDerived(true));
+      //      namespacedEntity.setAbstract(true);
+      //      namespacedEntity.addImplementedInterface(LionCoreBuiltins.getINamed());
+      //      namespacedEntity.addFeature(
+      //          Property.createRequired(
+      //                  "qualifiedName",
+      //                  LionCoreBuiltins.getString(),
+      //                  "LIonCore_M3_NamespacedEntity_qualifiedName")
+      //              .setDerived(true));
 
       primitiveType.setExtendedConcept(dataType);
 
@@ -200,7 +199,8 @@ public class LionCore {
       reference.setExtendedConcept(link);
 
       iKeyed.addExtendedInterface(LionCoreBuiltins.getINamed());
-      iKeyed.addFeature(Property.createRequired("key", LionCoreBuiltins.getString()).setID("-id-IKeyed-key"));
+      iKeyed.addFeature(
+          Property.createRequired("key", LionCoreBuiltins.getString()).setID("-id-IKeyed-key"));
 
       checkIDs(INSTANCE);
     }

@@ -27,8 +27,8 @@ public class NodeTreeValidatorTest {
     ValidationResult vr = new NodeTreeValidator().validate(node);
     assertEquals(false, vr.isSuccessful());
     assertEquals(
-            new HashSet(Arrays.asList(new Issue(IssueSeverity.Error, "ID null found", node))),
-            vr.getIssues());
+        new HashSet(Arrays.asList(new Issue(IssueSeverity.Error, "ID null found", node))),
+        vr.getIssues());
   }
 
   @Test

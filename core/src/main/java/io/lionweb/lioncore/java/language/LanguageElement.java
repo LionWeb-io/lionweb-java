@@ -84,9 +84,10 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
   }
 
   protected Object getDerivedValue(Property property) {
-//    if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
-//      return qualifiedName();
-//    }
+    //    if
+    // (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
+    //      return qualifiedName();
+    //    }
     return null;
   }
 
