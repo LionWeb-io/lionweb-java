@@ -44,7 +44,8 @@ public class LowLevelJsonSerializationTest {
     assertEquals("Book", book.getPropertyValue("LIonCore-builtins-INamed-name"));
 
     SerializedNode guidedBookWriter = serializedChunk.getNodeByID("library-GuideBookWriter");
-    assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore-builtins-INamed-name"));
+    assertEquals(
+        "GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore-builtins-INamed-name"));
     assertEquals(
         Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")),
         guidedBookWriter.getReferenceValues("Concept-extends"));

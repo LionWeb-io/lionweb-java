@@ -96,24 +96,28 @@ class SerializedJsonComparisonUtils {
         assertEquivalentArrays(
             expected.getAsJsonArray("references"),
             actual.getAsJsonArray("references"),
-            "References of " + context, true);
+            "References of " + context,
+            true);
       } else if (key.equals("children")) {
         assertEquivalentArrays(
             expected.getAsJsonArray("children"),
             actual.getAsJsonArray("children"),
-            "Children of " + context, true);
+            "Children of " + context,
+            true);
       } else if (key.equals("properties")) {
         assertEquivalentArrays(
             expected.getAsJsonArray("properties"),
             actual.getAsJsonArray("properties"),
-            "Properties of " + context, true);
+            "Properties of " + context,
+            true);
       } else {
         throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
       }
     }
   }
 
-  private static void assertEquivalentArrays(JsonArray expected, JsonArray actual, String context, Boolean unoreded) {
+  private static void assertEquivalentArrays(
+      JsonArray expected, JsonArray actual, String context, Boolean unoreded) {
     if (expected.size() != actual.size()) {
       throw new AssertionError(
           "("
@@ -128,7 +132,7 @@ class SerializedJsonComparisonUtils {
       for (int i = 0; i < expected.size(); i++) {
         JsonObject expectedElement = expected.get(i).getAsJsonObject();
         boolean matchFound = false;
-        for (int j=0;j<actual.size() && !matchFound;j++) {
+        for (int j = 0; j < actual.size() && !matchFound; j++) {
           if (!consumedActual.contains(j)) {
             if (areEquivalentObjects(expectedElement, actual.get(j).getAsJsonObject())) {
               consumedActual.add(j);
@@ -137,7 +141,7 @@ class SerializedJsonComparisonUtils {
           }
         }
         if (!matchFound) {
-          fail(context + " element " + i +" : no equivalent to " + expectedElement + " found");
+          fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
         }
       }
     } else {

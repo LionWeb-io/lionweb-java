@@ -10,13 +10,11 @@ public class BuiltinIDsTest {
   public void M3ElementsHasExpectedIDs() {
     Assert.assertEquals("-id-Concept", LionCore.getConcept().getID());
     Assert.assertEquals(
-        "-id-Concept-abstract",
-        LionCore.getConcept().getPropertyByName("abstract").getID());
+        "-id-Concept-abstract", LionCore.getConcept().getPropertyByName("abstract").getID());
     Assert.assertEquals(
         "-id-Concept-extends", LionCore.getConcept().getReferenceByName("extends").getID());
     Assert.assertEquals(
-        "-id-Concept-implements",
-        LionCore.getConcept().getReferenceByName("implements").getID());
+        "-id-Concept-implements", LionCore.getConcept().getReferenceByName("implements").getID());
 
     Assert.assertEquals("-id-ConceptInterface", LionCore.getConceptInterface().getID());
     Assert.assertEquals(
@@ -36,8 +34,7 @@ public class BuiltinIDsTest {
 
     Assert.assertEquals("-id-Feature", LionCore.getFeature().getID());
     Assert.assertEquals(
-        "-id-Feature-optional",
-        LionCore.getFeature().getPropertyByName("optional").getID());
+        "-id-Feature-optional", LionCore.getFeature().getPropertyByName("optional").getID());
 
     Assert.assertEquals("-id-Classifier", LionCore.getClassifier().getID());
     Assert.assertEquals(
@@ -47,20 +44,16 @@ public class BuiltinIDsTest {
     Assert.assertEquals("-id-Link", LionCore.getLink().getID());
     Assert.assertEquals(
         "-id-Link-multiple", LionCore.getLink().getPropertyByName("multiple").getID());
-    Assert.assertEquals(
-        "-id-Link-type", LionCore.getLink().getReferenceByName("type").getID());
+    Assert.assertEquals("-id-Link-type", LionCore.getLink().getReferenceByName("type").getID());
 
     Assert.assertEquals("-id-Language", LionCore.getLanguage().getID());
     Assert.assertEquals(
         "LIonCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getID());
+    Assert.assertEquals("-id-IKeyed-key", LionCore.getLanguage().getPropertyByName("key").getID());
     Assert.assertEquals(
-        "-id-IKeyed-key", LionCore.getLanguage().getPropertyByName("key").getID());
+        "-id-Language-dependsOn", LionCore.getLanguage().getReferenceByName("dependsOn").getID());
     Assert.assertEquals(
-        "-id-Language-dependsOn",
-        LionCore.getLanguage().getReferenceByName("dependsOn").getID());
-    Assert.assertEquals(
-        "-id-Language-entities",
-        LionCore.getLanguage().getContainmentByName("entities").getID());
+        "-id-Language-entities", LionCore.getLanguage().getContainmentByName("entities").getID());
 
     Assert.assertEquals("-id-LanguageEntity", LionCore.getLanguageEntity().getID());
 

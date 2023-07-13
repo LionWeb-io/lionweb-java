@@ -5,10 +5,8 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
-import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -45,10 +43,13 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), LIonCore_M3.getConcept());
     assertEquals(
         Arrays.asList(
-            new SerializedPropertyValue(new MetaPointer("LIonCore-M3", "1", "Language-version"), "1"),
-            new SerializedPropertyValue(new MetaPointer("LIonCore-M3", "1", "IKeyed-key"), "LIonCore-M3"),
-                new SerializedPropertyValue(
-                        new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"), "LIonCore.M3")),
+            new SerializedPropertyValue(
+                new MetaPointer("LIonCore-M3", "1", "Language-version"), "1"),
+            new SerializedPropertyValue(
+                new MetaPointer("LIonCore-M3", "1", "IKeyed-key"), "LIonCore-M3"),
+            new SerializedPropertyValue(
+                new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"),
+                "LIonCore.M3")),
         LIonCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
@@ -74,7 +75,8 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(
         Arrays.asList(
             new SerializedReferenceValue(
-                new MetaPointer("LIonCore-M3", "1", "Language-dependsOn"), Collections.emptyList())),
+                new MetaPointer("LIonCore-M3", "1", "Language-dependsOn"),
+                Collections.emptyList())),
         LIonCore_M3.getReferences());
 
     SerializedNode LIonCore_M3_ConceptInterface_extends =

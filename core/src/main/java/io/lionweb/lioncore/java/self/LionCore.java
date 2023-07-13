@@ -60,13 +60,13 @@ public class LionCore {
     return getInstance().requireConceptByName("LanguageEntity");
   }
 
-//  public static Concept getNamespacedEntity() {
-//    return getInstance().getConceptByName("NamespacedEntity");
-//  }
-//
-//  public static ConceptInterface getNamespaceProvider() {
-//    return getInstance().getConceptInterfaceByName("NamespaceProvider");
-//  }
+  //  public static Concept getNamespacedEntity() {
+  //    return getInstance().getConceptByName("NamespacedEntity");
+  //  }
+  //
+  //  public static ConceptInterface getNamespaceProvider() {
+  //    return getInstance().getConceptInterfaceByName("NamespaceProvider");
+  //  }
 
   public static Concept getPrimitiveType() {
     return getInstance().requireConceptByName("PrimitiveType");
