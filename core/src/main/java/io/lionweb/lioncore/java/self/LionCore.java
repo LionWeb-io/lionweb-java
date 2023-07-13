@@ -107,6 +107,7 @@ public class LionCore {
       Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
       Concept property = INSTANCE.addElement(new Concept("Property"));
       Concept reference = INSTANCE.addElement(new Concept("Reference"));
+      ConceptInterface iKeyed = INSTANCE.addElement(new ConceptInterface("IKeyed"));
 
       // Now we start adding the features to all the Concepts and ConceptInterfaces
 
@@ -196,6 +197,9 @@ public class LionCore {
       property.addFeature(Reference.createRequired("type", dataType, "LIonCore_M3_Property_type"));
 
       reference.setExtendedConcept(link);
+
+      conceptInterface.addImplementedInterface(LionCoreBuiltins.getINamed());
+      conceptInterface.addFeature(Property.createRequired("key", LionCoreBuiltins.getString()));
 
       checkIDs(INSTANCE);
     }
