@@ -16,10 +16,10 @@ public class MetaCircularityTest {
     assertSame(LionCore.getConcept(), LionCore.getEnumeration().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getEnumerationLiteral().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getFeature().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getFeaturesContainer().getConcept());
+    assertSame(LionCore.getConcept(), LionCore.getClassifier().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getLink().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getLanguage().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getLanguageElement().getConcept());
+    assertSame(LionCore.getConcept(), LionCore.getLanguageEntity().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getPrimitiveType().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getProperty().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getReference().getConcept());

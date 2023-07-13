@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
 public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
-    implements NamespacedEntity, HasKey<T> {
+    implements NamespacedEntity, IKeyed<T> {
 
   public LanguageElement() {}
 
@@ -81,13 +81,6 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
   public T setKey(String key) {
     setPropertyValue("key", key);
     return (T) this;
-  }
-
-  protected Object getDerivedValue(Property property) {
-    if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
-      return qualifiedName();
-    }
-    return null;
   }
 
   @Override

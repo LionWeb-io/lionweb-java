@@ -5,19 +5,34 @@ public class LionCoreBuiltins extends Language {
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins() {
-    super("LIonCore.Builtins");
-    setID("LIonCore_Builtins");
-    setKey("LIonCore_Builtins");
+    super("LIonCore.builtins");
+    setID("LIonCore-builtins");
+    setKey("LIonCore-builtins");
     setVersion("1");
-    new PrimitiveType(this, "String");
+    PrimitiveType string = new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
     new PrimitiveType(this, "JSON");
+
+    Concept node = new Concept(this, "Node").setID("LIonCore-builtins-Node");
+    node.setAbstract(true);
+
+    ConceptInterface iNamed =
+        new ConceptInterface(this, "INamed").setID("LIonCore-builtins-INamed");
+    iNamed.addFeature(
+        Property.createRequired("name", string)
+            .setID("LIonCore-builtins-INamed-name")
+            .setKey("LIonCore-builtins-INamed-name"));
+
     this.getElements()
         .forEach(
             e -> {
-              e.setID("LIonCore_M3_" + e.getName());
-              e.setKey(e.getName());
+              if (e.getID() == null) {
+                e.setID("LIonCore-builtins-" + e.getName());
+              }
+              if (e.getKey() == null) {
+                e.setKey("LIonCore-builtins-" + e.getName());
+              }
             });
   }
 
@@ -39,5 +54,13 @@ public class LionCoreBuiltins extends Language {
 
   public static PrimitiveType getJSON() {
     return INSTANCE.getPrimitiveTypeByName("JSON");
+  }
+
+  public static ConceptInterface getINamed() {
+    return INSTANCE.getConceptInterfaceByName("INamed");
+  }
+
+  public static Concept getNode() {
+    return INSTANCE.getConceptByName("Node");
   }
 }

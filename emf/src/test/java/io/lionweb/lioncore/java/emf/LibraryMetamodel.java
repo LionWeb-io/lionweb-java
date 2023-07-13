@@ -21,7 +21,7 @@ public class LibraryMetamodel {
   public static Concept GUIDE_BOOK_WRITER;
 
   static {
-    InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/library-metamodel.json");
+    InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);

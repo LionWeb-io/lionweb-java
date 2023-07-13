@@ -11,7 +11,9 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
+import io.lionweb.lioncore.java.utils.NetworkUtils;
 import java.io.*;
+import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -259,11 +261,20 @@ public class JsonSerialization {
   // Unserialization
   //
 
+  public List<Node> unserializeToNodes(File file) throws FileNotFoundException {
+    return unserializeToNodes(new FileInputStream(file));
+  }
+
   public List<Node> unserializeToNodes(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
     return unserializeSerializationBlock(serializationBlock);
+  }
+
+  public List<Node> unserializeToNodes(URL url) throws IOException {
+    String content = NetworkUtils.getStringFromUrl(url);
+    return unserializeToNodes(content);
   }
 
   public List<Node> unserializeToNodes(String json) {

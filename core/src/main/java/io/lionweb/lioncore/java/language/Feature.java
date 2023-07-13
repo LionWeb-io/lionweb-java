@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  *     SModel
  */
 public abstract class Feature<T extends M3Node> extends M3Node<T>
-    implements NamespacedEntity, HasKey<T> {
+    implements NamespacedEntity, IKeyed<T> {
 
   public Feature() {
     setDerived(false);
@@ -111,12 +111,5 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
 
   public Language getDeclaringLanguage() {
     return (Language) ((FeaturesContainer<?>) this.getContainer()).getContainer();
-  }
-
-  protected Object getDerivedValue(Property property) {
-    if (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
-      return qualifiedName();
-    }
-    return null;
   }
 }

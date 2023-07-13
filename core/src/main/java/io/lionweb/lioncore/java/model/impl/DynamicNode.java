@@ -246,7 +246,7 @@ public class DynamicNode implements Node {
     String qualifiedName;
     try {
       qualifiedName = concept.qualifiedName();
-    } catch(Throwable t) {
+    } catch (RuntimeException t) {
       qualifiedName = "<cannot be calculated>";
     }
 
@@ -255,7 +255,7 @@ public class DynamicNode implements Node {
         + id
         + '\''
         + ", parent="
-        + (parent == null? "null" : parent.getID())
+        + (parent == null ? "null" : parent.getID())
         + ", concept="
         + qualifiedName
         + ", propertyValues={"

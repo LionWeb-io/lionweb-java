@@ -13,7 +13,7 @@
       "references": [
         {"reference": {"language":"library","version":"1","key":"library-Book-author"}, "targets": [
           {
-            "reference": "_Arthur_Foozillus_id_",
+            "reference": "-Arthur-Foozillus-id-",
             "resolveInfo": null
           }
         ]

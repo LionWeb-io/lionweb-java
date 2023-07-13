@@ -33,16 +33,25 @@ public class Concept extends FeaturesContainer<Concept> {
   public Concept() {
     super();
     setAbstract(false);
+    setPartition(false);
   }
 
   public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
     setAbstract(false);
+    setPartition(false);
   }
 
   public Concept(@Nullable Language language, @Nullable String name) {
     super(language, name);
     setAbstract(false);
+    setPartition(false);
+  }
+
+  public Concept(@Nullable String name) {
+    super(null, name);
+    setAbstract(false);
+    setPartition(false);
   }
 
   @Nonnull
@@ -57,16 +66,20 @@ public class Concept extends FeaturesContainer<Concept> {
     return directAncestors;
   }
 
-  public Concept(@Nullable String name) {
-    super(null, name);
-  }
-
   public boolean isAbstract() {
     return this.getPropertyValue("abstract", Boolean.class, false);
   }
 
   public void setAbstract(boolean value) {
     this.setPropertyValue("abstract", value);
+  }
+
+  public boolean isPartition() {
+    return this.getPropertyValue("partition", Boolean.class, false);
+  }
+
+  public void setPartition(boolean value) {
+    this.setPropertyValue("partition", value);
   }
 
   // TODO should this return BaseConcept when extended is equal null?

@@ -3,44 +3,44 @@
   "languages": [],
   "nodes": [
     {
-      "id": "com_strumenta_StarLasu",
+      "id": "com-strumenta-StarLasu",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "Language"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "Language_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "com.strumenta.StarLasu"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "version"
+            "key": "Language-version"
           },
           "value": "1"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
-          "value": "com_strumenta_StarLasu"
+          "value": "com-strumenta-StarLasu"
         }
       ],
       "children": [
         {
           "containment": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "elements"
+            "key": "Language-entities"
           },
           "children": [
             "StarLasu-ASTNode",
@@ -55,9 +55,9 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "dependsOn"
+            "key": "Language-dependsOn"
           },
           "targets": []
         }
@@ -67,40 +67,32 @@
     {
       "id": "StarLasu-ASTNode",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "abstract"
+            "key": "Concept-abstract"
           },
           "value": "false"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "ASTNode"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.ASTNode"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-ASTNode"
         }
@@ -108,9 +100,9 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "features"
+            "key": "Classifier-features"
           },
           "children": []
         }
@@ -118,60 +110,52 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "Concept_extends"
+            "key": "Concept-extends"
           },
           "targets": []
         },
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "implements"
+            "key": "Concept-implements"
           },
           "targets": []
         }
       ],
-      "parent": "com_strumenta_StarLasu"
+      "parent": "com-strumenta-StarLasu"
     },
     {
       "id": "StarLasu-GenericErrorNode",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "abstract"
+            "key": "Concept-abstract"
           },
           "value": "false"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "GenericErrorNode"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.GenericErrorNode"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-GenericErrorNode"
         }
@@ -179,9 +163,9 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "features"
+            "key": "Classifier-features"
           },
           "children": []
         }
@@ -189,52 +173,44 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "Concept_extends"
+            "key": "Concept-extends"
           },
           "targets": []
         },
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "implements"
+            "key": "Concept-implements"
           },
           "targets": []
         }
       ],
-      "parent": "com_strumenta_StarLasu"
+      "parent": "com-strumenta-StarLasu"
     },
     {
       "id": "StarLasu-Named",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "ConceptInterface"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "Named"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.Named"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-Named"
         }
@@ -242,9 +218,9 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "features"
+            "key": "Classifier-features"
           },
           "children": []
         }
@@ -252,9 +228,9 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "ConceptInterface_extends"
+            "key": "ConceptInterface-extends"
           },
           "targets": [
             {
@@ -264,37 +240,29 @@
           ]
         }
       ],
-      "parent": "com_strumenta_StarLasu"
+      "parent": "com-strumenta-StarLasu"
     },
     {
       "id": "StarLasu-PossiblyNamed",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "ConceptInterface"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "PossiblyNamed"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.PossiblyNamed"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-PossiblyNamed"
         }
@@ -302,9 +270,9 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "features"
+            "key": "Classifier-features"
           },
           "children": [
             "StarLasu-PossiblyNamed-name"
@@ -314,60 +282,44 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "ConceptInterface_extends"
+            "key": "ConceptInterface-extends"
           },
           "targets": []
         }
       ],
-      "parent": "com_strumenta_StarLasu"
+      "parent": "com-strumenta-StarLasu"
     },
     {
       "id": "StarLasu-PossiblyNamed-name",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "optional"
+            "key": "Feature-optional"
           },
           "value": "true"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "derived"
-          },
-          "value": "false"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "name"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.PossiblyNamed.name"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-PossiblyNamed-name"
         }
@@ -376,14 +328,14 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "Property_type"
+            "key": "Property-type"
           },
           "targets": [
             {
               "resolveInfo": "String",
-              "reference": "LIonCore_M3_String"
+              "reference": "LIonCore-builtins-String"
             }
           ]
         }
@@ -393,76 +345,60 @@
     {
       "id": "StarLasu-Position",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "PrimitiveType"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "Position"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.Position"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-Position"
         }
       ],
       "children": [],
       "references": [],
-      "parent": "com_strumenta_StarLasu"
+      "parent": "com-strumenta-StarLasu"
     },
     {
       "id": "StarLasu-Char",
       "concept": {
-        "language": "LIonCore_M3",
+        "language": "LIonCore-M3",
         "version": "1",
         "key": "PrimitiveType"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-builtins",
             "version": "1",
-            "key": "NamespacedEntity_name"
+            "key": "LIonCore-builtins-INamed-name"
           },
           "value": "Char"
         },
         {
           "property": {
-            "language": "LIonCore_M3",
+            "language": "LIonCore-M3",
             "version": "1",
-            "key": "qualifiedName"
-          },
-          "value": "com.strumenta.StarLasu.Char"
-        },
-        {
-          "property": {
-            "language": "LIonCore_M3",
-            "version": "1",
-            "key": "key"
+            "key": "IKeyed-key"
           },
           "value": "StarLasu-Char"
         }
       ],
       "children": [],
       "references": [],
-      "parent": "com_strumenta_StarLasu"
+      "parent": "com-strumenta-StarLasu"
     }
   ]
 }

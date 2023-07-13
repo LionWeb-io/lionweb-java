@@ -6,8 +6,7 @@ package io.lionweb.lioncore.java.language;
  * <p>A Concept Invoice, contained in a Language com.foo.Accounting. Therefore, Invoice will have
  * the qualifiedName com.foo.Accounting.Invoice.
  */
-public interface NamespacedEntity {
-  // TODO add ID, once details are clearer
+public interface NamespacedEntity extends INamed {
   String getName();
 
   default String qualifiedName() {
