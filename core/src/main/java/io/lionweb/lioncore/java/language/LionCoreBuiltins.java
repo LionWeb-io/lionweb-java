@@ -15,11 +15,12 @@ public class LionCoreBuiltins extends Language {
     new PrimitiveType(this, "JSON");
     ConceptInterface iNamed = new ConceptInterface(this, "INamed");
     iNamed.addFeature(Property.createRequired("name", string).setKey("LIonCore-builtins-INamed-name"));
+    addElement(iNamed);
     this.getElements()
         .forEach(
             e -> {
-              e.setID("LIonCore_M3_" + e.getName());
-              e.setKey(e.getName());
+              e.setID("LIonCore-builtins-" + e.getName());
+              e.setKey("LIonCore-builtins-" + e.getName());
             });
   }
 

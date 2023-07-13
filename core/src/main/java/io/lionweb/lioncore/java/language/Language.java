@@ -56,7 +56,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, Has
   }
 
   public @Nonnull List<LanguageElement> getElements() {
-    return this.getContainmentMultipleValue("elements");
+    return this.getContainmentMultipleValue("entities");
   }
 
   public Language addDependency(@Nonnull Language dependency) {
@@ -68,7 +68,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, Has
 
   public <T extends LanguageElement> T addElement(@Nonnull T element) {
     Objects.requireNonNull(element, "element should not be null");
-    this.addContainmentMultipleValue("elements", element);
+    this.addContainmentMultipleValue("entities", element);
     element.setParent(this);
     return element;
   }

@@ -20,6 +20,13 @@ public class ReferenceValue {
     return referred;
   }
 
+  public @Nullable String getReferredID() {
+    if (referred == null) {
+      return null;
+    }
+    return referred.getID();
+  }
+
   public void setReferred(@Nullable Node referred) {
     this.referred = referred;
   }
@@ -43,5 +50,13 @@ public class ReferenceValue {
   @Override
   public int hashCode() {
     return Objects.hash(referred, resolveInfo);
+  }
+
+  @Override
+  public String toString() {
+    return "ReferenceValue{" +
+            "referred=" + referred +
+            ", resolveInfo='" + resolveInfo + '\'' +
+            '}';
   }
 }
