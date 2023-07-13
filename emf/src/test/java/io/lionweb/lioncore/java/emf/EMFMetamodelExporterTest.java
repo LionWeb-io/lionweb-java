@@ -11,11 +11,11 @@ import org.junit.Test;
 public class EMFMetamodelExporterTest {
 
   @Test
-  public void exportLibraryMetamodel() {
+  public void exportLibraryLanguage() {
     Language libraryLang =
         (Language)
             JsonSerialization.getStandardSerialization()
-                .unserializeToNodes(this.getClass().getResourceAsStream("/library-metamodel.json"))
+                .unserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
                 .get(0);
 
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();

@@ -83,14 +83,6 @@ public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
     return (T) this;
   }
 
-  protected Object getDerivedValue(Property property) {
-    //    if
-    // (property.getKey().equals(this.getConcept().getPropertyByName("qualifiedName").getKey())) {
-    //      return qualifiedName();
-    //    }
-    return null;
-  }
-
   @Override
   public String toString() {
     String qualifier = "<no language>";

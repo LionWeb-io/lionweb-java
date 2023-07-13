@@ -6,10 +6,14 @@ import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.language.PrimitiveType;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
+import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
 
 public class DataTypeMapping {
 
@@ -56,6 +60,12 @@ public class DataTypeMapping {
   }
 
   public DataType convertEClassifierToDataType(EClassifier eClassifier) {
+    if (eClassifier.equals(XMLTypePackageImpl.Literals.STRING)) {
+      return LionCoreBuiltins.getString();
+    }
+    if (eClassifier.equals(XMLTypePackageImpl.Literals.INT)) {
+      return LionCoreBuiltins.getInteger();
+    }
     if (eClassifier.equals(EcorePackage.Literals.ESTRING)) {
       return LionCoreBuiltins.getString();
     }
@@ -69,7 +79,9 @@ public class DataTypeMapping {
       return eEnumsToEnumerations.get((EEnum) eClassifier);
     }
     if (eClassifier instanceof EDataType) {
-      return eDataTypesToPrimitiveTypes.get((EDataType) eClassifier);
+      PrimitiveType result = eDataTypesToPrimitiveTypes.get((EDataType) eClassifier);
+      Objects.requireNonNull(result, "No data type for EDataType " + eClassifier);
+      return result;
     }
     if (eClassifier.getEPackage().getNsURI().equals("http://www.eclipse.org/emf/2003/XMLType")) {
       if (eClassifier.getName().equals("String")) {
