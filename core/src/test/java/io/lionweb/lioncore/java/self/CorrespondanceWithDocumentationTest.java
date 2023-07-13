@@ -37,9 +37,10 @@ public class CorrespondanceWithDocumentationTest {
   public void builtInIsTheSameAsInTheOrganizationRepo() throws IOException {
     JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
 
-     URL url = new
-     URL("https://raw.githubusercontent.com/LIonWeb-org/organization/niko/update-docs-june2/lioncore/metametamodel/builtins.json");
-     List<Node> nodes = jsonSer.unserializeToNodes(url);
+    URL url =
+        new URL(
+            "https://raw.githubusercontent.com/LIonWeb-org/organization/niko/update-docs-june2/lioncore/metametamodel/builtins.json");
+    List<Node> nodes = jsonSer.unserializeToNodes(url);
 
     Language unserializedBuiltins = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =

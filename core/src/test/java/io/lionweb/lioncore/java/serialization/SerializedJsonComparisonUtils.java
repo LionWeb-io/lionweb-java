@@ -124,22 +124,22 @@ class SerializedJsonComparisonUtils {
               + " and actual="
               + actual.size());
     }
-      Set<Integer> consumedActual = new HashSet<>();
-      for (int i = 0; i < expected.size(); i++) {
-        JsonObject expectedElement = expected.get(i).getAsJsonObject();
-        boolean matchFound = false;
-        for (int j = 0; j < actual.size() && !matchFound; j++) {
-          if (!consumedActual.contains(j)) {
-            if (areEquivalentObjects(expectedElement, actual.get(j).getAsJsonObject())) {
-              consumedActual.add(j);
-              matchFound = true;
-            }
+    Set<Integer> consumedActual = new HashSet<>();
+    for (int i = 0; i < expected.size(); i++) {
+      JsonObject expectedElement = expected.get(i).getAsJsonObject();
+      boolean matchFound = false;
+      for (int j = 0; j < actual.size() && !matchFound; j++) {
+        if (!consumedActual.contains(j)) {
+          if (areEquivalentObjects(expectedElement, actual.get(j).getAsJsonObject())) {
+            consumedActual.add(j);
+            matchFound = true;
           }
         }
-        if (!matchFound) {
-          fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
-        }
       }
+      if (!matchFound) {
+        fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
+      }
+    }
   }
 
   private static boolean areEquivalentObjects(JsonObject expected, JsonObject actual) {

@@ -6,7 +6,6 @@ import io.lionweb.lioncore.java.language.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -156,7 +155,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         featuresContainer.addFeature(property);
         property.setOptional(!eAttribute.isRequired());
         property.setDerived(eAttribute.isDerived());
-        DataType<DataType> propertyType = dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
+        DataType<DataType> propertyType =
+            dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
         Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
         property.setType(propertyType);
         if (eAttribute.isMany()) {

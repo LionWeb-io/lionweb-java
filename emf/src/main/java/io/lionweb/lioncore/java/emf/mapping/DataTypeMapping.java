@@ -7,12 +7,10 @@ import io.lionweb.lioncore.java.language.PrimitiveType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
 
 public class DataTypeMapping {
