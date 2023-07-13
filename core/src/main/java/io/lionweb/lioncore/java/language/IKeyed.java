@@ -5,7 +5,7 @@ package io.lionweb.lioncore.java.language;
  *
  * @param <T>
  */
-public interface HasKey<T> {
+public interface IKeyed<T> extends INamed {
   String getKey();
 
   T setKey(String value);

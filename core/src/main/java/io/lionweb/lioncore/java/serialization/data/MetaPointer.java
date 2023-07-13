@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization.data;
 
 import io.lionweb.lioncore.java.language.Feature;
-import io.lionweb.lioncore.java.language.HasKey;
+import io.lionweb.lioncore.java.language.IKeyed;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LanguageElement;
 import java.util.Objects;
@@ -39,7 +39,7 @@ public class MetaPointer {
     return metaPointer;
   }
 
-  public static MetaPointer from(HasKey<?> elementWithKey, Language language) {
+  public static MetaPointer from(IKeyed<?> elementWithKey, Language language) {
     MetaPointer metaPointer = new MetaPointer();
     metaPointer.setKey(elementWithKey.getKey());
     if (language != null) {

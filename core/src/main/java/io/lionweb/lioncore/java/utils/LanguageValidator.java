@@ -34,8 +34,8 @@ public class LanguageValidator extends Validator<Language> {
         .thisAndAllDescendants()
         .forEach(
             n -> {
-              if (n instanceof HasKey<?>) {
-                HasKey<?> hk = (HasKey<?>) n;
+              if (n instanceof IKeyed<?>) {
+                IKeyed<?> hk = (IKeyed<?>) n;
                 result.checkForError(
                     !CommonChecks.isValidID(hk.getKey()),
                     "Keys should respect the format for IDs",
@@ -132,9 +132,9 @@ public class LanguageValidator extends Validator<Language> {
         .thisAndAllDescendants()
         .forEach(
             n -> {
-              if (n instanceof HasKey<?>) {
-                HasKey<?> hasKey = (HasKey<?>) n;
-                String key = hasKey.getKey();
+              if (n instanceof IKeyed<?>) {
+                IKeyed<?> IKeyed = (IKeyed<?>) n;
+                String key = IKeyed.getKey();
                 if (key == null) {
                   result.addError("Key should not be null", n);
                 }
@@ -148,9 +148,9 @@ public class LanguageValidator extends Validator<Language> {
         .thisAndAllDescendants()
         .forEach(
             n -> {
-              if (n instanceof HasKey<?>) {
-                HasKey<?> hasKey = (HasKey<?>) n;
-                String key = hasKey.getKey();
+              if (n instanceof IKeyed<?>) {
+                IKeyed<?> IKeyed = (IKeyed<?>) n;
+                String key = IKeyed.getKey();
                 if (key != null) {
                   if (uniqueKeys.containsKey(key)) {
                     result.addError(

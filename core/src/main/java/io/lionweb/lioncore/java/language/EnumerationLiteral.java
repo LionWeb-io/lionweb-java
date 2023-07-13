@@ -7,7 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class EnumerationLiteral extends M3Node<EnumerationLiteral>
-    implements NamespacedEntity, HasKey<EnumerationLiteral> {
+    implements NamespacedEntity, IKeyed<EnumerationLiteral> {
 
   public EnumerationLiteral() {}
 

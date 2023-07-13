@@ -178,8 +178,8 @@ public class LionCore {
       if (node instanceof NamespacedEntity) {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
         node.setID("-id-" + namespacedEntity.getName().replaceAll("\\.", "_"));
-        if (node instanceof HasKey<?> && ((HasKey<?>) node).getKey() == null) {
-          ((HasKey<?>) node).setKey(namespacedEntity.getName());
+        if (node instanceof IKeyed<?> && ((IKeyed<?>) node).getKey() == null) {
+          ((IKeyed<?>) node).setKey(namespacedEntity.getName());
         }
       } else {
         throw new IllegalStateException(node.toString());

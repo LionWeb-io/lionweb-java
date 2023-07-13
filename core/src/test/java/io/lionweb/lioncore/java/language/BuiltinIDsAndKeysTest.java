@@ -4,7 +4,7 @@ import io.lionweb.lioncore.java.self.LionCore;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class BuiltinIDsTest {
+public class BuiltinIDsAndKeysTest {
 
   @Test
   public void M3ElementsHasExpectedIDs() {
@@ -64,5 +64,63 @@ public class BuiltinIDsTest {
         "-id-Property-type", LionCore.getProperty().getReferenceByName("type").getID());
 
     Assert.assertEquals("-id-Reference", LionCore.getReference().getID());
+  }
+
+  @Test
+  public void M3ElementsHasExpectedKeys() {
+    Assert.assertEquals("Concept", LionCore.getConcept().getKey());
+    Assert.assertEquals(
+        "Concept-abstract", LionCore.getConcept().getPropertyByName("abstract").getKey());
+    Assert.assertEquals(
+        "Concept-extends", LionCore.getConcept().getReferenceByName("extends").getKey());
+    Assert.assertEquals(
+        "Concept-implements", LionCore.getConcept().getReferenceByName("implements").getKey());
+
+    Assert.assertEquals("ConceptInterface", LionCore.getConceptInterface().getKey());
+    Assert.assertEquals(
+        "ConceptInterface-extends",
+        LionCore.getConceptInterface().getReferenceByName("extends").getKey());
+
+    Assert.assertEquals("Containment", LionCore.getContainment().getKey());
+
+    Assert.assertEquals("DataType", LionCore.getDataType().getKey());
+
+    Assert.assertEquals("Enumeration", LionCore.getEnumeration().getKey());
+    Assert.assertEquals(
+        "Enumeration-literals",
+        LionCore.getEnumeration().getContainmentByName("literals").getKey());
+
+    Assert.assertEquals("EnumerationLiteral", LionCore.getEnumerationLiteral().getKey());
+
+    Assert.assertEquals("Feature", LionCore.getFeature().getKey());
+    Assert.assertEquals(
+        "Feature-optional", LionCore.getFeature().getPropertyByName("optional").getKey());
+
+    Assert.assertEquals("Classifier", LionCore.getClassifier().getKey());
+    Assert.assertEquals(
+        "Classifier-features", LionCore.getClassifier().getContainmentByName("features").getKey());
+
+    Assert.assertEquals("Link", LionCore.getLink().getKey());
+    Assert.assertEquals("Link-multiple", LionCore.getLink().getPropertyByName("multiple").getKey());
+    Assert.assertEquals("Link-type", LionCore.getLink().getReferenceByName("type").getKey());
+
+    Assert.assertEquals("Language", LionCore.getLanguage().getKey());
+    Assert.assertEquals(
+        "LIonCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getKey());
+    Assert.assertEquals("IKeyed-key", LionCore.getLanguage().getPropertyByName("key").getKey());
+    Assert.assertEquals(
+        "Language-dependsOn", LionCore.getLanguage().getReferenceByName("dependsOn").getKey());
+    Assert.assertEquals(
+        "Language-entities", LionCore.getLanguage().getContainmentByName("entities").getKey());
+
+    Assert.assertEquals("LanguageEntity", LionCore.getLanguageEntity().getKey());
+
+    Assert.assertEquals("PrimitiveType", LionCore.getPrimitiveType().getKey());
+
+    Assert.assertEquals("Property", LionCore.getProperty().getKey());
+    Assert.assertEquals(
+        "Property-type", LionCore.getProperty().getReferenceByName("type").getKey());
+
+    Assert.assertEquals("Reference", LionCore.getReference().getKey());
   }
 }

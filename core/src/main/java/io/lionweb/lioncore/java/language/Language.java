@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's
  *     structure aspect</i> in documentation</a>
  */
-public class Language extends M3Node<Language> implements NamespaceProvider, HasKey<Language> {
+public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
   public Language() {}
 
   public Language(@Nonnull String name) {

@@ -19,7 +19,7 @@ import javax.annotation.Nullable;
  *     SModel
  */
 public abstract class Feature<T extends M3Node> extends M3Node<T>
-    implements NamespacedEntity, HasKey<T> {
+    implements NamespacedEntity, IKeyed<T> {
 
   public Feature() {
     setDerived(false);
