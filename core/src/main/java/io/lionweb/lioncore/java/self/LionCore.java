@@ -44,8 +44,8 @@ public class LionCore {
     return getInstance().requireConceptByName("Feature");
   }
 
-  public static Concept getFeaturesContainer() {
-    return getInstance().requireConceptByName("FeaturesContainer");
+  public static Concept getClassifier() {
+    return getInstance().requireConceptByName("Classifier");
   }
 
   public static Concept getLink() {
@@ -56,17 +56,17 @@ public class LionCore {
     return getInstance().requireConceptByName("Language");
   }
 
-  public static Concept getLanguageElement() {
-    return getInstance().requireConceptByName("LanguageElement");
+  public static Concept getLanguageEntity() {
+    return getInstance().requireConceptByName("LanguageEntity");
   }
 
-  public static Concept getNamespacedEntity() {
-    return getInstance().getConceptByName("NamespacedEntity");
-  }
-
-  public static ConceptInterface getNamespaceProvider() {
-    return getInstance().getConceptInterfaceByName("NamespaceProvider");
-  }
+//  public static Concept getNamespacedEntity() {
+//    return getInstance().getConceptByName("NamespacedEntity");
+//  }
+//
+//  public static ConceptInterface getNamespaceProvider() {
+//    return getInstance().getConceptInterfaceByName("NamespaceProvider");
+//  }
 
   public static Concept getPrimitiveType() {
     return getInstance().requireConceptByName("PrimitiveType");
