@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -95,24 +96,24 @@ class SerializedJsonComparisonUtils {
         assertEquivalentArrays(
             expected.getAsJsonArray("references"),
             actual.getAsJsonArray("references"),
-            "References of " + context);
+            "References of " + context, true);
       } else if (key.equals("children")) {
         assertEquivalentArrays(
             expected.getAsJsonArray("children"),
             actual.getAsJsonArray("children"),
-            "Children of " + context);
+            "Children of " + context, true);
       } else if (key.equals("properties")) {
         assertEquivalentArrays(
             expected.getAsJsonArray("properties"),
             actual.getAsJsonArray("properties"),
-            "Properties of " + context);
+            "Properties of " + context, true);
       } else {
         throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
       }
     }
   }
 
-  private static void assertEquivalentArrays(JsonArray expected, JsonArray actual, String context) {
+  private static void assertEquivalentArrays(JsonArray expected, JsonArray actual, String context, Boolean unoreded) {
     if (expected.size() != actual.size()) {
       throw new AssertionError(
           "("
@@ -122,11 +123,34 @@ class SerializedJsonComparisonUtils {
               + " and actual="
               + actual.size());
     }
-    for (int i = 0; i < expected.size(); i++) {
-      assertEquivalentObjects(
-          expected.get(i).getAsJsonObject(),
-          actual.get(i).getAsJsonObject(),
-          context + " element " + i);
+    if (unoreded) {
+      Set<Integer> consumedActual = new HashSet<>();
+      for (int i = 0; i < expected.size(); i++) {
+        JsonObject expectedElement = expected.get(i).getAsJsonObject();
+        boolean matchFound = false;
+        for (int j=0;j<actual.size() && !matchFound;j++) {
+          if (!consumedActual.contains(j)) {
+            if (areEquivalentObjects(expectedElement, actual.get(j).getAsJsonObject())) {
+              consumedActual.add(j);
+              matchFound = true;
+            }
+          }
+        }
+        if (!matchFound) {
+          fail(context + " element " + i +" : no equivalent to " + expectedElement + " found");
+        }
+      }
+    } else {
+      throw new UnsupportedOperationException();
+    }
+  }
+
+  private static boolean areEquivalentObjects(JsonObject expected, JsonObject actual) {
+    try {
+      assertEquivalentObjects(expected, actual, "<IRRELEVANT>");
+      return true;
+    } catch (AssertionError e) {
+      return false;
     }
   }
 

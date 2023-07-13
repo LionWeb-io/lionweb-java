@@ -102,28 +102,12 @@ public class SerializationOfLionCoreTest extends SerializationTest {
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
     List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
 
-    SerializedNode lioncore = serializedChunk.getNodeByID("LIonCore-M3");
+    SerializedNode lioncore = serializedChunk.getNodeByID("-id-LIonCore-M3");
     assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getConcept());
-    assertEquals("LIonCore-M3", lioncore.getID());
-    assertEquals("LIonCore.M3", lioncore.getPropertyValue("Language_name"));
-    assertEquals(17, lioncore.getChildren().size());
+    assertEquals("-id-LIonCore-M3", lioncore.getID());
+    assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
+    assertEquals(15, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
-
-    SerializedNode namespacedEntity = serializedChunk.getNodeByID("LIonCore-M3-NamespacedEntity");
-    assertEquals(MetaPointer.from(LionCore.getConcept()), namespacedEntity.getConcept());
-    assertEquals("LIonCore-M3-NamespacedEntity", namespacedEntity.getID());
-    assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
-    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
-    assertEquals(2, namespacedEntity.getChildren().size());
-    assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
-
-    SerializedNode name = serializedChunk.getNodeByID("LIonCore-M3-NamespacedEntity_name");
-    assertEquals(MetaPointer.from(LionCore.getProperty()), name.getConcept());
-    assertEquals("name", name.getPropertyValue("NamespacedEntity_name"));
-    assertEquals("LIonCore-M3-NamespacedEntity", name.getParentNodeID());
-    assertEquals(
-        Arrays.asList(new SerializedReferenceValue.Entry("LIonCore-M3-String", "String")),
-        name.getReferenceValues("Property_type"));
   }
 
   @Test
@@ -135,24 +119,10 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     Language lioncore = (Language) unserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
-    assertEquals("LIonCore-M3", lioncore.getID());
+    assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getName());
-    assertEquals(17, lioncore.getChildren().size());
+    assertEquals(15, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
-
-    Concept namespacedEntity = conceptByID(unserializedNodes, "LIonCore-M3-NamespacedEntity");
-    assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
-    assertEquals("LIonCore-M3-NamespacedEntity", namespacedEntity.getID());
-    assertEquals(true, namespacedEntity.isAbstract());
-    assertEquals("NamespacedEntity", namespacedEntity.getName());
-    assertEquals(2, namespacedEntity.getChildren().size());
-    assertEquals(lioncore, namespacedEntity.getParent());
-
-    Property name = propertyByID(unserializedNodes, "LIonCore-M3-NamespacedEntity_name");
-    assertEquals(LionCore.getProperty(), name.getConcept());
-    assertEquals("name", name.getName());
-    assertEquals("LIonCore-M3-NamespacedEntity", name.getParent().getID());
-    assertEquals("LIonCore-M3-String", name.getType().getID());
   }
 
   @Test
@@ -173,24 +143,10 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
-    assertEquals("LIonCore-M3", lioncore.getID());
+    assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
-    assertEquals(17, lioncore.getChildren().size());
+    assertEquals(15, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
-
-    DynamicNode namespacedEntity =
-        dynamicNodeByID(unserializedNodes, "LIonCore-M3-NamespacedEntity");
-    assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
-    assertEquals("LIonCore-M3-NamespacedEntity", namespacedEntity.getID());
-    assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
-    assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("name"));
-    assertEquals(2, namespacedEntity.getChildren().size());
-    assertEquals(lioncore, namespacedEntity.getParent());
-
-    DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore-M3-NamespacedEntity_name");
-    assertEquals(LionCore.getProperty(), name.getConcept());
-    assertEquals("name", name.getPropertyValueByName("name"));
-    assertEquals("LIonCore-M3-NamespacedEntity", name.getParent().getID());
   }
 
   @Test(expected = RuntimeException.class)
