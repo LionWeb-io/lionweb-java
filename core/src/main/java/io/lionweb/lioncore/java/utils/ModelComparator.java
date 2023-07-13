@@ -53,20 +53,6 @@ public class ModelComparator {
               + valueB);
     }
 
-    public void markDifferentReferenceValue(
-        String context, String nodeID, String propertyName, Object valueA, Object valueB) {
-      differences.add(
-          context
-              + " (id="
-              + nodeID
-              + ") : different reference value for "
-              + propertyName
-              + ", a="
-              + valueA
-              + ", b="
-              + valueB);
-    }
-
     public void markDifferentNumberOfChildren(
         String context, String nodeID, String containmentName, int childrenA, int childrenB) {
       differences.add(

@@ -93,31 +93,28 @@ class SerializedJsonComparisonUtils {
       } else if (key.equals("id")) {
         assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
       } else if (key.equals("references")) {
-        assertEquivalentArrays(
+        assertEquivalentUnorderedArrays(
             expected.getAsJsonArray("references"),
             actual.getAsJsonArray("references"),
-            "References of " + context,
-            true);
+            "References of " + context);
       } else if (key.equals("children")) {
-        assertEquivalentArrays(
+        assertEquivalentUnorderedArrays(
             expected.getAsJsonArray("children"),
             actual.getAsJsonArray("children"),
-            "Children of " + context,
-            true);
+            "Children of " + context);
       } else if (key.equals("properties")) {
-        assertEquivalentArrays(
+        assertEquivalentUnorderedArrays(
             expected.getAsJsonArray("properties"),
             actual.getAsJsonArray("properties"),
-            "Properties of " + context,
-            true);
+            "Properties of " + context);
       } else {
         throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
       }
     }
   }
 
-  private static void assertEquivalentArrays(
-      JsonArray expected, JsonArray actual, String context, Boolean unoreded) {
+  private static void assertEquivalentUnorderedArrays(
+      JsonArray expected, JsonArray actual, String context) {
     if (expected.size() != actual.size()) {
       throw new AssertionError(
           "("
@@ -127,7 +124,6 @@ class SerializedJsonComparisonUtils {
               + " and actual="
               + actual.size());
     }
-    if (unoreded) {
       Set<Integer> consumedActual = new HashSet<>();
       for (int i = 0; i < expected.size(); i++) {
         JsonObject expectedElement = expected.get(i).getAsJsonObject();
@@ -144,9 +140,6 @@ class SerializedJsonComparisonUtils {
           fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
         }
       }
-    } else {
-      throw new UnsupportedOperationException();
-    }
   }
 
   private static boolean areEquivalentObjects(JsonObject expected, JsonObject actual) {

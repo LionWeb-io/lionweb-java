@@ -22,8 +22,6 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LIonWeb-org/organization/niko/update-docs-june2/lioncore/metametamodel/lioncore.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
-    //    File file = new File("/Users/ftomassetti/Downloads/lioncore2.json");
-    //    List<Node> nodes = jsonSer.unserializeToNodes(file);
 
     Language unserializedLioncore = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
@@ -39,11 +37,9 @@ public class CorrespondanceWithDocumentationTest {
   public void builtInIsTheSameAsInTheOrganizationRepo() throws IOException {
     JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
 
-    // URL url = new
-    // URL("https://raw.githubusercontent.com/LIonWeb-org/organization/niko/update-docs-june2/lioncore/metametamodel/builtins.json");
-    // List<Node> nodes = jsonSer.unserializeToNodes(url);
-    File file = new File("/Users/ftomassetti/Downloads/builtins2.json");
-    List<Node> nodes = jsonSer.unserializeToNodes(file);
+     URL url = new
+     URL("https://raw.githubusercontent.com/LIonWeb-org/organization/niko/update-docs-june2/lioncore/metametamodel/builtins.json");
+     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
     Language unserializedBuiltins = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =

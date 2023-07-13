@@ -7,7 +7,6 @@ package io.lionweb.lioncore.java.language;
  * the qualifiedName com.foo.Accounting.Invoice.
  */
 public interface NamespacedEntity extends INamed {
-  // TODO add ID, once details are clearer
   String getName();
 
   default String qualifiedName() {

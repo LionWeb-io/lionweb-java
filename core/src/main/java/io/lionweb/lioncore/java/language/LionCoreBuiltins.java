@@ -59,4 +59,8 @@ public class LionCoreBuiltins extends Language {
   public static ConceptInterface getINamed() {
     return INSTANCE.getConceptInterfaceByName("INamed");
   }
+
+  public static Concept getNode() {
+    return INSTANCE.getConceptByName("Node");
+  }
 }
