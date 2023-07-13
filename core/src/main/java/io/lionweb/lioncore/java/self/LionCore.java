@@ -104,10 +104,10 @@ public class LionCore {
 //      Concept namespacedEntity = INSTANCE.addElement(new Concept("NamespacedEntity"));
 //      ConceptInterface namespaceProvider =
 //          INSTANCE.addElement(new ConceptInterface("NamespaceProvider"));
+      ConceptInterface iKeyed = INSTANCE.addElement(new ConceptInterface("IKeyed"));
       Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
       Concept property = INSTANCE.addElement(new Concept("Property"));
       Concept reference = INSTANCE.addElement(new Concept("Reference"));
-      ConceptInterface iKeyed = INSTANCE.addElement(new ConceptInterface("IKeyed"));
 
       // Now we start adding the features to all the Concepts and ConceptInterfaces
 
@@ -174,12 +174,13 @@ public class LionCore {
 //              "name", LionCoreBuiltins.getString(), "LIonCore_M3_Language_name"));
       language.addFeature(
           Property.createRequired(
-              "version", LionCoreBuiltins.getString(), "LIonCore_M3_Language_version"));
-      language.addFeature(Reference.createMultiple("dependsOn", language));
+              "version", LionCoreBuiltins.getString(), "-id-Language-version"));
+      language.addFeature(Reference.createMultiple("dependsOn", language).setID("-id-Language-dependsOn"));
       language.addFeature(
-          Containment.createMultiple("entities", languageEntity, "LIonCore_M3_Language_elements").setKey("Language-elements"));
+          Containment.createMultiple("entities", languageEntity, "-id-Language-entities").setKey("Language-entities"));
 
       //languageEntity.setExtendedConcept(namespacedEntity);
+      languageEntity.setAbstract(true);
       languageEntity.addImplementedInterface(iKeyed);
 
 //      namespacedEntity.setAbstract(true);
@@ -194,12 +195,12 @@ public class LionCore {
       primitiveType.setExtendedConcept(dataType);
 
       property.setExtendedConcept(feature);
-      property.addFeature(Reference.createRequired("type", dataType, "LIonCore_M3_Property_type"));
+      property.addFeature(Reference.createRequired("type", dataType, "-id-Property-type"));
 
       reference.setExtendedConcept(link);
 
       iKeyed.addExtendedInterface(LionCoreBuiltins.getINamed());
-      iKeyed.addFeature(Property.createRequired("key", LionCoreBuiltins.getString()));
+      iKeyed.addFeature(Property.createRequired("key", LionCoreBuiltins.getString()).setID("-id-IKeyed-key"));
 
       checkIDs(INSTANCE);
     }
