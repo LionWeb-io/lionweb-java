@@ -33,7 +33,7 @@ public class JsonSerializationTest extends SerializationTest {
   @Test
   public void serializeReferenceWithoutResolveInfo() {
     Node book = new DynamicNode("foo123", LibraryLanguage.BOOK);
-    Node writer = new DynamicNode("_Arthur_Foozillus_id_", LibraryLanguage.WRITER);
+    Node writer = new DynamicNode("-Arthur-Foozillus-id-", LibraryLanguage.WRITER);
     book.addReferenceValue(
         LibraryLanguage.BOOK.getReferenceByName("author"), new ReferenceValue(writer, null));
 

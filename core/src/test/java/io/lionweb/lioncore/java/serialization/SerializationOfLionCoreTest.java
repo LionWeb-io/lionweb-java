@@ -34,64 +34,52 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     assertEquals(1, serializedChunk.getLanguages().size());
     Assert.assertEquals(
-        new LanguageKeyVersion("LIonCore_M3", "1"), serializedChunk.getLanguages().get(0));
+        new LanguageKeyVersion("LIonCore-M3", "1"), serializedChunk.getLanguages().get(0));
 
     SerializedNode LIonCore_M3 =
         serializedChunk.getNodes().stream()
-            .filter(n -> n.getID().equals("LIonCore_M3"))
+            .filter(n -> n.getID().equals("-id-LIonCore-M3"))
             .findFirst()
             .get();
-    assertEquals("LIonCore_M3", LIonCore_M3.getID());
-    assertEquals(new MetaPointer("LIonCore_M3", "1", "Language"), LIonCore_M3.getConcept());
+    assertEquals("-id-LIonCore-M3", LIonCore_M3.getID());
+    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), LIonCore_M3.getConcept());
     assertEquals(
         Arrays.asList(
-            new SerializedPropertyValue(
-                new MetaPointer("LIonCore_M3", "1", "Language_name"), "LIonCore.M3"),
-            new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "version"), "1"),
-            new SerializedPropertyValue(new MetaPointer("LIonCore_M3", "1", "key"), "LIonCore_M3")),
+            new SerializedPropertyValue(new MetaPointer("LIonCore-M3", "1", "Language-version"), "1"),
+            new SerializedPropertyValue(new MetaPointer("LIonCore-M3", "1", "IKeyed-key"), "LIonCore-M3"),
+                new SerializedPropertyValue(
+                        new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"), "LIonCore.M3")),
         LIonCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
             new SerializedContainmentValue(
-                new MetaPointer("LIonCore_M3", "1", "elements"),
+                new MetaPointer("LIonCore-M3", "1", "Language-entities"),
                 Arrays.asList(
-                    "LIonCore_M3_Concept",
-                    "LIonCore_M3_ConceptInterface",
-                    "LIonCore_M3_Containment",
-                    "LIonCore_M3_DataType",
-                    "LIonCore_M3_Enumeration",
-                    "LIonCore_M3_EnumerationLiteral",
-                    "LIonCore_M3_Feature",
-                    "LIonCore_M3_FeaturesContainer",
-                    "LIonCore_M3_HasKey",
-                    "LIonCore_M3_Link",
-                    "LIonCore_M3_Language",
-                    "LIonCore_M3_LanguageElement",
-                    "LIonCore_M3_NamespacedEntity",
-                    "LIonCore_M3_NamespaceProvider",
-                    "LIonCore_M3_PrimitiveType",
-                    "LIonCore_M3_Property",
-                    "LIonCore_M3_Reference"))),
+                    "-id-Concept",
+                    "-id-ConceptInterface",
+                    "-id-Containment",
+                    "-id-DataType",
+                    "-id-Enumeration",
+                    "-id-EnumerationLiteral",
+                    "-id-Feature",
+                    "-id-Classifier",
+                    "-id-Link",
+                    "-id-Language",
+                    "-id-LanguageEntity",
+                    "-id-IKeyed",
+                    "-id-PrimitiveType",
+                    "-id-Property",
+                    "-id-Reference"))),
         LIonCore_M3.getContainments());
     assertEquals(
         Arrays.asList(
             new SerializedReferenceValue(
-                new MetaPointer("LIonCore_M3", "1", "dependsOn"), Collections.emptyList())),
+                new MetaPointer("LIonCore-M3", "1", "Language-dependsOn"), Collections.emptyList())),
         LIonCore_M3.getReferences());
 
-    SerializedNode LIonCore_M3_NamespacedEntity =
-        serializedChunk.getNodes().stream()
-            .filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity"))
-            .findFirst()
-            .get();
-    SerializedNode LIonCore_M3_NamespacedEntity_name =
-        serializedChunk.getNodes().stream()
-            .filter(n -> n.getID().equals("LIonCore_M3_NamespacedEntity_name"))
-            .findFirst()
-            .get();
     SerializedNode LIonCore_M3_ConceptInterface_extends =
         serializedChunk.getNodes().stream()
-            .filter(n -> n.getID().equals("LIonCore_M3_ConceptInterface_extends"))
+            .filter(n -> n.getID().equals("-id-ConceptInterface-extends"))
             .findFirst()
             .get();
   }
@@ -114,27 +102,27 @@ public class SerializationOfLionCoreTest extends SerializationTest {
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
     List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
 
-    SerializedNode lioncore = serializedChunk.getNodeByID("LIonCore_M3");
+    SerializedNode lioncore = serializedChunk.getNodeByID("LIonCore-M3");
     assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getConcept());
-    assertEquals("LIonCore_M3", lioncore.getID());
+    assertEquals("LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("Language_name"));
     assertEquals(17, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
 
-    SerializedNode namespacedEntity = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity");
+    SerializedNode namespacedEntity = serializedChunk.getNodeByID("LIonCore-M3-NamespacedEntity");
     assertEquals(MetaPointer.from(LionCore.getConcept()), namespacedEntity.getConcept());
-    assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
+    assertEquals("LIonCore-M3-NamespacedEntity", namespacedEntity.getID());
     assertEquals("true", namespacedEntity.getPropertyValue("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValue("NamespacedEntity_name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore.getID(), namespacedEntity.getParentNodeID());
 
-    SerializedNode name = serializedChunk.getNodeByID("LIonCore_M3_NamespacedEntity_name");
+    SerializedNode name = serializedChunk.getNodeByID("LIonCore-M3-NamespacedEntity_name");
     assertEquals(MetaPointer.from(LionCore.getProperty()), name.getConcept());
     assertEquals("name", name.getPropertyValue("NamespacedEntity_name"));
-    assertEquals("LIonCore_M3_NamespacedEntity", name.getParentNodeID());
+    assertEquals("LIonCore-M3-NamespacedEntity", name.getParentNodeID());
     assertEquals(
-        Arrays.asList(new SerializedReferenceValue.Entry("LIonCore_M3_String", "String")),
+        Arrays.asList(new SerializedReferenceValue.Entry("LIonCore-M3-String", "String")),
         name.getReferenceValues("Property_type"));
   }
 
@@ -147,24 +135,24 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     Language lioncore = (Language) unserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
-    assertEquals("LIonCore_M3", lioncore.getID());
+    assertEquals("LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getName());
     assertEquals(17, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
 
-    Concept namespacedEntity = conceptByID(unserializedNodes, "LIonCore_M3_NamespacedEntity");
+    Concept namespacedEntity = conceptByID(unserializedNodes, "LIonCore-M3-NamespacedEntity");
     assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
-    assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
+    assertEquals("LIonCore-M3-NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.isAbstract());
     assertEquals("NamespacedEntity", namespacedEntity.getName());
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
-    Property name = propertyByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
+    Property name = propertyByID(unserializedNodes, "LIonCore-M3-NamespacedEntity_name");
     assertEquals(LionCore.getProperty(), name.getConcept());
     assertEquals("name", name.getName());
-    assertEquals("LIonCore_M3_NamespacedEntity", name.getParent().getID());
-    assertEquals("LIonCore_M3_String", name.getType().getID());
+    assertEquals("LIonCore-M3-NamespacedEntity", name.getParent().getID());
+    assertEquals("LIonCore-M3-String", name.getType().getID());
   }
 
   @Test
@@ -185,24 +173,24 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
-    assertEquals("LIonCore_M3", lioncore.getID());
+    assertEquals("LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
     assertEquals(17, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
 
     DynamicNode namespacedEntity =
-        dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity");
+        dynamicNodeByID(unserializedNodes, "LIonCore-M3-NamespacedEntity");
     assertEquals(LionCore.getConcept(), namespacedEntity.getConcept());
-    assertEquals("LIonCore_M3_NamespacedEntity", namespacedEntity.getID());
+    assertEquals("LIonCore-M3-NamespacedEntity", namespacedEntity.getID());
     assertEquals(true, namespacedEntity.getPropertyValueByName("abstract"));
     assertEquals("NamespacedEntity", namespacedEntity.getPropertyValueByName("name"));
     assertEquals(2, namespacedEntity.getChildren().size());
     assertEquals(lioncore, namespacedEntity.getParent());
 
-    DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore_M3_NamespacedEntity_name");
+    DynamicNode name = dynamicNodeByID(unserializedNodes, "LIonCore-M3-NamespacedEntity_name");
     assertEquals(LionCore.getProperty(), name.getConcept());
     assertEquals("name", name.getPropertyValueByName("name"));
-    assertEquals("LIonCore_M3_NamespacedEntity", name.getParent().getID());
+    assertEquals("LIonCore-M3-NamespacedEntity", name.getParent().getID());
   }
 
   @Test(expected = RuntimeException.class)
