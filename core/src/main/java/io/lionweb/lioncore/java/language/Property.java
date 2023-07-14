@@ -48,8 +48,7 @@ public class Property extends Feature<Property> {
     super();
   }
 
-  public Property(
-          @Nullable String name, @Nullable Classifier container, @Nonnull String id) {
+  public Property(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
     // TODO verify that the container is also a NamespaceProvider
     super(name, container, id);
   }

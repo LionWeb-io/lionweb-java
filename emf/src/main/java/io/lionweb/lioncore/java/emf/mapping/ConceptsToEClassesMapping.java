@@ -2,9 +2,9 @@ package io.lionweb.lioncore.java.emf.mapping;
 
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
+import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.ConceptInterface;
-import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Language;
 import java.util.HashMap;
 import java.util.Map;

@@ -7,8 +7,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This represents a relation between an {@link Classifier} and referred {@link
- * Classifier}.
+ * This represents a relation between an {@link Classifier} and referred {@link Classifier}.
  *
  * <p>A VariableReference may have a Reference to a VariableDeclaration.
  *
@@ -34,7 +33,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createOptional(
-          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
+      @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(true);
@@ -52,7 +51,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createRequired(
-          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
+      @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(false);
@@ -70,7 +69,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultiple(
-          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
+      @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(true);

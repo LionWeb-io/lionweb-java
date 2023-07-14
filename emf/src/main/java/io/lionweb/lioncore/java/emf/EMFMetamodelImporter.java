@@ -148,10 +148,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
         Property property = new Property(eFeature.getName(), classifier);
-        property.setID(
-            ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-        property.setKey(
-            ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+        property.setID(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+        property.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
         classifier.addFeature(property);
         property.setOptional(!eAttribute.isRequired());
         property.setDerived(eAttribute.isDerived());
