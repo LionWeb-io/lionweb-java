@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This represents a relation between an {@link FeaturesContainer} and referred {@link
- * FeaturesContainer}.
+ * This represents a relation between an {@link Classifier} and referred {@link
+ * Classifier}.
  *
  * <p>A VariableReference may have a Reference to a VariableDeclaration.
  *
@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  */
 public class Reference extends Link<Reference> {
 
-  public static Reference createOptional(@Nullable String name, @Nullable FeaturesContainer type) {
+  public static Reference createOptional(@Nullable String name, @Nullable Classifier type) {
     Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(false);
@@ -34,7 +34,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createOptional(
-      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
+          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(true);
@@ -43,7 +43,7 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createRequired(@Nullable String name, @Nullable FeaturesContainer type) {
+  public static Reference createRequired(@Nullable String name, @Nullable Classifier type) {
     Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(false);
@@ -52,7 +52,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createRequired(
-      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
+          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(false);
@@ -61,7 +61,7 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createMultiple(@Nullable String name, @Nullable FeaturesContainer type) {
+  public static Reference createMultiple(@Nullable String name, @Nullable Classifier type) {
     Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(true);
@@ -70,7 +70,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultiple(
-      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
+          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(true);
@@ -80,7 +80,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultipleAndRequired(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+      @Nullable String name, @Nullable Classifier type) {
     Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(true);
@@ -94,13 +94,13 @@ public class Reference extends Link<Reference> {
     super();
   }
 
-  public Reference(@Nullable String name, @Nullable FeaturesContainer container) {
+  public Reference(@Nullable String name, @Nullable Classifier container) {
     // TODO verify that the container is also a NamespaceProvider
     super(name, container);
   }
 
   public Reference(@Nullable String name) {
-    super(name, (FeaturesContainer) null);
+    super(name, (Classifier) null);
   }
 
   public Reference(@Nullable String name, @Nonnull String id) {

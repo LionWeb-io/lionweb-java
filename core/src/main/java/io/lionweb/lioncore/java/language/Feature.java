@@ -32,7 +32,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setOptional(false);
   }
 
-  public Feature(@Nullable String name, @Nullable FeaturesContainer container, @Nonnull String id) {
+  public Feature(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
     setDerived(false);
     setOptional(false);
     Objects.requireNonNull(id, "id should not be null");
@@ -43,7 +43,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setParent(container);
   }
 
-  public Feature(@Nullable String name, @Nullable FeaturesContainer container) {
+  public Feature(@Nullable String name, @Nullable Classifier container) {
     setDerived(false);
     setOptional(false);
     // TODO verify that the container is also a NamespaceProvider
@@ -110,6 +110,6 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   public Language getDeclaringLanguage() {
-    return (Language) ((FeaturesContainer<?>) this.getContainer()).getContainer();
+    return (Language) ((Classifier<?>) this.getContainer()).getContainer();
   }
 }

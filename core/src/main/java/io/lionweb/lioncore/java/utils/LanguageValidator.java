@@ -72,9 +72,9 @@ public class LanguageValidator extends Validator<Language> {
                                 lit.getName() == null, "Simple name not set", lit));
                 validateNamesAreUnique(enumeration.getLiterals(), result);
               }
-              if (el instanceof FeaturesContainer) {
-                FeaturesContainer<M3Node> featuresContainer = (FeaturesContainer) el;
-                featuresContainer
+              if (el instanceof Classifier) {
+                Classifier<M3Node> classifier = (Classifier) el;
+                classifier
                     .getFeatures()
                     .forEach(
                         (Feature feature) ->
@@ -85,10 +85,10 @@ public class LanguageValidator extends Validator<Language> {
                                     feature.getContainer() == null, "Container not set", feature)
                                 .checkForError(
                                     feature.getContainer() != null
-                                        && feature.getContainer() != featuresContainer,
+                                        && feature.getContainer() != classifier,
                                     "Features container not set correctly",
                                     feature));
-                validateNamesAreUnique(featuresContainer.getFeatures(), result);
+                validateNamesAreUnique(classifier.getFeatures(), result);
               }
               if (el instanceof Concept) {
                 Concept concept = (Concept) el;
@@ -178,7 +178,7 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void checkAncestorsHelper(
-      Set<FeaturesContainer> alreadyExplored,
+      Set<Classifier> alreadyExplored,
       Concept concept,
       ValidationResult validationResult,
       boolean examiningConcept) {
@@ -200,7 +200,7 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void checkAncestorsHelper(
-      Set<FeaturesContainer> alreadyExplored,
+      Set<Classifier> alreadyExplored,
       ConceptInterface conceptInterface,
       ValidationResult validationResult,
       boolean examiningConcept) {
@@ -279,9 +279,9 @@ public class LanguageValidator extends Validator<Language> {
                                 lit.getName() == null, "Simple name not set", lit));
                 validateNamesAreUnique(enumeration.getLiterals(), result);
               }
-              if (el instanceof FeaturesContainer) {
-                FeaturesContainer<M3Node> featuresContainer = (FeaturesContainer) el;
-                featuresContainer
+              if (el instanceof Classifier) {
+                Classifier<M3Node> classifier = (Classifier) el;
+                classifier
                     .getFeatures()
                     .forEach(
                         (Feature feature) ->
@@ -292,10 +292,10 @@ public class LanguageValidator extends Validator<Language> {
                                     feature.getContainer() == null, "Container not set", feature)
                                 .checkForError(
                                     feature.getContainer() != null
-                                        && feature.getContainer() != featuresContainer,
+                                        && feature.getContainer() != classifier,
                                     "Features container not set correctly",
                                     feature));
-                validateNamesAreUnique(featuresContainer.getFeatures(), result);
+                validateNamesAreUnique(classifier.getFeatures(), result);
               }
               if (el instanceof Concept) {
                 Concept concept = (Concept) el;

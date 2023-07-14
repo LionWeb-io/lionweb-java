@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Represent a connection to an {@link FeaturesContainer}.
+ * Represent a connection to an {@link Classifier}.
  *
  * <p>An Invoice can be connected to its InvoiceLines and to a Customer.
  *
@@ -29,7 +29,7 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     setMultiple(false);
   }
 
-  public Link(@Nullable String name, @Nullable FeaturesContainer container) {
+  public Link(@Nullable String name, @Nullable Classifier container) {
     // TODO verify that the container is also a NamespaceProvider
     super(name, container);
     setMultiple(false);
@@ -44,11 +44,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     return (T) this;
   }
 
-  public @Nullable FeaturesContainer getType() {
+  public @Nullable Classifier getType() {
     return getReferenceSingleValue("type");
   }
 
-  public T setType(@Nullable FeaturesContainer type) {
+  public T setType(@Nullable Classifier type) {
     if (type == null) {
       this.setReferenceSingleValue("type", null);
     } else {

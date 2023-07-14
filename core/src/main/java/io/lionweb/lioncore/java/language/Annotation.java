@@ -19,9 +19,9 @@ import javax.annotation.Nullable;
  *     equivalent <i>NodeAttribute</i> in local MPS</a>
  */
 @Experimental
-public class Annotation extends FeaturesContainer<Annotation> {
+public class Annotation extends Classifier<Annotation> {
   private @Nullable String platformSpecific;
-  private FeaturesContainer target;
+  private Classifier target;
 
   public Annotation() {
     super();
@@ -33,7 +33,7 @@ public class Annotation extends FeaturesContainer<Annotation> {
 
   @Nonnull
   @Override
-  public List<FeaturesContainer<?>> directAncestors() {
+  public List<Classifier<?>> directAncestors() {
     throw new UnsupportedOperationException();
   }
 
@@ -53,11 +53,11 @@ public class Annotation extends FeaturesContainer<Annotation> {
     this.platformSpecific = platformSpecific;
   }
 
-  public @Nullable FeaturesContainer getTarget() {
+  public @Nullable Classifier getTarget() {
     return target;
   }
 
-  public void setTarget(@Nullable FeaturesContainer target) {
+  public void setTarget(@Nullable Classifier target) {
     // TODO prevent annotations to be used as target
     this.target = target;
   }

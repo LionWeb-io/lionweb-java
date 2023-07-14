@@ -185,14 +185,14 @@ public class LionCore {
         throw new IllegalStateException(node.toString());
       }
     }
-    if (node instanceof FeaturesContainer<?>) {
-      FeaturesContainer<?> featuresContainer = (FeaturesContainer<?>) node;
-      featuresContainer
+    if (node instanceof Classifier<?>) {
+      Classifier<?> classifier = (Classifier<?>) node;
+      classifier
           .getFeatures()
           .forEach(
               feature -> {
                 if (feature.getKey() == null) {
-                  feature.setKey(featuresContainer.getName() + "-" + feature.getName());
+                  feature.setKey(classifier.getName() + "-" + feature.getName());
                 }
               });
     }
@@ -204,8 +204,8 @@ public class LionCore {
   private static List<? extends M3Node> getChildrenHelper(M3Node node) {
     if (node instanceof Language) {
       return ((Language) node).getElements();
-    } else if (node instanceof FeaturesContainer) {
-      return ((FeaturesContainer) node).getFeatures();
+    } else if (node instanceof Classifier) {
+      return ((Classifier) node).getFeatures();
     } else if (node instanceof Feature) {
       return Collections.emptyList();
     } else {

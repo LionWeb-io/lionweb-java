@@ -133,7 +133,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     return metamodel;
   }
 
-  private FeaturesContainer convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
+  private Classifier convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
     if (conceptsToEClassesMapping.knows(eClassifier)) {
       return conceptsToEClassesMapping.getCorrespondingFeaturesContainer(eClassifier);
     } else {
@@ -143,16 +143,16 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   }
 
   private void processStructuralFeatures(
-      EPackage ePackage, EClass eClass, FeaturesContainer<?> featuresContainer) {
+      EPackage ePackage, EClass eClass, Classifier<?> classifier) {
     for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
-        Property property = new Property(eFeature.getName(), featuresContainer);
+        Property property = new Property(eFeature.getName(), classifier);
         property.setID(
-            ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+            ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
         property.setKey(
-            ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
-        featuresContainer.addFeature(property);
+            ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+        classifier.addFeature(property);
         property.setOptional(!eAttribute.isRequired());
         property.setDerived(eAttribute.isDerived());
         DataType<DataType> propertyType =
@@ -165,24 +165,24 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       } else if (eFeature.eClass().getName().equals(EcorePackage.Literals.EREFERENCE.getName())) {
         EReference eReference = (EReference) eFeature;
         if (eReference.isContainment()) {
-          Containment containment = new Containment(eFeature.getName(), featuresContainer);
+          Containment containment = new Containment(eFeature.getName(), classifier);
           containment.setID(
-              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           containment.setKey(
-              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           containment.setOptional(!eReference.isRequired());
           containment.setMultiple(eReference.isMany());
-          featuresContainer.addFeature(containment);
+          classifier.addFeature(containment);
           containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
         } else {
-          Reference reference = new Reference(eFeature.getName(), featuresContainer);
+          Reference reference = new Reference(eFeature.getName(), classifier);
           reference.setID(
-              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           reference.setKey(
-              ePackage.getName() + "-" + featuresContainer.getName() + "-" + eFeature.getName());
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           reference.setOptional(!eReference.isRequired());
           reference.setMultiple(eReference.isMany());
-          featuresContainer.addFeature(reference);
+          classifier.addFeature(reference);
           reference.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
         }
       } else {

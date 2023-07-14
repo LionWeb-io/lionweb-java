@@ -4,7 +4,7 @@ import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.ConceptInterface;
-import io.lionweb.lioncore.java.language.FeaturesContainer;
+import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Language;
 import java.util.HashMap;
 import java.util.Map;
@@ -87,7 +87,7 @@ public class ConceptsToEClassesMapping {
     return eClassesToConceptInterfaces.get(eClass);
   }
 
-  public EClassifier getCorrespondingEClass(FeaturesContainer type) {
+  public EClassifier getCorrespondingEClass(Classifier type) {
     if (!conceptsToEClasses.containsKey(type) && !conceptInterfacesToEClasses.containsKey(type)) {
       if (languagesToEPackages.containsKey(type.getLanguage())) {
         throw new IllegalStateException();
@@ -118,7 +118,7 @@ public class ConceptsToEClassesMapping {
         || eClassesToConceptInterfaces.containsKey(eClassifier);
   }
 
-  public @Nullable FeaturesContainer getCorrespondingFeaturesContainer(EClassifier eClassifier) {
+  public @Nullable Classifier getCorrespondingFeaturesContainer(EClassifier eClassifier) {
     if (eClassesToConcepts.containsKey(eClassifier)) {
       return eClassesToConcepts.get(eClassifier);
     }

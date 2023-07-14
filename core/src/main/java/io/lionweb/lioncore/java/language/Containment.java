@@ -7,8 +7,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Represents a relation between a containing {@link FeaturesContainer} and a contained {@link
- * FeaturesContainer}.
+ * Represents a relation between a containing {@link Classifier} and a contained {@link
+ * Classifier}.
  *
  * <p>Between an IfStatement and its condition there is a Containment relation.
  *
@@ -28,7 +28,7 @@ import javax.annotation.Nullable;
 public class Containment extends Link<Containment> {
 
   public static Containment createOptional(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+      @Nullable String name, @Nullable Classifier type) {
     Containment containment = new Containment(name);
     containment.setOptional(true);
     containment.setMultiple(false);
@@ -37,7 +37,7 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createRequired(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+      @Nullable String name, @Nullable Classifier type) {
     Containment containment = new Containment(name);
     containment.setOptional(false);
     containment.setMultiple(false);
@@ -46,7 +46,7 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createMultiple(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+      @Nullable String name, @Nullable Classifier type) {
     Containment containment = new Containment(name);
     containment.setOptional(true);
     containment.setMultiple(true);
@@ -55,7 +55,7 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createMultiple(
-      @Nullable String name, @Nullable FeaturesContainer type, @Nonnull String id) {
+          @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Containment containment = new Containment(name, id);
     containment.setOptional(true);
@@ -65,7 +65,7 @@ public class Containment extends Link<Containment> {
   }
 
   public static Containment createMultipleAndRequired(
-      @Nullable String name, @Nullable FeaturesContainer type) {
+      @Nullable String name, @Nullable Classifier type) {
     Containment containment = new Containment(name);
     containment.setOptional(false);
     containment.setMultiple(true);
@@ -79,13 +79,13 @@ public class Containment extends Link<Containment> {
     super();
   }
 
-  public Containment(String name, @Nullable FeaturesContainer container) {
+  public Containment(String name, @Nullable Classifier container) {
     // TODO verify that the container is also a NamespaceProvider
     super(name, container);
   }
 
   public Containment(String name) {
-    super(name, (FeaturesContainer) null);
+    super(name, (Classifier) null);
   }
 
   public Containment(String name, @Nonnull String id) {

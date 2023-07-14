@@ -22,17 +22,17 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i>
  *     in SModel
  */
-public abstract class FeaturesContainer<T extends M3Node> extends LanguageElement<T>
+public abstract class Classifier<T extends M3Node> extends LanguageElement<T>
     implements NamespaceProvider {
-  public FeaturesContainer() {
+  public Classifier() {
     super();
   }
 
-  public FeaturesContainer(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public Classifier(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
-  public FeaturesContainer(@Nullable Language language, @Nullable String name) {
+  public Classifier(@Nullable Language language, @Nullable String name) {
     super(language, name);
   }
 
@@ -44,11 +44,11 @@ public abstract class FeaturesContainer<T extends M3Node> extends LanguageElemen
         .orElse(null);
   }
 
-  public abstract @Nonnull List<FeaturesContainer<?>> directAncestors();
+  public abstract @Nonnull List<Classifier<?>> directAncestors();
 
-  public @Nonnull List<FeaturesContainer<?>> allAncestors() {
-    List<FeaturesContainer<?>> ancestors = new ArrayList<>();
-    for (FeaturesContainer<?> ancestor : directAncestors()) {}
+  public @Nonnull List<Classifier<?>> allAncestors() {
+    List<Classifier<?>> ancestors = new ArrayList<>();
+    for (Classifier<?> ancestor : directAncestors()) {}
 
     return ancestors;
   }

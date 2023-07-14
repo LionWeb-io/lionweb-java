@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SInterfaceConcept MPS equivalent <i>SInterfaceConcept</i>
  *     in SModel
  */
-public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
+public class ConceptInterface extends Classifier<ConceptInterface> {
   public ConceptInterface() {
     super();
   }
@@ -73,7 +73,7 @@ public class ConceptInterface extends FeaturesContainer<ConceptInterface> {
 
   @Nonnull
   @Override
-  public List<FeaturesContainer<?>> directAncestors() {
-    return (List<FeaturesContainer<?>>) (Object) this.getExtendedInterfaces();
+  public List<Classifier<?>> directAncestors() {
+    return (List<Classifier<?>>) (Object) this.getExtendedInterfaces();
   }
 }

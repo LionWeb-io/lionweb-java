@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  *     equivalent <i>ConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
-public class Concept extends FeaturesContainer<Concept> {
+public class Concept extends Classifier<Concept> {
   // DOUBT: would extended be null only for BaseConcept? Would this be null for all Concept that do
   // not explicitly extend
   //        another concept?
@@ -56,8 +56,8 @@ public class Concept extends FeaturesContainer<Concept> {
 
   @Nonnull
   @Override
-  public List<FeaturesContainer<?>> directAncestors() {
-    List<FeaturesContainer<?>> directAncestors = new ArrayList<>();
+  public List<Classifier<?>> directAncestors() {
+    List<Classifier<?>> directAncestors = new ArrayList<>();
     // TODO add base ancestor common to all Concepts
     if (this.getExtendedConcept() != null) {
       directAncestors.add(this.getExtendedConcept());
