@@ -55,7 +55,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return this.getReferenceMultipleValue("dependsOn");
   }
 
-  public @Nonnull List<LanguageElement> getElements() {
+  public @Nonnull List<LanguageEntity> getElements() {
     return this.getContainmentMultipleValue("entities");
   }
 
@@ -66,7 +66,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return dependency;
   }
 
-  public <T extends LanguageElement> T addElement(@Nonnull T element) {
+  public <T extends LanguageEntity> T addElement(@Nonnull T element) {
     Objects.requireNonNull(element, "element should not be null");
     this.addContainmentMultipleValue("entities", element);
     element.setParent(this);
@@ -123,7 +123,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return this.getPropertyValue("version", String.class);
   }
 
-  public @Nullable LanguageElement getElementByName(String name) {
+  public @Nullable LanguageEntity getElementByName(String name) {
     return getElements().stream()
         .filter(element -> element.getName().equals(name))
         .findFirst()
@@ -131,7 +131,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   }
 
   public @Nullable PrimitiveType getPrimitiveTypeByName(String name) {
-    LanguageElement element = this.getElementByName(name);
+    LanguageEntity element = this.getElementByName(name);
     if (element == null) {
       return null;
     }

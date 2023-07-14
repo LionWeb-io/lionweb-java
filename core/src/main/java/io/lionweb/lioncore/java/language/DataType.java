@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  *     equivalent <i>DataTypeDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SDataType MPS equivalent <i>SDataType</i> in SModel
  */
-public abstract class DataType<T extends M3Node> extends LanguageElement<T> {
+public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
   public DataType() {
     super();
   }

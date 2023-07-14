@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i>
  *     in SModel
  */
-public abstract class Classifier<T extends M3Node> extends LanguageElement<T>
+public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     implements NamespaceProvider {
   public Classifier() {
     super();

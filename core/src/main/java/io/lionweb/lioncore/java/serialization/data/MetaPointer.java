@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.serialization.data;
 import io.lionweb.lioncore.java.language.Feature;
 import io.lionweb.lioncore.java.language.IKeyed;
 import io.lionweb.lioncore.java.language.Language;
-import io.lionweb.lioncore.java.language.LanguageElement;
+import io.lionweb.lioncore.java.language.LanguageEntity;
 import java.util.Objects;
 
 /**
@@ -27,13 +27,13 @@ public class MetaPointer {
     return from(feature, feature.getDeclaringLanguage());
   }
 
-  public static MetaPointer from(LanguageElement<?> languageElement) {
+  public static MetaPointer from(LanguageEntity<?> languageEntity) {
     MetaPointer metaPointer = new MetaPointer();
-    metaPointer.setKey(languageElement.getKey());
-    if (languageElement.getLanguage() != null) {
-      metaPointer.setLanguage(languageElement.getLanguage().getKey());
-      if (languageElement.getLanguage().getVersion() != null) {
-        metaPointer.setVersion(languageElement.getLanguage().getVersion());
+    metaPointer.setKey(languageEntity.getKey());
+    if (languageEntity.getLanguage() != null) {
+      metaPointer.setLanguage(languageEntity.getLanguage().getKey());
+      if (languageEntity.getLanguage().getVersion() != null) {
+        metaPointer.setVersion(languageEntity.getLanguage().getVersion());
       }
     }
     return metaPointer;

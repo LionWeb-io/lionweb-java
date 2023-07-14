@@ -15,17 +15,17 @@ import javax.annotation.Nullable;
  *     equivalent <i>IStructureElement</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
-public abstract class LanguageElement<T extends M3Node> extends M3Node<T>
+public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
     implements NamespacedEntity, IKeyed<T> {
 
-  public LanguageElement() {}
+  public LanguageEntity() {}
 
-  public LanguageElement(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public LanguageEntity(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     this(language, name);
     this.setID(id);
   }
 
-  public LanguageElement(@Nullable Language language, @Nullable String name) {
+  public LanguageEntity(@Nullable Language language, @Nullable String name) {
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {

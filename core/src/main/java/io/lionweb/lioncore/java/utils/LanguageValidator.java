@@ -52,7 +52,7 @@ public class LanguageValidator extends Validator<Language> {
     language
         .getElements()
         .forEach(
-            (LanguageElement el) -> {
+            (LanguageEntity el) -> {
               result
                   .checkForError(el.getName() == null, "Simple name not set", el)
                   .checkForError(el.getLanguage() == null, "Language not set", el)
@@ -260,7 +260,7 @@ public class LanguageValidator extends Validator<Language> {
     language
         .getElements()
         .forEach(
-            (LanguageElement el) -> {
+            (LanguageEntity el) -> {
               result
                   .checkForError(el.getName() == null, "Simple name not set", el)
                   .checkForError(el.getLanguage() == null, "Language not set", el)

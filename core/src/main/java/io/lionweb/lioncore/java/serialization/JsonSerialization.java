@@ -209,7 +209,7 @@ public class JsonSerialization {
               SerializedReferenceValue referenceValue = new SerializedReferenceValue();
               referenceValue.setMetaPointer(
                   MetaPointer.from(
-                      reference, ((LanguageElement) reference.getContainer()).getLanguage()));
+                      reference, ((LanguageEntity) reference.getContainer()).getLanguage()));
               referenceValue.setValue(
                   node.getReferenceValues(reference).stream()
                       .map(
@@ -233,7 +233,7 @@ public class JsonSerialization {
               SerializedContainmentValue containmentValue = new SerializedContainmentValue();
               containmentValue.setMetaPointer(
                   MetaPointer.from(
-                      containment, ((LanguageElement) containment.getContainer()).getLanguage()));
+                      containment, ((LanguageEntity) containment.getContainer()).getLanguage()));
               containmentValue.setValue(
                   node.getChildren(containment).stream()
                       .map(c -> c.getID())
@@ -250,7 +250,7 @@ public class JsonSerialization {
               SerializedPropertyValue propertyValue = new SerializedPropertyValue();
               propertyValue.setMetaPointer(
                   MetaPointer.from(
-                      property, ((LanguageElement) property.getContainer()).getLanguage()));
+                      property, ((LanguageEntity) property.getContainer()).getLanguage()));
               propertyValue.setValue(
                   serializePropertyValue(property.getType(), node.getPropertyValue(property)));
               serializedNode.addPropertyValue(propertyValue);
