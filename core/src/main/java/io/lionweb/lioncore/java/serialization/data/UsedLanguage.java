@@ -4,22 +4,25 @@ import io.lionweb.lioncore.java.language.Language;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
-/** The pair Language Key and Language Version identify a specific version of a language. */
-public class LanguageKeyVersion {
+/**
+ * The pair Language Key and Language Version identify a specific version of a language.
+ * This pair is defined UsedLanguage (see https://github.com/LIonWeb-org/organization/issues/129).
+ */
+public class UsedLanguage {
   private String key;
   private String version;
 
-  public LanguageKeyVersion() {}
+  public UsedLanguage() {}
 
-  public LanguageKeyVersion(String key, String version) {
+  public UsedLanguage(String key, String version) {
     this.key = key;
     this.version = version;
   }
 
-  public static LanguageKeyVersion fromLanguage(@Nonnull Language language) {
+  public static UsedLanguage fromLanguage(@Nonnull Language language) {
     Objects.requireNonNull(language, "Language parameter should not be null");
     Objects.requireNonNull(language.getVersion(), "Language version should not be null");
-    return new LanguageKeyVersion(language.getKey(), language.getVersion());
+    return new UsedLanguage(language.getKey(), language.getVersion());
   }
 
   public String getKey() {
@@ -41,8 +44,8 @@ public class LanguageKeyVersion {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof LanguageKeyVersion)) return false;
-    LanguageKeyVersion that = (LanguageKeyVersion) o;
+    if (!(o instanceof UsedLanguage)) return false;
+    UsedLanguage that = (UsedLanguage) o;
     return Objects.equals(key, that.key) && Objects.equals(version, that.version);
   }
 
@@ -53,6 +56,6 @@ public class LanguageKeyVersion {
 
   @Override
   public String toString() {
-    return "LanguageKeyVersion{" + "key='" + key + '\'' + ", version='" + version + '\'' + '}';
+    return "UsedLanguage{" + "key='" + key + '\'' + ", version='" + version + '\'' + '}';
   }
 }

@@ -13,7 +13,7 @@ public class SerializedChunk {
   private Map<String, SerializedNode> nodesByID = new HashMap<>();
 
   private String serializationFormatVersion;
-  private List<LanguageKeyVersion> languages = new ArrayList<>();
+  private List<UsedLanguage> languages = new ArrayList<>();
   private List<SerializedNode> nodes = new ArrayList<>();
 
   public void setSerializationFormatVersion(String value) {
@@ -42,7 +42,7 @@ public class SerializedChunk {
     return node;
   }
 
-  public void addLanguage(LanguageKeyVersion language) {
+  public void addLanguage(UsedLanguage language) {
     this.languages.add(language);
   }
 
@@ -50,7 +50,7 @@ public class SerializedChunk {
     return nodesByID;
   }
 
-  public List<LanguageKeyVersion> getLanguages() {
+  public List<UsedLanguage> getLanguages() {
     return languages;
   }
 

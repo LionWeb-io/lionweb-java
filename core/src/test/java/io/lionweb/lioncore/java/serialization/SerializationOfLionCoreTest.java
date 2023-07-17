@@ -32,7 +32,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     assertEquals(1, serializedChunk.getLanguages().size());
     Assert.assertEquals(
-        new LanguageKeyVersion("LIonCore-M3", "1"), serializedChunk.getLanguages().get(0));
+        new UsedLanguage("LIonCore-M3", "1"), serializedChunk.getLanguages().get(0));
 
     SerializedNode LIonCore_M3 =
         serializedChunk.getNodes().stream()

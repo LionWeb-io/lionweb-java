@@ -130,7 +130,7 @@ public class LowLevelJsonSerialization {
           .forEach(
               element -> {
                 try {
-                  LanguageKeyVersion languageKeyVersion = new LanguageKeyVersion();
+                  UsedLanguage languageKeyVersion = new UsedLanguage();
                   if (element.isJsonObject()) {
                     JsonObject jsonObject = element.getAsJsonObject();
                     if (!jsonObject.has("key") || !jsonObject.has("version")) {
@@ -185,7 +185,7 @@ public class LowLevelJsonSerialization {
     return jsonObject;
   }
 
-  private JsonElement serializeToJsonElement(LanguageKeyVersion languageKeyVersion) {
+  private JsonElement serializeToJsonElement(UsedLanguage languageKeyVersion) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("version", languageKeyVersion.getVersion());
     jsonObject.addProperty("key", languageKeyVersion.getKey());
