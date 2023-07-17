@@ -200,6 +200,11 @@ public abstract class M3Node<T extends M3Node> implements Node {
     return id;
   }
 
+  @Override
+  public String toString() {
+    return this.getClass().getSimpleName() + "["+ this.getID() + "]";
+  }
+
   protected <V extends Node> V getContainmentSingleValue(String linkName) {
     if (containmentValues.containsKey(linkName)) {
       List<Node> values = containmentValues.get(linkName);
