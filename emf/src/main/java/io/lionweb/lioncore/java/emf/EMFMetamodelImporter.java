@@ -133,9 +133,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     return metamodel;
   }
 
-  private Classifier convertEClassifierToFeaturesContainer(EClassifier eClassifier) {
+  private Classifier convertEClassifierToClassifier(EClassifier eClassifier) {
     if (conceptsToEClassesMapping.knows(eClassifier)) {
-      return conceptsToEClassesMapping.getCorrespondingFeaturesContainer(eClassifier);
+      return conceptsToEClassesMapping.getCorrespondingClassifier(eClassifier);
     } else {
       throw new IllegalArgumentException(
           "Reference to an EClassifier we did not met: " + eClassifier);
@@ -171,7 +171,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           containment.setOptional(!eReference.isRequired());
           containment.setMultiple(eReference.isMany());
           classifier.addFeature(containment);
-          containment.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
+          containment.setType(convertEClassifierToClassifier(eReference.getEType()));
         } else {
           Reference reference = new Reference(eFeature.getName(), classifier);
           reference.setID(
@@ -181,7 +181,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           reference.setOptional(!eReference.isRequired());
           reference.setMultiple(eReference.isMany());
           classifier.addFeature(reference);
-          reference.setType(convertEClassifierToFeaturesContainer(eReference.getEType()));
+          reference.setType(convertEClassifierToClassifier(eReference.getEType()));
         }
       } else {
         throw new UnsupportedOperationException();

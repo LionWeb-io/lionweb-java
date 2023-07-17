@@ -118,7 +118,7 @@ public class ConceptsToEClassesMapping {
         || eClassesToConceptInterfaces.containsKey(eClassifier);
   }
 
-  public @Nullable Classifier getCorrespondingFeaturesContainer(EClassifier eClassifier) {
+  public @Nullable Classifier getCorrespondingClassifier(EClassifier eClassifier) {
     if (eClassesToConcepts.containsKey(eClassifier)) {
       return eClassesToConcepts.get(eClassifier);
     }

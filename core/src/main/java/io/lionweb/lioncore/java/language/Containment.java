@@ -94,7 +94,7 @@ public class Containment extends Link<Containment> {
 
   public void setSpecialized(@Nullable Containment specialized) {
     // TODO check which limitations there are: should have the same name? Should it belong
-    //      to an ancestor of the FeaturesContainer holding this Containment?
+    //      to an ancestor of the Classifier holding this Containment?
     this.specialized = specialized;
   }
 
