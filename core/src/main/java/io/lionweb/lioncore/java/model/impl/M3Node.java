@@ -31,11 +31,11 @@ public abstract class M3Node<T extends M3Node> implements Node {
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
   // language
   // elements are inheriting from this class.
-  private Map<String, Object> propertyValues = new HashMap<>();
-  private Map<String, List<Node>> containmentValues = new HashMap<>();
-  private Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  private final Map<String, Object> propertyValues = new HashMap<>();
+  private final Map<String, List<Node>> containmentValues = new HashMap<>();
+  private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
 
-  private List<AnnotationInstance> annotationInstances = new LinkedList<>();
+  private final List<AnnotationInstance> annotationInstances = new LinkedList<>();
 
   public T setID(String id) {
     this.id = id;
@@ -138,11 +138,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     if (!getConcept().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
-    if (containmentValues.containsKey(containment.getName())) {
-      return containmentValues.get(containment.getName());
-    } else {
-      return Collections.emptyList();
-    }
+    return containmentValues.getOrDefault(containment.getName(), Collections.emptyList());
   }
 
   @Override
@@ -173,11 +169,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     if (!getConcept().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (referenceValues.containsKey(reference.getName())) {
-      return referenceValues.get(reference.getName());
-    } else {
-      return Collections.emptyList();
-    }
+    return referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
   }
 
   @Override
@@ -202,7 +194,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
 
   @Override
   public String toString() {
-    return this.getClass().getSimpleName() + "["+ this.getID() + "]";
+    return this.getClass().getSimpleName() + "[" + this.getID() + "]";
   }
 
   protected <V extends Node> V getContainmentSingleValue(String linkName) {
