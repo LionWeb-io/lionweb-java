@@ -114,8 +114,7 @@ public class JsonSerialization {
           "A Concept should be part of a Language in order to be serialized. Concept "
               + node.getConcept()
               + " is not");
-      UsedLanguage languageKeyVersion =
-          UsedLanguage.fromLanguage(node.getConcept().getLanguage());
+      UsedLanguage languageKeyVersion = UsedLanguage.fromLanguage(node.getConcept().getLanguage());
       if (!serializationBlock.getLanguages().contains(languageKeyVersion)) {
         serializationBlock.getLanguages().add(languageKeyVersion);
       }
