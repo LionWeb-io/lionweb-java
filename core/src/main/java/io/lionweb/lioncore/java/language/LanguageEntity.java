@@ -5,9 +5,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A LanguageElement is an element with an identity within a {@link Language}.
+ * A LanguageEntity is an element with an identity within a {@link Language}.
  *
- * <p>For example, Invoice, Currency, Named, or String could be LanguageElements.
+ * <p>For example, Invoice, Currency, Named, or String could be LanguageEntities.
  *
  * @see org.eclipse.emf.ecore.EClassifier Ecore equivalent <i>EClassifier</i>
  * @see <a
@@ -46,7 +46,7 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
     } else if (getParent() instanceof Language) {
       return (Language) getParent();
     } else {
-      throw new IllegalStateException("The parent of this LanguageElement is not a Language");
+      throw new IllegalStateException("The parent of this LanguageEntity is not a Language");
     }
   }
 
