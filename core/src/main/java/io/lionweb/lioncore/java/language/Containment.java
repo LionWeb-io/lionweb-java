@@ -100,7 +100,7 @@ public class Containment extends Link<Containment> {
 
   @Override
   public String toString() {
-    return "Containment{" + "name=" + getName() + ", " + "type=" + getType() + '}';
+    return super.toString() + "{" + "name=" + getName() + ", " + "type=" + getType() + '}';
   }
 
   @Override

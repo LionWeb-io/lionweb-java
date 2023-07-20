@@ -37,7 +37,7 @@ public class PrimitiveType extends DataType<PrimitiveType> {
 
   @Override
   public String toString() {
-    return "PrimitiveType(" + getName() + ")";
+    return super.toString() + "{" + "name=" + getName() + '}';
   }
 
   @Override

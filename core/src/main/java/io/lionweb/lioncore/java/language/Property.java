@@ -73,7 +73,7 @@ public class Property extends Feature<Property> {
 
   @Override
   public String toString() {
-    return "Property{" + "name=" + getName() + ", " + "type=" + getType() + '}';
+    return super.toString() + "{" + "name=" + getName() + ", " + "type=" + getType() + '}';
   }
 
   @Override

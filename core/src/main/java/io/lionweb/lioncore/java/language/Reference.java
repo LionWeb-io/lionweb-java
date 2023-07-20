@@ -118,7 +118,7 @@ public class Reference extends Link<Reference> {
 
   @Override
   public String toString() {
-    return "Reference{" + "name=" + getName() + ", " + "type=" + getType() + '}';
+    return super.toString() + "{" + "name=" + getName() + ", " + "type=" + getType() + '}';
   }
 
   @Override

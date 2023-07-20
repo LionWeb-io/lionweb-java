@@ -149,7 +149,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
 
   @Override
   public String toString() {
-    return "Language(" + this.getName() + ")";
+    return super.toString() + "{" + "name=" + getName() + "}";
   }
 
   public List<PrimitiveType> getPrimitiveTypes() {

@@ -93,13 +93,11 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
         qualifier = "<unnamed language>";
       }
     }
-    ;
     String qualified = "<unnamed>";
     if (this.getName() != null) {
       qualified = this.getName();
     }
-    ;
     String qn = qualifier + "." + qualified;
-    return this.getClass().getName() + "(" + qn + ")";
+    return super.toString() + "{" + "qualifiedName=" + qn + "}";
   }
 }
