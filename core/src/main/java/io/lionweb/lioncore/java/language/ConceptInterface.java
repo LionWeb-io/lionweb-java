@@ -54,12 +54,10 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
         "extends", new ReferenceValue(extendedInterface, extendedInterface.getName()));
   }
 
+  @Nonnull
   @Override
-  public @Nonnull List<Feature> allFeatures() {
-    // TODO Should this return features which are overriden?
-    // TODO Should features be returned in a particular order?
+  public List<Feature> inheritedFeatures() {
     List<Feature> result = new LinkedList<>();
-    result.addAll(this.getFeatures());
     for (ConceptInterface superInterface : getExtendedInterfaces()) {
       result.addAll(superInterface.allFeatures());
     }

@@ -106,12 +106,10 @@ public class Concept extends Classifier<Concept> {
     }
   }
 
+  @Nonnull
   @Override
-  public @Nonnull List<Feature> allFeatures() {
-    // TODO Should this return features which are overriden?
-    // TODO Should features be returned in a particular order?
+  public List<Feature> inheritedFeatures() {
     List<Feature> result = new LinkedList<>();
-    result.addAll(this.getFeatures());
     if (this.getExtendedConcept() != null) {
       result.addAll(this.getExtendedConcept().allFeatures());
     }

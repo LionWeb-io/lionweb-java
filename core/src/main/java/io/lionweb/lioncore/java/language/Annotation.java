@@ -37,8 +37,9 @@ public class Annotation extends Classifier<Annotation> {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
-  public @Nonnull List<Feature> allFeatures() {
+  public List<Feature> inheritedFeatures() {
     throw new UnsupportedOperationException();
   }
 
