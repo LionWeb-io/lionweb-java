@@ -99,11 +99,6 @@ public class Containment extends Link<Containment> {
   }
 
   @Override
-  public String toString() {
-    return "Containment{" + "name=" + getName() + ", " + "type=" + getType() + '}';
-  }
-
-  @Override
   public Concept getConcept() {
     return LionCore.getContainment();
   }

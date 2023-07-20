@@ -56,4 +56,16 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     }
     return (T) this;
   }
+
+  @Override
+  public String toString() {
+    return super.toString()
+        + "{"
+        + "qualifiedName="
+        + DebugUtils.qualifiedName(this)
+        + ", "
+        + "type="
+        + getType()
+        + '}';
+  }
 }
