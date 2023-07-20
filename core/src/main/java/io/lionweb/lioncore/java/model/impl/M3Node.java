@@ -312,5 +312,4 @@ public abstract class M3Node<T extends M3Node> implements Node {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
   }
-
 }

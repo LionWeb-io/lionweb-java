@@ -73,7 +73,14 @@ public class Property extends Feature<Property> {
 
   @Override
   public String toString() {
-    return super.toString() + "{" + "qualifiedName=" + DebugUtils.qualifiedName(this) + ", " + "type=" + getType() + '}';
+    return super.toString()
+        + "{"
+        + "qualifiedName="
+        + DebugUtils.qualifiedName(this)
+        + ", "
+        + "type="
+        + getType()
+        + '}';
   }
 
   @Override
