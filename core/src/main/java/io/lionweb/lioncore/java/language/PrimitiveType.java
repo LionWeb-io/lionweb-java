@@ -36,11 +36,6 @@ public class PrimitiveType extends DataType<PrimitiveType> {
   }
 
   @Override
-  public String toString() {
-    return super.toString() + "{" + "name=" + getName() + '}';
-  }
-
-  @Override
   public Concept getConcept() {
     return LionCore.getPrimitiveType();
   }

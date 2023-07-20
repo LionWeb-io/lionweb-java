@@ -85,19 +85,6 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
 
   @Override
   public String toString() {
-    String qualifier = "<no language>";
-    if (this.getContainer() != null) {
-      if (this.getContainer().namespaceQualifier() != null) {
-        qualifier = this.getContainer().namespaceQualifier();
-      } else {
-        qualifier = "<unnamed language>";
-      }
-    }
-    String qualified = "<unnamed>";
-    if (this.getName() != null) {
-      qualified = this.getName();
-    }
-    String qn = qualifier + "." + qualified;
-    return super.toString() + "{" + "qualifiedName=" + qn + "}";
+    return super.toString() + "{" + "qualifiedName=" + DebugUtils.qualifiedName(this) + "}";
   }
 }
