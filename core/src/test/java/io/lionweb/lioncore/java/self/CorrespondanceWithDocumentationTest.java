@@ -14,13 +14,18 @@ import org.junit.Test;
 
 public class CorrespondanceWithDocumentationTest {
 
+  private static final String ORGANIZATION_COMMIT_CONSIDERED =
+      "f19ae276c2212cadaa2f34cab9cf7dde1667b5cc";
+
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo() throws IOException {
     JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LIonWeb-org/organization/main/metametamodel/lioncore.json");
+            "https://raw.githubusercontent.com/LIonWeb-org/organization/"
+                + ORGANIZATION_COMMIT_CONSIDERED
+                + "/metametamodel/lioncore.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
     Language unserializedLioncore = (Language) nodes.get(0);
@@ -39,7 +44,9 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LIonWeb-org/organization/main/metametamodel/builtins.json");
+            "https://raw.githubusercontent.com/LIonWeb-org/organization/"
+                + ORGANIZATION_COMMIT_CONSIDERED
+                + "/metametamodel/builtins.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
     Language unserializedBuiltins = (Language) nodes.get(0);
