@@ -24,8 +24,6 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.checkerframework.checker.units.qual.C;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -522,6 +520,8 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals("instance-a", serializedNode.getID());
     assertEquals(1, serializedNode.getProperties().size());
     SerializedPropertyValue serializedName = serializedNode.getProperties().get(0);
-    assertEquals(new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"), serializedName.getMetaPointer());
+    assertEquals(
+        new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"),
+        serializedName.getMetaPointer());
   }
 }

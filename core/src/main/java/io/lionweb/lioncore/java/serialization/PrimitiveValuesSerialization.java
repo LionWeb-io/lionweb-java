@@ -6,7 +6,6 @@ import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.impl.DynamicEnumerationValue;
-
 import java.util.*;
 
 /**
@@ -105,16 +104,16 @@ public class PrimitiveValuesSerialization {
       // primitiveUnserializers,
       // if a different behavior is needed
       Optional<EnumerationLiteral> enumerationLiteral =
-              enumerationsByID.get(dataTypeID).getLiterals().stream()
-                      .filter(l -> Objects.equals(l.getKey(), serializedValue))
-                      .findFirst();
+          enumerationsByID.get(dataTypeID).getLiterals().stream()
+              .filter(l -> Objects.equals(l.getKey(), serializedValue))
+              .findFirst();
       if (enumerationLiteral.isPresent()) {
         return enumerationLiteral.get();
       } else {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
     } else if (dynamicNodesEnabled && dataType instanceof Enumeration) {
-      return new DynamicEnumerationValue((Enumeration)dataType, serializedValue);
+      return new DynamicEnumerationValue((Enumeration) dataType, serializedValue);
     } else {
       throw new IllegalArgumentException(
           "Unable to unserialize primitive values of type " + dataTypeID);

@@ -1,13 +1,13 @@
 package io.lionweb.lioncore.java.self;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
 import org.junit.Test;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 public class LionCoreTest {
 

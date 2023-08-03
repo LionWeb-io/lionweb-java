@@ -464,8 +464,10 @@ public class JsonSerialization {
                   concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
               Objects.requireNonNull(
                   containment,
-                  "Unable to resolve containment " + serializedContainmentValue.getMetaPointer()
-                          + " in concept " + concept);
+                  "Unable to resolve containment "
+                      + serializedContainmentValue.getMetaPointer()
+                      + " in concept "
+                      + concept);
               Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
