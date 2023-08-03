@@ -133,54 +133,6 @@ publishing {
 
             }
         }
-        lioncore_java_core_fat(MavenPublication) {
-            groupId = 'io.lionweb.lioncore-java'
-            artifactId "lioncore-java-" + project.name + "-fat"
-            artifact sourcesJar
-            artifact javadocJar
-            artifact new File(buildDir, "libs/core-${version}-all.jar")
-            pom {
-                name = "lioncore-java-" + project.name + "-fat"
-                description = "Java APIs for the LIonWeb system"
-                version = project.version
-                packaging = 'jar'
-                url = 'https://github.com/LIonWeb-org/lioncore-java'
-
-                scm {
-                    connection = 'scm:git:https://github.com/LIonWeb-org/lioncore-java.git'
-                    developerConnection = 'scm:git:git@github.com:LIonWeb-org/lioncore-java.git'
-                    url = 'https://github.com/LIonWeb-org/lioncore-java.git'
-                }
-
-                licenses {
-                    license {
-                        name = 'Apache Licenve V2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0'
-                        distribution = 'repo'
-                    }
-                }
-
-                // The developers entry is strictly required by Maven Central
-                developers {
-                    developer {
-                        id = 'ftomassetti'
-                        name = 'Federico Tomassetti'
-                        email = 'federico@strumenta.com'
-                    }
-                    developer {
-                        id = 'dslmeinte'
-                        name = 'Meinte Boersma'
-                        email = 'meinte.boersma@gmail.com'
-                    }
-                    developer {
-                        id = 'enikao'
-                        name = 'Niko Stotz'
-                        email = 'niko.stotz@nikostotz.de'
-                    }
-                }
-
-            }
-        }
     }
 }
 
@@ -195,7 +147,6 @@ tasks.withType(Sign) {
 
 signing {
     sign publishing.publications.lioncore_java_core
-    sign publishing.publications.lioncore_java_core_fat
 }
 
 task relocateShadowJar(type: ConfigureShadowRelocation) {
@@ -207,23 +158,6 @@ tasks.withType(ShadowJar) {
     relocate 'com.google.gson', 'relocated.lionweb.com.google.gson'
 }
 
-tasks.named("publishLioncore_java_core_fatPublicationToMavenLocal") {
-    dependsOn("shadowJar")
-}
-
-tasks.named("publishLioncore_java_core_fatPublicationToMavenRepository") {
-    dependsOn("shadowJar")
-    dependsOn("signLioncore_java_corePublication")
-}
-
 tasks.named("signLioncore_java_corePublication") {
     dependsOn("shadowJar")
-}
-
-tasks.named("signLioncore_java_core_fatPublication") {
-    dependsOn("shadowJar")
-}
-
-tasks.named("publishLioncore_java_corePublicationToMavenRepository") {
-    dependsOn("signLioncore_java_core_fatPublication")
 }
