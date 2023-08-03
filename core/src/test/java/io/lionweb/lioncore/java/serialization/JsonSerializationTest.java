@@ -11,7 +11,7 @@ import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.serialization.data.SerializedContainmentValue;
+import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
 import io.lionweb.lioncore.java.serialization.refsmm.RefNode;
 import io.lionweb.lioncore.java.serialization.refsmm.RefsLanguage;
@@ -24,6 +24,8 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.checkerframework.checker.units.qual.C;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -501,5 +503,25 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(Arrays.asList(n1, n2), unserializedNodes);
     assertEquals(el1, unserializedNodes.get(0).getPropertyValue(p));
     assertEquals(el2, unserializedNodes.get(1).getPropertyValue(p));
+  }
+
+  @Test
+  public void serializationOfLanguageVersionsWithImports() {
+    Language myLanguage = new Language();
+    myLanguage.setKey("myLanguage-key");
+    myLanguage.setVersion("3");
+    Concept myConcept = new Concept();
+    myConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
+    myLanguage.addElement(myConcept);
+
+    DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
+    JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
+    SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationBlock(myInstance);
+    assertEquals(1, serializedChunk.getNodes().size());
+    SerializedNode serializedNode = serializedChunk.getNodes().get(0);
+    assertEquals("instance-a", serializedNode.getID());
+    assertEquals(1, serializedNode.getProperties().size());
+    SerializedPropertyValue serializedName = serializedNode.getProperties().get(0);
+    assertEquals(new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"), serializedName.getMetaPointer());
   }
 }

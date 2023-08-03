@@ -93,6 +93,11 @@ public class JsonSerialization {
     return nodeResolver;
   }
 
+  public void enableDynamicNodes() {
+    nodeInstantiator.enableDynamicNodes();
+    primitiveValuesSerialization.enableDynamicNodes();
+  }
+
   //
   // Serialization
   //
@@ -415,7 +420,7 @@ public class JsonSerialization {
                       + serializedNode);
               Object unserializedValue =
                   primitiveValuesSerialization.unserialize(
-                      property.getType().getID(), serializedPropertyValue.getValue());
+                      property.getType(), serializedPropertyValue.getValue());
               propertiesValues.put(property, unserializedValue);
             });
     Node node =

@@ -3,10 +3,10 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
-import io.lionweb.lioncore.java.language.EnumerationLiteral;
-import io.lionweb.lioncore.java.language.Language;
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.model.impl.DynamicEnumerationValue;
+
 import java.util.*;
 
 /**
@@ -18,11 +18,16 @@ public class PrimitiveValuesSerialization {
   // PrimitiveValuesSerialization
   // because that is unique
   private Map<String, Enumeration> enumerationsByID = new HashMap<>();
+  private boolean dynamicNodesEnabled = false;
 
   public void registerLanguage(Language language) {
     language.getElements().stream()
         .filter(e -> e instanceof Enumeration)
         .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
+  }
+
+  public void enableDynamicNodes() {
+    dynamicNodesEnabled = true;
   }
 
   public interface PrimitiveSerializer<V> {
@@ -86,10 +91,11 @@ public class PrimitiveValuesSerialization {
         (PrimitiveSerializer<Integer>) value -> value.toString());
   }
 
-  public Object unserialize(String primitiveTypeID, String serializedValue) {
-    if (primitiveUnserializers.containsKey(primitiveTypeID)) {
-      return primitiveUnserializers.get(primitiveTypeID).unserialize(serializedValue);
-    } else if (enumerationsByID.containsKey(primitiveTypeID)) {
+  public Object unserialize(DataType dataType, String serializedValue) {
+    String dataTypeID = dataType.getID();
+    if (primitiveUnserializers.containsKey(dataTypeID)) {
+      return primitiveUnserializers.get(dataTypeID).unserialize(serializedValue);
+    } else if (enumerationsByID.containsKey(dataTypeID)) {
       if (serializedValue == null) {
         return null;
       }
@@ -99,17 +105,19 @@ public class PrimitiveValuesSerialization {
       // primitiveUnserializers,
       // if a different behavior is needed
       Optional<EnumerationLiteral> enumerationLiteral =
-          enumerationsByID.get(primitiveTypeID).getLiterals().stream()
-              .filter(l -> Objects.equals(l.getKey(), serializedValue))
-              .findFirst();
+              enumerationsByID.get(dataTypeID).getLiterals().stream()
+                      .filter(l -> Objects.equals(l.getKey(), serializedValue))
+                      .findFirst();
       if (enumerationLiteral.isPresent()) {
         return enumerationLiteral.get();
       } else {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
+    } else if (dynamicNodesEnabled && dataType instanceof Enumeration) {
+      return new DynamicEnumerationValue((Enumeration)dataType, serializedValue);
     } else {
       throw new IllegalArgumentException(
-          "Unable to unserialize primitive values of type " + primitiveTypeID);
+          "Unable to unserialize primitive values of type " + dataTypeID);
     }
   }
 
