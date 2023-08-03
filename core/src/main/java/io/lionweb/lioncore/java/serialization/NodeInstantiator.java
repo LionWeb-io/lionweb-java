@@ -27,7 +27,7 @@ public class NodeInstantiator {
       (ConceptSpecificNodeInstantiator<Node>)
           (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
             throw new IllegalArgumentException(
-                "Unable to unserialize node with concept " + concept);
+                "Unable to instantiate node with concept " + concept);
           };
 
   public NodeInstantiator enableDynamicNodes() {
