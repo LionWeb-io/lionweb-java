@@ -55,12 +55,12 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   public @Nonnull List<Feature> allFeatures() {
-      // TODO Should this return features which are overriden?
-      // TODO Should features be returned in a particular order?
-      List<Feature> result = new LinkedList<>();
-      result.addAll(this.getFeatures());
-      result.addAll(this.inheritedFeatures());
-      return result;
+    // TODO Should this return features which are overriden?
+    // TODO Should features be returned in a particular order?
+    List<Feature> result = new LinkedList<>();
+    result.addAll(this.getFeatures());
+    result.addAll(this.inheritedFeatures());
+    return result;
   }
 
   public abstract @Nonnull List<Feature> inheritedFeatures();

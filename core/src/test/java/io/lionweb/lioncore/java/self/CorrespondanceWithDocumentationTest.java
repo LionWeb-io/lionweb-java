@@ -20,7 +20,7 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LIonWeb-org/organization/main/lioncore/metametamodel/lioncore.json");
+            "https://raw.githubusercontent.com/LIonWeb-org/organization/main/metametamodel/lioncore.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
     Language unserializedLioncore = (Language) nodes.get(0);
@@ -39,7 +39,7 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LIonWeb-org/organization/main/lioncore/metametamodel/builtins.json");
+            "https://raw.githubusercontent.com/LIonWeb-org/organization/main/metametamodel/builtins.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
     Language unserializedBuiltins = (Language) nodes.get(0);
