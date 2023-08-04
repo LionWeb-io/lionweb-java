@@ -1,11 +1,14 @@
 package io.lionweb.lioncore.java.model.impl;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
 import com.google.gson.JsonArray;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
 import org.junit.Test;
+
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 public class DynamicNodeTest {
 
@@ -51,5 +54,48 @@ public class DynamicNodeTest {
     n2.setP3("bar");
     n2.setP4(new JsonArray());
     assertFalse(n1.equals(n2));
+  }
+
+  @Test
+  public void removeChildOnSingleContainment() {
+    Concept c = new Concept();
+    Containment containment = Containment.createOptional("ch", c);
+    c.addFeature(containment);
+    DynamicNode n1 = new DynamicNode("id-123", c);
+    DynamicNode n2 = new DynamicNode("id-456", c);
+
+    assertEquals(Arrays.asList(), n1.getChildren(containment));
+    n1.addChild(containment, n2);
+    assertEquals(Arrays.asList(n2), n1.getChildren(containment));
+    n1.removeChild(n2);
+    assertEquals(Arrays.asList(), n1.getChildren(containment));
+  }
+
+  @Test
+  public void removeChildOnMultipleContainment() {
+    Concept c = new Concept();
+    Containment containment = Containment.createMultiple("ch", c);
+    c.addFeature(containment);
+    DynamicNode n1 = new DynamicNode("id-123", c);
+    DynamicNode n2 = new DynamicNode("id-456", c);
+    DynamicNode n3 = new DynamicNode("id-789", c);
+    DynamicNode n4 = new DynamicNode("id-012", c);
+
+    assertEquals(Arrays.asList(), n1.getChildren(containment));
+    n1.addChild(containment, n2);
+    n1.addChild(containment, n3);
+    n1.addChild(containment, n4);
+    assertEquals(Arrays.asList(n2, n3, n4), n1.getChildren(containment));
+    n1.removeChild(n3);
+    assertEquals(Arrays.asList(n2, n4), n1.getChildren(containment));
+    n1.removeChild(n2);
+    assertEquals(Arrays.asList(n4), n1.getChildren(containment));
+    n1.removeChild(n4);
+    assertEquals(Arrays.asList(), n1.getChildren(containment));
+  }
+
+  @Test
+  public void setContainmentSingleValue() {
+    throw new UnsupportedOperationException();
   }
 }

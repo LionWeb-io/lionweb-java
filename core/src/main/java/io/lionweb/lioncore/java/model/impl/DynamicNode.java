@@ -133,7 +133,14 @@ public class DynamicNode implements Node {
 
   @Override
   public void removeChild(Node node) {
-    throw new UnsupportedOperationException();
+    for (Map.Entry<String, List<Node>> entry: containmentValues.entrySet()) {
+      if (entry.getValue().contains(node)) {
+        entry.getValue().remove(node);
+        ((DynamicNode) node).setParent(null);
+        return;
+      }
+    }
+    throw new IllegalArgumentException("The given node is not a child of this node");
   }
 
   @Override
