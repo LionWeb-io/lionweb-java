@@ -1,14 +1,13 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import static org.junit.Assert.*;
+
 import com.google.gson.JsonArray;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
-import org.junit.Test;
-
 import java.util.Arrays;
-
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class DynamicNodeTest {
 
@@ -92,10 +91,5 @@ public class DynamicNodeTest {
     assertEquals(Arrays.asList(n4), n1.getChildren(containment));
     n1.removeChild(n4);
     assertEquals(Arrays.asList(), n1.getChildren(containment));
-  }
-
-  @Test
-  public void setContainmentSingleValue() {
-    throw new UnsupportedOperationException();
   }
 }

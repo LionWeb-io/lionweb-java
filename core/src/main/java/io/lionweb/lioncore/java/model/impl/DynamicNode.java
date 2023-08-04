@@ -133,7 +133,7 @@ public class DynamicNode implements Node {
 
   @Override
   public void removeChild(Node node) {
-    for (Map.Entry<String, List<Node>> entry: containmentValues.entrySet()) {
+    for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
       if (entry.getValue().contains(node)) {
         entry.getValue().remove(node);
         ((DynamicNode) node).setParent(null);
