@@ -29,7 +29,7 @@ public class LowLevelJsonSerializationTest {
     assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getConcept());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
   }
 

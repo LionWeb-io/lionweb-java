@@ -56,6 +56,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             new SerializedContainmentValue(
                 new MetaPointer("LIonCore-M3", "1", "Language-entities"),
                 Arrays.asList(
+                    "-id-Annotation",
                     "-id-Concept",
                     "-id-ConceptInterface",
                     "-id-Containment",
@@ -70,8 +71,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "-id-IKeyed",
                     "-id-PrimitiveType",
                     "-id-Property",
-                    "-id-Reference",
-                    "-id-Annotation"))),
+                    "-id-Reference"))),
         LIonCore_M3.getContainments());
     assertEquals(
         Arrays.asList(
@@ -109,7 +109,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getConcept());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
   }
 
@@ -124,7 +124,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getName());
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
   }
 
@@ -148,7 +148,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
   }
 

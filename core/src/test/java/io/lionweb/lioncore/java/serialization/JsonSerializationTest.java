@@ -406,6 +406,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        }],\n"
                 + "        \"children\": [],\n"
                 + "        \"references\": [],\n"
+                + "        \"annotations\": [],\n"
                 + "        \"parent\": null\n"
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
@@ -424,6 +425,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        }],\n"
                 + "        \"children\": [],\n"
                 + "        \"references\": [],\n"
+                + "        \"annotations\": [],\n"
                 + "        \"parent\": null\n"
                 + "    }]\n"
                 + "}"),

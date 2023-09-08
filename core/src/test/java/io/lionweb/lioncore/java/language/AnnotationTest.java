@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
-
 import org.junit.Test;
 
 public class AnnotationTest {
@@ -50,7 +49,8 @@ public class AnnotationTest {
 
     Concept myConcept = new Concept();
     annotation.addReferenceValue(
-        LionCore.getAnnotation().getReferenceByName("annotates"), new ReferenceValue(myConcept, null));
+        LionCore.getAnnotation().getReferenceByName("annotates"),
+        new ReferenceValue(myConcept, null));
     assertEquals(myConcept, annotation.getAnnotates());
   }
 
@@ -68,5 +68,4 @@ public class AnnotationTest {
         Arrays.asList(property),
         annotation.getChildren(LionCore.getAnnotation().getContainmentByName("features")));
   }
-
 }
