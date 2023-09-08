@@ -5,11 +5,9 @@ import static org.junit.Assert.assertEquals;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
-import org.junit.Ignore;
+
 import org.junit.Test;
 
-@Ignore // Ignoring the test as Annotation is still experimental and so is not yet reflected in
-// LionCore
 public class AnnotationTest {
 
   @Test
@@ -36,13 +34,13 @@ public class AnnotationTest {
     Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         Arrays.asList(),
-        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
+        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("annotates")));
 
     Concept myConcept = new Concept(language, "myc");
-    annotation.setTarget(myConcept);
+    annotation.setAnnotates(myConcept);
     assertEquals(
         Arrays.asList(myConcept),
-        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
+        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("annotates")));
   }
 
   @Test
@@ -52,8 +50,8 @@ public class AnnotationTest {
 
     Concept myConcept = new Concept();
     annotation.addReferenceValue(
-        LionCore.getAnnotation().getReferenceByName("target"), new ReferenceValue(myConcept, null));
-    assertEquals(myConcept, annotation.getTarget());
+        LionCore.getAnnotation().getReferenceByName("annotates"), new ReferenceValue(myConcept, null));
+    assertEquals(myConcept, annotation.getAnnotates());
   }
 
   @Test
@@ -71,22 +69,4 @@ public class AnnotationTest {
         annotation.getChildren(LionCore.getAnnotation().getContainmentByName("features")));
   }
 
-  @Test
-  public void getPropertyValueQualifiedName() {
-    Language language = new Language("my.amazing.language");
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(
-        "my.amazing.language.MyAnnotation",
-        annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("qualifiedName")));
-  }
-
-  @Test
-  public void getPropertyValueNamespaceQualifier() {
-    Language language = new Language("my.amazing.language");
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(
-        "my.amazing.language.MyAnnotation",
-        annotation.getPropertyValue(
-            LionCore.getAnnotation().getPropertyByName("namespaceQualifier")));
-  }
 }

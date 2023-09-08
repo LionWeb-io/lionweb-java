@@ -41,7 +41,7 @@ public class Annotation extends Classifier<Annotation> {
     this.setPropertyValue("multiple", value);
   }
 
-  public @Nullable Classifier<?> getTarget() {
+  public @Nullable Classifier<?> getAnnotates() {
     return this.getReferenceSingleValue("annotates");
   }
 
@@ -68,11 +68,11 @@ public class Annotation extends Classifier<Annotation> {
     }
   }
 
-  public void setTarget(@Nullable Classifier<?> target) {
+  public void setAnnotates(@Nullable Classifier<?> target) {
     if (target == null) {
-      this.setReferenceSingleValue("target", null);
+      this.setReferenceSingleValue("annotates", null);
     } else {
-      this.setReferenceSingleValue("target", new ReferenceValue(target, target.getName()));
+      this.setReferenceSingleValue("annotates", new ReferenceValue(target, target.getName()));
     }
   }
 
