@@ -1,4 +1,4 @@
-name: Javadoc
+name: Integration
 
 on: [push]
 
@@ -6,11 +6,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    # For the javadoc tasks specifically we use Java 11 instead of Java 8
     strategy:
       matrix:
-        java: [ '11' ]
-    name: Java ${{ matrix.Java }} Javadoc
+        java: [ '8', '11', '17' ]
+    name: Java ${{ matrix.Java }} Integration
 
     steps:
     - uses: actions/checkout@v1
@@ -19,5 +18,5 @@ jobs:
       with:
         distribution: 'adopt'
         java-version: ${{ matrix.java }}
-    - name: Javadoc generation
-      run: ./gradlew myJavadoc
+    - name: Test
+      run: ./gradlew integrationTest
