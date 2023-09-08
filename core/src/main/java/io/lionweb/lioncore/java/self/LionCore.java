@@ -81,6 +81,7 @@ public class LionCore {
 
       // We first instantiate all Concepts and ConceptInterfaces
       // we add features only after as the features will have references to these elements
+      Concept annotation = INSTANCE.addElement(new Concept("Annotation"));
       Concept concept = INSTANCE.addElement(new Concept("Concept"));
       Concept conceptInterface = INSTANCE.addElement(new Concept("ConceptInterface"));
       Concept containment = INSTANCE.addElement(new Concept("Containment"));
@@ -159,13 +160,25 @@ public class LionCore {
       primitiveType.setExtendedConcept(dataType);
 
       property.setExtendedConcept(feature);
-      property.addFeature(Reference.createRequired("type", dataType, "-id-Property-type"));
+      property.addFeature(
+          Reference.createRequired("type", dataType, "-id-Property-type").setKey("Property-type"));
 
       reference.setExtendedConcept(link);
 
       iKeyed.addExtendedInterface(LionCoreBuiltins.getINamed());
       iKeyed.addFeature(
           Property.createRequired("key", LionCoreBuiltins.getString()).setID("-id-IKeyed-key"));
+
+      annotation.setExtendedConcept(classifier);
+      annotation.addFeature(
+          Property.createOptional(
+              "multiple", LionCoreBuiltins.getBoolean(), "-id-Annotation-multiple"));
+      annotation.addFeature(
+          Reference.createOptional("annotates", classifier, "-id-Annotation-annotates"));
+      annotation.addFeature(
+          Reference.createOptional("extends", annotation, "-id-Annotation-extends"));
+      annotation.addFeature(
+          Reference.createMultiple("implements", conceptInterface, "-id-Annotation-implements"));
 
       checkIDs(INSTANCE);
     }

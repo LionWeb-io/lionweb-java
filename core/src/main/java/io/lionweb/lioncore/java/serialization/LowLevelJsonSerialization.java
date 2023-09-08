@@ -91,6 +91,14 @@ public class LowLevelJsonSerialization {
       }
       nodeJson.add("references", references);
 
+      JsonArray annotations = new JsonArray();
+      for (SerializedAnnotationValue annotationValue : node.getAnnotations()) {
+        JsonObject annotation = new JsonObject();
+        throw new UnsupportedOperationException();
+        // annotations.add(annotation);
+      }
+      nodeJson.add("annotations", annotations);
+
       nodeJson.addProperty("parent", node.getParentNodeID());
 
       nodes.add(nodeJson);

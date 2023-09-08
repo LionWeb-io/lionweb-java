@@ -35,6 +35,15 @@ public class Property extends Feature<Property> {
     return property;
   }
 
+  public static Property createOptional(
+      @Nullable String name, @Nullable DataType type, @Nonnull String id) {
+    Objects.requireNonNull(id, "id should not be null");
+    Property property = new Property(name, null, id);
+    property.setOptional(true);
+    property.setType(type);
+    return property;
+  }
+
   public static Property createRequired(
       @Nullable String name, @Nullable DataType type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");

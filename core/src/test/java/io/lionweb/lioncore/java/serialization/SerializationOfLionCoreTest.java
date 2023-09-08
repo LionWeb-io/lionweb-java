@@ -70,7 +70,8 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "-id-IKeyed",
                     "-id-PrimitiveType",
                     "-id-Property",
-                    "-id-Reference"))),
+                    "-id-Reference",
+                    "-id-Annotation"))),
         LIonCore_M3.getContainments());
     assertEquals(
         Arrays.asList(

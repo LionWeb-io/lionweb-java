@@ -14,6 +14,7 @@ public class SerializedNode {
   private List<SerializedPropertyValue> properties = new ArrayList<>();
   private List<SerializedContainmentValue> containments = new ArrayList<>();
   private List<SerializedReferenceValue> references = new ArrayList<>();
+  private List<SerializedAnnotationValue> annotations = new ArrayList<>();
 
   public SerializedNode() {}
 
@@ -42,6 +43,10 @@ public class SerializedNode {
 
   public List<SerializedReferenceValue> getReferences() {
     return this.references;
+  }
+
+  public List<SerializedAnnotationValue> getAnnotations() {
+    return this.annotations;
   }
 
   public List<SerializedPropertyValue> getProperties() {
