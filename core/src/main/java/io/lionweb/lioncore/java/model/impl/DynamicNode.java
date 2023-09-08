@@ -23,6 +23,7 @@ public class DynamicNode implements Node {
   private Map<String, List<Node>> containmentValues = new HashMap<>();
 
   private Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  private List<AnnotationInstance> annotations = new ArrayList<>();
 
   public DynamicNode(String id, Concept concept) {
     this.id = id;
@@ -203,7 +204,7 @@ public class DynamicNode implements Node {
 
   @Override
   public List<AnnotationInstance> getAnnotations() {
-    throw new UnsupportedOperationException();
+    return annotations;
   }
 
   @Override
