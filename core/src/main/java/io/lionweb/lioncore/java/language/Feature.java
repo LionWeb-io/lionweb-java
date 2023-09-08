@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -22,18 +21,15 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     implements NamespacedEntity, IKeyed<T> {
 
   public Feature() {
-    setDerived(false);
     setOptional(false);
   }
 
   public Feature(@Nullable String name, @Nonnull String id) {
     this(name, null, id);
-    setDerived(false);
     setOptional(false);
   }
 
   public Feature(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
-    setDerived(false);
     setOptional(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);
@@ -44,7 +40,6 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   public Feature(@Nullable String name, @Nullable Classifier container) {
-    setDerived(false);
     setOptional(false);
     // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
@@ -62,17 +57,6 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
 
   public T setOptional(boolean optional) {
     setPropertyValue("optional", optional);
-    return (T) this;
-  }
-
-  @Experimental
-  public boolean isDerived() {
-    return getPropertyValue("derived", Boolean.class);
-  }
-
-  @Experimental
-  public T setDerived(boolean derived) {
-    setPropertyValue("derived", derived);
     return (T) this;
   }
 

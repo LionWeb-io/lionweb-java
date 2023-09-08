@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -69,8 +68,6 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
-  @Experimental private Containment specialized;
-
   public Containment() {
     super();
   }
@@ -86,16 +83,6 @@ public class Containment extends Link<Containment> {
 
   public Containment(String name, @Nonnull String id) {
     super(name, id);
-  }
-
-  public @Nullable Containment getSpecialized() {
-    return specialized;
-  }
-
-  public void setSpecialized(@Nullable Containment specialized) {
-    // TODO check which limitations there are: should have the same name? Should it belong
-    //      to an ancestor of the Classifier holding this Containment?
-    this.specialized = specialized;
   }
 
   @Override

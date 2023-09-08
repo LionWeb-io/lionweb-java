@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.ArrayList;
@@ -22,7 +21,6 @@ import javax.annotation.Nullable;
  *     href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">MPS
  *     equivalent <i>NodeAttribute</i> in local MPS</a>
  */
-@Experimental
 public class Annotation extends Classifier<Annotation> {
 
   public Annotation() {

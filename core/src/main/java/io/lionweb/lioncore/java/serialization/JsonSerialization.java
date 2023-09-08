@@ -439,8 +439,7 @@ public class JsonSerialization {
               // Avoiding calling setters, in case the value has been already set at construction
               // time
 
-              if (!property.isDerived()
-                  && !Objects.equals(unserializedValue, node.getPropertyValue(property))) {
+              if (!Objects.equals(unserializedValue, node.getPropertyValue(property))) {
                 node.setPropertyValue(property, unserializedValue);
               }
             });
@@ -475,8 +474,7 @@ public class JsonSerialization {
                   serializedContainmentValue.getValue().stream()
                       .map(childNodeID -> nodeResolver.strictlyResolve(childNodeID))
                       .collect(Collectors.toList());
-              if (!containment.isDerived()
-                  && !Objects.equals(unserializedValue, node.getChildren(containment))) {
+              if (!Objects.equals(unserializedValue, node.getChildren(containment))) {
                 unserializedValue.forEach(child -> node.addChild(containment, child));
               }
             });
