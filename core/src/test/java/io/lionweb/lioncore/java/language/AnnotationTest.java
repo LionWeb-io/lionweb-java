@@ -31,31 +31,6 @@ public class AnnotationTest {
   }
 
   @Test
-  public void getPropertyValuePlatformSpecific() {
-    Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(
-        null,
-        annotation.getPropertyValue(
-            LionCore.getAnnotation().getPropertyByName("platformSpecific")));
-
-    annotation.setPlatformSpecific("java");
-    assertEquals(
-        "java",
-        annotation.getPropertyValue(
-            LionCore.getAnnotation().getPropertyByName("platformSpecific")));
-  }
-
-  @Test
-  public void setPropertyValuePlatformSpecific() {
-    Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    annotation.setPropertyValue(
-        LionCore.getAnnotation().getPropertyByName("platformSpecific"), "java");
-    assertEquals("java", annotation.getPlatformSpecific());
-  }
-
-  @Test
   public void getReferenceValueTarget() {
     Language language = new Language("mymm");
     Annotation annotation = new Annotation(language, "MyAnnotation");
