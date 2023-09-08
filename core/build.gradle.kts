@@ -45,20 +45,21 @@ dependencies {
     implementation("com.networknt:json-schema-validator:1.0.77")
 }
 
-tasks.register<Javadoc>("generateJavaDocs") {
+tasks.register<Javadoc>("myJavadoc") {
     source = sourceSets.main.get().allJava
     classpath = javadocConfig
-//    options {
-//        links("https://docs.oracle.com/javase/8/docs/api/")
-//        links("https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/")
-//        links("https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
-//    }
+    options {
+        require(this is StandardJavadocDocletOptions)
+        addStringOption("link", "https://docs.oracle.com/javase/8/docs/api/")
+        addStringOption("link", "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/")
+        addStringOption("link", "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
+    }
 }
 
 val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
 
 tasks.register<Jar>("javadocJar") {
-    dependsOn("javadoc")
+    dependsOn("myJavadoc")
     from(tasks.getByName("javadoc")/*.destinationDir*/)
     archiveClassifier.set("javadoc")
 }
