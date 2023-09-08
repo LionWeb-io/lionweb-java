@@ -7,6 +7,7 @@ import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,7 +20,7 @@ public class Invalid {
   @Parameterized.Parameters
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
-    Path basePath = integrationTests.resolve("testset").resolve("invalid");
+    Path basePath = integrationTests.resolve("invalid");
     try {
       Object[] result =
           Files.walk(basePath)
@@ -49,10 +50,10 @@ public class Invalid {
   }
 
   private static Path findIntegrationTests() {
-    String propertyValue = System.getenv("integrationTestingDir");
+    String propertyValue = System.getenv("lionwebTestSet");
     if (propertyValue != null) {
-      return Path.of(propertyValue);
+      return Paths.get(propertyValue);
     }
-    throw new IllegalArgumentException("environment variable integrationTestingDir not defined.");
+    throw new IllegalArgumentException("system variable lionwebTestSet not defined.");
   }
 }

@@ -166,7 +166,49 @@ tasks.named("signLioncore_java_corePublication") {
     dependsOn("shadowJar")
 }
 
-val extensiveTestSourceSet = sourceSets.create("extensiveTest") {
+val integrationTestSourceSet = sourceSets.create("integrationTest") {
     compileClasspath += sourceSets["main"].output
     runtimeClasspath += sourceSets["main"].output
+}
+
+configurations["integrationTestImplementation"]
+    .extendsFrom(configurations["testImplementation"])
+
+val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
+
+val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
+    val repoURL = "git@github.com:LIonWeb-org/lionweb-integration-testing.git"
+    doLast {
+        val destinationDir = integrationTestResources
+        if (destinationDir.exists()) {
+            logger.info("Not downloading integration test resources as directory ${destinationDir.absolutePath} exist")
+        } else {
+            val cmdLine = "git clone --depth 1 $repoURL ${destinationDir.absolutePath}"
+            logger.info("About to download integration test using this command: $cmdLine")
+            val process = ProcessBuilder()
+                .command(cmdLine.split(" "))
+                .directory(project.projectDir)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
+                .start()
+            val finished = process.waitFor(60, TimeUnit.SECONDS)
+            if (!finished) {
+                throw RuntimeException("Unable to download the repository ${repoURL} in 60 seconds, giving up")
+            } else {
+                logger.info("Downloaded integration test resources repo from ${repoURL} in directory ${destinationDir.absolutePath}")
+            }
+        }
+        require(destinationDir.exists() && destinationDir.isDirectory) {
+            throw IllegalStateException("Directory $destinationDir does not exist or is not a directory")
+        }
+    }
+}
+
+// Add a task to run the integration tests
+val integrationTest = tasks.create("integrationTest", Test::class.java) {
+    dependsOn(downloadIntegrationTestResources)
+    group = "Verification"
+    testClassesDirs = integrationTestSourceSet.output.classesDirs
+    classpath = integrationTestSourceSet.runtimeClasspath
+    environment("lionwebTestSet", File(integrationTestResources.absolutePath, "testset"))
 }
