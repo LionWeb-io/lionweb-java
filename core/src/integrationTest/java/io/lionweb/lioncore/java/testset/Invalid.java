@@ -13,7 +13,7 @@ public class Invalid extends ATestset {
   @Parameterized.Parameters
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
-    Path basePath = integrationTests.resolve("testset").resolve("invalid");
+    Path basePath = integrationTests.resolve("invalid");
     Object[] result = collectJsonFiles(basePath);
     return result;
   }
@@ -25,8 +25,8 @@ public class Invalid extends ATestset {
   @Test
   public void assertInvalid() {
     assertThrows(
-            path.toString(),
-            RuntimeException.class,
-            () -> System.out.println(parse(path, JsonSerialization.getStandardSerialization())));
+        path.toString(),
+        RuntimeException.class,
+        () -> System.out.println(parse(path, JsonSerialization.getStandardSerialization())));
   }
 }

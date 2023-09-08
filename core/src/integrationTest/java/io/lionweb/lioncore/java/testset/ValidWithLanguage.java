@@ -14,7 +14,7 @@ public class ValidWithLanguage extends ALanguageTestset {
   @Parameterized.Parameters
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
-    Path basePath = integrationTests.resolve("testset").resolve("withLanguage").resolve("valid");
+    Path basePath = integrationTests.resolve("withLanguage").resolve("valid");
     Object[] result = collectJsonFiles(basePath);
     return result;
   }

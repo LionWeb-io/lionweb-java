@@ -12,7 +12,7 @@ public class InvalidWithLanguage extends ALanguageTestset {
   @Parameterized.Parameters
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
-    Path basePath = integrationTests.resolve("testset").resolve("withLanguage").resolve("invalid");
+    Path basePath = integrationTests.resolve("withLanguage").resolve("invalid");
     Object[] result = collectJsonFiles(basePath);
     return result;
   }
