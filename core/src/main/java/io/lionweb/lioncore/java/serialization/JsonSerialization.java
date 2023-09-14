@@ -209,26 +209,31 @@ public class JsonSerialization {
   private static void serializeAnnotations(@Nonnull Node node, SerializedNode serializedNode) {
     Objects.requireNonNull(node, "Node should not be null");
     node.getConcept()
-            .getAnnotations()
-            .forEach(
-                    annotationInstance -> {
-//                      SerializedReferenceValue referenceValue = new SerializedReferenceValue();
-//                      referenceValue.setMetaPointer(
-//                              MetaPointer.from(
-//                                      reference, ((LanguageEntity) reference.getContainer()).getLanguage()));
-//                      referenceValue.setValue(
-//                              node.getReferenceValues(reference).stream()
-//                                      .map(
-//                                              rv -> {
-//                                                String referredID =
-//                                                        rv.getReferred() == null ? null : rv.getReferred().getID();
-//                                                return new SerializedReferenceValue.Entry(
-//                                                        referredID, rv.getResolveInfo());
-//                                              })
-//                                      .collect(Collectors.toList()));
-//                      serializedNode.addReferenceValue(referenceValue);
-                      throw new UnsupportedOperationException();
-                    });
+        .getAnnotations()
+        .forEach(
+            annotationInstance -> {
+              //                      SerializedReferenceValue referenceValue = new
+              // SerializedReferenceValue();
+              //                      referenceValue.setMetaPointer(
+              //                              MetaPointer.from(
+              //                                      reference, ((LanguageEntity)
+              // reference.getContainer()).getLanguage()));
+              //                      referenceValue.setValue(
+              //                              node.getReferenceValues(reference).stream()
+              //                                      .map(
+              //                                              rv -> {
+              //                                                String referredID =
+              //                                                        rv.getReferred() == null ?
+              // null : rv.getReferred().getID();
+              //                                                return new
+              // SerializedReferenceValue.Entry(
+              //                                                        referredID,
+              // rv.getResolveInfo());
+              //                                              })
+              //                                      .collect(Collectors.toList()));
+              //                      serializedNode.addReferenceValue(referenceValue);
+              throw new UnsupportedOperationException();
+            });
   }
 
   private static void serializeNodeReferences(@Nonnull Node node, SerializedNode serializedNode) {

@@ -2,13 +2,9 @@ package io.lionweb.lioncore.java.language;
 
 import static org.junit.Assert.assertEquals;
 
-import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
-
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 
 public class AnnotationTest extends BaseTest {
@@ -77,11 +73,11 @@ public class AnnotationTest extends BaseTest {
   public void isMultiple() {
     Language language = new Language();
     Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(false,annotation.isMultiple());
+    assertEquals(false, annotation.isMultiple());
     annotation.setMultiple(true);
-    assertEquals(true,annotation.isMultiple());
+    assertEquals(true, annotation.isMultiple());
     annotation.setMultiple(false);
-    assertEquals(false,annotation.isMultiple());
+    assertEquals(false, annotation.isMultiple());
   }
 
   @Test
@@ -97,7 +93,8 @@ public class AnnotationTest extends BaseTest {
     Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");
     assertEquals(null, annotation.getAnnotates());
     // From the node point of view the annotation is correct even if annotates is empty, because
-    // it can be sometimes, if the annotation is inherited or inheriting and the parent or sub-annotation
+    // it can be sometimes, if the annotation is inherited or inheriting and the parent or
+    // sub-annotation
     // mark the annotation as valid
     assertNodeTreeIsValid(annotation);
     assertLanguageIsNotValid(language);
@@ -142,5 +139,4 @@ public class AnnotationTest extends BaseTest {
     assertNodeTreeIsValid(annotation);
     assertLanguageIsNotValid(language);
   }
-
 }

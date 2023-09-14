@@ -89,7 +89,6 @@ public class LowLevelJsonSerializationTest {
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
     throw new RuntimeException("CHANGE ME");
-
   }
 
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {

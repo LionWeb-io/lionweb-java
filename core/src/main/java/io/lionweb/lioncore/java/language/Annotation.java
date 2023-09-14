@@ -12,8 +12,8 @@ import javax.annotation.Nullable;
 /**
  * This represents additional metadata relative to some orthogonal concern.
  *
- * While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any Containment
- * links. This is checked during validation.
+ * <p>While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any
+ * Containment links. This is checked during validation.
  *
  * <p>A DocumentationComment could be specified as an annotation.
  *
@@ -38,7 +38,11 @@ public class Annotation extends Classifier<Annotation> {
     super(language, name, id);
   }
 
-  public Annotation(@Nullable Language language, @Nullable String name, @Nonnull String id, @Nullable String key) {
+  public Annotation(
+      @Nullable Language language,
+      @Nullable String name,
+      @Nonnull String id,
+      @Nullable String key) {
     this(language, name, id);
     setKey(key);
   }

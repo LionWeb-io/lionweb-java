@@ -33,8 +33,8 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
-  public static Containment createOptional(@Nullable String name, @Nullable Classifier type,
-                                           @Nullable String id, @Nullable String key) {
+  public static Containment createOptional(
+      @Nullable String name, @Nullable Classifier type, @Nullable String id, @Nullable String key) {
     Containment containment = new Containment(name);
     containment.setOptional(true);
     containment.setMultiple(false);
@@ -44,7 +44,8 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
-  public static Containment createOptional(@Nullable String name, @Nullable Classifier type, @Nullable String id) {
+  public static Containment createOptional(
+      @Nullable String name, @Nullable Classifier type, @Nullable String id) {
     Containment containment = new Containment(name);
     containment.setOptional(true);
     containment.setMultiple(false);

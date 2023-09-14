@@ -5,7 +5,6 @@ import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -39,7 +38,8 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     this.setKey(key);
   }
 
-  public Language(@Nonnull String name, @Nullable String id, @Nullable String key, @Nullable String version) {
+  public Language(
+      @Nonnull String name, @Nullable String id, @Nullable String key, @Nullable String version) {
     this(name, id, key);
     setVersion(version);
   }
