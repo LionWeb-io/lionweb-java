@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.serialization;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
@@ -13,11 +14,11 @@ import java.util.Map;
  * This knows how to instantiate a Node, given the information provided by the unserialization
  * mechanism.
  */
-public class NodeInstantiator {
+public class Instantiator {
 
-  public interface ConceptSpecificNodeInstantiator<T extends Node> {
+  public interface ConceptSpecificNodeInstantiator<T extends ClassifierInstance<?>> {
     T instantiate(
-        Concept concept,
+        Classifier<?> classifier,
         SerializedClassifierInstance serializedClassifierInstance,
         Map<String, ClassifierInstance<?>> unserializedNodesByID,
         Map<Property, Object> propertiesValues);
@@ -31,15 +32,22 @@ public class NodeInstantiator {
                 "Unable to instantiate node with concept " + concept);
           };
 
-  public NodeInstantiator enableDynamicNodes() {
+  public Instantiator enableDynamicNodes() {
     defaultNodeUnserializer =
-        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-            new DynamicNode(serializedNode.getID(), concept);
+        (classifier, serializedNode, unserializedNodesByID, propertiesValues) -> {
+          if (classifier instanceof Concept) {
+            return new DynamicNode(serializedNode.getID(), (Concept) classifier);
+          } else if (classifier instanceof Annotation) {
+            return new DynamicAnnotationInstance(serializedNode.getID(), (Annotation) classifier);
+          } else {
+            throw new IllegalStateException();
+          }
+        };
     return this;
   }
 
-  public Node instantiate(
-      Concept concept,
+  public ClassifierInstance<?> instantiate(
+      Classifier<?> concept,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> unserializedNodesByID,
       Map<Property, Object> propertiesValues) {
@@ -53,7 +61,7 @@ public class NodeInstantiator {
     }
   }
 
-  public NodeInstantiator registerCustomUnserializer(
+  public Instantiator registerCustomUnserializer(
       String conceptID, ConceptSpecificNodeInstantiator<?> conceptSpecificNodeInstantiator) {
     customUnserializers.put(conceptID, conceptSpecificNodeInstantiator);
     return this;

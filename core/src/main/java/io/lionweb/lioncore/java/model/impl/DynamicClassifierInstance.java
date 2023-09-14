@@ -190,6 +190,11 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
+    if (this.annotations.contains(instance)) {
+      // necessary to avoid infinite loops and duplicate insertions
+      // the previous setAnnotated could potentially have already set annotations
+      return;
+    }
     this.annotations.add(instance);
   }
 

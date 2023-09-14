@@ -11,6 +11,7 @@ public class SerializedClassifierInstance {
   private String id;
   private MetaPointer classifier;
   private String parentNodeID;
+  private String annotatedID;
 
   private List<SerializedPropertyValue> properties = new ArrayList<>();
   private List<SerializedContainmentValue> containments = new ArrayList<>();
@@ -146,6 +147,9 @@ public class SerializedClassifierInstance {
         + ", parentNodeID='"
         + parentNodeID
         + '\''
+            + ", annotatedID='"
+            + annotatedID
+            + '\''
         + ", properties="
         + properties
         + ", containments="
@@ -160,4 +164,12 @@ public class SerializedClassifierInstance {
     public void setAnnotations(List<String> annotationIDs) {
       this.annotations = annotationIDs;
     }
+
+    public String getAnnotated() {
+      return annotatedID;
+    }
+
+  public void setAnnotated(String annotatedID) {
+    this.annotatedID = annotatedID;
+  }
 }

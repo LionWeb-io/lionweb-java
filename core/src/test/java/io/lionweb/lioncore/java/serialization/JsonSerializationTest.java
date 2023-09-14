@@ -186,7 +186,7 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
-    js.getConceptResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
+    js.getClassifierResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
     js.getNodeInstantiator()
         .registerCustomUnserializer(
             SimpleMathLanguage.INT_LITERAL.getID(),
@@ -293,7 +293,7 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   private void prepareUnserializationOfRefMM(JsonSerialization js) {
-    js.getConceptResolver().registerLanguage(RefsLanguage.INSTANCE);
+    js.getClassifierResolver().registerLanguage(RefsLanguage.INSTANCE);
     js.getNodeInstantiator()
         .registerCustomUnserializer(
             RefsLanguage.CONTAINER_NODE.getID(),
@@ -547,8 +547,24 @@ public class JsonSerializationTest extends SerializationTest {
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
+    assertEquals("n1", serializedN1.getID());
+    assertEquals(null, serializedN1.getParentNodeID());
+    assertEquals(null, serializedN1.getAnnotated());
+    assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
+    SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
+    assertEquals(null, serializedA1_1.getParentNodeID());
+    assertEquals("n1", serializedA1_1.getAnnotated());
 
     List<ClassifierInstance<?>> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
-    assertEquals(Arrays.asList(n1), unserialized);
+    assertEquals(4, unserialized.size());
+    assertInstancesAreEquals(a1_1, unserialized.get(1));
+    assertEquals(unserialized.get(0), ((AnnotationInstance)unserialized.get(1)).getAnnotated());
+    assertInstancesAreEquals(a1_2, unserialized.get(2));
+    assertEquals(unserialized.get(0), ((AnnotationInstance)unserialized.get(2)).getAnnotated());
+    assertInstancesAreEquals(a2_3, unserialized.get(3));
+    assertEquals(unserialized.get(0), ((AnnotationInstance)unserialized.get(3)).getAnnotated());
+    assertInstancesAreEquals(n1, unserialized.get(0));
+    assertEquals(Arrays.asList(unserialized.get(1), unserialized.get(2), unserialized.get(3)), unserialized.get(0).getAnnotations());
   }
 }

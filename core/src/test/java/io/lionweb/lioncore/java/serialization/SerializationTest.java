@@ -5,10 +5,15 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Property;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.utils.ModelComparator;
+
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.fail;
 
 /** Base class with some utility methods used by several tests. */
 abstract class SerializationTest {
@@ -30,5 +35,13 @@ abstract class SerializationTest {
 
   protected Property propertyByID(List<Node> nodes, String id) {
     return (Property) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
+  }
+
+  public void assertInstancesAreEquals(ClassifierInstance<?> a, ClassifierInstance<?> b) {
+    ModelComparator modelComparator = new ModelComparator();
+    ModelComparator.ComparisonResult comparisonResult = modelComparator.compare(a, b);
+    if (!comparisonResult.areEquivalent()) {
+      fail(comparisonResult.toString());
+    }
   }
 }

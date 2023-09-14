@@ -137,7 +137,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization
         .getNodeResolver()
         .addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
-    jsonSerialization.getConceptResolver().registerLanguage(LionCore.getInstance());
+    jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization.getNodeInstantiator().enableDynamicNodes();
     jsonSerialization
         .getPrimitiveValuesSerialization()
@@ -157,7 +157,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(LionCore.getInstance());
+    jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();

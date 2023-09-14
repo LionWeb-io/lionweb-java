@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
@@ -13,9 +14,20 @@ import java.util.Map;
  * <p>While initially just know concepts which have been explicitly registered, in the future it
  * could adopt more advanced resolution strategies.
  */
-public class ConceptResolver {
+public class ClassifierResolver {
   private Map<MetaPointer, Concept> registeredConcepts = new HashMap<>();
   private Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
+
+  public Classifier<?> resolveClassifier(MetaPointer conceptMetaPointer) {
+    if (registeredConcepts.containsKey(conceptMetaPointer)) {
+      return registeredConcepts.get(conceptMetaPointer);
+    } else if (registeredAnnotations.containsKey(conceptMetaPointer)) {
+      return registeredAnnotations.get(conceptMetaPointer);
+    } else {
+      throw new RuntimeException(
+              "Unable to resolve classifier with metaPointer " + conceptMetaPointer);
+    }
+  }
 
   public Concept resolveConcept(MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {
@@ -35,13 +47,15 @@ public class ConceptResolver {
     }
   }
 
-  public ConceptResolver registerLanguage(Language language) {
+  public ClassifierResolver registerLanguage(Language language) {
     language
         .getElements()
         .forEach(
             e -> {
               if (e instanceof Concept) {
                 registerConcept((Concept) e);
+              } else if (e instanceof Annotation) {
+                registeredAnnotation((Annotation) e);
               }
             });
     return this;
@@ -49,5 +63,9 @@ public class ConceptResolver {
 
   private void registerConcept(Concept concept) {
     registeredConcepts.put(MetaPointer.from(concept), concept);
+  }
+
+  private void registeredAnnotation(Annotation annotation) {
+    registeredAnnotations.put(MetaPointer.from(annotation), annotation);
   }
 }
