@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * @see org.modelix.model.api.INode Modelix equivalent <i>INode</i>
  *     <p>TODO consider if the Model should have a version too
  */
-public interface Node extends Element {
+public interface Node extends ClassifierInstance {
 
   /**
    * This return the Node ID.
