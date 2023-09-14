@@ -4,18 +4,21 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/** This is able to find a Node given its ID. */
+/** This is able to find a Node or an Annotation Instance given its ID. */
 public interface ClassifierInstanceResolver {
 
-  /** This returns the Node or null if the Node cannot be found by this NodeResolver. */
+  /**
+   * This returns the Classifier Instance or null if the Classifier Instance cannot be found by this
+   * Classifier InstanceResolver.
+   */
   @Nullable
-  ClassifierInstance<?> resolve(String nodeID);
+  ClassifierInstance<?> resolve(String instanceID);
 
   @Nonnull
-  default ClassifierInstance<?> strictlyResolve(String nodeID) {
-    ClassifierInstance<?> partial = resolve(nodeID);
+  default ClassifierInstance<?> strictlyResolve(String instanceID) {
+    ClassifierInstance<?> partial = resolve(instanceID);
     if (partial == null) {
-      throw new UnresolvedClassifierInstanceException(nodeID);
+      throw new UnresolvedClassifierInstanceException(instanceID);
     } else {
       return partial;
     }

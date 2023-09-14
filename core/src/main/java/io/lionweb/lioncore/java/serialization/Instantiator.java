@@ -11,12 +11,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This knows how to instantiate a Node, given the information provided by the unserialization
- * mechanism.
+ * This knows how to instantiate a Classifier Instance (either a Node or an Annotation Instance),
+ * given the information provided by the unserialization mechanism.
  */
 public class Instantiator {
 
-  public interface ConceptSpecificNodeInstantiator<T extends ClassifierInstance<?>> {
+  public interface ClassifierSpecificInstantiator<T extends ClassifierInstance<?>> {
     T instantiate(
         Classifier<?> classifier,
         SerializedClassifierInstance serializedClassifierInstance,
@@ -24,12 +24,12 @@ public class Instantiator {
         Map<Property, Object> propertiesValues);
   }
 
-  private Map<String, ConceptSpecificNodeInstantiator<?>> customUnserializers = new HashMap<>();
-  private ConceptSpecificNodeInstantiator<?> defaultNodeUnserializer =
-      (ConceptSpecificNodeInstantiator<Node>)
+  private Map<String, ClassifierSpecificInstantiator<?>> customUnserializers = new HashMap<>();
+  private ClassifierSpecificInstantiator<?> defaultNodeUnserializer =
+      (ClassifierSpecificInstantiator<Node>)
           (classifier, serializedNode, unserializedNodesByID, propertiesValues) -> {
             throw new IllegalArgumentException(
-                "Unable to instantiate node with classifier " + classifier);
+                "Unable to instantiate instance with classifier " + classifier);
           };
 
   public Instantiator enableDynamicNodes() {
@@ -47,24 +47,27 @@ public class Instantiator {
   }
 
   public ClassifierInstance<?> instantiate(
-      Classifier<?> concept,
+      Classifier<?> classifier,
       SerializedClassifierInstance serializedClassifierInstance,
-      Map<String, ClassifierInstance<?>> unserializedNodesByID,
+      Map<String, ClassifierInstance<?>> unserializedInstancesByID,
       Map<Property, Object> propertiesValues) {
-    if (customUnserializers.containsKey(concept.getID())) {
+    if (customUnserializers.containsKey(classifier.getID())) {
       return customUnserializers
-          .get(concept.getID())
+          .get(classifier.getID())
           .instantiate(
-              concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
+              classifier,
+              serializedClassifierInstance,
+              unserializedInstancesByID,
+              propertiesValues);
     } else {
       return defaultNodeUnserializer.instantiate(
-          concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
+          classifier, serializedClassifierInstance, unserializedInstancesByID, propertiesValues);
     }
   }
 
   public Instantiator registerCustomUnserializer(
-      String conceptID, ConceptSpecificNodeInstantiator<?> conceptSpecificNodeInstantiator) {
-    customUnserializers.put(conceptID, conceptSpecificNodeInstantiator);
+      String classifierID, ClassifierSpecificInstantiator<?> classifierSpecificInstantiator) {
+    customUnserializers.put(classifierID, classifierSpecificInstantiator);
     return this;
   }
 
@@ -76,11 +79,11 @@ public class Instantiator {
     customUnserializers.put(
         LionCore.getConcept().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-            new Concept((String) null).setID(serializedNode.getID()));
+            new Concept().setID(serializedNode.getID()));
     customUnserializers.put(
         LionCore.getConceptInterface().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-            new ConceptInterface((String) null).setID(serializedNode.getID()));
+            new ConceptInterface().setID(serializedNode.getID()));
     customUnserializers.put(
         LionCore.getProperty().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
@@ -105,5 +108,9 @@ public class Instantiator {
         LionCore.getEnumerationLiteral().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
             new EnumerationLiteral().setID(serializedNode.getID()));
+    customUnserializers.put(
+        LionCore.getAnnotation().getID(),
+        (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
+            new Annotation().setID(serializedNode.getID()));
   }
 }

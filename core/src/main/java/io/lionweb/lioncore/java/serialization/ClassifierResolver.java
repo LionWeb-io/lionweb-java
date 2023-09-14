@@ -9,14 +9,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * This class is responsible to resolve the Concept associate with a given Concept ID.
+ * This class is responsible to resolve the Classifier associate with a given Classifier ID.
  *
- * <p>While initially just know concepts which have been explicitly registered, in the future it
+ * <p>While initially just know classifiers which have been explicitly registered, in the future it
  * could adopt more advanced resolution strategies.
  */
 public class ClassifierResolver {
-  private Map<MetaPointer, Concept> registeredConcepts = new HashMap<>();
-  private Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
+  private final Map<MetaPointer, Concept> registeredConcepts = new HashMap<>();
+  private final Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
 
   public Classifier<?> resolveClassifier(MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {

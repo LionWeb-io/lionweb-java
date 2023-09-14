@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
 
-/** This combines several NodeResolvers. */
+/** This combines several ClassifierInstanceResolvers. */
 public class CompositeClassifierInstanceResolver implements ClassifierInstanceResolver {
   private List<ClassifierInstanceResolver> classifierInstanceResolvers = new ArrayList<>();
 
@@ -26,11 +26,11 @@ public class CompositeClassifierInstanceResolver implements ClassifierInstanceRe
 
   @Nullable
   @Override
-  public ClassifierInstance<?> resolve(String nodeID) {
+  public ClassifierInstance<?> resolve(String instanceID) {
     for (ClassifierInstanceResolver classifierInstanceResolver : classifierInstanceResolvers) {
-      ClassifierInstance<?> node = classifierInstanceResolver.resolve(nodeID);
-      if (node != null) {
-        return node;
+      ClassifierInstance<?> instance = classifierInstanceResolver.resolve(instanceID);
+      if (instance != null) {
+        return instance;
       }
     }
     return null;
@@ -38,6 +38,6 @@ public class CompositeClassifierInstanceResolver implements ClassifierInstanceRe
 
   @Override
   public String toString() {
-    return "CompositeNodeResolver(" + classifierInstanceResolvers + ")";
+    return "CompositeClassifierInstanceResolver(" + classifierInstanceResolvers + ")";
   }
 }

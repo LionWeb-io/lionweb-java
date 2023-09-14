@@ -1,13 +1,13 @@
 package io.lionweb.lioncore.java.api;
 
 public class UnresolvedClassifierInstanceException extends RuntimeException {
-  private String nodeID;
+  private String instanceID;
 
-  public String getNodeID() {
-    return nodeID;
+  public String getInstanceID() {
+    return instanceID;
   }
 
-  public UnresolvedClassifierInstanceException(String nodeID) {
-    super("Unable to resolve node with ID=" + nodeID);
+  public UnresolvedClassifierInstanceException(String instanceID) {
+    super("Unable to resolve classifier instance with ID=" + instanceID);
   }
 }
