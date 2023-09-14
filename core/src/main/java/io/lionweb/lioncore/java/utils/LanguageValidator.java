@@ -104,6 +104,7 @@ public class LanguageValidator extends Validator<Language> {
               }
               if (el instanceof Annotation) {
                 checkAnnotates((Annotation) el, result);
+                checkAnnotationFeatures((Annotation) el, result);
               }
             });
 
@@ -184,6 +185,11 @@ public class LanguageValidator extends Validator<Language> {
       validationResult.checkForError(annotation.getAnnotates() == null,
               "An annotation should specify annotates or inherit it", annotation);
   }
+
+    private void checkAnnotationFeatures(Annotation annotation, ValidationResult validationResult) {
+        validationResult.checkForError(!annotation.allContainments().isEmpty(),
+                "An annotation should not have containment links", annotation);
+    }
 
   private void checkAncestorsHelper(
       Set<Classifier> alreadyExplored,

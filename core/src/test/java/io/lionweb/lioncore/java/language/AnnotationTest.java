@@ -128,4 +128,19 @@ public class AnnotationTest extends BaseTest {
     assertLanguageIsValid(language);
   }
 
+  @Test
+  public void containmentLinks() {
+    Language language = new Language("LangFoo", "lf", "lf");
+    Concept myConcept = new Concept(language, "MyConcept", "c", "c");
+
+    Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");
+    annotation.setAnnotates(myConcept);
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsValid(language);
+
+    annotation.addFeature(Containment.createOptional("cont", myConcept, "cont"));
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsNotValid(language);
+  }
+
 }

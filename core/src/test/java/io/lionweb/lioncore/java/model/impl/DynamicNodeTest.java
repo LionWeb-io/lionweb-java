@@ -3,8 +3,11 @@ package io.lionweb.lioncore.java.model.impl;
 import static org.junit.Assert.*;
 
 import com.google.gson.JsonArray;
+import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
 import java.util.Arrays;
 import org.junit.Test;
@@ -91,5 +94,44 @@ public class DynamicNodeTest {
     assertEquals(Arrays.asList(n4), n1.getChildren(containment));
     n1.removeChild(n4);
     assertEquals(Arrays.asList(), n1.getChildren(containment));
+  }
+
+  @Test
+  public void addAnnotations() {
+    Language l = new Language("l");
+    Annotation a1 = new Annotation(l, "a1");
+    Annotation a2 = new Annotation(l, "a2");
+    Concept c = new Concept(l, "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    assertEquals(Arrays.asList(), n1.getAnnotations());
+    assertEquals(Arrays.asList(), n1.getAnnotations(a1));
+    assertEquals(Arrays.asList(), n1.getAnnotations(a2));
+
+    AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
+    assertEquals(Arrays.asList(a1_1), n1.getAnnotations());
+    assertEquals(Arrays.asList(a1_1), n1.getAnnotations(a1));
+    assertEquals(Arrays.asList(), n1.getAnnotations(a2));
+
+    AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
+    assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations());
+    assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
+    assertEquals(Arrays.asList(), n1.getAnnotations(a2));
+
+    AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
+    assertEquals(Arrays.asList(a1_1, a1_2, a2_3), n1.getAnnotations());
+    assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
+    assertEquals(Arrays.asList(a2_3), n1.getAnnotations(a2));
+
+    AnnotationInstance a2_4 = new DynamicAnnotationInstance("a2_4", a2, n1);
+    assertEquals(Arrays.asList(a1_1, a1_2, a2_3, a2_4), n1.getAnnotations());
+    assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
+    assertEquals(Arrays.asList(a2_3, a2_4), n1.getAnnotations(a2));
+
+    n1.removeAnnotation(a2_3);
+    assertEquals(null, a2_3.getAnnotated());
+    assertEquals(Arrays.asList(a1_1, a1_2, a2_4), n1.getAnnotations());
+    assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
+    assertEquals(Arrays.asList(a2_4), n1.getAnnotations(a2));
   }
 }

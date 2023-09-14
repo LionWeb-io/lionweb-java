@@ -12,6 +12,9 @@ import javax.annotation.Nullable;
 /**
  * This represents additional metadata relative to some orthogonal concern.
  *
+ * While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any Containment
+ * links. This is checked during validation.
+ *
  * <p>A DocumentationComment could be specified as an annotation.
  *
  * @see org.eclipse.emf.ecore.EAnnotation Ecore equivalent <i>EAnnotation</i>

@@ -33,6 +33,26 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
+  public static Containment createOptional(@Nullable String name, @Nullable Classifier type,
+                                           @Nullable String id, @Nullable String key) {
+    Containment containment = new Containment(name);
+    containment.setOptional(true);
+    containment.setMultiple(false);
+    containment.setType(type);
+    containment.setID(id);
+    containment.setKey(key);
+    return containment;
+  }
+
+  public static Containment createOptional(@Nullable String name, @Nullable Classifier type, @Nullable String id) {
+    Containment containment = new Containment(name);
+    containment.setOptional(true);
+    containment.setMultiple(false);
+    containment.setType(type);
+    containment.setID(id);
+    return containment;
+  }
+
   public static Containment createRequired(@Nullable String name, @Nullable Classifier type) {
     Containment containment = new Containment(name);
     containment.setOptional(false);
