@@ -26,7 +26,7 @@ public class LowLevelJsonSerialization {
       JsonObject topLevel = jsonElement.getAsJsonObject();
       readSerializationFormatVersion(serializedChunk, topLevel);
       readLanguages(serializedChunk, topLevel);
-      unserializeNodes(serializedChunk, topLevel);
+      unserializeClassifierInstances(serializedChunk, topLevel);
       return serializedChunk;
     } else {
       throw new IllegalArgumentException(
@@ -170,7 +170,8 @@ public class LowLevelJsonSerialization {
     }
   }
 
-  private void unserializeNodes(SerializedChunk serializedChunk, JsonObject topLevel) {
+  private void unserializeClassifierInstances(
+      SerializedChunk serializedChunk, JsonObject topLevel) {
     if (!topLevel.has("nodes")) {
       throw new IllegalArgumentException("nodes not specified");
     }
@@ -179,10 +180,11 @@ public class LowLevelJsonSerialization {
           .forEach(
               element -> {
                 try {
-                  SerializedClassifierInstance node = unserializeNode(element);
-                  serializedChunk.addClassifierInstance(node);
+                  SerializedClassifierInstance instance = unserializeClassifierInstance(element);
+                  serializedChunk.addClassifierInstance(instance);
                 } catch (UnserializationException e) {
-                  throw new UnserializationException("Issue while unserializing nodes", e);
+                  throw new UnserializationException(
+                      "Issue while unserializing classifier instances", e);
                 } catch (Exception e) {
                   throw new RuntimeException("Issue while unserializing " + element, e);
                 }
@@ -209,7 +211,7 @@ public class LowLevelJsonSerialization {
   }
 
   @Nullable
-  private SerializedClassifierInstance unserializeNode(JsonElement jsonElement) {
+  private SerializedClassifierInstance unserializeClassifierInstance(JsonElement jsonElement) {
     if (!jsonElement.isJsonObject()) {
       throw new IllegalArgumentException(
           "Malformed JSON. Object expected but found " + jsonElement);

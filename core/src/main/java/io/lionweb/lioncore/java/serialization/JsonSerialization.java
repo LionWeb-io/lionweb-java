@@ -47,11 +47,12 @@ public class JsonSerialization {
   public static JsonSerialization getStandardSerialization() {
     JsonSerialization jsonSerialization = new JsonSerialization();
     jsonSerialization.classifierResolver.registerLanguage(LionCore.getInstance());
-    jsonSerialization.nodeInstantiator.registerLionCoreCustomUnserializers();
+    jsonSerialization.instantiator.registerLionCoreCustomUnserializers();
     jsonSerialization.primitiveValuesSerialization
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-    jsonSerialization.nodeResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
-    jsonSerialization.nodeResolver.addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
+    jsonSerialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
+    jsonSerialization.instanceResolver.addAll(
+        LionCoreBuiltins.getInstance().thisAndAllDescendants());
     return jsonSerialization;
   }
 
@@ -62,17 +63,17 @@ public class JsonSerialization {
   }
 
   private ClassifierResolver classifierResolver;
-  private Instantiator nodeInstantiator;
+  private Instantiator instantiator;
   private PrimitiveValuesSerialization primitiveValuesSerialization;
 
-  private LocalClassifierInstanceResolver nodeResolver;
+  private LocalClassifierInstanceResolver instanceResolver;
 
   private JsonSerialization() {
     // prevent public access
     classifierResolver = new ClassifierResolver();
-    nodeInstantiator = new Instantiator();
+    instantiator = new Instantiator();
     primitiveValuesSerialization = new PrimitiveValuesSerialization();
-    nodeResolver = new LocalClassifierInstanceResolver();
+    instanceResolver = new LocalClassifierInstanceResolver();
   }
 
   //
@@ -83,20 +84,20 @@ public class JsonSerialization {
     return classifierResolver;
   }
 
-  public Instantiator getNodeInstantiator() {
-    return nodeInstantiator;
+  public Instantiator getInstantiator() {
+    return instantiator;
   }
 
   public PrimitiveValuesSerialization getPrimitiveValuesSerialization() {
     return primitiveValuesSerialization;
   }
 
-  public LocalClassifierInstanceResolver getNodeResolver() {
-    return nodeResolver;
+  public LocalClassifierInstanceResolver getInstanceResolver() {
+    return instanceResolver;
   }
 
   public void enableDynamicNodes() {
-    nodeInstantiator.enableDynamicNodes();
+    instantiator.enableDynamicNodes();
     primitiveValuesSerialization.enableDynamicNodes();
   }
 
@@ -460,7 +461,7 @@ public class JsonSerialization {
     }
     ClassifierInstanceResolver classifierInstanceResolver =
         new CompositeClassifierInstanceResolver(
-            new MapBasedResolver(unserializedByID), this.nodeResolver);
+            new MapBasedResolver(unserializedByID), this.instanceResolver);
     serializedClassifierInstances.stream()
         .forEach(
             n -> {
@@ -525,7 +526,7 @@ public class JsonSerialization {
               propertiesValues.put(property, unserializedValue);
             });
     ClassifierInstance<?> classifierInstance =
-        getNodeInstantiator()
+        getInstantiator()
             .instantiate(
                 classifier, serializedClassifierInstance, unserializedByID, propertiesValues);
 

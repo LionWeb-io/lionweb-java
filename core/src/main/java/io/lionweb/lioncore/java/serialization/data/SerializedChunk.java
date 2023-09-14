@@ -28,18 +28,18 @@ public class SerializedChunk {
     return classifierInstances;
   }
 
-  public void addClassifierInstance(SerializedClassifierInstance node) {
-    this.classifierInstancesByID.put(node.getID(), node);
-    classifierInstances.add(node);
+  public void addClassifierInstance(SerializedClassifierInstance instance) {
+    this.classifierInstancesByID.put(instance.getID(), instance);
+    classifierInstances.add(instance);
   }
 
   @Nonnull
-  public SerializedClassifierInstance getNodeByID(String nodeID) {
-    SerializedClassifierInstance node = this.classifierInstancesByID.get(nodeID);
-    if (node == null) {
-      throw new IllegalArgumentException("Cannot find node with ID " + nodeID);
+  public SerializedClassifierInstance getInstanceByID(String instanceID) {
+    SerializedClassifierInstance instance = this.classifierInstancesByID.get(instanceID);
+    if (instance == null) {
+      throw new IllegalArgumentException("Cannot find instance with ID " + instanceID);
     }
-    return node;
+    return instance;
   }
 
   public void addLanguage(UsedLanguage language) {
@@ -62,7 +62,7 @@ public class SerializedChunk {
         + '\''
         + ", languages="
         + languages
-        + ", nodes="
+        + ", classifierInstances="
         + classifierInstances
         + '}';
   }

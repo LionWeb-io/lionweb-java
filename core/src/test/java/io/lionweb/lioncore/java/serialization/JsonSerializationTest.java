@@ -174,7 +174,7 @@ public class JsonSerializationTest extends SerializationTest {
                 .unserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json"))
                 .get(0);
-    jsonSerialization.getNodeResolver().addTree(starlasu);
+    jsonSerialization.getInstanceResolver().addTree(starlasu);
     Language properties =
         (Language)
             jsonSerialization
@@ -187,14 +187,14 @@ public class JsonSerializationTest extends SerializationTest {
 
   private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
     js.getClassifierResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
-    js.getNodeInstantiator()
+    js.getInstantiator()
         .registerCustomUnserializer(
             SimpleMathLanguage.INT_LITERAL.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new IntLiteral(
                     (Integer) propertiesValues.get(concept.getPropertyByName("value")),
                     serializedNode.getID()));
-    js.getNodeInstantiator()
+    js.getInstantiator()
         .registerCustomUnserializer(
             SimpleMathLanguage.SUM.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
@@ -294,14 +294,14 @@ public class JsonSerializationTest extends SerializationTest {
 
   private void prepareUnserializationOfRefMM(JsonSerialization js) {
     js.getClassifierResolver().registerLanguage(RefsLanguage.INSTANCE);
-    js.getNodeInstantiator()
+    js.getInstantiator()
         .registerCustomUnserializer(
             RefsLanguage.CONTAINER_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new ContainerNode(
                     (ContainerNode) propertiesValues.get(concept.getContainmentByName("contained")),
                     serializedNode.getID()));
-    js.getNodeInstantiator()
+    js.getInstantiator()
         .registerCustomUnserializer(
             RefsLanguage.REF_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
@@ -500,7 +500,7 @@ public class JsonSerializationTest extends SerializationTest {
     n2.setPropertyValue(p, el2);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     js.registerLanguage(mm);
-    js.getNodeInstantiator().enableDynamicNodes();
+    js.getInstantiator().enableDynamicNodes();
 
     List<Node> unserializedNodes = js.unserializeToNodes(je);
     assertEquals(Arrays.asList(n1, n2), unserializedNodes);

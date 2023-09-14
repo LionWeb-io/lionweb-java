@@ -46,11 +46,11 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    SerializedClassifierInstance book = serializedChunk.getNodeByID("library-Book");
+    SerializedClassifierInstance book = serializedChunk.getInstanceByID("library-Book");
     assertEquals("Book", book.getPropertyValue("LIonCore-builtins-INamed-name"));
 
     SerializedClassifierInstance guidedBookWriter =
-        serializedChunk.getNodeByID("library-GuideBookWriter");
+        serializedChunk.getInstanceByID("library-GuideBookWriter");
     assertEquals(
         "GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore-builtins-INamed-name"));
     assertEquals(

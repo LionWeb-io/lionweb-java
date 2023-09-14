@@ -144,7 +144,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
@@ -280,7 +280,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
@@ -417,7 +417,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
@@ -560,7 +560,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
