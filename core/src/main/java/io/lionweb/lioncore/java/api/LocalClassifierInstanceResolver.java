@@ -31,7 +31,7 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
     return instances.get(instanceID);
   }
 
-  public void addAll(@Nonnull List<ClassifierInstance<?>> instances) {
+  public void addAll(@Nonnull List<? extends ClassifierInstance<?>> instances) {
     instances.forEach(n -> add(n));
   }
 
