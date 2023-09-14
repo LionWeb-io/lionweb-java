@@ -35,6 +35,11 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
+  public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id, @Nullable String key) {
+    this(language, name, id);
+    setKey(key);
+  }
+
   public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
     setAbstract(false);

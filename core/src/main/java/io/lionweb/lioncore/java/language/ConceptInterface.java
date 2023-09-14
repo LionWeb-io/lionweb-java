@@ -32,6 +32,11 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
     super(language, name, id);
   }
 
+  public ConceptInterface(@Nullable Language language, @Nullable String name, @Nonnull String id, @Nullable String key) {
+    this(language, name, id);
+    setKey(key);
+  }
+
   public ConceptInterface(@Nullable Language language, @Nullable String name) {
     super(language, name);
   }

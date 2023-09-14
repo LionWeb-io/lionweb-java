@@ -27,8 +27,17 @@ public class Annotation extends Classifier<Annotation> {
     super();
   }
 
-  public Annotation(Language language, String name) {
+  public Annotation(@Nullable Language language, @Nullable String name) {
     super(language, name);
+  }
+
+  public Annotation(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
+  }
+
+  public Annotation(@Nullable Language language, @Nullable String name, @Nonnull String id, @Nullable String key) {
+    this(language, name, id);
+    setKey(key);
   }
 
   public boolean isMultiple() {
@@ -40,7 +49,12 @@ public class Annotation extends Classifier<Annotation> {
   }
 
   public @Nullable Classifier<?> getAnnotates() {
-    return this.getReferenceSingleValue("annotates");
+    Classifier<?> annotates = this.getReferenceSingleValue("annotates");
+    if (annotates == null && getExtendedAnnotation() != null) {
+      return getExtendedAnnotation().getAnnotates();
+    } else {
+      return annotates;
+    }
   }
 
   public @Nullable Annotation getExtendedAnnotation() {

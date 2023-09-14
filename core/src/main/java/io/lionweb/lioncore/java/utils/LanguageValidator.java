@@ -102,6 +102,9 @@ public class LanguageValidator extends Validator<Language> {
               if (el instanceof ConceptInterface) {
                 checkAncestors((ConceptInterface) el, result);
               }
+              if (el instanceof Annotation) {
+                checkAnnotates((Annotation) el, result);
+              }
             });
 
     return result;
@@ -175,6 +178,11 @@ public class LanguageValidator extends Validator<Language> {
   private void checkAncestors(
       ConceptInterface conceptInterface, ValidationResult validationResult) {
     checkAncestorsHelper(new HashSet<>(), conceptInterface, validationResult, false);
+  }
+
+  private void checkAnnotates(Annotation annotation, ValidationResult validationResult) {
+      validationResult.checkForError(annotation.getAnnotates() == null,
+              "An annotation should specify annotates or inherit it", annotation);
   }
 
   private void checkAncestorsHelper(
