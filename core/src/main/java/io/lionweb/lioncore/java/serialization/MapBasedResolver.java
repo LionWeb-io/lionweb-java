@@ -2,7 +2,6 @@ package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
-
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;

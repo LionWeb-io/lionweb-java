@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.api;
 
 import io.lionweb.lioncore.java.model.ClassifierInstance;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 

@@ -3,9 +3,9 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
-import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
@@ -114,9 +114,12 @@ public class JsonSerialization {
     for (Node node : nodes) {
       Objects.requireNonNull(node, "nodes should not contain null values");
       serializationBlock.addClassifierInstance(serializeNode(node));
-      node.getAnnotations().forEach(annotationInstance -> {
-        serializationBlock.addClassifierInstance(serializeAnnotationInstance(annotationInstance));
-      });
+      node.getAnnotations()
+          .forEach(
+              annotationInstance -> {
+                serializationBlock.addClassifierInstance(
+                    serializeAnnotationInstance(annotationInstance));
+              });
       Objects.requireNonNull(
           node.getConcept(), "A node should have a concept in order to be serialized");
       Objects.requireNonNull(
@@ -198,7 +201,7 @@ public class JsonSerialization {
 
   private SerializedClassifierInstance serializeNode(@Nonnull Node node) {
     Objects.requireNonNull(node, "Node should not be null");
-    SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
+    SerializedNodeInstance serializedClassifierInstance = new SerializedNodeInstance();
     serializedClassifierInstance.setID(node.getID());
     serializedClassifierInstance.setClassifier(MetaPointer.from(node.getConcept()));
     if (node.getParent() != null) {
@@ -211,12 +214,14 @@ public class JsonSerialization {
     return serializedClassifierInstance;
   }
 
-  private SerializedClassifierInstance serializeAnnotationInstance(@Nonnull AnnotationInstance annotationInstance) {
+  private SerializedClassifierInstance serializeAnnotationInstance(
+      @Nonnull AnnotationInstance annotationInstance) {
     Objects.requireNonNull(annotationInstance, "AnnotationInstance should not be null");
-    SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
+    SerializedAnnotationInstance serializedClassifierInstance = new SerializedAnnotationInstance();
     serializedClassifierInstance.setID(annotationInstance.getID());
     serializedClassifierInstance.setAnnotated(annotationInstance.getAnnotated().getID());
-    serializedClassifierInstance.setClassifier(MetaPointer.from(annotationInstance.getAnnotationDefinition()));
+    serializedClassifierInstance.setClassifier(
+        MetaPointer.from(annotationInstance.getAnnotationDefinition()));
     serializeProperties(annotationInstance, serializedClassifierInstance);
     serializeContainments(annotationInstance, serializedClassifierInstance);
     serializeReferences(annotationInstance, serializedClassifierInstance);
@@ -224,14 +229,22 @@ public class JsonSerialization {
     return serializedClassifierInstance;
   }
 
-  private static void serializeAnnotations(@Nonnull ClassifierInstance<?> classifierInstance, SerializedClassifierInstance serializedClassifierInstance) {
+  private static void serializeAnnotations(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      SerializedClassifierInstance serializedClassifierInstance) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    serializedClassifierInstance.setAnnotations(classifierInstance.getAnnotations().stream().map(a -> a.getID()).collect(Collectors.toList()));
+    serializedClassifierInstance.setAnnotations(
+        classifierInstance.getAnnotations().stream()
+            .map(a -> a.getID())
+            .collect(Collectors.toList()));
   }
 
-  private static void serializeReferences(@Nonnull ClassifierInstance<?> classifierInstance, SerializedClassifierInstance serializedClassifierInstance) {
+  private static void serializeReferences(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      SerializedClassifierInstance serializedClassifierInstance) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    classifierInstance.getClassifier()
+    classifierInstance
+        .getClassifier()
         .allReferences()
         .forEach(
             reference -> {
@@ -240,7 +253,7 @@ public class JsonSerialization {
                   MetaPointer.from(
                       reference, ((LanguageEntity) reference.getContainer()).getLanguage()));
               referenceValue.setValue(
-                      classifierInstance.getReferenceValues(reference).stream()
+                  classifierInstance.getReferenceValues(reference).stream()
                       .map(
                           rv -> {
                             String referredID =
@@ -253,9 +266,12 @@ public class JsonSerialization {
             });
   }
 
-  private static void serializeContainments(@Nonnull ClassifierInstance<?> classifierInstance, SerializedClassifierInstance serializedClassifierInstance) {
+  private static void serializeContainments(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      SerializedClassifierInstance serializedClassifierInstance) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    classifierInstance.getClassifier()
+    classifierInstance
+        .getClassifier()
         .allContainments()
         .forEach(
             containment -> {
@@ -264,27 +280,30 @@ public class JsonSerialization {
                   MetaPointer.from(
                       containment, ((LanguageEntity) containment.getContainer()).getLanguage()));
               containmentValue.setValue(
-                      classifierInstance.getChildren(containment).stream()
+                  classifierInstance.getChildren(containment).stream()
                       .map(c -> c.getID())
                       .collect(Collectors.toList()));
               serializedClassifierInstance.addContainmentValue(containmentValue);
             });
   }
 
-  private void serializeProperties(ClassifierInstance<?> classifierInstance,
-                                   SerializedClassifierInstance serializedClassifierInstance) {
-    classifierInstance.getClassifier()
-            .allProperties()
-            .forEach(
-                    property -> {
-                      SerializedPropertyValue propertyValue = new SerializedPropertyValue();
-                      propertyValue.setMetaPointer(
-                              MetaPointer.from(
-                                      property, ((LanguageEntity) property.getContainer()).getLanguage()));
-                      propertyValue.setValue(
-                              serializePropertyValue(property.getType(), classifierInstance.getPropertyValue(property)));
-                      serializedClassifierInstance.addPropertyValue(propertyValue);
-                    });
+  private void serializeProperties(
+      ClassifierInstance<?> classifierInstance,
+      SerializedClassifierInstance serializedClassifierInstance) {
+    classifierInstance
+        .getClassifier()
+        .allProperties()
+        .forEach(
+            property -> {
+              SerializedPropertyValue propertyValue = new SerializedPropertyValue();
+              propertyValue.setMetaPointer(
+                  MetaPointer.from(
+                      property, ((LanguageEntity) property.getContainer()).getLanguage()));
+              propertyValue.setValue(
+                  serializePropertyValue(
+                      property.getType(), classifierInstance.getPropertyValue(property)));
+              serializedClassifierInstance.addPropertyValue(propertyValue);
+            });
   }
 
   //
@@ -297,12 +316,14 @@ public class JsonSerialization {
 
   public List<Node> unserializeToNodes(JsonElement jsonElement) {
     return unserializeToClassifierInstances(jsonElement).stream()
-            .filter(ci -> ci instanceof Node).map(ci -> (Node)ci).collect(Collectors.toList());
+        .filter(ci -> ci instanceof Node)
+        .map(ci -> (Node) ci)
+        .collect(Collectors.toList());
   }
 
   public List<ClassifierInstance<?>> unserializeToClassifierInstances(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
-            new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
+        new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
     return unserializeSerializationBlock(serializationBlock);
   }
@@ -341,7 +362,8 @@ public class JsonSerialization {
    * This method returned a sorted version of the original list, so that leaves nodes comes first,
    * or in other words that a parent never precedes its children.
    */
-  private List<SerializedClassifierInstance> sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
+  private List<SerializedClassifierInstance> sortLeavesFirst(
+      List<SerializedClassifierInstance> originalList) {
     List<SerializedClassifierInstance> sortedList = new ArrayList<>();
     List<SerializedClassifierInstance> nodesToSort = new ArrayList<>(originalList);
     // We create the list going from the roots, to their children and so on, and then we will revert
@@ -360,12 +382,23 @@ public class JsonSerialization {
       int initialLength = sortedList.size();
       for (int i = 0; i < nodesToSort.size(); i++) {
         SerializedClassifierInstance n = nodesToSort.get(i);
-        if (n.getParentNodeID() == null
-            || sortedList.stream()
-                .anyMatch(sn -> Objects.equals(sn.getID(), n.getParentNodeID()))) {
-          sortedList.add(n);
-          nodesToSort.remove(i);
-          i--;
+        if (n instanceof SerializedNodeInstance) {
+          SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance)n;
+          if (serializedNodeInstance.getParentNodeID() == null
+                  || sortedList.stream()
+                  .anyMatch(sn -> Objects.equals(sn.getID(), serializedNodeInstance.getParentNodeID()))) {
+            sortedList.add(n);
+            nodesToSort.remove(i);
+            i--;
+          }
+        } else if (n instanceof SerializedAnnotationInstance) {
+          SerializedAnnotationInstance serializedAnnotationInstance = (SerializedAnnotationInstance)n;
+          if (serializedAnnotationInstance.getAnnotated() == null || sortedList.stream()
+                  .anyMatch(sn -> Objects.equals(sn.getID(), serializedAnnotationInstance.getAnnotated()))) {
+            sortedList.add(n);
+            nodesToSort.remove(i);
+            i--;
+          }
         }
       }
       if (initialLength == sortedList.size()) {
@@ -385,19 +418,23 @@ public class JsonSerialization {
     return sortedList;
   }
 
-  public List<ClassifierInstance<?>> unserializeSerializationBlock(SerializedChunk serializationBlock) {
+  public List<ClassifierInstance<?>> unserializeSerializationBlock(
+      SerializedChunk serializationBlock) {
     return unserializeClassifierInstances(serializationBlock.getClassifierInstances());
   }
 
-  private List<ClassifierInstance<?>> unserializeClassifierInstances(List<SerializedClassifierInstance> serializedClassifierInstances) {
+  private List<ClassifierInstance<?>> unserializeClassifierInstances(
+      List<SerializedClassifierInstance> serializedClassifierInstances) {
     // We want to unserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
-    List<SerializedClassifierInstance> sortedSerializedClassifierInstances = sortLeavesFirst(serializedClassifierInstances);
+    List<SerializedClassifierInstance> sortedSerializedClassifierInstances =
+        sortLeavesFirst(serializedClassifierInstances);
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
     Map<String, ClassifierInstance<?>> unserializedByID = new HashMap<>();
-    IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap = new IdentityHashMap<>();
+    IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
+        new IdentityHashMap<>();
     sortedSerializedClassifierInstances.stream()
         .forEach(
             n -> {
@@ -416,17 +453,32 @@ public class JsonSerialization {
               + serializedToInstanceMap.size());
     }
     ClassifierInstanceResolver classifierInstanceResolver =
-        new CompositeClassifierInstanceResolver(new MapBasedResolver(unserializedByID), this.nodeResolver);
+        new CompositeClassifierInstanceResolver(
+            new MapBasedResolver(unserializedByID), this.nodeResolver);
     serializedClassifierInstances.stream()
-        .forEach(n -> {
-          populateClassifierInstance(n, serializedToInstanceMap.get(n), classifierInstanceResolver);
-          ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(n);
-          if (classifierInstance instanceof AnnotationInstance) {
-            AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
-            Node annotatedNode = (Node)unserializedByID.get(n.getAnnotated());
-            annotatedNode.addAnnotation(annotationInstance);
-          }
-        });
+        .forEach(
+            n -> {
+              populateClassifierInstance(
+                  n, serializedToInstanceMap.get(n), classifierInstanceResolver);
+              ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(n);
+              if (classifierInstance instanceof AnnotationInstance) {
+                SerializedAnnotationInstance serializedAnnotationInstance = (SerializedAnnotationInstance)n;
+                if (serializedAnnotationInstance == null) {
+                  throw new IllegalStateException(
+                      "Dangling annotation instance found (annotated node is null). "
+                          + "SerializedAnnotationInstance: "
+                          + n);
+                }
+                Node annotatedNode = (Node) unserializedByID.get(serializedAnnotationInstance.getAnnotated());
+                AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
+                if (annotatedNode != null) {
+                  annotatedNode.addAnnotation(annotationInstance);
+                } else {
+                  throw new IllegalStateException(
+                      "Cannot resolved annotated node " + annotationInstance.getAnnotated());
+                }
+              }
+            });
 
     // We want the nodes returned to be sorted as the original serializedNodes
     List<ClassifierInstance<?>> nodesWithOriginalSorting =
@@ -437,8 +489,10 @@ public class JsonSerialization {
   }
 
   private ClassifierInstance<?> instantiateFromSerialized(
-          SerializedClassifierInstance serializedClassifierInstance, Map<String, ClassifierInstance<?>> unserializedByID) {
-    Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifierInstance.getClassifier());
+      SerializedClassifierInstance serializedClassifierInstance,
+      Map<String, ClassifierInstance<?>> unserializedByID) {
+    Classifier<?> classifier =
+        getClassifierResolver().resolveClassifier(serializedClassifierInstance.getClassifier());
 
     // We prepare all the properties values and pass them to instantiator, as it could use them to
     // build the node
@@ -464,7 +518,8 @@ public class JsonSerialization {
             });
     ClassifierInstance<?> classifierInstance =
         getNodeInstantiator()
-            .instantiate(classifier, serializedClassifierInstance, unserializedByID, propertiesValues);
+            .instantiate(
+                classifier, serializedClassifierInstance, unserializedByID, propertiesValues);
 
     // We ensure that the properties values are set correctly. They could already have been set
     // while instantiating the node. If that is the case, we have nothing to do, otherwise we set
@@ -478,7 +533,8 @@ public class JsonSerialization {
               // Avoiding calling setters, in case the value has been already set at construction
               // time
 
-              if (!Objects.equals(unserializedValue, classifierInstance.getPropertyValue(property))) {
+              if (!Objects.equals(
+                  unserializedValue, classifierInstance.getPropertyValue(property))) {
                 classifierInstance.setPropertyValue(property, unserializedValue);
               }
             });
@@ -486,15 +542,18 @@ public class JsonSerialization {
     return classifierInstance;
   }
 
-  private void populateClassifierInstance(SerializedClassifierInstance serializedClassifierInstance,
-                                          ClassifierInstance<?> node, ClassifierInstanceResolver classifierInstanceResolver) {
+  private void populateClassifierInstance(
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstance<?> node,
+      ClassifierInstanceResolver classifierInstanceResolver) {
     populateContainments(serializedClassifierInstance, node, classifierInstanceResolver);
     populateNodeReferences(serializedClassifierInstance, node, classifierInstanceResolver);
   }
 
   private void populateContainments(
-          SerializedClassifierInstance serializedClassifierInstance, ClassifierInstance<?> node,
-          ClassifierInstanceResolver classifierInstanceResolver) {
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstance<?> node,
+      ClassifierInstanceResolver classifierInstanceResolver) {
     Classifier<?> concept = node.getClassifier();
     serializedClassifierInstance
         .getContainments()
@@ -516,13 +575,15 @@ public class JsonSerialization {
                       .map(childNodeID -> classifierInstanceResolver.strictlyResolve(childNodeID))
                       .collect(Collectors.toList());
               if (!Objects.equals(unserializedValue, node.getChildren(containment))) {
-                unserializedValue.forEach(child -> node.addChild(containment, (Node)child));
+                unserializedValue.forEach(child -> node.addChild(containment, (Node) child));
               }
             });
   }
 
   private void populateNodeReferences(
-          SerializedClassifierInstance serializedClassifierInstance, ClassifierInstance<?> node, ClassifierInstanceResolver classifierInstanceResolver) {
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstance<?> node,
+      ClassifierInstanceResolver classifierInstanceResolver) {
     Classifier<?> concept = node.getClassifier();
     // TODO resolve references to Nodes in different models
     serializedClassifierInstance
@@ -544,7 +605,8 @@ public class JsonSerialization {
                   .getValue()
                   .forEach(
                       entry -> {
-                        Node referred = (Node)classifierInstanceResolver.resolve(entry.getReference());
+                        Node referred =
+                            (Node) classifierInstanceResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
                           throw new UnserializationException(
                               "Unable to resolve reference to "

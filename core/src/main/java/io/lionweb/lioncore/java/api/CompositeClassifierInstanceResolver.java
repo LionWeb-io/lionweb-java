@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.api;
 
 import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.Node;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -12,13 +11,15 @@ public class CompositeClassifierInstanceResolver implements ClassifierInstanceRe
 
   public CompositeClassifierInstanceResolver() {}
 
-  public CompositeClassifierInstanceResolver(ClassifierInstanceResolver... classifierInstanceResolvers) {
+  public CompositeClassifierInstanceResolver(
+      ClassifierInstanceResolver... classifierInstanceResolvers) {
     for (ClassifierInstanceResolver classifierInstanceResolver : classifierInstanceResolvers) {
       add(classifierInstanceResolver);
     }
   }
 
-  public CompositeClassifierInstanceResolver add(ClassifierInstanceResolver classifierInstanceResolver) {
+  public CompositeClassifierInstanceResolver add(
+      ClassifierInstanceResolver classifierInstanceResolver) {
     classifierInstanceResolvers.add(classifierInstanceResolver);
     return this;
   }

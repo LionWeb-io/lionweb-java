@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
+import static org.junit.Assert.fail;
+
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -9,11 +11,8 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.utils.ModelComparator;
-
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.fail;
 
 /** Base class with some utility methods used by several tests. */
 abstract class SerializationTest {

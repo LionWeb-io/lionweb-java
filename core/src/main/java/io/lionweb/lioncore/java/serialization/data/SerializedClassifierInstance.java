@@ -5,18 +5,18 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-/** Lower level representation of a Classifier Instance (either a Node or an AnnotationInstance) which is used to load
- *  broken classifier instances during serialization. */
-public class SerializedClassifierInstance {
-  private String id;
-  private MetaPointer classifier;
-  private String parentNodeID;
-  private String annotatedID;
+/**
+ * Lower level representation of a Classifier Instance (either a Node or an AnnotationInstance)
+ * which is used to load broken classifier instances during serialization.
+ */
+public abstract class SerializedClassifierInstance {
+  protected String id;
+  protected MetaPointer classifier;
 
-  private List<SerializedPropertyValue> properties = new ArrayList<>();
-  private List<SerializedContainmentValue> containments = new ArrayList<>();
-  private List<SerializedReferenceValue> references = new ArrayList<>();
-  private List<String> annotations = new ArrayList<>();
+  protected List<SerializedPropertyValue> properties = new ArrayList<>();
+  protected List<SerializedContainmentValue> containments = new ArrayList<>();
+  protected List<SerializedReferenceValue> references = new ArrayList<>();
+  protected List<String> annotations = new ArrayList<>();
 
   public SerializedClassifierInstance() {}
 
@@ -25,13 +25,6 @@ public class SerializedClassifierInstance {
     setClassifier(concept);
   }
 
-  public String getParentNodeID() {
-    return parentNodeID;
-  }
-
-  public void setParentNodeID(String parentNodeID) {
-    this.parentNodeID = parentNodeID;
-  }
 
   public List<SerializedContainmentValue> getContainments() {
     return this.containments;
@@ -117,59 +110,11 @@ public class SerializedClassifierInstance {
     return null;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof SerializedClassifierInstance)) return false;
-    SerializedClassifierInstance that = (SerializedClassifierInstance) o;
-    return Objects.equals(id, that.id)
-        && Objects.equals(classifier, that.classifier)
-        && Objects.equals(parentNodeID, that.parentNodeID)
-        && Objects.equals(properties, that.properties)
-        && Objects.equals(containments, that.containments)
-        && Objects.equals(annotations, that.annotations)
-        && Objects.equals(references, that.references);
+
+
+  public void setAnnotations(List<String> annotationIDs) {
+    this.annotations = annotationIDs;
   }
 
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, classifier, parentNodeID, properties, containments, references);
-  }
 
-  @Override
-  public String toString() {
-    return "SerializedNode{"
-        + "id='"
-        + id
-        + '\''
-        + ", concept="
-        + classifier
-        + ", parentNodeID='"
-        + parentNodeID
-        + '\''
-            + ", annotatedID='"
-            + annotatedID
-            + '\''
-        + ", properties="
-        + properties
-        + ", containments="
-        + containments
-        + ", references="
-        + references
-            + ", annotations="
-            + annotations
-        + '}';
-  }
-
-    public void setAnnotations(List<String> annotationIDs) {
-      this.annotations = annotationIDs;
-    }
-
-    public String getAnnotated() {
-      return annotatedID;
-    }
-
-  public void setAnnotated(String annotatedID) {
-    this.annotatedID = annotatedID;
-  }
 }

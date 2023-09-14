@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.Annotation;
-import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import java.util.Objects;
@@ -90,5 +89,4 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
         + annotatedDesc
         + '}';
   }
-
 }

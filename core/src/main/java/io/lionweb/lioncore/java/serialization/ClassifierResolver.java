@@ -25,7 +25,7 @@ public class ClassifierResolver {
       return registeredAnnotations.get(conceptMetaPointer);
     } else {
       throw new RuntimeException(
-              "Unable to resolve classifier with metaPointer " + conceptMetaPointer);
+          "Unable to resolve classifier with metaPointer " + conceptMetaPointer);
     }
   }
 
@@ -42,8 +42,7 @@ public class ClassifierResolver {
     if (registeredAnnotations.containsKey(metaPointer)) {
       return registeredAnnotations.get(metaPointer);
     } else {
-      throw new RuntimeException(
-              "Unable to resolve annotation with metaPointer " + metaPointer);
+      throw new RuntimeException("Unable to resolve annotation with metaPointer " + metaPointer);
     }
   }
 

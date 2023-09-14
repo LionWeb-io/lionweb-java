@@ -137,15 +137,11 @@ public class ModelComparator {
     }
 
     public void markDifferentNumberOfAnnotations(String context, int na, int nb) {
-      differences.add(
-              context
-                      + " different number of annotations (" + na + " != " + nb + ")");
+      differences.add(context + " different number of annotations (" + na + " != " + nb + ")");
     }
 
     public void markDifferentAnnotation(String context, int i) {
-      differences.add(
-              context
-                      + " annotation " + i + " is different");
+      differences.add(context + " annotation " + i + " is different");
     }
   }
 
@@ -163,83 +159,106 @@ public class ModelComparator {
 
   public ComparisonResult compare(ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB) {
     if (nodeA instanceof Node && nodeB instanceof Node) {
-      return compare((Node)nodeA, (Node) nodeB);
+      return compare((Node) nodeA, (Node) nodeB);
     } else if (nodeA instanceof AnnotationInstance && nodeB instanceof AnnotationInstance) {
-      return compare((AnnotationInstance)nodeA, (AnnotationInstance) nodeB);
+      return compare((AnnotationInstance) nodeA, (AnnotationInstance) nodeB);
     } else {
       return new ComparisonResult().markIncompatible();
     }
   }
 
-  private void compareProperties(Classifier<?> concept, ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB, ComparisonResult comparisonResult, String context) {
+  private void compareProperties(
+      Classifier<?> concept,
+      ClassifierInstance<?> nodeA,
+      ClassifierInstance<?> nodeB,
+      ComparisonResult comparisonResult,
+      String context) {
     for (Property property : concept.allProperties()) {
       Object valueA = nodeA.getPropertyValue(property);
       Object valueB = nodeA.getPropertyValue(property);
       if (!Objects.equals(valueA, valueB)) {
         comparisonResult.markDifferentPropertyValue(
-                context, nodeA.getID(), property.qualifiedName(), valueA, valueB);
+            context, nodeA.getID(), property.qualifiedName(), valueA, valueB);
       }
     }
   }
 
-  private void compareReferences(Classifier<?> concept, ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB, ComparisonResult comparisonResult, String context) {
+  private void compareReferences(
+      Classifier<?> concept,
+      ClassifierInstance<?> nodeA,
+      ClassifierInstance<?> nodeB,
+      ComparisonResult comparisonResult,
+      String context) {
     for (Reference reference : concept.allReferences()) {
       List<ReferenceValue> valueA = nodeA.getReferenceValues(reference);
       List<ReferenceValue> valueB = nodeB.getReferenceValues(reference);
       if (valueA.size() != valueB.size()) {
         comparisonResult.markDifferentNumberOfReferences(
-                context, nodeA.getID(), reference.qualifiedName(), valueA.size(), valueB.size());
+            context, nodeA.getID(), reference.qualifiedName(), valueA.size(), valueB.size());
       } else {
         for (int i = 0; i < valueA.size(); i++) {
           ReferenceValue refA = valueA.get(i);
           ReferenceValue refB = valueB.get(i);
           if (!Objects.equals(refA.getReferredID(), refB.getReferredID())) {
             comparisonResult.markDifferentReferredID(
-                    context,
-                    nodeA.getID(),
-                    reference.qualifiedName(),
-                    i,
-                    refA.getReferredID(),
-                    refB.getReferredID());
+                context,
+                nodeA.getID(),
+                reference.qualifiedName(),
+                i,
+                refA.getReferredID(),
+                refB.getReferredID());
           }
           if (!Objects.equals(refA.getResolveInfo(), refB.getResolveInfo())) {
             comparisonResult.markDifferentResolveInfo(
-                    context,
-                    nodeA.getID(),
-                    reference.qualifiedName(),
-                    i,
-                    refA.getResolveInfo(),
-                    refB.getResolveInfo());
+                context,
+                nodeA.getID(),
+                reference.qualifiedName(),
+                i,
+                refA.getResolveInfo(),
+                refB.getResolveInfo());
           }
         }
       }
     }
   }
 
-  private void compareContainments(Classifier<?> concept, ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB, ComparisonResult comparisonResult, String context) {
+  private void compareContainments(
+      Classifier<?> concept,
+      ClassifierInstance<?> nodeA,
+      ClassifierInstance<?> nodeB,
+      ComparisonResult comparisonResult,
+      String context) {
     for (Containment containment : concept.allContainments()) {
       List<? extends Node> valueA = nodeA.getChildren(containment);
       List<? extends Node> valueB = nodeB.getChildren(containment);
       if (valueA.size() != valueB.size()) {
         comparisonResult.markDifferentNumberOfChildren(
-                context, nodeA.getID(), containment.qualifiedName(), valueA.size(), valueB.size());
+            context, nodeA.getID(), containment.qualifiedName(), valueA.size(), valueB.size());
       } else {
         for (int i = 0; i < valueA.size(); i++) {
           compare(
-                  valueA.get(i),
-                  valueB.get(i),
-                  comparisonResult,
-                  context + "/" + containment.getName() + "[" + i + "]");
+              valueA.get(i),
+              valueB.get(i),
+              comparisonResult,
+              context + "/" + containment.getName() + "[" + i + "]");
         }
       }
     }
   }
 
-  private void compareAnnotations(Classifier<?> concept, ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB, ComparisonResult comparisonResult, String context) {
+  private void compareAnnotations(
+      Classifier<?> concept,
+      ClassifierInstance<?> nodeA,
+      ClassifierInstance<?> nodeB,
+      ComparisonResult comparisonResult,
+      String context) {
     if (nodeA.getAnnotations().size() != nodeB.getAnnotations().size()) {
-      comparisonResult.markDifferentNumberOfAnnotations(context, nodeA.getAnnotations().size(), nodeB.getAnnotations().size());
+      comparisonResult.markDifferentNumberOfAnnotations(
+          context, nodeA.getAnnotations().size(), nodeB.getAnnotations().size());
     }
-    for (int i=0;i<Math.min(nodeA.getAnnotations().size(), nodeB.getAnnotations().size());i++) {
+    for (int i = 0;
+        i < Math.min(nodeA.getAnnotations().size(), nodeB.getAnnotations().size());
+        i++) {
       String aID = nodeA.getAnnotations().get(i).getID();
       String bID = nodeB.getAnnotations().get(i).getID();
       if (!Objects.equals(aID, bID)) {
@@ -265,11 +284,16 @@ public class ModelComparator {
     }
   }
 
-  private void compare(AnnotationInstance nodeA, AnnotationInstance nodeB, ComparisonResult comparisonResult, String context) {
+  private void compare(
+      AnnotationInstance nodeA,
+      AnnotationInstance nodeB,
+      ComparisonResult comparisonResult,
+      String context) {
     if (!Objects.equals(nodeA.getID(), nodeB.getID())) {
       comparisonResult.markDifferentIDs(context, nodeA.getID(), nodeB.getID());
     } else {
-      if (Objects.equals(nodeA.getAnnotationDefinition().getID(), nodeB.getAnnotationDefinition().getID())) {
+      if (Objects.equals(
+          nodeA.getAnnotationDefinition().getID(), nodeB.getAnnotationDefinition().getID())) {
         Annotation concept = nodeA.getAnnotationDefinition();
         if (!Objects.equals(nodeA.getAnnotated().getID(), nodeB.getAnnotated().getID())) {
           comparisonResult.markDifferentAnnotated(context, nodeA.getID(), nodeB.getID());
@@ -280,7 +304,7 @@ public class ModelComparator {
         compareAnnotations(concept, nodeA, nodeB, comparisonResult, context);
       } else {
         comparisonResult.markDifferentConcept(
-                context, nodeA.getID(), nodeA.getClassifier().getID(), nodeB.getClassifier().getID());
+            context, nodeA.getID(), nodeA.getClassifier().getID(), nodeB.getClassifier().getID());
       }
     }
   }

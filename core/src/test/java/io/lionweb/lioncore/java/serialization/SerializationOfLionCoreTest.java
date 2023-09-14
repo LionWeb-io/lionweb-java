@@ -103,9 +103,10 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     SerializedChunk serializedChunk =
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
-    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData = serializedChunk.getClassifierInstances();
+    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData =
+        serializedChunk.getClassifierInstances();
 
-    SerializedClassifierInstance lioncore = serializedChunk.getNodeByID("-id-LIonCore-M3");
+    SerializedNodeInstance lioncore = (SerializedNodeInstance)serializedChunk.getNodeByID("-id-LIonCore-M3");
     assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getClassifier());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));

@@ -8,6 +8,8 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
@@ -18,6 +20,7 @@ public abstract class SimpleNode implements Node {
 
   private String id;
   private Node parent;
+  private List<AnnotationInstance> annotations = new ArrayList<>();
 
   protected void assignRandomID() {
     String randomId = "id_" + Math.abs(new Random().nextLong());
@@ -50,7 +53,7 @@ public abstract class SimpleNode implements Node {
 
   @Override
   public List<AnnotationInstance> getAnnotations() {
-    throw new UnsupportedOperationException();
+    return annotations;
   }
 
   @Override

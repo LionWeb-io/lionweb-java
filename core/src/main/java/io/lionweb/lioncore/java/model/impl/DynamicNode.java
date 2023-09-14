@@ -109,5 +109,4 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
         + annotations
         + "} }";
   }
-
 }

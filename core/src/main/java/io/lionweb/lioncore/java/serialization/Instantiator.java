@@ -27,9 +27,9 @@ public class Instantiator {
   private Map<String, ConceptSpecificNodeInstantiator<?>> customUnserializers = new HashMap<>();
   private ConceptSpecificNodeInstantiator<?> defaultNodeUnserializer =
       (ConceptSpecificNodeInstantiator<Node>)
-          (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
+          (classifier, serializedNode, unserializedNodesByID, propertiesValues) -> {
             throw new IllegalArgumentException(
-                "Unable to instantiate node with concept " + concept);
+                "Unable to instantiate node with classifier " + classifier);
           };
 
   public Instantiator enableDynamicNodes() {
@@ -54,7 +54,8 @@ public class Instantiator {
     if (customUnserializers.containsKey(concept.getID())) {
       return customUnserializers
           .get(concept.getID())
-          .instantiate(concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
+          .instantiate(
+              concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
     } else {
       return defaultNodeUnserializer.instantiate(
           concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
