@@ -5,6 +5,12 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
+import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
+import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.serialization.data.SerializedNode;
@@ -64,6 +70,26 @@ public class LowLevelJsonSerializationTest {
   @Test
   public void reserializeLanguageEngineeringLibrary() {
     assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/langeng-library.json");
+  }
+
+  @Test
+  public void serializeAnnotations() {
+    Language l = new Language("l");
+    Annotation a1 = new Annotation(l, "a1");
+    Annotation a2 = new Annotation(l, "a2");
+    Concept c = new Concept(l, "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
+    AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
+    AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
+
+    LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
+    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
+
+    throw new RuntimeException("CHANGE ME");
+
   }
 
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {

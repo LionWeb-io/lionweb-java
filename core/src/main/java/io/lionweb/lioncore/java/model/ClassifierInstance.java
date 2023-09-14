@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface ClassifierInstance extends HasFeatureValues {
   List<AnnotationInstance> getAnnotations();
+
+  String getID();
 }

@@ -79,9 +79,13 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance impleme
 
     @Override
     public String toString() {
+        String annotatedDesc = null;
+        if (annotated != null) {
+            annotatedDesc = annotated.getID();
+        }
         return "DynamicAnnotationInstance{" +
                 "annotation=" + annotation +
-                ", annotated=" + annotated +
+                ", annotated=" + annotatedDesc +
                 '}';
     }
 }

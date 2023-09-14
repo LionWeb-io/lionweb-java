@@ -39,6 +39,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     this.setKey(key);
   }
 
+  public Language(@Nonnull String name, @Nullable String id, @Nullable String key, @Nullable String version) {
+    this(name, id, key);
+    setVersion(version);
+  }
+
   public Language(@Nonnull String name, @Nullable String id) {
     this(name);
     this.setID(id);

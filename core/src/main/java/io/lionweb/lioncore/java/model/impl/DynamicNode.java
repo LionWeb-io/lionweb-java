@@ -108,6 +108,8 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
         + referenceValues.entrySet().stream()
             .map(e -> e.getKey() + "=" + e.getValue())
             .collect(Collectors.joining(", "))
+        + "}, annotations={"
+            + annotations
         + "} }";
   }
 

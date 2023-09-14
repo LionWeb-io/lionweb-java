@@ -8,8 +8,10 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
@@ -525,5 +527,25 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
+  }
+
+  @Test
+  public void serializeAnnotations() {
+    Language l = new Language("l", "l", "l", "1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
+    AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
+    AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
+
+    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    hjs.enableDynamicNodes();
+    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
+
+    List<Node> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
+    assertEquals(Arrays.asList(n1), unserialized);
   }
 }

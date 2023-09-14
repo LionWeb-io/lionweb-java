@@ -119,6 +119,7 @@ public class JsonSerialization {
           "A Concept should be part of a Language in order to be serialized. Concept "
               + node.getConcept()
               + " is not");
+      registerLanguage(node.getConcept().getLanguage());
       UsedLanguage languageKeyVersion = UsedLanguage.fromLanguage(node.getConcept().getLanguage());
       if (!serializationBlock.getLanguages().contains(languageKeyVersion)) {
         serializationBlock.getLanguages().add(languageKeyVersion);
@@ -201,7 +202,33 @@ public class JsonSerialization {
     serializeNodeProperties(node, serializedNode);
     serializeNodeContainments(node, serializedNode);
     serializeNodeReferences(node, serializedNode);
+    serializeAnnotations(node, serializedNode);
     return serializedNode;
+  }
+
+  private static void serializeAnnotations(@Nonnull Node node, SerializedNode serializedNode) {
+    Objects.requireNonNull(node, "Node should not be null");
+    node.getConcept()
+            .getAnnotations()
+            .forEach(
+                    annotationInstance -> {
+//                      SerializedReferenceValue referenceValue = new SerializedReferenceValue();
+//                      referenceValue.setMetaPointer(
+//                              MetaPointer.from(
+//                                      reference, ((LanguageEntity) reference.getContainer()).getLanguage()));
+//                      referenceValue.setValue(
+//                              node.getReferenceValues(reference).stream()
+//                                      .map(
+//                                              rv -> {
+//                                                String referredID =
+//                                                        rv.getReferred() == null ? null : rv.getReferred().getID();
+//                                                return new SerializedReferenceValue.Entry(
+//                                                        referredID, rv.getResolveInfo());
+//                                              })
+//                                      .collect(Collectors.toList()));
+//                      serializedNode.addReferenceValue(referenceValue);
+                      throw new UnsupportedOperationException();
+                    });
   }
 
   private static void serializeNodeReferences(@Nonnull Node node, SerializedNode serializedNode) {
@@ -354,7 +381,7 @@ public class JsonSerialization {
     return sortedList;
   }
 
-  private List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
+  public List<Node> unserializeSerializationBlock(SerializedChunk serializationBlock) {
     return unserializeNodes(serializationBlock.getNodes());
   }
 
