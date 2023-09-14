@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
+import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
@@ -14,6 +15,7 @@ import java.util.Map;
  */
 public class ConceptResolver {
   private Map<MetaPointer, Concept> registeredConcepts = new HashMap<>();
+  private Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
 
   public Concept resolveConcept(MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {
@@ -21,6 +23,15 @@ public class ConceptResolver {
     } else {
       throw new RuntimeException(
           "Unable to resolve concept with metaPointer " + conceptMetaPointer);
+    }
+  }
+
+  public Annotation resolveAnnotation(MetaPointer metaPointer) {
+    if (registeredAnnotations.containsKey(metaPointer)) {
+      return registeredAnnotations.get(metaPointer);
+    } else {
+      throw new RuntimeException(
+              "Unable to resolve annotation with metaPointer " + metaPointer);
     }
   }
 

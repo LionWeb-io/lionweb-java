@@ -5,22 +5,23 @@ import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-/** Lower level representation of Node which is used to load broken nodes during serialization. */
-public class SerializedNode {
+/** Lower level representation of a Classifier Instance (either a Node or an AnnotationInstance) which is used to load
+ *  broken classifier instances during serialization. */
+public class SerializedClassifierInstance {
   private String id;
-  private MetaPointer concept;
+  private MetaPointer classifier;
   private String parentNodeID;
 
   private List<SerializedPropertyValue> properties = new ArrayList<>();
   private List<SerializedContainmentValue> containments = new ArrayList<>();
   private List<SerializedReferenceValue> references = new ArrayList<>();
-  private List<SerializedAnnotationValue> annotations = new ArrayList<>();
+  private List<String> annotations = new ArrayList<>();
 
-  public SerializedNode() {}
+  public SerializedClassifierInstance() {}
 
-  public SerializedNode(String id, MetaPointer concept) {
+  public SerializedClassifierInstance(String id, MetaPointer concept) {
     setID(id);
-    setConcept(concept);
+    setClassifier(concept);
   }
 
   public String getParentNodeID() {
@@ -45,7 +46,7 @@ public class SerializedNode {
     return this.references;
   }
 
-  public List<SerializedAnnotationValue> getAnnotations() {
+  public List<String> getAnnotations() {
     return this.annotations;
   }
 
@@ -65,12 +66,12 @@ public class SerializedNode {
     this.references.add(referenceValue);
   }
 
-  public MetaPointer getConcept() {
-    return concept;
+  public MetaPointer getClassifier() {
+    return classifier;
   }
 
-  public void setConcept(MetaPointer concept) {
-    this.concept = concept;
+  public void setClassifier(MetaPointer classifier) {
+    this.classifier = classifier;
   }
 
   @Nullable
@@ -118,19 +119,20 @@ public class SerializedNode {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof SerializedNode)) return false;
-    SerializedNode that = (SerializedNode) o;
+    if (!(o instanceof SerializedClassifierInstance)) return false;
+    SerializedClassifierInstance that = (SerializedClassifierInstance) o;
     return Objects.equals(id, that.id)
-        && Objects.equals(concept, that.concept)
+        && Objects.equals(classifier, that.classifier)
         && Objects.equals(parentNodeID, that.parentNodeID)
         && Objects.equals(properties, that.properties)
         && Objects.equals(containments, that.containments)
+        && Objects.equals(annotations, that.annotations)
         && Objects.equals(references, that.references);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, concept, parentNodeID, properties, containments, references);
+    return Objects.hash(id, classifier, parentNodeID, properties, containments, references);
   }
 
   @Override
@@ -140,7 +142,7 @@ public class SerializedNode {
         + id
         + '\''
         + ", concept="
-        + concept
+        + classifier
         + ", parentNodeID='"
         + parentNodeID
         + '\''
@@ -150,6 +152,12 @@ public class SerializedNode {
         + containments
         + ", references="
         + references
+            + ", annotations="
+            + annotations
         + '}';
   }
+
+    public void setAnnotations(List<String> annotationIDs) {
+      this.annotations = annotationIDs;
+    }
 }

@@ -11,18 +11,13 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class DynamicClassifierInstance<T extends Classifier<T>>
-    implements ClassifierInstance {
+    implements ClassifierInstance<T> {
   protected String id;
-  protected T classifier;
   protected Map<String, Object> propertyValues = new HashMap<>();
   protected Map<String, List<Node>> containmentValues = new HashMap<>();
 
   protected Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
   protected List<AnnotationInstance> annotations = new ArrayList<>();
-
-  public T getClassifier() {
-    return this.classifier;
-  }
 
   @Override
   public Object getPropertyValue(@Nonnull Property property) {

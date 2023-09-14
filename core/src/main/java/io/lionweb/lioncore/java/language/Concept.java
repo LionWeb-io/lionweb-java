@@ -131,4 +131,5 @@ public class Concept extends Classifier<Concept> {
   public Concept getConcept() {
     return LionCore.getConcept();
   }
+
 }

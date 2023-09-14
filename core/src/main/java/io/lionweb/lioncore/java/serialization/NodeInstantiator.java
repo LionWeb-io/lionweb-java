@@ -1,10 +1,11 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.self.LionCore;
-import io.lionweb.lioncore.java.serialization.data.SerializedNode;
+import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,8 +18,8 @@ public class NodeInstantiator {
   public interface ConceptSpecificNodeInstantiator<T extends Node> {
     T instantiate(
         Concept concept,
-        SerializedNode serializedNode,
-        Map<String, Node> unserializedNodesByID,
+        SerializedClassifierInstance serializedClassifierInstance,
+        Map<String, ClassifierInstance<?>> unserializedNodesByID,
         Map<Property, Object> propertiesValues);
   }
 
@@ -39,16 +40,16 @@ public class NodeInstantiator {
 
   public Node instantiate(
       Concept concept,
-      SerializedNode serializedNode,
-      Map<String, Node> unserializedNodesByID,
+      SerializedClassifierInstance serializedClassifierInstance,
+      Map<String, ClassifierInstance<?>> unserializedNodesByID,
       Map<Property, Object> propertiesValues) {
     if (customUnserializers.containsKey(concept.getID())) {
       return customUnserializers
           .get(concept.getID())
-          .instantiate(concept, serializedNode, unserializedNodesByID, propertiesValues);
+          .instantiate(concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
     } else {
       return defaultNodeUnserializer.instantiate(
-          concept, serializedNode, unserializedNodesByID, propertiesValues);
+          concept, serializedClassifierInstance, unserializedNodesByID, propertiesValues);
     }
   }
 

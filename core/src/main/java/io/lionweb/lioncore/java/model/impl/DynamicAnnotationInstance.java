@@ -1,11 +1,12 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import java.util.Objects;
 
-public class DynamicAnnotationInstance extends DynamicClassifierInstance
+public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotation>
     implements AnnotationInstance {
 
   private Annotation annotation;
@@ -37,7 +38,6 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance
     return Objects.equals(annotation, that.annotation)
         && Objects.equals(id, that.id)
         && Objects.equals(annotated, that.annotated)
-        && Objects.equals(classifier, that.classifier)
         && Objects.equals(propertyValues, that.propertyValues)
         && Objects.equals(containmentValues, that.containmentValues)
         && Objects.equals(referenceValues, that.referenceValues)
@@ -90,4 +90,5 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance
         + annotatedDesc
         + '}';
   }
+
 }

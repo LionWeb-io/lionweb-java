@@ -13,7 +13,7 @@ import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
-import io.lionweb.lioncore.java.serialization.data.SerializedNode;
+import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.lioncore.java.serialization.data.SerializedReferenceValue;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,10 +29,10 @@ public class LowLevelJsonSerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
+    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData = serializedChunk.getClassifierInstances();
 
-    SerializedNode lioncore = unserializedSerializedNodeData.get(0);
-    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getConcept());
+    SerializedClassifierInstance lioncore = unserializedSerializedClassifierInstanceData.get(0);
+    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
     assertEquals(16, lioncore.getChildren().size());
@@ -46,10 +46,10 @@ public class LowLevelJsonSerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    SerializedNode book = serializedChunk.getNodeByID("library-Book");
+    SerializedClassifierInstance book = serializedChunk.getNodeByID("library-Book");
     assertEquals("Book", book.getPropertyValue("LIonCore-builtins-INamed-name"));
 
-    SerializedNode guidedBookWriter = serializedChunk.getNodeByID("library-GuideBookWriter");
+    SerializedClassifierInstance guidedBookWriter = serializedChunk.getNodeByID("library-GuideBookWriter");
     assertEquals(
         "GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore-builtins-INamed-name"));
     assertEquals(

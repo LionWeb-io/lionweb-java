@@ -12,10 +12,11 @@ import java.util.stream.Collectors;
  */
 public class DynamicNode extends DynamicClassifierInstance<Concept> implements Node {
   private Node parent = null;
+  private Concept concept = null;
 
   public DynamicNode(String id, Concept concept) {
     this.id = id;
-    this.classifier = concept;
+    this.concept = concept;
   }
 
   @Override
@@ -35,7 +36,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
 
   @Override
   public Concept getConcept() {
-    return this.classifier;
+    return this.concept;
   }
 
   @Override
@@ -58,7 +59,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
     DynamicNode that = (DynamicNode) o;
     return Objects.equals(id, that.id)
         && Objects.equals(parent, that.parent)
-        && Objects.equals(classifier, that.classifier)
+        && Objects.equals(concept, that.concept)
         && Objects.equals(propertyValues, that.propertyValues)
         && Objects.equals(containmentValues, that.containmentValues)
         && Objects.equals(referenceValues, that.referenceValues)
@@ -74,7 +75,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
   public String toString() {
     String qualifiedName;
     try {
-      qualifiedName = classifier.qualifiedName();
+      qualifiedName = concept.qualifiedName();
     } catch (RuntimeException t) {
       qualifiedName = "<cannot be calculated>";
     }
@@ -108,4 +109,5 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
         + annotations
         + "} }";
   }
+
 }

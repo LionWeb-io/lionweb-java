@@ -9,6 +9,7 @@ import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
@@ -519,11 +520,11 @@ public class JsonSerializationTest extends SerializationTest {
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
     JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
     SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationBlock(myInstance);
-    assertEquals(1, serializedChunk.getNodes().size());
-    SerializedNode serializedNode = serializedChunk.getNodes().get(0);
-    assertEquals("instance-a", serializedNode.getID());
-    assertEquals(1, serializedNode.getProperties().size());
-    SerializedPropertyValue serializedName = serializedNode.getProperties().get(0);
+    assertEquals(1, serializedChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedClassifierInstance = serializedChunk.getClassifierInstances().get(0);
+    assertEquals("instance-a", serializedClassifierInstance.getID());
+    assertEquals(1, serializedClassifierInstance.getProperties().size());
+    SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
         new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
@@ -545,7 +546,9 @@ public class JsonSerializationTest extends SerializationTest {
     hjs.enableDynamicNodes();
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
-    List<Node> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
+    assertEquals(4, serializedChunk.getClassifierInstances().size());
+
+    List<ClassifierInstance<?>> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
     assertEquals(Arrays.asList(n1), unserialized);
   }
 }

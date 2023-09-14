@@ -8,12 +8,12 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /** This NodeResolver consult a given list of nodes to find the one with the requested ID. */
-public class LocalNodeResolver implements NodeResolver {
+public class LocalClassifierInstanceResolver implements ClassifierInstanceResolver {
   private Map<String, Node> nodes = new HashMap<>();
 
-  public LocalNodeResolver() {}
+  public LocalClassifierInstanceResolver() {}
 
-  public LocalNodeResolver(List<Node> nodes) {
+  public LocalClassifierInstanceResolver(List<Node> nodes) {
     nodes.forEach(n -> add(n));
   }
 
