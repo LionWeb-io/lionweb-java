@@ -97,11 +97,12 @@ public class LowLevelJsonSerialization {
       nodeJson.add("annotations", annotations);
 
       if (node instanceof SerializedNodeInstance) {
-        SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance)node;
+        SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance) node;
         nodeJson.addProperty("parent", serializedNodeInstance.getParentNodeID());
         nodeJson.add("concept", serializeToJsonElement(node.getClassifier()));
       } else if (node instanceof SerializedAnnotationInstance) {
-        SerializedAnnotationInstance serializedAnnotationInstance = (SerializedAnnotationInstance)node;
+        SerializedAnnotationInstance serializedAnnotationInstance =
+            (SerializedAnnotationInstance) node;
         nodeJson.addProperty("annotated", serializedAnnotationInstance.getAnnotated());
         nodeJson.add("annotation", serializeToJsonElement(node.getClassifier()));
       } else {
@@ -220,19 +221,22 @@ public class LowLevelJsonSerialization {
       if (jsonObject.has("parent") || jsonObject.has("concept")) {
         SerializedNodeInstance serializedNodeInstance = new SerializedNodeInstance();
         serializedNodeInstance.setClassifier(
-                SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
+            SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
         serializedNodeInstance.setParentNodeID(
-                SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
+            SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
         serializedClassifierInstance = serializedNodeInstance;
       } else if (jsonObject.has("annotated") || jsonObject.has("annotation")) {
-        SerializedAnnotationInstance serializedAnnotationInstance = new SerializedAnnotationInstance();
+        SerializedAnnotationInstance serializedAnnotationInstance =
+            new SerializedAnnotationInstance();
         serializedAnnotationInstance.setClassifier(
-                SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "annotation"));
+            SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "annotation"));
         serializedAnnotationInstance.setAnnotated(
-                SerializationUtils.tryToGetStringProperty(jsonObject, "annotated"));
+            SerializationUtils.tryToGetStringProperty(jsonObject, "annotated"));
         serializedClassifierInstance = serializedAnnotationInstance;
       } else {
-        throw new UnsupportedOperationException("Classifier instance which does not look like a node or an annotation instance: " + jsonObject);
+        throw new UnsupportedOperationException(
+            "Classifier instance which does not look like a node or an annotation instance: "
+                + jsonObject);
       }
 
       serializedClassifierInstance.setID(

@@ -8,7 +8,6 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;

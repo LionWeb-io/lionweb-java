@@ -2,7 +2,6 @@ package io.lionweb.lioncore.java.serialization.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 /**
@@ -24,7 +23,6 @@ public abstract class SerializedClassifierInstance {
     setID(id);
     setClassifier(concept);
   }
-
 
   public List<SerializedContainmentValue> getContainments() {
     return this.containments;
@@ -110,11 +108,7 @@ public abstract class SerializedClassifierInstance {
     return null;
   }
 
-
-
   public void setAnnotations(List<String> annotationIDs) {
     this.annotations = annotationIDs;
   }
-
-
 }

@@ -548,11 +548,13 @@ public class JsonSerializationTest extends SerializationTest {
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
-    SerializedNodeInstance serializedN1 = (SerializedNodeInstance) serializedChunk.getClassifierInstances().get(0);
+    SerializedNodeInstance serializedN1 =
+        (SerializedNodeInstance) serializedChunk.getClassifierInstances().get(0);
     assertEquals("n1", serializedN1.getID());
     assertEquals(null, serializedN1.getParentNodeID());
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
-    SerializedAnnotationInstance serializedA1_1 = (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);
+    SerializedAnnotationInstance serializedA1_1 =
+        (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getAnnotated());
 
     List<ClassifierInstance<?>> unserialized = hjs.unserializeSerializationBlock(serializedChunk);

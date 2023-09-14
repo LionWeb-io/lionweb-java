@@ -383,18 +383,24 @@ public class JsonSerialization {
       for (int i = 0; i < nodesToSort.size(); i++) {
         SerializedClassifierInstance n = nodesToSort.get(i);
         if (n instanceof SerializedNodeInstance) {
-          SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance)n;
+          SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance) n;
           if (serializedNodeInstance.getParentNodeID() == null
-                  || sortedList.stream()
-                  .anyMatch(sn -> Objects.equals(sn.getID(), serializedNodeInstance.getParentNodeID()))) {
+              || sortedList.stream()
+                  .anyMatch(
+                      sn -> Objects.equals(sn.getID(), serializedNodeInstance.getParentNodeID()))) {
             sortedList.add(n);
             nodesToSort.remove(i);
             i--;
           }
         } else if (n instanceof SerializedAnnotationInstance) {
-          SerializedAnnotationInstance serializedAnnotationInstance = (SerializedAnnotationInstance)n;
-          if (serializedAnnotationInstance.getAnnotated() == null || sortedList.stream()
-                  .anyMatch(sn -> Objects.equals(sn.getID(), serializedAnnotationInstance.getAnnotated()))) {
+          SerializedAnnotationInstance serializedAnnotationInstance =
+              (SerializedAnnotationInstance) n;
+          if (serializedAnnotationInstance.getAnnotated() == null
+              || sortedList.stream()
+                  .anyMatch(
+                      sn ->
+                          Objects.equals(
+                              sn.getID(), serializedAnnotationInstance.getAnnotated()))) {
             sortedList.add(n);
             nodesToSort.remove(i);
             i--;
@@ -462,14 +468,16 @@ public class JsonSerialization {
                   n, serializedToInstanceMap.get(n), classifierInstanceResolver);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(n);
               if (classifierInstance instanceof AnnotationInstance) {
-                SerializedAnnotationInstance serializedAnnotationInstance = (SerializedAnnotationInstance)n;
+                SerializedAnnotationInstance serializedAnnotationInstance =
+                    (SerializedAnnotationInstance) n;
                 if (serializedAnnotationInstance == null) {
                   throw new IllegalStateException(
                       "Dangling annotation instance found (annotated node is null). "
                           + "SerializedAnnotationInstance: "
                           + n);
                 }
-                Node annotatedNode = (Node) unserializedByID.get(serializedAnnotationInstance.getAnnotated());
+                Node annotatedNode =
+                    (Node) unserializedByID.get(serializedAnnotationInstance.getAnnotated());
                 AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
                 if (annotatedNode != null) {
                   annotatedNode.addAnnotation(annotationInstance);

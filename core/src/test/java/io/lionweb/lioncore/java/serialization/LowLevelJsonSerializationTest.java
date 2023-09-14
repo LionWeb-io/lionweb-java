@@ -13,7 +13,6 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.*;
-
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
@@ -31,7 +30,8 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData =
         serializedChunk.getClassifierInstances();
 
-    SerializedNodeInstance lioncore = (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
+    SerializedNodeInstance lioncore =
+        (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
     assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
