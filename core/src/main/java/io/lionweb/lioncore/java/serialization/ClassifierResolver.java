@@ -54,7 +54,7 @@ public class ClassifierResolver {
               if (e instanceof Concept) {
                 registerConcept((Concept) e);
               } else if (e instanceof Annotation) {
-                registeredAnnotation((Annotation) e);
+                registerAnnotation((Annotation) e);
               }
             });
     return this;
@@ -64,7 +64,7 @@ public class ClassifierResolver {
     registeredConcepts.put(MetaPointer.from(concept), concept);
   }
 
-  private void registeredAnnotation(Annotation annotation) {
+  private void registerAnnotation(Annotation annotation) {
     registeredAnnotations.put(MetaPointer.from(annotation), annotation);
   }
 }
