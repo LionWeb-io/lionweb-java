@@ -220,7 +220,7 @@ public class JsonSerialization {
     Objects.requireNonNull(annotationInstance, "AnnotationInstance should not be null");
     SerializedAnnotationInstance serializedClassifierInstance = new SerializedAnnotationInstance();
     serializedClassifierInstance.setID(annotationInstance.getID());
-    serializedClassifierInstance.setAnnotated(annotationInstance.getAnnotated().getID());
+    serializedClassifierInstance.setParentNodeID(annotationInstance.getParent().getID());
     serializedClassifierInstance.setClassifier(
         MetaPointer.from(annotationInstance.getAnnotationDefinition()));
     serializeProperties(annotationInstance, serializedClassifierInstance);
@@ -396,12 +396,12 @@ public class JsonSerialization {
         } else if (n instanceof SerializedAnnotationInstance) {
           SerializedAnnotationInstance serializedAnnotationInstance =
               (SerializedAnnotationInstance) n;
-          if (serializedAnnotationInstance.getAnnotated() == null
+          if (serializedAnnotationInstance.getParentNodeID() == null
               || sortedList.stream()
                   .anyMatch(
                       sn ->
                           Objects.equals(
-                              sn.getID(), serializedAnnotationInstance.getAnnotated()))) {
+                              sn.getID(), serializedAnnotationInstance.getParentNodeID()))) {
             sortedList.add(n);
             nodesToSort.remove(i);
             i--;
@@ -478,13 +478,13 @@ public class JsonSerialization {
                           + n);
                 }
                 Node annotatedNode =
-                    (Node) unserializedByID.get(serializedAnnotationInstance.getAnnotated());
+                    (Node) unserializedByID.get(serializedAnnotationInstance.getParentNodeID());
                 AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
                 if (annotatedNode != null) {
                   annotatedNode.addAnnotation(annotationInstance);
                 } else {
                   throw new IllegalStateException(
-                      "Cannot resolved annotated node " + annotationInstance.getAnnotated());
+                      "Cannot resolved annotated node " + annotationInstance.getParent());
                 }
               }
             });

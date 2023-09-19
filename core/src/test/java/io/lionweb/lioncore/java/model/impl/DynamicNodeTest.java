@@ -129,7 +129,7 @@ public class DynamicNodeTest {
     assertEquals(Arrays.asList(a2_3, a2_4), n1.getAnnotations(a2));
 
     n1.removeAnnotation(a2_3);
-    assertEquals(null, a2_3.getAnnotated());
+    assertEquals(null, a2_3.getParent());
     assertEquals(Arrays.asList(a1_1, a1_2, a2_4), n1.getAnnotations());
     assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
     assertEquals(Arrays.asList(a2_4), n1.getAnnotations(a2));

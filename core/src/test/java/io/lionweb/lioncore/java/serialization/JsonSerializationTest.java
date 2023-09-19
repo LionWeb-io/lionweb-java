@@ -555,16 +555,16 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
     SerializedAnnotationInstance serializedA1_1 =
         (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);
-    assertEquals("n1", serializedA1_1.getAnnotated());
+    assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
     assertEquals(4, unserialized.size());
     assertInstancesAreEquals(a1_1, unserialized.get(1));
-    assertEquals(unserialized.get(0), ((AnnotationInstance) unserialized.get(1)).getAnnotated());
+    assertEquals(unserialized.get(0), unserialized.get(1).getParent());
     assertInstancesAreEquals(a1_2, unserialized.get(2));
-    assertEquals(unserialized.get(0), ((AnnotationInstance) unserialized.get(2)).getAnnotated());
+    assertEquals(unserialized.get(0), unserialized.get(2).getParent());
     assertInstancesAreEquals(a2_3, unserialized.get(3));
-    assertEquals(unserialized.get(0), ((AnnotationInstance) unserialized.get(3)).getAnnotated());
+    assertEquals(unserialized.get(0), unserialized.get(3).getParent());
     assertInstancesAreEquals(n1, unserialized.get(0));
     assertEquals(
         Arrays.asList(unserialized.get(1), unserialized.get(2), unserialized.get(3)),

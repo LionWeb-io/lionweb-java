@@ -3,15 +3,6 @@ package io.lionweb.lioncore.java.serialization.data;
 import java.util.Objects;
 
 public class SerializedNodeInstance extends SerializedClassifierInstance {
-  private String parentNodeID;
-
-  public String getParentNodeID() {
-    return parentNodeID;
-  }
-
-  public void setParentNodeID(String parentNodeID) {
-    this.parentNodeID = parentNodeID;
-  }
 
   @Override
   public boolean equals(Object o) {

@@ -295,7 +295,7 @@ public class ModelComparator {
       if (Objects.equals(
           nodeA.getAnnotationDefinition().getID(), nodeB.getAnnotationDefinition().getID())) {
         Annotation concept = nodeA.getAnnotationDefinition();
-        if (!Objects.equals(nodeA.getAnnotated().getID(), nodeB.getAnnotated().getID())) {
+        if (!Objects.equals(nodeA.getParent().getID(), nodeB.getParent().getID())) {
           comparisonResult.markDifferentAnnotated(context, nodeA.getID(), nodeB.getID());
         }
         compareProperties(concept, nodeA, nodeB, comparisonResult, context);

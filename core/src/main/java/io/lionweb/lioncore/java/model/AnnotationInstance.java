@@ -10,8 +10,6 @@ import io.lionweb.lioncore.java.language.Classifier;
 public interface AnnotationInstance extends ClassifierInstance<Annotation> {
   Annotation getAnnotationDefinition();
 
-  ClassifierInstance getAnnotated();
-
   default Classifier<Annotation> getClassifier() {
     return getAnnotationDefinition();
   }

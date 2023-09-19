@@ -39,9 +39,6 @@ public interface Node extends ClassifierInstance<Concept> {
    */
   Node getRoot();
 
-  /** The immediate parent of the Node. This should be null only for root nodes. */
-  Node getParent();
-
   /** The concept of which this Node is an instance. The Concept should not be abstract. */
   Concept getConcept();
 

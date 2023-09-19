@@ -16,6 +16,15 @@ public abstract class SerializedClassifierInstance {
   protected List<SerializedContainmentValue> containments = new ArrayList<>();
   protected List<SerializedReferenceValue> references = new ArrayList<>();
   protected List<String> annotations = new ArrayList<>();
+  protected String parentNodeID;
+
+  public String getParentNodeID() {
+    return parentNodeID;
+  }
+
+  public void setParentNodeID(String parentNodeID) {
+    this.parentNodeID = parentNodeID;
+  }
 
   public SerializedClassifierInstance() {}
 

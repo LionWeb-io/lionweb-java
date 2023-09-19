@@ -103,7 +103,7 @@ public class LowLevelJsonSerialization {
       } else if (node instanceof SerializedAnnotationInstance) {
         SerializedAnnotationInstance serializedAnnotationInstance =
             (SerializedAnnotationInstance) node;
-        nodeJson.addProperty("annotated", serializedAnnotationInstance.getAnnotated());
+        nodeJson.addProperty("annotated", serializedAnnotationInstance.getParentNodeID());
         nodeJson.add("annotation", serializeToJsonElement(node.getClassifier()));
       } else {
         throw new UnsupportedOperationException();
@@ -232,7 +232,7 @@ public class LowLevelJsonSerialization {
             new SerializedAnnotationInstance();
         serializedAnnotationInstance.setClassifier(
             SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "annotation"));
-        serializedAnnotationInstance.setAnnotated(
+        serializedAnnotationInstance.setParentNodeID(
             SerializationUtils.tryToGetStringProperty(jsonObject, "annotated"));
         serializedClassifierInstance = serializedAnnotationInstance;
       } else {

@@ -9,4 +9,7 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
   String getID();
 
   Classifier<T> getClassifier();
+
+  /** The immediate parent of the Node. This should be null only for root nodes. */
+  ClassifierInstance<T> getParent();
 }
