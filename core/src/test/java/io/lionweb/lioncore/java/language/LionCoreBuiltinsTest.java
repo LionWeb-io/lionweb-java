@@ -13,15 +13,15 @@ public class LionCoreBuiltinsTest {
     PrimitiveType string =
         (PrimitiveType) LionCoreBuiltins.getInstance().getElementByName("String");
     assertEquals("String", string.getName());
-    assertEquals("LIonCore.builtins.String", string.qualifiedName());
+    assertEquals("LionCore.builtins.String", string.qualifiedName());
   }
 
   @Test
   public void primitiveTypesHaveAgreedIDs() {
-    assertEquals("LIonCore-builtins-String", LionCoreBuiltins.getString().getID());
-    assertEquals("LIonCore-builtins-Boolean", LionCoreBuiltins.getBoolean().getID());
-    assertEquals("LIonCore-builtins-Integer", LionCoreBuiltins.getInteger().getID());
-    assertEquals("LIonCore-builtins-JSON", LionCoreBuiltins.getJSON().getID());
+    assertEquals("LionCore-builtins-String", LionCoreBuiltins.getString().getID());
+    assertEquals("LionCore-builtins-Boolean", LionCoreBuiltins.getBoolean().getID());
+    assertEquals("LionCore-builtins-Integer", LionCoreBuiltins.getInteger().getID());
+    assertEquals("LionCore-builtins-JSON", LionCoreBuiltins.getJSON().getID());
   }
 
   @Test

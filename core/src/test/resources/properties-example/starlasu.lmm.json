@@ -5,22 +5,22 @@
     {
       "id": "com-strumenta-StarLasu",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "Language"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "com.strumenta.StarLasu"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Language-version"
           },
@@ -28,7 +28,7 @@
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -38,7 +38,7 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Language-entities"
           },
@@ -55,7 +55,7 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Language-dependsOn"
           },
@@ -67,14 +67,14 @@
     {
       "id": "StarLasu-ASTNode",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Concept-abstract"
           },
@@ -82,15 +82,15 @@
         },
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "ASTNode"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -100,7 +100,7 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Classifier-features"
           },
@@ -110,7 +110,7 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Concept-extends"
           },
@@ -118,7 +118,7 @@
         },
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Concept-implements"
           },
@@ -130,14 +130,14 @@
     {
       "id": "StarLasu-GenericErrorNode",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Concept-abstract"
           },
@@ -145,15 +145,15 @@
         },
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "GenericErrorNode"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -163,7 +163,7 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Classifier-features"
           },
@@ -173,7 +173,7 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Concept-extends"
           },
@@ -181,7 +181,7 @@
         },
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Concept-implements"
           },
@@ -193,22 +193,22 @@
     {
       "id": "StarLasu-Named",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "ConceptInterface"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "Named"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -218,7 +218,7 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Classifier-features"
           },
@@ -228,7 +228,7 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "ConceptInterface-extends"
           },
@@ -245,22 +245,22 @@
     {
       "id": "StarLasu-PossiblyNamed",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "ConceptInterface"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "PossiblyNamed"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -270,7 +270,7 @@
       "children": [
         {
           "containment": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Classifier-features"
           },
@@ -282,7 +282,7 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "ConceptInterface-extends"
           },
@@ -294,14 +294,14 @@
     {
       "id": "StarLasu-PossiblyNamed-name",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Feature-optional"
           },
@@ -309,15 +309,15 @@
         },
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "name"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -328,14 +328,14 @@
       "references": [
         {
           "reference": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "Property-type"
           },
           "targets": [
             {
               "resolveInfo": "String",
-              "reference": "LIonCore-builtins-String"
+              "reference": "LionCore-builtins-String"
             }
           ]
         }
@@ -345,22 +345,22 @@
     {
       "id": "StarLasu-Position",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "PrimitiveType"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "Position"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },
@@ -374,22 +374,22 @@
     {
       "id": "StarLasu-Char",
       "concept": {
-        "language": "LIonCore-M3",
+        "language": "LionCore-M3",
         "version": "1",
         "key": "PrimitiveType"
       },
       "properties": [
         {
           "property": {
-            "language": "LIonCore-builtins",
+            "language": "LionCore-builtins",
             "version": "1",
-            "key": "LIonCore-builtins-INamed-name"
+            "key": "LionCore-builtins-INamed-name"
           },
           "value": "Char"
         },
         {
           "property": {
-            "language": "LIonCore-M3",
+            "language": "LionCore-M3",
             "version": "1",
             "key": "IKeyed-key"
           },

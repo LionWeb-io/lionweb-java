@@ -96,15 +96,15 @@ publishing {
             suppressPomMetadataWarningsFor("cliRuntimeElements")
             pom {
                 name.set("lioncore-java-" + project.name)
-                description.set("Java APIs for the LIonWeb system")
+                description.set("Java APIs for the LionWeb system")
                 version = project.version as String
                 packaging = "jar"
-                url.set("https://github.com/LIonWeb-org/lioncore-java")
+                url.set("https://github.com/LionWeb-org/lioncore-java")
 
                 scm {
-                    connection.set("scm:git:https://github.com/LIonWeb-org/lioncore-java.git")
-                    developerConnection.set("scm:git:git@github.com:LIonWeb-org/lioncore-java.git")
-                    url.set("https://github.com/LIonWeb-org/lioncore-java.git")
+                    connection.set("scm:git:https://github.com/LionWeb-org/lioncore-java.git")
+                    developerConnection.set("scm:git:git@github.com:LionWeb-org/lioncore-java.git")
+                    url.set("https://github.com/LionWeb-org/lioncore-java.git")
                 }
 
                 licenses {
@@ -178,7 +178,7 @@ configurations["integrationTestImplementation"]
 val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
 
 val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
-    val repoURL = "git@github.com:LIonWeb-org/lionweb-integration-testing.git"
+    val repoURL = "git@github.com:LionWeb-org/lionweb-integration-testing.git"
     doLast {
         val destinationDir = integrationTestResources
         if (destinationDir.exists()) {

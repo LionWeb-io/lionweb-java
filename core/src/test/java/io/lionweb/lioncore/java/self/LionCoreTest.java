@@ -24,8 +24,8 @@ public class LionCoreTest {
     Concept property = LionCore.getProperty();
     Property name = property.getPropertyByName("name");
     assertNotNull(name);
-    assertEquals("LIonCore-builtins-INamed-name", name.getKey());
-    assertEquals("LIonCore-builtins", name.getDeclaringLanguage().getKey());
+    assertEquals("LionCore-builtins-INamed-name", name.getKey());
+    assertEquals("LionCore-builtins", name.getDeclaringLanguage().getKey());
     Property key = property.getPropertyByName("key");
     assertNotNull(key);
   }
@@ -35,8 +35,8 @@ public class LionCoreTest {
     Concept language = LionCore.getLanguage();
     Property name = language.getPropertyByName("name");
     assertNotNull(name);
-    assertEquals("LIonCore-builtins-INamed-name", name.getKey());
-    assertEquals("LIonCore-builtins", name.getDeclaringLanguage().getKey());
+    assertEquals("LionCore-builtins-INamed-name", name.getKey());
+    assertEquals("LionCore-builtins", name.getDeclaringLanguage().getKey());
     Property version = language.getPropertyByName("version");
     assertNotNull(version);
   }
