@@ -90,8 +90,8 @@ publishing {
             from(components.findByName("java"))
             groupId = "io.lionweb.lioncore-java"
             artifactId = "lioncore-java-" + project.name
-            artifact("sourcesJar")
-            artifact("javadocJar")
+            artifact(tasks.findByName("sourcesJar"))
+            artifact(tasks.findByName("javadocJar"))
             suppressPomMetadataWarningsFor("cliApiElements")
             suppressPomMetadataWarningsFor("cliRuntimeElements")
             pom {
