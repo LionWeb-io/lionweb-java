@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.api.NodeResolver;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nullable;
@@ -10,18 +10,18 @@ import javax.annotation.Nullable;
  * This is used only during unserialization. Some nodes could be an ID that depends on their
  * position, so until we place them they could be a temporarily wrong ID.
  */
-class MapBasedResolver implements NodeResolver {
-  private Map<String, Node> nodesByID = new HashMap<>();
+class MapBasedResolver implements ClassifierInstanceResolver {
+  private Map<String, ClassifierInstance<?>> instancesByID = new HashMap<>();
 
   public MapBasedResolver() {}
 
-  public MapBasedResolver(Map<String, Node> nodesByID) {
-    this.nodesByID.putAll(nodesByID);
+  public MapBasedResolver(Map<String, ClassifierInstance<?>> instancesByID) {
+    this.instancesByID.putAll(instancesByID);
   }
 
   @Nullable
   @Override
-  public Node resolve(String nodeID) {
-    return nodesByID.get(nodeID);
+  public ClassifierInstance<?> resolve(String instanceID) {
+    return instancesByID.get(instanceID);
   }
 }

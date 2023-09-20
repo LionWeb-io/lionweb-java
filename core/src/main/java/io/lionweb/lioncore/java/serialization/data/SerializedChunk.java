@@ -10,11 +10,11 @@ import javax.annotation.Nonnull;
  */
 public class SerializedChunk {
 
-  private Map<String, SerializedNode> nodesByID = new HashMap<>();
+  private Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
   private String serializationFormatVersion;
   private List<UsedLanguage> languages = new ArrayList<>();
-  private List<SerializedNode> nodes = new ArrayList<>();
+  private List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
   public void setSerializationFormatVersion(String value) {
     this.serializationFormatVersion = value;
@@ -24,30 +24,30 @@ public class SerializedChunk {
     return serializationFormatVersion;
   }
 
-  public List<SerializedNode> getNodes() {
-    return nodes;
+  public List<SerializedClassifierInstance> getClassifierInstances() {
+    return classifierInstances;
   }
 
-  public void addNode(SerializedNode node) {
-    this.nodesByID.put(node.getID(), node);
-    nodes.add(node);
+  public void addClassifierInstance(SerializedClassifierInstance instance) {
+    this.classifierInstancesByID.put(instance.getID(), instance);
+    classifierInstances.add(instance);
   }
 
   @Nonnull
-  public SerializedNode getNodeByID(String nodeID) {
-    SerializedNode node = this.nodesByID.get(nodeID);
-    if (node == null) {
-      throw new IllegalArgumentException("Cannot find node with ID " + nodeID);
+  public SerializedClassifierInstance getInstanceByID(String instanceID) {
+    SerializedClassifierInstance instance = this.classifierInstancesByID.get(instanceID);
+    if (instance == null) {
+      throw new IllegalArgumentException("Cannot find instance with ID " + instanceID);
     }
-    return node;
+    return instance;
   }
 
   public void addLanguage(UsedLanguage language) {
     this.languages.add(language);
   }
 
-  public Map<String, SerializedNode> getNodesByID() {
-    return nodesByID;
+  public Map<String, SerializedClassifierInstance> getClassifierInstancesByID() {
+    return classifierInstancesByID;
   }
 
   public List<UsedLanguage> getLanguages() {
@@ -62,8 +62,8 @@ public class SerializedChunk {
         + '\''
         + ", languages="
         + languages
-        + ", nodes="
-        + nodes
+        + ", classifierInstances="
+        + classifierInstances
         + '}';
   }
 
@@ -74,11 +74,11 @@ public class SerializedChunk {
     SerializedChunk that = (SerializedChunk) o;
     return serializationFormatVersion.equals(that.serializationFormatVersion)
         && languages.equals(that.languages)
-        && nodes.equals(that.nodes);
+        && classifierInstances.equals(that.classifierInstances);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(serializationFormatVersion, languages, nodes);
+    return Objects.hash(serializationFormatVersion, languages, classifierInstances);
   }
 }

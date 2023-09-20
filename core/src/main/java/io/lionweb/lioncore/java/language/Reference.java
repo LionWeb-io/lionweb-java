@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -87,8 +86,6 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  @Experimental private Reference specialized;
-
   public Reference() {
     super();
   }
@@ -104,16 +101,6 @@ public class Reference extends Link<Reference> {
 
   public Reference(@Nullable String name, @Nonnull String id) {
     super(name, id);
-  }
-
-  public @Nullable Reference getSpecialized() {
-    return specialized;
-  }
-
-  public void setSpecialized(@Nullable Reference specialized) {
-    // TODO check which limitations there are: should have the same name? Should it belong
-    //      to an ancestor of the Classifier holding this Containment?
-    this.specialized = specialized;
   }
 
   @Override

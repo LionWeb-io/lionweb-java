@@ -2,25 +2,21 @@ package io.lionweb.lioncore.java.serialization.data;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nullable;
 
-/** Lower level representation of Node which is used to load broken nodes during serialization. */
-public class SerializedNode {
-  private String id;
-  private MetaPointer concept;
-  private String parentNodeID;
+/**
+ * Lower level representation of a Classifier Instance (either a Node or an AnnotationInstance)
+ * which is used to load broken classifier instances during serialization.
+ */
+public abstract class SerializedClassifierInstance {
+  protected String id;
+  protected MetaPointer classifier;
 
-  private List<SerializedPropertyValue> properties = new ArrayList<>();
-  private List<SerializedContainmentValue> containments = new ArrayList<>();
-  private List<SerializedReferenceValue> references = new ArrayList<>();
-
-  public SerializedNode() {}
-
-  public SerializedNode(String id, MetaPointer concept) {
-    setID(id);
-    setConcept(concept);
-  }
+  protected List<SerializedPropertyValue> properties = new ArrayList<>();
+  protected List<SerializedContainmentValue> containments = new ArrayList<>();
+  protected List<SerializedReferenceValue> references = new ArrayList<>();
+  protected List<String> annotations = new ArrayList<>();
+  protected String parentNodeID;
 
   public String getParentNodeID() {
     return parentNodeID;
@@ -28,6 +24,13 @@ public class SerializedNode {
 
   public void setParentNodeID(String parentNodeID) {
     this.parentNodeID = parentNodeID;
+  }
+
+  public SerializedClassifierInstance() {}
+
+  public SerializedClassifierInstance(String id, MetaPointer concept) {
+    setID(id);
+    setClassifier(concept);
   }
 
   public List<SerializedContainmentValue> getContainments() {
@@ -42,6 +45,10 @@ public class SerializedNode {
 
   public List<SerializedReferenceValue> getReferences() {
     return this.references;
+  }
+
+  public List<String> getAnnotations() {
+    return this.annotations;
   }
 
   public List<SerializedPropertyValue> getProperties() {
@@ -60,12 +67,12 @@ public class SerializedNode {
     this.references.add(referenceValue);
   }
 
-  public MetaPointer getConcept() {
-    return concept;
+  public MetaPointer getClassifier() {
+    return classifier;
   }
 
-  public void setConcept(MetaPointer concept) {
-    this.concept = concept;
+  public void setClassifier(MetaPointer classifier) {
+    this.classifier = classifier;
   }
 
   @Nullable
@@ -110,41 +117,7 @@ public class SerializedNode {
     return null;
   }
 
-  @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof SerializedNode)) return false;
-    SerializedNode that = (SerializedNode) o;
-    return Objects.equals(id, that.id)
-        && Objects.equals(concept, that.concept)
-        && Objects.equals(parentNodeID, that.parentNodeID)
-        && Objects.equals(properties, that.properties)
-        && Objects.equals(containments, that.containments)
-        && Objects.equals(references, that.references);
-  }
-
-  @Override
-  public int hashCode() {
-    return Objects.hash(id, concept, parentNodeID, properties, containments, references);
-  }
-
-  @Override
-  public String toString() {
-    return "SerializedNode{"
-        + "id='"
-        + id
-        + '\''
-        + ", concept="
-        + concept
-        + ", parentNodeID='"
-        + parentNodeID
-        + '\''
-        + ", properties="
-        + properties
-        + ", containments="
-        + containments
-        + ", references="
-        + references
-        + '}';
+  public void setAnnotations(List<String> annotationIDs) {
+    this.annotations = annotationIDs;
   }
 }

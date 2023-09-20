@@ -5,15 +5,12 @@ import static org.junit.Assert.assertEquals;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
-import org.junit.Ignore;
 import org.junit.Test;
 
-@Ignore // Ignoring the test as Annotation is still experimental and so is not yet reflected in
-// LionCore
-public class AnnotationTest {
+public class AnnotationTest extends BaseTest {
 
   @Test
-  public void getPropertyValuename() {
+  public void getPropertyValueName() {
     Language language = new Language();
     Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
@@ -22,7 +19,7 @@ public class AnnotationTest {
   }
 
   @Test
-  public void setPropertyValuename() {
+  public void setPropertyValueName() {
     Language language = new Language();
     Annotation annotation = new Annotation(language, "MyAnnotation");
     annotation.setPropertyValue(
@@ -31,43 +28,18 @@ public class AnnotationTest {
   }
 
   @Test
-  public void getPropertyValuePlatformSpecific() {
-    Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(
-        null,
-        annotation.getPropertyValue(
-            LionCore.getAnnotation().getPropertyByName("platformSpecific")));
-
-    annotation.setPlatformSpecific("java");
-    assertEquals(
-        "java",
-        annotation.getPropertyValue(
-            LionCore.getAnnotation().getPropertyByName("platformSpecific")));
-  }
-
-  @Test
-  public void setPropertyValuePlatformSpecific() {
-    Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    annotation.setPropertyValue(
-        LionCore.getAnnotation().getPropertyByName("platformSpecific"), "java");
-    assertEquals("java", annotation.getPlatformSpecific());
-  }
-
-  @Test
   public void getReferenceValueTarget() {
     Language language = new Language("mymm");
     Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         Arrays.asList(),
-        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
+        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("annotates")));
 
     Concept myConcept = new Concept(language, "myc");
-    annotation.setTarget(myConcept);
+    annotation.setAnnotates(myConcept);
     assertEquals(
         Arrays.asList(myConcept),
-        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("target")));
+        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("annotates")));
   }
 
   @Test
@@ -77,8 +49,9 @@ public class AnnotationTest {
 
     Concept myConcept = new Concept();
     annotation.addReferenceValue(
-        LionCore.getAnnotation().getReferenceByName("target"), new ReferenceValue(myConcept, null));
-    assertEquals(myConcept, annotation.getTarget());
+        LionCore.getAnnotation().getReferenceByName("annotates"),
+        new ReferenceValue(myConcept, null));
+    assertEquals(myConcept, annotation.getAnnotates());
   }
 
   @Test
@@ -97,21 +70,73 @@ public class AnnotationTest {
   }
 
   @Test
-  public void getPropertyValueQualifiedName() {
-    Language language = new Language("my.amazing.language");
+  public void isMultiple() {
+    Language language = new Language();
     Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(
-        "my.amazing.language.MyAnnotation",
-        annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("qualifiedName")));
+    assertEquals(false, annotation.isMultiple());
+    annotation.setMultiple(true);
+    assertEquals(true, annotation.isMultiple());
+    annotation.setMultiple(false);
+    assertEquals(false, annotation.isMultiple());
   }
 
   @Test
-  public void getPropertyValueNamespaceQualifier() {
-    Language language = new Language("my.amazing.language");
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(
-        "my.amazing.language.MyAnnotation",
-        annotation.getPropertyValue(
-            LionCore.getAnnotation().getPropertyByName("namespaceQualifier")));
+  public void annotates() {
+    Language language = new Language("LangFoo", "lf", "lf");
+    Concept myConcept = new Concept(language, "MyConcept", "c", "c");
+    Annotation otherAnnotation = new Annotation(language, "OtherAnnotation", "oa", "oa");
+    otherAnnotation.setAnnotates(myConcept);
+    Annotation superAnnotation = new Annotation(language, "SuperAnnotation", "sa", "sa");
+    superAnnotation.setAnnotates(myConcept);
+    ConceptInterface myCI = new ConceptInterface(language, "MyCI", "ci", "ci");
+
+    Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");
+    assertEquals(null, annotation.getAnnotates());
+    // From the node point of view the annotation is correct even if annotates is empty, because
+    // it can be sometimes, if the annotation is inherited or inheriting and the parent or
+    // sub-annotation
+    // mark the annotation as valid
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsNotValid(language);
+
+    annotation.setAnnotates(myConcept);
+    assertEquals(myConcept, annotation.getAnnotates());
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsValid(language);
+
+    annotation.setAnnotates(myCI);
+    assertEquals(myCI, annotation.getAnnotates());
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsValid(language);
+
+    annotation.setAnnotates(otherAnnotation);
+    assertEquals(otherAnnotation, annotation.getAnnotates());
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsValid(language);
+
+    annotation.setAnnotates(null);
+    assertEquals(null, annotation.getAnnotates());
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsNotValid(language);
+
+    annotation.setExtendedAnnotation(superAnnotation);
+    assertEquals(myConcept, annotation.getAnnotates());
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsValid(language);
+  }
+
+  @Test
+  public void containmentLinks() {
+    Language language = new Language("LangFoo", "lf", "lf");
+    Concept myConcept = new Concept(language, "MyConcept", "c", "c");
+
+    Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");
+    annotation.setAnnotates(myConcept);
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsValid(language);
+
+    annotation.addFeature(Containment.createOptional("cont", myConcept, "cont"));
+    assertNodeTreeIsValid(annotation);
+    assertLanguageIsNotValid(language);
   }
 }

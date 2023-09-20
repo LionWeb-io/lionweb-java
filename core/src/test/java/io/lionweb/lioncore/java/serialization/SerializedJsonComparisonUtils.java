@@ -107,6 +107,11 @@ class SerializedJsonComparisonUtils {
             expected.getAsJsonArray("properties"),
             actual.getAsJsonArray("properties"),
             "Properties of " + context);
+      } else if (key.equals("annotations")) {
+        assertEquivalentUnorderedArrays(
+            expected.getAsJsonArray("annotations"),
+            actual.getAsJsonArray("annotations"),
+            "Annotations of " + context);
       } else {
         throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
       }

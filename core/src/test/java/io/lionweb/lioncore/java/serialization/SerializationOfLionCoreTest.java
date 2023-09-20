@@ -34,13 +34,13 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     Assert.assertEquals(
         new UsedLanguage("LIonCore-M3", "1"), serializedChunk.getLanguages().get(0));
 
-    SerializedNode LIonCore_M3 =
-        serializedChunk.getNodes().stream()
+    SerializedClassifierInstance LIonCore_M3 =
+        serializedChunk.getClassifierInstances().stream()
             .filter(n -> n.getID().equals("-id-LIonCore-M3"))
             .findFirst()
             .get();
     assertEquals("-id-LIonCore-M3", LIonCore_M3.getID());
-    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), LIonCore_M3.getConcept());
+    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), LIonCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
             new SerializedPropertyValue(
@@ -56,6 +56,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             new SerializedContainmentValue(
                 new MetaPointer("LIonCore-M3", "1", "Language-entities"),
                 Arrays.asList(
+                    "-id-Annotation",
                     "-id-Concept",
                     "-id-ConceptInterface",
                     "-id-Containment",
@@ -79,8 +80,8 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                 Collections.emptyList())),
         LIonCore_M3.getReferences());
 
-    SerializedNode LIonCore_M3_ConceptInterface_extends =
-        serializedChunk.getNodes().stream()
+    SerializedClassifierInstance LIonCore_M3_ConceptInterface_extends =
+        serializedChunk.getClassifierInstances().stream()
             .filter(n -> n.getID().equals("-id-ConceptInterface-extends"))
             .findFirst()
             .get();
@@ -102,13 +103,15 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     SerializedChunk serializedChunk =
         new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
-    List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
+    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData =
+        serializedChunk.getClassifierInstances();
 
-    SerializedNode lioncore = serializedChunk.getNodeByID("-id-LIonCore-M3");
-    assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getConcept());
+    SerializedNodeInstance lioncore =
+        (SerializedNodeInstance) serializedChunk.getInstanceByID("-id-LIonCore-M3");
+    assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getClassifier());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
   }
 
@@ -123,7 +126,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getName());
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
   }
 
@@ -132,12 +135,12 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-    jsonSerialization.getNodeResolver().addAll(LionCore.getInstance().thisAndAllDescendants());
+    jsonSerialization.getInstanceResolver().addAll(LionCore.getInstance().thisAndAllDescendants());
     jsonSerialization
-        .getNodeResolver()
+        .getInstanceResolver()
         .addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
-    jsonSerialization.getConceptResolver().registerLanguage(LionCore.getInstance());
-    jsonSerialization.getNodeInstantiator().enableDynamicNodes();
+    jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
+    jsonSerialization.getInstantiator().enableDynamicNodes();
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
@@ -147,7 +150,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValueByName("name"));
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParent());
   }
 
@@ -156,7 +159,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(LionCore.getInstance());
+    jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndUnserializers();

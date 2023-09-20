@@ -2,7 +2,6 @@ package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
-import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +33,15 @@ public class Concept extends Classifier<Concept> {
     super();
     setAbstract(false);
     setPartition(false);
+  }
+
+  public Concept(
+      @Nullable Language language,
+      @Nullable String name,
+      @Nonnull String id,
+      @Nullable String key) {
+    this(language, name, id);
+    setKey(key);
   }
 
   public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
@@ -122,108 +130,5 @@ public class Concept extends Classifier<Concept> {
   @Override
   public Concept getConcept() {
     return LionCore.getConcept();
-  }
-
-  public @Nullable Property getPropertyByID(@Nonnull String propertyId) {
-    if (propertyId == null) {
-      throw new IllegalArgumentException("propertyId cannot be null");
-    }
-    return allFeatures().stream()
-        .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
-        .filter(p -> p.getID().equals(propertyId))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Property getPropertyByName(@Nonnull String propertyName) {
-    Objects.requireNonNull(propertyName, "propertyName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
-        .filter(p -> Objects.equals(p.getName(), propertyName))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
-    Objects.requireNonNull(containmentName, "containmentName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getName(), containmentName))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nonnull Containment requireContainmentByName(@Nonnull String containmentName) {
-    Containment containment = getContainmentByName(containmentName);
-    if (containment == null) {
-      throw new IllegalArgumentException(
-          "Containment " + containmentName + " not found in Concept " + getName());
-    }
-    return containment;
-  }
-
-  public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
-    Objects.requireNonNull(referenceName, "referenceName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Reference)
-        .map(f -> (Reference) f)
-        .filter(c -> Objects.equals(c.getName(), referenceName))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Containment getContainmentByID(@Nonnull String containmentID) {
-    Objects.requireNonNull(containmentID, "containmentID should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getID(), containmentID))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Reference getReferenceByID(@Nonnull String referenceID) {
-    Objects.requireNonNull(referenceID, "referenceID should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Reference)
-        .map(f -> (Reference) f)
-        .filter(c -> c.getID().equals(referenceID))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Link getLinkByName(@Nonnull String linkName) {
-    Objects.requireNonNull(linkName, "linkName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Link)
-        .map(f -> (Link) f)
-        .filter(c -> Objects.equals(c.getName(), linkName))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
-
-    return this.allProperties().stream()
-        .filter(p -> MetaPointer.from(p).equals(metaPointer))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Containment getContainmentByMetaPointer(MetaPointer metaPointer) {
-    return this.allContainments().stream()
-        .filter(p -> MetaPointer.from(p).equals(metaPointer))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
-    return this.allReferences().stream()
-        .filter(p -> MetaPointer.from(p).equals(metaPointer))
-        .findFirst()
-        .orElse(null);
   }
 }

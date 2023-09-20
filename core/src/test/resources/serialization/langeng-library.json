@@ -33,6 +33,7 @@
         }
       ],
       "references": [],
+      "annotations": [],
       "parent": null
     },
     {
@@ -76,6 +77,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "lib-1"
     },
     {
@@ -119,6 +121,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "lib-1"
     }
   ]

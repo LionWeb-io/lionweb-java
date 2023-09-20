@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.model;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
@@ -8,7 +7,6 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-@Experimental
 public interface HasFeatureValues {
   /**
    * Get the property value associated with the specified property.

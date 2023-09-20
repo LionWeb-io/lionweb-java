@@ -152,7 +152,6 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         property.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
         classifier.addFeature(property);
         property.setOptional(!eAttribute.isRequired());
-        property.setDerived(eAttribute.isDerived());
         DataType<DataType> propertyType =
             dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
         Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());

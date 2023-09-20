@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  * @see org.modelix.model.api.INode Modelix equivalent <i>INode</i>
  *     <p>TODO consider if the Model should have a version too
  */
-public interface Node extends HasFeatureValues {
+public interface Node extends ClassifierInstance<Concept> {
 
   /**
    * This return the Node ID.
@@ -38,9 +38,6 @@ public interface Node extends HasFeatureValues {
    * inserted in a Model and it is therefore considered a dangling Node.
    */
   Node getRoot();
-
-  /** The immediate parent of the Node. This should be null only for root nodes. */
-  Node getParent();
 
   /** The concept of which this Node is an instance. The Concept should not be abstract. */
   Concept getConcept();
@@ -139,5 +136,9 @@ public interface Node extends HasFeatureValues {
               + referenceName);
     }
     return getReferenceValues(reference);
+  }
+
+  default Classifier<Concept> getClassifier() {
+    return getConcept();
   }
 }

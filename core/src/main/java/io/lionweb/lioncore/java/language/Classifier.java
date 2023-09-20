@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -160,6 +161,47 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .filter(f -> f instanceof Reference)
         .map(f -> (Reference) f)
         .filter(c -> Objects.equals(c.getName(), referenceName))
+        .findFirst()
+        .orElse(null);
+  }
+
+  public @Nonnull Containment requireContainmentByName(@Nonnull String containmentName) {
+    Containment containment = getContainmentByName(containmentName);
+    if (containment == null) {
+      throw new IllegalArgumentException(
+          "Containment " + containmentName + " not found in Concept " + getName());
+    }
+    return containment;
+  }
+
+  public @Nullable Link getLinkByName(@Nonnull String linkName) {
+    Objects.requireNonNull(linkName, "linkName should not be null");
+    return allFeatures().stream()
+        .filter(f -> f instanceof Link)
+        .map(f -> (Link) f)
+        .filter(c -> Objects.equals(c.getName(), linkName))
+        .findFirst()
+        .orElse(null);
+  }
+
+  public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
+
+    return this.allProperties().stream()
+        .filter(p -> MetaPointer.from(p).equals(metaPointer))
+        .findFirst()
+        .orElse(null);
+  }
+
+  public @Nullable Containment getContainmentByMetaPointer(MetaPointer metaPointer) {
+    return this.allContainments().stream()
+        .filter(p -> MetaPointer.from(p).equals(metaPointer))
+        .findFirst()
+        .orElse(null);
+  }
+
+  public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
+    return this.allReferences().stream()
+        .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }

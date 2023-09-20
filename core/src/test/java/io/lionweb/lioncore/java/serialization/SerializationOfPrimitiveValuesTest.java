@@ -70,6 +70,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
@@ -134,15 +135,16 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
+    jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
@@ -205,6 +207,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
@@ -275,9 +278,9 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
+    jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
@@ -340,6 +343,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
@@ -404,15 +408,16 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
+    jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
@@ -478,6 +483,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
@@ -545,15 +551,16 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "      ],\n"
                     + "      \"children\": [],\n"
                     + "      \"references\": [],\n"
+                    + "      \"annotations\": [],\n"
                     + "      \"parent\": null\n"
                     + "    }\n"
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.getConceptResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
+    jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
-        .getNodeInstantiator()
+        .getInstantiator()
         .registerCustomUnserializer(
             MyNodeWithProperties.CONCEPT.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValue) ->

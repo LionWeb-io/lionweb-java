@@ -5,17 +5,21 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.serialization.data.MetaPointer;
-import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
-import io.lionweb.lioncore.java.serialization.data.SerializedNode;
-import io.lionweb.lioncore.java.serialization.data.SerializedReferenceValue;
+import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
+import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
+import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.serialization.data.*;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 
-public class LowLevelJsonSerializationTest {
+public class LowLevelJsonSerializationTest extends SerializationTest {
 
   @Test
   public void unserializeLionCoreToSerializedNodes() {
@@ -23,13 +27,15 @@ public class LowLevelJsonSerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    List<SerializedNode> unserializedSerializedNodeData = serializedChunk.getNodes();
+    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData =
+        serializedChunk.getClassifierInstances();
 
-    SerializedNode lioncore = unserializedSerializedNodeData.get(0);
-    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getConcept());
+    SerializedNodeInstance lioncore =
+        (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
+    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LIonCore-M3", lioncore.getID());
     assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
-    assertEquals(15, lioncore.getChildren().size());
+    assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
   }
 
@@ -40,10 +46,11 @@ public class LowLevelJsonSerializationTest {
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    SerializedNode book = serializedChunk.getNodeByID("library-Book");
+    SerializedClassifierInstance book = serializedChunk.getInstanceByID("library-Book");
     assertEquals("Book", book.getPropertyValue("LIonCore-builtins-INamed-name"));
 
-    SerializedNode guidedBookWriter = serializedChunk.getNodeByID("library-GuideBookWriter");
+    SerializedClassifierInstance guidedBookWriter =
+        serializedChunk.getInstanceByID("library-GuideBookWriter");
     assertEquals(
         "GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore-builtins-INamed-name"));
     assertEquals(
@@ -64,6 +71,27 @@ public class LowLevelJsonSerializationTest {
   @Test
   public void reserializeLanguageEngineeringLibrary() {
     assertTheFileIsReserializedFromLowLevelCorrectly("/serialization/langeng-library.json");
+  }
+
+  @Test
+  public void serializeAnnotations() {
+    Language l = new Language("l", "l", "l", "1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
+    AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
+    AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
+
+    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    hjs.enableDynamicNodes();
+
+    JsonElement je = hjs.serializeNodesToJsonElement(n1);
+    List<Node> unserializedNodes = hjs.unserializeToNodes(je);
+    assertEquals(1, unserializedNodes.size());
+    assertInstancesAreEquals(n1, unserializedNodes.get(0));
   }
 
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {

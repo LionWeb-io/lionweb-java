@@ -3,6 +3,8 @@ package io.lionweb.lioncore.java.language;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.utils.LanguageValidator;
+import io.lionweb.lioncore.java.utils.ValidationResult;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -28,6 +30,23 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   public Language(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     this.setName(name);
+  }
+
+  public Language(@Nonnull String name, @Nullable String id, @Nullable String key) {
+    this(name);
+    this.setID(id);
+    this.setKey(key);
+  }
+
+  public Language(
+      @Nonnull String name, @Nullable String id, @Nullable String key, @Nullable String version) {
+    this(name, id, key);
+    setVersion(version);
+  }
+
+  public Language(@Nonnull String name, @Nullable String id) {
+    this(name);
+    this.setID(id);
   }
 
   public Language setName(String name) {
@@ -157,5 +176,13 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .filter(e -> e instanceof PrimitiveType)
         .map(e -> (PrimitiveType) e)
         .collect(Collectors.toList());
+  }
+
+  public boolean isValid() {
+    return new LanguageValidator().isValid(this);
+  }
+
+  public ValidationResult validate() {
+    return new LanguageValidator().validate(this);
   }
 }

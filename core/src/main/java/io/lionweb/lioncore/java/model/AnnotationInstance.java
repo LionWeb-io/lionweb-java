@@ -1,13 +1,16 @@
 package io.lionweb.lioncore.java.model;
 
-import io.lionweb.lioncore.java.Experimental;
 import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Classifier;
 
 /**
- * While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any Containment
- * links.
+ * While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any children, as
+ * the Annotation should not have any containment link.
  */
-@Experimental
-public interface AnnotationInstance extends HasFeatureValues {
+public interface AnnotationInstance extends ClassifierInstance<Annotation> {
   Annotation getAnnotationDefinition();
+
+  default Classifier<Annotation> getClassifier() {
+    return getAnnotationDefinition();
+  }
 }

@@ -39,7 +39,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getString(), bookTitle.getType());
     assertSame(book, bookTitle.getContainer());
     assertEquals("library.Book.title", bookTitle.qualifiedName());
-    assertEquals(false, bookTitle.isDerived());
     assertEquals(false, bookTitle.isOptional());
     assertEquals(true, bookTitle.isRequired());
 
@@ -47,7 +46,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getInteger(), bookPages.getType());
     assertSame(book, bookPages.getContainer());
     assertEquals("library.Book.pages", bookPages.qualifiedName());
-    assertEquals(false, bookPages.isDerived());
     assertEquals(false, bookPages.isOptional());
     assertEquals(true, bookPages.isRequired());
 
@@ -55,11 +53,9 @@ public class EMFMetamodelImporterTest {
     assertSame(language.getElementByName("Writer"), bookAuthor.getType());
     assertSame(book, bookAuthor.getContainer());
     assertEquals("library.Book.author", bookAuthor.qualifiedName());
-    assertEquals(false, bookAuthor.isDerived());
     assertEquals(false, bookAuthor.isOptional());
     assertEquals(true, bookAuthor.isRequired());
     assertEquals(false, bookAuthor.isMultiple());
-    assertEquals(null, bookAuthor.getSpecialized());
 
     Concept library = (Concept) language.getElementByName("Library");
     assertNull(library.getExtendedConcept());
@@ -74,7 +70,6 @@ public class EMFMetamodelImporterTest {
     assertSame(library, libraryName.getContainer());
     assertEquals("library.Library.name", libraryName.qualifiedName());
     assertEquals("library-Library-name", libraryName.getKey());
-    assertEquals(false, libraryName.isDerived());
     assertEquals(false, libraryName.isOptional());
     assertEquals(true, libraryName.isRequired());
 
@@ -82,11 +77,9 @@ public class EMFMetamodelImporterTest {
     assertSame(language.getElementByName("Book"), libraryBooks.getType());
     assertSame(library, libraryBooks.getContainer());
     assertEquals("library.Library.books", libraryBooks.qualifiedName());
-    assertEquals(false, libraryBooks.isDerived());
     assertEquals(true, libraryBooks.isOptional());
     assertEquals(false, libraryBooks.isRequired());
     assertEquals(true, libraryBooks.isMultiple());
-    assertEquals(null, libraryBooks.getSpecialized());
 
     Concept writer = (Concept) language.getElementByName("Writer");
     assertNull(writer.getExtendedConcept());
@@ -100,7 +93,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getString(), writerName.getType());
     assertSame(writer, writerName.getContainer());
     assertEquals("library.Writer.name", writerName.qualifiedName());
-    assertEquals(false, writerName.isDerived());
     assertEquals(false, writerName.isOptional());
     assertEquals(true, writerName.isRequired());
 
@@ -116,7 +108,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getString(), guideBookWriterCountries.getType());
     assertSame(guideBookWriter, guideBookWriterCountries.getContainer());
     assertEquals("library.GuideBookWriter.countries", guideBookWriterCountries.qualifiedName());
-    assertEquals(false, guideBookWriterCountries.isDerived());
     assertEquals(true, guideBookWriterCountries.isOptional());
     assertEquals(false, guideBookWriterCountries.isRequired());
 
@@ -124,7 +115,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getString(), guideBookWriterName.getType());
     assertSame(writer, guideBookWriterName.getContainer());
     assertEquals("library.Writer.name", guideBookWriterName.qualifiedName());
-    assertEquals(false, guideBookWriterName.isDerived());
     assertEquals(false, guideBookWriterName.isOptional());
     assertEquals(true, guideBookWriterName.isRequired());
 
@@ -142,7 +132,6 @@ public class EMFMetamodelImporterTest {
     assertSame(specialistBookWriter, specialistBookWriterSubject.getContainer());
     assertEquals(
         "library.SpecialistBookWriter.subject", specialistBookWriterSubject.qualifiedName());
-    assertEquals(false, specialistBookWriterSubject.isDerived());
     assertEquals(true, specialistBookWriterSubject.isOptional());
     assertEquals(false, specialistBookWriterSubject.isRequired());
 
@@ -150,7 +139,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(LionCoreBuiltins.getString(), specialistBookWriterName.getType());
     assertSame(writer, specialistBookWriterName.getContainer());
     assertEquals("library.Writer.name", specialistBookWriterName.qualifiedName());
-    assertEquals(false, specialistBookWriterName.isDerived());
     assertEquals(false, specialistBookWriterName.isOptional());
     assertEquals(true, specialistBookWriterName.isRequired());
   }

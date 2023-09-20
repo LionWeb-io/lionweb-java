@@ -1,13 +1,19 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.Experimental;
-import io.lionweb.lioncore.java.utils.Naming;
+import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.self.LionCore;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * This represents additional metadata relative to some orthogonal concern.
+ *
+ * <p>While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any
+ * Containment links. This is checked during validation.
  *
  * <p>A DocumentationComment could be specified as an annotation.
  *
@@ -18,54 +24,104 @@ import javax.annotation.Nullable;
  *     href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">MPS
  *     equivalent <i>NodeAttribute</i> in local MPS</a>
  */
-@Experimental
 public class Annotation extends Classifier<Annotation> {
-  private @Nullable String platformSpecific;
-  private Classifier target;
 
   public Annotation() {
     super();
   }
 
-  public Annotation(Language language, String name) {
+  public Annotation(@Nullable Language language, @Nullable String name) {
     super(language, name);
+  }
+
+  public Annotation(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
+  }
+
+  public Annotation(
+      @Nullable Language language,
+      @Nullable String name,
+      @Nonnull String id,
+      @Nullable String key) {
+    this(language, name, id);
+    setKey(key);
+  }
+
+  public boolean isMultiple() {
+    return this.getPropertyValue("multiple", Boolean.class, false);
+  }
+
+  public void setMultiple(boolean value) {
+    this.setPropertyValue("multiple", value);
+  }
+
+  public @Nullable Classifier<?> getAnnotates() {
+    Classifier<?> annotates = this.getReferenceSingleValue("annotates");
+    if (annotates == null && getExtendedAnnotation() != null) {
+      return getExtendedAnnotation().getAnnotates();
+    } else {
+      return annotates;
+    }
+  }
+
+  public @Nullable Annotation getExtendedAnnotation() {
+    return this.getReferenceSingleValue("extends");
+  }
+
+  public @Nonnull List<ConceptInterface> getImplemented() {
+    return this.getReferenceMultipleValue("implements");
+  }
+
+  public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
+    Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
+    this.addReferenceMultipleValue(
+        "implements", new ReferenceValue(conceptInterface, conceptInterface.getName()));
+  }
+
+  // TODO should we verify the Annotation does not extend itself, even indirectly?
+  public void setExtendedAnnotation(@Nullable Annotation extended) {
+    if (extended == null) {
+      this.setReferenceSingleValue("extends", null);
+    } else {
+      this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
+    }
+  }
+
+  public void setAnnotates(@Nullable Classifier<?> target) {
+    if (target == null) {
+      this.setReferenceSingleValue("annotates", null);
+    } else {
+      this.setReferenceSingleValue("annotates", new ReferenceValue(target, target.getName()));
+    }
   }
 
   @Nonnull
   @Override
   public List<Classifier<?>> directAncestors() {
-    throw new UnsupportedOperationException();
+    List<Classifier<?>> directAncestors = new ArrayList<>();
+    // TODO add base ancestor common to all Concepts
+    if (this.getExtendedAnnotation() != null) {
+      directAncestors.add(this.getExtendedAnnotation());
+    }
+    directAncestors.addAll(this.getImplemented());
+    return directAncestors;
   }
 
   @Nonnull
   @Override
   public List<Feature> inheritedFeatures() {
-    throw new UnsupportedOperationException();
-  }
-
-  public @Nullable String getPlatformSpecific() {
-    return platformSpecific;
-  }
-
-  public void setPlatformSpecific(@Nullable String platformSpecific) {
-    if (platformSpecific != null) {
-      Naming.validateName(platformSpecific);
+    List<Feature> result = new LinkedList<>();
+    if (this.getExtendedAnnotation() != null) {
+      result.addAll(this.getExtendedAnnotation().allFeatures());
     }
-    this.platformSpecific = platformSpecific;
-  }
-
-  public @Nullable Classifier getTarget() {
-    return target;
-  }
-
-  public void setTarget(@Nullable Classifier target) {
-    // TODO prevent annotations to be used as target
-    this.target = target;
+    for (ConceptInterface superInterface : this.getImplemented()) {
+      result.addAll(superInterface.allFeatures());
+    }
+    return result;
   }
 
   @Override
   public Concept getConcept() {
-    throw new UnsupportedOperationException(
-        "Annotation is currently not yet approved, so there is no concept defined for it");
+    return LionCore.getAnnotation();
   }
 }

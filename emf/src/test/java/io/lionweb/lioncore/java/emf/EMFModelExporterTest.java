@@ -17,7 +17,7 @@ public class EMFModelExporterTest {
   public void exportLibraryInstance() throws IOException {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
-    jsonSerialization.getNodeInstantiator().enableDynamicNodes();
+    jsonSerialization.getInstantiator().enableDynamicNodes();
     List<Node> nodes =
         jsonSerialization.unserializeToNodes(
             this.getClass().getResourceAsStream("/langeng-library.json"));

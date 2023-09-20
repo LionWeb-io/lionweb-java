@@ -8,8 +8,11 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
@@ -171,7 +174,7 @@ public class JsonSerializationTest extends SerializationTest {
                 .unserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json"))
                 .get(0);
-    jsonSerialization.getNodeResolver().addTree(starlasu);
+    jsonSerialization.getInstanceResolver().addTree(starlasu);
     Language properties =
         (Language)
             jsonSerialization
@@ -183,15 +186,15 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
-    js.getConceptResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
-    js.getNodeInstantiator()
+    js.getClassifierResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
+    js.getInstantiator()
         .registerCustomUnserializer(
             SimpleMathLanguage.INT_LITERAL.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new IntLiteral(
                     (Integer) propertiesValues.get(concept.getPropertyByName("value")),
                     serializedNode.getID()));
-    js.getNodeInstantiator()
+    js.getInstantiator()
         .registerCustomUnserializer(
             SimpleMathLanguage.SUM.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
@@ -290,15 +293,15 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   private void prepareUnserializationOfRefMM(JsonSerialization js) {
-    js.getConceptResolver().registerLanguage(RefsLanguage.INSTANCE);
-    js.getNodeInstantiator()
+    js.getClassifierResolver().registerLanguage(RefsLanguage.INSTANCE);
+    js.getInstantiator()
         .registerCustomUnserializer(
             RefsLanguage.CONTAINER_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
                 new ContainerNode(
                     (ContainerNode) propertiesValues.get(concept.getContainmentByName("contained")),
                     serializedNode.getID()));
-    js.getNodeInstantiator()
+    js.getInstantiator()
         .registerCustomUnserializer(
             RefsLanguage.REF_NODE.getID(),
             (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
@@ -406,6 +409,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        }],\n"
                 + "        \"children\": [],\n"
                 + "        \"references\": [],\n"
+                + "        \"annotations\": [],\n"
                 + "        \"parent\": null\n"
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
@@ -424,6 +428,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        }],\n"
                 + "        \"children\": [],\n"
                 + "        \"references\": [],\n"
+                + "        \"annotations\": [],\n"
                 + "        \"parent\": null\n"
                 + "    }]\n"
                 + "}"),
@@ -495,7 +500,7 @@ public class JsonSerializationTest extends SerializationTest {
     n2.setPropertyValue(p, el2);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     js.registerLanguage(mm);
-    js.getNodeInstantiator().enableDynamicNodes();
+    js.getInstantiator().enableDynamicNodes();
 
     List<Node> unserializedNodes = js.unserializeToNodes(je);
     assertEquals(Arrays.asList(n1, n2), unserializedNodes);
@@ -515,13 +520,54 @@ public class JsonSerializationTest extends SerializationTest {
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
     JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
     SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationBlock(myInstance);
-    assertEquals(1, serializedChunk.getNodes().size());
-    SerializedNode serializedNode = serializedChunk.getNodes().get(0);
-    assertEquals("instance-a", serializedNode.getID());
-    assertEquals(1, serializedNode.getProperties().size());
-    SerializedPropertyValue serializedName = serializedNode.getProperties().get(0);
+    assertEquals(1, serializedChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedClassifierInstance =
+        serializedChunk.getClassifierInstances().get(0);
+    assertEquals("instance-a", serializedClassifierInstance.getID());
+    assertEquals(1, serializedClassifierInstance.getProperties().size());
+    SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
         new MetaPointer("LIonCore-builtins", "1", "LIonCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
+  }
+
+  @Test
+  public void serializeAnnotations() {
+    Language l = new Language("l", "l", "l", "1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
+    AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
+    AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
+
+    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    hjs.enableDynamicNodes();
+    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
+
+    assertEquals(4, serializedChunk.getClassifierInstances().size());
+    SerializedNodeInstance serializedN1 =
+        (SerializedNodeInstance) serializedChunk.getClassifierInstances().get(0);
+    assertEquals("n1", serializedN1.getID());
+    assertEquals(null, serializedN1.getParentNodeID());
+    assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
+    SerializedAnnotationInstance serializedA1_1 =
+        (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);
+    assertEquals("n1", serializedA1_1.getParentNodeID());
+
+    List<ClassifierInstance<?>> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
+    assertEquals(4, unserialized.size());
+    assertInstancesAreEquals(a1_1, unserialized.get(1));
+    assertEquals(unserialized.get(0), unserialized.get(1).getParent());
+    assertInstancesAreEquals(a1_2, unserialized.get(2));
+    assertEquals(unserialized.get(0), unserialized.get(2).getParent());
+    assertInstancesAreEquals(a2_3, unserialized.get(3));
+    assertEquals(unserialized.get(0), unserialized.get(3).getParent());
+    assertInstancesAreEquals(n1, unserialized.get(0));
+    assertEquals(
+        Arrays.asList(unserialized.get(1), unserialized.get(2), unserialized.get(3)),
+        unserialized.get(0).getAnnotations());
   }
 }
