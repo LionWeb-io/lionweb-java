@@ -84,15 +84,15 @@ publishing {
             suppressPomMetadataWarningsFor('cliRuntimeElements')
             pom {
                 name = "lioncore-java-" + project.name
-                description = "EMF compatibility layer for LIonWeb"
+                description = "EMF compatibility layer for LionWeb"
                 version = project.version
                 packaging = 'jar'
-                url = 'https://github.com/LIonWeb-org/lioncore-java'
+                url = 'https://github.com/LionWeb-org/lioncore-java'
 
                 scm {
-                    connection = 'scm:git:https://github.com/LIonWeb-org/lioncore-java.git'
-                    developerConnection = 'scm:git:git@github.com:LIonWeb-org/lioncore-java.git'
-                    url = 'https://github.com/LIonWeb-org/lioncore-java.git'
+                    connection = 'scm:git:https://github.com/LionWeb-org/lioncore-java.git'
+                    developerConnection = 'scm:git:git@github.com:LionWeb-org/lioncore-java.git'
+                    url = 'https://github.com/LionWeb-org/lioncore-java.git'
                 }
 
                 licenses {

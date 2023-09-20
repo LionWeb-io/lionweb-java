@@ -32,9 +32,9 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
 
     SerializedNodeInstance lioncore =
         (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
-    assertEquals(new MetaPointer("LIonCore-M3", "1", "Language"), lioncore.getClassifier());
-    assertEquals("-id-LIonCore-M3", lioncore.getID());
-    assertEquals("LIonCore.M3", lioncore.getPropertyValue("LIonCore-builtins-INamed-name"));
+    assertEquals(new MetaPointer("LionCore-M3", "1", "Language"), lioncore.getClassifier());
+    assertEquals("-id-LionCore-M3", lioncore.getID());
+    assertEquals("LionCore.M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(16, lioncore.getChildren().size());
     assertEquals(null, lioncore.getParentNodeID());
   }
@@ -47,12 +47,12 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
     SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
     SerializedClassifierInstance book = serializedChunk.getInstanceByID("library-Book");
-    assertEquals("Book", book.getPropertyValue("LIonCore-builtins-INamed-name"));
+    assertEquals("Book", book.getPropertyValue("LionCore-builtins-INamed-name"));
 
     SerializedClassifierInstance guidedBookWriter =
         serializedChunk.getInstanceByID("library-GuideBookWriter");
     assertEquals(
-        "GuideBookWriter", guidedBookWriter.getPropertyValue("LIonCore-builtins-INamed-name"));
+        "GuideBookWriter", guidedBookWriter.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(
         Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")),
         guidedBookWriter.getReferenceValues("Concept-extends"));

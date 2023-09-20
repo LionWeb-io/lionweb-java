@@ -48,7 +48,7 @@ public class BuiltinIDsAndKeysTest {
 
     Assert.assertEquals("-id-Language", LionCore.getLanguage().getID());
     Assert.assertEquals(
-        "LIonCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getID());
+        "LionCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getID());
     Assert.assertEquals("-id-IKeyed-key", LionCore.getLanguage().getPropertyByName("key").getID());
     Assert.assertEquals(
         "-id-Language-dependsOn", LionCore.getLanguage().getReferenceByName("dependsOn").getID());
@@ -106,7 +106,7 @@ public class BuiltinIDsAndKeysTest {
 
     Assert.assertEquals("Language", LionCore.getLanguage().getKey());
     Assert.assertEquals(
-        "LIonCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getKey());
+        "LionCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getKey());
     Assert.assertEquals("IKeyed-key", LionCore.getLanguage().getPropertyByName("key").getKey());
     Assert.assertEquals(
         "Language-dependsOn", LionCore.getLanguage().getReferenceByName("dependsOn").getKey());

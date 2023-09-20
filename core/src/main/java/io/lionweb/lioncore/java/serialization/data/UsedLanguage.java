@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 
 /**
  * The pair Language Key and Language Version identify a specific version of a language. This pair
- * is defined UsedLanguage (see https://github.com/LIonWeb-org/organization/issues/129).
+ * is defined UsedLanguage (see https://github.com/LionWeb-org/organization/issues/129).
  */
 public class UsedLanguage {
   private String key;

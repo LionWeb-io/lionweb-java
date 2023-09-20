@@ -74,9 +74,9 @@ public class LionCore {
 
   public static Language getInstance() {
     if (INSTANCE == null) {
-      INSTANCE = new Language("LIonCore.M3");
-      INSTANCE.setID("-id-LIonCore-M3");
-      INSTANCE.setKey("LIonCore-M3");
+      INSTANCE = new Language("LionCore.M3");
+      INSTANCE.setID("-id-LionCore-M3");
+      INSTANCE.setKey("LionCore-M3");
       INSTANCE.setVersion("1");
 
       // We first instantiate all Concepts and ConceptInterfaces
