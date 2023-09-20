@@ -60,7 +60,7 @@ val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
 
 tasks.register<Jar>("javadocJar") {
     dependsOn("myJavadoc")
-    from(tasks.getByName("javadoc")/*.destinationDir*/)
+    from(tasks.getByName("myJavadoc")/*.destinationDir*/)
     archiveClassifier.set("javadoc")
 }
 
