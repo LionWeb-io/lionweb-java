@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.utils;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;
@@ -21,12 +20,11 @@ public class LanguageValidator extends Validator<Language> {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
-      result.checkForError(language.getName() == null, "Qualified name not set", language);
+    result.checkForError(language.getName() == null, "Qualified name not set", language);
 
-      validateNamesAreUnique(language.getElements(), result);
-      validateKeysAreNotNull(language, result);
-      validateKeysAreUnique(language, result);
-
+    validateNamesAreUnique(language.getElements(), result);
+    validateKeysAreNotNull(language, result);
+    validateKeysAreUnique(language, result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
@@ -81,8 +79,8 @@ public class LanguageValidator extends Validator<Language> {
                     concept);
               }
               if (el instanceof ConceptInterface) {
-                  checkInterfacesCycles((ConceptInterface) el, result);
-                //checkAncestors((ConceptInterface) el, result);
+                checkInterfacesCycles((ConceptInterface) el, result);
+                // checkAncestors((ConceptInterface) el, result);
               }
               if (el instanceof Annotation) {
                 checkAnnotates((Annotation) el, result);
@@ -229,10 +227,12 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
-  private void checkInterfacesCycles(ConceptInterface conceptInterface, ValidationResult validationResult) {
-      if (conceptInterface.allExtendedInterfaces().contains(conceptInterface)) {
-          validationResult.addError("Cyclic hierarchy found: the interface extends itself", conceptInterface);
-      }
+  private void checkInterfacesCycles(
+      ConceptInterface conceptInterface, ValidationResult validationResult) {
+    if (conceptInterface.allExtendedInterfaces().contains(conceptInterface)) {
+      validationResult.addError(
+          "Cyclic hierarchy found: the interface extends itself", conceptInterface);
+    }
   }
 
   private void checkAncestorsHelperForConceptInterfaces(
@@ -251,6 +251,4 @@ public class LanguageValidator extends Validator<Language> {
                       alreadyExplored, interf, validationResult));
     }
   }
-
-
 }

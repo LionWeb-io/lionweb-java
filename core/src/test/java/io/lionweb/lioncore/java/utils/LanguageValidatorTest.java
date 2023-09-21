@@ -7,7 +7,6 @@ import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.stream.Collectors;
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class LanguageValidatorTest {
@@ -25,7 +24,9 @@ public class LanguageValidatorTest {
         new LanguageValidator()
             .validate(language).getIssues().stream().allMatch(issue -> issue.isError()));
     assertEquals(
-        new HashSet<>(Arrays.asList("Simple name not set", "An annotation should specify annotates or inherit it")),
+        new HashSet<>(
+            Arrays.asList(
+                "Simple name not set", "An annotation should specify annotates or inherit it")),
         new LanguageValidator()
             .validate(language).getIssues().stream()
                 .map(issue -> issue.getMessage())
@@ -35,7 +36,8 @@ public class LanguageValidatorTest {
   @Test
   public void anAnnotationMustSpecifyAnnotated() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Annotation annotation = new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
+    Annotation annotation =
+        new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
     language.addElement(annotation);
 
     assertFalse(new LanguageValidator().validate(language).isSuccessful());
@@ -46,7 +48,8 @@ public class LanguageValidatorTest {
   @Test
   public void anAnnotationCanBeValid() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Annotation annotation = new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
+    Annotation annotation =
+        new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
     language.addElement(annotation);
     Concept c = new Concept(language, "C", "c-id", "c-key");
     annotation.setAnnotates(c);
@@ -79,7 +82,8 @@ public class LanguageValidatorTest {
   @Test
   public void aPrimitiveTypeCanBeValid() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    PrimitiveType primitiveType = new PrimitiveType(language, "PrimitiveType").setKey("pt-key").setID("pt-id");
+    PrimitiveType primitiveType =
+        new PrimitiveType(language, "PrimitiveType").setKey("pt-key").setID("pt-id");
     language.addElement(primitiveType);
 
     assertTrue(new LanguageValidator().validate(language).isSuccessful());
@@ -124,10 +128,13 @@ public class LanguageValidatorTest {
     a.addExtendedInterface(a);
 
     assertEquals(
-            new HashSet<>(
-                    Arrays.asList(
-                            new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", a))),
-            new LanguageValidator().validate(language).getIssues());
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "Cyclic hierarchy found: the interface extends itself",
+                    a))),
+        new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
@@ -143,8 +150,12 @@ public class LanguageValidatorTest {
     assertEquals(
         new HashSet<>(
             Arrays.asList(
-                new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", a),
-                new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", b))),
+                new Issue(
+                    IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", a),
+                new Issue(
+                    IssueSeverity.Error,
+                    "Cyclic hierarchy found: the interface extends itself",
+                    b))),
         new LanguageValidator().validate(language).getIssues());
   }
 
@@ -186,8 +197,7 @@ public class LanguageValidatorTest {
     language.addElement(i);
 
     assertEquals(
-        new HashSet<>(Arrays.asList()),
-        new LanguageValidator().validate(language).getIssues());
+        new HashSet<>(Arrays.asList()), new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
@@ -215,9 +225,7 @@ public class LanguageValidatorTest {
     ConceptInterface top = new ConceptInterface(l, "Top", "top_id", "top_key");
     top.addExtendedInterface(branchA);
     top.addExtendedInterface(branchB);
-    assertEquals(
-            new HashSet<>(Arrays.asList()),
-            l.validate().getIssues());
+    assertEquals(new HashSet<>(Arrays.asList()), l.validate().getIssues());
   }
 
   // This is not fine
@@ -231,10 +239,16 @@ public class LanguageValidatorTest {
     branchA.addExtendedInterface(branchB);
     branchB.addExtendedInterface(branchA);
     assertEquals(
-            new HashSet<>(Arrays.asList(
-                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", branchA),
-                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", branchB))),
-            l.validate().getIssues());
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "Cyclic hierarchy found: the interface extends itself",
+                    branchA),
+                new Issue(
+                    IssueSeverity.Error,
+                    "Cyclic hierarchy found: the interface extends itself",
+                    branchB))),
+        l.validate().getIssues());
   }
-
 }
