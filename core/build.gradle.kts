@@ -194,9 +194,9 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
                 .start()
             val finished = process.waitFor(60, TimeUnit.SECONDS)
             if (!finished) {
-                throw RuntimeException("Unable to download the repository ${repoURL} in 60 seconds, giving up")
+                throw RuntimeException("Unable to download the repository $repoURL in 60 seconds, giving up")
             } else {
-                logger.info("Downloaded integration test resources repo from ${repoURL} in directory ${destinationDir.absolutePath}")
+                logger.info("Downloaded integration test resources repo from $repoURL in directory ${destinationDir.absolutePath}")
             }
         }
         require(destinationDir.exists() && destinationDir.isDirectory) {
