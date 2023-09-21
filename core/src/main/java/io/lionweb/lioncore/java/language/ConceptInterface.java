@@ -2,9 +2,8 @@ package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -82,5 +81,19 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
   @Override
   public List<Classifier<?>> directAncestors() {
     return (List<Classifier<?>>) (Object) this.getExtendedInterfaces();
+  }
+
+  public Set<ConceptInterface> allExtendedInterfaces() {
+    Set<ConceptInterface> interfaces = new HashSet<>();
+    Set<ConceptInterface> toAvoid = new HashSet<>();
+    toAvoid.add(this);
+    this.getExtendedInterfaces().forEach(ei -> {
+      boolean toConsider = !toAvoid.contains(ei) && !interfaces.contains(ei);
+      interfaces.add(ei);
+      if (toConsider) {
+        interfaces.addAll(ei.allExtendedInterfaces());
+      }
+    });
+    return interfaces;
   }
 }

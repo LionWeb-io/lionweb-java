@@ -13,54 +13,65 @@ import org.junit.Test;
 public class LanguageValidatorTest {
 
   @Test
-  @Ignore
   public void anEmptyAnnotationIsInvalid() {
-    Language language = new Language().setKey("mm-key");
-    Annotation annotation = new Annotation().setKey("aa-key");
+    Language language = new Language("MyLanguageName").setKey("mm-key").setID("mm-id");
+    Annotation annotation = new Annotation().setKey("aa-key").setID("aa-id");
     language.addElement(annotation);
 
-    assertFalse(new LanguageValidator().validateLanguage(language).isSuccessful());
+    assertFalse(new LanguageValidator().validate(language).isSuccessful());
     assertFalse(new LanguageValidator().isLanguageValid(language));
-    assertEquals(2, new LanguageValidator().validateLanguage(language).getIssues().size());
+    assertEquals(2, new LanguageValidator().validate(language).getIssues().size());
     assertTrue(
         new LanguageValidator()
-            .validateLanguage(language).getIssues().stream().allMatch(issue -> issue.isError()));
+            .validate(language).getIssues().stream().allMatch(issue -> issue.isError()));
     assertEquals(
-        new HashSet<>(Arrays.asList("Simple name not set", "Qualified name not set")),
+        new HashSet<>(Arrays.asList("Simple name not set", "An annotation should specify annotates or inherit it")),
         new LanguageValidator()
-            .validateLanguage(language).getIssues().stream()
+            .validate(language).getIssues().stream()
                 .map(issue -> issue.getMessage())
                 .collect(Collectors.toSet()));
   }
 
   @Test
-  @Ignore
-  public void anAnnotationCanBeValid() {
+  public void anAnnotationMustSpecifyAnnotated() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Annotation annotation = new Annotation(language, "MyAnnotation").setKey("annotation-key");
+    Annotation annotation = new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
     language.addElement(annotation);
 
-    assertTrue(new LanguageValidator().validateLanguage(language).isSuccessful());
+    assertFalse(new LanguageValidator().validate(language).isSuccessful());
+    assertFalse(new LanguageValidator().isLanguageValid(language));
+    assertEquals(1, new LanguageValidator().validate(language).getIssues().size());
+  }
+
+  @Test
+  public void anAnnotationCanBeValid() {
+    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Annotation annotation = new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
+    language.addElement(annotation);
+    Concept c = new Concept(language, "C", "c-id", "c-key");
+    annotation.setAnnotates(c);
+
+    assertTrue(new LanguageValidator().validate(language).isSuccessful());
     assertTrue(new LanguageValidator().isLanguageValid(language));
-    assertEquals(0, new LanguageValidator().validateLanguage(language).getIssues().size());
+    assertEquals(0, new LanguageValidator().validate(language).getIssues().size());
   }
 
   @Test
   public void anEmptyPrimitiveTypeIsInvalid() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    PrimitiveType primitiveType = new PrimitiveType().setKey("pt-key");
+    PrimitiveType primitiveType = new PrimitiveType().setKey("pt-key").setID("pt-id");
     language.addElement(primitiveType);
 
-    assertFalse(new LanguageValidator().validateLanguage(language).isSuccessful());
+    assertFalse(new LanguageValidator().validate(language).isSuccessful());
     assertFalse(new LanguageValidator().isLanguageValid(language));
-    assertEquals(1, new LanguageValidator().validateLanguage(language).getIssues().size());
+    assertEquals(1, new LanguageValidator().validate(language).getIssues().size());
     assertTrue(
         new LanguageValidator()
-            .validateLanguage(language).getIssues().stream().allMatch(issue -> issue.isError()));
+            .validate(language).getIssues().stream().allMatch(issue -> issue.isError()));
     assertEquals(
         new HashSet<>(Arrays.asList("Simple name not set")),
         new LanguageValidator()
-            .validateLanguage(language).getIssues().stream()
+            .validate(language).getIssues().stream()
                 .map(issue -> issue.getMessage())
                 .collect(Collectors.toSet()));
   }
@@ -71,28 +82,28 @@ public class LanguageValidatorTest {
     PrimitiveType primitiveType = new PrimitiveType(language, "PrimitiveType").setKey("pt-key");
     language.addElement(primitiveType);
 
-    assertTrue(new LanguageValidator().validateLanguage(language).isSuccessful());
+    assertTrue(new LanguageValidator().validate(language).isSuccessful());
     assertTrue(new LanguageValidator().isLanguageValid(language));
-    assertEquals(0, new LanguageValidator().validateLanguage(language).getIssues().size());
+    assertEquals(0, new LanguageValidator().validate(language).getIssues().size());
   }
 
   @Test
   public void simpleSelfInheritanceIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Concept a = new Concept(language, "a").setKey("key-a");
+    Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
     a.setExtendedConcept(a);
     language.addElement(a);
 
     assertEquals(
         new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a))),
-        new LanguageValidator().validateLanguage(language).getIssues());
+        new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
   public void indirectSelfInheritanceOfConceptsIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Concept a = new Concept(language, "a").setKey("key-a");
-    Concept b = new Concept(language, "b").setKey("key-b");
+    Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
+    Concept b = new Concept(language, "b").setKey("key-b").setID("id-b");
     a.setExtendedConcept(b);
     b.setExtendedConcept(a);
     language.addElement(a);
@@ -103,14 +114,14 @@ public class LanguageValidatorTest {
             Arrays.asList(
                 new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a),
                 new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
-        new LanguageValidator().validateLanguage(language).getIssues());
+        new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
   public void indirectSelfInheritanceOfConceptInterfacesIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    ConceptInterface a = new ConceptInterface(language, "a").setKey("a-key");
-    ConceptInterface b = new ConceptInterface(language, "b").setKey("b-key");
+    ConceptInterface a = new ConceptInterface(language, "a").setKey("a-key").setID("a-id");
+    ConceptInterface b = new ConceptInterface(language, "b").setKey("b-key").setID("b-id");
     a.addExtendedInterface(b);
     b.addExtendedInterface(a);
     language.addElement(a);
@@ -121,14 +132,14 @@ public class LanguageValidatorTest {
             Arrays.asList(
                 new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a),
                 new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
-        new LanguageValidator().validateLanguage(language).getIssues());
+        new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
   public void multipleDirectImplementationsOfTheSameInterfaceAreNotAllowed() {
-    Language language = new Language("MyLanguage").setKey("mm-key");
-    Concept a = new Concept(language, "a").setKey("key-a");
-    ConceptInterface i = new ConceptInterface(language, "I").setKey("key-i");
+    Language language = new Language("MyLanguage").setKey("mm-key").setID("mm-id");
+    Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
+    ConceptInterface i = new ConceptInterface(language, "I").setKey("key-i").setID("id-i");
 
     a.addImplementedInterface(i);
     a.addImplementedInterface(i);
@@ -143,15 +154,15 @@ public class LanguageValidatorTest {
                     IssueSeverity.Error,
                     "The same interface has been implemented multiple times",
                     a))),
-        new LanguageValidator().validateLanguage(language).getIssues());
+        new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
   public void multipleIndirectImplementationsOfTheSameInterfaceAreAllowed() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Concept a = new Concept(language, "A").setKey("a-key");
-    Concept b = new Concept(language, "B").setKey("b-key");
-    ConceptInterface i = new ConceptInterface(language, "I").setKey("i-key");
+    Concept a = new Concept(language, "A").setKey("a-key").setID("a-id");
+    Concept b = new Concept(language, "B").setKey("b-key").setID("b-id");
+    ConceptInterface i = new ConceptInterface(language, "I").setKey("i-key").setID("i-id");
 
     a.setExtendedConcept(b);
     a.addImplementedInterface(i);
@@ -163,21 +174,69 @@ public class LanguageValidatorTest {
 
     assertEquals(
         new HashSet<>(Arrays.asList()),
-        new LanguageValidator().validateLanguage(language).getIssues());
+        new LanguageValidator().validate(language).getIssues());
   }
 
   @Test
   public void ensuringLionCoreIsValidated() {
-    ;
     assertEquals(
         new HashSet<>(Arrays.asList()),
-        new LanguageValidator().validateLanguage(LionCore.getInstance()).getIssues());
+        new LanguageValidator().validate(LionCore.getInstance()).getIssues());
   }
 
   @Test
   public void ensuringLionCoreBuiltinsIsValidated() {
     assertEquals(
         new HashSet<>(Arrays.asList()),
-        new LanguageValidator().validateLanguage(LionCoreBuiltins.getInstance()).getIssues());
+        new LanguageValidator().validate(LionCoreBuiltins.getInstance()).getIssues());
+  }
+
+  @Test
+  public void diamondWithInterfaces() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    ConceptInterface base = new ConceptInterface(l, "Base", "base_id", "base_key");
+    ConceptInterface branchA = new ConceptInterface(l, "BranchA", "branchA_id", "branchA_key");
+    branchA.addExtendedInterface(base);
+    ConceptInterface branchB = new ConceptInterface(l, "BranchB", "branchB_id", "branchB_key");
+    branchB.addExtendedInterface(base);
+    ConceptInterface top = new ConceptInterface(l, "Top", "top_id", "top_key");
+    top.addExtendedInterface(branchA);
+    top.addExtendedInterface(branchB);
+    assertEquals(
+            new HashSet<>(Arrays.asList()),
+            l.validate().getIssues());
+  }
+
+  // This is not fine
+  // interface I1 extends I2
+  // interface I2 extends I1
+  @Test
+  public void mutualExtensionOfInterfaces() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    ConceptInterface branchA = new ConceptInterface(l, "BranchA", "branchA_id", "branchA_key");
+    ConceptInterface branchB = new ConceptInterface(l, "BranchB", "branchB_id", "branchB_key");
+    branchA.addExtendedInterface(branchB);
+    branchB.addExtendedInterface(branchA);
+    assertEquals(
+            new HashSet<>(Arrays.asList(
+                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found", branchA),
+                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found", branchB))),
+            l.validate().getIssues());
+  }
+
+  @Test
+  public void diamondWithConcepts() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Concept base = new Concept(l, "Base", "base_id", "base-key");
+    Concept branchA = new Concept(l, "BranchA", "branchA_id", "branchA_key");
+    branchA.setExtendedConcept(base);
+    Concept branchB = new Concept(l, "BranchB", "branchB_id", "branchB_key");
+    branchB.setExtendedConcept(base);
+    Concept top = new Concept(l, "Top", "top_id", "top_key");
+    top.setExtendedConcept(branchA);
+    top.setExtendedConcept(branchB);
+    assertEquals(
+            new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "Cyclic hierarchy found", top))),
+            l.validate().getIssues());
   }
 }

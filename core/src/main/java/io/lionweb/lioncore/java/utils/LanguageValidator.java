@@ -21,31 +21,12 @@ public class LanguageValidator extends Validator<Language> {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
-    language
-        .thisAndAllDescendants()
-        .forEach(
-            n ->
-                result.checkForError(
-                    !CommonChecks.isValidID(n.getID()),
-                    "Node IDs should respect the format for IDs",
-                    n));
+      result.checkForError(language.getName() == null, "Qualified name not set", language);
 
-    language
-        .thisAndAllDescendants()
-        .forEach(
-            n -> {
-              if (n instanceof IKeyed<?>) {
-                IKeyed<?> hk = (IKeyed<?>) n;
-                result.checkForError(
-                    !CommonChecks.isValidID(hk.getKey()),
-                    "Keys should respect the format for IDs",
-                    n);
-              }
-            });
+      validateNamesAreUnique(language.getElements(), result);
+      validateKeysAreNotNull(language, result);
+      validateKeysAreUnique(language, result);
 
-    result.checkForError(language.getName() == null, "Qualified name not set", language);
-
-    validateNamesAreUnique(language.getElements(), result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
@@ -100,7 +81,8 @@ public class LanguageValidator extends Validator<Language> {
                     concept);
               }
               if (el instanceof ConceptInterface) {
-                checkAncestors((ConceptInterface) el, result);
+                  checkInterfacesCycles((ConceptInterface) el, result);
+                //checkAncestors((ConceptInterface) el, result);
               }
               if (el instanceof Annotation) {
                 checkAnnotates((Annotation) el, result);
@@ -169,7 +151,7 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   public boolean isLanguageValid(Language language) {
-    return validateLanguage(language).isSuccessful();
+    return validate(language).isSuccessful();
   }
 
   private void checkAncestors(Concept concept, ValidationResult validationResult) {
@@ -247,6 +229,12 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
+  private void checkInterfacesCycles(ConceptInterface conceptInterface, ValidationResult validationResult) {
+      if (conceptInterface.allExtendedInterfaces().contains(conceptInterface)) {
+          validationResult.addError("Cyclic hierarchy found: the interface extends itself", conceptInterface);
+      }
+  }
+
   private void checkAncestorsHelperForConceptInterfaces(
       Set<ConceptInterface> alreadyExplored,
       ConceptInterface conceptInterface,
@@ -264,71 +252,5 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
-  public ValidationResult validateLanguage(Language language) {
-    ValidationResult result = new ValidationResult();
 
-    result.checkForError(language.getName() == null, "Qualified name not set", language);
-
-    validateNamesAreUnique(language.getElements(), result);
-    validateKeysAreNotNull(language, result);
-    validateKeysAreUnique(language, result);
-
-    // TODO once we implement the Node interface we could navigate the tree differently
-
-    language
-        .getElements()
-        .forEach(
-            (LanguageEntity el) -> {
-              result
-                  .checkForError(el.getName() == null, "Simple name not set", el)
-                  .checkForError(el.getLanguage() == null, "Language not set", el)
-                  .checkForError(
-                      el.getLanguage() != null && el.getLanguage() != language,
-                      "Language not set correctly",
-                      el);
-
-              if (el instanceof io.lionweb.lioncore.java.language.Enumeration) {
-                io.lionweb.lioncore.java.language.Enumeration enumeration = (Enumeration) el;
-                enumeration
-                    .getLiterals()
-                    .forEach(
-                        (EnumerationLiteral lit) ->
-                            result.checkForError(
-                                lit.getName() == null, "Simple name not set", lit));
-                validateNamesAreUnique(enumeration.getLiterals(), result);
-              }
-              if (el instanceof Classifier) {
-                Classifier<M3Node> classifier = (Classifier) el;
-                classifier
-                    .getFeatures()
-                    .forEach(
-                        (Feature feature) ->
-                            result
-                                .checkForError(
-                                    feature.getName() == null, "Simple name not set", feature)
-                                .checkForError(
-                                    feature.getContainer() == null, "Container not set", feature)
-                                .checkForError(
-                                    feature.getContainer() != null
-                                        && feature.getContainer() != classifier,
-                                    "Features container not set correctly",
-                                    feature));
-                validateNamesAreUnique(classifier.getFeatures(), result);
-              }
-              if (el instanceof Concept) {
-                Concept concept = (Concept) el;
-                checkAncestors(concept, result);
-                result.checkForError(
-                    concept.getImplemented().size()
-                        != concept.getImplemented().stream().distinct().count(),
-                    "The same interface has been implemented multiple times",
-                    concept);
-              }
-              if (el instanceof ConceptInterface) {
-                checkAncestors((ConceptInterface) el, result);
-              }
-            });
-
-    return result;
-  }
 }
