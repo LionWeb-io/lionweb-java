@@ -178,8 +178,8 @@ configurations["integrationTestImplementation"]
 val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
 
 val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
-    val repoURL = "git@github.com:LionWeb-org/lionweb-integration-testing.git"
-    outputs.dir(integrationTestResources.absolutePath)
+    val repoURL = "https://github.com/LionWeb-org/lionweb-integration-testing.git"
+    //outputs.dir(integrationTestResources.absolutePath)
     doLast {
         val destinationDir = integrationTestResources
         if (destinationDir.exists()) {
