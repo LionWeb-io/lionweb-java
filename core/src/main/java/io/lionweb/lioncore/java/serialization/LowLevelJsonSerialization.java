@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * This class is responsible for handling serialization and unserialization from JSON and the
@@ -30,11 +31,7 @@ public class LowLevelJsonSerialization {
     SerializedChunk serializedChunk = new SerializedChunk();
     if (jsonElement.isJsonObject()) {
       JsonObject topLevel = jsonElement.getAsJsonObject();
-      Collection<String> extraKeys = new HashSet<>(topLevel.keySet());
-      extraKeys.removeAll(Arrays.asList("nodes", "serializationFormatVersion", "languages"));
-      if (!extraKeys.isEmpty()) {
-        throw new RuntimeException("Extra keys found: " + extraKeys);
-      }
+      checkNoExtraKeys(topLevel, Arrays.asList("nodes", "serializationFormatVersion", "languages"));
       readSerializationFormatVersion(serializedChunk, topLevel);
       readLanguages(serializedChunk, topLevel);
       unserializeClassifierInstances(serializedChunk, topLevel);
@@ -158,8 +155,10 @@ public class LowLevelJsonSerialization {
     if (!topLevel.has("serializationFormatVersion")) {
       throw new IllegalArgumentException("serializationFormatVersion not specified");
     }
-    String serializationFormatVersion = topLevel.get("serializationFormatVersion").getAsString();
-    serializedChunk.setSerializationFormatVersion(serializationFormatVersion);
+    JsonElement serializationFormatVersion = topLevel.get("serializationFormatVersion");
+    requireIsString(serializationFormatVersion, "serializationFormatVersion");
+    String serializationFormatVersionValue = serializationFormatVersion.getAsString();
+    serializedChunk.setSerializationFormatVersion(serializationFormatVersionValue);
   }
 
   private void readLanguages(SerializedChunk serializedChunk, JsonObject topLevel) {
@@ -174,10 +173,13 @@ public class LowLevelJsonSerialization {
                   UsedLanguage languageKeyVersion = new UsedLanguage();
                   if (element.isJsonObject()) {
                     JsonObject jsonObject = element.getAsJsonObject();
+                    checkNoExtraKeys(jsonObject, Arrays.asList("key", "version"));
                     if (!jsonObject.has("key") || !jsonObject.has("version")) {
                       throw new IllegalArgumentException(
                           "Language should have keys key and version. Found: " + element);
                     }
+                    requireIsString(jsonObject.get("key"), "key");
+                    requireIsString(jsonObject.get("version"), "key");
                     languageKeyVersion.setKey(jsonObject.get("key").getAsString());
                     languageKeyVersion.setVersion(jsonObject.get("version").getAsString());
                   } else {
@@ -302,6 +304,20 @@ public class LowLevelJsonSerialization {
       return serializedClassifierInstance;
     } catch (UnserializationException e) {
       throw new UnserializationException("Issue occurred while unserializing " + jsonElement, e);
+    }
+  }
+
+  private void checkNoExtraKeys(JsonObject jsonObject, Collection<String> expectedKeys) {
+    Collection<String> extraKeys = new HashSet<>(jsonObject.keySet());
+    extraKeys.removeAll(expectedKeys);
+    if (!extraKeys.isEmpty()) {
+      throw new RuntimeException("Extra keys found: " + extraKeys + ". Expected keys: " + expectedKeys);
+    }
+  }
+
+  private void requireIsString(JsonElement jsonElement, String desc) {
+    if (jsonElement == null || !jsonElement.isJsonPrimitive() || !jsonElement.getAsJsonPrimitive().isString()) {
+      throw new RuntimeException(desc + " should be present and be a string value");
     }
   }
 }

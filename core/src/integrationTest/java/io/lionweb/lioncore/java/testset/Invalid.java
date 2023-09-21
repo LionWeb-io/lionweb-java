@@ -35,5 +35,10 @@ public class Invalid extends ATestset {
           "json/wrongOrder.json",
           "json/languages/duplicateKey.json",
           "json/languages/key/duplicateKey.json",
-          "json/languages/version/duplicateKey.json"));
+          "json/languages/version/duplicateKey.json",
+          "format/languages/key/empty.json", // this error would be caught when we do a node validation, but that requires having the language
+          "format/languages/key/space.json",  // this error would be caught when we do a node validation, but that requires having the language));
+          "format/languages/duplicateValue.json",
+          "format/languages/version/empty.json"
+  ));
 }
