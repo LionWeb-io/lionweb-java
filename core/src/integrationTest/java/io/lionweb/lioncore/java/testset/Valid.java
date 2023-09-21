@@ -1,10 +1,14 @@
 package io.lionweb.lioncore.java.testset;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 import io.lionweb.lioncore.java.model.Node;
 import java.nio.file.Path;
 import java.util.List;
+
+import io.lionweb.lioncore.java.utils.NodeTreeValidator;
+import io.lionweb.lioncore.java.utils.ValidationResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -26,6 +30,12 @@ public class Valid extends ALanguageTestset {
   @Test
   public void assertValid() {
     List<Node> nodes = parse(path, getSerialization());
-    assertFalse(path.toString(), nodes.isEmpty());
+    nodes.forEach(n -> assertNodeIsValid(path, new NodeTreeValidator().validate(n)));
+  }
+
+  private void assertNodeIsValid(Path path, ValidationResult validationResult) {
+    if (!validationResult.isSuccessful()) {
+      fail("Fail processing a node in " + path + ": " + validationResult.getIssues());
+    }
   }
 }

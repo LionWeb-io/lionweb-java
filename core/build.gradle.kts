@@ -216,5 +216,5 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
     group = "Verification"
     testClassesDirs = integrationTestSourceSet.output.classesDirs
     classpath = integrationTestSourceSet.runtimeClasspath
-    environment("lionwebTestSet", File(integrationTestResources.absolutePath, "testset"))
+    environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
 }
