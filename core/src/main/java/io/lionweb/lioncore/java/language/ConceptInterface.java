@@ -84,14 +84,19 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
   }
 
   public Set<ConceptInterface> allExtendedInterfaces() {
-    Set<ConceptInterface> interfaces = new HashSet<>();
     Set<ConceptInterface> toAvoid = new HashSet<>();
+    toAvoid.add(this);
+    return allExtendedInterfacesHelper(toAvoid);
+  }
+
+  private Set<ConceptInterface> allExtendedInterfacesHelper(Set<ConceptInterface> toAvoid) {
+    Set<ConceptInterface> interfaces = new HashSet<>();
     toAvoid.add(this);
     this.getExtendedInterfaces().forEach(ei -> {
       boolean toConsider = !toAvoid.contains(ei) && !interfaces.contains(ei);
       interfaces.add(ei);
       if (toConsider) {
-        interfaces.addAll(ei.allExtendedInterfaces());
+        interfaces.addAll(ei.allExtendedInterfacesHelper(toAvoid));
       }
     });
     return interfaces;

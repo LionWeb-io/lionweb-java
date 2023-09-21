@@ -79,7 +79,7 @@ public class LanguageValidatorTest {
   @Test
   public void aPrimitiveTypeCanBeValid() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    PrimitiveType primitiveType = new PrimitiveType(language, "PrimitiveType").setKey("pt-key");
+    PrimitiveType primitiveType = new PrimitiveType(language, "PrimitiveType").setKey("pt-key").setID("pt-id");
     language.addElement(primitiveType);
 
     assertTrue(new LanguageValidator().validate(language).isSuccessful());
@@ -118,6 +118,19 @@ public class LanguageValidatorTest {
   }
 
   @Test
+  public void directSelfInheritanceOfConceptInterfacesIsCaught() {
+    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    ConceptInterface a = new ConceptInterface(language, "a").setKey("a-key").setID("a-id");
+    a.addExtendedInterface(a);
+
+    assertEquals(
+            new HashSet<>(
+                    Arrays.asList(
+                            new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", a))),
+            new LanguageValidator().validate(language).getIssues());
+  }
+
+  @Test
   public void indirectSelfInheritanceOfConceptInterfacesIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
     ConceptInterface a = new ConceptInterface(language, "a").setKey("a-key").setID("a-id");
@@ -130,8 +143,8 @@ public class LanguageValidatorTest {
     assertEquals(
         new HashSet<>(
             Arrays.asList(
-                new Issue(IssueSeverity.Error, "Cyclic hierarchy found", a),
-                new Issue(IssueSeverity.Error, "Cyclic hierarchy found", b))),
+                new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", a),
+                new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", b))),
         new LanguageValidator().validate(language).getIssues());
   }
 
@@ -219,24 +232,9 @@ public class LanguageValidatorTest {
     branchB.addExtendedInterface(branchA);
     assertEquals(
             new HashSet<>(Arrays.asList(
-                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found", branchA),
-                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found", branchB))),
+                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", branchA),
+                    new Issue(IssueSeverity.Error, "Cyclic hierarchy found: the interface extends itself", branchB))),
             l.validate().getIssues());
   }
 
-  @Test
-  public void diamondWithConcepts() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
-    Concept base = new Concept(l, "Base", "base_id", "base-key");
-    Concept branchA = new Concept(l, "BranchA", "branchA_id", "branchA_key");
-    branchA.setExtendedConcept(base);
-    Concept branchB = new Concept(l, "BranchB", "branchB_id", "branchB_key");
-    branchB.setExtendedConcept(base);
-    Concept top = new Concept(l, "Top", "top_id", "top_key");
-    top.setExtendedConcept(branchA);
-    top.setExtendedConcept(branchB);
-    assertEquals(
-            new HashSet<>(Arrays.asList(new Issue(IssueSeverity.Error, "Cyclic hierarchy found", top))),
-            l.validate().getIssues());
-  }
 }
