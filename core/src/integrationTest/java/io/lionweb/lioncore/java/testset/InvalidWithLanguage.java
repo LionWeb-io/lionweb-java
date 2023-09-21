@@ -23,9 +23,6 @@ public class InvalidWithLanguage extends ALanguageTestset {
 
   @Test
   public void assertInvalid() {
-    assertThrows(
-        path.toString(),
-        RuntimeException.class,
-        () -> System.out.println(parse(path, getSerialization())));
+    assertIsNotValid(path);
   }
 }

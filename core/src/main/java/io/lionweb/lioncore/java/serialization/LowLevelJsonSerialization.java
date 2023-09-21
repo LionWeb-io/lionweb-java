@@ -3,6 +3,12 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.*;
 import io.lionweb.lioncore.java.serialization.data.*;
 import javax.annotation.Nullable;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * This class is responsible for handling serialization and unserialization from JSON and the
@@ -24,6 +30,11 @@ public class LowLevelJsonSerialization {
     SerializedChunk serializedChunk = new SerializedChunk();
     if (jsonElement.isJsonObject()) {
       JsonObject topLevel = jsonElement.getAsJsonObject();
+      Collection<String> extraKeys = new HashSet<>(topLevel.keySet());
+      extraKeys.removeAll(Arrays.asList("nodes", "serializationFormatVersion", "languages"));
+      if (!extraKeys.isEmpty()) {
+        throw new RuntimeException("Extra keys found: " + extraKeys);
+      }
       readSerializationFormatVersion(serializedChunk, topLevel);
       readLanguages(serializedChunk, topLevel);
       unserializeClassifierInstances(serializedChunk, topLevel);
@@ -46,6 +57,20 @@ public class LowLevelJsonSerialization {
    */
   public SerializedChunk unserializeSerializationBlock(String json) {
     return unserializeSerializationBlock(JsonParser.parseString(json));
+  }
+
+  /**
+   * This will return a lower-level representation of the information stored in JSON. It is intended
+   * to load broken models.
+   *
+   * <p>Possible usages: repair a broken model, extract a language from the model ("model
+   * archeology"), etc.
+   *
+   * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
+   * whenever is possible, in the measure that it is possible.
+   */
+  public SerializedChunk unserializeSerializationBlock(File file) throws FileNotFoundException {
+    return unserializeSerializationBlock(JsonParser.parseReader(new FileReader(file)));
   }
 
   public JsonElement serializeToJsonElement(SerializedChunk serializedChunk) {

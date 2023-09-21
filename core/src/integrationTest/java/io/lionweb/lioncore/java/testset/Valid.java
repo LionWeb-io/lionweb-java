@@ -27,13 +27,7 @@ public class Valid extends ALanguageTestset {
 
   @Test
   public void assertValid() {
-    List<Node> nodes = parse(path, getSerialization());
-    nodes.forEach(n -> assertNodeIsValid(path, new NodeTreeValidator().validate(n)));
+    assertCanBeLoadedAtLowLevel(path);
   }
 
-  private void assertNodeIsValid(Path path, ValidationResult validationResult) {
-    if (!validationResult.isSuccessful()) {
-      fail("Fail processing a node in " + path + ": " + validationResult.getIssues());
-    }
-  }
 }

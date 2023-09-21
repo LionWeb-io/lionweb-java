@@ -94,6 +94,18 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     assertInstancesAreEquals(n1, unserializedNodes.get(0));
   }
 
+  @Test(expected = RuntimeException.class)
+  public void unexepectedProperty() {
+    String json = "{\n" +
+            "  \"serializationFormatVersion\": \"1\",\n" +
+            "  \"languages\": [],\n" +
+            "  \"nodes\": [],\n" +
+            "  \"info\": \"should not be here\"\n" +
+            "}";
+    LowLevelJsonSerialization lljs = new LowLevelJsonSerialization();
+    lljs.unserializeSerializationBlock(json);
+  }
+
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {
     InputStream inputStream = this.getClass().getResourceAsStream(filePath);
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));

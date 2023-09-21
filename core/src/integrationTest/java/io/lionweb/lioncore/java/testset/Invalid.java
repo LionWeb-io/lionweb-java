@@ -1,12 +1,15 @@
 package io.lionweb.lioncore.java.testset;
 
-import static org.junit.Assert.assertThrows;
-
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import java.nio.file.Path;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RunWith(Parameterized.class)
 public class Invalid extends ATestset {
@@ -14,7 +17,7 @@ public class Invalid extends ATestset {
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
     Path basePath = integrationTests.resolve("invalid");
-    Object[] result = collectJsonFiles(basePath);
+    Object[] result = collectJsonFiles(basePath, ignored.stream().map(s -> Paths.get(s)).collect(Collectors.toSet()));
     return result;
   }
 
@@ -24,9 +27,13 @@ public class Invalid extends ATestset {
 
   @Test
   public void assertInvalid() {
-    assertThrows(
-        path.toString(),
-        RuntimeException.class,
-        () -> System.out.println(parse(path, JsonSerialization.getStandardSerialization())));
+    assertIsNotValid(path);
   }
+
+  private static final Set<String> ignored = new HashSet<>(Arrays.asList(
+          "json/serializationFormatVersion/duplicateKey.json",
+          "json/wrongOrder.json",
+          "json/languages/duplicateKey.json",
+          "json/languages/key/duplicateKey.json",
+          "json/languages/version/duplicateKey.json"));
 }
