@@ -2,14 +2,13 @@ package io.lionweb.lioncore.java.serialization;
 
 import com.google.gson.*;
 import io.lionweb.lioncore.java.serialization.data.*;
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
+import javax.annotation.Nullable;
 
 /**
  * This class is responsible for handling serialization and unserialization from JSON and the
@@ -311,12 +310,15 @@ public class LowLevelJsonSerialization {
     Collection<String> extraKeys = new HashSet<>(jsonObject.keySet());
     extraKeys.removeAll(expectedKeys);
     if (!extraKeys.isEmpty()) {
-      throw new RuntimeException("Extra keys found: " + extraKeys + ". Expected keys: " + expectedKeys);
+      throw new RuntimeException(
+          "Extra keys found: " + extraKeys + ". Expected keys: " + expectedKeys);
     }
   }
 
   private void requireIsString(JsonElement jsonElement, String desc) {
-    if (jsonElement == null || !jsonElement.isJsonPrimitive() || !jsonElement.getAsJsonPrimitive().isString()) {
+    if (jsonElement == null
+        || !jsonElement.isJsonPrimitive()
+        || !jsonElement.getAsJsonPrimitive().isString()) {
       throw new RuntimeException(desc + " should be present and be a string value");
     }
   }

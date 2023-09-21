@@ -1,10 +1,14 @@
 package io.lionweb.lioncore.java.testset;
 
+import static org.junit.Assert.*;
+
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
+import io.lionweb.lioncore.java.utils.NodeTreeValidator;
+import io.lionweb.lioncore.java.utils.ValidationResult;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -15,13 +19,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import io.lionweb.lioncore.java.utils.ValidationResult;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-
-import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
 public abstract class ATestset {
@@ -56,11 +55,11 @@ public abstract class ATestset {
   protected static Object[] collectJsonFiles(Path basePath, Set<Path> pathsToIgnore) {
     try (Stream<Path> files = Files.walk(basePath)) {
       Object[] result =
-          files.filter(Files::isRegularFile)
-                  .filter(f -> f.toString().endsWith(".json"))
-                  .filter(f ->
-                          !pathsToIgnore.contains(basePath.relativize(f)))
-                  .toArray();
+          files
+              .filter(Files::isRegularFile)
+              .filter(f -> f.toString().endsWith(".json"))
+              .filter(f -> !pathsToIgnore.contains(basePath.relativize(f)))
+              .toArray();
       return result;
     } catch (IOException e) {
       throw new RuntimeException(e);

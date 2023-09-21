@@ -96,12 +96,13 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
 
   @Test(expected = RuntimeException.class)
   public void unexepectedProperty() {
-    String json = "{\n" +
-            "  \"serializationFormatVersion\": \"1\",\n" +
-            "  \"languages\": [],\n" +
-            "  \"nodes\": [],\n" +
-            "  \"info\": \"should not be here\"\n" +
-            "}";
+    String json =
+        "{\n"
+            + "  \"serializationFormatVersion\": \"1\",\n"
+            + "  \"languages\": [],\n"
+            + "  \"nodes\": [],\n"
+            + "  \"info\": \"should not be here\"\n"
+            + "}";
     LowLevelJsonSerialization lljs = new LowLevelJsonSerialization();
     lljs.unserializeSerializationBlock(json);
   }

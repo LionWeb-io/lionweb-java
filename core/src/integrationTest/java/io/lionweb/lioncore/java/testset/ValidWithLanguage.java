@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -21,7 +20,9 @@ public class ValidWithLanguage extends ALanguageTestset {
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
     Path basePath = integrationTests.resolve("withLanguage").resolve("valid");
-    Object[] result = collectJsonFiles(basePath, ignored.stream().map(s -> Paths.get(s)).collect(Collectors.toSet()));
+    Object[] result =
+        collectJsonFiles(
+            basePath, ignored.stream().map(s -> Paths.get(s)).collect(Collectors.toSet()));
     return result;
   }
 
@@ -39,8 +40,8 @@ public class ValidWithLanguage extends ALanguageTestset {
     }
   }
 
-  private static final Set<String> ignored = new HashSet<>(Arrays.asList(
-          "properties/integer/positiveLong.json",
-          "properties/integer/negativeLong.json"
-  ));
+  private static final Set<String> ignored =
+      new HashSet<>(
+          Arrays.asList(
+              "properties/integer/positiveLong.json", "properties/integer/negativeLong.json"));
 }

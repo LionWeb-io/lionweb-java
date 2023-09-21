@@ -1,7 +1,5 @@
 package io.lionweb.lioncore.java.testset;
 
-import static org.junit.Assert.assertThrows;
-
 import java.nio.file.Path;
 import org.junit.Test;
 import org.junit.runner.RunWith;
