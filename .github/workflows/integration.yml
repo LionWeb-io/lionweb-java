@@ -19,4 +19,4 @@ jobs:
         distribution: 'adopt'
         java-version: ${{ matrix.java }}
     - name: Test
-      run: ./gradlew integrationTest
+      run: ./gradlew integrationTest --stacktrace
