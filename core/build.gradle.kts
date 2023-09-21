@@ -179,6 +179,7 @@ val integrationTestResources : File = File(project.buildDir, "integrationTestRes
 
 val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
     val repoURL = "git@github.com:LionWeb-org/lionweb-integration-testing.git"
+    outputs.dir(integrationTestResources.absolutePath)
     doLast {
         val destinationDir = integrationTestResources
         if (destinationDir.exists()) {
@@ -188,11 +189,16 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
             logger.info("About to download integration test using this command: $cmdLine")
             val process = ProcessBuilder()
                 .command(cmdLine.split(" "))
-                .directory(project.projectDir)
+                .directory(project.buildDir)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
             val finished = process.waitFor(60, TimeUnit.SECONDS)
+            if (logger.isInfoEnabled) {
+                logger.info("--- Git process output - start ---")
+                logger.info(process.inputStream.reader().readText())
+                logger.info("--- Git process output - end ---")
+            }
             if (!finished) {
                 throw RuntimeException("Unable to download the repository $repoURL in 60 seconds, giving up")
             } else {
