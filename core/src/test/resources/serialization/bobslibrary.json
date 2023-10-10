@@ -4,7 +4,7 @@
   "nodes": [
     {
       "id": "bl",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Library"
@@ -37,7 +37,7 @@
     },
     {
       "id": "jl",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-GuideBookWriter"
@@ -67,7 +67,7 @@
     },
     {
       "id": "eb",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Book"

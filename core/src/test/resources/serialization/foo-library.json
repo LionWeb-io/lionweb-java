@@ -3,7 +3,7 @@
   "languages": [],
   "nodes": [
     {
-      "concept": {"language":"library","version":"1","key":"library-Book"},
+      "classifier": {"language":"library","version":"1","key":"library-Book"},
       "id": "foo123",
       "properties": [
         {"property": {"language":"library","version":"1","key":"library-Book-title"}, "value": null},

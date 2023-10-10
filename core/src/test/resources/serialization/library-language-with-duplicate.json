@@ -4,7 +4,7 @@
   "nodes": [
     {
       "id": "library",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Language"
@@ -65,7 +65,7 @@
     },
     {
       "id": "library-Book",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
@@ -131,7 +131,7 @@
     },
     {
       "id": "library-Book-title",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
@@ -182,7 +182,7 @@
     },
     {
       "id": "library-Book-title",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
@@ -233,7 +233,7 @@
     },
     {
       "id": "library-Book-author",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Reference"
@@ -292,7 +292,7 @@
     },
     {
       "id": "library-Library",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
@@ -358,7 +358,7 @@
     },
     {
       "id": "library-Library-name",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
@@ -409,7 +409,7 @@
     },
     {
       "id": "library-Library-books",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Containment"
@@ -468,7 +468,7 @@
     },
     {
       "id": "library-Writer",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
@@ -533,7 +533,7 @@
     },
     {
       "id": "library-Writer-name",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
@@ -584,7 +584,7 @@
     },
     {
       "id": "library-GuideBookWriter",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
@@ -654,7 +654,7 @@
     },
     {
       "id": "library-GuideBookWriter-countries",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
@@ -705,7 +705,7 @@
     },
     {
       "id": "library-SpecialistBookWriter",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Concept"
@@ -775,7 +775,7 @@
     },
     {
       "id": "library-SpecialistBookWriter-subject",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
         "version": "1",
         "key": "Property"
