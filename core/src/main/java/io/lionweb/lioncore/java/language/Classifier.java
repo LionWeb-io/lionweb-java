@@ -50,6 +50,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   public @Nonnull List<Classifier<?>> allAncestors() {
     List<Classifier<?>> ancestors = new ArrayList<>();
+    // TODO this implementation seems to be wrong
     for (Classifier<?> ancestor : directAncestors()) {}
 
     return ancestors;
