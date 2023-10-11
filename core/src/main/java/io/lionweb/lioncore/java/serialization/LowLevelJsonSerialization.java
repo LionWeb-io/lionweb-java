@@ -120,7 +120,7 @@ public class LowLevelJsonSerialization {
       if (node instanceof SerializedNodeInstance) {
         SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance) node;
         nodeJson.addProperty("parent", serializedNodeInstance.getParentNodeID());
-        nodeJson.add("concept", serializeToJsonElement(node.getClassifier()));
+        nodeJson.add("classifier", serializeToJsonElement(node.getClassifier()));
       } else if (node instanceof SerializedAnnotationInstance) {
         SerializedAnnotationInstance serializedAnnotationInstance =
             (SerializedAnnotationInstance) node;
@@ -246,10 +246,10 @@ public class LowLevelJsonSerialization {
       JsonObject jsonObject = jsonElement.getAsJsonObject();
 
       SerializedClassifierInstance serializedClassifierInstance;
-      if (jsonObject.has("parent") || jsonObject.has("concept")) {
+      if (jsonObject.has("parent") || jsonObject.has("classifier")) {
         SerializedNodeInstance serializedNodeInstance = new SerializedNodeInstance();
         serializedNodeInstance.setClassifier(
-            SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "concept"));
+            SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "classifier"));
         serializedNodeInstance.setParentNodeID(
             SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
         serializedClassifierInstance = serializedNodeInstance;
