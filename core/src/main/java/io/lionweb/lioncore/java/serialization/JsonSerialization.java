@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
  * behavior explicitly by calling getNodeInstantiator().enableDynamicNodes().
  */
 public class JsonSerialization {
+  public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
+
   public static void saveLanguageToFile(Language language, File file) throws IOException {
     String content = getStandardSerialization().serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
@@ -111,7 +113,7 @@ public class JsonSerialization {
 
   public SerializedChunk serializeNodesToSerializationBlock(List<Node> nodes) {
     SerializedChunk serializationBlock = new SerializedChunk();
-    serializationBlock.setSerializationFormatVersion("1");
+    serializationBlock.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
     for (Node node : nodes) {
       Objects.requireNonNull(node, "nodes should not contain null values");
       serializationBlock.addClassifierInstance(serializeNode(node));
@@ -354,8 +356,8 @@ public class JsonSerialization {
   }
 
   private void validateSerializationBlock(SerializedChunk serializationBlock) {
-    if (!serializationBlock.getSerializationFormatVersion().equals("1")) {
-      throw new IllegalArgumentException("Only serializationFormatVersion = '1' is supported");
+    if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)) {
+      throw new IllegalArgumentException("Only serializationFormatVersion = '"+DEFAULT_SERIALIZATION_FORMAT+"' is supported");
     }
   }
 
@@ -500,8 +502,11 @@ public class JsonSerialization {
   private ClassifierInstance<?> instantiateFromSerialized(
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> unserializedByID) {
-    Classifier<?> classifier =
-        getClassifierResolver().resolveClassifier(serializedClassifierInstance.getClassifier());
+    MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
+    if(serializedClassifier == null) {
+      throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
+    }
+    Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifier);
 
     // We prepare all the properties values and pass them to instantiator, as it could use them to
     // build the node
