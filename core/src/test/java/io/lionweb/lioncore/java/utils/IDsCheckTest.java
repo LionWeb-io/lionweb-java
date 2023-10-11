@@ -7,22 +7,22 @@ public class IDsCheckTest {
 
   @Test
   public void positiveCase() {
-    Assert.assertEquals(true, CommonChecks.isValidID("foo"));
+    Assert.assertTrue(CommonChecks.isValidID("foo"));
   }
 
   @Test
   public void emptyIDIsInvalid() {
-    Assert.assertEquals(false, CommonChecks.isValidID(""));
+    Assert.assertFalse(CommonChecks.isValidID(""));
   }
 
   @Test
   public void idsWithUmlautsAreInvalid() {
-    Assert.assertEquals(false, CommonChecks.isValidID("foö"));
+    Assert.assertFalse(CommonChecks.isValidID("foö"));
   }
 
   @Test
   public void idsWithAccentsAreInvalid() {
-    Assert.assertEquals(false, CommonChecks.isValidID("foò"));
-    Assert.assertEquals(false, CommonChecks.isValidID("foó"));
+    Assert.assertFalse(CommonChecks.isValidID("foò"));
+    Assert.assertFalse(CommonChecks.isValidID("foó"));
   }
 }

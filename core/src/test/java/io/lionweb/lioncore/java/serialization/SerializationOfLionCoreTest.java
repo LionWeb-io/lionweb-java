@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.serialization;
 
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -112,7 +113,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParentNodeID());
+    assertNull(lioncore.getParentNodeID());
   }
 
   @Test
@@ -127,7 +128,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getName());
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParent());
+    assertNull(lioncore.getParent());
   }
 
   @Test
@@ -151,7 +152,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getPropertyValueByName("name"));
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParent());
+    assertNull(lioncore.getParent());
   }
 
   @Test(expected = RuntimeException.class)

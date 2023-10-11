@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.serialization;
 
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.google.gson.*;
 import io.lionweb.lioncore.java.language.*;
@@ -548,7 +549,7 @@ public class JsonSerializationTest extends SerializationTest {
     SerializedNodeInstance serializedN1 =
         (SerializedNodeInstance) serializedChunk.getClassifierInstances().get(0);
     assertEquals("n1", serializedN1.getID());
-    assertEquals(null, serializedN1.getParentNodeID());
+    assertNull(serializedN1.getParentNodeID());
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
     SerializedAnnotationInstance serializedA1_1 =
         (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);

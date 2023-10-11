@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.self;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
@@ -35,7 +35,7 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertEquals(comparison.toString(), true, comparison.areEquivalent());
+    assertTrue(comparison.toString(), comparison.areEquivalent());
   }
 
   @Test
@@ -56,6 +56,6 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertEquals(comparison.toString(), true, comparison.areEquivalent());
+    assertTrue(comparison.toString(), comparison.areEquivalent());
   }
 }
