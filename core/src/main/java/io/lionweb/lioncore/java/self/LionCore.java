@@ -77,7 +77,7 @@ public class LionCore {
       INSTANCE = new Language("LionCore.M3");
       INSTANCE.setID("-id-LionCore-M3");
       INSTANCE.setKey("LionCore-M3");
-      INSTANCE.setVersion("1");
+      INSTANCE.setVersion("2023.1");
 
       // We first instantiate all Concepts and ConceptInterfaces
       // we add features only after as the features will have references to these elements

@@ -8,7 +8,7 @@ public class LionCoreBuiltins extends Language {
     super("LionCore.builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
-    setVersion("1");
+    setVersion("2023.1");
     PrimitiveType string = new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
