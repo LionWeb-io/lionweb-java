@@ -200,7 +200,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
   protected <V extends Node> V getContainmentSingleValue(String linkName) {
     if (containmentValues.containsKey(linkName)) {
       List<Node> values = containmentValues.get(linkName);
-      if (values.size() == 0) {
+      if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
         return (V) (values.get(0));
@@ -215,7 +215,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
   protected <V extends Node> V getReferenceSingleValue(String linkName) {
     if (referenceValues.containsKey(linkName)) {
       List<ReferenceValue> values = referenceValues.get(linkName);
-      if (values.size() == 0) {
+      if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
         return (V) (values.get(0).getReferred());
