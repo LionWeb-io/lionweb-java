@@ -23,7 +23,7 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LionWeb-org/organization/"
+            "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_COMMIT_CONSIDERED
                 + "/metametamodel/lioncore.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
@@ -44,7 +44,7 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LionWeb-org/organization/"
+            "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_COMMIT_CONSIDERED
                 + "/metametamodel/builtins.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
