@@ -357,7 +357,8 @@ public class JsonSerialization {
 
   private void validateSerializationBlock(SerializedChunk serializationBlock) {
     if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)) {
-      throw new IllegalArgumentException("Only serializationFormatVersion = '"+DEFAULT_SERIALIZATION_FORMAT+"' is supported");
+      throw new IllegalArgumentException(
+          "Only serializationFormatVersion = '" + DEFAULT_SERIALIZATION_FORMAT + "' is supported");
     }
   }
 
@@ -501,7 +502,7 @@ public class JsonSerialization {
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> unserializedByID) {
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
-    if(serializedClassifier == null) {
+    if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
     }
     Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifier);

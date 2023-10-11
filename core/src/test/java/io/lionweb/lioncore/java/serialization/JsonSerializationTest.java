@@ -140,8 +140,7 @@ public class JsonSerializationTest extends SerializationTest {
                 .filter(
                     n ->
                         "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"
-                            .equals(
-                                    n.getID()))
+                            .equals(n.getID()))
                 .findFirst()
                 .get();
     assertEquals("TestEnumeration1", testEnumeration1.getName());
@@ -153,8 +152,7 @@ public class JsonSerializationTest extends SerializationTest {
                 .filter(
                     n ->
                         "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"
-                            .equals(
-                                    n.getID()))
+                            .equals(n.getID()))
                 .findFirst()
                 .get();
     assertEquals("SideTransformInfo", sideTransformInfo.getName());

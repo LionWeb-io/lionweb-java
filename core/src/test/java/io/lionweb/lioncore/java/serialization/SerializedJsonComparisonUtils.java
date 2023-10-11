@@ -84,45 +84,47 @@ class SerializedJsonComparisonUtils {
       throw new AssertionError("(" + context + ") Missing keys found: " + missingKeys);
     }
     for (String key : actualMeaningfulKeys) {
-        switch (key) {
-            case "parent":
-                assertEquals(
-                        "(" + context + ") different parent", expected.get("parent"), actual.get("parent"));
-                break;
-            case "classifier":
-                assertEquals(
-                        "(" + context + ") different classifier", expected.get("classifier"), actual.get("classifier"));
-                break;
-            case "id":
-                assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
-                break;
-            case "references":
-                assertEquivalentUnorderedArrays(
-                        expected.getAsJsonArray("references"),
-                        actual.getAsJsonArray("references"),
-                        "References of " + context);
-                break;
-            case "children":
-                assertEquivalentUnorderedArrays(
-                        expected.getAsJsonArray("children"),
-                        actual.getAsJsonArray("children"),
-                        "Children of " + context);
-                break;
-            case "properties":
-                assertEquivalentUnorderedArrays(
-                        expected.getAsJsonArray("properties"),
-                        actual.getAsJsonArray("properties"),
-                        "Properties of " + context);
-                break;
-            case "annotations":
-                assertEquivalentUnorderedArrays(
-                        expected.getAsJsonArray("annotations"),
-                        actual.getAsJsonArray("annotations"),
-                        "Annotations of " + context);
-                break;
-            default:
-                throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
-        }
+      switch (key) {
+        case "parent":
+          assertEquals(
+              "(" + context + ") different parent", expected.get("parent"), actual.get("parent"));
+          break;
+        case "classifier":
+          assertEquals(
+              "(" + context + ") different classifier",
+              expected.get("classifier"),
+              actual.get("classifier"));
+          break;
+        case "id":
+          assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
+          break;
+        case "references":
+          assertEquivalentUnorderedArrays(
+              expected.getAsJsonArray("references"),
+              actual.getAsJsonArray("references"),
+              "References of " + context);
+          break;
+        case "children":
+          assertEquivalentUnorderedArrays(
+              expected.getAsJsonArray("children"),
+              actual.getAsJsonArray("children"),
+              "Children of " + context);
+          break;
+        case "properties":
+          assertEquivalentUnorderedArrays(
+              expected.getAsJsonArray("properties"),
+              actual.getAsJsonArray("properties"),
+              "Properties of " + context);
+          break;
+        case "annotations":
+          assertEquivalentUnorderedArrays(
+              expected.getAsJsonArray("annotations"),
+              actual.getAsJsonArray("annotations"),
+              "Annotations of " + context);
+          break;
+        default:
+          throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
+      }
     }
   }
 

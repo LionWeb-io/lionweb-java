@@ -1,11 +1,11 @@
 package io.lionweb.lioncore.java.language;
 
+import static org.junit.Assert.*;
+
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.NodeTreeValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
-
-import static org.junit.Assert.*;
 
 public abstract class BaseTest {
 
