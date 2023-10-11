@@ -9,8 +9,6 @@ import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

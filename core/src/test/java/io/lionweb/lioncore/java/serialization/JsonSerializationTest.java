@@ -5,9 +5,6 @@ import static org.junit.Assert.assertEquals;
 
 import com.google.gson.*;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Enumeration;
-import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
