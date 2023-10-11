@@ -37,7 +37,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     SerializedClassifierInstance LionCore_M3 =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> n.getID().equals("-id-LionCore-M3"))
+            .filter(n -> "-id-LionCore-M3".equals(n.getID()))
             .findFirst()
             .get();
     assertEquals("-id-LionCore-M3", LionCore_M3.getID());
@@ -83,7 +83,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     SerializedClassifierInstance LionCore_M3_ConceptInterface_extends =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> n.getID().equals("-id-ConceptInterface-extends"))
+            .filter(n -> "-id-ConceptInterface-extends".equals(n.getID()))
             .findFirst()
             .get();
   }

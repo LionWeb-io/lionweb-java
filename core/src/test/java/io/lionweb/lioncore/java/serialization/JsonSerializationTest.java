@@ -139,9 +139,9 @@ public class JsonSerializationTest extends SerializationTest {
             unserializedNodes.stream()
                 .filter(
                     n ->
-                        n.getID()
+                        "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"
                             .equals(
-                                "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"))
+                                    n.getID()))
                 .findFirst()
                 .get();
     assertEquals("TestEnumeration1", testEnumeration1.getName());
@@ -152,9 +152,9 @@ public class JsonSerializationTest extends SerializationTest {
             unserializedNodes.stream()
                 .filter(
                     n ->
-                        n.getID()
+                        "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"
                             .equals(
-                                "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"))
+                                    n.getID()))
                 .findFirst()
                 .get();
     assertEquals("SideTransformInfo", sideTransformInfo.getName());

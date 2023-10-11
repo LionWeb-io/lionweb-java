@@ -25,15 +25,15 @@ abstract class SerializationTest {
   }
 
   protected DynamicNode dynamicNodeByID(List<Node> nodes, String id) {
-    return (DynamicNode) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
+    return (DynamicNode) nodes.stream().filter(e -> id.equals(e.getID())).findFirst().get();
   }
 
   protected Concept conceptByID(List<Node> nodes, String id) {
-    return (Concept) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
+    return (Concept) nodes.stream().filter(e -> id.equals(e.getID())).findFirst().get();
   }
 
   protected Property propertyByID(List<Node> nodes, String id) {
-    return (Property) nodes.stream().filter(e -> e.getID().equals(id)).findFirst().get();
+    return (Property) nodes.stream().filter(e -> id.equals(e.getID())).findFirst().get();
   }
 
   public void assertInstancesAreEquals(ClassifierInstance<?> a, ClassifierInstance<?> b) {
