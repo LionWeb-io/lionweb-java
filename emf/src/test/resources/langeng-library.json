@@ -4,7 +4,7 @@
   "nodes": [
     {
       "id": "mv",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Writer"
@@ -25,7 +25,7 @@
     },
     {
       "id": "mb",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Writer"
@@ -46,7 +46,7 @@
     },
     {
       "id": "lib-1",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Library"
@@ -79,7 +79,7 @@
     },
     {
       "id": "de",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Book"
@@ -122,7 +122,7 @@
     },
     {
       "id": "bfd",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Book"

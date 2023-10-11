@@ -387,14 +387,14 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"1\",\n"
+                + "    \"serializationFormatVersion\": \"2023.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
                 + "    }],\n"
                 + "    \"nodes\": [{\n"
                 + "        \"id\": \"node1\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -413,7 +413,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -440,14 +440,14 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"1\",\n"
+                + "    \"serializationFormatVersion\": \"2023.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
                 + "    }],\n"
                 + "    \"nodes\": [{\n"
                 + "        \"id\": \"node1\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -465,7 +465,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -527,7 +527,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
-        new MetaPointer("LionCore-builtins", "1", "LionCore-builtins-INamed-name"),
+        new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
   }
 

@@ -20,7 +20,7 @@ abstract class SerializationTest {
   protected List<JsonObject> getNodesByConcept(JsonArray nodes, String conceptKey) {
     return nodes.asList().stream()
         .map(JsonElement::getAsJsonObject)
-        .filter(e -> e.get("concept").getAsJsonObject().get("key").getAsString().equals(conceptKey))
+        .filter(e -> e.get("classifier").getAsJsonObject().get("key").getAsString().equals(conceptKey))
         .collect(Collectors.toList());
   }
 
