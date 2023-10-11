@@ -131,7 +131,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
       postponedReferences.add(new PostponedReference(node, eObject, eReference));
     }
 
-    class PostponedReference {
+    static class PostponedReference {
       final Node node;
       final EObject eObject;
       final EReference eReference;

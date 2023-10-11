@@ -38,7 +38,7 @@ public class JSONResourceFactory implements Resource.Factory {
       this.packagesRegistry = packagesRegistry;
     }
 
-    private class PostponedReference {
+    private static class PostponedReference {
       final EObject container;
       final EStructuralFeature eStructuralFeature;
       final List<String> refs;
