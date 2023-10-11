@@ -73,6 +73,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
   public List<AnnotationInstance> getAnnotations(Annotation annotation) {
     return annotationInstances.stream()
@@ -153,8 +154,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
-  public List<Node> getReferredNodes(Reference reference) {
+  public List<Node> getReferredNodes(@Nonnull Reference reference) {
     return getReferenceValues(reference).stream()
         .map(v -> v.getReferred())
         .collect(Collectors.toList());
