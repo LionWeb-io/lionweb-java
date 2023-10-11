@@ -89,7 +89,9 @@ class SerializedJsonComparisonUtils {
             "(" + context + ") different parent", expected.get("parent"), actual.get("parent"));
       } else if (key.equals("classifier")) {
         assertEquals(
-            "(" + context + ") different classifier", expected.get("classifier"), actual.get("classifier"));
+            "(" + context + ") different classifier",
+            expected.get("classifier"),
+            actual.get("classifier"));
       } else if (key.equals("id")) {
         assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
       } else if (key.equals("references")) {
