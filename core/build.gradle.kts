@@ -146,10 +146,10 @@ java {
     targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
-if (isReleaseVersion) {
-    tasks.withType(Sign::class) {
-    }
+tasks.withType(Sign::class) {
+    onlyIf("isReleaseVersion is set", { isReleaseVersion } )
 }
+
 signing {
     sign(publishing.publications["lioncore_java_core"])
 }
