@@ -87,12 +87,12 @@ publishing {
                 description = "EMF compatibility layer for LionWeb"
                 version = project.version
                 packaging = 'jar'
-                url = 'https://github.com/LionWeb-org/lioncore-java'
+                url = 'https://github.com/LionWeb-io/lioncore-java'
 
                 scm {
-                    connection = 'scm:git:https://github.com/LionWeb-org/lioncore-java.git'
-                    developerConnection = 'scm:git:git@github.com:LionWeb-org/lioncore-java.git'
-                    url = 'https://github.com/LionWeb-org/lioncore-java.git'
+                    connection = 'scm:git:https://github.com/LionWeb-io/lioncore-java.git'
+                    developerConnection = 'scm:git:git@github.com:LionWeb-io/lioncore-java.git'
+                    url = 'https://github.com/LionWeb-io/lioncore-java.git'
                 }
 
                 licenses {
