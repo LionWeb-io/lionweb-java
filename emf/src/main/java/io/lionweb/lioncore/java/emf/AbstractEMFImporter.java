@@ -25,7 +25,7 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
  */
 public abstract class AbstractEMFImporter<E> {
 
-  protected ConceptsToEClassesMapping conceptsToEClassesMapping;
+  protected final ConceptsToEClassesMapping conceptsToEClassesMapping;
 
   public AbstractEMFImporter() {
     this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
@@ -75,7 +75,6 @@ public abstract class AbstractEMFImporter<E> {
       packageRegistryInit.accept(resourceSet.getPackageRegistry());
     }
     URI uri = URI.createFileURI("dummy." + resourceType.getExtension());
-    ;
 
     Resource resource = resourceSet.createResource(uri);
     resourceSet.getPackageRegistry().put(EcorePackage.eINSTANCE.getNsURI(), EcorePackage.eINSTANCE);

@@ -9,8 +9,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class Sum extends SimpleNode {
-  private IntLiteral left;
-  private IntLiteral right;
+  private final IntLiteral left;
+  private final IntLiteral right;
 
   public Sum(IntLiteral left, IntLiteral right) {
     this.left = left;

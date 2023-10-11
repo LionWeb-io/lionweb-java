@@ -16,12 +16,12 @@ import org.jetbrains.annotations.Nullable;
 
 public class ConceptsToEClassesMapping {
 
-  private Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
-  private Map<Language, EPackage> languagesToEPackages = new HashMap<>();
-  private Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
-  private Map<EClass, ConceptInterface> eClassesToConceptInterfaces = new HashMap<>();
-  private Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
-  private Map<ConceptInterface, EClass> conceptInterfacesToEClasses = new HashMap<>();
+  private final Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
+  private final Map<Language, EPackage> languagesToEPackages = new HashMap<>();
+  private final Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
+  private final Map<EClass, ConceptInterface> eClassesToConceptInterfaces = new HashMap<>();
+  private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
+  private final Map<ConceptInterface, EClass> conceptInterfacesToEClasses = new HashMap<>();
 
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");

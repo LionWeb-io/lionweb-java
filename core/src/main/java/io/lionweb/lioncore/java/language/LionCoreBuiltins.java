@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 public class LionCoreBuiltins extends Language {
-  private static LionCoreBuiltins INSTANCE = new LionCoreBuiltins();
+  private static final LionCoreBuiltins INSTANCE = new LionCoreBuiltins();
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins() {

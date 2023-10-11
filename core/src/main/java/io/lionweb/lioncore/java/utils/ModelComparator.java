@@ -11,8 +11,8 @@ import java.util.Objects;
 
 public class ModelComparator {
 
-  public class ComparisonResult {
-    private List<String> differences = new ArrayList<>();
+  public static class ComparisonResult {
+    private final List<String> differences = new ArrayList<>();
 
     public List<String> getDifferences() {
       return differences;

@@ -13,12 +13,12 @@ import java.util.Objects;
 
 public class LibraryMetamodel {
 
-  public static Language LIBRARY_LANG;
-  public static Concept LIBRARY;
-  public static Concept BOOK;
-  public static Concept WRITER;
+  public static final Language LIBRARY_LANG;
+  public static final Concept LIBRARY;
+  public static final Concept BOOK;
+  public static final Concept WRITER;
 
-  public static Concept GUIDE_BOOK_WRITER;
+  public static final Concept GUIDE_BOOK_WRITER;
 
   static {
     InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/library-language.json");

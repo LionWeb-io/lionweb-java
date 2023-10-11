@@ -4,10 +4,10 @@ import io.lionweb.lioncore.java.model.Node;
 import java.util.Objects;
 
 public class Issue {
-  private String message;
-  private IssueSeverity severity;
+  private final String message;
+  private final IssueSeverity severity;
 
-  private Node subject;
+  private final Node subject;
 
   public Issue(IssueSeverity severity, String message, Node subject) {
     this.message = message;

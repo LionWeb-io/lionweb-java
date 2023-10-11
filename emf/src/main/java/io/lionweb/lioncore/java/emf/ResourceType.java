@@ -5,7 +5,7 @@ public enum ResourceType {
   XML("xml"),
   JSON("json"),
   ECORE("ecore");
-  private String extension;
+  private final String extension;
 
   ResourceType(String extension) {
     this.extension = extension;

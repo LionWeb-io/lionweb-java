@@ -24,7 +24,7 @@ public class Instantiator {
         Map<Property, Object> propertiesValues);
   }
 
-  private Map<String, ClassifierSpecificInstantiator<?>> customUnserializers = new HashMap<>();
+  private final Map<String, ClassifierSpecificInstantiator<?>> customUnserializers = new HashMap<>();
   private ClassifierSpecificInstantiator<?> defaultNodeUnserializer =
       (ClassifierSpecificInstantiator<Node>)
           (classifier, serializedNode, unserializedNodesByID, propertiesValues) -> {

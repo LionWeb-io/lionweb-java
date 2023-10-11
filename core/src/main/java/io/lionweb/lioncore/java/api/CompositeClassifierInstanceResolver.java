@@ -7,7 +7,7 @@ import javax.annotation.Nullable;
 
 /** This combines several ClassifierInstanceResolvers. */
 public class CompositeClassifierInstanceResolver implements ClassifierInstanceResolver {
-  private List<ClassifierInstanceResolver> classifierInstanceResolvers = new ArrayList<>();
+  private final List<ClassifierInstanceResolver> classifierInstanceResolvers = new ArrayList<>();
 
   public CompositeClassifierInstanceResolver() {}
 

@@ -64,11 +64,11 @@ public class JsonSerialization {
     return jsonSerialization;
   }
 
-  private ClassifierResolver classifierResolver;
-  private Instantiator instantiator;
-  private PrimitiveValuesSerialization primitiveValuesSerialization;
+  private final ClassifierResolver classifierResolver;
+  private final Instantiator instantiator;
+  private final PrimitiveValuesSerialization primitiveValuesSerialization;
 
-  private LocalClassifierInstanceResolver instanceResolver;
+  private final LocalClassifierInstanceResolver instanceResolver;
 
   private JsonSerialization() {
     // prevent public access
@@ -411,7 +411,7 @@ public class JsonSerialization {
         }
       }
       if (initialLength == sortedList.size()) {
-        if (sortedList.size() == 0) {
+        if (sortedList.isEmpty()) {
           throw new UnserializationException(
               "No root found, we cannot unserialize this tree. Original list: " + originalList);
         } else {
@@ -475,9 +475,7 @@ public class JsonSerialization {
                     (SerializedAnnotationInstance) n;
                 if (serializedAnnotationInstance == null) {
                   throw new IllegalStateException(
-                      "Dangling annotation instance found (annotated node is null). "
-                          + "SerializedAnnotationInstance: "
-                          + n);
+                      "Dangling annotation instance found (annotated node is null). ");
                 }
                 Node annotatedNode =
                     (Node) unserializedByID.get(serializedAnnotationInstance.getParentNodeID());

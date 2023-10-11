@@ -19,7 +19,7 @@ public abstract class SimpleNode implements Node {
 
   private String id;
   private Node parent;
-  private List<AnnotationInstance> annotations = new ArrayList<>();
+  private final List<AnnotationInstance> annotations = new ArrayList<>();
 
   protected void assignRandomID() {
     String randomId = "id_" + Math.abs(new Random().nextLong());

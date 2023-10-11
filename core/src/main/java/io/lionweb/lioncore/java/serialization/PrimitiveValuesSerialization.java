@@ -16,7 +16,7 @@ public class PrimitiveValuesSerialization {
   // We use the ID, and not the key, to classify the enumerations internally within
   // PrimitiveValuesSerialization
   // because that is unique
-  private Map<String, Enumeration> enumerationsByID = new HashMap<>();
+  private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
 
   public void registerLanguage(Language language) {
@@ -40,8 +40,8 @@ public class PrimitiveValuesSerialization {
   public interface PrimitiveValueSerializerAndUnserializer<V>
       extends PrimitiveSerializer<V>, PrimitiveUnserializer<V> {}
 
-  private Map<String, PrimitiveUnserializer<?>> primitiveUnserializers = new HashMap<>();
-  private Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
+  private final Map<String, PrimitiveUnserializer<?>> primitiveUnserializers = new HashMap<>();
+  private final Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
   public PrimitiveValuesSerialization registerUnserializer(
       String dataTypeID, PrimitiveUnserializer<?> unserializer) {

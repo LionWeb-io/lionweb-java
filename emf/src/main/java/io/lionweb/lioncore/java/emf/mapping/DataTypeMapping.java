@@ -15,11 +15,11 @@ import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
 
 public class DataTypeMapping {
 
-  private Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
-  private Map<Enumeration, EEnum> enumerationsToEEnums = new HashMap<>();
+  private final Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
+  private final Map<Enumeration, EEnum> enumerationsToEEnums = new HashMap<>();
 
-  private Map<EDataType, PrimitiveType> eDataTypesToPrimitiveTypes = new HashMap<>();
-  private Map<PrimitiveType, EDataType> primitiveTypesToEDataTypes = new HashMap<>();
+  private final Map<EDataType, PrimitiveType> eDataTypesToPrimitiveTypes = new HashMap<>();
+  private final Map<PrimitiveType, EDataType> primitiveTypesToEDataTypes = new HashMap<>();
 
   public void registerMapping(EEnum eEnum, Enumeration enumeration) {
     eEnumsToEnumerations.put(eEnum, enumeration);

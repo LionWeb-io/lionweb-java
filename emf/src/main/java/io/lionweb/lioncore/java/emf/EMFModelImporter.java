@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 /** Importer which produces LionWeb's Nodes. */
 public class EMFModelImporter extends AbstractEMFImporter<Node> {
-  private NodeInstantiator nodeInstantiator;
+  private final NodeInstantiator nodeInstantiator;
 
   public EMFModelImporter() {
     super();

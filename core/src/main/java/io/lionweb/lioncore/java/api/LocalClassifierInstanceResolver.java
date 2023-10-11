@@ -13,7 +13,7 @@ import javax.annotation.Nullable;
  * ID.
  */
 public class LocalClassifierInstanceResolver implements ClassifierInstanceResolver {
-  private Map<String, ClassifierInstance<?>> instances = new HashMap<>();
+  private final Map<String, ClassifierInstance<?>> instances = new HashMap<>();
 
   public LocalClassifierInstanceResolver() {}
 
