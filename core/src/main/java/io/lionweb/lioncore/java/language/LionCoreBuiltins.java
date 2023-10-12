@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
+
 public class LionCoreBuiltins extends Language {
   private static final LionCoreBuiltins INSTANCE = new LionCoreBuiltins();
 
@@ -8,7 +10,7 @@ public class LionCoreBuiltins extends Language {
     super("LionCore.builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
-    setVersion("2023.1");
+    setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
     PrimitiveType string = new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");
