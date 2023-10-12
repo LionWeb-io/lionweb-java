@@ -147,7 +147,7 @@ java {
 }
 
 tasks.withType(Sign::class) {
-    onlyIf("isReleaseVersion is set", { isReleaseVersion } )
+    onlyIf("isReleaseVersion is set") { isReleaseVersion }
 }
 
 signing {
