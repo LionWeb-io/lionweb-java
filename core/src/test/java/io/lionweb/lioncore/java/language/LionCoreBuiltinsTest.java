@@ -13,7 +13,7 @@ public class LionCoreBuiltinsTest {
     PrimitiveType string =
         (PrimitiveType) LionCoreBuiltins.getInstance().getElementByName("String");
     assertEquals("String", string.getName());
-    assertEquals("LionCore.builtins.String", string.qualifiedName());
+    assertEquals("LionCore_builtins.String", string.qualifiedName());
   }
 
   @Test

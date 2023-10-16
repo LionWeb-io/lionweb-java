@@ -7,7 +7,7 @@ public class LionCoreBuiltins extends Language {
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins() {
-    super("LionCore.builtins");
+    super("LionCore_builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
     setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
