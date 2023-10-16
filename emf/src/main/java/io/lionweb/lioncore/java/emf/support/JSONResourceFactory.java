@@ -22,7 +22,7 @@ public class JSONResourceFactory implements Resource.Factory {
   public Resource createResource(URI uri) {
     return new ResourceImpl() {
       @Override
-      protected void doLoad(InputStream inputStream, Map<?, ?> options) throws IOException {
+      protected void doLoad(InputStream inputStream, Map<?, ?> options) {
         loadIntoResource(inputStream, this);
       }
     };
