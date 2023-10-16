@@ -82,8 +82,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          Interface iface =
-              conceptsToEClassesMapping.getCorrespondingInterface(eClass);
+          Interface iface = conceptsToEClassesMapping.getCorrespondingInterface(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
