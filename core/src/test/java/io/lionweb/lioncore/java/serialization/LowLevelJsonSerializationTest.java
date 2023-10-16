@@ -35,7 +35,7 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
         (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
     assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
-    assertEquals("LionCore.M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
+    assertEquals("LionCore_M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(16, lioncore.getChildren().size());
     assertNull(lioncore.getParentNodeID());
   }

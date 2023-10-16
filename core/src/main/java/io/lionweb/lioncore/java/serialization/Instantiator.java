@@ -82,9 +82,9 @@ public class Instantiator {
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
             new Concept().setID(serializedNode.getID()));
     customUnserializers.put(
-        LionCore.getConceptInterface().getID(),
+        LionCore.getInterface().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
-            new ConceptInterface().setID(serializedNode.getID()));
+            new Interface().setID(serializedNode.getID()));
     customUnserializers.put(
         LionCore.getProperty().getID(),
         (concept, serializedNode, unserializedNodesByID, propertiesValues) ->

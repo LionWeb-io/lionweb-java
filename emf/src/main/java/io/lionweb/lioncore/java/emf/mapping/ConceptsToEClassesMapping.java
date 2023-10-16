@@ -4,7 +4,7 @@ import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.ConceptInterface;
+import io.lionweb.lioncore.java.language.Interface;
 import io.lionweb.lioncore.java.language.Language;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,9 +19,9 @@ public class ConceptsToEClassesMapping {
   private final Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
   private final Map<Language, EPackage> languagesToEPackages = new HashMap<>();
   private final Map<EClass, Concept> eClassesToConcepts = new HashMap<>();
-  private final Map<EClass, ConceptInterface> eClassesToConceptInterfaces = new HashMap<>();
+  private final Map<EClass, Interface> eClassesToInterfaces = new HashMap<>();
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
-  private final Map<ConceptInterface, EClass> conceptInterfacesToEClasses = new HashMap<>();
+  private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
@@ -74,21 +74,21 @@ public class ConceptsToEClassesMapping {
     return eClassesToConcepts.get(eClass);
   }
 
-  public ConceptInterface getCorrespondingConceptInterface(EClass eClass) {
-    if (!eClassesToConceptInterfaces.containsKey(eClass)) {
+  public Interface getCorrespondingInterface(EClass eClass) {
+    if (!eClassesToInterfaces.containsKey(eClass)) {
       if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
         throw new IllegalStateException();
       }
       processEPackage(eClass.getEPackage());
     }
-    if (!eClassesToConceptInterfaces.containsKey(eClass)) {
+    if (!eClassesToInterfaces.containsKey(eClass)) {
       throw new IllegalStateException();
     }
-    return eClassesToConceptInterfaces.get(eClass);
+    return eClassesToInterfaces.get(eClass);
   }
 
   public EClassifier getCorrespondingEClass(Classifier type) {
-    if (!conceptsToEClasses.containsKey(type) && !conceptInterfacesToEClasses.containsKey(type)) {
+    if (!conceptsToEClasses.containsKey(type) && !interfacesToEClasses.containsKey(type)) {
       if (languagesToEPackages.containsKey(type.getLanguage())) {
         throw new IllegalStateException();
       }
@@ -96,8 +96,8 @@ public class ConceptsToEClassesMapping {
     }
     if (conceptsToEClasses.containsKey(type)) {
       return conceptsToEClasses.get(type);
-    } else if (conceptInterfacesToEClasses.containsKey(type)) {
-      return conceptInterfacesToEClasses.get(type);
+    } else if (interfacesToEClasses.containsKey(type)) {
+      return interfacesToEClasses.get(type);
     } else {
       throw new IllegalStateException();
     }
@@ -108,22 +108,22 @@ public class ConceptsToEClassesMapping {
     conceptsToEClasses.put(concept, eClass);
   }
 
-  public void registerMapping(ConceptInterface conceptInterface, EClass eClass) {
-    eClassesToConceptInterfaces.put(eClass, conceptInterface);
-    conceptInterfacesToEClasses.put(conceptInterface, eClass);
+  public void registerMapping(Interface iface, EClass eClass) {
+    eClassesToInterfaces.put(eClass, iface);
+    interfacesToEClasses.put(iface, eClass);
   }
 
   public boolean knows(EClassifier eClassifier) {
     return eClassesToConcepts.containsKey(eClassifier)
-        || eClassesToConceptInterfaces.containsKey(eClassifier);
+        || eClassesToInterfaces.containsKey(eClassifier);
   }
 
   public @Nullable Classifier getCorrespondingClassifier(EClassifier eClassifier) {
     if (eClassesToConcepts.containsKey(eClassifier)) {
       return eClassesToConcepts.get(eClassifier);
     }
-    if (eClassesToConceptInterfaces.containsKey(eClassifier)) {
-      return eClassesToConceptInterfaces.get(eClassifier);
+    if (eClassesToInterfaces.containsKey(eClassifier)) {
+      return eClassesToInterfaces.get(eClassifier);
     }
     return null;
   }

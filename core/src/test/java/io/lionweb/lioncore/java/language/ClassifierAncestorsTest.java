@@ -10,10 +10,10 @@ public class ClassifierAncestorsTest {
   public void concept() {
     Concept a = new Concept("A");
     Concept b = new Concept("b");
-    ConceptInterface i = new ConceptInterface("i");
-    ConceptInterface j = new ConceptInterface("j");
-    ConceptInterface k = new ConceptInterface("k");
-    ConceptInterface l = new ConceptInterface("l");
+    Interface i = new Interface("i");
+    Interface j = new Interface("j");
+    Interface k = new Interface("k");
+    Interface l = new Interface("l");
     a.setExtendedConcept(b);
     a.addImplementedInterface(i);
     a.addImplementedInterface(j);
@@ -31,10 +31,10 @@ public class ClassifierAncestorsTest {
     a.setName("A");
     Annotation b = new Annotation();
     b.setName("b");
-    ConceptInterface i = new ConceptInterface("i");
-    ConceptInterface j = new ConceptInterface("j");
-    ConceptInterface k = new ConceptInterface("k");
-    ConceptInterface l = new ConceptInterface("l");
+    Interface i = new Interface("i");
+    Interface j = new Interface("j");
+    Interface k = new Interface("k");
+    Interface l = new Interface("l");
     a.setExtendedAnnotation(b);
     a.addImplementedInterface(i);
     a.addImplementedInterface(j);
@@ -48,10 +48,10 @@ public class ClassifierAncestorsTest {
 
   @Test
   public void iface() {
-    ConceptInterface i = new ConceptInterface("i");
-    ConceptInterface j = new ConceptInterface("j");
-    ConceptInterface k = new ConceptInterface("k");
-    ConceptInterface l = new ConceptInterface("l");
+    Interface i = new Interface("i");
+    Interface j = new Interface("j");
+    Interface k = new Interface("k");
+    Interface l = new Interface("l");
     i.addExtendedInterface(j);
     i.addExtendedInterface(k);
     k.addExtendedInterface(l);
@@ -63,10 +63,10 @@ public class ClassifierAncestorsTest {
 
   @Test
   public void ifaceSelf() {
-    ConceptInterface i = new ConceptInterface("i");
-    ConceptInterface j = new ConceptInterface("j");
-    ConceptInterface k = new ConceptInterface("k");
-    ConceptInterface l = new ConceptInterface("l");
+    Interface i = new Interface("i");
+    Interface j = new Interface("j");
+    Interface k = new Interface("k");
+    Interface l = new Interface("l");
     i.addExtendedInterface(i);
     i.addExtendedInterface(j);
     i.addExtendedInterface(k);
@@ -79,10 +79,10 @@ public class ClassifierAncestorsTest {
 
   @Test
   public void ifaceDirectLoop() {
-    ConceptInterface i = new ConceptInterface("i");
-    ConceptInterface j = new ConceptInterface("j");
-    ConceptInterface k = new ConceptInterface("k");
-    ConceptInterface l = new ConceptInterface("l");
+    Interface i = new Interface("i");
+    Interface j = new Interface("j");
+    Interface k = new Interface("k");
+    Interface l = new Interface("l");
     i.addExtendedInterface(j);
     j.addExtendedInterface(i);
     i.addExtendedInterface(k);
@@ -95,10 +95,10 @@ public class ClassifierAncestorsTest {
 
   @Test
   public void ifaceIndirectLoop() {
-    ConceptInterface i = new ConceptInterface("i");
-    ConceptInterface j = new ConceptInterface("j");
-    ConceptInterface k = new ConceptInterface("k");
-    ConceptInterface l = new ConceptInterface("l");
+    Interface i = new Interface("i");
+    Interface j = new Interface("j");
+    Interface k = new Interface("k");
+    Interface l = new Interface("l");
     i.addExtendedInterface(j);
     i.addExtendedInterface(k);
     k.addExtendedInterface(l);

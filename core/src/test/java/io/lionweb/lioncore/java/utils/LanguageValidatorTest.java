@@ -122,9 +122,9 @@ public class LanguageValidatorTest {
   }
 
   @Test
-  public void directSelfInheritanceOfConceptInterfacesIsCaught() {
+  public void directSelfInheritanceOfInterfacesIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    ConceptInterface a = new ConceptInterface(language, "a").setKey("a-key").setID("a-id");
+    Interface a = new Interface(language, "a").setKey("a-key").setID("a-id");
     a.addExtendedInterface(a);
 
     assertEquals(
@@ -138,10 +138,10 @@ public class LanguageValidatorTest {
   }
 
   @Test
-  public void indirectSelfInheritanceOfConceptInterfacesIsCaught() {
+  public void indirectSelfInheritanceOfInterfacesIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    ConceptInterface a = new ConceptInterface(language, "a").setKey("a-key").setID("a-id");
-    ConceptInterface b = new ConceptInterface(language, "b").setKey("b-key").setID("b-id");
+    Interface a = new Interface(language, "a").setKey("a-key").setID("a-id");
+    Interface b = new Interface(language, "b").setKey("b-key").setID("b-id");
     a.addExtendedInterface(b);
     b.addExtendedInterface(a);
     language.addElement(a);
@@ -163,7 +163,7 @@ public class LanguageValidatorTest {
   public void multipleDirectImplementationsOfTheSameInterfaceAreNotAllowed() {
     Language language = new Language("MyLanguage").setKey("mm-key").setID("mm-id");
     Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
-    ConceptInterface i = new ConceptInterface(language, "I").setKey("key-i").setID("id-i");
+    Interface i = new Interface(language, "I").setKey("key-i").setID("id-i");
 
     a.addImplementedInterface(i);
     a.addImplementedInterface(i);
@@ -186,7 +186,7 @@ public class LanguageValidatorTest {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
     Concept a = new Concept(language, "A").setKey("a-key").setID("a-id");
     Concept b = new Concept(language, "B").setKey("b-key").setID("b-id");
-    ConceptInterface i = new ConceptInterface(language, "I").setKey("i-key").setID("i-id");
+    Interface i = new Interface(language, "I").setKey("i-key").setID("i-id");
 
     a.setExtendedConcept(b);
     a.addImplementedInterface(i);
@@ -217,12 +217,12 @@ public class LanguageValidatorTest {
   @Test
   public void diamondWithInterfaces() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
-    ConceptInterface base = new ConceptInterface(l, "Base", "base_id", "base_key");
-    ConceptInterface branchA = new ConceptInterface(l, "BranchA", "branchA_id", "branchA_key");
+    Interface base = new Interface(l, "Base", "base_id", "base_key");
+    Interface branchA = new Interface(l, "BranchA", "branchA_id", "branchA_key");
     branchA.addExtendedInterface(base);
-    ConceptInterface branchB = new ConceptInterface(l, "BranchB", "branchB_id", "branchB_key");
+    Interface branchB = new Interface(l, "BranchB", "branchB_id", "branchB_key");
     branchB.addExtendedInterface(base);
-    ConceptInterface top = new ConceptInterface(l, "Top", "top_id", "top_key");
+    Interface top = new Interface(l, "Top", "top_id", "top_key");
     top.addExtendedInterface(branchA);
     top.addExtendedInterface(branchB);
     assertEquals(new HashSet<>(Arrays.asList()), l.validate().getIssues());
@@ -234,8 +234,8 @@ public class LanguageValidatorTest {
   @Test
   public void mutualExtensionOfInterfaces() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
-    ConceptInterface branchA = new ConceptInterface(l, "BranchA", "branchA_id", "branchA_key");
-    ConceptInterface branchB = new ConceptInterface(l, "BranchB", "branchB_id", "branchB_key");
+    Interface branchA = new Interface(l, "BranchA", "branchA_id", "branchA_key");
+    Interface branchB = new Interface(l, "BranchB", "branchB_id", "branchB_key");
     branchA.addExtendedInterface(branchB);
     branchB.addExtendedInterface(branchA);
     assertEquals(

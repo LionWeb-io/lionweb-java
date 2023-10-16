@@ -78,9 +78,9 @@ public class LanguageValidator extends Validator<Language> {
                     "The same interface has been implemented multiple times",
                     concept);
               }
-              if (el instanceof ConceptInterface) {
-                checkInterfacesCycles((ConceptInterface) el, result);
-                // checkAncestors((ConceptInterface) el, result);
+              if (el instanceof Interface) {
+                checkInterfacesCycles((Interface) el, result);
+                // checkAncestors((Interface) el, result);
               }
               if (el instanceof Annotation) {
                 checkAnnotates((Annotation) el, result);
@@ -156,9 +156,8 @@ public class LanguageValidator extends Validator<Language> {
     checkAncestorsHelper(new HashSet<>(), concept, validationResult, true);
   }
 
-  private void checkAncestors(
-      ConceptInterface conceptInterface, ValidationResult validationResult) {
-    checkAncestorsHelper(new HashSet<>(), conceptInterface, validationResult, false);
+  private void checkAncestors(Interface iface, ValidationResult validationResult) {
+    checkAncestorsHelper(new HashSet<>(), iface, validationResult, false);
   }
 
   private void checkAnnotates(Annotation annotation, ValidationResult validationResult) {
@@ -199,10 +198,10 @@ public class LanguageValidator extends Validator<Language> {
 
   private void checkAncestorsHelper(
       Set<Classifier> alreadyExplored,
-      ConceptInterface conceptInterface,
+      Interface iface,
       ValidationResult validationResult,
       boolean examiningConcept) {
-    if (alreadyExplored.contains(conceptInterface)) {
+    if (alreadyExplored.contains(iface)) {
       // It is ok to indirectly implement multiple time the same interface for a Concept.
       // It is instead an issue in case we are looking into interfaces.
       //
@@ -214,11 +213,11 @@ public class LanguageValidator extends Validator<Language> {
       // interface I1 extends I2
       // interface I2 extends I1
       if (!examiningConcept) {
-        validationResult.addError("Cyclic hierarchy found", conceptInterface);
+        validationResult.addError("Cyclic hierarchy found", iface);
       }
     } else {
-      alreadyExplored.add(conceptInterface);
-      conceptInterface
+      alreadyExplored.add(iface);
+      iface
           .getExtendedInterfaces()
           .forEach(
               interf ->
@@ -227,28 +226,23 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
-  private void checkInterfacesCycles(
-      ConceptInterface conceptInterface, ValidationResult validationResult) {
-    if (conceptInterface.allExtendedInterfaces().contains(conceptInterface)) {
-      validationResult.addError(
-          "Cyclic hierarchy found: the interface extends itself", conceptInterface);
+  private void checkInterfacesCycles(Interface iface, ValidationResult validationResult) {
+    if (iface.allExtendedInterfaces().contains(iface)) {
+      validationResult.addError("Cyclic hierarchy found: the interface extends itself", iface);
     }
   }
 
-  private void checkAncestorsHelperForConceptInterfaces(
-      Set<ConceptInterface> alreadyExplored,
-      ConceptInterface conceptInterface,
-      ValidationResult validationResult) {
-    if (alreadyExplored.contains(conceptInterface)) {
-      validationResult.addError("Cyclic hierarchy found", conceptInterface);
+  private void checkAncestorsHelperForInterfaces(
+      Set<Interface> alreadyExplored, Interface iface, ValidationResult validationResult) {
+    if (alreadyExplored.contains(iface)) {
+      validationResult.addError("Cyclic hierarchy found", iface);
     } else {
-      alreadyExplored.add(conceptInterface);
-      conceptInterface
+      alreadyExplored.add(iface);
+      iface
           .getExtendedInterfaces()
           .forEach(
               interf ->
-                  checkAncestorsHelperForConceptInterfaces(
-                      alreadyExplored, interf, validationResult));
+                  checkAncestorsHelperForInterfaces(alreadyExplored, interf, validationResult));
     }
   }
 }

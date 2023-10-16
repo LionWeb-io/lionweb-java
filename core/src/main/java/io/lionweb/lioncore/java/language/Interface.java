@@ -7,9 +7,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A ConceptInterface represents a category of entities sharing some similar characteristics.
+ * An Interface represents a category of entities sharing some similar characteristics.
  *
- * <p>For example, Named would be a ConceptInterface.
+ * <p>For example, Named would be an Interface.
  *
  * @see org.eclipse.emf.ecore.EClass Ecore equivalent <i>EClass</i> (with the <code>isInterface
  *     </code> flag set to <code>true</code>)
@@ -21,16 +21,16 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SInterfaceConcept MPS equivalent <i>SInterfaceConcept</i>
  *     in SModel
  */
-public class ConceptInterface extends Classifier<ConceptInterface> {
-  public ConceptInterface() {
+public class Interface extends Classifier<Interface> {
+  public Interface() {
     super();
   }
 
-  public ConceptInterface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public Interface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
-  public ConceptInterface(
+  public Interface(
       @Nullable Language language,
       @Nullable String name,
       @Nonnull String id,
@@ -39,23 +39,23 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
     setKey(key);
   }
 
-  public ConceptInterface(@Nullable Language language, @Nullable String name) {
+  public Interface(@Nullable Language language, @Nullable String name) {
     super(language, name);
   }
 
-  public ConceptInterface(@Nullable String name) {
+  public Interface(@Nullable String name) {
     super(null, name);
   }
 
-  public ConceptInterface(@Nullable String name, @Nonnull String id) {
+  public Interface(@Nullable String name, @Nonnull String id) {
     super(null, name, id);
   }
 
-  public @Nonnull List<ConceptInterface> getExtendedInterfaces() {
+  public @Nonnull List<Interface> getExtendedInterfaces() {
     return getReferenceMultipleValue("extends");
   }
 
-  public void addExtendedInterface(@Nonnull ConceptInterface extendedInterface) {
+  public void addExtendedInterface(@Nonnull Interface extendedInterface) {
     Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
     this.addReferenceMultipleValue(
         "extends", new ReferenceValue(extendedInterface, extendedInterface.getName()));
@@ -65,7 +65,7 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
   @Override
   public List<Feature> inheritedFeatures() {
     List<Feature> result = new LinkedList<>();
-    for (ConceptInterface superInterface : getExtendedInterfaces()) {
+    for (Interface superInterface : getExtendedInterfaces()) {
       result.addAll(superInterface.allFeatures());
     }
     return result;
@@ -73,7 +73,7 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
 
   @Override
   public Concept getConcept() {
-    return LionCore.getConceptInterface();
+    return LionCore.getInterface();
   }
 
   @Nonnull
@@ -82,14 +82,14 @@ public class ConceptInterface extends Classifier<ConceptInterface> {
     return (List<Classifier<?>>) (Object) this.getExtendedInterfaces();
   }
 
-  public Set<ConceptInterface> allExtendedInterfaces() {
-    Set<ConceptInterface> toAvoid = new HashSet<>();
+  public Set<Interface> allExtendedInterfaces() {
+    Set<Interface> toAvoid = new HashSet<>();
     toAvoid.add(this);
     return allExtendedInterfacesHelper(toAvoid);
   }
 
-  private Set<ConceptInterface> allExtendedInterfacesHelper(Set<ConceptInterface> toAvoid) {
-    Set<ConceptInterface> interfaces = new HashSet<>();
+  private Set<Interface> allExtendedInterfacesHelper(Set<Interface> toAvoid) {
+    Set<Interface> interfaces = new HashSet<>();
     toAvoid.add(this);
     this.getExtendedInterfaces()
         .forEach(

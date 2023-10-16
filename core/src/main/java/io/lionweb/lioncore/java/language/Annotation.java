@@ -68,14 +68,13 @@ public class Annotation extends Classifier<Annotation> {
     return this.getReferenceSingleValue("extends");
   }
 
-  public @Nonnull List<ConceptInterface> getImplemented() {
+  public @Nonnull List<Interface> getImplemented() {
     return this.getReferenceMultipleValue("implements");
   }
 
-  public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
-    Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
-    this.addReferenceMultipleValue(
-        "implements", new ReferenceValue(conceptInterface, conceptInterface.getName()));
+  public void addImplementedInterface(@Nonnull Interface iface) {
+    Objects.requireNonNull(iface, "iface should not be null");
+    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Annotation does not extend itself, even indirectly?
@@ -114,7 +113,7 @@ public class Annotation extends Classifier<Annotation> {
     if (this.getExtendedAnnotation() != null) {
       result.addAll(this.getExtendedAnnotation().allFeatures());
     }
-    for (ConceptInterface superInterface : this.getImplemented()) {
+    for (Interface superInterface : this.getImplemented()) {
       result.addAll(superInterface.allFeatures());
     }
     return result;

@@ -7,7 +7,7 @@ public class LionCoreBuiltins extends Language {
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins() {
-    super("LionCore.builtins");
+    super("LionCore_builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
     setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
@@ -19,8 +19,7 @@ public class LionCoreBuiltins extends Language {
     Concept node = new Concept(this, "Node").setID("LionCore-builtins-Node");
     node.setAbstract(true);
 
-    ConceptInterface iNamed =
-        new ConceptInterface(this, "INamed").setID("LionCore-builtins-INamed");
+    Interface iNamed = new Interface(this, "INamed").setID("LionCore-builtins-INamed");
     iNamed.addFeature(
         Property.createRequired("name", string)
             .setID("LionCore-builtins-INamed-name")
@@ -58,8 +57,8 @@ public class LionCoreBuiltins extends Language {
     return INSTANCE.getPrimitiveTypeByName("JSON");
   }
 
-  public static ConceptInterface getINamed() {
-    return INSTANCE.getConceptInterfaceByName("INamed");
+  public static Interface getINamed() {
+    return INSTANCE.getInterfaceByName("INamed");
   }
 
   public static Concept getNode() {

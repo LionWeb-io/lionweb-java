@@ -59,15 +59,15 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
                 ePackage.getEClassifiers().add(eClass);
                 conceptsToEClassesMapping.registerMapping(concept, eClass);
-              } else if (e instanceof ConceptInterface) {
-                ConceptInterface conceptInterface = (ConceptInterface) e;
+              } else if (e instanceof Interface) {
+                Interface iface = (Interface) e;
 
                 EClass eClass = EcoreFactory.eINSTANCE.createEClass();
-                eClass.setName(conceptInterface.getName());
+                eClass.setName(iface.getName());
                 eClass.setInterface(true);
 
                 ePackage.getEClassifiers().add(eClass);
-                conceptsToEClassesMapping.registerMapping(conceptInterface, eClass);
+                conceptsToEClassesMapping.registerMapping(iface, eClass);
               } else if (e instanceof Enumeration) {
                 Enumeration enumeration = (Enumeration) e;
 
@@ -154,17 +154,17 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
   }
 
-  private void populateEClassFromConceptInterface(ConceptInterface conceptInterface) {
-    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(conceptInterface);
+  private void populateEClassFromInterface(Interface iface) {
+    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(iface);
 
-    conceptInterface
+    iface
         .getExtendedInterfaces()
         .forEach(
             extended -> {
               throw new UnsupportedOperationException();
             });
 
-    conceptInterface
+    iface
         .getFeatures()
         .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
   }
@@ -189,8 +189,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
             e -> {
               if (e instanceof Concept) {
                 populateEClassFromConcept((Concept) e);
-              } else if (e instanceof ConceptInterface) {
-                populateEClassFromConceptInterface((ConceptInterface) e);
+              } else if (e instanceof Interface) {
+                populateEClassFromInterface((Interface) e);
               } else if (e instanceof Enumeration) {
                 populateEEnumFromEnumerration((Enumeration) e);
               } else {

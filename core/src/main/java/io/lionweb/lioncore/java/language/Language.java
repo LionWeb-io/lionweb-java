@@ -119,10 +119,10 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-  public @Nullable ConceptInterface getConceptInterfaceByName(String name) {
+  public @Nullable Interface getInterfaceByName(String name) {
     return getElements().stream()
-        .filter(element -> element instanceof ConceptInterface)
-        .map(element -> (ConceptInterface) element)
+        .filter(element -> element instanceof Interface)
+        .map(element -> (Interface) element)
         .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);

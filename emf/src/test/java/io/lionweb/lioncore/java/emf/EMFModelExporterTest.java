@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNull;
 
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.*;
@@ -15,7 +14,7 @@ import org.junit.Test;
 public class EMFModelExporterTest {
 
   @Test
-  public void exportLibraryInstance() throws IOException {
+  public void exportLibraryInstance() {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
     jsonSerialization.getInstantiator().enableDynamicNodes();

@@ -44,11 +44,11 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          ConceptInterface conceptInterface = new ConceptInterface(metamodel, eClass.getName());
-          conceptInterface.setID(ePackage.getName() + "-" + conceptInterface.getName());
-          conceptInterface.setKey(ePackage.getName() + "-" + conceptInterface.getName());
-          metamodel.addElement(conceptInterface);
-          conceptsToEClassesMapping.registerMapping(conceptInterface, eClass);
+          Interface iface = new Interface(metamodel, eClass.getName());
+          iface.setID(ePackage.getName() + "-" + iface.getName());
+          iface.setKey(ePackage.getName() + "-" + iface.getName());
+          metamodel.addElement(iface);
+          conceptsToEClassesMapping.registerMapping(iface, eClass);
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
           concept.setID(ePackage.getName() + "-" + concept.getName());
@@ -82,29 +82,28 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          ConceptInterface conceptInterface =
-              conceptsToEClassesMapping.getCorrespondingConceptInterface(eClass);
+          Interface iface = conceptsToEClassesMapping.getCorrespondingInterface(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
-              ConceptInterface superConceptInterface =
-                  conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
-              conceptInterface.addExtendedInterface(superConceptInterface);
+              Interface superInterface =
+                  conceptsToEClassesMapping.getCorrespondingInterface(supertype);
+              iface.addExtendedInterface(superInterface);
             } else {
               throw new UnsupportedOperationException();
             }
           }
 
-          processStructuralFeatures(ePackage, eClass, conceptInterface);
+          processStructuralFeatures(ePackage, eClass, iface);
 
         } else {
           Concept concept = conceptsToEClassesMapping.getCorrespondingConcept(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
-              ConceptInterface superConceptInterface =
-                  conceptsToEClassesMapping.getCorrespondingConceptInterface(supertype);
-              concept.addImplementedInterface(superConceptInterface);
+              Interface superInterface =
+                  conceptsToEClassesMapping.getCorrespondingInterface(supertype);
+              concept.addImplementedInterface(superInterface);
             } else {
               Concept superConcept = conceptsToEClassesMapping.getCorrespondingConcept(supertype);
               if (concept.getExtendedConcept() != null) {

@@ -95,14 +95,13 @@ public class Concept extends Classifier<Concept> {
     return this.getReferenceSingleValue("extends");
   }
 
-  public @Nonnull List<ConceptInterface> getImplemented() {
+  public @Nonnull List<Interface> getImplemented() {
     return this.getReferenceMultipleValue("implements");
   }
 
-  public void addImplementedInterface(@Nonnull ConceptInterface conceptInterface) {
-    Objects.requireNonNull(conceptInterface, "conceptInterface should not be null");
-    this.addReferenceMultipleValue(
-        "implements", new ReferenceValue(conceptInterface, conceptInterface.getName()));
+  public void addImplementedInterface(@Nonnull Interface iface) {
+    Objects.requireNonNull(iface, "Interface should not be null");
+    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?
@@ -121,7 +120,7 @@ public class Concept extends Classifier<Concept> {
     if (this.getExtendedConcept() != null) {
       result.addAll(this.getExtendedConcept().allFeatures());
     }
-    for (ConceptInterface superInterface : this.getImplemented()) {
+    for (Interface superInterface : this.getImplemented()) {
       result.addAll(superInterface.allFeatures());
     }
     return result;
