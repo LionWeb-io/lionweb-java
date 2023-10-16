@@ -77,8 +77,8 @@ public class ConceptReflectionTest {
   public void getReferenceImplemented() {
     Language language = new Language();
     Concept concept = new Concept(language, "MyConcept");
-    ConceptInterface i1 = new ConceptInterface(language, "I1");
-    ConceptInterface i2 = new ConceptInterface(language, "I2");
+    Interface i1 = new Interface(language, "I1");
+    Interface i2 = new Interface(language, "I2");
     Reference reference = LionCore.getConcept().getReferenceByName("implements");
     assertEquals(Collections.emptyList(), concept.getReferredNodes(reference));
     concept.addImplementedInterface(i1);
@@ -91,8 +91,8 @@ public class ConceptReflectionTest {
   public void setReferenceImplemented() {
     Language language = new Language();
     Concept concept = new Concept(language, "MyConcept");
-    ConceptInterface i1 = new ConceptInterface(language, "I1");
-    ConceptInterface i2 = new ConceptInterface(language, "I2");
+    Interface i1 = new Interface(language, "I1");
+    Interface i2 = new Interface(language, "I2");
     Reference reference = LionCore.getConcept().getReferenceByName("implements");
     assertEquals(Collections.emptyList(), concept.getImplemented());
     concept.addReferenceValue(reference, new ReferenceValue(i1, null));

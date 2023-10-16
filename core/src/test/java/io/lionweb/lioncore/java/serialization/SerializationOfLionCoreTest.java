@@ -59,7 +59,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                 Arrays.asList(
                     "-id-Annotation",
                     "-id-Concept",
-                    "-id-ConceptInterface",
+                    "-id-Interface",
                     "-id-Containment",
                     "-id-DataType",
                     "-id-Enumeration",
@@ -81,9 +81,9 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                 Collections.emptyList())),
         LionCore_M3.getReferences());
 
-    SerializedClassifierInstance LionCore_M3_ConceptInterface_extends =
+    SerializedClassifierInstance LionCore_M3_Interface_extends =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> "-id-ConceptInterface-extends".equals(n.getID()))
+            .filter(n -> "-id-Interface-extends".equals(n.getID()))
             .findFirst()
             .get();
   }

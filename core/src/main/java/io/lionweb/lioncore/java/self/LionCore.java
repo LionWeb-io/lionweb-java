@@ -21,8 +21,8 @@ public class LionCore {
     return getInstance().requireConceptByName("Concept");
   }
 
-  public static Concept getConceptInterface() {
-    return getInstance().requireConceptByName("ConceptInterface");
+  public static Concept getInterface() {
+    return getInstance().requireConceptByName("Interface");
   }
 
   public static Concept getContainment() {
@@ -80,11 +80,11 @@ public class LionCore {
       INSTANCE.setKey("LionCore-M3");
       INSTANCE.setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
 
-      // We first instantiate all Concepts and ConceptInterfaces
+      // We first instantiate all Concepts and Interfaces
       // we add features only after as the features will have references to these elements
       Concept annotation = INSTANCE.addElement(new Concept("Annotation"));
       Concept concept = INSTANCE.addElement(new Concept("Concept"));
-      Concept conceptInterface = INSTANCE.addElement(new Concept("ConceptInterface"));
+      Concept iface = INSTANCE.addElement(new Concept("Interface"));
       Concept containment = INSTANCE.addElement(new Concept("Containment"));
       Concept dataType = INSTANCE.addElement(new Concept("DataType"));
       Concept enumeration = INSTANCE.addElement(new Concept("Enumeration"));
@@ -94,12 +94,12 @@ public class LionCore {
       Concept link = INSTANCE.addElement(new Concept("Link"));
       Concept language = INSTANCE.addElement(new Concept("Language"));
       Concept languageEntity = INSTANCE.addElement(new Concept("LanguageEntity"));
-      ConceptInterface iKeyed = INSTANCE.addElement(new ConceptInterface("IKeyed"));
+      Interface iKeyed = INSTANCE.addElement(new Interface("IKeyed"));
       Concept primitiveType = INSTANCE.addElement(new Concept("PrimitiveType"));
       Concept property = INSTANCE.addElement(new Concept("Property"));
       Concept reference = INSTANCE.addElement(new Concept("Reference"));
 
-      // Now we start adding the features to all the Concepts and ConceptInterfaces
+      // Now we start adding the features to all the Concepts and Interfaces
 
       concept.setExtendedConcept(classifier);
       concept.addFeature(
@@ -110,11 +110,11 @@ public class LionCore {
               "partition", LionCoreBuiltins.getBoolean(), "-id-Concept-partition"));
       concept.addFeature(Reference.createOptional("extends", concept, "-id-Concept-extends"));
       concept.addFeature(
-          Reference.createMultiple("implements", conceptInterface, "-id-Concept-implements"));
+          Reference.createMultiple("implements", iface, "-id-Concept-implements"));
 
-      conceptInterface.setExtendedConcept(classifier);
-      conceptInterface.addFeature(
-          Reference.createMultiple("extends", conceptInterface, "-id-ConceptInterface-extends"));
+      iface.setExtendedConcept(classifier);
+      iface.addFeature(
+          Reference.createMultiple("extends", iface, "-id-Interface-extends"));
 
       containment.setExtendedConcept(link);
 
@@ -179,7 +179,7 @@ public class LionCore {
       annotation.addFeature(
           Reference.createOptional("extends", annotation, "-id-Annotation-extends"));
       annotation.addFeature(
-          Reference.createMultiple("implements", conceptInterface, "-id-Annotation-implements"));
+          Reference.createMultiple("implements", iface, "-id-Annotation-implements"));
 
       checkIDs(INSTANCE);
     }

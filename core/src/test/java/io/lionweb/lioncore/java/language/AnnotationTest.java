@@ -89,7 +89,7 @@ public class AnnotationTest extends BaseTest {
     otherAnnotation.setAnnotates(myConcept);
     Annotation superAnnotation = new Annotation(language, "SuperAnnotation", "sa", "sa");
     superAnnotation.setAnnotates(myConcept);
-    ConceptInterface myCI = new ConceptInterface(language, "MyCI", "ci", "ci");
+    Interface myCI = new Interface(language, "MyCI", "ci", "ci");
 
     Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");
     assertNull(annotation.getAnnotates());

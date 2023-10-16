@@ -10,7 +10,7 @@ public class MetaCircularityTest {
   @Test
   public void eachElementOfM3HasRightConcept() {
     assertSame(LionCore.getConcept(), LionCore.getConcept().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getConceptInterface().getConcept());
+    assertSame(LionCore.getConcept(), LionCore.getInterface().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getContainment().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getDataType().getConcept());
     assertSame(LionCore.getConcept(), LionCore.getEnumeration().getConcept());
@@ -28,7 +28,7 @@ public class MetaCircularityTest {
   @Test
   public void eachElementOfM2HasRightConcept() {
     assertSame(LionCore.getConcept(), new Concept().getConcept());
-    assertSame(LionCore.getConceptInterface(), new ConceptInterface().getConcept());
+    assertSame(LionCore.getInterface(), new Interface().getConcept());
     assertSame(LionCore.getContainment(), new Containment().getConcept());
     assertSame(LionCore.getEnumeration(), new Enumeration().getConcept());
     assertSame(LionCore.getEnumerationLiteral(), new EnumerationLiteral().getConcept());

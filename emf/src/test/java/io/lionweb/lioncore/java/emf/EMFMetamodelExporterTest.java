@@ -89,13 +89,13 @@ public class EMFMetamodelExporterTest {
   }
 
   @Test
-  public void exportConceptInterfaceAndEnumeration() {
+  public void exportInterfaceAndEnumeration() {
     Language simpleLang = new Language("SimpleMM").setKey("simkey").setID("simid");
     Enumeration color = new Enumeration(simpleLang, "Color");
     new EnumerationLiteral(color, "red");
     new EnumerationLiteral(color, "white");
     new EnumerationLiteral(color, "green");
-    ConceptInterface coloredCI = new ConceptInterface(simpleLang, "Colored");
+    Interface coloredCI = new Interface(simpleLang, "Colored");
     coloredCI.addFeature(Property.createRequired("color", color));
 
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
