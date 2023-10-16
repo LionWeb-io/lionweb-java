@@ -19,8 +19,7 @@ public class LionCoreBuiltins extends Language {
     Concept node = new Concept(this, "Node").setID("LionCore-builtins-Node");
     node.setAbstract(true);
 
-    Interface iNamed =
-        new Interface(this, "INamed").setID("LionCore-builtins-INamed");
+    Interface iNamed = new Interface(this, "INamed").setID("LionCore-builtins-INamed");
     iNamed.addFeature(
         Property.createRequired("name", string)
             .setID("LionCore-builtins-INamed-name")

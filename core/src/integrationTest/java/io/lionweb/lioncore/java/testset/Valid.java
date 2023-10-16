@@ -7,7 +7,7 @@ import org.junit.runners.Parameterized;
 
 @RunWith(Parameterized.class)
 public class Valid extends ATestset {
-  @Parameterized.Parameters(name="[{index}] {0}")
+  @Parameterized.Parameters(name = "[{index}] {0}")
   public static Object[] inputFiles() {
     Path integrationTests = findIntegrationTests();
     Path basePath = integrationTests.resolve("valid");

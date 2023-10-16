@@ -18,8 +18,7 @@ public class BuiltinIDsAndKeysTest {
 
     Assert.assertEquals("-id-Interface", LionCore.getInterface().getID());
     Assert.assertEquals(
-        "-id-Interface-extends",
-        LionCore.getInterface().getReferenceByName("extends").getID());
+        "-id-Interface-extends", LionCore.getInterface().getReferenceByName("extends").getID());
 
     Assert.assertEquals("-id-Containment", LionCore.getContainment().getID());
 
@@ -78,8 +77,7 @@ public class BuiltinIDsAndKeysTest {
 
     Assert.assertEquals("Interface", LionCore.getInterface().getKey());
     Assert.assertEquals(
-        "Interface-extends",
-        LionCore.getInterface().getReferenceByName("extends").getKey());
+        "Interface-extends", LionCore.getInterface().getReferenceByName("extends").getKey());
 
     Assert.assertEquals("Containment", LionCore.getContainment().getKey());
 

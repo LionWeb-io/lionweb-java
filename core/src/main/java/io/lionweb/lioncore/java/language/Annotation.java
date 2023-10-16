@@ -74,8 +74,7 @@ public class Annotation extends Classifier<Annotation> {
 
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "iface should not be null");
-    this.addReferenceMultipleValue(
-        "implements", new ReferenceValue(iface, iface.getName()));
+    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Annotation does not extend itself, even indirectly?

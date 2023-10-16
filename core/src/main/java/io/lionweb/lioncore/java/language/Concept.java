@@ -101,8 +101,7 @@ public class Concept extends Classifier<Concept> {
 
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "Interface should not be null");
-    this.addReferenceMultipleValue(
-        "implements", new ReferenceValue(iface, iface.getName()));
+    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?

@@ -109,12 +109,10 @@ public class LionCore {
           Property.createRequired(
               "partition", LionCoreBuiltins.getBoolean(), "-id-Concept-partition"));
       concept.addFeature(Reference.createOptional("extends", concept, "-id-Concept-extends"));
-      concept.addFeature(
-          Reference.createMultiple("implements", iface, "-id-Concept-implements"));
+      concept.addFeature(Reference.createMultiple("implements", iface, "-id-Concept-implements"));
 
       iface.setExtendedConcept(classifier);
-      iface.addFeature(
-          Reference.createMultiple("extends", iface, "-id-Interface-extends"));
+      iface.addFeature(Reference.createMultiple("extends", iface, "-id-Interface-extends"));
 
       containment.setExtendedConcept(link);
 

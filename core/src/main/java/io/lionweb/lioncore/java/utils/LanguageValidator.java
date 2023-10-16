@@ -156,8 +156,7 @@ public class LanguageValidator extends Validator<Language> {
     checkAncestorsHelper(new HashSet<>(), concept, validationResult, true);
   }
 
-  private void checkAncestors(
-      Interface iface, ValidationResult validationResult) {
+  private void checkAncestors(Interface iface, ValidationResult validationResult) {
     checkAncestorsHelper(new HashSet<>(), iface, validationResult, false);
   }
 
@@ -227,18 +226,14 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
-  private void checkInterfacesCycles(
-      Interface iface, ValidationResult validationResult) {
+  private void checkInterfacesCycles(Interface iface, ValidationResult validationResult) {
     if (iface.allExtendedInterfaces().contains(iface)) {
-      validationResult.addError(
-          "Cyclic hierarchy found: the interface extends itself", iface);
+      validationResult.addError("Cyclic hierarchy found: the interface extends itself", iface);
     }
   }
 
   private void checkAncestorsHelperForInterfaces(
-      Set<Interface> alreadyExplored,
-      Interface iface,
-      ValidationResult validationResult) {
+      Set<Interface> alreadyExplored, Interface iface, ValidationResult validationResult) {
     if (alreadyExplored.contains(iface)) {
       validationResult.addError("Cyclic hierarchy found", iface);
     } else {
@@ -247,8 +242,7 @@ public class LanguageValidator extends Validator<Language> {
           .getExtendedInterfaces()
           .forEach(
               interf ->
-                  checkAncestorsHelperForInterfaces(
-                      alreadyExplored, interf, validationResult));
+                  checkAncestorsHelperForInterfaces(alreadyExplored, interf, validationResult));
     }
   }
 }
