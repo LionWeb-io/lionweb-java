@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.self;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
@@ -14,8 +14,8 @@ import org.junit.Test;
 
 public class CorrespondanceWithDocumentationTest {
 
-  private static final String ORGANIZATION_COMMIT_CONSIDERED =
-      "d10e68d72fe1eb3f6970b121960acb3770d215e7";
+  private static final String SPECIFICATION_COMMIT_CONSIDERED =
+      "64b76fe6493a000861368ce4a382c827d87fccfb";
 
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo() throws IOException {
@@ -23,8 +23,8 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LionWeb-org/organization/"
-                + ORGANIZATION_COMMIT_CONSIDERED
+            "https://raw.githubusercontent.com/LionWeb-io/specification/"
+                + SPECIFICATION_COMMIT_CONSIDERED
                 + "/metametamodel/lioncore.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
@@ -35,7 +35,7 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertEquals(comparison.toString(), true, comparison.areEquivalent());
+    assertTrue(comparison.toString(), comparison.areEquivalent());
   }
 
   @Test
@@ -44,8 +44,8 @@ public class CorrespondanceWithDocumentationTest {
 
     URL url =
         new URL(
-            "https://raw.githubusercontent.com/LionWeb-org/organization/"
-                + ORGANIZATION_COMMIT_CONSIDERED
+            "https://raw.githubusercontent.com/LionWeb-io/specification/"
+                + SPECIFICATION_COMMIT_CONSIDERED
                 + "/metametamodel/builtins.json");
     List<Node> nodes = jsonSer.unserializeToNodes(url);
 
@@ -56,6 +56,6 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertEquals(comparison.toString(), true, comparison.areEquivalent());
+    assertTrue(comparison.toString(), comparison.areEquivalent());
   }
 }

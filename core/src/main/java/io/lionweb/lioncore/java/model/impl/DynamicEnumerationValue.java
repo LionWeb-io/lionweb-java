@@ -6,8 +6,8 @@ import javax.annotation.Nonnull;
 
 /** This represents an Enumeration Value when the actual Enum class is not available. */
 public class DynamicEnumerationValue {
-  private Enumeration enumeration;
-  private String serializedValue;
+  private final Enumeration enumeration;
+  private final String serializedValue;
 
   public DynamicEnumerationValue(
       @Nonnull Enumeration enumeration, @Nonnull String serializedValue) {

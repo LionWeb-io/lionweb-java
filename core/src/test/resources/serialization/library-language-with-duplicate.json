@@ -1,19 +1,19 @@
 {
-  "serializationFormatVersion": "1",
+  "serializationFormatVersion": "2023.1",
   "languages": [],
   "nodes": [
     {
       "id": "library",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Language"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Language-name"
           },
           "value": "library"
@@ -21,7 +21,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "version"
           },
           "value": "1"
@@ -29,7 +29,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library"
@@ -39,7 +39,7 @@
         {
           "containment": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "elements"
           },
           "children": [
@@ -55,7 +55,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "dependsOn"
           },
           "targets": []
@@ -65,16 +65,16 @@
     },
     {
       "id": "library-Book",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-abstract"
           },
           "value": "false"
@@ -82,7 +82,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "Book"
@@ -90,7 +90,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Book"
@@ -100,7 +100,7 @@
         {
           "containment": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Classifier-features"
           },
           "children": [
@@ -113,7 +113,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-extends"
           },
           "targets": []
@@ -121,7 +121,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "implements"
           },
           "targets": []
@@ -131,16 +131,16 @@
     },
     {
       "id": "library-Book-title",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "false"
@@ -148,7 +148,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "title"
@@ -156,7 +156,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Book-title"
@@ -167,7 +167,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Property-type"
           },
           "targets": [
@@ -182,16 +182,16 @@
     },
     {
       "id": "library-Book-title",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "false"
@@ -199,7 +199,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "pages"
@@ -207,7 +207,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Book-title"
@@ -218,7 +218,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Property-type"
           },
           "targets": [
@@ -233,16 +233,16 @@
     },
     {
       "id": "library-Book-author",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Reference"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Link-multiple"
           },
           "value": "false"
@@ -250,7 +250,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "false"
@@ -258,7 +258,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "author"
@@ -266,7 +266,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Book-author"
@@ -277,7 +277,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Link-type"
           },
           "targets": [
@@ -292,16 +292,16 @@
     },
     {
       "id": "library-Library",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-abstract"
           },
           "value": "false"
@@ -309,7 +309,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "Library"
@@ -317,7 +317,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Library"
@@ -327,7 +327,7 @@
         {
           "containment": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Classifier-features"
           },
           "children": [
@@ -340,7 +340,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-extends"
           },
           "targets": []
@@ -348,7 +348,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "implements"
           },
           "targets": []
@@ -358,16 +358,16 @@
     },
     {
       "id": "library-Library-name",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "false"
@@ -375,7 +375,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "name"
@@ -383,7 +383,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Library-name"
@@ -394,7 +394,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Property-type"
           },
           "targets": [
@@ -409,16 +409,16 @@
     },
     {
       "id": "library-Library-books",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Containment"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Link-multiple"
           },
           "value": "true"
@@ -426,7 +426,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "true"
@@ -434,7 +434,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "books"
@@ -442,7 +442,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Library-books"
@@ -453,7 +453,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Link-type"
           },
           "targets": [
@@ -468,16 +468,16 @@
     },
     {
       "id": "library-Writer",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-abstract"
           },
           "value": "false"
@@ -485,7 +485,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "Writer"
@@ -493,7 +493,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Writer"
@@ -503,7 +503,7 @@
         {
           "containment": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Classifier-features"
           },
           "children": [
@@ -515,7 +515,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-extends"
           },
           "targets": []
@@ -523,7 +523,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "implements"
           },
           "targets": []
@@ -533,16 +533,16 @@
     },
     {
       "id": "library-Writer-name",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "false"
@@ -550,7 +550,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "name"
@@ -558,7 +558,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-Writer-name"
@@ -569,7 +569,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Property-type"
           },
           "targets": [
@@ -584,16 +584,16 @@
     },
     {
       "id": "library-GuideBookWriter",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-abstract"
           },
           "value": "false"
@@ -601,7 +601,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "GuideBookWriter"
@@ -609,7 +609,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-GuideBookWriter"
@@ -619,7 +619,7 @@
         {
           "containment": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Classifier-features"
           },
           "children": [
@@ -631,7 +631,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-extends"
           },
           "targets": [
@@ -644,7 +644,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "implements"
           },
           "targets": []
@@ -654,16 +654,16 @@
     },
     {
       "id": "library-GuideBookWriter-countries",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "true"
@@ -671,7 +671,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "countries"
@@ -679,7 +679,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-GuideBookWriter-countries"
@@ -690,7 +690,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Property-type"
           },
           "targets": [
@@ -705,16 +705,16 @@
     },
     {
       "id": "library-SpecialistBookWriter",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Concept"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-abstract"
           },
           "value": "false"
@@ -722,7 +722,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "SpecialistBookWriter"
@@ -730,7 +730,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-SpecialistBookWriter"
@@ -740,7 +740,7 @@
         {
           "containment": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Classifier-features"
           },
           "children": [
@@ -752,7 +752,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Concept-extends"
           },
           "targets": [
@@ -765,7 +765,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "implements"
           },
           "targets": []
@@ -775,16 +775,16 @@
     },
     {
       "id": "library-SpecialistBookWriter-subject",
-      "concept": {
+      "classifier": {
         "language": "LionCore-M3",
-        "version": "1",
+        "version": "2023.1",
         "key": "Property"
       },
       "properties": [
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Feature-optional"
           },
           "value": "true"
@@ -792,7 +792,7 @@
         {
           "property": {
             "language": "LionCore-builtins",
-            "version": "1",
+            "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
           "value": "subject"
@@ -800,7 +800,7 @@
         {
           "property": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "IKeyed-key"
           },
           "value": "library-SpecialistBookWriter-subject"
@@ -811,7 +811,7 @@
         {
           "reference": {
             "language": "LionCore-M3",
-            "version": "1",
+            "version": "2023.1",
             "key": "Property-type"
           },
           "targets": [

@@ -2,12 +2,10 @@ package io.lionweb.lioncore.java.serialization;
 
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.google.gson.*;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Enumeration;
-import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
@@ -141,9 +139,8 @@ public class JsonSerializationTest extends SerializationTest {
             unserializedNodes.stream()
                 .filter(
                     n ->
-                        n.getID()
-                            .equals(
-                                "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"))
+                        "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"
+                            .equals(n.getID()))
                 .findFirst()
                 .get();
     assertEquals("TestEnumeration1", testEnumeration1.getName());
@@ -154,9 +151,8 @@ public class JsonSerializationTest extends SerializationTest {
             unserializedNodes.stream()
                 .filter(
                     n ->
-                        n.getID()
-                            .equals(
-                                "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"))
+                        "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"
+                            .equals(n.getID()))
                 .findFirst()
                 .get();
     assertEquals("SideTransformInfo", sideTransformInfo.getName());
@@ -387,14 +383,14 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"1\",\n"
+                + "    \"serializationFormatVersion\": \"2023.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
                 + "    }],\n"
                 + "    \"nodes\": [{\n"
                 + "        \"id\": \"node1\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -413,7 +409,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -440,14 +436,14 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"1\",\n"
+                + "    \"serializationFormatVersion\": \"2023.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
                 + "    }],\n"
                 + "    \"nodes\": [{\n"
                 + "        \"id\": \"node1\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -465,7 +461,7 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }, {\n"
                 + "        \"id\": \"node2\",\n"
-                + "        \"concept\": {\n"
+                + "        \"classifier\": {\n"
                 + "            \"language\": \"mm_key\",\n"
                 + "            \"version\": \"1\",\n"
                 + "            \"key\": \"concept_key\"\n"
@@ -527,7 +523,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
-        new MetaPointer("LionCore-builtins", "1", "LionCore-builtins-INamed-name"),
+        new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
   }
 
@@ -551,7 +547,7 @@ public class JsonSerializationTest extends SerializationTest {
     SerializedNodeInstance serializedN1 =
         (SerializedNodeInstance) serializedChunk.getClassifierInstances().get(0);
     assertEquals("n1", serializedN1.getID());
-    assertEquals(null, serializedN1.getParentNodeID());
+    assertNull(serializedN1.getParentNodeID());
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
     SerializedAnnotationInstance serializedA1_1 =
         (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);

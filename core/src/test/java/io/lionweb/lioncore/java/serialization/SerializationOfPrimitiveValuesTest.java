@@ -24,12 +24,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -89,12 +89,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -161,12 +161,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -226,12 +226,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -297,12 +297,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -362,12 +362,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -437,12 +437,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"
@@ -505,12 +505,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"1\",\n"
+                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
-                    + "      \"concept\": {\n"
+                    + "      \"classifier\": {\n"
                     + "        \"language\": \"mylanguage\",\n"
                     + "        \"version\": \"1\",\n"
                     + "        \"key\": \"concept-MyNodeWithProperties\"\n"

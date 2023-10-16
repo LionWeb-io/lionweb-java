@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.serialization;
 
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -32,11 +33,11 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
 
     SerializedNodeInstance lioncore =
         (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
-    assertEquals(new MetaPointer("LionCore-M3", "1", "Language"), lioncore.getClassifier());
+    assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParentNodeID());
+    assertNull(lioncore.getParentNodeID());
   }
 
   @Test

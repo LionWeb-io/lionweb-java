@@ -12,9 +12,9 @@ public abstract class SerializedClassifierInstance {
   protected String id;
   protected MetaPointer classifier;
 
-  protected List<SerializedPropertyValue> properties = new ArrayList<>();
-  protected List<SerializedContainmentValue> containments = new ArrayList<>();
-  protected List<SerializedReferenceValue> references = new ArrayList<>();
+  protected final List<SerializedPropertyValue> properties = new ArrayList<>();
+  protected final List<SerializedContainmentValue> containments = new ArrayList<>();
+  protected final List<SerializedReferenceValue> references = new ArrayList<>();
   protected List<String> annotations = new ArrayList<>();
   protected String parentNodeID;
 

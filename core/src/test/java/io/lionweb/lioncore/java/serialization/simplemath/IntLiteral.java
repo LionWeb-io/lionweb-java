@@ -6,7 +6,7 @@ import io.lionweb.lioncore.java.serialization.SimpleNode;
 import java.util.Objects;
 
 public class IntLiteral extends SimpleNode {
-  private int value;
+  private final int value;
 
   public IntLiteral(int value) {
     assignRandomID();

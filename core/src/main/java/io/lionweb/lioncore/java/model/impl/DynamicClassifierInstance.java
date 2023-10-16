@@ -13,11 +13,11 @@ import javax.annotation.Nullable;
 public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     implements ClassifierInstance<T> {
   protected String id;
-  protected Map<String, Object> propertyValues = new HashMap<>();
-  protected Map<String, List<Node>> containmentValues = new HashMap<>();
+  protected final Map<String, Object> propertyValues = new HashMap<>();
+  protected final Map<String, List<Node>> containmentValues = new HashMap<>();
 
-  protected Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
-  protected List<AnnotationInstance> annotations = new ArrayList<>();
+  protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  protected final List<AnnotationInstance> annotations = new ArrayList<>();
 
   @Override
   public Object getPropertyValue(@Nonnull Property property) {
@@ -133,8 +133,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     throw new IllegalArgumentException("The given node is not a child of this node");
   }
 
+  @Nonnull
   @Override
-  public List<Node> getReferredNodes(Reference reference) {
+  public List<Node> getReferredNodes(@Nonnull Reference reference) {
     return getReferenceValues(reference).stream()
         .map(v -> v.getReferred())
         .collect(Collectors.toList());
@@ -142,7 +143,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Nonnull
   @Override
-  public List<ReferenceValue> getReferenceValues(Reference reference) {
+  public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
@@ -170,6 +171,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     return annotations;
   }
 
+  @Nonnull
   public List<AnnotationInstance> getAnnotations(Annotation annotation) {
     return annotations.stream()
         .filter(a -> a.getAnnotationDefinition() == annotation)

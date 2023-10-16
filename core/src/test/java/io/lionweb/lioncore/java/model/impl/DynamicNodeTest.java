@@ -18,14 +18,14 @@ public class DynamicNodeTest {
   public void equalityPositiveCaseEmptyNodes() {
     MyNodeWithProperties n1 = new MyNodeWithProperties("id1");
     MyNodeWithProperties n2 = new MyNodeWithProperties("id1");
-    assertTrue(n1.equals(n2));
+    assertEquals(n1, n2);
   }
 
   @Test
   public void equalityNegativeCaseEmptyNodes() {
     MyNodeWithProperties n1 = new MyNodeWithProperties("id1");
     MyNodeWithProperties n2 = new MyNodeWithProperties("id2");
-    assertFalse(n1.equals(n2));
+    assertNotEquals(n1, n2);
   }
 
   @Test
@@ -40,7 +40,7 @@ public class DynamicNodeTest {
     n2.setP2(123);
     n2.setP3("foo");
     n2.setP4(new JsonArray());
-    assertTrue(n1.equals(n2));
+    assertEquals(n1, n2);
   }
 
   @Test
@@ -55,7 +55,7 @@ public class DynamicNodeTest {
     n2.setP2(123);
     n2.setP3("bar");
     n2.setP4(new JsonArray());
-    assertFalse(n1.equals(n2));
+    assertNotEquals(n1, n2);
   }
 
   @Test
@@ -129,7 +129,7 @@ public class DynamicNodeTest {
     assertEquals(Arrays.asList(a2_3, a2_4), n1.getAnnotations(a2));
 
     n1.removeAnnotation(a2_3);
-    assertEquals(null, a2_3.getParent());
+    assertNull(a2_3.getParent());
     assertEquals(Arrays.asList(a1_1, a1_2, a2_4), n1.getAnnotations());
     assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
     assertEquals(Arrays.asList(a2_4), n1.getAnnotations(a2));

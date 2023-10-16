@@ -21,7 +21,8 @@ public class NodeInstantiator {
         Map<Property, Object> propertiesValues);
   }
 
-  private Map<String, ConceptSpecificNodeInstantiator<?>> customUnserializers = new HashMap<>();
+  private final Map<String, ConceptSpecificNodeInstantiator<?>> customUnserializers =
+      new HashMap<>();
   private ConceptSpecificNodeInstantiator<?> defaultNodeUnserializer =
       (ConceptSpecificNodeInstantiator<Node>)
           (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {

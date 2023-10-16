@@ -12,12 +12,12 @@ import java.util.Objects;
 
 public class LibraryLanguage {
 
-  public static Language LIBRARY_MM;
-  public static Concept LIBRARY;
-  public static Concept BOOK;
-  public static Concept WRITER;
+  public static final Language LIBRARY_MM;
+  public static final Concept LIBRARY;
+  public static final Concept BOOK;
+  public static final Concept WRITER;
 
-  public static Concept GUIDE_BOOK_WRITER;
+  public static final Concept GUIDE_BOOK_WRITER;
 
   static {
     InputStream inputStream =

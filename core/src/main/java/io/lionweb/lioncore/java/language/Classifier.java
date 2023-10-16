@@ -2,10 +2,7 @@ package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,11 +45,25 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   public abstract @Nonnull List<Classifier<?>> directAncestors();
 
-  public @Nonnull List<Classifier<?>> allAncestors() {
-    List<Classifier<?>> ancestors = new ArrayList<>();
-    for (Classifier<?> ancestor : directAncestors()) {}
+  /**
+   * Finds all ancestors. Works even for invalid inheritance hierarchies (i.e. containing loops).
+   *
+   * @return All direct or indirect/transitive ancestors.
+   */
+  public @Nonnull Set<Classifier<?>> allAncestors() {
+    Set<Classifier<?>> result = new HashSet<>();
+    Set<Classifier<?>> ancestors = new HashSet<>(directAncestors());
 
-    return ancestors;
+    while (!ancestors.isEmpty()) {
+      for (Classifier<?> a : new HashSet<>(ancestors)) {
+        ancestors.remove(a);
+        if (result.add(a)) {
+          ancestors.addAll(a.directAncestors());
+        }
+      }
+    }
+
+    return result;
   }
 
   public @Nonnull List<Feature> allFeatures() {

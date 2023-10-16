@@ -30,18 +30,18 @@ public class JSONResourceFactory implements Resource.Factory {
 
   // private JsonElement jsonRoot;
 
-  private class ReferencePostponer {
+  private static class ReferencePostponer {
 
-    private EPackage.Registry packagesRegistry;
+    private final EPackage.Registry packagesRegistry;
 
     public ReferencePostponer(EPackage.Registry packagesRegistry) {
       this.packagesRegistry = packagesRegistry;
     }
 
-    private class PostponedReference {
-      EObject container;
-      EStructuralFeature eStructuralFeature;
-      List<String> refs;
+    private static class PostponedReference {
+      final EObject container;
+      final EStructuralFeature eStructuralFeature;
+      final List<String> refs;
 
       public PostponedReference(
           EObject container, EStructuralFeature eStructuralFeature, String ref) {
@@ -58,7 +58,7 @@ public class JSONResourceFactory implements Resource.Factory {
       }
     }
 
-    private List<PostponedReference> postponedReferences = new ArrayList<>();
+    private final List<PostponedReference> postponedReferences = new ArrayList<>();
 
     public void considerReferences(List<EObject> theseNodes) {
       postponedReferences.forEach(

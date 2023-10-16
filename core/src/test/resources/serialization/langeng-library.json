@@ -1,10 +1,10 @@
 {
-  "serializationFormatVersion": "1",
+  "serializationFormatVersion": "2023.1",
   "languages": [],
   "nodes": [
     {
       "id": "lib-1",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Library"
@@ -38,7 +38,7 @@
     },
     {
       "id": "de",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Book"
@@ -82,7 +82,7 @@
     },
     {
       "id": "bfd",
-      "concept": {
+      "classifier": {
         "language": "library",
         "version": "1",
         "key": "library-Book"

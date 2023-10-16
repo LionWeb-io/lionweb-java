@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -91,7 +92,7 @@ public class AnnotationTest extends BaseTest {
     ConceptInterface myCI = new ConceptInterface(language, "MyCI", "ci", "ci");
 
     Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");
-    assertEquals(null, annotation.getAnnotates());
+    assertNull(annotation.getAnnotates());
     // From the node point of view the annotation is correct even if annotates is empty, because
     // it can be sometimes, if the annotation is inherited or inheriting and the parent or
     // sub-annotation
@@ -115,7 +116,7 @@ public class AnnotationTest extends BaseTest {
     assertLanguageIsValid(language);
 
     annotation.setAnnotates(null);
-    assertEquals(null, annotation.getAnnotates());
+    assertNull(annotation.getAnnotates());
     assertNodeTreeIsValid(annotation);
     assertLanguageIsNotValid(language);
 

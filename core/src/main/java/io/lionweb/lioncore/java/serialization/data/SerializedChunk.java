@@ -10,11 +10,11 @@ import javax.annotation.Nonnull;
  */
 public class SerializedChunk {
 
-  private Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
+  private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
   private String serializationFormatVersion;
-  private List<UsedLanguage> languages = new ArrayList<>();
-  private List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
+  private final List<UsedLanguage> languages = new ArrayList<>();
+  private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
   public void setSerializationFormatVersion(String value) {
     this.serializationFormatVersion = value;

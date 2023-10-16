@@ -11,7 +11,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 /** EMF importer which produces LionWeb's Metamodels. */
 public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
-  private DataTypeMapping dataTypeMapping = new DataTypeMapping();
+  private final DataTypeMapping dataTypeMapping = new DataTypeMapping();
 
   public EMFMetamodelImporter() {
     super();

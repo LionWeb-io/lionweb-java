@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.self;
 
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.util.*;
 
 public class LionCore {
@@ -77,7 +78,7 @@ public class LionCore {
       INSTANCE = new Language("LionCore.M3");
       INSTANCE.setID("-id-LionCore-M3");
       INSTANCE.setKey("LionCore-M3");
-      INSTANCE.setVersion("1");
+      INSTANCE.setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
 
       // We first instantiate all Concepts and ConceptInterfaces
       // we add features only after as the features will have references to these elements

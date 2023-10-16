@@ -119,7 +119,7 @@ public interface Node extends ClassifierInstance<Concept> {
     List<? extends Node> children = getChildrenByContainmentName(containmentName);
     if (children.size() > 1) {
       throw new IllegalStateException();
-    } else if (children.size() == 0) {
+    } else if (children.isEmpty()) {
       return null;
     } else {
       return children.get(0);

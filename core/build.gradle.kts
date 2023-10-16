@@ -99,12 +99,12 @@ publishing {
                 description.set("Java APIs for the LionWeb system")
                 version = project.version as String
                 packaging = "jar"
-                url.set("https://github.com/LionWeb-org/lioncore-java")
+                url.set("https://github.com/LionWeb-io/lioncore-java")
 
                 scm {
-                    connection.set("scm:git:https://github.com/LionWeb-org/lioncore-java.git")
-                    developerConnection.set("scm:git:git@github.com:LionWeb-org/lioncore-java.git")
-                    url.set("https://github.com/LionWeb-org/lioncore-java.git")
+                    connection.set("scm:git:https://github.com/LionWeb-io/lioncore-java.git")
+                    developerConnection.set("scm:git:git@github.com:LionWeb-io/lioncore-java.git")
+                    url.set("https://github.com/LionWeb-io/lioncore-java.git")
                 }
 
                 licenses {
@@ -146,10 +146,10 @@ java {
     targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
-if (isReleaseVersion) {
-    tasks.withType(Sign::class) {
-    }
+tasks.withType(Sign::class) {
+    onlyIf("isReleaseVersion is set") { isReleaseVersion }
 }
+
 signing {
     sign(publishing.publications["lioncore_java_core"])
 }
@@ -178,7 +178,7 @@ configurations["integrationTestImplementation"]
 val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
 
 val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
-    val repoURL = "https://github.com/LionWeb-org/lionweb-integration-testing.git"
+    val repoURL = "https://github.com/LionWeb-io/lionweb-integration-testing.git"
     doLast {
         val destinationDir = integrationTestResources
         if (destinationDir.exists()) {

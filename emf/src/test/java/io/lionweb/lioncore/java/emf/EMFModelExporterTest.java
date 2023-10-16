@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
@@ -32,12 +33,12 @@ public class EMFModelExporterTest {
     EObject mv = resource.getContents().get(0);
     assertEquals("Writer", mv.eClass().getName());
     assertEquals("Markus Voelter", mv.eGet(mv.eClass().getEStructuralFeature("name")));
-    assertEquals(null, mv.eContainer());
+    assertNull(mv.eContainer());
 
     EObject mb = resource.getContents().get(1);
     assertEquals("Writer", mb.eClass().getName());
     assertEquals("Meinte Boersma", mb.eGet(mb.eClass().getEStructuralFeature("name")));
-    assertEquals(null, mb.eContainer());
+    assertNull(mb.eContainer());
 
     EObject library = resource.getContents().get(2);
     assertEquals("Library", library.eClass().getName());

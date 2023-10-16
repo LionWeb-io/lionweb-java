@@ -77,10 +77,10 @@ public class EMFModelExporter extends AbstractEMFExporter {
     return eObject;
   }
 
-  private class ReferencesPostponer {
+  public static class ReferencesPostponer {
 
-    private Map<Node, EObject> nodesToEObjects = new HashMap<>();
-    private List<PostponedReference> postponedReferences = new ArrayList<>();
+    private final Map<Node, EObject> nodesToEObjects = new HashMap<>();
+    private final List<PostponedReference> postponedReferences = new ArrayList<>();
 
     public void trackMapping(Node node, EObject eObject) {
       nodesToEObjects.put(node, eObject);
@@ -114,7 +114,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
               postponedReference.eObject.eSet(postponedReference.eReference, referredEObjects);
             } else {
               EObject referredEObject;
-              if (referenceValues.size() == 0) {
+              if (referenceValues.isEmpty()) {
                 referredEObject = null;
               } else if (referenceValues.size() == 1) {
                 referredEObject = nodeToEObject(referenceValues.get(0).getReferred());
@@ -131,10 +131,10 @@ public class EMFModelExporter extends AbstractEMFExporter {
       postponedReferences.add(new PostponedReference(node, eObject, eReference));
     }
 
-    class PostponedReference {
-      Node node;
-      EObject eObject;
-      EReference eReference;
+    static class PostponedReference {
+      final Node node;
+      final EObject eObject;
+      final EReference eReference;
 
       public PostponedReference(Node node, EObject eObject, EReference eReference) {
         this.node = node;

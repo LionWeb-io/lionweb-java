@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -67,7 +68,7 @@ public class ConceptReflectionTest {
     Concept otherConcept = new Concept(language, "OtherConcept");
     Reference reference = LionCore.getConcept().getReferenceByName("extends");
     concept.addReferenceValue(reference, null);
-    assertEquals(null, concept.getExtendedConcept());
+    assertNull(concept.getExtendedConcept());
     concept.addReferenceValue(reference, new ReferenceValue(otherConcept, null));
     assertEquals(otherConcept, concept.getExtendedConcept());
   }

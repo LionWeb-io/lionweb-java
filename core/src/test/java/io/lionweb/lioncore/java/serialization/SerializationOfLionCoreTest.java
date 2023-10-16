@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.serialization;
 
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -28,33 +29,33 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     SerializedChunk serializedChunk =
         jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
 
-    assertEquals("1", serializedChunk.getSerializationFormatVersion());
+    assertEquals("2023.1", serializedChunk.getSerializationFormatVersion());
 
     assertEquals(1, serializedChunk.getLanguages().size());
     Assert.assertEquals(
-        new UsedLanguage("LionCore-M3", "1"), serializedChunk.getLanguages().get(0));
+        new UsedLanguage("LionCore-M3", "2023.1"), serializedChunk.getLanguages().get(0));
 
     SerializedClassifierInstance LionCore_M3 =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> n.getID().equals("-id-LionCore-M3"))
+            .filter(n -> "-id-LionCore-M3".equals(n.getID()))
             .findFirst()
             .get();
     assertEquals("-id-LionCore-M3", LionCore_M3.getID());
-    assertEquals(new MetaPointer("LionCore-M3", "1", "Language"), LionCore_M3.getClassifier());
+    assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), LionCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-M3", "1", "Language-version"), "1"),
+                new MetaPointer("LionCore-M3", "2023.1", "Language-version"), "2023.1"),
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-M3", "1", "IKeyed-key"), "LionCore-M3"),
+                new MetaPointer("LionCore-M3", "2023.1", "IKeyed-key"), "LionCore-M3"),
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-builtins", "1", "LionCore-builtins-INamed-name"),
+                new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
                 "LionCore.M3")),
         LionCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
             new SerializedContainmentValue(
-                new MetaPointer("LionCore-M3", "1", "Language-entities"),
+                new MetaPointer("LionCore-M3", "2023.1", "Language-entities"),
                 Arrays.asList(
                     "-id-Annotation",
                     "-id-Concept",
@@ -76,13 +77,13 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(
         Arrays.asList(
             new SerializedReferenceValue(
-                new MetaPointer("LionCore-M3", "1", "Language-dependsOn"),
+                new MetaPointer("LionCore-M3", "2023.1", "Language-dependsOn"),
                 Collections.emptyList())),
         LionCore_M3.getReferences());
 
     SerializedClassifierInstance LionCore_M3_ConceptInterface_extends =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> n.getID().equals("-id-ConceptInterface-extends"))
+            .filter(n -> "-id-ConceptInterface-extends".equals(n.getID()))
             .findFirst()
             .get();
   }
@@ -112,7 +113,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParentNodeID());
+    assertNull(lioncore.getParentNodeID());
   }
 
   @Test
@@ -127,7 +128,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getName());
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParent());
+    assertNull(lioncore.getParent());
   }
 
   @Test
@@ -151,7 +152,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore.M3", lioncore.getPropertyValueByName("name"));
     assertEquals(16, lioncore.getChildren().size());
-    assertEquals(null, lioncore.getParent());
+    assertNull(lioncore.getParent());
   }
 
   @Test(expected = RuntimeException.class)

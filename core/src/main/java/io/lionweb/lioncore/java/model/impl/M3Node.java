@@ -9,8 +9,6 @@ import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -75,6 +73,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
   public List<AnnotationInstance> getAnnotations(Annotation annotation) {
     return annotationInstances.stream()
@@ -155,8 +154,9 @@ public abstract class M3Node<T extends M3Node> implements Node {
     throw new UnsupportedOperationException();
   }
 
+  @Nonnull
   @Override
-  public List<Node> getReferredNodes(Reference reference) {
+  public List<Node> getReferredNodes(@Nonnull Reference reference) {
     return getReferenceValues(reference).stream()
         .map(v -> v.getReferred())
         .collect(Collectors.toList());
@@ -200,7 +200,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
   protected <V extends Node> V getContainmentSingleValue(String linkName) {
     if (containmentValues.containsKey(linkName)) {
       List<Node> values = containmentValues.get(linkName);
-      if (values.size() == 0) {
+      if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
         return (V) (values.get(0));
@@ -215,7 +215,7 @@ public abstract class M3Node<T extends M3Node> implements Node {
   protected <V extends Node> V getReferenceSingleValue(String linkName) {
     if (referenceValues.containsKey(linkName)) {
       List<ReferenceValue> values = referenceValues.get(linkName);
-      if (values.size() == 0) {
+      if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
         return (V) (values.get(0).getReferred());

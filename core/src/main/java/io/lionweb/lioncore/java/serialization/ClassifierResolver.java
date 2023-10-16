@@ -7,6 +7,7 @@ import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /**
  * This class is responsible to resolve the Classifier associate with a given Classifier ID.
@@ -18,7 +19,8 @@ public class ClassifierResolver {
   private final Map<MetaPointer, Concept> registeredConcepts = new HashMap<>();
   private final Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
 
-  public Classifier<?> resolveClassifier(MetaPointer conceptMetaPointer) {
+  @Nonnull
+  public Classifier<?> resolveClassifier(@Nonnull MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {
       return registeredConcepts.get(conceptMetaPointer);
     } else if (registeredAnnotations.containsKey(conceptMetaPointer)) {
@@ -29,7 +31,8 @@ public class ClassifierResolver {
     }
   }
 
-  public Concept resolveConcept(MetaPointer conceptMetaPointer) {
+  @Nonnull
+  public Concept resolveConcept(@Nonnull MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {
       return registeredConcepts.get(conceptMetaPointer);
     } else {
@@ -38,7 +41,8 @@ public class ClassifierResolver {
     }
   }
 
-  public Annotation resolveAnnotation(MetaPointer metaPointer) {
+  @Nonnull
+  public Annotation resolveAnnotation(@Nonnull MetaPointer metaPointer) {
     if (registeredAnnotations.containsKey(metaPointer)) {
       return registeredAnnotations.get(metaPointer);
     } else {
@@ -46,7 +50,8 @@ public class ClassifierResolver {
     }
   }
 
-  public ClassifierResolver registerLanguage(Language language) {
+  @Nonnull
+  public ClassifierResolver registerLanguage(@Nonnull Language language) {
     language
         .getElements()
         .forEach(

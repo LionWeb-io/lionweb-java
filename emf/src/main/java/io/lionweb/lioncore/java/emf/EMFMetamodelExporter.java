@@ -3,7 +3,6 @@ package io.lionweb.lioncore.java.emf;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.language.Language;
 import java.util.List;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -12,7 +11,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 /** Export LionWeb's metamodels into EMF's metamodels. */
 public class EMFMetamodelExporter extends AbstractEMFExporter {
 
-  private DataTypeMapping dataTypeMapping = new DataTypeMapping();
+  private final DataTypeMapping dataTypeMapping = new DataTypeMapping();
 
   public EMFMetamodelExporter() {
     super();

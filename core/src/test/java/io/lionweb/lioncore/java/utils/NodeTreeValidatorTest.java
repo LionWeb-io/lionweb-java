@@ -16,7 +16,7 @@ public class NodeTreeValidatorTest {
     Concept c = new Concept();
     DynamicNode node = new DynamicNode("abc", c);
     ValidationResult vr = new NodeTreeValidator().validate(node);
-    assertEquals(true, vr.isSuccessful());
+    assertTrue(vr.isSuccessful());
     assertEquals(Collections.emptySet(), vr.getIssues());
   }
 
@@ -25,7 +25,7 @@ public class NodeTreeValidatorTest {
     Concept c = new Concept();
     DynamicNode node = new DynamicNode(null, c);
     ValidationResult vr = new NodeTreeValidator().validate(node);
-    assertEquals(false, vr.isSuccessful());
+    assertFalse(vr.isSuccessful());
     assertEquals(
         new HashSet(Arrays.asList(new Issue(IssueSeverity.Error, "ID null found", node))),
         vr.getIssues());
@@ -36,7 +36,7 @@ public class NodeTreeValidatorTest {
     Concept c = new Concept();
     DynamicNode node = new DynamicNode("@@@", c);
     ValidationResult vr = new NodeTreeValidator().validate(node);
-    assertEquals(false, vr.isSuccessful());
+    assertFalse(vr.isSuccessful());
     assertEquals(
         new HashSet(Arrays.asList(new Issue(IssueSeverity.Error, "Invalid ID", node))),
         vr.getIssues());
