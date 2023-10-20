@@ -146,7 +146,9 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         .getImplemented()
         .forEach(
             implemented -> {
-              throw new UnsupportedOperationException();
+              EClass implementedEClass =
+                      (EClass) conceptsToEClassesMapping.getCorrespondingEClass(implemented);
+              eClass.getESuperTypes().add(implementedEClass);
             });
 
     concept
