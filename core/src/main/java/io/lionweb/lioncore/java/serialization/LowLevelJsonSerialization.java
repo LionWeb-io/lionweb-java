@@ -302,15 +302,18 @@ public class LowLevelJsonSerialization {
                     SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));
           });
 
-      JsonArray annotations = jsonObject.get("annotations").getAsJsonArray();
-      serializedClassifierInstance.setAnnotations(
-          StreamSupport.stream(annotations.spliterator(), false)
-              .map(
-                  annotationEntry -> {
-                    JsonPrimitive annotationJP = annotationEntry.getAsJsonPrimitive();
-                    return annotationJP.getAsString();
-                  })
-              .collect(Collectors.toList()));
+      JsonElement annotationsJE = jsonObject.get("annotations");
+      if (annotationsJE != null) {
+        JsonArray annotations = annotationsJE.getAsJsonArray();
+        serializedClassifierInstance.setAnnotations(
+            StreamSupport.stream(annotations.spliterator(), false)
+                .map(
+                    annotationEntry -> {
+                      JsonPrimitive annotationJP = annotationEntry.getAsJsonPrimitive();
+                      return annotationJP.getAsString();
+                    })
+                .collect(Collectors.toList()));
+      }
 
       return serializedClassifierInstance;
     } catch (UnserializationException e) {
