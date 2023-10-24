@@ -118,7 +118,7 @@ publishing {
                     developer {
                         id = 'enikao'
                         name = 'Niko Stotz'
-                        email = 'niko.stotz@nikostotz.de'
+                        email = 'github-public@nikostotz.de'
                     }
                 }
 
