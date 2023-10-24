@@ -130,7 +130,7 @@ publishing {
                     developer {
                         id.set("enikao")
                         name.set("Niko Stotz")
-                        email.set("niko.stotz@nikostotz.de")
+                        email.set("github-public@nikostotz.de")
                     }
                 }
 
