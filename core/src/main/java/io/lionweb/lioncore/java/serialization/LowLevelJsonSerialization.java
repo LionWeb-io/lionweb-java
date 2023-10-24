@@ -8,6 +8,8 @@ import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
 /**
@@ -299,6 +301,16 @@ public class LowLevelJsonSerialization {
                     SerializationUtils.tryToGetMetaPointerProperty(referenceJO, "reference"),
                     SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));
           });
+
+      JsonArray annotations = jsonObject.get("annotations").getAsJsonArray();
+      serializedClassifierInstance.setAnnotations(
+          StreamSupport.stream(annotations.spliterator(), false)
+              .map(
+                  annotationEntry -> {
+                    JsonPrimitive annotationJP = annotationEntry.getAsJsonPrimitive();
+                    return annotationJP.getAsString();
+                  })
+              .collect(Collectors.toList()));
 
       return serializedClassifierInstance;
     } catch (UnserializationException e) {
