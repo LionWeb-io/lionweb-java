@@ -14,6 +14,7 @@ public class NodeTreeValidatorTest {
   @Test
   public void everythingCorrectCase() {
     Concept c = new Concept();
+    c.setPartition(true);
     DynamicNode node = new DynamicNode("abc", c);
     ValidationResult vr = new NodeTreeValidator().validate(node);
     assertTrue(vr.isSuccessful());
@@ -23,6 +24,7 @@ public class NodeTreeValidatorTest {
   @Test
   public void aNodeWithoutIDIsNotValid() {
     Concept c = new Concept();
+    c.setPartition(true);
     DynamicNode node = new DynamicNode(null, c);
     ValidationResult vr = new NodeTreeValidator().validate(node);
     assertFalse(vr.isSuccessful());
@@ -34,6 +36,7 @@ public class NodeTreeValidatorTest {
   @Test
   public void aNodeWithInvalidIDIsNotValid() {
     Concept c = new Concept();
+    c.setPartition(true);
     DynamicNode node = new DynamicNode("@@@", c);
     ValidationResult vr = new NodeTreeValidator().validate(node);
     assertFalse(vr.isSuccessful());
