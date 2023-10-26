@@ -169,7 +169,7 @@ public class LanguageValidator extends Validator<Language> {
         annotation.getExtendedAnnotation() != null
             && annotation.getAnnotates() != null
             && annotation.getAnnotates() != annotation.getExtendedAnnotation().getAnnotates(),
-        "A sub annotation should not define annotates",
+        "When a sub annotation specify a value for annotates it must be the same value the super annotation specifies",
         annotation);
     validationResult.checkForError(
         annotation.getExtendedAnnotation() != null

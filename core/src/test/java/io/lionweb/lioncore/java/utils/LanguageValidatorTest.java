@@ -266,7 +266,10 @@ public class LanguageValidatorTest {
     assertEquals(
         new HashSet<>(
             Arrays.asList(
-                new Issue(IssueSeverity.Error, "A sub annotation should not define annotates", b))),
+                new Issue(
+                    IssueSeverity.Error,
+                    "When a sub annotation specify a value for annotates it must be the same value the super annotation specifies",
+                    b))),
         l.validate().getIssues());
   }
 
