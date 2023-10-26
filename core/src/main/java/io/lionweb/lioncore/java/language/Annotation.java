@@ -56,7 +56,15 @@ public class Annotation extends Classifier<Annotation> {
   }
 
   public @Nullable Classifier<?> getAnnotates() {
-    Classifier<?> annotates = this.getReferenceSingleValue("annotates");
+    return this.getReferenceSingleValue("annotates");
+  }
+
+  /**
+   * An Annotation extending another annotation should not redefine annotates. So the value is
+   * effectively inherited from the super annotation.
+   */
+  public @Nullable Classifier<?> getEffectivelyAnnotated() {
+    Classifier<?> annotates = getAnnotates();
     if (annotates == null && getExtendedAnnotation() != null) {
       return getExtendedAnnotation().getAnnotates();
     } else {

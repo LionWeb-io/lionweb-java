@@ -121,7 +121,8 @@ public class AnnotationTest extends BaseTest {
     assertLanguageIsNotValid(language);
 
     annotation.setExtendedAnnotation(superAnnotation);
-    assertEquals(myConcept, annotation.getAnnotates());
+    assertEquals(null, annotation.getAnnotates());
+    assertEquals(myConcept, annotation.getEffectivelyAnnotated());
     assertNodeTreeIsValid(annotation);
     assertLanguageIsValid(language);
   }

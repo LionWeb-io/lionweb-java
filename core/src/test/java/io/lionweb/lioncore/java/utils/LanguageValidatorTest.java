@@ -251,4 +251,42 @@ public class LanguageValidatorTest {
                     branchB))),
         l.validate().getIssues());
   }
+
+  @Test
+  public void aSubAnnotationShouldNotDefineAnnotates() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Concept c = new Concept(l, "C", "c_id", "c_key");
+    Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
+    a.setAnnotates(c);
+    Annotation b = new Annotation(l, "B", "branchB_id", "branchB_key");
+    b.setAnnotates(c);
+    b.setExtendedAnnotation(a);
+    assertEquals(
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(IssueSeverity.Error, "A sub annotation should not define annotates", b))),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void aSubAnnotationShouldHaveTheSameMultipleValueAsTheParent() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Concept c = new Concept(l, "C", "c_id", "c_key");
+    Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
+    a.setAnnotates(c);
+    Annotation b = new Annotation(l, "B", "branchB_id", "branchB_key");
+    b.setExtendedAnnotation(a);
+    a.setMultiple(true);
+    b.setMultiple(true);
+    assertTrue(l.validate().isSuccessful());
+    b.setMultiple(false);
+    assertEquals(
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "A sub annotation should have the same multiple value as the super annotation",
+                    b))),
+        l.validate().getIssues());
+  }
 }
