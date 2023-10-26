@@ -4,15 +4,10 @@ plugins {
     id("java-library")
     id("maven-publish")
     id("signing")
-    id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 repositories {
     mavenCentral()
-    // Required for MPS OpenAPI and Modelix"s Model API
-    maven {
-        url = URI("https://artifacts.itemis.cloud/repository/maven-mps/")
-    }
 }
 
 val javadocConfig by configurations.creating {
@@ -20,29 +15,28 @@ val javadocConfig by configurations.creating {
 }
 
 dependencies {
-    // Use JUnit test framework.
-    testImplementation("junit:junit:4.13")
+    api(project(":core"))
 
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.apache.commons:commons-math3:3.6.1")
+    api("org.eclipse.emf:org.eclipse.emf.common:2.28.0")
+    api("org.eclipse.emf:org.eclipse.emf.ecore:2.33.0")
+    api("org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.18.0")
 
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation("com.google.guava:guava:29.0-jre")
-
-    javadocConfig("org.eclipse.emf:org.eclipse.emf.ecore:2.28.0")
-
-    // Please note that this forces us to use Java 11 for the javadoc tasks
-    // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
-    // on Maven
-    javadocConfig("com.jetbrains:mps-openapi:2021.3.1")
-
-    javadocConfig("org.modelix:model-api:1.3.2")
+    api("org.eclipse.emfcloud:emfjson-jackson:2.2.0")
 
     implementation("com.google.code.gson:gson:2.10.1")
+    implementation("org.jetbrains:annotations:24.0.0")
 
-    implementation("com.networknt:json-schema-validator:1.0.77")
+    // Use JUnit test framework.
+    testImplementation("junit:junit:4.13")
+    testImplementation("com.google.code.gson:gson:2.10.1")
 }
 
+val jvmVersion = extra["jvmVersion"] as String
+
+java {
+    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
+    targetCompatibility = JavaVersion.toVersion(jvmVersion)
+}
 tasks.register<Javadoc>("myJavadoc") {
     source = sourceSets.main.get().allJava
     classpath = javadocConfig
@@ -84,7 +78,7 @@ publishing {
     }
 
     publications {
-        create<MavenPublication>("lionweb_java_core") {
+        create<MavenPublication>("lionweb_java_emf") {
             from(components.findByName("java"))
             groupId = "io.lionweb.lionweb-java"
             artifactId = "lionweb-java-" + project.name
@@ -94,7 +88,7 @@ publishing {
             suppressPomMetadataWarningsFor("cliRuntimeElements")
             pom {
                 name.set("lionweb-java-" + project.name)
-                description.set("Java APIs for the LionWeb system")
+                description.set("EMF compatibility layer for LionWeb")
                 version = project.version as String
                 packaging = "jar"
                 url.set("https://github.com/LionWeb-io/lionweb-java")
@@ -137,73 +131,10 @@ publishing {
     }
 }
 
-val jvmVersion = extra["jvmVersion"] as String
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-
 tasks.withType(Sign::class) {
     onlyIf("isReleaseVersion is set") { isReleaseVersion }
 }
 
 signing {
-    sign(publishing.publications["lionweb_java_core"])
-}
-
-tasks.named("signLionweb_java_corePublication") {
-    dependsOn("shadowJar")
-}
-
-val integrationTestSourceSet = sourceSets.create("integrationTest") {
-    compileClasspath += sourceSets["main"].output
-    runtimeClasspath += sourceSets["main"].output
-}
-
-configurations["integrationTestImplementation"]
-    .extendsFrom(configurations["testImplementation"])
-
-val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
-
-val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
-    val repoURL = "https://github.com/LionWeb-io/lionweb-integration-testing.git"
-    doLast {
-        val destinationDir = integrationTestResources
-        if (destinationDir.exists()) {
-            logger.info("Not downloading integration test resources as directory ${destinationDir.absolutePath} exist")
-        } else {
-            val cmdLine = "git clone --depth 1 $repoURL ${destinationDir.absolutePath}"
-            logger.info("About to download integration test using this command: $cmdLine")
-            val process = ProcessBuilder()
-                .command(cmdLine.split(" "))
-                .directory(project.buildDir)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .start()
-            val finished = process.waitFor(60, TimeUnit.SECONDS)
-            if (logger.isInfoEnabled) {
-                logger.info("--- Git process output - start ---")
-                logger.info(process.inputStream.reader().readText())
-                logger.info("--- Git process output - end ---")
-            }
-            if (!finished) {
-                throw RuntimeException("Unable to download the repository $repoURL in 60 seconds, giving up")
-            } else {
-                logger.info("Downloaded integration test resources repo from $repoURL in directory ${destinationDir.absolutePath}")
-            }
-        }
-        require(destinationDir.exists() && destinationDir.isDirectory) {
-            throw IllegalStateException("Directory $destinationDir does not exist or is not a directory")
-        }
-    }
-}
-
-// Add a task to run the integration tests
-val integrationTest = tasks.create("integrationTest", Test::class.java) {
-    dependsOn(downloadIntegrationTestResources)
-    group = "Verification"
-    testClassesDirs = integrationTestSourceSet.output.classesDirs
-    classpath = integrationTestSourceSet.runtimeClasspath
-    environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
+    sign(publishing.publications["lionweb_java_emf"])
 }
