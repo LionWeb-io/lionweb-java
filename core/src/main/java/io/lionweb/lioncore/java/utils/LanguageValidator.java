@@ -166,7 +166,9 @@ public class LanguageValidator extends Validator<Language> {
         "An annotation should specify annotates or inherit it",
         annotation);
     validationResult.checkForError(
-        annotation.getExtendedAnnotation() != null && annotation.getAnnotates() != null,
+        annotation.getExtendedAnnotation() != null
+            && annotation.getAnnotates() != null
+            && annotation.getAnnotates() != annotation.getExtendedAnnotation().getAnnotates(),
         "A sub annotation should not define annotates",
         annotation);
     validationResult.checkForError(
