@@ -41,4 +41,30 @@ public class NodeTreeValidatorTest {
         new HashSet(Arrays.asList(new Issue(IssueSeverity.Error, "Invalid ID", node))),
         vr.getIssues());
   }
+
+  @Test
+  public void rootNodeWhichIsNotPartition() {
+    Concept nonPartitionConcept = new Concept();
+    nonPartitionConcept.setPartition(false);
+    DynamicNode node = new DynamicNode("N1", nonPartitionConcept);
+    ValidationResult vr = new NodeTreeValidator().validate(node);
+    assertFalse(vr.isSuccessful());
+    assertEquals(
+        new HashSet(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "A root node should be an instance of a Partition concept",
+                    node))),
+        vr.getIssues());
+  }
+
+  @Test
+  public void rootNodeWhichIsPartition() {
+    Concept nonPartitionConcept = new Concept();
+    nonPartitionConcept.setPartition(true);
+    DynamicNode node = new DynamicNode("N1", nonPartitionConcept);
+    ValidationResult vr = new NodeTreeValidator().validate(node);
+    assertTrue(vr.isSuccessful());
+  }
 }
