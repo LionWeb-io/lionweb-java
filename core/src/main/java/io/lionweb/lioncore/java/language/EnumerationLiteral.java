@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nonnull;
@@ -35,10 +34,11 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
     Node parent = getParent();
     if (parent == null) {
       return null;
-    } else if (parent instanceof Enumeration){
+    } else if (parent instanceof Enumeration) {
       return (Enumeration) parent;
     } else {
-      throw new IllegalStateException("The parent of this EnumerationLiteral is not an Enumeration");
+      throw new IllegalStateException(
+          "The parent of this EnumerationLiteral is not an Enumeration");
     }
   }
 
