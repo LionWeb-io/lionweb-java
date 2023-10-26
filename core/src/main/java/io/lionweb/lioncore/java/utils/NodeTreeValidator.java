@@ -18,6 +18,12 @@ public class NodeTreeValidator extends Validator<Node> {
       // It does not make sense to make the same ID as null and invalid
       validationResult.checkForError(!CommonChecks.isValidID(node.getID()), "Invalid ID", node);
     }
+    if (node.isRoot()) {
+      validationResult.checkForError(
+          !node.getConcept().isPartition(),
+          "A root node should be an instance of a Partition concept",
+          node);
+    }
     node.getChildren().forEach(child -> validateNodeAndDescendants(child, validationResult));
   }
 

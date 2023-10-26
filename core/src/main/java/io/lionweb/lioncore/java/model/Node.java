@@ -141,4 +141,8 @@ public interface Node extends ClassifierInstance<Concept> {
   default Classifier<Concept> getClassifier() {
     return getConcept();
   }
+
+  default boolean isRoot() {
+    return getParent() == null;
+  }
 }
