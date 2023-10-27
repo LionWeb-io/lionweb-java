@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -249,6 +250,60 @@ public class LanguageValidatorTest {
                     IssueSeverity.Error,
                     "Cyclic hierarchy found: the interface extends itself",
                     branchB))),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void aSubAnnotationShouldNotDefineAnnotatesToADifferentValue() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Concept c = new Concept(l, "C", "c_id", "c_key");
+    Concept c2 = new Concept(l, "C2", "c2_id", "c2_key");
+    Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
+    a.setAnnotates(c);
+    Annotation b = new Annotation(l, "B", "branchB_id", "branchB_key");
+    b.setAnnotates(c2);
+    b.setExtendedAnnotation(a);
+    assertEquals(
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "When a sub annotation specify a value for annotates it must be the same value the super annotation specifies",
+                    b))),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void aSubAnnotationCanReDefineAnnotatesToTheSameValue() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Concept c = new Concept(l, "C", "c_id", "c_key");
+    Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
+    a.setAnnotates(c);
+    Annotation b = new Annotation(l, "B", "branchB_id", "branchB_key");
+    b.setAnnotates(c);
+    b.setExtendedAnnotation(a);
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+  }
+
+  @Test
+  public void aSubAnnotationShouldHaveTheSameMultipleValueAsTheParent() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Concept c = new Concept(l, "C", "c_id", "c_key");
+    Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
+    a.setAnnotates(c);
+    Annotation b = new Annotation(l, "B", "branchB_id", "branchB_key");
+    b.setExtendedAnnotation(a);
+    a.setMultiple(true);
+    b.setMultiple(true);
+    assertTrue(l.validate().isSuccessful());
+    b.setMultiple(false);
+    assertEquals(
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "A sub annotation should have the same multiple value as the super annotation",
+                    b))),
         l.validate().getIssues());
   }
 }
