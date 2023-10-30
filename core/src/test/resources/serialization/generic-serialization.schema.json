@@ -35,7 +35,7 @@
         "properties": {
           "type": "object"
         },
-        "children": {
+        "containments": {
           "type": "object"
         },
         "references": {
@@ -46,7 +46,7 @@
         "concept",
         "id",
         "properties",
-        "children",
+        "containments",
         "references"
       ]
     }

@@ -6,3 +6,6 @@ build
 .idea
 **/bin/
 **/.DS_Store
+
+# Ignore IntelliJ project files (from MPS debugging)
+**/*.iml

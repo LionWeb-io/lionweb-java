@@ -35,7 +35,7 @@
           "value": "library"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -96,7 +96,7 @@
           "value": "library-Book"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -162,7 +162,7 @@
           "value": "library-Book-title"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -213,7 +213,7 @@
           "value": "library-Book-title"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -272,7 +272,7 @@
           "value": "library-Book-author"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -323,7 +323,7 @@
           "value": "library-Library"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -389,7 +389,7 @@
           "value": "library-Library-name"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -448,7 +448,7 @@
           "value": "library-Library-books"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -499,7 +499,7 @@
           "value": "library-Writer"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -564,7 +564,7 @@
           "value": "library-Writer-name"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -615,7 +615,7 @@
           "value": "library-GuideBookWriter"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -685,7 +685,7 @@
           "value": "library-GuideBookWriter-countries"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -736,7 +736,7 @@
           "value": "library-SpecialistBookWriter"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -806,7 +806,7 @@
           "value": "library-SpecialistBookWriter-subject"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {

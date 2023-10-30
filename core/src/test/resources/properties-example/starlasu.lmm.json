@@ -35,7 +35,7 @@
           "value": "com-strumenta-StarLasu"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -97,7 +97,7 @@
           "value": "StarLasu-ASTNode"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -160,7 +160,7 @@
           "value": "StarLasu-GenericErrorNode"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -215,7 +215,7 @@
           "value": "StarLasu-Named"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -267,7 +267,7 @@
           "value": "StarLasu-PossiblyNamed"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -324,7 +324,7 @@
           "value": "StarLasu-PossiblyNamed-name"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -367,7 +367,7 @@
           "value": "StarLasu-Position"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [],
       "parent": "com-strumenta-StarLasu"
     },
@@ -396,7 +396,7 @@
           "value": "StarLasu-Char"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [],
       "parent": "com-strumenta-StarLasu"
     }
