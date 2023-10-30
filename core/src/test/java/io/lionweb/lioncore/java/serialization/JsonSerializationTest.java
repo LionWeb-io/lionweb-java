@@ -127,16 +127,16 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeLanguageWithEnumerations() {
+  public void deserializeLanguageWithEnumerations() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/TestLang-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Enumeration testEnumeration1 =
         (Enumeration)
-            unserializedNodes.stream()
+            deserializedNodes.stream()
                 .filter(
                     n ->
                         "MDhjYWFkNzUtODI0Ni00NDI3LWJiNGQtODQ0NGI2YzVjNzI5LzI1ODUzNzgxNjU5NzMyMDQ1ODI"
@@ -148,7 +148,7 @@ public class JsonSerializationTest extends SerializationTest {
 
     Concept sideTransformInfo =
         (Concept)
-            unserializedNodes.stream()
+            deserializedNodes.stream()
                 .filter(
                     n ->
                         "Y2VhYjUxOTUtMjVlYS00ZjIyLTliOTItMTAzYjk1Y2E4YzBjLzc3OTEyODQ5Mjg1MzM2OTE2NQ"
@@ -162,89 +162,89 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeLanguageWithDependencies() {
+  public void deserializeLanguageWithDependencies() {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     Language starlasu =
         (Language)
             jsonSerialization
-                .unserializeToNodes(
+                .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/starlasu.lmm.json"))
                 .get(0);
     jsonSerialization.getInstanceResolver().addTree(starlasu);
     Language properties =
         (Language)
             jsonSerialization
-                .unserializeToNodes(
+                .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-example/properties.lmm.json"))
                 .get(0);
     LanguageValidator.ensureIsValid(starlasu);
     LanguageValidator.ensureIsValid(properties);
   }
 
-  private void prepareUnserializationOfSimpleMath(JsonSerialization js) {
+  private void prepareDeserializationOfSimpleMath(JsonSerialization js) {
     js.getClassifierResolver().registerLanguage(SimpleMathLanguage.INSTANCE);
     js.getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             SimpleMathLanguage.INT_LITERAL.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
+            (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
                 new IntLiteral(
                     (Integer) propertiesValues.get(concept.getPropertyByName("value")),
                     serializedNode.getID()));
     js.getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             SimpleMathLanguage.SUM.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
+            (concept, serializedNode, deserializedNodesByID, propertiesValues) -> {
               SerializedContainmentValue leftSCV =
                   serializedNode.getContainments().stream()
                       .filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_left"))
                       .findFirst()
                       .get();
-              IntLiteral left = (IntLiteral) unserializedNodesByID.get(leftSCV.getValue().get(0));
+              IntLiteral left = (IntLiteral) deserializedNodesByID.get(leftSCV.getValue().get(0));
               SerializedContainmentValue rightSCV =
                   serializedNode.getContainments().stream()
                       .filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_right"))
                       .findFirst()
                       .get();
-              IntLiteral right = (IntLiteral) unserializedNodesByID.get(rightSCV.getValue().get(0));
+              IntLiteral right = (IntLiteral) deserializedNodesByID.get(rightSCV.getValue().get(0));
               return new Sum(left, right, serializedNode.getID());
             });
   }
 
   @Test
-  public void unserializeMultipleRoots() {
+  public void deserializeMultipleRoots() {
     Sum sum1 = new Sum(new IntLiteral(1), new IntLiteral(2));
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
     assertEquals(1, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
-    prepareUnserializationOfSimpleMath(js);
-    List<Sum> unserialized =
-        js.unserializeToNodes(serialized).stream()
+    prepareDeserializationOfSimpleMath(js);
+    List<Sum> deserialized =
+        js.deserializeToNodes(serialized).stream()
             .filter(n -> n instanceof Sum)
             .map(n -> (Sum) n)
             .collect(Collectors.toList());
-    assertEquals(Arrays.asList(sum1, sum2), unserialized);
+    assertEquals(Arrays.asList(sum1, sum2), deserialized);
   }
 
   @Test
-  public void unserializeNodesWithoutIDsInTheRightOrder() {
+  public void deserializeNodesWithoutIDsInTheRightOrder() {
     IntLiteral il1 = new IntLiteral(1, null);
     IntLiteral il2 = new IntLiteral(2, null);
     IntLiteral il3 = new IntLiteral(3, null);
     IntLiteral il4 = new IntLiteral(4, null);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(il1, il2, il3, il4);
-    prepareUnserializationOfSimpleMath(js);
-    List<IntLiteral> unserialized =
-        js.unserializeToNodes(serialized).stream()
+    prepareDeserializationOfSimpleMath(js);
+    List<IntLiteral> deserialized =
+        js.deserializeToNodes(serialized).stream()
             .map(n -> (IntLiteral) n)
             .collect(Collectors.toList());
-    assertEquals(Arrays.asList(il1, il2, il3, il4), unserialized);
+    assertEquals(Arrays.asList(il1, il2, il3, il4), deserialized);
   }
 
   @Test
-  public void unserializeTreesWithoutIDsInTheRightOrder() {
+  public void deserializeTreesWithoutIDsInTheRightOrder() {
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, "int_2");
     Sum sum1 = new Sum(il1, il2, null);
@@ -253,13 +253,13 @@ public class JsonSerializationTest extends SerializationTest {
     Sum sum2 = new Sum(il3, il4, null);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
-    prepareUnserializationOfSimpleMath(js);
-    List<Node> unserialized = js.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(sum1, il1, il2, sum2, il3, il4), unserialized);
+    prepareDeserializationOfSimpleMath(js);
+    List<Node> deserialized = js.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(sum1, il1, il2, sum2, il3, il4), deserialized);
   }
 
   @Test
-  public void unserializeTreesWithArbitraryOrderAndNullIDsInTheRightOrder() {
+  public void deserializeTreesWithArbitraryOrderAndNullIDsInTheRightOrder() {
     // handling multiple parents with null IDs require special care as they
     // are ambiguous (i.e., they cannot be distinguished by looking at their ID)
     IntLiteral il1 = new IntLiteral(1, "int_1");
@@ -270,50 +270,50 @@ public class JsonSerializationTest extends SerializationTest {
     Sum sum2 = new Sum(il3, il4, null);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(il4, il1, sum1, il2, sum2, il3);
-    prepareUnserializationOfSimpleMath(js);
-    List<Node> unserialized = js.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(il4, il1, sum1, il2, sum2, il3), unserialized);
+    prepareDeserializationOfSimpleMath(js);
+    List<Node> deserialized = js.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(il4, il1, sum1, il2, sum2, il3), deserialized);
   }
 
-  // We should get a UnserializationException as we are unable to reassign the child with null ID
-  @Test(expected = UnserializationException.class)
+  // We should get a DeserializationException as we are unable to reassign the child with null ID
+  @Test(expected = DeserializationException.class)
   public void deserializeChildrenWithNullID() {
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, null);
     Sum sum1 = new Sum(il1, il2, null);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(sum1, il1, il2);
-    prepareUnserializationOfSimpleMath(js);
-    List<Node> unserialized = js.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(sum1, il1, il2), unserialized);
+    prepareDeserializationOfSimpleMath(js);
+    List<Node> deserialized = js.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(sum1, il1, il2), deserialized);
   }
 
-  private void prepareUnserializationOfRefMM(JsonSerialization js) {
+  private void prepareDeserializationOfRefMM(JsonSerialization js) {
     js.getClassifierResolver().registerLanguage(RefsLanguage.INSTANCE);
     js.getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             RefsLanguage.CONTAINER_NODE.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValues) ->
+            (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
                 new ContainerNode(
                     (ContainerNode) propertiesValues.get(concept.getContainmentByName("contained")),
                     serializedNode.getID()));
     js.getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             RefsLanguage.REF_NODE.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
+            (concept, serializedNode, deserializedNodesByID, propertiesValues) -> {
               return new RefNode(serializedNode.getID());
             });
   }
 
-  @Test(expected = UnserializationException.class)
+  @Test(expected = DeserializationException.class)
   public void deadReferences() {
     RefNode r1 = new RefNode();
     RefNode r2 = new RefNode();
     r1.setReferred(r2);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(r1);
-    prepareUnserializationOfRefMM(js);
-    List<Node> unserialized = js.unserializeToNodes(serialized);
+    prepareDeserializationOfRefMM(js);
+    List<Node> deserialized = js.deserializeToNodes(serialized);
   }
 
   @Test
@@ -326,12 +326,12 @@ public class JsonSerializationTest extends SerializationTest {
     r3.setReferred(r1);
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(r1, r2, r3);
-    prepareUnserializationOfRefMM(js);
-    List<Node> unserialized = js.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(r1, r2, r3), unserialized);
+    prepareDeserializationOfRefMM(js);
+    List<Node> deserialized = js.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(r1, r2, r3), deserialized);
   }
 
-  @Test(expected = UnserializationException.class)
+  @Test(expected = DeserializationException.class)
   public void containmentsLoop() {
     ContainerNode c1 = new ContainerNode();
     ContainerNode c2 = new ContainerNode();
@@ -347,15 +347,15 @@ public class JsonSerializationTest extends SerializationTest {
 
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(c1, c2);
-    prepareUnserializationOfRefMM(js);
-    List<Node> unserialized = js.unserializeToNodes(serialized);
+    prepareDeserializationOfRefMM(js);
+    List<Node> deserialized = js.deserializeToNodes(serialized);
   }
 
-  @Test(expected = UnserializationException.class)
-  public void unserializeTreeWithoutRoot() {
+  @Test(expected = DeserializationException.class)
+  public void deserializeTreeWithoutRoot() {
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     List<Node> nodes =
-        js.unserializeToNodes(
+        js.deserializeToNodes(
             this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
   }
 
@@ -432,7 +432,7 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeEnumerationLiterals() {
+  public void deserializeEnumerationLiterals() {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
@@ -498,10 +498,10 @@ public class JsonSerializationTest extends SerializationTest {
     js.registerLanguage(mm);
     js.getInstantiator().enableDynamicNodes();
 
-    List<Node> unserializedNodes = js.unserializeToNodes(je);
-    assertEquals(Arrays.asList(n1, n2), unserializedNodes);
-    assertEquals(el1, unserializedNodes.get(0).getPropertyValue(p));
-    assertEquals(el2, unserializedNodes.get(1).getPropertyValue(p));
+    List<Node> deserializedNodes = js.deserializeToNodes(je);
+    assertEquals(Arrays.asList(n1, n2), deserializedNodes);
+    assertEquals(el1, deserializedNodes.get(0).getPropertyValue(p));
+    assertEquals(el2, deserializedNodes.get(1).getPropertyValue(p));
   }
 
   @Test
@@ -553,17 +553,17 @@ public class JsonSerializationTest extends SerializationTest {
         (SerializedAnnotationInstance) serializedChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
-    List<ClassifierInstance<?>> unserialized = hjs.unserializeSerializationBlock(serializedChunk);
-    assertEquals(4, unserialized.size());
-    assertInstancesAreEquals(a1_1, unserialized.get(1));
-    assertEquals(unserialized.get(0), unserialized.get(1).getParent());
-    assertInstancesAreEquals(a1_2, unserialized.get(2));
-    assertEquals(unserialized.get(0), unserialized.get(2).getParent());
-    assertInstancesAreEquals(a2_3, unserialized.get(3));
-    assertEquals(unserialized.get(0), unserialized.get(3).getParent());
-    assertInstancesAreEquals(n1, unserialized.get(0));
+    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationBlock(serializedChunk);
+    assertEquals(4, deserialized.size());
+    assertInstancesAreEquals(a1_1, deserialized.get(1));
+    assertEquals(deserialized.get(0), deserialized.get(1).getParent());
+    assertInstancesAreEquals(a1_2, deserialized.get(2));
+    assertEquals(deserialized.get(0), deserialized.get(2).getParent());
+    assertInstancesAreEquals(a2_3, deserialized.get(3));
+    assertEquals(deserialized.get(0), deserialized.get(3).getParent());
+    assertInstancesAreEquals(n1, deserialized.get(0));
     assertEquals(
-        Arrays.asList(unserialized.get(1), unserialized.get(2), unserialized.get(3)),
-        unserialized.get(0).getAnnotations());
+        Arrays.asList(deserialized.get(1), deserialized.get(2), deserialized.get(3)),
+        deserialized.get(0).getAnnotations());
   }
 }

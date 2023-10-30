@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
-/** Collection of utility methods to simplify serialization and unserialization to JSON. */
+/** Collection of utility methods to simplify serialization and deserialization to JSON. */
 class SerializationUtils {
 
   private SerializationUtils() {
@@ -67,8 +67,8 @@ class SerializationUtils {
           .map(
               e -> {
                 if (e.isJsonNull()) {
-                  throw new UnserializationException(
-                      "Unable to unserialize child identified by Null ID");
+                  throw new DeserializationException(
+                      "Unable to deserialize child identified by Null ID");
                 }
                 return e.getAsString();
               })

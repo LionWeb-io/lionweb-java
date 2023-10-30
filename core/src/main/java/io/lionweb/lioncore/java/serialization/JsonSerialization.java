@@ -21,15 +21,15 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
- * This class is responsible for unserializing models.
+ * This class is responsible for deserializing models.
  *
- * <p>The unserialization of each node _requires_ the unserializer to be able to resolve the Concept
- * used. If this requirement is not satisfied the unserialization will fail. The actual class
+ * <p>The deserialization of each node _requires_ the deserializer to be able to resolve the Concept
+ * used. If this requirement is not satisfied the deserialization will fail. The actual class
  * implementing Node being instantiated will depend on the configuration. Specific classes for
  * specific Concepts can be registered, and the usage of DynamicNode for all others can be enabled.
  *
  * <p>Note that by default JsonSerialization will require specific Node subclasses to be specified.
- * For example, it will need to know that the concept with id 'foo-library' can be unserialized to
+ * For example, it will need to know that the concept with id 'foo-library' can be deserialized to
  * instances of the class Library. If you want serialization to instantiate DynamicNodes for
  * concepts for which you do not have a corresponding Node subclass, then you need to enable that
  * behavior explicitly by calling getNodeInstantiator().enableDynamicNodes().
@@ -49,9 +49,9 @@ public class JsonSerialization {
   public static JsonSerialization getStandardSerialization() {
     JsonSerialization jsonSerialization = new JsonSerialization();
     jsonSerialization.classifierResolver.registerLanguage(LionCore.getInstance());
-    jsonSerialization.instantiator.registerLionCoreCustomUnserializers();
+    jsonSerialization.instantiator.registerLionCoreCustomDeserializers();
     jsonSerialization.primitiveValuesSerialization
-        .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
     jsonSerialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
     jsonSerialization.instanceResolver.addAll(
         LionCoreBuiltins.getInstance().thisAndAllDescendants());
@@ -310,42 +310,42 @@ public class JsonSerialization {
   }
 
   //
-  // Unserialization
+  // Deserialization
   //
 
-  public List<Node> unserializeToNodes(File file) throws FileNotFoundException {
-    return unserializeToNodes(new FileInputStream(file));
+  public List<Node> deserializeToNodes(File file) throws FileNotFoundException {
+    return deserializeToNodes(new FileInputStream(file));
   }
 
-  public List<Node> unserializeToNodes(JsonElement jsonElement) {
-    return unserializeToClassifierInstances(jsonElement).stream()
+  public List<Node> deserializeToNodes(JsonElement jsonElement) {
+    return deserializeToClassifierInstances(jsonElement).stream()
         .filter(ci -> ci instanceof Node)
         .map(ci -> (Node) ci)
         .collect(Collectors.toList());
   }
 
-  public List<ClassifierInstance<?>> unserializeToClassifierInstances(JsonElement jsonElement) {
+  public List<ClassifierInstance<?>> deserializeToClassifierInstances(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
-        new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
+        new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
-    return unserializeSerializationBlock(serializationBlock);
+    return deserializeSerializationBlock(serializationBlock);
   }
 
-  public List<Node> unserializeToNodes(URL url) throws IOException {
+  public List<Node> deserializeToNodes(URL url) throws IOException {
     String content = NetworkUtils.getStringFromUrl(url);
-    return unserializeToNodes(content);
+    return deserializeToNodes(content);
   }
 
-  public List<Node> unserializeToNodes(String json) {
-    return unserializeToNodes(JsonParser.parseString(json));
+  public List<Node> deserializeToNodes(String json) {
+    return deserializeToNodes(JsonParser.parseString(json));
   }
 
-  public List<Node> unserializeToNodes(InputStream inputStream) {
-    return unserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
+  public List<Node> deserializeToNodes(InputStream inputStream) {
+    return deserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
   }
 
   //
-  // Unserialization - Private
+  // Deserialization - Private
   //
 
   private String serializePropertyValue(DataType dataType, Object value) {
@@ -413,10 +413,10 @@ public class JsonSerialization {
       }
       if (initialLength == sortedList.size()) {
         if (sortedList.isEmpty()) {
-          throw new UnserializationException(
-              "No root found, we cannot unserialize this tree. Original list: " + originalList);
+          throw new DeserializationException(
+              "No root found, we cannot deserialize this tree. Original list: " + originalList);
         } else {
-          throw new UnserializationException(
+          throw new DeserializationException(
               "Something is not right: we are unable to complete sorting the list "
                   + originalList
                   + ". Probably there is a containment loop");
@@ -428,43 +428,43 @@ public class JsonSerialization {
     return sortedList;
   }
 
-  public List<ClassifierInstance<?>> unserializeSerializationBlock(
+  public List<ClassifierInstance<?>> deserializeSerializationBlock(
       SerializedChunk serializationBlock) {
-    return unserializeClassifierInstances(serializationBlock.getClassifierInstances());
+    return deserializeClassifierInstances(serializationBlock.getClassifierInstances());
   }
 
-  private List<ClassifierInstance<?>> unserializeClassifierInstances(
+  private List<ClassifierInstance<?>> deserializeClassifierInstances(
       List<SerializedClassifierInstance> serializedClassifierInstances) {
-    // We want to unserialize the nodes starting from the leaves. This is useful because in certain
+    // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
     List<SerializedClassifierInstance> sortedSerializedClassifierInstances =
         sortLeavesFirst(serializedClassifierInstances);
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
-    Map<String, ClassifierInstance<?>> unserializedByID = new HashMap<>();
+    Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>();
     IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
         new IdentityHashMap<>();
     sortedSerializedClassifierInstances.stream()
         .forEach(
             n -> {
-              ClassifierInstance<?> instantiated = instantiateFromSerialized(n, unserializedByID);
-              if (n.getID() != null && unserializedByID.containsKey(n.getID())) {
+              ClassifierInstance<?> instantiated = instantiateFromSerialized(n, deserializedByID);
+              if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
                 throw new IllegalStateException("Duplicate ID found: " + n.getID());
               }
-              unserializedByID.put(n.getID(), instantiated);
+              deserializedByID.put(n.getID(), instantiated);
               serializedToInstanceMap.put(n, instantiated);
             });
     if (sortedSerializedClassifierInstances.size() != serializedToInstanceMap.size()) {
       throw new IllegalStateException(
           "We got "
               + sortedSerializedClassifierInstances.size()
-              + " nodes to unserialize, but we unserialized "
+              + " nodes to deserialize, but we deserialized "
               + serializedToInstanceMap.size());
     }
     ClassifierInstanceResolver classifierInstanceResolver =
         new CompositeClassifierInstanceResolver(
-            new MapBasedResolver(unserializedByID), this.instanceResolver);
+            new MapBasedResolver(deserializedByID), this.instanceResolver);
     serializedClassifierInstances.stream()
         .forEach(
             n -> {
@@ -479,7 +479,7 @@ public class JsonSerialization {
                       "Dangling annotation instance found (annotated node is null). ");
                 }
                 Node annotatedNode =
-                    (Node) unserializedByID.get(serializedAnnotationInstance.getParentNodeID());
+                    (Node) deserializedByID.get(serializedAnnotationInstance.getParentNodeID());
                 AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
                 if (annotatedNode != null) {
                   annotatedNode.addAnnotation(annotationInstance);
@@ -500,7 +500,7 @@ public class JsonSerialization {
 
   private ClassifierInstance<?> instantiateFromSerialized(
       SerializedClassifierInstance serializedClassifierInstance,
-      Map<String, ClassifierInstance<?>> unserializedByID) {
+      Map<String, ClassifierInstance<?>> deserializedByID) {
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
@@ -524,15 +524,15 @@ public class JsonSerialization {
                       + classifier
                       + ". SerializedNode: "
                       + serializedClassifierInstance);
-              Object unserializedValue =
-                  primitiveValuesSerialization.unserialize(
+              Object deserializedValue =
+                  primitiveValuesSerialization.deserialize(
                       property.getType(), serializedPropertyValue.getValue());
-              propertiesValues.put(property, unserializedValue);
+              propertiesValues.put(property, deserializedValue);
             });
     ClassifierInstance<?> classifierInstance =
         getInstantiator()
             .instantiate(
-                classifier, serializedClassifierInstance, unserializedByID, propertiesValues);
+                classifier, serializedClassifierInstance, deserializedByID, propertiesValues);
 
     // We ensure that the properties values are set correctly. They could already have been set
     // while instantiating the node. If that is the case, we have nothing to do, otherwise we set
@@ -541,14 +541,14 @@ public class JsonSerialization {
         .entrySet()
         .forEach(
             pv -> {
-              Object unserializedValue = pv.getValue();
+              Object deserializedValue = pv.getValue();
               Property property = pv.getKey();
               // Avoiding calling setters, in case the value has been already set at construction
               // time
 
               if (!Objects.equals(
-                  unserializedValue, classifierInstance.getPropertyValue(property))) {
-                classifierInstance.setPropertyValue(property, unserializedValue);
+                  deserializedValue, classifierInstance.getPropertyValue(property))) {
+                classifierInstance.setPropertyValue(property, deserializedValue);
               }
             });
 
@@ -583,12 +583,12 @@ public class JsonSerialization {
               Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
-              List<ClassifierInstance<?>> unserializedValue =
+              List<ClassifierInstance<?>> deserializedValue =
                   serializedContainmentValue.getValue().stream()
                       .map(childNodeID -> classifierInstanceResolver.strictlyResolve(childNodeID))
                       .collect(Collectors.toList());
-              if (!Objects.equals(unserializedValue, node.getChildren(containment))) {
-                unserializedValue.forEach(child -> node.addChild(containment, (Node) child));
+              if (!Objects.equals(deserializedValue, node.getChildren(containment))) {
+                deserializedValue.forEach(child -> node.addChild(containment, (Node) child));
               }
             });
   }
@@ -621,7 +621,7 @@ public class JsonSerialization {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          throw new UnserializationException(
+                          throw new DeserializationException(
                               "Unable to resolve reference to "
                                   + entry.getReference()
                                   + " for feature "

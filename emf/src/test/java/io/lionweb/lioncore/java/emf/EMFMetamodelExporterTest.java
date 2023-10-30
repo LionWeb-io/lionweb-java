@@ -15,7 +15,7 @@ public class EMFMetamodelExporterTest {
     Language libraryLang =
         (Language)
             JsonSerialization.getStandardSerialization()
-                .unserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
+                .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
                 .get(0);
 
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();

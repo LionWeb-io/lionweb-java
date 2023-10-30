@@ -26,11 +26,11 @@ public class CorrespondanceWithDocumentationTest {
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_COMMIT_CONSIDERED
                 + "/metametamodel/lioncore.json");
-    List<Node> nodes = jsonSer.unserializeToNodes(url);
+    List<Node> nodes = jsonSer.deserializeToNodes(url);
 
-    Language unserializedLioncore = (Language) nodes.get(0);
+    Language deserializedLioncore = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
-        new ModelComparator().compare(unserializedLioncore, LionCore.getInstance());
+        new ModelComparator().compare(deserializedLioncore, LionCore.getInstance());
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
@@ -47,11 +47,11 @@ public class CorrespondanceWithDocumentationTest {
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_COMMIT_CONSIDERED
                 + "/metametamodel/builtins.json");
-    List<Node> nodes = jsonSer.unserializeToNodes(url);
+    List<Node> nodes = jsonSer.deserializeToNodes(url);
 
-    Language unserializedBuiltins = (Language) nodes.get(0);
+    Language deserializedBuiltins = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
-        new ModelComparator().compare(unserializedBuiltins, LionCoreBuiltins.getInstance());
+        new ModelComparator().compare(deserializedBuiltins, LionCoreBuiltins.getInstance());
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);

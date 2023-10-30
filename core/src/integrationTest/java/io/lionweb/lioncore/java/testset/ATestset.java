@@ -41,7 +41,7 @@ public abstract class ATestset {
   protected static List<Node> parse(Path path, JsonSerialization serialization) {
     try {
       File myLangFile = path.toFile();
-      List<Node> nodes = serialization.unserializeToNodes(myLangFile);
+      List<Node> nodes = serialization.deserializeToNodes(myLangFile);
       return nodes;
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
@@ -82,7 +82,7 @@ public abstract class ATestset {
 
   protected void assertCanBeLoadedAtLowLevel(Path path) {
     try {
-      new LowLevelJsonSerialization().unserializeSerializationBlock(path.toFile());
+      new LowLevelJsonSerialization().deserializeSerializationBlock(path.toFile());
     } catch (FileNotFoundException e) {
       throw new RuntimeException(e);
     }

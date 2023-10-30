@@ -13,7 +13,7 @@ import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
 
 /**
- * This class is responsible for handling serialization and unserialization from JSON and the
+ * This class is responsible for handling serialization and deserialization from JSON and the
  * low-level representation of models composed by SerializationBlock and the related classes.
  */
 public class LowLevelJsonSerialization {
@@ -28,14 +28,14 @@ public class LowLevelJsonSerialization {
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
    */
-  public SerializedChunk unserializeSerializationBlock(JsonElement jsonElement) {
+  public SerializedChunk deserializeSerializationBlock(JsonElement jsonElement) {
     SerializedChunk serializedChunk = new SerializedChunk();
     if (jsonElement.isJsonObject()) {
       JsonObject topLevel = jsonElement.getAsJsonObject();
       checkNoExtraKeys(topLevel, Arrays.asList("nodes", "serializationFormatVersion", "languages"));
       readSerializationFormatVersion(serializedChunk, topLevel);
       readLanguages(serializedChunk, topLevel);
-      unserializeClassifierInstances(serializedChunk, topLevel);
+      deserializeClassifierInstances(serializedChunk, topLevel);
       return serializedChunk;
     } else {
       throw new IllegalArgumentException(
@@ -53,8 +53,8 @@ public class LowLevelJsonSerialization {
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
    */
-  public SerializedChunk unserializeSerializationBlock(String json) {
-    return unserializeSerializationBlock(JsonParser.parseString(json));
+  public SerializedChunk deserializeSerializationBlock(String json) {
+    return deserializeSerializationBlock(JsonParser.parseString(json));
   }
 
   /**
@@ -67,8 +67,8 @@ public class LowLevelJsonSerialization {
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
    */
-  public SerializedChunk unserializeSerializationBlock(File file) throws FileNotFoundException {
-    return unserializeSerializationBlock(JsonParser.parseReader(new FileReader(file)));
+  public SerializedChunk deserializeSerializationBlock(File file) throws FileNotFoundException {
+    return deserializeSerializationBlock(JsonParser.parseReader(new FileReader(file)));
   }
 
   public JsonElement serializeToJsonElement(SerializedChunk serializedChunk) {
@@ -189,7 +189,7 @@ public class LowLevelJsonSerialization {
                   }
                   serializedChunk.addLanguage(languageKeyVersion);
                 } catch (Exception e) {
-                  throw new RuntimeException("Issue while unserializing " + element, e);
+                  throw new RuntimeException("Issue while deserializing " + element, e);
                 }
               });
     } else {
@@ -198,7 +198,7 @@ public class LowLevelJsonSerialization {
     }
   }
 
-  private void unserializeClassifierInstances(
+  private void deserializeClassifierInstances(
       SerializedChunk serializedChunk, JsonObject topLevel) {
     if (!topLevel.has("nodes")) {
       throw new IllegalArgumentException("nodes not specified");
@@ -208,13 +208,13 @@ public class LowLevelJsonSerialization {
           .forEach(
               element -> {
                 try {
-                  SerializedClassifierInstance instance = unserializeClassifierInstance(element);
+                  SerializedClassifierInstance instance = deserializeClassifierInstance(element);
                   serializedChunk.addClassifierInstance(instance);
-                } catch (UnserializationException e) {
-                  throw new UnserializationException(
-                      "Issue while unserializing classifier instances", e);
+                } catch (DeserializationException e) {
+                  throw new DeserializationException(
+                      "Issue while deserializing classifier instances", e);
                 } catch (Exception e) {
-                  throw new RuntimeException("Issue while unserializing " + element, e);
+                  throw new RuntimeException("Issue while deserializing " + element, e);
                 }
               });
     } else {
@@ -239,7 +239,7 @@ public class LowLevelJsonSerialization {
   }
 
   @Nullable
-  private SerializedClassifierInstance unserializeClassifierInstance(JsonElement jsonElement) {
+  private SerializedClassifierInstance deserializeClassifierInstance(JsonElement jsonElement) {
     if (!jsonElement.isJsonObject()) {
       throw new IllegalArgumentException(
           "Malformed JSON. Object expected but found " + jsonElement);
@@ -325,8 +325,8 @@ public class LowLevelJsonSerialization {
       }
 
       return serializedClassifierInstance;
-    } catch (UnserializationException e) {
-      throw new UnserializationException("Issue occurred while unserializing " + jsonElement, e);
+    } catch (DeserializationException e) {
+      throw new DeserializationException("Issue occurred while deserializing " + jsonElement, e);
     }
   }
 

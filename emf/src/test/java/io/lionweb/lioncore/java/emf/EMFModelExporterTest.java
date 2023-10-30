@@ -19,7 +19,7 @@ public class EMFModelExporterTest {
     jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
     jsonSerialization.getInstantiator().enableDynamicNodes();
     List<Node> nodes =
-        jsonSerialization.unserializeToNodes(
+        jsonSerialization.deserializeToNodes(
             this.getClass().getResourceAsStream("/langeng-library.json"));
     List<Node> roots =
         nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
