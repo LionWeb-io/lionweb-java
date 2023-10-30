@@ -170,9 +170,6 @@ public class LionCore {
 
       annotation.setExtendedConcept(classifier);
       annotation.addFeature(
-          Property.createOptional(
-              "multiple", LionCoreBuiltins.getBoolean(), "-id-Annotation-multiple"));
-      annotation.addFeature(
           Reference.createOptional("annotates", classifier, "-id-Annotation-annotates"));
       annotation.addFeature(
           Reference.createOptional("extends", annotation, "-id-Annotation-extends"));

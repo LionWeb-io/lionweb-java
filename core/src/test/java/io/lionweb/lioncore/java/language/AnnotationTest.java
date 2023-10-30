@@ -71,17 +71,6 @@ public class AnnotationTest extends BaseTest {
   }
 
   @Test
-  public void isMultiple() {
-    Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
-    assertEquals(false, annotation.isMultiple());
-    annotation.setMultiple(true);
-    assertEquals(true, annotation.isMultiple());
-    annotation.setMultiple(false);
-    assertEquals(false, annotation.isMultiple());
-  }
-
-  @Test
   public void annotates() {
     Language language = new Language("LangFoo", "lf", "lf");
     Concept myConcept = new Concept(language, "MyConcept", "c", "c");

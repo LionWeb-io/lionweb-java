@@ -15,7 +15,7 @@ import org.junit.Test;
 public class CorrespondanceWithDocumentationTest {
 
   private static final String SPECIFICATION_COMMIT_CONSIDERED =
-      "c956d3e1273f56e945e5de85a2eddb34bd5cb008";
+      "69ddbf4685acf1ef6d83c400570fb6c37efa4cfc";
 
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo() throws IOException {
