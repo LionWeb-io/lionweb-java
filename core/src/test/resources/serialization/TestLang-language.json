@@ -21,7 +21,7 @@
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "Language-version"},"value":null},
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -83,7 +83,7 @@
           "value": "TestConceptPlain"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -143,7 +143,7 @@
           "value": "TestConceptNoExtends"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -198,7 +198,7 @@
           "value": "TestConceptBase"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -271,7 +271,7 @@
           "value": "stringProp"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -315,7 +315,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -359,7 +359,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -402,7 +402,7 @@
           "value": "enumProp"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -446,7 +446,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -489,7 +489,7 @@
           "value": "primitiveProp"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -541,7 +541,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -593,7 +593,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -645,7 +645,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -697,7 +697,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -749,7 +749,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -800,7 +800,7 @@
           "value": "oneToMany"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -844,7 +844,7 @@
         },
         {"property":{"language":"LionCore-M3","version":"2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -910,7 +910,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -967,7 +967,7 @@
           "value": "TestInterfacePlain"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1007,7 +1007,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1057,7 +1057,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1092,7 +1092,7 @@
           "value": "TestInterfaceExtends1"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1147,7 +1147,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1182,7 +1182,7 @@
           "value": "TestInterfaceExtends2"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1239,7 +1239,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1290,7 +1290,7 @@
           "value": "anything"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1341,7 +1341,7 @@
           "value": "circular"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1376,7 +1376,7 @@
           "value": "TestInterfaceExtends3"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1435,7 +1435,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1471,7 +1471,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -1492,7 +1492,7 @@
           "value": "TestEnumeration1"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1525,7 +1525,7 @@
           "value": "TestLiteral1"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -1547,7 +1547,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -1569,7 +1569,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1602,7 +1602,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -1624,7 +1624,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -1644,7 +1644,7 @@
           "value": "jetbrains.mps.lang.core"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1735,7 +1735,7 @@
           "value": "BaseConcept"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1794,7 +1794,7 @@
           "value": "shortDescription"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1837,7 +1837,7 @@
           "value": "virtualPackage"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1888,7 +1888,7 @@
           "value": "smodelAttribute"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -1932,7 +1932,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -1992,7 +1992,7 @@
           "value": "LinkAttribute"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2056,7 +2056,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2100,7 +2100,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2143,7 +2143,7 @@
           "value": "NodeAttribute"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2204,7 +2204,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2268,7 +2268,7 @@
           "value": "name-DebugInfo"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2312,7 +2312,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2356,7 +2356,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2399,7 +2399,7 @@
           "value": "SuppressErrorsAnnotation"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2469,7 +2469,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2512,7 +2512,7 @@
           "value": "message"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2556,7 +2556,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2600,7 +2600,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2664,7 +2664,7 @@
           "value": "side"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2708,7 +2708,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2752,7 +2752,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2795,7 +2795,7 @@
           "value": "BaseCommentAttribute"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2879,7 +2879,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -2922,7 +2922,7 @@
           "value": "ChildAttribute"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -2985,7 +2985,7 @@
           "value": "role-DebugInfo"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3029,7 +3029,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3072,7 +3072,7 @@
           "value": "ReviewMigration-old"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3141,7 +3141,7 @@
           "value": "reasonShort"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3184,7 +3184,7 @@
           "value": "todo"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3228,7 +3228,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3272,7 +3272,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3343,7 +3343,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3386,7 +3386,7 @@
           "value": "MigrationDataAnnotation"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3461,7 +3461,7 @@
           "value": "dataNode"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3504,7 +3504,7 @@
           "value": "ReviewMigration"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3574,7 +3574,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3618,7 +3618,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3662,7 +3662,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3705,7 +3705,7 @@
           "value": "TypeAnnotated"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3776,7 +3776,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3811,7 +3811,7 @@
           "value": "INamedConcept"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3861,7 +3861,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3897,7 +3897,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -3946,7 +3946,7 @@
           "value": "resolveInfo"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -3982,7 +3982,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4022,7 +4022,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4061,7 +4061,7 @@
           "value": "IContainer"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4101,7 +4101,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4141,7 +4141,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4181,7 +4181,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4221,7 +4221,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4260,7 +4260,7 @@
           "value": "ICanSuppressErrors"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4299,7 +4299,7 @@
           "value": "ISuppressErrors"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4338,7 +4338,7 @@
           "value": "IDontSubstituteByDefault"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4377,7 +4377,7 @@
           "value": "ScopeFacade"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4416,7 +4416,7 @@
           "value": "ImplementationPart"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4460,7 +4460,7 @@
           "value": "ImplementationContainer"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4499,7 +4499,7 @@
           "value": "InterfacePart"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4539,7 +4539,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4584,7 +4584,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4629,7 +4629,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4668,7 +4668,7 @@
           "value": "IDontApplyTypesystemRules"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4707,7 +4707,7 @@
           "value": "IOldCommentContainer"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4746,7 +4746,7 @@
           "value": "ISmartReferent"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4785,7 +4785,7 @@
           "value": "MigrationAnnotation-old"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4824,7 +4824,7 @@
           "value": "IPlaceholderContent"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4863,7 +4863,7 @@
           "value": "MigrationAnnotation"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4918,7 +4918,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -4954,7 +4954,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -4988,7 +4988,7 @@
         },
         {"property":{"language":"LionCore-M3","version": "2023.1","key": "IKeyed-key"},"value":null}
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -5009,7 +5009,7 @@
           "value": "left"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -5030,7 +5030,7 @@
           "value": "string"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -5051,7 +5051,7 @@
           "value": "integer"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": []
     },
     {
@@ -5072,7 +5072,7 @@
           "value": "boolean"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": []
     }
   ]

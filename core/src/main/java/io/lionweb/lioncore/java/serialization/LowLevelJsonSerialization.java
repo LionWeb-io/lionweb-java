@@ -94,14 +94,14 @@ public class LowLevelJsonSerialization {
       }
       nodeJson.add("properties", properties);
 
-      JsonArray children = new JsonArray();
+      JsonArray containments = new JsonArray();
       for (SerializedContainmentValue childrenValue : node.getContainments()) {
-        JsonObject childrenJ = new JsonObject();
-        childrenJ.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
-        childrenJ.add("children", SerializationUtils.toJsonArray(childrenValue.getValue()));
-        children.add(childrenJ);
+        JsonObject children = new JsonObject();
+        children.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
+        children.add("children", SerializationUtils.toJsonArray(childrenValue.getValue()));
+        containments.add(children);
       }
-      nodeJson.add("children", children);
+      nodeJson.add("containments", containments);
 
       JsonArray references = new JsonArray();
       for (SerializedReferenceValue referenceValue : node.getReferences()) {
@@ -282,14 +282,23 @@ public class LowLevelJsonSerialization {
                     SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
           });
 
-      JsonArray children = jsonObject.get("children").getAsJsonArray();
-      children.forEach(
-          childrenEntry -> {
-            JsonObject childrenJO = childrenEntry.getAsJsonObject();
+      JsonArray containments;
+      if (jsonObject.has("children")) {
+        containments = jsonObject.get("children").getAsJsonArray();
+      } else if (jsonObject.has("containments")) {
+        containments = jsonObject.get("containments").getAsJsonArray();
+      } else {
+        throw new UnsupportedOperationException(
+            "Node is missing containments entry: " + jsonObject);
+      }
+
+      containments.forEach(
+          containmentEntry -> {
+            JsonObject containmentJO = containmentEntry.getAsJsonObject();
             serializedClassifierInstance.addContainmentValue(
                 new SerializedContainmentValue(
-                    SerializationUtils.tryToGetMetaPointerProperty(childrenJO, "containment"),
-                    SerializationUtils.tryToGetArrayOfIDs(childrenJO, "children")));
+                    SerializationUtils.tryToGetMetaPointerProperty(containmentJO, "containment"),
+                    SerializationUtils.tryToGetArrayOfIDs(containmentJO, "children")));
           });
 
       JsonArray references = jsonObject.get("references").getAsJsonArray();

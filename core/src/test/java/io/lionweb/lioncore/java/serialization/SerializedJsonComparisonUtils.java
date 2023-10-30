@@ -104,10 +104,10 @@ class SerializedJsonComparisonUtils {
               actual.getAsJsonArray("references"),
               "References of " + context);
           break;
-        case "children":
+        case "containments":
           assertEquivalentUnorderedArrays(
-              expected.getAsJsonArray("children"),
-              actual.getAsJsonArray("children"),
+              expected.getAsJsonArray("containments"),
+              actual.getAsJsonArray("containments"),
               "Children of " + context);
           break;
         case "properties":

@@ -9,7 +9,7 @@
         {"property": {"language":"library","version":"1","key":"library-Book-title"}, "value": null},
         {"property": {"language":"library","version":"1","key":"library-Book-pages"}, "value": null}
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {"reference": {"language":"library","version":"1","key":"library-Book-author"}, "targets": [
           {

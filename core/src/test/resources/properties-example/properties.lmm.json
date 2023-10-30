@@ -35,7 +35,7 @@
           "value": "io-lionweb-Properties"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -103,7 +103,7 @@
           "value": "io-lionweb-Properties-PropertiesFile"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -181,7 +181,7 @@
           "value": "io-lionweb-Properties-PropertiesFile-props"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -232,7 +232,7 @@
           "value": "io-lionweb-Properties-Property"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -303,7 +303,7 @@
           "value": "io-lionweb-Properties-Property-name"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -362,7 +362,7 @@
           "value": "io-lionweb-Properties-Property-value"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -413,7 +413,7 @@
           "value": "io-lionweb-Properties-Value"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -481,7 +481,7 @@
           "value": "io-lionweb-Properties-BooleanValue"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -551,7 +551,7 @@
           "value": "io-lionweb-Properties-BooleanValue-value"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -602,7 +602,7 @@
           "value": "io-lionweb-Properties-DecValue"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -672,7 +672,7 @@
           "value": "io-lionweb-Properties-DecValue-value"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -723,7 +723,7 @@
           "value": "io-lionweb-Properties-IntValue"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -793,7 +793,7 @@
           "value": "io-lionweb-Properties-IntValue-value"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
@@ -844,7 +844,7 @@
           "value": "io-lionweb-Properties-StringValue"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "LionCore-M3",
@@ -914,7 +914,7 @@
           "value": "io-lionweb-Properties-StringValue-value"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {

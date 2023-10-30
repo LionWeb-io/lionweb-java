@@ -19,7 +19,7 @@
           "value": "Bob\u0027s Library"
         }
       ],
-      "children": [
+      "containments": [
         {
           "containment": {
             "language": "library",
@@ -60,7 +60,7 @@
           "value": "Jack London"
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [],
       "annotations": [],
       "parent": null
@@ -90,7 +90,7 @@
           "value": null
         }
       ],
-      "children": [],
+      "containments": [],
       "references": [
         {
           "reference": {
