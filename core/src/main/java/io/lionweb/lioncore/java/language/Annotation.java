@@ -47,14 +47,6 @@ public class Annotation extends Classifier<Annotation> {
     setKey(key);
   }
 
-  public boolean isMultiple() {
-    return this.getPropertyValue("multiple", Boolean.class, false);
-  }
-
-  public void setMultiple(boolean value) {
-    this.setPropertyValue("multiple", value);
-  }
-
   public @Nullable Classifier<?> getAnnotates() {
     return this.getReferenceSingleValue("annotates");
   }

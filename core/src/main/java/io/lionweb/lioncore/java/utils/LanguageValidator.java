@@ -171,11 +171,6 @@ public class LanguageValidator extends Validator<Language> {
             && annotation.getAnnotates() != annotation.getExtendedAnnotation().getAnnotates(),
         "When a sub annotation specify a value for annotates it must be the same value the super annotation specifies",
         annotation);
-    validationResult.checkForError(
-        annotation.getExtendedAnnotation() != null
-            && annotation.isMultiple() != annotation.getExtendedAnnotation().isMultiple(),
-        "A sub annotation should have the same multiple value as the super annotation",
-        annotation);
   }
 
   private void checkAnnotationFeatures(Annotation annotation, ValidationResult validationResult) {
