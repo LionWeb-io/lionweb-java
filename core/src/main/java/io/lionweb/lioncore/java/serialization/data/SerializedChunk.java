@@ -6,7 +6,7 @@ import javax.annotation.Nonnull;
 /**
  * This represents a chunk of nodes which have been serialized. The serialization could be
  * inconsistent. This is a low-level representation, intended to represent broken chunks or as an
- * intermediate step during serialization or unserialization.
+ * intermediate step during serialization or deserialization.
  */
 public class SerializedChunk {
 

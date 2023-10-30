@@ -7,7 +7,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 /**
- * This is used only during unserialization. Some nodes could be an ID that depends on their
+ * This is used only during deserialization. Some nodes could be an ID that depends on their
  * position, so until we place them they could be a temporarily wrong ID.
  */
 class MapBasedResolver implements ClassifierInstanceResolver {

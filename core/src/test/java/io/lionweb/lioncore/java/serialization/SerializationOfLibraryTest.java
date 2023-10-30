@@ -18,25 +18,25 @@ import org.junit.Test;
 public class SerializationOfLibraryTest extends SerializationTest {
 
   @Test
-  public void unserializeLibraryToConcreteClasses() {
+  public void deserializeLibraryToConcreteClasses() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
-    Concept library = conceptByID(unserializedNodes, "library-Library");
+    Concept library = conceptByID(deserializedNodes, "library-Library");
     Property libraryName = library.getPropertyByName("name");
     assertNotNull(libraryName.getKey());
 
     Node book =
-        unserializedNodes.stream().filter(n -> n.getID().equals("library-Book")).findFirst().get();
+        deserializedNodes.stream().filter(n -> n.getID().equals("library-Book")).findFirst().get();
     assertEquals("Book", book.getPropertyValueByName("name"));
     assertEquals("library-Book", book.getPropertyValueByName("key"));
 
     Concept guidedBookWriter =
         (Concept)
-            unserializedNodes.stream()
+            deserializedNodes.stream()
                 .filter(n -> n.getID().equals("library-GuideBookWriter"))
                 .findFirst()
                 .get();
@@ -50,9 +50,9 @@ public class SerializationOfLibraryTest extends SerializationTest {
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     JsonElement reserialized =
-        jsonSerialization.serializeTreeToJsonElement(unserializedNodes.get(0));
+        jsonSerialization.serializeTreeToJsonElement(deserializedNodes.get(0));
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(
         jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
   }
@@ -91,10 +91,10 @@ public class SerializationOfLibraryTest extends SerializationTest {
   }
 
   @Test(expected = IllegalStateException.class)
-  public void unserializeLanguageWithDuplicateIDs() {
+  public void deserializeLanguageWithDuplicateIDs() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language-with-duplicate.json");
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    jsonSerialization.unserializeToNodes(inputStream);
+    jsonSerialization.deserializeToNodes(inputStream);
   }
 }

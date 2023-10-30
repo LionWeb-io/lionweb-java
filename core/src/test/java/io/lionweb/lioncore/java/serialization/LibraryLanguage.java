@@ -24,9 +24,9 @@ public class LibraryLanguage {
         LibraryLanguage.class.getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     LIBRARY_MM =
-        unserializedNodes.stream()
+        deserializedNodes.stream()
             .filter(e -> e instanceof Language)
             .map(e -> (Language) e)
             .findFirst()

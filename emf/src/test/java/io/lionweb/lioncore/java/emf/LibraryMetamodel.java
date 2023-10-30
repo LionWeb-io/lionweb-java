@@ -24,9 +24,9 @@ public class LibraryMetamodel {
     InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     LIBRARY_LANG =
-        unserializedNodes.stream()
+        deserializedNodes.stream()
             .filter(e -> e instanceof Language)
             .map(e -> (Language) e)
             .findFirst()

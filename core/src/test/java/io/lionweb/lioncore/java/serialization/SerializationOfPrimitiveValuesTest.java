@@ -11,7 +11,7 @@ import java.util.List;
 import org.junit.Test;
 
 /**
- * Specific tests of JsonSerialization for the serialization and unserialization of primitive
+ * Specific tests of JsonSerialization for the serialization and deserialization of primitive
  * values.
  */
 public class SerializationOfPrimitiveValuesTest extends SerializationTest {
@@ -82,7 +82,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeBoolean() {
+  public void deserializeBoolean() {
     MyNodeWithProperties node = new MyNodeWithProperties("n1");
     node.setP1(true);
 
@@ -145,12 +145,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
+            (concept, serializedNode, deserializedNodesByID, propertiesValue) ->
                 new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(node), unserialized);
+    List<Node> deserialized = jsonSerialization.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(node), deserialized);
   }
 
   @Test
@@ -219,7 +219,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeString() {
+  public void deserializeString() {
     MyNodeWithProperties node = new MyNodeWithProperties("n1");
     node.setP3("qwerty");
 
@@ -281,12 +281,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
+            (concept, serializedNode, deserializedNodesByID, propertiesValue) ->
                 new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(node), unserialized);
+    List<Node> deserialized = jsonSerialization.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(node), deserialized);
   }
 
   @Test
@@ -355,7 +355,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeInteger() {
+  public void deserializeInteger() {
     MyNodeWithProperties node = new MyNodeWithProperties("n1");
     node.setP2(2904);
 
@@ -418,12 +418,12 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
+            (concept, serializedNode, deserializedNodesByID, propertiesValue) ->
                 new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(node), unserialized);
+    List<Node> deserialized = jsonSerialization.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(node), deserialized);
   }
 
   @Test
@@ -495,7 +495,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeJSON() {
+  public void deserializeJSON() {
     MyNodeWithProperties node = new MyNodeWithProperties("n1");
     JsonArray ja = new JsonArray();
     ja.add(1);
@@ -561,11 +561,11 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
-        .registerCustomUnserializer(
+        .registerCustomDeserializer(
             MyNodeWithProperties.CONCEPT.getID(),
-            (concept, serializedNode, unserializedNodesByID, propertiesValue) ->
+            (concept, serializedNode, deserializedNodesByID, propertiesValue) ->
                 new MyNodeWithProperties(serializedNode.getID()));
-    List<Node> unserialized = jsonSerialization.unserializeToNodes(serialized);
-    assertEquals(Arrays.asList(node), unserialized);
+    List<Node> deserialized = jsonSerialization.deserializeToNodes(serialized);
+    assertEquals(Arrays.asList(node), deserialized);
   }
 }

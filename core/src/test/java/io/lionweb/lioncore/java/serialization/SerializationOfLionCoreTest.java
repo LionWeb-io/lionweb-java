@@ -99,12 +99,12 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeLionCoreToSerializedChunk() {
+  public void deserializeLionCoreToSerializedChunk() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     SerializedChunk serializedChunk =
-        new LowLevelJsonSerialization().unserializeSerializationBlock(jsonElement);
-    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData =
+        new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
+    List<SerializedClassifierInstance> deserializedSerializedClassifierInstanceData =
         serializedChunk.getClassifierInstances();
 
     SerializedNodeInstance lioncore =
@@ -117,13 +117,13 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeLionCoreToConcreteClasses() {
+  public void deserializeLionCoreToConcreteClasses() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
-    Language lioncore = (Language) unserializedNodes.get(0);
+    Language lioncore = (Language) deserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getName());
@@ -132,7 +132,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeLionCoreToDynamicNodes() {
+  public void deserializeLionCoreToDynamicNodes() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
@@ -144,10 +144,10 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization.getInstantiator().enableDynamicNodes();
     jsonSerialization
         .getPrimitiveValuesSerialization()
-        .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-    List<Node> unserializedNodes = jsonSerialization.unserializeToNodes(jsonElement);
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
-    DynamicNode lioncore = (DynamicNode) unserializedNodes.get(0);
+    DynamicNode lioncore = (DynamicNode) deserializedNodes.get(0);
     assertEquals(LionCore.getLanguage(), lioncore.getConcept());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getPropertyValueByName("name"));
@@ -156,14 +156,14 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   }
 
   @Test(expected = RuntimeException.class)
-  public void unserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
+  public void deserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization
         .getPrimitiveValuesSerialization()
-        .registerLionBuiltinsPrimitiveSerializersAndUnserializers();
-    jsonSerialization.unserializeToNodes(jsonElement);
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+    jsonSerialization.deserializeToNodes(jsonElement);
   }
 }

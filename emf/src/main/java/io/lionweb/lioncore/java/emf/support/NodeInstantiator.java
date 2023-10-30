@@ -8,7 +8,7 @@ import java.util.Map;
 import org.eclipse.emf.ecore.EObject;
 
 /**
- * This knows how to instantiate a Node, given the information provided by the unserialization
+ * This knows how to instantiate a Node, given the information provided by the deserialization
  * mechanism.
  */
 public class NodeInstantiator {
@@ -17,22 +17,22 @@ public class NodeInstantiator {
     T instantiate(
         Concept concept,
         EObject emfObject,
-        Map<String, Node> unserializedNodesByID,
+        Map<String, Node> deserializedNodesByID,
         Map<Property, Object> propertiesValues);
   }
 
-  private final Map<String, ConceptSpecificNodeInstantiator<?>> customUnserializers =
+  private final Map<String, ConceptSpecificNodeInstantiator<?>> customDeserializers =
       new HashMap<>();
-  private ConceptSpecificNodeInstantiator<?> defaultNodeUnserializer =
+  private ConceptSpecificNodeInstantiator<?> defaultNodeDeserializer =
       (ConceptSpecificNodeInstantiator<Node>)
-          (concept, serializedNode, unserializedNodesByID, propertiesValues) -> {
+          (concept, serializedNode, deserializedNodesByID, propertiesValues) -> {
             throw new IllegalArgumentException(
-                "Unable to unserialize node with concept " + concept);
+                "Unable to deserialize node with concept " + concept);
           };
 
   public NodeInstantiator enableDynamicNodes() {
-    defaultNodeUnserializer =
-        (concept, emfObject, unserializedNodesByID, propertiesValues) ->
+    defaultNodeDeserializer =
+        (concept, emfObject, deserializedNodesByID, propertiesValues) ->
             new DynamicNode(null, concept);
     return this;
   }
@@ -40,21 +40,21 @@ public class NodeInstantiator {
   public Node instantiate(
       Concept concept,
       EObject eObject,
-      Map<String, Node> unserializedNodesByID,
+      Map<String, Node> deserializedNodesByID,
       Map<Property, Object> propertiesValues) {
-    if (customUnserializers.containsKey(concept.getID())) {
-      return customUnserializers
+    if (customDeserializers.containsKey(concept.getID())) {
+      return customDeserializers
           .get(concept.getID())
-          .instantiate(concept, eObject, unserializedNodesByID, propertiesValues);
+          .instantiate(concept, eObject, deserializedNodesByID, propertiesValues);
     } else {
-      return defaultNodeUnserializer.instantiate(
-          concept, eObject, unserializedNodesByID, propertiesValues);
+      return defaultNodeDeserializer.instantiate(
+          concept, eObject, deserializedNodesByID, propertiesValues);
     }
   }
 
-  public NodeInstantiator registerCustomUnserializer(
+  public NodeInstantiator registerCustomDeserializer(
       String conceptID, ConceptSpecificNodeInstantiator<?> conceptSpecificNodeInstantiator) {
-    customUnserializers.put(conceptID, conceptSpecificNodeInstantiator);
+    customDeserializers.put(conceptID, conceptSpecificNodeInstantiator);
     return this;
   }
 }

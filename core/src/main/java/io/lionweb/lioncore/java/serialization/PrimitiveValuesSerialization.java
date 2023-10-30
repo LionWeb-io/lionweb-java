@@ -9,7 +9,7 @@ import io.lionweb.lioncore.java.model.impl.DynamicEnumerationValue;
 import java.util.*;
 
 /**
- * This class is responsible for serialization and unserializing primitive values, based on the type
+ * This class is responsible for serialization and deserializing primitive values, based on the type
  * of the primitive value.
  */
 public class PrimitiveValuesSerialization {
@@ -33,19 +33,19 @@ public class PrimitiveValuesSerialization {
     String serialize(V value);
   }
 
-  public interface PrimitiveUnserializer<V> {
-    V unserialize(String serializedValue);
+  public interface PrimitiveDeserializer<V> {
+    V deserialize(String serializedValue);
   }
 
-  public interface PrimitiveValueSerializerAndUnserializer<V>
-      extends PrimitiveSerializer<V>, PrimitiveUnserializer<V> {}
+  public interface PrimitiveValueSerializerAndDeserializer<V>
+      extends PrimitiveSerializer<V>, PrimitiveDeserializer<V> {}
 
-  private final Map<String, PrimitiveUnserializer<?>> primitiveUnserializers = new HashMap<>();
+  private final Map<String, PrimitiveDeserializer<?>> primitiveDeserializers = new HashMap<>();
   private final Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
-  public PrimitiveValuesSerialization registerUnserializer(
-      String dataTypeID, PrimitiveUnserializer<?> unserializer) {
-    this.primitiveUnserializers.put(dataTypeID, unserializer);
+  public PrimitiveValuesSerialization registerDeserializer(
+      String dataTypeID, PrimitiveDeserializer<?> deserializer) {
+    this.primitiveDeserializers.put(dataTypeID, deserializer);
     return this;
   }
 
@@ -55,21 +55,21 @@ public class PrimitiveValuesSerialization {
     return this;
   }
 
-  public void registerLionBuiltinsPrimitiveSerializersAndUnserializers() {
-    primitiveUnserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
-    primitiveUnserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
-    primitiveUnserializers.put(
+  public void registerLionBuiltinsPrimitiveSerializersAndDeserializers() {
+    primitiveDeserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
+    primitiveDeserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
+    primitiveDeserializers.put(
         LionCoreBuiltins.getJSON().getID(),
-        (PrimitiveUnserializer<JsonElement>)
+        (PrimitiveDeserializer<JsonElement>)
             serializedValue -> {
               if (serializedValue == null) {
                 return null;
               }
               return JsonParser.parseString(serializedValue);
             });
-    primitiveUnserializers.put(
+    primitiveDeserializers.put(
         LionCoreBuiltins.getInteger().getID(),
-        (PrimitiveUnserializer<Integer>)
+        (PrimitiveDeserializer<Integer>)
             serializedValue -> {
               if (serializedValue == null) {
                 return null;
@@ -90,10 +90,10 @@ public class PrimitiveValuesSerialization {
         (PrimitiveSerializer<Integer>) value -> value.toString());
   }
 
-  public Object unserialize(DataType dataType, String serializedValue) {
+  public Object deserialize(DataType dataType, String serializedValue) {
     String dataTypeID = dataType.getID();
-    if (primitiveUnserializers.containsKey(dataTypeID)) {
-      return primitiveUnserializers.get(dataTypeID).unserialize(serializedValue);
+    if (primitiveDeserializers.containsKey(dataTypeID)) {
+      return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue);
     } else if (enumerationsByID.containsKey(dataTypeID)) {
       if (serializedValue == null) {
         return null;
@@ -101,7 +101,7 @@ public class PrimitiveValuesSerialization {
       // In this case, where we are dealing with primitive values, we want to use the literal _key_
       // (and not the ID)
       // This is at least the default behavior, but the user can register specialized
-      // primitiveUnserializers,
+      // primitiveDeserializers,
       // if a different behavior is needed
       Optional<EnumerationLiteral> enumerationLiteral =
           enumerationsByID.get(dataTypeID).getLiterals().stream()
@@ -116,7 +116,7 @@ public class PrimitiveValuesSerialization {
       return new DynamicEnumerationValue((Enumeration) dataType, serializedValue);
     } else {
       throw new IllegalArgumentException(
-          "Unable to unserialize primitive values of type " + dataTypeID);
+          "Unable to deserialize primitive values of type " + dataTypeID);
     }
   }
 

@@ -23,16 +23,16 @@ import org.junit.Test;
 public class LowLevelJsonSerializationTest extends SerializationTest {
 
   @Test
-  public void unserializeLionCoreToSerializedNodes() {
+  public void deserializeLionCoreToSerializedNodes() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-    SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
-    List<SerializedClassifierInstance> unserializedSerializedClassifierInstanceData =
+    SerializedChunk serializedChunk = jsonSerialization.deserializeSerializationBlock(jsonElement);
+    List<SerializedClassifierInstance> deserializedSerializedClassifierInstanceData =
         serializedChunk.getClassifierInstances();
 
     SerializedNodeInstance lioncore =
-        (SerializedNodeInstance) unserializedSerializedClassifierInstanceData.get(0);
+        (SerializedNodeInstance) deserializedSerializedClassifierInstanceData.get(0);
     assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
@@ -41,12 +41,12 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void unserializeLibraryLanguageToSerializedNodes() {
+  public void deserializeLibraryLanguageToSerializedNodes() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-    SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
+    SerializedChunk serializedChunk = jsonSerialization.deserializeSerializationBlock(jsonElement);
     SerializedClassifierInstance book = serializedChunk.getInstanceByID("library-Book");
     assertEquals("Book", book.getPropertyValue("LionCore-builtins-INamed-name"));
 
@@ -90,9 +90,9 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     hjs.enableDynamicNodes();
 
     JsonElement je = hjs.serializeNodesToJsonElement(n1);
-    List<Node> unserializedNodes = hjs.unserializeToNodes(je);
-    assertEquals(1, unserializedNodes.size());
-    assertInstancesAreEquals(n1, unserializedNodes.get(0));
+    List<Node> deserializedNodes = hjs.deserializeToNodes(je);
+    assertEquals(1, deserializedNodes.size());
+    assertInstancesAreEquals(n1, deserializedNodes.get(0));
   }
 
   @Test(expected = RuntimeException.class)
@@ -105,14 +105,14 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
             + "  \"info\": \"should not be here\"\n"
             + "}";
     LowLevelJsonSerialization lljs = new LowLevelJsonSerialization();
-    lljs.unserializeSerializationBlock(json);
+    lljs.deserializeSerializationBlock(json);
   }
 
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {
     InputStream inputStream = this.getClass().getResourceAsStream(filePath);
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-    SerializedChunk serializedChunk = jsonSerialization.unserializeSerializationBlock(jsonElement);
+    SerializedChunk serializedChunk = jsonSerialization.deserializeSerializationBlock(jsonElement);
     JsonElement reserialized = jsonSerialization.serializeToJsonElement(serializedChunk);
     assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
   }
