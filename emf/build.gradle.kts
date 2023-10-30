@@ -1,3 +1,4 @@
+import org.apache.tools.ant.taskdefs.condition.Os
 import java.net.URI
 
 plugins {
@@ -136,5 +137,8 @@ tasks.withType(Sign::class) {
 }
 
 signing {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        useGpgCmd()
+    }
     sign(publishing.publications["lionweb_java_emf"])
 }
