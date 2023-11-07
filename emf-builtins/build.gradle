@@ -62,8 +62,6 @@ sourceSets {
 var isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
 
 task javadocJar(type: Jar) {
-//    dependsOn("myJavadoc")
-//    from(tasks.getByName("myJavadoc")/*.destinationDir*/)
     archiveClassifier.set("javadoc")
 }
 
