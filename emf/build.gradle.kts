@@ -19,18 +19,18 @@ dependencies {
     api(project(":core"))
     api(project(":emf-builtins"))
 
-    api("org.eclipse.emf:org.eclipse.emf.common:2.28.0")
-    api("org.eclipse.emf:org.eclipse.emf.ecore:2.33.0")
-    api("org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.18.0")
+    api(emf.common)
+    api(emf.ecore)
+    api(emf.ecore.xmi)
 
-    api("org.eclipse.emfcloud:emfjson-jackson:2.2.0")
+    api(emf.emfjson)
 
-    implementation("com.google.code.gson:gson:2.10.1")
-    implementation("org.jetbrains:annotations:24.0.0")
+    implementation(libs.gson)
+    implementation(libs.annotations)
 
     // Use JUnit test framework.
-    testImplementation("junit:junit:4.13")
-    testImplementation("com.google.code.gson:gson:2.10.1")
+    testImplementation(libs.junit)
+    testImplementation(libs.gson)
 }
 
 val jvmVersion = extra["jvmVersion"] as String

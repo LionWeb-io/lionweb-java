@@ -13,14 +13,13 @@ configurations {
 }
 
 dependencies {
-    api("org.eclipse.emf:org.eclipse.emf.common:2.28.0")
-    api("org.eclipse.emf:org.eclipse.emf.ecore:2.33.0")
-    api("org.eclipse.emf:org.eclipse.emf.ecore.change:2.15.0")
-    api("org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.35.0")
-    mwe2("org.eclipse.emf:org.eclipse.emf.mwe2.launch:2.15.0")
+    api emf.common
+    api emf.ecore
+    api emf.ecore.change
+    api emf.ecore.xmi
+    mwe2("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
-//    mwe2("org.eclipse.xtext:xtext-antlr-generator:2.1.1")
 }
 
 tasks.register("generateXtextLanguage", JavaExec) {
