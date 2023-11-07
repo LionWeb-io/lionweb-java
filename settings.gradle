@@ -9,7 +9,6 @@ dependencyResolutionManagement {
         emf {
             library("common", "org.eclipse.emf:org.eclipse.emf.common:2.28.0")
             library("ecore", "org.eclipse.emf:org.eclipse.emf.ecore:2.33.0")
-            library("ecore-change", "org.eclipse.emf:org.eclipse.emf.ecore.change:2.15.0")
             library("ecore-xmi", "org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.18.0")
 
             library("emfjson", "org.eclipse.emfcloud:emfjson-jackson:2.2.0")
