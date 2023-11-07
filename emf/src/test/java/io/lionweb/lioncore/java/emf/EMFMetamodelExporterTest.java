@@ -6,9 +6,20 @@ import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.Test;
 
 public class EMFMetamodelExporterTest {
@@ -152,56 +163,56 @@ public class EMFMetamodelExporterTest {
                                 .get(0);
 
         EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
-        EPackage libraryPkg = ecoreExporter.exportLanguage(propertiesLang);
+        EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
 
-        assertEquals("io.lionweb.Properties", libraryPkg.getName());
-        assertEquals("https://lionweb.io/io_lionweb_Properties", libraryPkg.getNsURI());
-        assertEquals("io.lionweb.Properties", libraryPkg.getNsPrefix());
-        assertEquals(7, libraryPkg.getEClassifiers().size());
+        assertEquals("io.lionweb.Properties", propertiesPkg.getName());
+        assertEquals("https://lionweb.io/io_lionweb_Properties", propertiesPkg.getNsURI());
+        assertEquals("io.lionweb.Properties", propertiesPkg.getNsPrefix());
+        assertEquals(7, propertiesPkg.getEClassifiers().size());
 
-        EClass propertiesFile = (EClass) libraryPkg.getEClassifier("PropertiesFile");
+        EClass propertiesFile = (EClass) propertiesPkg.getEClassifier("PropertiesFile");
         assertEquals(Arrays.asList(eObject, iNamed), propertiesFile.getESuperTypes());
         assertEquals("PropertiesFile", propertiesFile.getName());
         assertFalse(propertiesFile.isAbstract());
         assertFalse(propertiesFile.isInterface());
         assertEquals(1, propertiesFile.getEStructuralFeatures().size());
 
-        EClass property = (EClass) libraryPkg.getEClassifier("Property");
+        EClass property = (EClass) propertiesPkg.getEClassifier("Property");
         assertEquals(Arrays.asList(eObject, iNamed), property.getESuperTypes());
         assertEquals("Property", property.getName());
         assertFalse(property.isAbstract());
         assertFalse(property.isInterface());
         assertEquals(1, property.getEStructuralFeatures().size());
 
-        EClass value = (EClass) libraryPkg.getEClassifier("Value");
+        EClass value = (EClass) propertiesPkg.getEClassifier("Value");
         assertEquals(Arrays.asList(eObject), value.getESuperTypes());
         assertEquals("Value", value.getName());
         assertFalse(value.isAbstract());
         assertFalse(value.isInterface());
         assertEquals(0, value.getEStructuralFeatures().size());
 
-        EClass booleanValue = (EClass) libraryPkg.getEClassifier("BooleanValue");
+        EClass booleanValue = (EClass) propertiesPkg.getEClassifier("BooleanValue");
         assertEquals(Arrays.asList(value), booleanValue.getESuperTypes());
         assertEquals("BooleanValue", booleanValue.getName());
         assertFalse(booleanValue.isAbstract());
         assertFalse(booleanValue.isInterface());
         assertEquals(1, booleanValue.getEStructuralFeatures().size());
 
-        EClass decValue = (EClass) libraryPkg.getEClassifier("DecValue");
+        EClass decValue = (EClass) propertiesPkg.getEClassifier("DecValue");
         assertEquals(Arrays.asList(value), decValue.getESuperTypes());
         assertEquals("DecValue", decValue.getName());
         assertFalse(decValue.isAbstract());
         assertFalse(decValue.isInterface());
         assertEquals(1, decValue.getEStructuralFeatures().size());
 
-        EClass intValue = (EClass) libraryPkg.getEClassifier("IntValue");
+        EClass intValue = (EClass) propertiesPkg.getEClassifier("IntValue");
         assertEquals(Arrays.asList(value), intValue.getESuperTypes());
         assertEquals("IntValue", intValue.getName());
         assertFalse(intValue.isAbstract());
         assertFalse(intValue.isInterface());
         assertEquals(1, intValue.getEStructuralFeatures().size());
 
-        EClass stringValue = (EClass) libraryPkg.getEClassifier("StringValue");
+        EClass stringValue = (EClass) propertiesPkg.getEClassifier("StringValue");
         assertEquals(Arrays.asList(value), stringValue.getESuperTypes());
         assertEquals("StringValue", stringValue.getName());
         assertFalse(stringValue.isAbstract());
@@ -245,5 +256,32 @@ public class EMFMetamodelExporterTest {
         assertEquals(0, stringProp.getLowerBound());
         assertEquals(1, stringProp.getUpperBound());
         assertEquals(EcorePackage.eINSTANCE.getEString(), stringProp.getEType());
+    }
+
+    @Test
+    public void storePropertiesLangWithINamed() throws IOException {
+        Language propertiesLang =
+                (Language)
+                        JsonSerialization.getStandardSerialization()
+                                .deserializeToNodes(this.getClass().getResourceAsStream("/properties-language.json"))
+                                .get(0);
+
+        EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+        EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
+
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap().put("ecore", new EcoreResourceFactoryImpl());
+
+        ResourceSet resourceSet = new ResourceSetImpl();
+
+        File tempFile = File.createTempFile("gen-properties-language", ".ecore");
+        tempFile.deleteOnExit();
+        Resource resource = resourceSet.createResource(URI.createFileURI(tempFile.getAbsolutePath()));
+        resource.getContents().add(propertiesPkg);
+        resource.save(Collections.emptyMap());
+
+        List<String> expected = new BufferedReader(new InputStreamReader(this.getClass().getResourceAsStream("/properties.ecore"), StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+        List<String> actual = new BufferedReader(new InputStreamReader(new FileInputStream(tempFile), StandardCharsets.UTF_8)).lines().collect(Collectors.toList());
+
+        assertEquals(expected, actual);
     }
 }
