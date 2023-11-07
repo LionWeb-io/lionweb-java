@@ -19,8 +19,22 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
+  /**
+   * Creates a mapping with pre-populated builtins.
+   */
   public ConceptsToEClassesMapping() {
-    populateInternal();
+    this(true);
+  }
+
+  /**
+   *
+   * @param prePopulateInternal Whether builtins should be pre-populated in this mapping.
+   */
+  public ConceptsToEClassesMapping(boolean prePopulateInternal)
+  {
+    if(prePopulateInternal) {
+      populateInternal();
+    }
   }
 
   private void processEPackage(EPackage ePackage) {
