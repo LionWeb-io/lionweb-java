@@ -2,10 +2,8 @@ package io.lionweb.lioncore.java.emf.mapping;
 
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
-import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Interface;
-import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -22,6 +20,21 @@ public class ConceptsToEClassesMapping {
   private final Map<EClass, Interface> eClassesToInterfaces = new HashMap<>();
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
+
+  public ConceptsToEClassesMapping() {
+    this(true);
+  }
+
+  public ConceptsToEClassesMapping(boolean preRegisterBuiltinsMapping) {
+    if (preRegisterBuiltinsMapping) {
+      registerBuiltinsMapping();
+    }
+  }
+
+  private void registerBuiltinsMapping() {
+    ePackagesToLanguages.put(BuiltinsEMFPackageProvider.getEPackage(), LionCoreBuiltins.getInstance());
+    languagesToEPackages.put(LionCoreBuiltins.getInstance(), BuiltinsEMFPackageProvider.getEPackage());
+  }
 
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");

@@ -3,7 +3,11 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Interface;
 import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.LanguageEntity;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 
@@ -80,5 +84,32 @@ public class EMFModelExporterTest {
     InputStream modelIs = this.getClass().getResourceAsStream("/example1-exported.lm.json");
     List<Node> nodes = jsonSerialization.deserializeToNodes(modelIs);
 
+    List<Node> roots = nodes.stream().filter(it -> it.getParent() == null).collect(Collectors.toList());
+
+    ConceptsToEClassesMapping conceptMapper = new ConceptsToEClassesMapping();
+//    for (LanguageEntity<?> element : propertiesLanguage.getElements()) {
+//      if (element instanceof Concept) {
+//          EClass eClass = PropertiesPackage.eINSTANCE.EClassifiers.filter(EClass).findFirst[it.name == element.name]
+//          if(eClass != null) {
+//            conceptMapper.registerMapping(element, eClass)
+//          }
+//          else {
+//            throw new RuntimeException('''Couldn't find EClass for concept «element»''')
+//          }
+//        } else if (element instanceof Interface) {
+//          var eClass = PropertiesPackage.eINSTANCE.EClassifiers.filter(EClass).findFirst[it.name == element.name]
+//          if(eClass !== null) {
+//            conceptMapper.registerMapping(element, eClass)
+//          }
+//          else {
+//            throw new RuntimeException('''Couldn't find EClass for interface «element»''')
+//          }
+//        }
+//      }
+//    }
+
+
+    EMFModelExporter emfExporter = new EMFModelExporter(conceptMapper);
+    Resource resource = emfExporter.exportResource(roots);
   }
 }
