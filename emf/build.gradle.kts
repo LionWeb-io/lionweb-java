@@ -17,6 +17,7 @@ val javadocConfig by configurations.creating {
 
 dependencies {
     api(project(":core"))
+    api(project(":emf-builtins"))
 
     api("org.eclipse.emf:org.eclipse.emf.common:2.28.0")
     api("org.eclipse.emf:org.eclipse.emf.ecore:2.33.0")

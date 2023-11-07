@@ -1,17 +1,15 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
+import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
-import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Interface;
-import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.*;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EPackage;
+
+import org.eclipse.emf.ecore.*;
 import org.jetbrains.annotations.Nullable;
 
 public class ConceptsToEClassesMapping {
@@ -23,7 +21,11 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
-  private void processEPackage(EPackage ePackage) {
+  public ConceptsToEClassesMapping() {
+    populateInternal();
+  }
+
+    private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
     EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(this);
     Language language = EMFMetamodelImporter.importEPackage(ePackage);
@@ -126,5 +128,10 @@ public class ConceptsToEClassesMapping {
       return eClassesToInterfaces.get(eClassifier);
     }
     return null;
+  }
+
+  public void populateInternal() {
+    registerMapping(LionCoreBuiltins.getNode(), EcorePackage.eINSTANCE.getEObject());
+    registerMapping(LionCoreBuiltins.getINamed(), BuiltinsPackage.eINSTANCE.getINamed());
   }
 }

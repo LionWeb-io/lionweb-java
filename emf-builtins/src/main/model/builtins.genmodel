@@ -5,7 +5,8 @@
     importerID="org.eclipse.emf.importer.ecore" bundleManifest="false" complianceLevel="17.0"
     copyrightFields="false" operationReflection="true" importOrganizing="true">
   <foreignModel>builtins.ecore</foreignModel>
-  <genPackages prefix="LionCore_builtins" disposableProviderFactory="true" ecorePackage="builtins.ecore#/">
+  <genPackages prefix="Builtins" basePackage="io.lionweb.java.emf" disposableProviderFactory="true"
+      fileExtensions="" ecorePackage="builtins.ecore#/" publicationLocation="">
     <genClasses image="false" ecoreClass="builtins.ecore#//INamed">
       <genFeatures createChild="false" ecoreFeature="ecore:EAttribute builtins.ecore#//INamed/name"/>
     </genClasses>

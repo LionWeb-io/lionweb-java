@@ -2,138 +2,248 @@ package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.*;
 
+import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+
 import java.util.Arrays;
+
 import org.eclipse.emf.ecore.*;
 import org.junit.Test;
 
 public class EMFMetamodelExporterTest {
 
-  @Test
-  public void exportLibraryLanguage() {
-    Language libraryLang =
-        (Language)
-            JsonSerialization.getStandardSerialization()
-                .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
-                .get(0);
+    @Test
+    public void exportLibraryLanguage() {
+        Language libraryLang =
+                (Language)
+                        JsonSerialization.getStandardSerialization()
+                                .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
+                                .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
-    EPackage libraryPkg = ecoreExporter.exportLanguage(libraryLang);
+        EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+        EPackage libraryPkg = ecoreExporter.exportLanguage(libraryLang);
 
-    assertEquals("library", libraryPkg.getName());
-    assertEquals("https://lionweb.io/library", libraryPkg.getNsURI());
-    assertEquals("library", libraryPkg.getNsPrefix());
-    assertEquals(5, libraryPkg.getEClassifiers().size());
+        assertEquals("library", libraryPkg.getName());
+        assertEquals("https://lionweb.io/library", libraryPkg.getNsURI());
+        assertEquals("library", libraryPkg.getNsPrefix());
+        assertEquals(5, libraryPkg.getEClassifiers().size());
 
-    EClass writer =
-        (EClass)
-            libraryPkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("Writer"))
-                .findFirst()
-                .get();
-    assertEquals(Arrays.asList(), writer.getESuperTypes());
+        EClass writer =
+                (EClass)
+                        libraryPkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("Writer"))
+                                .findFirst()
+                                .get();
+        assertEquals(Arrays.asList(), writer.getESuperTypes());
 
-    EClass book =
-        (EClass)
-            libraryPkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("Book"))
-                .findFirst()
-                .get();
-    assertEquals("Book", book.getName());
-    assertEquals(false, book.isAbstract());
-    assertEquals(false, book.isInterface());
-    assertEquals(3, book.getEStructuralFeatures().size());
+        EClass book =
+                (EClass)
+                        libraryPkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("Book"))
+                                .findFirst()
+                                .get();
+        assertEquals("Book", book.getName());
+        assertEquals(false, book.isAbstract());
+        assertEquals(false, book.isInterface());
+        assertEquals(3, book.getEStructuralFeatures().size());
 
-    EAttribute bookTitle = (EAttribute) book.getEStructuralFeature("title");
-    assertEquals("title", bookTitle.getName());
-    assertEquals(1, bookTitle.getLowerBound());
-    assertEquals(1, bookTitle.getUpperBound());
-    assertEquals(EcorePackage.eINSTANCE.getEString(), bookTitle.getEType());
+        EAttribute bookTitle = (EAttribute) book.getEStructuralFeature("title");
+        assertEquals("title", bookTitle.getName());
+        assertEquals(1, bookTitle.getLowerBound());
+        assertEquals(1, bookTitle.getUpperBound());
+        assertEquals(EcorePackage.eINSTANCE.getEString(), bookTitle.getEType());
 
-    EAttribute bookPages = (EAttribute) book.getEStructuralFeature("pages");
-    assertEquals("pages", bookPages.getName());
-    assertEquals(1, bookPages.getLowerBound());
-    assertEquals(1, bookPages.getUpperBound());
-    assertEquals(EcorePackage.eINSTANCE.getEInt(), bookPages.getEType());
+        EAttribute bookPages = (EAttribute) book.getEStructuralFeature("pages");
+        assertEquals("pages", bookPages.getName());
+        assertEquals(1, bookPages.getLowerBound());
+        assertEquals(1, bookPages.getUpperBound());
+        assertEquals(EcorePackage.eINSTANCE.getEInt(), bookPages.getEType());
 
-    EReference bookAuthor = (EReference) book.getEStructuralFeature("author");
-    assertEquals("author", bookAuthor.getName());
-    assertEquals(false, bookAuthor.isContainment());
-    assertEquals(1, bookAuthor.getLowerBound());
-    assertEquals(1, bookAuthor.getUpperBound());
-    assertEquals(writer, bookAuthor.getEType());
+        EReference bookAuthor = (EReference) book.getEStructuralFeature("author");
+        assertEquals("author", bookAuthor.getName());
+        assertEquals(false, bookAuthor.isContainment());
+        assertEquals(1, bookAuthor.getLowerBound());
+        assertEquals(1, bookAuthor.getUpperBound());
+        assertEquals(writer, bookAuthor.getEType());
 
-    EClass library =
-        (EClass)
-            libraryPkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("Library"))
-                .findFirst()
-                .get();
+        EClass library =
+                (EClass)
+                        libraryPkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("Library"))
+                                .findFirst()
+                                .get();
 
-    EClass specialistBookWriter =
-        (EClass)
-            libraryPkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("SpecialistBookWriter"))
-                .findFirst()
-                .get();
-    assertEquals(Arrays.asList(writer), specialistBookWriter.getESuperTypes());
+        EClass specialistBookWriter =
+                (EClass)
+                        libraryPkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("SpecialistBookWriter"))
+                                .findFirst()
+                                .get();
+        assertEquals(Arrays.asList(writer), specialistBookWriter.getESuperTypes());
 
-    EClass guideBookWriter =
-        (EClass)
-            libraryPkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("GuideBookWriter"))
-                .findFirst()
-                .get();
-    assertEquals(Arrays.asList(writer), guideBookWriter.getESuperTypes());
-  }
+        EClass guideBookWriter =
+                (EClass)
+                        libraryPkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("GuideBookWriter"))
+                                .findFirst()
+                                .get();
+        assertEquals(Arrays.asList(writer), guideBookWriter.getESuperTypes());
+    }
 
-  @Test
-  public void exportInterfaceAndEnumeration() {
-    Language simpleLang = new Language("SimpleMM").setKey("simkey").setID("simid");
-    Enumeration color = new Enumeration(simpleLang, "Color");
-    new EnumerationLiteral(color, "red");
-    new EnumerationLiteral(color, "white");
-    new EnumerationLiteral(color, "green");
-    Interface coloredCI = new Interface(simpleLang, "Colored");
-    coloredCI.addFeature(Property.createRequired("color", color));
+    @Test
+    public void exportInterfaceAndEnumeration() {
+        Language simpleLang = new Language("SimpleMM").setKey("simkey").setID("simid");
+        Enumeration color = new Enumeration(simpleLang, "Color");
+        new EnumerationLiteral(color, "red");
+        new EnumerationLiteral(color, "white");
+        new EnumerationLiteral(color, "green");
+        Interface coloredCI = new Interface(simpleLang, "Colored");
+        coloredCI.addFeature(Property.createRequired("color", color));
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
-    EPackage simplePkg = ecoreExporter.exportLanguage(simpleLang);
+        EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+        EPackage simplePkg = ecoreExporter.exportLanguage(simpleLang);
 
-    assertEquals("SimpleMM", simplePkg.getName());
-    assertEquals("https://lionweb.io/simkey", simplePkg.getNsURI());
-    assertEquals("SimpleMM", simplePkg.getNsPrefix());
-    assertEquals(2, simplePkg.getEClassifiers().size());
+        assertEquals("SimpleMM", simplePkg.getName());
+        assertEquals("https://lionweb.io/simkey", simplePkg.getNsURI());
+        assertEquals("SimpleMM", simplePkg.getNsPrefix());
+        assertEquals(2, simplePkg.getEClassifiers().size());
 
-    EEnum colorDT =
-        (EEnum)
-            simplePkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("Color"))
-                .findFirst()
-                .get();
-    assertEquals(3, colorDT.getELiterals().size());
-    assertEquals("red", colorDT.getELiterals().get(0).getName());
-    assertEquals("red", colorDT.getELiterals().get(0).getLiteral());
-    assertEquals("white", colorDT.getELiterals().get(1).getName());
-    assertEquals("white", colorDT.getELiterals().get(1).getLiteral());
-    assertEquals("green", colorDT.getELiterals().get(2).getName());
-    assertEquals("green", colorDT.getELiterals().get(2).getLiteral());
+        EEnum colorDT =
+                (EEnum)
+                        simplePkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("Color"))
+                                .findFirst()
+                                .get();
+        assertEquals(3, colorDT.getELiterals().size());
+        assertEquals("red", colorDT.getELiterals().get(0).getName());
+        assertEquals("red", colorDT.getELiterals().get(0).getLiteral());
+        assertEquals("white", colorDT.getELiterals().get(1).getName());
+        assertEquals("white", colorDT.getELiterals().get(1).getLiteral());
+        assertEquals("green", colorDT.getELiterals().get(2).getName());
+        assertEquals("green", colorDT.getELiterals().get(2).getLiteral());
 
-    EClass coloredEC =
-        (EClass)
-            simplePkg.getEClassifiers().stream()
-                .filter(e -> e.getName().equals("Colored"))
-                .findFirst()
-                .get();
-    assertEquals("Colored", coloredEC.getName());
-    assertEquals(true, coloredEC.isInterface());
-    assertEquals(1, coloredEC.getEStructuralFeatures().size());
+        EClass coloredEC =
+                (EClass)
+                        simplePkg.getEClassifiers().stream()
+                                .filter(e -> e.getName().equals("Colored"))
+                                .findFirst()
+                                .get();
+        assertEquals("Colored", coloredEC.getName());
+        assertEquals(true, coloredEC.isInterface());
+        assertEquals(1, coloredEC.getEStructuralFeatures().size());
 
-    EAttribute colorAttr = coloredEC.getEAllAttributes().get(0);
-    assertEquals("color", colorAttr.getName());
-    assertEquals(colorDT, colorAttr.getEAttributeType());
-    assertEquals(1, colorAttr.getLowerBound());
-    assertEquals(1, colorAttr.getUpperBound());
-  }
+        EAttribute colorAttr = coloredEC.getEAllAttributes().get(0);
+        assertEquals("color", colorAttr.getName());
+        assertEquals(colorDT, colorAttr.getEAttributeType());
+        assertEquals(1, colorAttr.getLowerBound());
+        assertEquals(1, colorAttr.getUpperBound());
+    }
+
+    @Test
+    public void exportPropertiesLangWithINamed() {
+        EClass eObject = EcorePackage.eINSTANCE.getEObject();
+        EClass iNamed = BuiltinsPackage.eINSTANCE.getINamed();
+
+        Language propertiesLang =
+                (Language)
+                        JsonSerialization.getStandardSerialization()
+                                .deserializeToNodes(this.getClass().getResourceAsStream("/properties-language.json"))
+                                .get(0);
+
+        EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+        EPackage libraryPkg = ecoreExporter.exportLanguage(propertiesLang);
+
+        assertEquals("io.lionweb.Properties", libraryPkg.getName());
+        assertEquals("https://lionweb.io/io_lionweb_Properties", libraryPkg.getNsURI());
+        assertEquals("io.lionweb.Properties", libraryPkg.getNsPrefix());
+        assertEquals(7, libraryPkg.getEClassifiers().size());
+
+        EClass propertiesFile = (EClass) libraryPkg.getEClassifier("PropertiesFile");
+        assertEquals(Arrays.asList(eObject, iNamed), propertiesFile.getESuperTypes());
+        assertEquals("PropertiesFile", propertiesFile.getName());
+        assertFalse(propertiesFile.isAbstract());
+        assertFalse(propertiesFile.isInterface());
+        assertEquals(1, propertiesFile.getEStructuralFeatures().size());
+
+        EClass property = (EClass) libraryPkg.getEClassifier("Property");
+        assertEquals(Arrays.asList(eObject, iNamed), property.getESuperTypes());
+        assertEquals("Property", property.getName());
+        assertFalse(property.isAbstract());
+        assertFalse(property.isInterface());
+        assertEquals(1, property.getEStructuralFeatures().size());
+
+        EClass value = (EClass) libraryPkg.getEClassifier("Value");
+        assertEquals(Arrays.asList(eObject), value.getESuperTypes());
+        assertEquals("Value", value.getName());
+        assertFalse(value.isAbstract());
+        assertFalse(value.isInterface());
+        assertEquals(0, value.getEStructuralFeatures().size());
+
+        EClass booleanValue = (EClass) libraryPkg.getEClassifier("BooleanValue");
+        assertEquals(Arrays.asList(value), booleanValue.getESuperTypes());
+        assertEquals("BooleanValue", booleanValue.getName());
+        assertFalse(booleanValue.isAbstract());
+        assertFalse(booleanValue.isInterface());
+        assertEquals(1, booleanValue.getEStructuralFeatures().size());
+
+        EClass decValue = (EClass) libraryPkg.getEClassifier("DecValue");
+        assertEquals(Arrays.asList(value), decValue.getESuperTypes());
+        assertEquals("DecValue", decValue.getName());
+        assertFalse(decValue.isAbstract());
+        assertFalse(decValue.isInterface());
+        assertEquals(1, decValue.getEStructuralFeatures().size());
+
+        EClass intValue = (EClass) libraryPkg.getEClassifier("IntValue");
+        assertEquals(Arrays.asList(value), intValue.getESuperTypes());
+        assertEquals("IntValue", intValue.getName());
+        assertFalse(intValue.isAbstract());
+        assertFalse(intValue.isInterface());
+        assertEquals(1, intValue.getEStructuralFeatures().size());
+
+        EClass stringValue = (EClass) libraryPkg.getEClassifier("StringValue");
+        assertEquals(Arrays.asList(value), stringValue.getESuperTypes());
+        assertEquals("StringValue", stringValue.getName());
+        assertFalse(stringValue.isAbstract());
+        assertFalse(stringValue.isInterface());
+        assertEquals(1, stringValue.getEStructuralFeatures().size());
+
+        EReference props = (EReference) propertiesFile.getEStructuralFeature("props");
+        assertEquals("props", props.getName());
+        assertEquals(1, props.getLowerBound());
+        assertEquals(-1, props.getUpperBound());
+        assertEquals(property, props.getEType());
+
+        EReference valueRef = (EReference) property.getEStructuralFeature("value");
+        assertEquals("value", valueRef.getName());
+        assertEquals(1, valueRef.getLowerBound());
+        // TODO fix
+        assertEquals(-1, valueRef.getUpperBound());
+        assertEquals(value, valueRef.getEType());
+
+        EAttribute boolProp = (EAttribute) booleanValue.getEStructuralFeature("value");
+        assertEquals("value", boolProp.getName());
+        assertEquals(0, boolProp.getLowerBound());
+        assertEquals(1, boolProp.getUpperBound());
+        assertEquals(EcorePackage.eINSTANCE.getEBoolean(), boolProp.getEType());
+
+        EAttribute decProp = (EAttribute) decValue.getEStructuralFeature("value");
+        assertEquals("value", decProp.getName());
+        assertEquals(0, decProp.getLowerBound());
+        assertEquals(1, decProp.getUpperBound());
+        assertEquals(EcorePackage.eINSTANCE.getEString(), decProp.getEType());
+
+        EAttribute intProp = (EAttribute) intValue.getEStructuralFeature("value");
+        assertEquals("value", intProp.getName());
+        assertEquals(0, intProp.getLowerBound());
+        assertEquals(1, intProp.getUpperBound());
+        //TODO correct?
+        assertEquals(EcorePackage.eINSTANCE.getEString(), intProp.getEType());
+
+        EAttribute stringProp = (EAttribute) stringValue.getEStructuralFeature("value");
+        assertEquals("value", stringProp.getName());
+        assertEquals(0, stringProp.getLowerBound());
+        assertEquals(1, stringProp.getUpperBound());
+        assertEquals(EcorePackage.eINSTANCE.getEString(), stringProp.getEType());
+    }
 }

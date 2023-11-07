@@ -13,10 +13,10 @@ configurations {
 }
 
 dependencies {
-    implementation("org.eclipse.emf:org.eclipse.emf.common:2.29.0")
-    implementation("org.eclipse.emf:org.eclipse.emf.ecore:2.35.0")
-    implementation("org.eclipse.emf:org.eclipse.emf.ecore.change:2.15.0")
-    implementation("org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.35.0")
+    api("org.eclipse.emf:org.eclipse.emf.common:2.28.0")
+    api("org.eclipse.emf:org.eclipse.emf.ecore:2.33.0")
+    api("org.eclipse.emf:org.eclipse.emf.ecore.change:2.15.0")
+    api("org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.35.0")
     mwe2("org.eclipse.emf:org.eclipse.emf.mwe2.launch:2.15.0")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
@@ -35,12 +35,24 @@ tasks.compileJava.dependsOn("generateXtextLanguage")
 tasks.processResources.dependsOn("generateXtextLanguage")
 tasks.clean.dependsOn("cleanGenerateXtextLanguage")
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(JavaVersion.toVersion("${jvmVersion}").getMajorVersion())
+    }
+}
+
 sourceSets {
     main {
         java {
             srcDirs([
-            	"${projectDir}/src-gen/main/java",
-            	"${projectDir}/src/main/java"
+                    "${projectDir}/src-gen/main/java",
+                    "${projectDir}/src/main/java"
+            ])
+        }
+        resources {
+            srcDirs([
+                    "${projectDir}/src/main/resources",
+                    "${projectDir}/src/main/model"
             ])
         }
     }
