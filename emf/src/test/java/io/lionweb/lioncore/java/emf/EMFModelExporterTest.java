@@ -3,8 +3,11 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+
+import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.*;
@@ -60,5 +63,22 @@ public class EMFModelExporterTest {
     assertEquals("Business-Friendly DSLs", bfd.eGet(de.eClass().getEStructuralFeature("title")));
     assertEquals(517, bfd.eGet(bfd.eClass().getEStructuralFeature("pages")));
     assertEquals(mb, bfd.eGet(bfd.eClass().getEStructuralFeature("author")));
+  }
+
+  @Test
+  public void exportSingleContainment() {
+    InputStream languageIs = this.getClass().getResourceAsStream("/properties.lmm.json");
+    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    List<Node> lNodes = jsonSerialization.deserializeToNodes(languageIs);
+    List<Language> languages = lNodes.stream().filter(n -> n instanceof Language).map(n -> (Language)n).collect(Collectors.toList());;
+    if (languages.size() != 1) {
+      throw new IllegalStateException();
+    }
+    Language propertiesLanguage = languages.get(0);
+    jsonSerialization.registerLanguage(propertiesLanguage);
+    jsonSerialization.getInstantiator().enableDynamicNodes();
+    InputStream modelIs = this.getClass().getResourceAsStream("/example1-exported.lm.json");
+    List<Node> nodes = jsonSerialization.deserializeToNodes(modelIs);
+
   }
 }

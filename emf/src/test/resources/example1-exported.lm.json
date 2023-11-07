@@ -1,0 +1,197 @@
+{
+  "serializationFormatVersion": "2023.1",
+  "languages": [],
+  "nodes": [
+    {
+      "id": "file_properties-parser-examples-example1-props",
+      "properties": [],
+      "containments": [
+        {
+          "containment": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-PropertiesFile-props"
+          },
+          "children": [
+            "file_properties-parser-examples-example1-props-props0",
+            "file_properties-parser-examples-example1-props-props1",
+            "file_properties-parser-examples-example1-props-props2"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": null,
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-PropertiesFile"
+      }
+    },
+    {
+      "id": "file_properties-parser-examples-example1-props-props0",
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "integerProp"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-Property-value"
+          },
+          "children": [
+            "file_properties-parser-examples-example1-props-props0-value0"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "file_properties-parser-examples-example1-props",
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-Property"
+      }
+    },
+    {
+      "id": "file_properties-parser-examples-example1-props-props0-value0",
+      "properties": [
+        {
+          "property": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-IntValue-value"
+          },
+          "value": "1"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "file_properties-parser-examples-example1-props-props0",
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-IntValue"
+      }
+    },
+    {
+      "id": "file_properties-parser-examples-example1-props-props1",
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "booleanProp"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-Property-value"
+          },
+          "children": [
+            "file_properties-parser-examples-example1-props-props1-value0"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "file_properties-parser-examples-example1-props",
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-Property"
+      }
+    },
+    {
+      "id": "file_properties-parser-examples-example1-props-props1-value0",
+      "properties": [
+        {
+          "property": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-BooleanValue-value"
+          },
+          "value": "true"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "file_properties-parser-examples-example1-props-props1",
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-BooleanValue"
+      }
+    },
+    {
+      "id": "file_properties-parser-examples-example1-props-props2",
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "stringProp"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-Property-value"
+          },
+          "children": [
+            "file_properties-parser-examples-example1-props-props2-value0"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "file_properties-parser-examples-example1-props",
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-Property"
+      }
+    },
+    {
+      "id": "file_properties-parser-examples-example1-props-props2-value0",
+      "properties": [
+        {
+          "property": {
+            "language": "io_lionweb_Properties",
+            "version": "1",
+            "key": "io_lionweb_Properties-StringValue-value"
+          },
+          "value": "Hello, StarLasu, MPS, and Freon!"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "file_properties-parser-examples-example1-props-props2",
+      "classifier": {
+        "language": "io_lionweb_Properties",
+        "version": "1",
+        "key": "io_lionweb_Properties-StringValue"
+      }
+    }
+  ]
+}
