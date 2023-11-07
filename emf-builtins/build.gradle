@@ -1,0 +1,47 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+configurations {
+    mwe2.extendsFrom compileClasspath
+}
+
+dependencies {
+    implementation("org.eclipse.emf:org.eclipse.emf.common:2.29.0")
+    implementation("org.eclipse.emf:org.eclipse.emf.ecore:2.35.0")
+    implementation("org.eclipse.emf:org.eclipse.emf.ecore.change:2.15.0")
+    implementation("org.eclipse.emf:org.eclipse.emf.ecore.xmi:2.35.0")
+    mwe2("org.eclipse.emf:org.eclipse.emf.mwe2.launch:2.15.0")
+    mwe2("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
+    mwe2("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
+//    mwe2("org.eclipse.xtext:xtext-antlr-generator:2.1.1")
+}
+
+tasks.register("generateXtextLanguage", JavaExec) {
+    mainClass.set("org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher")
+    classpath = configurations.mwe2
+    args = args?.plus("src/main/java/io/lionweb/java/emf/builtins/GenerateBuiltins.mwe2")
+    args = args?.plus("-p")
+    args = args?.plus("rootPath=/${projectDir}")
+}
+
+tasks.compileJava.dependsOn("generateXtextLanguage")
+tasks.processResources.dependsOn("generateXtextLanguage")
+tasks.clean.dependsOn("cleanGenerateXtextLanguage")
+
+sourceSets {
+    main {
+        java {
+            srcDirs([
+            	"${projectDir}/src-gen/main/java",
+            	"${projectDir}/src/main/java"
+            ])
+        }
+    }
+}
