@@ -1,6 +1,9 @@
+import org.apache.tools.ant.taskdefs.condition.Os
+
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id 'signing'
 }
 
 repositories {
@@ -55,4 +58,98 @@ sourceSets {
             ])
         }
     }
+}
+
+var isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
+
+task javadocJar(type: Jar) {
+//    dependsOn("myJavadoc")
+//    from(tasks.getByName("myJavadoc")/*.destinationDir*/)
+    archiveClassifier.set("javadoc")
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
+    // Without the closure, parent sources are used for children too
+    from(sourceSets.getByName("main").java.srcDirs)
+}
+
+publishing {
+
+    repositories {
+        maven {
+            var releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
+            var snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
+            url = new URI((isReleaseVersion) ? releaseRepo : snapshotRepo)
+            credentials {
+                username = (project.hasProperty("ossrhUsername")) ? "$ossrhUsername" as String : "Unknown user"
+                password = (project.hasProperty("ossrhPassword")) ? "$ossrhPassword" as String : "Unknown password"
+            }
+        }
+    }
+
+    publications {
+        lionweb_java_emf_builtins(MavenPublication) {
+            from(components.findByName("java"))
+            groupId = "io.lionweb.lionweb-java"
+            artifactId = "lionweb-java-" + project.name
+            artifact(tasks.findByName("sourcesJar"))
+            artifact(tasks.findByName("javadocJar"))
+            suppressPomMetadataWarningsFor("cliApiElements")
+            suppressPomMetadataWarningsFor("cliRuntimeElements")
+            pom {
+                name.set("lionweb-java-" + project.name)
+                description.set("Builtins EPackage for EMF compatibility layer for LionWeb")
+                version = project.version as String
+                packaging = "jar"
+                url.set("https://github.com/LionWeb-io/lionweb-java")
+
+                scm {
+                    connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
+                    developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
+                    url.set("https://github.com/LionWeb-io/lionweb-java.git")
+                }
+
+                licenses {
+                    license {
+                        name.set("Apache Licenve V2.0")
+                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                        distribution.set("repo")
+                    }
+                }
+
+                // The developers entry is strictly required by Maven Central
+                developers {
+                    developer {
+                        id.set("ftomassetti")
+                        name.set("Federico Tomassetti")
+                        email.set("federico@strumenta.com")
+                    }
+                    developer {
+                        id.set("dslmeinte")
+                        name.set("Meinte Boersma")
+                        email.set("meinte.boersma@gmail.com")
+                    }
+                    developer {
+                        id.set("enikao")
+                        name.set("Niko Stotz")
+                        email.set("github-public@nikostotz.de")
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+task signOnlyRelease(type: Sign) {
+    onlyIf("isReleaseVersion is set") { isReleaseVersion }
+}
+
+signing {
+    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        useGpgCmd()
+    }
+    sign(publishing.publications["lionweb_java_emf_builtins"])
 }
