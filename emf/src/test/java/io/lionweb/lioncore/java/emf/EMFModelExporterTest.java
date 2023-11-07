@@ -66,10 +66,11 @@ public class EMFModelExporterTest {
   @Test
   public void exportPropertiesInstance() {
     Language propertiesLang =
-            (Language)
-                    JsonSerialization.getStandardSerialization()
-                            .deserializeToNodes(this.getClass().getResourceAsStream("/properties-language.json"))
-                            .get(0);
+        (Language)
+            JsonSerialization.getStandardSerialization()
+                .deserializeToNodes(
+                    this.getClass().getResourceAsStream("/properties-language.json"))
+                .get(0);
 
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.registerLanguage(propertiesLang);
@@ -94,8 +95,10 @@ public class EMFModelExporterTest {
 
     EObject integerProp = props.get(0);
     assertEquals("Property", integerProp.eClass().getName());
-    assertEquals("integerProp", integerProp.eGet(integerProp.eClass().getEStructuralFeature("name")));
-    List<EObject> intPropValues = (List<EObject>) integerProp.eGet(integerProp.eClass().getEStructuralFeature("value"));
+    assertEquals(
+        "integerProp", integerProp.eGet(integerProp.eClass().getEStructuralFeature("name")));
+    List<EObject> intPropValues =
+        (List<EObject>) integerProp.eGet(integerProp.eClass().getEStructuralFeature("value"));
     assertEquals(file, integerProp.eContainer());
     assertEquals(1, intPropValues.size());
 
@@ -103,11 +106,12 @@ public class EMFModelExporterTest {
     assertEquals("IntValue", intValue.eClass().getName());
     assertEquals("1", intValue.eGet(intValue.eClass().getEStructuralFeature("value")));
 
-
     EObject booleanProp = props.get(1);
     assertEquals("Property", booleanProp.eClass().getName());
-    assertEquals("booleanProp", booleanProp.eGet(booleanProp.eClass().getEStructuralFeature("name")));
-    List<EObject> boolPropValues = (List<EObject>) booleanProp.eGet(booleanProp.eClass().getEStructuralFeature("value"));
+    assertEquals(
+        "booleanProp", booleanProp.eGet(booleanProp.eClass().getEStructuralFeature("name")));
+    List<EObject> boolPropValues =
+        (List<EObject>) booleanProp.eGet(booleanProp.eClass().getEStructuralFeature("value"));
     assertEquals(file, booleanProp.eContainer());
     assertEquals(1, boolPropValues.size());
 
@@ -115,16 +119,18 @@ public class EMFModelExporterTest {
     assertEquals("BooleanValue", boolValue.eClass().getName());
     assertEquals(true, boolValue.eGet(boolValue.eClass().getEStructuralFeature("value")));
 
-
     EObject stringProp = props.get(2);
     assertEquals("Property", stringProp.eClass().getName());
     assertEquals("stringProp", stringProp.eGet(stringProp.eClass().getEStructuralFeature("name")));
-    List<EObject> stringPropValues = (List<EObject>) stringProp.eGet(stringProp.eClass().getEStructuralFeature("value"));
+    List<EObject> stringPropValues =
+        (List<EObject>) stringProp.eGet(stringProp.eClass().getEStructuralFeature("value"));
     assertEquals(file, stringProp.eContainer());
     assertEquals(1, stringPropValues.size());
 
     EObject stringValue = stringPropValues.get(0);
     assertEquals("StringValue", stringValue.eClass().getName());
-    assertEquals("Hello, StarLasu, MPS, and Freon!", stringValue.eGet(stringValue.eClass().getEStructuralFeature("value")));
+    assertEquals(
+        "Hello, StarLasu, MPS, and Freon!",
+        stringValue.eGet(stringValue.eClass().getEStructuralFeature("value")));
   }
 }

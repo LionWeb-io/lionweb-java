@@ -4,11 +4,9 @@ import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
 import org.eclipse.emf.ecore.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -25,7 +23,7 @@ public class ConceptsToEClassesMapping {
     populateInternal();
   }
 
-    private void processEPackage(EPackage ePackage) {
+  private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
     EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(this);
     Language language = EMFMetamodelImporter.importEPackage(ePackage);
