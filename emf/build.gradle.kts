@@ -15,6 +15,8 @@ val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
 }
 
+
+
 dependencies {
     api(project(":core"))
     api(project(":emf-builtins"))
