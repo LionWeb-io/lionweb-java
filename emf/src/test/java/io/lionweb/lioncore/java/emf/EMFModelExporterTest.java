@@ -88,30 +88,7 @@ public class EMFModelExporterTest {
 
     List<Node> roots = nodes.stream().filter(it -> it.getParent() == null).collect(Collectors.toList());
 
-    ConceptsToEClassesMapping conceptMapper = new ConceptsToEClassesMapping();
-//    for (LanguageEntity<?> element : propertiesLanguage.getElements()) {
-//      if (element instanceof Concept) {
-//          EClass eClass = PropertiesPackage.eINSTANCE.EClassifiers.filter(EClass).findFirst[it.name == element.name]
-//          if(eClass != null) {
-//            conceptMapper.registerMapping(element, eClass)
-//          }
-//          else {
-//            throw new RuntimeException('''Couldn't find EClass for concept «element»''')
-//          }
-//        } else if (element instanceof Interface) {
-//          var eClass = PropertiesPackage.eINSTANCE.EClassifiers.filter(EClass).findFirst[it.name == element.name]
-//          if(eClass !== null) {
-//            conceptMapper.registerMapping(element, eClass)
-//          }
-//          else {
-//            throw new RuntimeException('''Couldn't find EClass for interface «element»''')
-//          }
-//        }
-//      }
-//    }
-
-
-    EMFModelExporter emfExporter = new EMFModelExporter(conceptMapper);
+    EMFModelExporter emfExporter = new EMFModelExporter();
     Resource resource = emfExporter.exportResource(roots);
   }
 
