@@ -3,6 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id "eclipse"
     id 'signing'
 }
 
@@ -19,6 +20,9 @@ dependencies {
     api emf.common
     api emf.ecore
     api emf.ecore.xmi
+    api("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
+    api("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
+    api("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
     mwe2("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
@@ -42,6 +46,19 @@ java {
     }
 }
 
+jar {
+    manifest {
+        attributes(
+                "Manifest-Version": "1.0",
+                "Bundle-ManifestVersion": "2",
+                "Bundle-Name": "emf-builtins",
+                "Bundle-SymbolicName": "io.lionweb.java.emf.builtins;singleton:=true",
+                "Bundle-Version": "0.1.0.qualifier",
+                "Require-Bundle": "org.eclipse.emf.ecore"
+        )
+    }
+}
+
 sourceSets {
     main {
         java {
@@ -57,6 +74,14 @@ sourceSets {
             ])
         }
     }
+}
+
+processResources {
+    from(".project")
+    from(".classpath")
+    from("build.properties")
+    from("plugin.properties")
+    from("plugin.xml")
 }
 
 var isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
