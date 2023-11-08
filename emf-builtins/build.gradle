@@ -151,8 +151,6 @@ signing {
     sign(publishing.publications["lionweb_java_emf_builtins"])
 }
 
-
 task setup() {
     dependsOn("generateXtextLanguage")
 }
-

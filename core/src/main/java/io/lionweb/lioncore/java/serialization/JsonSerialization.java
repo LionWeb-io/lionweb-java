@@ -45,14 +45,21 @@ public class JsonSerialization {
     writer.close();
   }
 
+  /**
+   * Load a single Language from a file. If the file contains more than one language an exception is
+   * thrown.
+   */
   public Language loadLanguage(File file) throws IOException {
     FileInputStream fileInputStream = new FileInputStream(file);
     Language language = loadLanguage(fileInputStream);
     fileInputStream.close();
-    ;
     return language;
   }
 
+  /**
+   * Load a single Language from an InputStream. If the InputStream contains more than one language
+   * an exception is thrown.
+   */
   public Language loadLanguage(InputStream inputStream) {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> lNodes = jsonSerialization.deserializeToNodes(inputStream);
