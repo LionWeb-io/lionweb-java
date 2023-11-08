@@ -68,7 +68,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
                         root.getChildrenByContainmentName(eReference.getName());
                     if (childrenInLW.size() > 1) {
                       throw new IllegalStateException(
-                          "More than one child found, where up to one ");
+                          "More than one child found, where up to one children was expected, "
+                              + "as the relation has not multiplicity many");
                     } else if (childrenInLW.size() == 1) {
                       eObject.eSet(
                           eReference, exportTree(childrenInLW.get(0), referencesPostponer));
