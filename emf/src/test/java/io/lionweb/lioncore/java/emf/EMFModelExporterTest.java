@@ -3,15 +3,12 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-<<<<<<< HEAD
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Interface;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LanguageEntity;
-=======
 import io.lionweb.lioncore.java.language.Language;
->>>>>>> origin/master
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 
