@@ -48,14 +48,19 @@ public class JsonSerialization {
   public Language loadLanguage(File file) throws IOException {
     FileInputStream fileInputStream = new FileInputStream(file);
     Language language = loadLanguage(fileInputStream);
-    fileInputStream.close();;
+    fileInputStream.close();
+    ;
     return language;
   }
 
   public Language loadLanguage(InputStream inputStream) {
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     List<Node> lNodes = jsonSerialization.deserializeToNodes(inputStream);
-    List<Language> languages = lNodes.stream().filter(n -> n instanceof Language).map(n -> (Language) n).collect(Collectors.toList());
+    List<Language> languages =
+        lNodes.stream()
+            .filter(n -> n instanceof Language)
+            .map(n -> (Language) n)
+            .collect(Collectors.toList());
     if (languages.size() != 1) {
       throw new IllegalStateException();
     }

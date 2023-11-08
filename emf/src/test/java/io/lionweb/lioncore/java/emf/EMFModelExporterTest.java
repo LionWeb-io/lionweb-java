@@ -3,15 +3,9 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Interface;
-import io.lionweb.lioncore.java.language.Language;
-import io.lionweb.lioncore.java.language.LanguageEntity;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
-
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,7 +74,8 @@ public class EMFModelExporterTest {
     InputStream modelIs = this.getClass().getResourceAsStream("/example1-exported.lm.json");
     List<Node> nodes = jsonSerialization.deserializeToNodes(modelIs);
 
-    List<Node> roots = nodes.stream().filter(it -> it.getParent() == null).collect(Collectors.toList());
+    List<Node> roots =
+        nodes.stream().filter(it -> it.getParent() == null).collect(Collectors.toList());
 
     EMFModelExporter emfExporter = new EMFModelExporter();
     Resource resource = emfExporter.exportResource(roots);
@@ -89,9 +84,8 @@ public class EMFModelExporterTest {
   @Test
   public void exportPropertiesInstance() {
     Language propertiesLang =
-            JsonSerialization.getStandardSerialization()
-                .loadLanguage(
-                    this.getClass().getResourceAsStream("/properties-language.json"));
+        JsonSerialization.getStandardSerialization()
+            .loadLanguage(this.getClass().getResourceAsStream("/properties-language.json"));
 
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.registerLanguage(propertiesLang);

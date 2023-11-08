@@ -141,6 +141,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
       EClass superEClass =
           (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept.getExtendedConcept());
       eClass.getESuperTypes().add(superEClass);
+    } else {
+      eClass.getESuperTypes().add(EcorePackage.eINSTANCE.getEObject());
     }
     concept
         .getImplemented()

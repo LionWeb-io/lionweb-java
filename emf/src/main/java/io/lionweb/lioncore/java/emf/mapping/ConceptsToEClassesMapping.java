@@ -4,7 +4,6 @@ import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.*;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -138,8 +137,10 @@ public class ConceptsToEClassesMapping {
   }
 
   public void prePopulateBuiltins() {
-    ePackagesToLanguages.put(BuiltinsEMFPackageProvider.getEPackage(), LionCoreBuiltins.getInstance());
-    languagesToEPackages.put(LionCoreBuiltins.getInstance(), BuiltinsEMFPackageProvider.getEPackage());
+    ePackagesToLanguages.put(
+        BuiltinsEMFPackageProvider.getEPackage(), LionCoreBuiltins.getInstance());
+    languagesToEPackages.put(
+        LionCoreBuiltins.getInstance(), BuiltinsEMFPackageProvider.getEPackage());
     registerMapping(LionCoreBuiltins.getNode(), EcorePackage.eINSTANCE.getEObject());
     registerMapping(LionCoreBuiltins.getINamed(), BuiltinsPackage.eINSTANCE.getINamed());
   }
