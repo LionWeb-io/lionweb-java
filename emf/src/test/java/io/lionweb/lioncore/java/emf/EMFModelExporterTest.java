@@ -74,13 +74,7 @@ public class EMFModelExporterTest {
   public void exportSingleContainment() {
     InputStream languageIs = this.getClass().getResourceAsStream("/properties.lmm.json");
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-    List<Node> lNodes = jsonSerialization.deserializeToNodes(languageIs);
-    List<Language> languages = lNodes.stream().filter(n -> n instanceof Language).map(n -> (Language) n).collect(Collectors.toList());
-    ;
-    if (languages.size() != 1) {
-      throw new IllegalStateException();
-    }
-    Language propertiesLanguage = languages.get(0);
+    Language propertiesLanguage = jsonSerialization.loadLanguage(languageIs);
     jsonSerialization.registerLanguage(propertiesLanguage);
     jsonSerialization.getInstantiator().enableDynamicNodes();
     InputStream modelIs = this.getClass().getResourceAsStream("/example1-exported.lm.json");
@@ -92,13 +86,12 @@ public class EMFModelExporterTest {
     Resource resource = emfExporter.exportResource(roots);
   }
 
+  @Test
   public void exportPropertiesInstance() {
     Language propertiesLang =
-        (Language)
             JsonSerialization.getStandardSerialization()
-                .deserializeToNodes(
-                    this.getClass().getResourceAsStream("/properties-language.json"))
-                .get(0);
+                .loadLanguage(
+                    this.getClass().getResourceAsStream("/properties-language.json"));
 
     JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
     jsonSerialization.registerLanguage(propertiesLang);
