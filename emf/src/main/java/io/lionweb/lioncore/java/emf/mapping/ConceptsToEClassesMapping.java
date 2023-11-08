@@ -24,10 +24,10 @@ public class ConceptsToEClassesMapping {
     this(true);
   }
 
-  /** @param prePopulateInternal Whether builtins should be pre-populated in this mapping. */
-  public ConceptsToEClassesMapping(boolean prePopulateInternal) {
-    if (prePopulateInternal) {
-      populateInternal();
+  /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
+  public ConceptsToEClassesMapping(boolean prePopulateBuiltins) {
+    if (prePopulateBuiltins) {
+      prePopulateBuiltins();
     }
   }
 
@@ -136,7 +136,9 @@ public class ConceptsToEClassesMapping {
     return null;
   }
 
-  public void populateInternal() {
+  public void prePopulateBuiltins() {
+    ePackagesToLanguages.put(BuiltinsPackage.eINSTANCE, LionCoreBuiltins.getInstance());
+    languagesToEPackages.put(LionCoreBuiltins.getInstance(), BuiltinsPackage.eINSTANCE);
     registerMapping(LionCoreBuiltins.getNode(), EcorePackage.eINSTANCE.getEObject());
     registerMapping(LionCoreBuiltins.getINamed(), BuiltinsPackage.eINSTANCE.getINamed());
   }

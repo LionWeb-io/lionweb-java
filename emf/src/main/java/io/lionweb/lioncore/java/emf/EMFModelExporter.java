@@ -64,7 +64,22 @@ public class EMFModelExporter extends AbstractEMFExporter {
                             .collect(Collectors.toList());
                     eObject.eSet(eReference, childrenInEmf);
                   } else {
-                    throw new UnsupportedOperationException();
+                    List<? extends Node> childrenInLW =
+                        root.getChildrenByContainmentName(eReference.getName());
+                    if (childrenInLW.size() > 1) {
+                      throw new IllegalStateException(
+                          "More than one child found in eReference "
+                              + eReference.getEContainingClass().getName()
+                              + "."
+                              + eReference.getName()
+                              + ", where up to one children was expected, "
+                              + "as the relation has not multiplicity many");
+                    } else if (childrenInLW.size() == 1) {
+                      eObject.eSet(
+                          eReference, exportTree(childrenInLW.get(0), referencesPostponer));
+                    } else {
+                      eObject.eSet(eReference, null);
+                    }
                   }
                 } else {
                   referencesPostponer.recordReference(root, eObject, eReference);

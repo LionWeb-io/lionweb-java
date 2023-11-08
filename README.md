@@ -5,6 +5,16 @@ This projects requires Java 8, to maximize compatibility.
 We require Java 11 exclusively for the Javadoc tasks, as it needs to add references to
 libraries not available for Java 8. This does not affect runtime usages of the library.
 
+## Development
+
+Before opening in IDEA run:
+
+```
+./gradlew setup
+```
+
+This will generate necessary classes.
+
 ## Core
 Contains LionCore (M2) and LionWeb (M1) implementations in Java, including (de-)serializers from/to JSON.
 

@@ -43,7 +43,7 @@ public class EMFMetamodelExporterTest {
                 .filter(e -> e.getName().equals("Writer"))
                 .findFirst()
                 .get();
-    assertEquals(Arrays.asList(), writer.getESuperTypes());
+    assertEquals(Arrays.asList(EcorePackage.eINSTANCE.getEObject()), writer.getESuperTypes());
 
     EClass book =
         (EClass)
