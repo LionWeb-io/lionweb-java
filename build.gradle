@@ -13,12 +13,13 @@ subprojects {
     spotless {
         java {
             googleJavaFormat()
+            targetExclude ("**/src-gen/**")
         }
     }
 }
 
 release {
-    buildTasks = [':core:publish', ":emf:publish"]
+    buildTasks = [':core:publish', ":emf:publish", ":emf-builtins:publish"]
     versionPropertyFile = './gradle.properties'
     git {
         requireBranch.set('master')

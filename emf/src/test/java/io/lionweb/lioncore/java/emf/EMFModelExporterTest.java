@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.util.List;
@@ -60,5 +61,76 @@ public class EMFModelExporterTest {
     assertEquals("Business-Friendly DSLs", bfd.eGet(de.eClass().getEStructuralFeature("title")));
     assertEquals(517, bfd.eGet(bfd.eClass().getEStructuralFeature("pages")));
     assertEquals(mb, bfd.eGet(bfd.eClass().getEStructuralFeature("author")));
+  }
+
+  @Test
+  public void exportPropertiesInstance() {
+    Language propertiesLang =
+        (Language)
+            JsonSerialization.getStandardSerialization()
+                .deserializeToNodes(
+                    this.getClass().getResourceAsStream("/properties-language.json"))
+                .get(0);
+
+    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    jsonSerialization.registerLanguage(propertiesLang);
+    jsonSerialization.getInstantiator().enableDynamicNodes();
+
+    List<Node> nodes =
+        jsonSerialization.deserializeToNodes(
+            this.getClass().getResourceAsStream("/properties-instance.json"));
+    List<Node> roots =
+        nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
+
+    EMFModelExporter emfExporter = new EMFModelExporter();
+    Resource resource = emfExporter.exportResource(roots);
+
+    assertEquals(1, resource.getContents().size());
+
+    EObject file = resource.getContents().get(0);
+    assertEquals("PropertiesFile", file.eClass().getName());
+    List<EObject> props = (List<EObject>) file.eGet(file.eClass().getEStructuralFeature("props"));
+    assertNull(file.eContainer());
+    assertEquals(3, props.size());
+
+    EObject integerProp = props.get(0);
+    assertEquals("Property", integerProp.eClass().getName());
+    assertEquals(
+        "integerProp", integerProp.eGet(integerProp.eClass().getEStructuralFeature("name")));
+    List<EObject> intPropValues =
+        (List<EObject>) integerProp.eGet(integerProp.eClass().getEStructuralFeature("value"));
+    assertEquals(file, integerProp.eContainer());
+    assertEquals(1, intPropValues.size());
+
+    EObject intValue = intPropValues.get(0);
+    assertEquals("IntValue", intValue.eClass().getName());
+    assertEquals("1", intValue.eGet(intValue.eClass().getEStructuralFeature("value")));
+
+    EObject booleanProp = props.get(1);
+    assertEquals("Property", booleanProp.eClass().getName());
+    assertEquals(
+        "booleanProp", booleanProp.eGet(booleanProp.eClass().getEStructuralFeature("name")));
+    List<EObject> boolPropValues =
+        (List<EObject>) booleanProp.eGet(booleanProp.eClass().getEStructuralFeature("value"));
+    assertEquals(file, booleanProp.eContainer());
+    assertEquals(1, boolPropValues.size());
+
+    EObject boolValue = boolPropValues.get(0);
+    assertEquals("BooleanValue", boolValue.eClass().getName());
+    assertEquals(true, boolValue.eGet(boolValue.eClass().getEStructuralFeature("value")));
+
+    EObject stringProp = props.get(2);
+    assertEquals("Property", stringProp.eClass().getName());
+    assertEquals("stringProp", stringProp.eGet(stringProp.eClass().getEStructuralFeature("name")));
+    List<EObject> stringPropValues =
+        (List<EObject>) stringProp.eGet(stringProp.eClass().getEStructuralFeature("value"));
+    assertEquals(file, stringProp.eContainer());
+    assertEquals(1, stringPropValues.size());
+
+    EObject stringValue = stringPropValues.get(0);
+    assertEquals("StringValue", stringValue.eClass().getName());
+    assertEquals(
+        "Hello, StarLasu, MPS, and Freon!",
+        stringValue.eGet(stringValue.eClass().getEStructuralFeature("value")));
   }
 }

@@ -22,7 +22,7 @@ val javadocConfig by configurations.creating {
 
 dependencies {
     // Use JUnit test framework.
-    testImplementation("junit:junit:4.13")
+    testImplementation(libs.junit)
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.apache.commons:commons-math3:3.6.1")
@@ -30,7 +30,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:29.0-jre")
 
-    javadocConfig("org.eclipse.emf:org.eclipse.emf.ecore:2.28.0")
+    javadocConfig(emf.ecore)
 
     // Please note that this forces us to use Java 11 for the javadoc tasks
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
@@ -39,7 +39,7 @@ dependencies {
 
     javadocConfig("org.modelix:model-api:1.3.2")
 
-    implementation("com.google.code.gson:gson:2.10.1")
+    implementation(libs.gson)
 
     implementation("com.networknt:json-schema-validator:1.0.77")
 }

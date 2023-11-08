@@ -9,3 +9,6 @@ build
 
 # Ignore IntelliJ project files (from MPS debugging)
 **/*.iml
+
+# Ignore Eclipse project files
+.settings
