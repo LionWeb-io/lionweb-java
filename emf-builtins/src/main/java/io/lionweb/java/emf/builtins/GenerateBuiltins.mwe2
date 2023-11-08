@@ -1,0 +1,15 @@
+module io.lionweb.java.emf.builtins
+
+import org.eclipse.xtext.xtext.generator.*
+import org.eclipse.xtext.xtext.generator.model.project.*
+
+Workflow {
+	bean = org.eclipse.emf.mwe.utils.StandaloneSetup {
+    	platformUri="."
+	}
+	
+	component = org.eclipse.emf.mwe2.ecore.EcoreGenerator {
+	    genModel = "platform:/resource/emf-builtins/src/main/model/builtins.genmodel"
+	    srcPath = "platform:/resource/emf-builtins/src-gen/main/java"
+	}
+}

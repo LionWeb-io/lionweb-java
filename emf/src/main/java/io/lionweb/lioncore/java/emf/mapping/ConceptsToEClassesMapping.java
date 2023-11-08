@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
+import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.*;
@@ -7,9 +8,7 @@ import io.lionweb.lioncore.java.language.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import org.eclipse.emf.ecore.EClass;
-import org.eclipse.emf.ecore.EClassifier;
-import org.eclipse.emf.ecore.EPackage;
+import org.eclipse.emf.ecore.*;
 import org.jetbrains.annotations.Nullable;
 
 public class ConceptsToEClassesMapping {
@@ -21,19 +20,21 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
+  /** Creates a mapping with pre-populated builtins. */
   public ConceptsToEClassesMapping() {
     this(true);
-  }
-
-  public ConceptsToEClassesMapping(boolean preRegisterBuiltinsMapping) {
-    if (preRegisterBuiltinsMapping) {
-      registerBuiltinsMapping();
-    }
   }
 
   private void registerBuiltinsMapping() {
     ePackagesToLanguages.put(BuiltinsEMFPackageProvider.getEPackage(), LionCoreBuiltins.getInstance());
     languagesToEPackages.put(LionCoreBuiltins.getInstance(), BuiltinsEMFPackageProvider.getEPackage());
+  }
+
+  /** @param prePopulateInternal Whether builtins should be pre-populated in this mapping. */
+  public ConceptsToEClassesMapping(boolean prePopulateInternal) {
+    if (prePopulateInternal) {
+      populateInternal();
+    }
   }
 
   private void processEPackage(EPackage ePackage) {
@@ -139,5 +140,10 @@ public class ConceptsToEClassesMapping {
       return eClassesToInterfaces.get(eClassifier);
     }
     return null;
+  }
+
+  public void populateInternal() {
+    registerMapping(LionCoreBuiltins.getNode(), EcorePackage.eINSTANCE.getEObject());
+    registerMapping(LionCoreBuiltins.getINamed(), BuiltinsPackage.eINSTANCE.getINamed());
   }
 }
