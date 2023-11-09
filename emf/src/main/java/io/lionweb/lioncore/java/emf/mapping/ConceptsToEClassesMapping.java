@@ -139,6 +139,23 @@ public class ConceptsToEClassesMapping {
   public void registerMapping(Language language, EPackage ePackage) {
     for (LanguageEntity entity : language.getElements()) {
       EClassifier eClassifier = ePackage.getEClassifier(entity.getName());
+      if (entity instanceof Classifier) {
+        Classifier classifier = (Classifier) entity;
+        if (eClassifier != null && knows(classifier)) {
+          EClassifier correspondingEClass = getCorrespondingEClass(classifier);
+          if (!eClassifier.equals(correspondingEClass)) {
+            throw new IllegalStateException(
+                "Classifier "
+                    + classifier.getName()
+                    + " is already mapped to "
+                    + correspondingEClass
+                    + ", but would be re-mapped to "
+                    + eClassifier);
+          }
+          continue;
+        }
+      }
+
       if (entity instanceof Concept && eClassifier instanceof EClass) {
         registerMapping((Concept) entity, (EClass) eClassifier);
       } else if (entity instanceof Interface && eClassifier instanceof EClass) {
@@ -161,6 +178,11 @@ public class ConceptsToEClassesMapping {
   public boolean knows(EClassifier eClassifier) {
     return eClassesToConcepts.containsKey(eClassifier)
         || eClassesToInterfaces.containsKey(eClassifier);
+  }
+
+  public boolean knows(Classifier classifier) {
+    return conceptsToEClasses.containsKey(classifier)
+        || interfacesToEClasses.containsKey(classifier);
   }
 
   public @Nullable Classifier getCorrespondingClassifier(EClassifier eClassifier) {
