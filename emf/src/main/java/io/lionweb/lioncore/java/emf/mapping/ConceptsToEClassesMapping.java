@@ -121,6 +121,24 @@ public class ConceptsToEClassesMapping {
     interfacesToEClasses.put(iface, eClass);
   }
 
+  public void registerMapping(Language language, EPackage ePackage) {
+    for(LanguageEntity entity : language.getElements()) {
+      EClassifier eClassifier = ePackage.getEClassifier(entity.getName());
+      if(entity instanceof Concept && eClassifier instanceof EClass) {
+        registerMapping((Concept) entity, (EClass) eClassifier);
+      }else if (entity instanceof Interface && eClassifier instanceof EClass) {
+        registerMapping((Interface) entity, (EClass) eClassifier);
+      } else if (entity instanceof Annotation) {
+        // fall-through
+      } else if (entity instanceof Classifier && eClassifier == null) {
+        throw new IllegalStateException("Can't find EClassifier for Classifier "+ entity);
+      }
+    }
+
+    ePackagesToLanguages.put(ePackage, language);
+    languagesToEPackages.put(language, ePackage);
+  }
+
   public boolean knows(EClassifier eClassifier) {
     return eClassesToConcepts.containsKey(eClassifier)
         || eClassesToInterfaces.containsKey(eClassifier);
