@@ -28,6 +28,13 @@ dependencies {
     mwe2("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
 }
 
+// generateXtextLanguage gets unhappy about files it finds in `build/resources` if we re-run without a clean.
+tasks.register("cleanGeneratedEcore") {
+    doLast {
+        delete(new File(project.buildDir, "resources"))
+    }
+}
+
 tasks.register("generateXtextLanguage", JavaExec) {
     mainClass.set("org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher")
     classpath = configurations.mwe2
@@ -35,6 +42,8 @@ tasks.register("generateXtextLanguage", JavaExec) {
     args = args?.plus("-p")
     args = args?.plus("rootPath=/${projectDir}")
 }
+
+tasks.generateXtextLanguage.dependsOn("cleanGeneratedEcore")
 
 tasks.compileJava.dependsOn("generateXtextLanguage")
 tasks.processResources.dependsOn("generateXtextLanguage")
