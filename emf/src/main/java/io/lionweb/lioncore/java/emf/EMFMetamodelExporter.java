@@ -3,11 +3,10 @@ package io.lionweb.lioncore.java.emf;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
+import java.util.List;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
-
-import java.util.List;
 
 /** Export LionWeb's metamodels into EMF's metamodels. */
 public class EMFMetamodelExporter extends AbstractEMFExporter {
@@ -78,7 +77,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 ePackage.getEClassifiers().add(eEnum);
                 dataTypeMapping.registerMapping(eEnum, enumeration);
               } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(
+                    "Cannot handle " + e.getClass() + " yet. Instance: " + e.getName());
               }
             });
   }
@@ -131,7 +131,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
       return eReference;
     } else {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Unexpected feature " + feature.getClass() + ". Instance: " + feature.getName());
     }
   }
 
@@ -167,7 +168,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         .getExtendedInterfaces()
         .forEach(
             extended -> {
-              throw new UnsupportedOperationException();
+              throw new UnsupportedOperationException("Cannot handle extended interfaces yet.");
             });
 
     iface
@@ -200,7 +201,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
               } else if (e instanceof Enumeration) {
                 populateEEnumFromEnumerration((Enumeration) e);
               } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(
+                    "Cannot handle " + e.getClass() + " yet. Instance: " + e.getName());
               }
             });
   }

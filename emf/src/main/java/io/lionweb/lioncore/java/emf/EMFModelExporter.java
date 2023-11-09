@@ -37,7 +37,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
     EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(root.getConcept());
     if (eClass == null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Cannot find EClass corresponding to " + root.getConcept().getName() + ". Node: " + root);
     }
     EObject eObject = eClass.getEPackage().getEFactoryInstance().create(eClass);
     referencesPostponer.trackMapping(root, eObject);
@@ -85,7 +86,11 @@ public class EMFModelExporter extends AbstractEMFExporter {
                   referencesPostponer.recordReference(root, eObject, eReference);
                 }
               } else {
-                throw new IllegalStateException();
+                throw new IllegalStateException(
+                    "Unexpected feature "
+                        + eStructuralFeature.getClass()
+                        + ". Instance: "
+                        + eStructuralFeature.getName());
               }
             });
 
@@ -134,7 +139,13 @@ public class EMFModelExporter extends AbstractEMFExporter {
               } else if (referenceValues.size() == 1) {
                 referredEObject = nodeToEObject(referenceValues.get(0).getReferred());
               } else {
-                throw new IllegalStateException();
+                throw new IllegalStateException(
+                    "More than one reference found in reference "
+                        + reference.getContainmentFeature().getName()
+                        + "."
+                        + reference.getName()
+                        + ", where up to one reference was expected, "
+                        + "as the relation has not multiplicity many");
               }
 
               postponedReference.eObject.eSet(postponedReference.eReference, referredEObject);

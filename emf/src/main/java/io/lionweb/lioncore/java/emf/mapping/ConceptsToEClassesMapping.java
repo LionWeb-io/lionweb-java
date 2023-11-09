@@ -72,12 +72,17 @@ public class ConceptsToEClassesMapping {
   public Concept getCorrespondingConcept(EClass eClass) {
     if (!eClassesToConcepts.containsKey(eClass)) {
       if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
-        throw new IllegalStateException();
+        throw new IllegalStateException(
+            "Cannot find corresponding Concept for EClass "
+                + eClass.getName()
+                + " in EPackage "
+                + eClass.getEPackage().getName());
       }
       processEPackage(eClass.getEPackage());
     }
     if (!eClassesToConcepts.containsKey(eClass)) {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Cannot find corresponding Concept for EClass " + eClass.getName());
     }
     return eClassesToConcepts.get(eClass);
   }
@@ -85,12 +90,17 @@ public class ConceptsToEClassesMapping {
   public Interface getCorrespondingInterface(EClass eClass) {
     if (!eClassesToInterfaces.containsKey(eClass)) {
       if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
-        throw new IllegalStateException();
+        throw new IllegalStateException(
+            "Cannot find corresponding Interface for EClass "
+                + eClass.getName()
+                + " in EPackage "
+                + eClass.getEPackage().getName());
       }
       processEPackage(eClass.getEPackage());
     }
     if (!eClassesToInterfaces.containsKey(eClass)) {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Cannot find corresponding Interface for EClass " + eClass.getName());
     }
     return eClassesToInterfaces.get(eClass);
   }
@@ -98,7 +108,11 @@ public class ConceptsToEClassesMapping {
   public EClassifier getCorrespondingEClass(Classifier type) {
     if (!conceptsToEClasses.containsKey(type) && !interfacesToEClasses.containsKey(type)) {
       if (languagesToEPackages.containsKey(type.getLanguage())) {
-        throw new IllegalStateException();
+        throw new IllegalStateException(
+            "Cannot find corresponding EClassifier for Classifier "
+                + type.getName()
+                + " in Language "
+                + type.getLanguage().getName());
       }
       processMetamodel(type.getLanguage());
     }
@@ -107,7 +121,8 @@ public class ConceptsToEClassesMapping {
     } else if (interfacesToEClasses.containsKey(type)) {
       return interfacesToEClasses.get(type);
     } else {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Cannot find corresponding EClassifier for Classifier " + type.getName());
     }
   }
 
@@ -122,16 +137,20 @@ public class ConceptsToEClassesMapping {
   }
 
   public void registerMapping(Language language, EPackage ePackage) {
-    for(LanguageEntity entity : language.getElements()) {
+    for (LanguageEntity entity : language.getElements()) {
       EClassifier eClassifier = ePackage.getEClassifier(entity.getName());
-      if(entity instanceof Concept && eClassifier instanceof EClass) {
+      if (entity instanceof Concept && eClassifier instanceof EClass) {
         registerMapping((Concept) entity, (EClass) eClassifier);
-      }else if (entity instanceof Interface && eClassifier instanceof EClass) {
+      } else if (entity instanceof Interface && eClassifier instanceof EClass) {
         registerMapping((Interface) entity, (EClass) eClassifier);
       } else if (entity instanceof Annotation) {
         // fall-through
       } else if (entity instanceof Classifier && eClassifier == null) {
-        throw new IllegalStateException("Can't find EClassifier for Classifier "+ entity);
+        throw new IllegalStateException(
+            "Can't find corresponding EClassifier for Classifier "
+                + entity.getName()
+                + " in EPackage "
+                + ePackage.getName());
       }
     }
 
