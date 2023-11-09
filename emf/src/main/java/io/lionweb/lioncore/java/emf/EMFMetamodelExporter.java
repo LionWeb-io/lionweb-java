@@ -32,7 +32,12 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
   public EPackage exportLanguage(Language language) {
     EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
 
-    ePackage.setName(language.getName());
+    // Ecore expects valid Java identifiers as package name, see
+    // https://github.com/eclipse-emf/org.eclipse.emf/blob/d761f373bda75cccc7adfd79783304762fd3affa/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/util/EcoreValidator.java#L2218
+    // and
+    // https://github.com/eclipse-emf/org.eclipse.emf/blob/d761f373bda75cccc7adfd79783304762fd3affa/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/util/EcoreValidator.java#L683
+    // Otherwise, generated Java code might not compile.
+    ePackage.setName(language.getName().replaceAll("[^\\p{Alnum}_]", "_"));
     ePackage.setNsURI("https://lionweb.io/" + language.getKey());
     ePackage.setNsPrefix(language.getName());
 
@@ -77,7 +82,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 ePackage.getEClassifiers().add(eEnum);
                 dataTypeMapping.registerMapping(eEnum, enumeration);
               } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(
+                    "Cannot handle " + e.getClass() + " yet. Instance: " + e.getName());
               }
             });
   }
@@ -130,7 +136,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
       return eReference;
     } else {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Unexpected feature " + feature.getClass() + ". Instance: " + feature.getName());
     }
   }
 
@@ -166,7 +173,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         .getExtendedInterfaces()
         .forEach(
             extended -> {
-              throw new UnsupportedOperationException();
+              throw new UnsupportedOperationException("Cannot handle extended interfaces yet.");
             });
 
     iface
@@ -199,7 +206,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
               } else if (e instanceof Enumeration) {
                 populateEEnumFromEnumerration((Enumeration) e);
               } else {
-                throw new UnsupportedOperationException();
+                throw new UnsupportedOperationException(
+                    "Cannot handle " + e.getClass() + " yet. Instance: " + e.getName());
               }
             });
   }

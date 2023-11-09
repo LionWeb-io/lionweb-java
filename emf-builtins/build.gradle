@@ -3,6 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 plugins {
     id 'java-library'
     id 'maven-publish'
+    id "eclipse"
     id 'signing'
 }
 
@@ -19,9 +20,19 @@ dependencies {
     api emf.common
     api emf.ecore
     api emf.ecore.xmi
+    api("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
+    api("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
+    api("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
     mwe2("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     mwe2("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
+}
+
+// generateXtextLanguage gets unhappy about files it finds in `build/resources` if we re-run without a clean.
+tasks.register("cleanGeneratedEcore") {
+    doLast {
+        delete(new File(project.buildDir, "resources"))
+    }
 }
 
 tasks.register("generateXtextLanguage", JavaExec) {
@@ -32,6 +43,8 @@ tasks.register("generateXtextLanguage", JavaExec) {
     args = args?.plus("rootPath=/${projectDir}")
 }
 
+tasks.generateXtextLanguage.dependsOn("cleanGeneratedEcore")
+
 tasks.compileJava.dependsOn("generateXtextLanguage")
 tasks.processResources.dependsOn("generateXtextLanguage")
 tasks.clean.dependsOn("cleanGenerateXtextLanguage")
@@ -39,6 +52,19 @@ tasks.clean.dependsOn("cleanGenerateXtextLanguage")
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(JavaVersion.toVersion("${jvmVersion}").getMajorVersion())
+    }
+}
+
+jar {
+    manifest {
+        attributes(
+                "Manifest-Version": "1.0",
+                "Bundle-ManifestVersion": "2",
+                "Bundle-Name": "emf-builtins",
+                "Bundle-SymbolicName": "io.lionweb.java.emf.builtins;singleton:=true",
+                "Bundle-Version": "${version}.qualifier",
+                "Require-Bundle": "org.eclipse.emf.ecore"
+        )
     }
 }
 
@@ -57,6 +83,14 @@ sourceSets {
             ])
         }
     }
+}
+
+processResources {
+    from(".project")
+    from(".classpath")
+    from("build.properties")
+    from("plugin.properties")
+    from("plugin.xml")
 }
 
 var isReleaseVersion = !(version as String).endsWith("SNAPSHOT")

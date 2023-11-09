@@ -5,7 +5,7 @@ import org.eclipse.xtext.xtext.generator.model.project.*
 
 Workflow {
 	bean = org.eclipse.emf.mwe.utils.StandaloneSetup {
-    	platformUri="."
+    	platformUri = "."
 	}
 	
 	component = org.eclipse.emf.mwe2.ecore.EcoreGenerator {

@@ -163,7 +163,7 @@ public class EMFMetamodelExporterTest {
     EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
     EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
 
-    assertEquals("io.lionweb.Properties", propertiesPkg.getName());
+    assertEquals("io_lionweb_Properties", propertiesPkg.getName());
     assertEquals("https://lionweb.io/io_lionweb_Properties", propertiesPkg.getNsURI());
     assertEquals("io.lionweb.Properties", propertiesPkg.getNsPrefix());
     assertEquals(7, propertiesPkg.getEClassifiers().size());
