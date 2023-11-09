@@ -3,10 +3,11 @@ package io.lionweb.lioncore.java.emf;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
-import java.util.List;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+
+import java.util.List;
 
 /** Export LionWeb's metamodels into EMF's metamodels. */
 public class EMFMetamodelExporter extends AbstractEMFExporter {
@@ -32,7 +33,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
   public EPackage exportLanguage(Language language) {
     EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
 
-    ePackage.setName(language.getName());
+    ePackage.setName(language.getName().replaceAll("[^\\p{Alnum}_]", "_"));
     ePackage.setNsURI("https://lionweb.io/" + language.getKey());
     ePackage.setNsPrefix(language.getName());
 
