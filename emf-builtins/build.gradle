@@ -124,7 +124,7 @@ publishing {
         lionweb_java_emf_builtins(MavenPublication) {
             from(components.findByName("java"))
             groupId = "io.lionweb.lionweb-java"
-            artifactId = "lionweb-java-${specsVersion}" + project.name
+            artifactId = "lionweb-java-${specsVersion}-" + project.name
             artifact(tasks.findByName("sourcesJar"))
             artifact(tasks.findByName("javadocJar"))
             suppressPomMetadataWarningsFor("cliApiElements")
