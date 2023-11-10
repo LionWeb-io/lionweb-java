@@ -16,6 +16,9 @@ repositories {
     }
 }
 
+val jvmVersion = extra["jvmVersion"] as String
+val specsVersion = extra["specsVersion"] as String
+
 val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
 }
@@ -88,7 +91,7 @@ publishing {
         create<MavenPublication>("lionweb_java_core") {
             from(components.findByName("java"))
             groupId = "io.lionweb.lionweb-java"
-            artifactId = "lionweb-java-" + project.name
+            artifactId = "lionweb-java-${specsVersion}-" + project.name
             artifact(tasks.findByName("sourcesJar"))
             artifact(tasks.findByName("javadocJar"))
             suppressPomMetadataWarningsFor("cliApiElements")
@@ -137,8 +140,6 @@ publishing {
         }
     }
 }
-
-val jvmVersion = extra["jvmVersion"] as String
 
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
