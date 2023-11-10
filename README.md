@@ -25,3 +25,12 @@ Contains im/exporters to convert models between LionCore &harr; Ecore and LionWe
 Some of LionCore's built-in elements have no direct representation in Ecore.
 This sub-project is an Eclipse project that defines an _EPackage_ `builtins` to host the equivalent elements in Ecore.
 The language's _nsURI_ is `http://lionweb.io/lionweb-java/emf/core/builtins/2023.1`.
+
+## Changelog
+
+## lionweb-java-2023.1-* - Version 0.2.0
+
+This is the first release based on the new coordinates, which indicate support for the specification of LionWeb released under version 2023.1.
+
+At this stage support for the M1 and M2 APIs is relatively complete. Support for annotations may need refinements. Some constraints may not yet been verified.
+Import and export from and to EMF is a work in progress.
