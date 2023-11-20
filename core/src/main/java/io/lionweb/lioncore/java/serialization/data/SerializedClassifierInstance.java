@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization.data;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -15,7 +16,7 @@ public abstract class SerializedClassifierInstance {
   protected final List<SerializedPropertyValue> properties = new ArrayList<>();
   protected final List<SerializedContainmentValue> containments = new ArrayList<>();
   protected final List<SerializedReferenceValue> references = new ArrayList<>();
-  protected List<String> annotations = new ArrayList<>();
+  protected final List<String> annotations = new ArrayList<>();
   protected String parentNodeID;
 
   public String getParentNodeID() {
@@ -34,25 +35,25 @@ public abstract class SerializedClassifierInstance {
   }
 
   public List<SerializedContainmentValue> getContainments() {
-    return this.containments;
+    return Collections.unmodifiableList(this.containments);
   }
 
   public List<String> getChildren() {
     List<String> children = new ArrayList<>();
     this.containments.forEach(c -> children.addAll(c.getValue()));
-    return children;
+    return Collections.unmodifiableList(children);
   }
 
   public List<SerializedReferenceValue> getReferences() {
-    return this.references;
+    return Collections.unmodifiableList(this.references);
   }
 
   public List<String> getAnnotations() {
-    return this.annotations;
+    return Collections.unmodifiableList(this.annotations);
   }
 
   public List<SerializedPropertyValue> getProperties() {
-    return properties;
+    return Collections.unmodifiableList(properties);
   }
 
   public void addPropertyValue(SerializedPropertyValue propertyValue) {
@@ -111,14 +112,15 @@ public abstract class SerializedClassifierInstance {
   public List<SerializedReferenceValue.Entry> getReferenceValues(String referenceKey) {
     for (SerializedReferenceValue rv : this.getReferences()) {
       if (rv.getMetaPointer().getKey().equals(referenceKey)) {
-        return rv.getValue();
+        return Collections.unmodifiableList(rv.getValue());
       }
     }
     return null;
   }
 
   public void setAnnotations(List<String> annotationIDs) {
-    this.annotations = annotationIDs;
+    this.annotations.clear();
+    this.annotations.addAll(annotationIDs);
   }
 
   public void addAnnotation(String annotationID) {
