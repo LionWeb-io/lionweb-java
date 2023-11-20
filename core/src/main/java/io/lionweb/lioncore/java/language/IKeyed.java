@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.java.language;
 
 /**
- * Implementation detail of the Java implementation. Not part of the official M3.
- * TODO: Is this statement still correct?
+ * Implementation detail of the Java implementation. Not part of the official M3. TODO: Is this
+ * statement still correct?
  *
  * @param <T> Type of keyed element.
  */
