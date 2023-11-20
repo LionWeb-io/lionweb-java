@@ -13,7 +13,7 @@ public class SerializedChunk {
   private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
   private String serializationFormatVersion;
-  private final List<UsedLanguage> languages = new ArrayList<>();
+  private final Set<UsedLanguage> languages = new LinkedHashSet<>();
   private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
   public void setSerializationFormatVersion(String value) {
@@ -25,7 +25,7 @@ public class SerializedChunk {
   }
 
   public List<SerializedClassifierInstance> getClassifierInstances() {
-    return classifierInstances;
+    return Collections.unmodifiableList(classifierInstances);
   }
 
   public void addClassifierInstance(SerializedClassifierInstance instance) {
@@ -47,11 +47,11 @@ public class SerializedChunk {
   }
 
   public Map<String, SerializedClassifierInstance> getClassifierInstancesByID() {
-    return classifierInstancesByID;
+    return Collections.unmodifiableMap(classifierInstancesByID);
   }
 
-  public List<UsedLanguage> getLanguages() {
-    return languages;
+  public Set<UsedLanguage> getLanguages() {
+    return Collections.unmodifiableSet(languages);
   }
 
   @Override
