@@ -120,4 +120,8 @@ public abstract class SerializedClassifierInstance {
   public void setAnnotations(List<String> annotationIDs) {
     this.annotations = annotationIDs;
   }
+
+  public void addAnnotation(String annotationID) {
+    this.annotations.add(annotationID);
+  }
 }
