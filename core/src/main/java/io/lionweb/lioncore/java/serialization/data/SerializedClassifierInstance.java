@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.serialization.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -109,6 +110,16 @@ public abstract class SerializedClassifierInstance {
   }
 
   @Nullable
+  public String getPropertyValue(@Nonnull MetaPointer propertyMetaPointer) {
+    for (SerializedPropertyValue pv : this.getProperties()) {
+      if (propertyMetaPointer.equals(pv.getMetaPointer())) {
+        return pv.getValue();
+      }
+    }
+    return null;
+  }
+
+  @Nullable
   public List<SerializedReferenceValue.Entry> getReferenceValues(String referenceKey) {
     for (SerializedReferenceValue rv : this.getReferences()) {
       if (rv.getMetaPointer().getKey().equals(referenceKey)) {
@@ -116,6 +127,27 @@ public abstract class SerializedClassifierInstance {
       }
     }
     return null;
+  }
+
+  @Nonnull
+  public List<SerializedReferenceValue.Entry> getReferenceValues(
+      @Nonnull MetaPointer referenceMetaPointer) {
+    for (SerializedReferenceValue rv : this.getReferences()) {
+      if (referenceMetaPointer.equals(rv.getMetaPointer())) {
+        return Collections.unmodifiableList(rv.getValue());
+      }
+    }
+    return Collections.emptyList();
+  }
+
+  @Nonnull
+  public List<String> getContainmentValues(@Nonnull MetaPointer containmentMetaPointer) {
+    for (SerializedContainmentValue cv : this.getContainments()) {
+      if (containmentMetaPointer.equals(cv.getMetaPointer())) {
+        return Collections.unmodifiableList(cv.getValue());
+      }
+    }
+    return Collections.emptyList();
   }
 
   public void setAnnotations(List<String> annotationIDs) {
