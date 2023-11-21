@@ -25,7 +25,7 @@ public class SerializedChunk {
   }
 
   public List<SerializedClassifierInstance> getClassifierInstances() {
-    return classifierInstances;
+    return Collections.unmodifiableList(classifierInstances);
   }
 
   public void addClassifierInstance(SerializedClassifierInstance instance) {
@@ -47,11 +47,11 @@ public class SerializedChunk {
   }
 
   public Map<String, SerializedClassifierInstance> getClassifierInstancesByID() {
-    return classifierInstancesByID;
+    return Collections.unmodifiableMap(classifierInstancesByID);
   }
 
   public List<UsedLanguage> getLanguages() {
-    return languages;
+    return Collections.unmodifiableList(languages);
   }
 
   @Override

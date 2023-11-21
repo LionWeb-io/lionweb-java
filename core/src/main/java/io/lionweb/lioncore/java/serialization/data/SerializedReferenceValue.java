@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.serialization.data;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,13 +63,15 @@ public class SerializedReferenceValue {
   }
 
   private MetaPointer metaPointer;
-  private List<Entry> value;
+  private final List<Entry> value;
 
-  public SerializedReferenceValue() {}
+  public SerializedReferenceValue() {
+    value = new ArrayList<>();
+  }
 
   public SerializedReferenceValue(MetaPointer metaPointer, List<Entry> value) {
     this.metaPointer = metaPointer;
-    this.value = value;
+    this.value = new ArrayList<>(value);
   }
 
   public MetaPointer getMetaPointer() {
@@ -79,11 +83,12 @@ public class SerializedReferenceValue {
   }
 
   public List<Entry> getValue() {
-    return value;
+    return Collections.unmodifiableList(value);
   }
 
   public void setValue(List<Entry> value) {
-    this.value = value;
+    this.value.clear();
+    this.value.addAll(value);
   }
 
   @Override

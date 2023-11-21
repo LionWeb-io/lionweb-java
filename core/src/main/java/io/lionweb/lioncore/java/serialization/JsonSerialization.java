@@ -162,7 +162,7 @@ public class JsonSerialization {
       registerLanguage(node.getConcept().getLanguage());
       UsedLanguage languageKeyVersion = UsedLanguage.fromLanguage(node.getConcept().getLanguage());
       if (!serializationBlock.getLanguages().contains(languageKeyVersion)) {
-        serializationBlock.getLanguages().add(languageKeyVersion);
+        serializationBlock.addLanguage(languageKeyVersion);
       }
     }
     return serializationBlock;

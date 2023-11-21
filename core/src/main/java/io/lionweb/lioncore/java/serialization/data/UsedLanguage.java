@@ -25,6 +25,13 @@ public class UsedLanguage {
     return new UsedLanguage(language.getKey(), language.getVersion());
   }
 
+  public static UsedLanguage fromMetaPointer(@Nonnull MetaPointer metaPointer) {
+    Objects.requireNonNull(metaPointer, "metaPointer parameter should not be null");
+    Objects.requireNonNull(metaPointer.getLanguage(), "metaPointer language should not be null");
+    Objects.requireNonNull(metaPointer.getVersion(), "metaPointer version should not be null");
+    return new UsedLanguage(metaPointer.getLanguage(), metaPointer.getVersion());
+  }
+
   public String getKey() {
     return key;
   }
