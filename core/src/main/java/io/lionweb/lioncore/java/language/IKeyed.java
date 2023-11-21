@@ -1,8 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 /**
- * Implementation detail of the Java implementation. Not part of the official M3. TODO: Is this
- * statement still correct?
+ * Any element in a Language (M2) that can be referred from an instance (M1).
  *
  * @param <T> Type of keyed element.
  */
