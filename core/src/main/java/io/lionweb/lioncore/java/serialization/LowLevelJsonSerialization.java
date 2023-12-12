@@ -85,6 +85,18 @@ public class LowLevelJsonSerialization {
       JsonObject nodeJson = new JsonObject();
       nodeJson.addProperty("id", node.getID());
 
+      if (node instanceof SerializedNodeInstance) {
+        SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance) node;
+        nodeJson.add("classifier", serializeToJsonElement(node.getClassifier()));
+      } else if (node instanceof SerializedAnnotationInstance) {
+        SerializedAnnotationInstance serializedAnnotationInstance =
+            (SerializedAnnotationInstance) node;
+        nodeJson.add("annotation", serializeToJsonElement(node.getClassifier()));
+        // TODO  "annotation" -> "classifier"
+      } else {
+        throw new UnsupportedOperationException();
+      }
+
       JsonArray properties = new JsonArray();
       for (SerializedPropertyValue propertyValue : node.getProperties()) {
         JsonObject property = new JsonObject();
@@ -122,12 +134,11 @@ public class LowLevelJsonSerialization {
       if (node instanceof SerializedNodeInstance) {
         SerializedNodeInstance serializedNodeInstance = (SerializedNodeInstance) node;
         nodeJson.addProperty("parent", serializedNodeInstance.getParentNodeID());
-        nodeJson.add("classifier", serializeToJsonElement(node.getClassifier()));
       } else if (node instanceof SerializedAnnotationInstance) {
         SerializedAnnotationInstance serializedAnnotationInstance =
             (SerializedAnnotationInstance) node;
         nodeJson.addProperty("annotated", serializedAnnotationInstance.getParentNodeID());
-        nodeJson.add("annotation", serializeToJsonElement(node.getClassifier()));
+        // TODO  "annotated" -> "parent"
       } else {
         throw new UnsupportedOperationException();
       }

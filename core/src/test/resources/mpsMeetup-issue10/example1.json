@@ -32,6 +32,7 @@
         }
       ],
       "references": [],
+      "annotations": [],
       "parent": "file_properties-parser-examples-example1-props-"
     },
     {
@@ -53,6 +54,7 @@
       ],
       "containments": [],
       "references": [],
+      "annotations": [],
       "parent": "file_properties-parser-examples-example1-props--props0"
     },
     {
@@ -85,6 +87,7 @@
         }
       ],
       "references": [],
+      "annotations": [],
       "parent": "file_properties-parser-examples-example1-props-"
     },
     {
@@ -106,6 +109,7 @@
       ],
       "containments": [],
       "references": [],
+      "annotations": [],
       "parent": "file_properties-parser-examples-example1-props--props1"
     },
     {
@@ -138,6 +142,7 @@
         }
       ],
       "references": [],
+      "annotations": [],
       "parent": "file_properties-parser-examples-example1-props-"
     },
     {
@@ -159,6 +164,7 @@
       ],
       "containments": [],
       "references": [],
+      "annotations": [],
       "parent": "file_properties-parser-examples-example1-props--props2"
     }
   ]
