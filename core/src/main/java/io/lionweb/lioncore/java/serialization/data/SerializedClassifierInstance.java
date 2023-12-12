@@ -182,7 +182,7 @@ public class SerializedClassifierInstance {
 
   @Override
   public String toString() {
-    return "SerializedNodeInstance{"
+    return "SerializedClassifierInstance{"
         + "id='"
         + id
         + '\''
