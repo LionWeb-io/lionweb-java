@@ -34,3 +34,9 @@ This is the first release based on the new artifact ids (which now include the s
 
 At this stage support for the M1 and M2 APIs is relatively complete. Support for annotations may need refinements. Some constraints may not yet been verified.
 Import and export from and to EMF is a work in progress.
+
+### Version 0.2.1
+
+* The JSON serialization is changed so that the meta-pointer under `"classifier"` appears directly after the `"id"` key-value pair.
+* The internal representation of serialized nodes was simplified.
+

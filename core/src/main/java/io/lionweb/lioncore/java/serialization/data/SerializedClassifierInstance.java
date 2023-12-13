@@ -3,22 +3,23 @@ package io.lionweb.lioncore.java.serialization.data;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
  * Lower level representation of a Classifier Instance (either a Node or an AnnotationInstance)
- * which is used to load broken classifier instances during serialization.
+ * which is used to load classifier instances during serialization. Note that also "broken" classifier instances can be loaded.
  */
-public abstract class SerializedClassifierInstance {
-  protected String id;
-  protected MetaPointer classifier;
+public class SerializedClassifierInstance {
+  private String id;
+  private MetaPointer classifier;
 
-  protected final List<SerializedPropertyValue> properties = new ArrayList<>();
-  protected final List<SerializedContainmentValue> containments = new ArrayList<>();
-  protected final List<SerializedReferenceValue> references = new ArrayList<>();
-  protected final List<String> annotations = new ArrayList<>();
-  protected String parentNodeID;
+  private final List<SerializedPropertyValue> properties = new ArrayList<>();
+  private final List<SerializedContainmentValue> containments = new ArrayList<>();
+  private final List<SerializedReferenceValue> references = new ArrayList<>();
+  private final List<String> annotations = new ArrayList<>();
+  private String parentNodeID;
 
   public String getParentNodeID() {
     return parentNodeID;
@@ -157,5 +158,47 @@ public abstract class SerializedClassifierInstance {
 
   public void addAnnotation(String annotationID) {
     this.annotations.add(annotationID);
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof SerializedClassifierInstance)) return false;
+    SerializedClassifierInstance that = (SerializedClassifierInstance) o;
+    return Objects.equals(id, that.id)
+        && Objects.equals(classifier, that.classifier)
+        && Objects.equals(parentNodeID, that.parentNodeID)
+        && Objects.equals(properties, that.properties)
+        && Objects.equals(containments, that.containments)
+        && Objects.equals(references, that.references)
+        && Objects.equals(annotations, that.annotations);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(
+        id, classifier, parentNodeID, properties, containments, references, annotations);
+  }
+
+  @Override
+  public String toString() {
+    return "SerializedClassifierInstance{"
+        + "id='"
+        + id
+        + '\''
+        + ", classifier="
+        + classifier
+        + ", parentNodeID='"
+        + parentNodeID
+        + '\''
+        + ", properties="
+        + properties
+        + ", containments="
+        + containments
+        + ", references="
+        + references
+        + ", annotations="
+        + annotations
+        + '}';
   }
 }

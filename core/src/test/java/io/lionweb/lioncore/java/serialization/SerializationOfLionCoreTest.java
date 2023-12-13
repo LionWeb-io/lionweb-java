@@ -108,8 +108,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     List<SerializedClassifierInstance> deserializedSerializedClassifierInstanceData =
         serializedChunk.getClassifierInstances();
 
-    SerializedNodeInstance lioncore =
-        (SerializedNodeInstance) serializedChunk.getInstanceByID("-id-LionCore-M3");
+    SerializedClassifierInstance lioncore = serializedChunk.getInstanceByID("-id-LionCore-M3");
     assertEquals(MetaPointer.from(LionCore.getLanguage()), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));

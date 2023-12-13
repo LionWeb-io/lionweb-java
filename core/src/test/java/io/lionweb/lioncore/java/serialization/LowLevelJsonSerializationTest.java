@@ -33,8 +33,7 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     List<SerializedClassifierInstance> deserializedSerializedClassifierInstanceData =
         serializedChunk.getClassifierInstances();
 
-    SerializedNodeInstance lioncore =
-        (SerializedNodeInstance) deserializedSerializedClassifierInstanceData.get(0);
+    SerializedClassifierInstance lioncore = deserializedSerializedClassifierInstanceData.get(0);
     assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getPropertyValue("LionCore-builtins-INamed-name"));
