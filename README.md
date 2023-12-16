@@ -1,6 +1,6 @@
 # LionWeb Java
 
-![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.lionweb.lionweb-java/lionweb-java-core/badge.png)
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.lionweb.lionweb-java/lionweb-java-2023.1-core/badge.png)
 
 This projects requires Java 8, to maximize compatibility.
 
@@ -11,7 +11,7 @@ libraries not available for Java 8. This does not affect runtime usages of the l
 
 ```
 dependencies {
-   implementation("io.lionweb.lionweb-java:lionweb-java-core:$lionwebVersion")
+   implementation("io.lionweb.lionweb-java:lionweb-java-2023.1-core:$lionwebVersion")
 }
 ```
 
