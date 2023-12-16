@@ -1,5 +1,7 @@
 # LionWeb Java
 
+![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.lionweb.lionweb-java/lionweb-java-core/badge.png)
+
 This projects requires Java 8, to maximize compatibility.
 
 We require Java 11 exclusively for the Javadoc tasks, as it needs to add references to
