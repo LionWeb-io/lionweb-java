@@ -224,8 +224,8 @@ public class LowLevelJsonSerialization {
 
   private JsonElement serializeToJsonElement(UsedLanguage languageKeyVersion) {
     JsonObject jsonObject = new JsonObject();
-    jsonObject.addProperty("version", languageKeyVersion.getVersion());
     jsonObject.addProperty("key", languageKeyVersion.getKey());
+    jsonObject.addProperty("version", languageKeyVersion.getVersion());
     return jsonObject;
   }
 
