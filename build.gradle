@@ -20,7 +20,9 @@ subprojects {
 }
 
 release {
-    buildTasks = [':core:publish', ":emf:publish", ":emf-builtins:publish"]
+    buildTasks = [":core:publishAllPublicationsToMavenCentralRepository",
+                  ":emf:publishAllPublicationsToMavenCentralRepository",
+                  ":emf-builtins:publishAllPublicationsToMavenCentralRepository"]
     versionPropertyFile = './gradle.properties'
     git {
         requireBranch.set('master')
