@@ -6,7 +6,6 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-    # For the javadoc tasks specifically we use Java 11 instead of Java 8
     strategy:
       matrix:
         java: [ '11' ]
