@@ -9,7 +9,8 @@ import javax.annotation.Nullable;
 
 /**
  * Lower level representation of a Classifier Instance (either a Node or an AnnotationInstance)
- * which is used to load classifier instances during serialization. Note that also "broken" classifier instances can be loaded.
+ * which is used to load classifier instances during serialization. Note that also "broken"
+ * classifier instances can be loaded.
  */
 public class SerializedClassifierInstance {
   private String id;
