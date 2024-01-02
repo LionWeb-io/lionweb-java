@@ -1,9 +1,8 @@
-import org.apache.tools.ant.taskdefs.condition.Os
-import java.net.URI
+import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("java-library")
-    id("maven-publish")
+    id("com.vanniktech.maven.publish")
     id("signing")
 }
 
@@ -66,81 +65,53 @@ tasks.register<Jar>("sourcesJar") {
     from(sourceSets.getByName("main").java.srcDirs)
 }
 
-publishing {
+mavenPublishing {
+    coordinates(
+        groupId = "io.lionweb.lionweb-java",
+        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+        version = project.version as String,
+    )
 
-    repositories {
-        maven {
-            val releaseRepo = "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            val snapshotRepo = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-            url = URI(if (isReleaseVersion) releaseRepo else  snapshotRepo)
-            credentials {
-                username = if (project.hasProperty("ossrhUsername")) extra["ossrhUsername"] as String else "Unknown user"
-                password = if (project.hasProperty("ossrhPassword")) extra["ossrhPassword"] as String else "Unknown password"
+    pom {
+        name.set("lionweb-java-" + project.name)
+        description.set("EMF compatibility layer for LionWeb")
+        version = project.version as String
+        packaging = "jar"
+        url.set("https://github.com/LionWeb-io/lionweb-java")
+
+        scm {
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
+            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+        }
+
+        licenses {
+            license {
+                name.set("Apache Licenve V2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                distribution.set("repo")
+            }
+        }
+
+        // The developers entry is strictly required by Maven Central
+        developers {
+            developer {
+                id.set("ftomassetti")
+                name.set("Federico Tomassetti")
+                email.set("federico@strumenta.com")
+            }
+            developer {
+                id.set("dslmeinte")
+                name.set("Meinte Boersma")
+                email.set("meinte.boersma@gmail.com")
+            }
+            developer {
+                id.set("enikao")
+                name.set("Niko Stotz")
+                email.set("github-public@nikostotz.de")
             }
         }
     }
-
-    publications {
-        create<MavenPublication>("lionweb_java_emf") {
-            from(components.findByName("java"))
-            groupId = "io.lionweb.lionweb-java"
-            artifactId = "lionweb-java-${specsVersion}-" + project.name
-            artifact(tasks.findByName("sourcesJar"))
-            artifact(tasks.findByName("javadocJar"))
-            suppressPomMetadataWarningsFor("cliApiElements")
-            suppressPomMetadataWarningsFor("cliRuntimeElements")
-            pom {
-                name.set("lionweb-java-" + project.name)
-                description.set("EMF compatibility layer for LionWeb")
-                version = project.version as String
-                packaging = "jar"
-                url.set("https://github.com/LionWeb-io/lionweb-java")
-
-                scm {
-                    connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-                    developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-                    url.set("https://github.com/LionWeb-io/lionweb-java.git")
-                }
-
-                licenses {
-                    license {
-                        name.set("Apache Licenve V2.0")
-                        url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                        distribution.set("repo")
-                    }
-                }
-
-                // The developers entry is strictly required by Maven Central
-                developers {
-                    developer {
-                        id.set("ftomassetti")
-                        name.set("Federico Tomassetti")
-                        email.set("federico@strumenta.com")
-                    }
-                    developer {
-                        id.set("dslmeinte")
-                        name.set("Meinte Boersma")
-                        email.set("meinte.boersma@gmail.com")
-                    }
-                    developer {
-                        id.set("enikao")
-                        name.set("Niko Stotz")
-                        email.set("github-public@nikostotz.de")
-                    }
-                }
-
-            }
-        }
-    }
-}
-
-tasks.withType(Sign::class) {
-    onlyIf("isReleaseVersion is set") { isReleaseVersion }
-}
-
-signing {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        useGpgCmd()
-    }
-    sign(publishing.publications["lionweb_java_emf"])
+    publishToMavenCentral(SonatypeHost.DEFAULT, true)
+    signAllPublications()
 }
