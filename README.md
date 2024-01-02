@@ -49,3 +49,6 @@ Import and export from and to EMF is a work in progress.
 * The JSON serialization is changed so that the meta-pointer under `"classifier"` appears directly after the `"id"` key-value pair.
 * The internal representation of serialized nodes was simplified.
 
+### Version 0.2.2
+
+* Convergence of Serialized{Annotation&Node}Instance into SerializedClassifierInstance
