@@ -112,6 +112,6 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.DEFAULT, true)
+    publishToMavenCentral(SonatypeHost.S01, true)
     signAllPublications()
 }
