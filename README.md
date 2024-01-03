@@ -4,8 +4,7 @@
 
 This projects requires Java 8, to maximize compatibility.
 
-We require Java 11 exclusively for the Javadoc tasks, as it needs to add references to
-libraries not available for Java 8. This does not affect runtime usages of the library.
+We require Java 11 for building the project, while the artifacts published are compatible with Java 8.
 
 ## Using the library
 
@@ -50,3 +49,6 @@ Import and export from and to EMF is a work in progress.
 * The JSON serialization is changed so that the meta-pointer under `"classifier"` appears directly after the `"id"` key-value pair.
 * The internal representation of serialized nodes was simplified.
 
+### Version 0.2.2
+
+* Convergence of Serialized{Annotation&Node}Instance into SerializedClassifierInstance
