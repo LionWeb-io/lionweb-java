@@ -3,6 +3,7 @@ package io.lionweb.api.bulk.test;
 import io.lionweb.api.bulk.IBulk;
 import io.lionweb.api.bulk.lowlevel.IBulkLowlevel;
 import io.lionweb.api.bulk.test.impl.LionwebRepositoryBulkLowlevel;
+import io.lionweb.api.bulk.test.impl.MpsBulkLowlevel;
 import io.lionweb.api.bulk.wrapper.BulkLowlevelWrapper;
 
 public class BulkApiProvider {
@@ -15,6 +16,6 @@ public class BulkApiProvider {
     }
 
     public IBulkLowlevel getBulkLowlevel() {
-        return new LionwebRepositoryBulkLowlevel();
+        return new MpsBulkLowlevel();
     }
 }
