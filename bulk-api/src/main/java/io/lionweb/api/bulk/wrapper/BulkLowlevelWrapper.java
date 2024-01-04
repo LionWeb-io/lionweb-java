@@ -46,9 +46,8 @@ public class BulkLowlevelWrapper implements IBulk {
     @Override
     public void store(SerializedChunk nodes, StoreMode mode) throws BulkException {
         Objects.requireNonNull(nodes);
-        Objects.requireNonNull(mode);
-
-        IStoreResponse response = lowlevel.store(nodes, mode.name().toLowerCase());
+        String modeString = mode !=null ? mode.name().toLowerCase() : null;
+        IStoreResponse response = lowlevel.store(nodes, modeString);
 
         if(response.isOk()) {
             return;
