@@ -2,7 +2,7 @@ rootProject.name = 'lionweb-java'
 include('core')
 include('emf')
 include('emf-builtins')
-
+include('bulk-api')
 
 dependencyResolutionManagement {
     versionCatalogs {
