@@ -6,12 +6,10 @@ import io.lionweb.api.bulk.lowlevel.IBulkLowlevel;
 public abstract class ATestBulk {
 
   protected IBulk getBulk() {
-    // TODO
-    throw new UnsupportedOperationException();
+    return BulkApiProvider.getInstance().getBulk();
   }
 
   protected IBulkLowlevel getBulkLowlevel() {
-    // TODO
-    throw new UnsupportedOperationException();
+    return BulkApiProvider.getInstance().getBulkLowlevel();
   }
 }
