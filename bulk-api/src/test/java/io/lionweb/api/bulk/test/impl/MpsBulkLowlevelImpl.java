@@ -15,17 +15,18 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
-    private static final String URI_BASE = "http://127.0.0.1:3005/bulk/";
+public class MpsBulkLowlevelImpl implements IBulkLowlevel {
+    private static final String URI_BASE = "http://127.0.0.1:63320/lionweb/api/bulk/";
 
     @Override
     public IPartitionsResponse partitions() {
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "partitions")).GET().build();
+        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "partitions?onlyPartitions=true")).GET().build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IPartitionsResponse() {
@@ -68,7 +69,7 @@ public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
 
     @Override
     public IRetrieveResponse retrieve(List<String> nodeIds, String depthLimit) {
-        String ids = "{ \"ids\": " + nodeIds.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(",", "[", "]")) + "}";
+        String ids = nodeIds.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(",", "[", "]"));
         String limit = depthLimit != null ? "?depthLimit=" + depthLimit : "";
 
         HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "retrieve" + limit)).POST(HttpRequest.BodyPublishers.ofString(ids)).build();
@@ -82,12 +83,12 @@ public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
 
                 @Override
                 public boolean isValidNodeIds() {
-                    return true;
+                    return responseContains(response, "nodeids");
                 }
 
                 @Override
                 public boolean isValidDepthLimit() {
-                    return true;
+                    return responseContains(response, "depthlimit");
                 }
 
                 @Override
@@ -141,6 +142,18 @@ public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
                 return "";
             }
         };
+    }
+
+    private boolean responseContains(HttpResponse<InputStream> response, String keyword) {
+        try {
+            return !extractContents(response).toLowerCase().contains(keyword);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String extractContents(HttpResponse<InputStream> response) throws IOException {
+        return new String(response.body().readAllBytes(), StandardCharsets.UTF_8);
     }
 
     @Override

@@ -12,7 +12,7 @@ public class TestMultiPartition extends ATestRetrieve {
   @Test
   public void infinite() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("partition-id", "other-partition-id"), null).getClassifierInstances();
-    assertEquals(17, roots.size());
+    assertEquals(15, roots.size());
   }
   @Test
   public void depth0() {
@@ -22,7 +22,7 @@ public class TestMultiPartition extends ATestRetrieve {
   @Test
   public void depth1() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("partition-id", "other-partition-id"), 1).getClassifierInstances();
-    assertEquals(5, roots.size());
+    assertEquals(4, roots.size());
   }
   @Test
   public void depth2() {

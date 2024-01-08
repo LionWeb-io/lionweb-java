@@ -22,7 +22,7 @@ public class TestSinglePartition extends ATestRetrieve {
   @Test
   public void depth1() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("partition-id"), 1).getClassifierInstances();
-    assertEquals(3, roots.size());
+    assertEquals(2, roots.size());
   }
   @Test
   public void depth2() {

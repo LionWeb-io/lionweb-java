@@ -10,7 +10,7 @@ import static org.junit.Assert.assertEquals;
 
 public class TestSingleLeaf extends ATestRetrieve {
   @Test
-  public void depthinfinite() {
+  public void infinite() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("leaf-id"), null).getClassifierInstances();
     assertEquals(1, roots.size());
   }

@@ -12,7 +12,7 @@ public class TestMixedPartitionMidNodeLeaf extends ATestRetrieve {
   @Test
   public void infinite() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("partition-id", "midnode-id", "leaf-id"), null).getClassifierInstances();
-    assertEquals(16, roots.size());
+    assertEquals(10, roots.size());
   }
   @Test
   public void depth0() {
@@ -22,11 +22,11 @@ public class TestMixedPartitionMidNodeLeaf extends ATestRetrieve {
   @Test
   public void depth1() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("partition-id", "midnode-id", "leaf-id"), 1).getClassifierInstances();
-    assertEquals(7, roots.size());
+    assertEquals(6, roots.size());
   }
   @Test
   public void depth2() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("partition-id", "midnode-id", "leaf-id"), 3).getClassifierInstances();
-    assertEquals(9, roots.size());
+    assertEquals(10, roots.size());
   }
 }

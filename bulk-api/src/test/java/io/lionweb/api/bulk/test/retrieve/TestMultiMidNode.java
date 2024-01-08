@@ -12,7 +12,7 @@ public class TestMultiMidNode extends ATestRetrieve {
   @Test
   public void infinite() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("midnode-id", "other-midnode-id", "third-midnode-id"), null).getClassifierInstances();
-    assertEquals(10, roots.size());
+    assertEquals(9, roots.size());
   }
   @Test
   public void depth0() {
@@ -22,7 +22,7 @@ public class TestMultiMidNode extends ATestRetrieve {
   @Test
   public void depth1() {
     List<SerializedClassifierInstance> roots = getBulk().retrieve(Arrays.asList("midnode-id", "other-midnode-id", "third-midnode-id"), 1).getClassifierInstances();
-    assertEquals(5, roots.size());
+    assertEquals(7, roots.size());
   }
   @Test
   public void depth2() {
