@@ -20,12 +20,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
-    private static final String URI_BASE = "http://127.0.0.1:3005/bulk/";
+public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel<LionwebRepositoryConfig> {
+    private LionwebRepositoryConfig config = new LionwebRepositoryConfig();
 
     @Override
     public IPartitionsResponse partitions() {
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "partitions")).GET().build();
+        HttpRequest request = buildRequest().uri(URI.create(config.getUriBase() + "partitions")).GET().build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IPartitionsResponse() {
@@ -71,7 +71,7 @@ public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
         String ids = "{ \"ids\": " + nodeIds.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(",", "[", "]")) + "}";
         String limit = depthLimit != null ? "?depthLimit=" + depthLimit : "";
 
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "retrieve" + limit)).POST(HttpRequest.BodyPublishers.ofString(ids)).build();
+        HttpRequest request = buildRequest().uri(URI.create(config.getUriBase() + "retrieve" + limit)).POST(HttpRequest.BodyPublishers.ofString(ids)).build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IRetrieveResponse() {
@@ -147,7 +147,7 @@ public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
     public IStoreResponse store(SerializedChunk nodes, String mode) {
         String jsonString = new LowLevelJsonSerialization().serializeToJsonString(nodes);
 
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "store")).POST(HttpRequest.BodyPublishers.ofString(jsonString)).build();
+        HttpRequest request = buildRequest().uri(URI.create(config.getUriBase() + "store")).POST(HttpRequest.BodyPublishers.ofString(jsonString)).build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IStoreResponse() {
@@ -204,6 +204,16 @@ public class LionwebRepositoryBulkLowlevel implements IBulkLowlevel {
     @Override
     public IIdsResponse ids(String count) {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public LionwebRepositoryConfig getConfig() {
+        return this.config;
+    }
+
+    @Override
+    public void setConfig(LionwebRepositoryConfig config) {
+        this.config = config;
     }
 
     private HttpClient createClient() {

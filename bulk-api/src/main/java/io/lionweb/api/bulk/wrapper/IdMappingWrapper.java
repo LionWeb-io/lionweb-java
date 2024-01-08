@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class IdMappingWrapper implements IBulkLowlevel {
-    private final IBulkLowlevel delegate;
+public class IdMappingWrapper<C extends ILowlevelConfig> implements IBulkLowlevel<C> {
+    private final IBulkLowlevel<C> delegate;
     private final IIdMapper idMapper;
 
-    public IdMappingWrapper(IBulkLowlevel delegate, IIdMapper idMapper){
+    public IdMappingWrapper(IBulkLowlevel<C> delegate, IIdMapper idMapper){
         this.delegate = delegate;
         this.idMapper = idMapper;
     }
@@ -109,6 +109,16 @@ public class IdMappingWrapper implements IBulkLowlevel {
                 return response.getErrorMessage();
             }
         };
+    }
+
+    @Override
+    public C getConfig() {
+        return delegate.getConfig();
+    }
+
+    @Override
+    public void setConfig(C config) {
+        delegate.setConfig(config);
     }
 
     @Override

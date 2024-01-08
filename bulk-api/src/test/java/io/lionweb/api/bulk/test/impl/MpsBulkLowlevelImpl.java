@@ -17,16 +17,22 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MpsBulkLowlevelImpl implements IBulkLowlevel {
-    private static final String URI_BASE = "http://127.0.0.1:63320/lionweb/api/bulk/";
+public class MpsBulkLowlevelImpl implements IBulkLowlevel<MpsConfig> {
+    private MpsConfig config = new MpsConfig();
 
     @Override
     public IPartitionsResponse partitions() {
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "partitions?onlyPartitions=true")).GET().build();
+        List<String> parameters = Arrays.asList(
+                "onlyPartitions=" + config.isOnlyPartitions(),
+                "includeLanguages=" + config.isIncludeLanguages(),
+                "includePackaged=" + config.isIncludePackaged());
+        URI uri = URI.create(config.getUriBase() + "partitions?" + String.join("&", parameters));
+        HttpRequest request = buildRequest().uri(uri).GET().build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IPartitionsResponse() {
@@ -72,7 +78,8 @@ public class MpsBulkLowlevelImpl implements IBulkLowlevel {
         String ids = nodeIds.stream().map(s -> "\"" + s + "\"").collect(Collectors.joining(",", "[", "]"));
         String limit = depthLimit != null ? "?depthLimit=" + depthLimit : "";
 
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "retrieve" + limit)).POST(HttpRequest.BodyPublishers.ofString(ids)).build();
+        URI uri = URI.create(config.getUriBase() + "retrieve" + limit);
+        HttpRequest request = buildRequest().uri(uri).POST(HttpRequest.BodyPublishers.ofString(ids)).build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IRetrieveResponse() {
@@ -144,6 +151,16 @@ public class MpsBulkLowlevelImpl implements IBulkLowlevel {
         };
     }
 
+    @Override
+    public MpsConfig getConfig() {
+        return config;
+    }
+
+    @Override
+    public void setConfig(MpsConfig config) {
+        this.config = config;
+    }
+
     private boolean responseContains(HttpResponse<InputStream> response, String keyword) {
         try {
             return !extractContents(response).toLowerCase().contains(keyword);
@@ -160,7 +177,7 @@ public class MpsBulkLowlevelImpl implements IBulkLowlevel {
     public IStoreResponse store(SerializedChunk nodes, String mode) {
         String jsonString = new LowLevelJsonSerialization().serializeToJsonString(nodes);
 
-        HttpRequest request = buildRequest().uri(URI.create(URI_BASE + "store")).POST(HttpRequest.BodyPublishers.ofString(jsonString)).build();
+        HttpRequest request = buildRequest().uri(URI.create(config.getUriBase() + "store")).POST(HttpRequest.BodyPublishers.ofString(jsonString)).build();
         HttpResponse<InputStream> response = send(request);
         if (HttpURLConnection.HTTP_OK != response.statusCode()) {
             return new IStoreResponse() {
