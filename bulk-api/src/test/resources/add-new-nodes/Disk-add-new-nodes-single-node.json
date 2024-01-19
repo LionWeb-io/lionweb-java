@@ -1,0 +1,70 @@
+{
+  "serializationFormatVersion": "2023.1",
+  "languages": [
+    {
+      "key": "-default-key-FileSystem",
+      "version": "2023.1"
+    },
+    {
+      "key": "LionCore-builtins",
+      "version": "2023.1"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "ID-20",
+      "classifier": {
+        "language": "-default-key-FileSystem",
+        "version": "2023.1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "folder-20"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "-default-key-FileSystem",
+            "version": "2023.1",
+            "key": "Folder-listing-key"
+          },
+          "children": []
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "ANN-1"
+    },
+    {
+      "id": "ANN-1",
+      "classifier": {
+        "language": "-default-key-FileSystem",
+        "version": "2023.1",
+        "key": "Folder-key"
+      },
+      "properties": [],
+      "containments": [
+        {
+          "containment": {
+            "language": "-default-key-FileSystem",
+            "version": "2023.1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "ID-20"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "ID-7"
+    }
+  ]
+}

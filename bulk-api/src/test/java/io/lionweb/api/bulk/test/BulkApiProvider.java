@@ -16,7 +16,7 @@ public class BulkApiProvider {
     }
 
     public IBulkLowlevel getBulkLowlevel() {
-        return new MpsBulkLowlevel();
-//        return new LionwebRepositoryBulkLowlevel();
+//        return new MpsBulkLowlevel();
+        return new LionwebRepositoryBulkLowlevel();
     }
 }
