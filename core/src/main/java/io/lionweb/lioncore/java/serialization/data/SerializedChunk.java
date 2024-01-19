@@ -72,9 +72,9 @@ public class SerializedChunk {
     if (this == o) return true;
     if (!(o instanceof SerializedChunk)) return false;
     SerializedChunk that = (SerializedChunk) o;
-    return serializationFormatVersion.equals(that.serializationFormatVersion)
-        && languages.equals(that.languages)
-        && classifierInstances.equals(that.classifierInstances);
+    return Objects.equals(serializationFormatVersion, that.serializationFormatVersion)
+        && Objects.equals(languages, that.languages)
+        && Objects.equals(classifierInstances, that.classifierInstances);
   }
 
   @Override
