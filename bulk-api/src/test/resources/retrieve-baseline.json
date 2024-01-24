@@ -12,7 +12,7 @@
   ],
   "nodes": [
     {
-      "id": "3783922071925855294",
+      "id": "partition-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -70,13 +70,13 @@
           },
           "children": [
             "3783922071929604110",
-            "3783922071925855296"
+            "midnode-id"
           ]
         }
       ],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855294"
+      "parent": "partition-id"
     },
     {
       "id": "3783922071929604110",
@@ -104,7 +104,7 @@
           },
           "children": [
             "3783922071929604060",
-            "3783922071925855302"
+            "leaf-id"
           ]
         }
       ],
@@ -135,7 +135,7 @@
       "parent": "3783922071929604110"
     },
     {
-      "id": "3783922071925855302",
+      "id": "leaf-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -157,7 +157,7 @@
       "parent": "3783922071929604110"
     },
     {
-      "id": "3783922071925855296",
+      "id": "midnode-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -210,7 +210,7 @@
       "containments": [],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855296"
+      "parent": "midnode-id"
     },
     {
       "id": "3783922071929604254",
@@ -243,7 +243,7 @@
       ],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855296"
+      "parent": "midnode-id"
     },
     {
       "id": "3783922071929604312",
@@ -301,7 +301,7 @@
       "parent": "3783922071929604312"
     },
     {
-      "id": "3783922071925855305",
+      "id": "other-partition-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -325,7 +325,7 @@
             "key": "Disk-root-key"
           },
           "children": [
-            "3783922071925855307"
+            "other-midnode-id"
           ]
         }
       ],
@@ -334,7 +334,7 @@
       "parent": null
     },
     {
-      "id": "3783922071925855307",
+      "id": "other-midnode-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -358,17 +358,17 @@
             "key": "Folder-listing-key"
           },
           "children": [
-            "3783922071925855326",
-            "3783922071925855313"
+            "other-leaf-id",
+            "third-midnode-id"
           ]
         }
       ],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855305"
+      "parent": "other-partition-id"
     },
     {
-      "id": "3783922071925855326",
+      "id": "other-leaf-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -387,10 +387,10 @@
       "containments": [],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855307"
+      "parent": "other-midnode-id"
     },
     {
-      "id": "3783922071925855313",
+      "id": "third-midnode-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -414,16 +414,16 @@
             "key": "Folder-listing-key"
           },
           "children": [
-            "3783922071925855319"
+            "third-leaf-id"
           ]
         }
       ],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855307"
+      "parent": "other-midnode-id"
     },
     {
-      "id": "3783922071925855319",
+      "id": "third-leaf-id",
       "classifier": {
         "language": "FileSystem-key",
         "version": "1",
@@ -442,7 +442,7 @@
       "containments": [],
       "references": [],
       "annotations": [],
-      "parent": "3783922071925855313"
+      "parent": "third-midnode-id"
     }
   ]
 }
