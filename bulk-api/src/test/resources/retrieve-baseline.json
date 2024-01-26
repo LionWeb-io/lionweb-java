@@ -1,0 +1,448 @@
+{
+  "serializationFormatVersion": "2023.1",
+  "languages": [
+    {
+      "key": "FileSystem-key",
+      "version": "1"
+    },
+    {
+      "key": "LionCore-builtins",
+      "version": "2023.1"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "partition-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Disk-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Partition"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Disk-root-key"
+          },
+          "children": [
+            "3783922071929604053"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": null
+    },
+    {
+      "id": "3783922071929604053",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "something"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "3783922071929604110",
+            "midnode-id"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "partition-id"
+    },
+    {
+      "id": "3783922071929604110",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "f"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "3783922071929604060",
+            "leaf-id"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "3783922071929604053"
+    },
+    {
+      "id": "3783922071929604060",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "File-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "1"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "3783922071929604110"
+    },
+    {
+      "id": "leaf-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "File-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Leaf"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "3783922071929604110"
+    },
+    {
+      "id": "midnode-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Midnode"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "3783922071929604075",
+            "3783922071929604254"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "3783922071929604053"
+    },
+    {
+      "id": "3783922071929604075",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "File-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "d"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "midnode-id"
+    },
+    {
+      "id": "3783922071929604254",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "d"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "3783922071929604312"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "midnode-id"
+    },
+    {
+      "id": "3783922071929604312",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "d"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "3783922071929604070"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "3783922071929604254"
+    },
+    {
+      "id": "3783922071929604070",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "File-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "2"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "3783922071929604312"
+    },
+    {
+      "id": "other-partition-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Disk-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "OtherPartition"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Disk-root-key"
+          },
+          "children": [
+            "other-midnode-id"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": null
+    },
+    {
+      "id": "other-midnode-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "OtherMidnode"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "other-leaf-id",
+            "third-midnode-id"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "other-partition-id"
+    },
+    {
+      "id": "other-leaf-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "File-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "OtherLeaf"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "other-midnode-id"
+    },
+    {
+      "id": "third-midnode-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "Folder-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "ThirdMidnode"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "FileSystem-key",
+            "version": "1",
+            "key": "Folder-listing-key"
+          },
+          "children": [
+            "third-leaf-id"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "other-midnode-id"
+    },
+    {
+      "id": "third-leaf-id",
+      "classifier": {
+        "language": "FileSystem-key",
+        "version": "1",
+        "key": "File-key"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "ThirdLeaf"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "third-midnode-id"
+    }
+  ]
+}
