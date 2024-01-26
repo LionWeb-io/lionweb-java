@@ -502,16 +502,7 @@
           "value": "folder-20"
         }
       ],
-      "containments": [
-        {
-          "containment": {
-            "language": "-default-key-FileSystem",
-            "version": "2023.1",
-            "key": "Folder-listing-key"
-          },
-          "children": []
-        }
-      ],
+      "containments": [],
       "references": [],
       "annotations": [],
       "parent": "ANN-1"

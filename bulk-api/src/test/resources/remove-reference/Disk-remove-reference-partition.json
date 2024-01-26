@@ -40,8 +40,8 @@
           ]
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": null
     },
     {
@@ -76,8 +76,8 @@
           ]
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-2"
     },
     {
@@ -111,26 +111,8 @@
           ]
         }
       ],
+      "references": [],
       "annotations": [],
-      "references": [
-        {
-          "reference": {
-            "language": "-default-key-FileSystem",
-            "version": "2023.1",
-            "key": "Folder-linked-key"
-          },
-          "targets": [
-            {
-              "resolveInfo": null,
-              "reference": "ID-10"
-            },
-            {
-              "resolveInfo": null,
-              "reference": "ID-8"
-            }
-          ]
-        }
-      ],
       "parent": "ID-3"
     },
     {
@@ -160,8 +142,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-4"
     },
     {
@@ -191,8 +173,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-4"
     },
     {
@@ -222,8 +204,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-4"
     },
     {
@@ -287,8 +269,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-5"
     },
     {
@@ -322,8 +304,8 @@
           ]
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-5"
     },
     {
@@ -353,8 +335,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-12"
     },
     {
@@ -384,8 +366,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-12"
     },
     {
@@ -415,8 +397,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-12"
     },
     {
@@ -446,8 +428,8 @@
           "children": []
         }
       ],
-      "annotations": [],
       "references": [],
+      "annotations": [],
       "parent": "ID-3"
     },
     {
