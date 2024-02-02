@@ -133,7 +133,16 @@ public class PrimitiveValuesSerialization {
       // This is at least the default behavior, but the user can register specialized
       // primitiveSerializers,
       // if a different behavior is needed
-      return ((EnumerationLiteral) value).getKey();
+      try {
+        return ((EnumerationLiteral) value).getKey();
+      } catch (Exception e) {
+        throw new IllegalArgumentException(
+                "Unable to serialize as enums primitive values of type "
+                        + primitiveTypeID
+                        + " (class: "
+                        + value.getClass()
+                        + ")");
+      }
     } else {
       throw new IllegalArgumentException(
           "Unable to serialize primitive values of type "
