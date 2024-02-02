@@ -137,11 +137,11 @@ public class PrimitiveValuesSerialization {
         return ((EnumerationLiteral) value).getKey();
       } catch (Exception e) {
         throw new IllegalArgumentException(
-                "Unable to serialize as enums primitive values of type "
-                        + primitiveTypeID
-                        + " (class: "
-                        + value.getClass()
-                        + ")");
+            "Unable to serialize as enums primitive values of type "
+                + primitiveTypeID
+                + " (class: "
+                + value.getClass()
+                + ")");
       }
     } else {
       throw new IllegalArgumentException(
