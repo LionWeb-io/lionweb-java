@@ -71,7 +71,8 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     // TODO Should features be returned in a particular order?
     List<Feature<?>> result = new LinkedList<>();
     result.addAll(this.getFeatures());
-    result.addAll(this.inheritedFeatures());
+    combineFeatures(result, this.inheritedFeatures());
+
     return result;
   }
 
@@ -215,5 +216,19 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
+  }
+
+  protected void combineFeatures(List<Feature<?>> featuresA, List<Feature<?>> featuresB) {
+    Set<MetaPointer> existingMetapointers = new HashSet<>();
+    for (Feature<?> f : featuresA) {
+      existingMetapointers.add(MetaPointer.from(f));
+    }
+    for (Feature<?> f : featuresB) {
+      MetaPointer metaPointer = MetaPointer.from(f);
+      if (!existingMetapointers.contains(metaPointer)) {
+        existingMetapointers.add(metaPointer);
+        featuresA.add(f);
+      }
+    }
   }
 }
