@@ -26,7 +26,7 @@ public class ConceptTest {
     assertEquals(1, a.allFeatures().size());
     assertEquals(1, a.inheritedFeatures().size());
     assertEquals(1, b.allFeatures().size());
-    assertEquals(0, b.inheritedFeatures().size());
+    assertEquals(1, b.inheritedFeatures().size());
     assertEquals(1, c.allFeatures().size());
     assertEquals(1, c.inheritedFeatures().size());
   }
