@@ -108,8 +108,8 @@ public class Annotation extends Classifier<Annotation> {
 
   @Nonnull
   @Override
-  public List<Feature> inheritedFeatures() {
-    List<Feature> result = new LinkedList<>();
+  public List<Feature<?>> inheritedFeatures() {
+    List<Feature<?>> result = new LinkedList<>();
     if (this.getExtendedAnnotation() != null) {
       result.addAll(this.getExtendedAnnotation().allFeatures());
     }
