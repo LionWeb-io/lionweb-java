@@ -65,7 +65,7 @@ public class Interface extends Classifier<Interface> {
   @Override
   public List<Feature<?>> inheritedFeatures() {
     List<Feature<?>> result = new LinkedList<>();
-    for (Interface superInterface : getExtendedInterfaces()) {
+    for (Classifier<?> superInterface : allAncestors()) {
       combineFeatures(result, superInterface.allFeatures());
     }
     return result;

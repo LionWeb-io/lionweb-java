@@ -18,14 +18,15 @@ public class ConceptTest {
     Concept a = new Concept(l, "A", "a-id", "a-key");
     Concept b = new Concept(l, "B", "b-id", "b-key");
     Concept c = new Concept(l, "C", "c-id", "c-key");
+    a.setExtendedConcept(c);
     b.setExtendedConcept(a);
     c.setExtendedConcept(b);
     b.addFeature(new Property("P1", b, "p1-id").setKey("p1-key"));
 
-    assertEquals(0, a.allFeatures().size());
-    assertEquals(0, a.inheritedFeatures().size());
+    assertEquals(1, a.allFeatures().size());
+    assertEquals(1, a.inheritedFeatures().size());
     assertEquals(1, b.allFeatures().size());
-    assertEquals(0, b.inheritedFeatures().size());
+    assertEquals(1, b.inheritedFeatures().size());
     assertEquals(1, c.allFeatures().size());
     assertEquals(1, c.inheritedFeatures().size());
   }

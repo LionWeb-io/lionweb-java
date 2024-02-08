@@ -114,11 +114,8 @@ public class Concept extends Classifier<Concept> {
   @Override
   public List<Feature<?>> inheritedFeatures() {
     List<Feature<?>> result = new LinkedList<>();
-    if (this.getExtendedConcept() != null) {
-      combineFeatures(result, this.getExtendedConcept().allFeatures());
-    }
-    for (Interface superInterface : this.getImplemented()) {
-      combineFeatures(result, superInterface.allFeatures());
+    for (Classifier<?> ancestor : this.allAncestors()) {
+      combineFeatures(result, ancestor.getFeatures());
     }
     return result;
   }

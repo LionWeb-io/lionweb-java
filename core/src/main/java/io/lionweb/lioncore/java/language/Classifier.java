@@ -51,7 +51,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
    * @return All direct or indirect/transitive ancestors.
    */
   public @Nonnull Set<Classifier<?>> allAncestors() {
-    Set<Classifier<?>> result = new HashSet<>();
+    Set<Classifier<?>> result = new LinkedHashSet<>();
     Set<Classifier<?>> ancestors = new HashSet<>(directAncestors());
 
     while (!ancestors.isEmpty()) {
