@@ -111,10 +111,10 @@ public class Annotation extends Classifier<Annotation> {
   public List<Feature<?>> inheritedFeatures() {
     List<Feature<?>> result = new LinkedList<>();
     if (this.getExtendedAnnotation() != null) {
-      result.addAll(this.getExtendedAnnotation().allFeatures());
+      combineFeatures(result, this.getExtendedAnnotation().allFeatures());
     }
     for (Interface superInterface : this.getImplemented()) {
-      result.addAll(superInterface.allFeatures());
+      combineFeatures(result, superInterface.allFeatures());
     }
     return result;
   }

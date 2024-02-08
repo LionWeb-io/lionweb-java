@@ -2,10 +2,7 @@ package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -118,10 +115,10 @@ public class Concept extends Classifier<Concept> {
   public List<Feature<?>> inheritedFeatures() {
     List<Feature<?>> result = new LinkedList<>();
     if (this.getExtendedConcept() != null) {
-      result.addAll(this.getExtendedConcept().allFeatures());
+      combineFeatures(result, this.getExtendedConcept().allFeatures());
     }
     for (Interface superInterface : this.getImplemented()) {
-      result.addAll(superInterface.allFeatures());
+      combineFeatures(result, superInterface.allFeatures());
     }
     return result;
   }
