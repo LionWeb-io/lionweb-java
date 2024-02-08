@@ -66,16 +66,16 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return result;
   }
 
-  public @Nonnull List<Feature> allFeatures() {
+  public @Nonnull List<Feature<?>> allFeatures() {
     // TODO Should this return features which are overriden?
     // TODO Should features be returned in a particular order?
-    List<Feature> result = new LinkedList<>();
+    List<Feature<?>> result = new LinkedList<>();
     result.addAll(this.getFeatures());
     result.addAll(this.inheritedFeatures());
     return result;
   }
 
-  public abstract @Nonnull List<Feature> inheritedFeatures();
+  public abstract @Nonnull List<Feature<?>> inheritedFeatures();
 
   public @Nonnull List<Property> allProperties() {
     return allFeatures().stream()
@@ -100,7 +100,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   // TODO should this expose an immutable list to force users to use methods on this class
   //      to modify the collection?
-  public @Nonnull List<Feature> getFeatures() {
+  public @Nonnull List<Feature<?>> getFeatures() {
     return this.getContainmentMultipleValue("features");
   }
 

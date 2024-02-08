@@ -115,8 +115,8 @@ public class Concept extends Classifier<Concept> {
 
   @Nonnull
   @Override
-  public List<Feature> inheritedFeatures() {
-    List<Feature> result = new LinkedList<>();
+  public List<Feature<?>> inheritedFeatures() {
+    List<Feature<?>> result = new LinkedList<>();
     if (this.getExtendedConcept() != null) {
       result.addAll(this.getExtendedConcept().allFeatures());
     }
