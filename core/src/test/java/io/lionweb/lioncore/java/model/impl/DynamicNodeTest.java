@@ -134,4 +134,43 @@ public class DynamicNodeTest {
     assertEquals(Arrays.asList(a1_1, a1_2), n1.getAnnotations(a1));
     assertEquals(Arrays.asList(a2_4), n1.getAnnotations(a2));
   }
+
+  @Test
+  public void getRootSimpleCases() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    DynamicNode n1 = new DynamicNode("n1", a);
+    DynamicNode n2 = new DynamicNode("n2", a);
+    DynamicNode n3 = new DynamicNode("n3", a);
+    DynamicNode n4 = new DynamicNode("n4", a);
+
+    n2.setParent(n1);
+    n3.setParent(n2);
+    n4.setParent(n3);
+
+    assertEquals(n1, n1.getRoot());
+    assertEquals(n1, n2.getRoot());
+    assertEquals(n1, n3.getRoot());
+    assertEquals(n1, n4.getRoot());
+  }
+
+  @Test
+  public void getRootCircularHierarchy() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    DynamicNode n1 = new DynamicNode("n1", a);
+    DynamicNode n2 = new DynamicNode("n2", a);
+    DynamicNode n3 = new DynamicNode("n3", a);
+    DynamicNode n4 = new DynamicNode("n4", a);
+
+    n1.setParent(n4);
+    n2.setParent(n1);
+    n3.setParent(n2);
+    n4.setParent(n3);
+
+    assertThrows(IllegalStateException.class, () -> n1.getRoot());
+    assertThrows(IllegalStateException.class, () -> n2.getRoot());
+    assertThrows(IllegalStateException.class, () -> n3.getRoot());
+    assertThrows(IllegalStateException.class, () -> n4.getRoot());
+  }
 }

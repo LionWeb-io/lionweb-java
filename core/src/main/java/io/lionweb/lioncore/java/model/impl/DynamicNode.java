@@ -25,11 +25,6 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
   }
 
   @Override
-  public Node getRoot() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Node getParent() {
     return this.parent;
   }

@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,7 +38,19 @@ public interface Node extends ClassifierInstance<Concept> {
    * the ancestor which is a root node. This method should return null only if the Node is not
    * inserted in a Model and it is therefore considered a dangling Node.
    */
-  Node getRoot();
+  default Node getRoot() {
+    List<Node> ancestors = new LinkedList<>();
+    Node curr = this;
+    while (curr != null) {
+      if (!ancestors.contains(curr)) {
+        ancestors.add(curr);
+        curr = (Node) curr.getParent();
+      } else {
+        throw new IllegalStateException("A circular hierarchy has been identified");
+      }
+    }
+    return ancestors.get(ancestors.size() - 1);
+  }
 
   /** The concept of which this Node is an instance. The Concept should not be abstract. */
   Concept getConcept();
