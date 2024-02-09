@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.Partition;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -20,7 +20,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
   }
 
   @Override
-  public Model getModel() {
+  public Partition getPartition() {
     throw new UnsupportedOperationException();
   }
 

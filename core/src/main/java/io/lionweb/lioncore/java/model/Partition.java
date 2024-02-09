@@ -13,7 +13,7 @@ import java.util.List;
  *     <p>TODO consider if the Model should have a version too
  */
 @Experimental
-public interface Model {
+public interface Partition {
   /** Return the fully qualified name associated with the model. */
   String getName();
 
@@ -25,7 +25,7 @@ public interface Model {
    *
    * <p>TODO: consider versioning of models
    */
-  List<Model> getImportedModels();
+  List<Partition> getImportedModels();
 
   /**
    * Return the list of languages used by this model. All nodes contained in the Model could use
