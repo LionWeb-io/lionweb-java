@@ -5,8 +5,8 @@ import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.Model;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -41,7 +41,7 @@ public abstract class SimpleNode implements Node {
   }
 
   @Override
-  public Model getModel() {
+  public Partition getPartition() {
     throw new UnsupportedOperationException();
   }
 

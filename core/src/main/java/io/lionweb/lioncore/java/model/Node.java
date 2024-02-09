@@ -27,10 +27,10 @@ public interface Node extends ClassifierInstance<Concept> {
   String getID();
 
   /**
-   * The Model in which the Node is contained. A Node is contained into a Model when it is a root
-   * node of that Node or if one of its ancestors is.
+   * The Partition in which the Node is contained. A Node is contained into a Partition when it is a
+   * root node of that Node or if one of its ancestors is.
    */
-  Model getModel();
+  Partition getPartition();
 
   /**
    * If a Node is a root node in a Model, this method returns the node itself. Otherwise it returns
