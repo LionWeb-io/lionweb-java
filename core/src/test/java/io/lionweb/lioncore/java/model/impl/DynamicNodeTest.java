@@ -196,6 +196,19 @@ public class DynamicNodeTest {
   }
 
   @Test
+  public void settingNullNonNullableBooleanProperty() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()));
+    DynamicNode n1 = new DynamicNode("n1", a);
+
+    assertEquals(false, n1.getPropertyValueByName("foo"));
+    // This is interpreted as "go back to default value"
+    n1.setPropertyValueByName("foo", null);
+    assertEquals(false, n1.getPropertyValueByName("foo"));
+  }
+
+  @Test
   public void settingFalseNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
@@ -215,6 +228,13 @@ public class DynamicNodeTest {
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(null, n1.getPropertyValueByName("foo"));
+    n1.setPropertyValueByName("foo", null);
+    assertEquals(null, n1.getPropertyValueByName("foo"));
+
+    // Check also what happens when we null a value that was previously not null
+    n1.setPropertyValueByName("foo", true);
+    assertEquals(true, n1.getPropertyValueByName("foo"));
+
     n1.setPropertyValueByName("foo", null);
     assertEquals(null, n1.getPropertyValueByName("foo"));
   }
