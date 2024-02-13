@@ -25,7 +25,11 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this classifier");
     }
-    return propertyValues.get(property.getID());
+    Object storedValue = propertyValues.get(property.getID());
+    if (storedValue == null && property.getType() == LionCoreBuiltins.getBoolean() && property.isRequired()) {
+      return false;
+    }
+    return storedValue;
   }
 
   @Override
@@ -35,7 +39,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException(
           "Property " + property + " is not belonging to classifier " + getClassifier());
     }
-    if (value == null || value == Boolean.FALSE) {
+    if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
       // DynamicNode can be
       // simplified
