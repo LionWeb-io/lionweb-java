@@ -3,10 +3,7 @@ package io.lionweb.lioncore.java.model.impl;
 import static org.junit.Assert.*;
 
 import com.google.gson.JsonArray;
-import io.lionweb.lioncore.java.language.Annotation;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
 import java.util.Arrays;
@@ -172,5 +169,65 @@ public class DynamicNodeTest {
     assertThrows(IllegalStateException.class, () -> n2.getRoot());
     assertThrows(IllegalStateException.class, () -> n3.getRoot());
     assertThrows(IllegalStateException.class, () -> n4.getRoot());
+  }
+
+  @Test
+  public void settingFalseNonNullableBooleanProperty() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()));
+    DynamicNode n1 = new DynamicNode("n1", a);
+
+    assertEquals(false, n1.getPropertyValueByName("foo"));
+    n1.setPropertyValueByName("foo", false);
+    assertEquals(false, n1.getPropertyValueByName("foo"));
+  }
+
+  @Test
+  public void settingTrueNonNullableBooleanProperty() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()));
+    DynamicNode n1 = new DynamicNode("n1", a);
+
+    assertEquals(false, n1.getPropertyValueByName("foo"));
+    n1.setPropertyValueByName("foo", true);
+    assertEquals(true, n1.getPropertyValueByName("foo"));
+  }
+
+  @Test
+  public void settingFalseNullableBooleanProperty() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()));
+    DynamicNode n1 = new DynamicNode("n1", a);
+
+    assertEquals(null, n1.getPropertyValueByName("foo"));
+    n1.setPropertyValueByName("foo", false);
+    assertEquals(false, n1.getPropertyValueByName("foo"));
+  }
+
+  @Test
+  public void settingNullNullableBooleanProperty() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()));
+    DynamicNode n1 = new DynamicNode("n1", a);
+
+    assertEquals(null, n1.getPropertyValueByName("foo"));
+    n1.setPropertyValueByName("foo", null);
+    assertEquals(null, n1.getPropertyValueByName("foo"));
+  }
+
+  @Test
+  public void settingTrueNullableBooleanProperty() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()));
+    DynamicNode n1 = new DynamicNode("n1", a);
+
+    assertEquals(null, n1.getPropertyValueByName("foo"));
+    n1.setPropertyValueByName("foo", true);
+    assertEquals(true, n1.getPropertyValueByName("foo"));
   }
 }
