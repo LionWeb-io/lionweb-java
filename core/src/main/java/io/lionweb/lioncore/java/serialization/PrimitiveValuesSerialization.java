@@ -35,6 +35,10 @@ public class PrimitiveValuesSerialization {
 
   public interface PrimitiveDeserializer<V> {
     V deserialize(String serializedValue);
+
+    default V deserialize(String serializedValue, boolean isRequired) {
+      return deserialize(serializedValue);
+    }
   }
 
   public interface PrimitiveValueSerializerAndDeserializer<V>
@@ -56,7 +60,23 @@ public class PrimitiveValuesSerialization {
   }
 
   public void registerLionBuiltinsPrimitiveSerializersAndDeserializers() {
-    primitiveDeserializers.put(LionCoreBuiltins.getBoolean().getID(), Boolean::parseBoolean);
+    primitiveDeserializers.put(
+        LionCoreBuiltins.getBoolean().getID(),
+        new PrimitiveDeserializer<Boolean>() {
+
+          @Override
+          public Boolean deserialize(String serializedValue) {
+            throw new UnsupportedOperationException();
+          }
+
+          @Override
+          public Boolean deserialize(String serializedValue, boolean isRequired) {
+            if (!isRequired && serializedValue == null) {
+              return null;
+            }
+            return Boolean.parseBoolean(serializedValue);
+          }
+        });
     primitiveDeserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
     primitiveDeserializers.put(
         LionCoreBuiltins.getJSON().getID(),
@@ -90,10 +110,10 @@ public class PrimitiveValuesSerialization {
         (PrimitiveSerializer<Integer>) value -> value.toString());
   }
 
-  public Object deserialize(DataType dataType, String serializedValue) {
+  public Object deserialize(DataType dataType, String serializedValue, boolean isRequired) {
     String dataTypeID = dataType.getID();
     if (primitiveDeserializers.containsKey(dataTypeID)) {
-      return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue);
+      return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue, isRequired);
     } else if (enumerationsByID.containsKey(dataTypeID)) {
       if (serializedValue == null) {
         return null;

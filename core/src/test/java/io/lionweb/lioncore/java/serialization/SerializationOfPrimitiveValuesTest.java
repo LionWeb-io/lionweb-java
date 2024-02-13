@@ -221,6 +221,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
   @Test
   public void deserializeString() {
     MyNodeWithProperties node = new MyNodeWithProperties("n1");
+    assertEquals(null, node.getP1());
     node.setP3("qwerty");
 
     JsonObject serialized =
@@ -357,6 +358,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
   @Test
   public void deserializeInteger() {
     MyNodeWithProperties node = new MyNodeWithProperties("n1");
+    node.setP1(false);
     node.setP2(2904);
 
     JsonObject serialized =
@@ -379,7 +381,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"version\": \"1\",\n"
                     + "            \"key\": \"p1\"\n"
                     + "          },\n"
-                    + "          \"value\": null\n"
+                    + "          \"value\": \"false\"\n"
                     + "        },\n"
                     + "        {\n"
                     + "          \"property\": {\n"
@@ -500,6 +502,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonArray ja = new JsonArray();
     ja.add(1);
     ja.add("foo");
+    assertEquals(null, node.getP1());
     node.setP4(ja);
 
     JsonObject serialized =

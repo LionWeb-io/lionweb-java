@@ -535,7 +535,9 @@ public class JsonSerialization {
                       + serializedClassifierInstance);
               Object deserializedValue =
                   primitiveValuesSerialization.deserialize(
-                      property.getType(), serializedPropertyValue.getValue());
+                      property.getType(),
+                      serializedPropertyValue.getValue(),
+                      property.isRequired());
               propertiesValues.put(property, deserializedValue);
             });
     ClassifierInstance<?> classifierInstance =
