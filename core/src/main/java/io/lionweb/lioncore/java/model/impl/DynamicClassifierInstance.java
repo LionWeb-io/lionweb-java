@@ -26,7 +26,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Property not belonging to this classifier");
     }
     Object storedValue = propertyValues.get(property.getID());
-    if (storedValue == null && property.getType() == LionCoreBuiltins.getBoolean() && property.isRequired()) {
+    if (storedValue == null
+        && property.getType() == LionCoreBuiltins.getBoolean()
+        && property.isRequired()) {
       return false;
     }
     return storedValue;
