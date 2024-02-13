@@ -33,8 +33,13 @@ public class MyNodeWithProperties extends DynamicNode {
     super(id, CONCEPT);
   }
 
-  public boolean getP1() {
-    return (boolean) this.getPropertyValueByName("p1");
+  public Boolean getP1() {
+    Object value = this.getPropertyValueByName("p1");
+    if (value == null) {
+      return null;
+    } else {
+      return (Boolean) value;
+    }
   }
 
   public int getP2() {
