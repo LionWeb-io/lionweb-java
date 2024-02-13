@@ -34,8 +34,7 @@ public class MyNodeWithProperties extends DynamicNode {
   }
 
   public Boolean getP1() {
-    Object value = this.getPropertyValueByName("p1");
-    return value == null ? null : (Boolean) value;
+    return (Boolean) this.getPropertyValueByName("p1");
   }
 
   public int getP2() {
