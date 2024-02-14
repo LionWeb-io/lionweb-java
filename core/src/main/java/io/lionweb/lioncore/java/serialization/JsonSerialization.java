@@ -377,7 +377,10 @@ public class JsonSerialization {
   // Deserialization - Private
   //
 
-  private String serializePropertyValue(DataType dataType, Object value) {
+  private String serializePropertyValue(@Nonnull DataType dataType, Object value) {
+    Objects.requireNonNull(dataType == null, "cannot serialize property when the dataType is null");
+    Objects.requireNonNull(
+        dataType.getID() == null, "cannot serialize property when the dataType.ID is null");
     if (value == null) {
       return null;
     }

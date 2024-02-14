@@ -7,6 +7,8 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.impl.DynamicEnumerationValue;
 import java.util.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This class is responsible for serialization and deserializing primitive values, based on the type
@@ -140,7 +142,8 @@ public class PrimitiveValuesSerialization {
     }
   }
 
-  public String serialize(String primitiveTypeID, Object value) {
+  public String serialize(@Nonnull String primitiveTypeID, @Nullable Object value) {
+    Objects.requireNonNull(primitiveTypeID, "The primitiveTypeID should not be null");
     if (primitiveSerializers.containsKey(primitiveTypeID)) {
       return ((PrimitiveSerializer<Object>) primitiveSerializers.get(primitiveTypeID))
           .serialize(value);
