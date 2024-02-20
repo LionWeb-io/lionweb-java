@@ -22,16 +22,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * When deserializing a tree, we either extract an entire partitions (and perhaps all the referred
- * partitions) or we will get references to nodes (for example, parents or ancestors) outside of the
- * scope of the tree extracted. This policy specifies what we do with such references.
- */
-enum UnknownParentPolicy {
-  NULL_REFERENCES,
-  THROW_ERROR
-}
-
-/**
  * This class is responsible for deserializing models.
  *
  * <p>The deserialization of each node _requires_ the deserializer to be able to resolve the Concept
@@ -145,11 +135,11 @@ public class JsonSerialization {
     primitiveValuesSerialization.enableDynamicNodes();
   }
 
-  public @Nonnull UnknownParentPolicy getUnknownNodePolicy() {
+  public @Nonnull UnknownParentPolicy getUnknownParentPolicy() {
     return this.unknownParentPolicy;
   }
 
-  public void setUnknownNodePolicy(@Nonnull UnknownParentPolicy unknownParentPolicy) {
+  public void setUnknownParentPolicy(@Nonnull UnknownParentPolicy unknownParentPolicy) {
     Objects.requireNonNull(unknownParentPolicy);
     this.unknownParentPolicy = unknownParentPolicy;
   }
