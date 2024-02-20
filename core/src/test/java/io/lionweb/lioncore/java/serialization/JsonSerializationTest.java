@@ -1,8 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import com.google.gson.*;
 import io.lionweb.lioncore.java.language.*;
@@ -216,7 +215,7 @@ public class JsonSerializationTest extends SerializationTest {
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
-    assertEquals(1, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
+    assertEquals(2, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
     prepareDeserializationOfSimpleMath(js);
     List<Sum> deserialized =
@@ -563,5 +562,32 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         Arrays.asList(deserialized.get(1), deserialized.get(2), deserialized.get(3)),
         deserialized.get(0).getAnnotations());
+  }
+
+  @Test
+  public void serializationIncludeBuiltinsWhenUsedInProperties() {
+    Language l = new Language("l", "l", "l", "1");
+    Concept c = new Concept(l, "c", "c", "c");
+    c.addFeature(Property.createRequired("foo", LionCoreBuiltins.getString()));
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    n1.setPropertyValueByName("foo", "abc");
+
+    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
+
+    assertEquals(2, serializedChunk.getLanguages().size());
+    assertSerializedChunkContainsLanguage(serializedChunk, l);
+    assertSerializedChunkContainsLanguage(serializedChunk, LionCoreBuiltins.getInstance());
+  }
+
+  private void assertSerializedChunkContainsLanguage(
+      SerializedChunk serializedChunk, Language language) {
+    assertTrue(
+        serializedChunk.getLanguages().stream()
+            .anyMatch(
+                entry ->
+                    entry.getKey().equals(language.getKey())
+                        && entry.getVersion().equals(language.getVersion())));
   }
 }
