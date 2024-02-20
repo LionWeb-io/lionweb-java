@@ -550,7 +550,8 @@ public class JsonSerializationTest extends SerializationTest {
     SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
-    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationBlock(serializedChunk);
+    List<ClassifierInstance<?>> deserialized =
+        hjs.deserializeSerializationBlock(serializedChunk, false);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(a1_1, deserialized.get(1));
     assertEquals(deserialized.get(0), deserialized.get(1).getParent());
@@ -589,5 +590,32 @@ public class JsonSerializationTest extends SerializationTest {
                 entry ->
                     entry.getKey().equals(language.getKey())
                         && entry.getVersion().equals(language.getVersion())));
+  }
+
+  @Test(expected = DeserializationException.class)
+  public void deserializePartialTreeFailsByDefault() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    InputStream languageIs =
+        this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
+    Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
+    js.registerLanguage(propertiesLanguage);
+    InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
+
+    js.enableDynamicNodes();
+    List<Node> nodes = js.deserializeToNodes(is);
+  }
+
+  @Test
+  public void deserializePartialTreeSucceedsWithThePartialTreeFlag() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    InputStream languageIs =
+        this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
+    Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
+    js.registerLanguage(propertiesLanguage);
+    InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
+
+    js.enableDynamicNodes();
+    List<Node> nodes = js.deserializeToNodes(is, true);
+    assertEquals(4, nodes.size());
   }
 }

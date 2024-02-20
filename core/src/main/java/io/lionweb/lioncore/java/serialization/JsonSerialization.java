@@ -361,34 +361,57 @@ public class JsonSerialization {
   //
 
   public List<Node> deserializeToNodes(File file) throws FileNotFoundException {
-    return deserializeToNodes(new FileInputStream(file));
+    return deserializeToNodes(file, false);
+  }
+
+  public List<Node> deserializeToNodes(File file, boolean allowPartialTrees)
+      throws FileNotFoundException {
+    return deserializeToNodes(new FileInputStream(file), allowPartialTrees);
   }
 
   public List<Node> deserializeToNodes(JsonElement jsonElement) {
-    return deserializeToClassifierInstances(jsonElement).stream()
+    return deserializeToNodes(jsonElement, false);
+  }
+
+  public List<Node> deserializeToNodes(JsonElement jsonElement, boolean allowPartialTrees) {
+    return deserializeToClassifierInstances(jsonElement, allowPartialTrees).stream()
         .filter(ci -> ci instanceof Node)
         .map(ci -> (Node) ci)
         .collect(Collectors.toList());
   }
 
-  public List<ClassifierInstance<?>> deserializeToClassifierInstances(JsonElement jsonElement) {
+  public List<ClassifierInstance<?>> deserializeToClassifierInstances(
+      JsonElement jsonElement, boolean allowPartialTrees) {
     SerializedChunk serializationBlock =
         new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
-    return deserializeSerializationBlock(serializationBlock);
+    return deserializeSerializationBlock(serializationBlock, allowPartialTrees);
   }
 
   public List<Node> deserializeToNodes(URL url) throws IOException {
+    return deserializeToNodes(url, false);
+  }
+
+  public List<Node> deserializeToNodes(URL url, boolean allowPartialTrees) throws IOException {
     String content = NetworkUtils.getStringFromUrl(url);
-    return deserializeToNodes(content);
+    return deserializeToNodes(content, allowPartialTrees);
   }
 
   public List<Node> deserializeToNodes(String json) {
-    return deserializeToNodes(JsonParser.parseString(json));
+    return deserializeToNodes(json, false);
+  }
+
+  public List<Node> deserializeToNodes(String json, boolean allowPartialTrees) {
+    return deserializeToNodes(JsonParser.parseString(json), allowPartialTrees);
   }
 
   public List<Node> deserializeToNodes(InputStream inputStream) {
-    return deserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
+    return deserializeToNodes(inputStream, false);
+  }
+
+  public List<Node> deserializeToNodes(InputStream inputStream, boolean allowPartialTrees) {
+    return deserializeToNodes(
+        JsonParser.parseReader(new InputStreamReader(inputStream)), allowPartialTrees);
   }
 
   //
@@ -417,7 +440,7 @@ public class JsonSerialization {
    * or in other words that a parent never precedes its children.
    */
   private List<SerializedClassifierInstance> sortLeavesFirst(
-      List<SerializedClassifierInstance> originalList) {
+      List<SerializedClassifierInstance> originalList, boolean allowPartialTrees) {
     List<SerializedClassifierInstance> sortedList = new ArrayList<>();
     List<SerializedClassifierInstance> nodesToSort = new ArrayList<>(originalList);
     // We create the list going from the roots, to their children and so on, and then we will revert
@@ -429,6 +452,23 @@ public class JsonSerialization {
     // the list)
     nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
     nodesToSort.removeAll(sortedList);
+
+    if (allowPartialTrees) {
+      // Let's find all the IDs of nodes present here. The nodes with parents not present here are
+      // effectively
+      // treated as roots and their parent will be set to null, as we cannot retrieve them or set
+      // them (until we
+      // decide to provide some sort of NodeResolver)
+      Set<String> knownIDs =
+          originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
+      originalList.stream()
+          .filter(ci -> !knownIDs.contains(ci.getParentNodeID()))
+          .forEach(
+              effectivelyRoot -> {
+                sortedList.add(effectivelyRoot);
+                nodesToSort.remove(effectivelyRoot);
+              });
+    }
 
     // We can start by putting at the start all the elements which either have no parent,
     // or had a parent already added to the list
@@ -462,16 +502,17 @@ public class JsonSerialization {
   }
 
   public List<ClassifierInstance<?>> deserializeSerializationBlock(
-      SerializedChunk serializationBlock) {
-    return deserializeClassifierInstances(serializationBlock.getClassifierInstances());
+      SerializedChunk serializationBlock, boolean allowPartialTrees) {
+    return deserializeClassifierInstances(
+        serializationBlock.getClassifierInstances(), allowPartialTrees);
   }
 
   private List<ClassifierInstance<?>> deserializeClassifierInstances(
-      List<SerializedClassifierInstance> serializedClassifierInstances) {
+      List<SerializedClassifierInstance> serializedClassifierInstances, boolean allowPartialTrees) {
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
     List<SerializedClassifierInstance> sortedSerializedClassifierInstances =
-        sortLeavesFirst(serializedClassifierInstances);
+        sortLeavesFirst(serializedClassifierInstances, allowPartialTrees);
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
