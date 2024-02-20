@@ -31,7 +31,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     assertEquals("2023.1", serializedChunk.getSerializationFormatVersion());
 
-    assertEquals(1, serializedChunk.getLanguages().size());
+    assertEquals(2, serializedChunk.getLanguages().size());
     Assert.assertEquals(
         new UsedLanguage("LionCore-M3", "2023.1"),
         serializedChunk.getLanguages().iterator().next());

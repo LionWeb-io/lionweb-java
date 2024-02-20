@@ -142,15 +142,15 @@ public class JsonSerialization {
   }
 
   public SerializedChunk serializeNodesToSerializationBlock(List<Node> nodes) {
-    SerializedChunk serializationBlock = new SerializedChunk();
-    serializationBlock.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
+    SerializedChunk serializedChunk = new SerializedChunk();
+    serializedChunk.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
     for (Node node : nodes) {
       Objects.requireNonNull(node, "nodes should not contain null values");
-      serializationBlock.addClassifierInstance(serializeNode(node));
+      serializedChunk.addClassifierInstance(serializeNode(node));
       node.getAnnotations()
           .forEach(
               annotationInstance -> {
-                serializationBlock.addClassifierInstance(
+                serializedChunk.addClassifierInstance(
                     serializeAnnotationInstance(annotationInstance));
               });
       Objects.requireNonNull(
@@ -160,13 +160,30 @@ public class JsonSerialization {
           "A Concept should be part of a Language in order to be serialized. Concept "
               + node.getConcept()
               + " is not");
-      registerLanguage(node.getConcept().getLanguage());
-      UsedLanguage languageKeyVersion = UsedLanguage.fromLanguage(node.getConcept().getLanguage());
-      if (!serializationBlock.getLanguages().contains(languageKeyVersion)) {
-        serializationBlock.addLanguage(languageKeyVersion);
-      }
+      considerLanguageDuringSerialization(serializedChunk, node.getConcept().getLanguage());
+      node.getConcept()
+          .allFeatures()
+          .forEach(
+              f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
+      node.getConcept()
+          .allProperties()
+          .forEach(
+              p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
+      node.getConcept()
+          .allLinks()
+          .forEach(
+              l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
     }
-    return serializationBlock;
+    return serializedChunk;
+  }
+
+  private void considerLanguageDuringSerialization(
+      SerializedChunk serializedChunk, Language language) {
+    registerLanguage(language);
+    UsedLanguage languageKeyVersion = UsedLanguage.fromLanguage(language);
+    if (!serializedChunk.getLanguages().contains(languageKeyVersion)) {
+      serializedChunk.addLanguage(languageKeyVersion);
+    }
   }
 
   public SerializedChunk serializeNodesToSerializationBlock(Node... nodes) {

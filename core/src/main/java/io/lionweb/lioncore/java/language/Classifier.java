@@ -99,6 +99,13 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .collect(Collectors.toList());
   }
 
+  public @Nonnull List<Link<?>> allLinks() {
+    return allFeatures().stream()
+        .filter(f -> f instanceof Link)
+        .map(f -> (Link<?>) f)
+        .collect(Collectors.toList());
+  }
+
   // TODO should this expose an immutable list to force users to use methods on this class
   //      to modify the collection?
   public @Nonnull List<Feature<?>> getFeatures() {
