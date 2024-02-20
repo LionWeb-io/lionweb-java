@@ -550,8 +550,7 @@ public class JsonSerializationTest extends SerializationTest {
     SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
-    List<ClassifierInstance<?>> deserialized =
-        hjs.deserializeSerializationBlock(serializedChunk, false);
+    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationBlock(serializedChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(a1_1, deserialized.get(1));
     assertEquals(deserialized.get(0), deserialized.get(1).getParent());
@@ -615,7 +614,8 @@ public class JsonSerializationTest extends SerializationTest {
     InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
 
     js.enableDynamicNodes();
-    List<Node> nodes = js.deserializeToNodes(is, true);
+    js.setUnknownNodePolicy(UnknownNodePolicy.NULL_REFERENCES);
+    List<Node> nodes = js.deserializeToNodes(is);
     assertEquals(4, nodes.size());
   }
 }
