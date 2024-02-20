@@ -26,7 +26,7 @@ import javax.annotation.Nullable;
  * partitions) or we will get references to nodes (for example, parents or ancestors) outside of the
  * scope of the tree extracted. This policy specifies what we do with such references.
  */
-enum UnknownNodePolicy {
+enum UnknownParentPolicy {
   NULL_REFERENCES,
   THROW_ERROR
 }
@@ -110,7 +110,7 @@ public class JsonSerialization {
 
   private final LocalClassifierInstanceResolver instanceResolver;
 
-  private UnknownNodePolicy unknownNodePolicy = UnknownNodePolicy.THROW_ERROR;
+  private UnknownParentPolicy unknownParentPolicy = UnknownParentPolicy.THROW_ERROR;
 
   private JsonSerialization() {
     // prevent public access
@@ -145,13 +145,13 @@ public class JsonSerialization {
     primitiveValuesSerialization.enableDynamicNodes();
   }
 
-  public @Nonnull UnknownNodePolicy getUnknownNodePolicy() {
-    return this.unknownNodePolicy;
+  public @Nonnull UnknownParentPolicy getUnknownNodePolicy() {
+    return this.unknownParentPolicy;
   }
 
-  public void setUnknownNodePolicy(@Nonnull UnknownNodePolicy unknownNodePolicy) {
-    Objects.requireNonNull(unknownNodePolicy);
-    this.unknownNodePolicy = unknownNodePolicy;
+  public void setUnknownNodePolicy(@Nonnull UnknownParentPolicy unknownParentPolicy) {
+    Objects.requireNonNull(unknownParentPolicy);
+    this.unknownParentPolicy = unknownParentPolicy;
   }
 
   //
@@ -451,7 +451,7 @@ public class JsonSerialization {
     nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
     nodesToSort.removeAll(sortedList);
 
-    if (unknownNodePolicy == UnknownNodePolicy.NULL_REFERENCES) {
+    if (unknownParentPolicy == UnknownParentPolicy.NULL_REFERENCES) {
       // Let's find all the IDs of nodes present here. The nodes with parents not present here are
       // effectively treated as roots and their parent will be set to null, as we cannot retrieve
       // them

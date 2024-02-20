@@ -614,7 +614,7 @@ public class JsonSerializationTest extends SerializationTest {
     InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
 
     js.enableDynamicNodes();
-    js.setUnknownNodePolicy(UnknownNodePolicy.NULL_REFERENCES);
+    js.setUnknownNodePolicy(UnknownParentPolicy.NULL_REFERENCES);
     List<Node> nodes = js.deserializeToNodes(is);
     assertEquals(4, nodes.size());
   }
