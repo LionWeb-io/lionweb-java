@@ -17,9 +17,9 @@ import java.util.stream.Collectors;
  * deserializing it.
  */
 class NodePopulator {
-  private JsonSerialization jsonSerialization;
-  private ClassifierInstanceResolver classifierInstanceResolver;
-  private DeserializationStatus deserializationStatus;
+  private final JsonSerialization jsonSerialization;
+  private final ClassifierInstanceResolver classifierInstanceResolver;
+  private final DeserializationStatus deserializationStatus;
 
   NodePopulator(
       JsonSerialization jsonSerialization,

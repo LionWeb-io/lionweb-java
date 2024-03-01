@@ -15,10 +15,10 @@ import javax.annotation.Nullable;
  * list of unserialized nodes.
  */
 class DeserializationStatus {
-  List<SerializedClassifierInstance> sortedList;
-  List<SerializedClassifierInstance> nodesToSort;
-  List<ProxyNode> proxies = new ArrayList<>();
-  private JsonSerialization jsonSerialization;
+  final List<SerializedClassifierInstance> sortedList;
+  final List<SerializedClassifierInstance> nodesToSort;
+  final List<ProxyNode> proxies = new ArrayList<>();
+  private final JsonSerialization jsonSerialization;
 
   DeserializationStatus(
       JsonSerialization jsonSerialization, List<SerializedClassifierInstance> originalList) {
