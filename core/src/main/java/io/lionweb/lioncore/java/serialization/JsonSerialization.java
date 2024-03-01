@@ -449,7 +449,10 @@ public class JsonSerialization {
   /** Create a Proxy and from now on use it to resolve instances for this node ID. */
   private ProxyNode createProxy(String nodeID) {
     if (instanceResolver.resolve(nodeID) != null) {
-      throw new IllegalStateException();
+      throw new IllegalStateException(
+          "Cannot create a Proxy for node ID "
+              + nodeID
+              + " has there is already a Classifier Instance available for such ID");
     }
     ProxyNode proxyNode = new ProxyNode(nodeID);
     instanceResolver.add(proxyNode);
