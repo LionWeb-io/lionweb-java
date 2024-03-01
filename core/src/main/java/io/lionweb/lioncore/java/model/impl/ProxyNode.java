@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.model.impl;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.*;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -13,9 +14,10 @@ import javax.annotation.Nullable;
  */
 public class ProxyNode implements Node {
 
-  private String id;
+  private @Nonnull String id;
 
-  public ProxyNode(String id) {
+  public ProxyNode(@Nonnull String id) {
+    Objects.requireNonNull(id, "The node ID of a ProxyNode should not be null");
     this.id = id;
   }
 
@@ -72,7 +74,7 @@ public class ProxyNode implements Node {
     throw cannotDoBecauseProxy();
   }
 
-  @Nullable
+  @Nonnull
   @Override
   public String getID() {
     return id;
