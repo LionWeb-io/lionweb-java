@@ -11,7 +11,6 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -21,7 +20,6 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -448,7 +446,7 @@ public class JsonSerialization {
   }
 
   /** Create a Proxy and from now on use it to resolve instances for this node ID. */
-  private ProxyNode createProxy(String nodeID) {
+  ProxyNode createProxy(String nodeID) {
     if (instanceResolver.resolve(nodeID) != null) {
       throw new IllegalStateException(
           "Cannot create a Proxy for node ID "
@@ -461,80 +459,16 @@ public class JsonSerialization {
   }
 
   /**
-   * This class is used to track the sorting operation. It is also used to track the proxies created
-   * while sorting this particular set of nodes, as the proxies created in this process will need to
-   * be returned together with the sorted list of unserialized nodes.
-   */
-  private class SortingResult {
-    List<SerializedClassifierInstance> sortedList;
-    List<SerializedClassifierInstance> nodesToSort;
-    private List<ProxyNode> proxies = new ArrayList<>();
-    private JsonSerialization jsonSerialization;
-
-    SortingResult(
-        JsonSerialization jsonSerialization, List<SerializedClassifierInstance> originalList) {
-      sortedList = new ArrayList<>();
-      nodesToSort = new ArrayList<>(originalList);
-      this.jsonSerialization = jsonSerialization;
-    }
-
-    void putNodesWithNullIDsInFront() {
-      // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
-      // just be parent of other nodes, so we put all of them at the start (so they end up at the
-      // end when we reverse the list)
-      nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
-      nodesToSort.removeAll(sortedList);
-    }
-
-    /** We place the node in the sorted list. */
-    void place(SerializedClassifierInstance node) {
-      sortedList.add(node);
-      nodesToSort.remove(node);
-    }
-
-    void reverse() {
-      Collections.reverse(sortedList);
-    }
-
-    int howManySorted() {
-      return sortedList.size();
-    }
-
-    int howManyToSort() {
-      return nodesToSort.size();
-    }
-
-    SerializedClassifierInstance getNodeToSort(int index) {
-      return nodesToSort.get(index);
-    }
-
-    Stream<SerializedClassifierInstance> streamSorted() {
-      return sortedList.stream();
-    }
-
-    private ProxyNode createProxy(String nodeID) {
-      ProxyNode proxyNode = this.jsonSerialization.createProxy(nodeID);
-      proxies.add(proxyNode);
-      return proxyNode;
-    }
-
-    @Nullable
-    ProxyNode proxyFor(String nodeID) {
-      return proxies.stream().filter(n -> n.getID().equals(nodeID)).findFirst().orElse(null);
-    }
-  }
-
-  /**
    * This method returned a sorted version of the original list, so that leaves nodes comes first,
    * or in other words that a parent never precedes its children.
    */
-  private SortingResult sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
-    SortingResult sortingResult = new SortingResult(this, originalList);
+  private DeserializationStatus sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
+    DeserializationStatus deserializationStatus = new DeserializationStatus(this, originalList);
 
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list
 
-    sortingResult.putNodesWithNullIDsInFront();
+    deserializationStatus.putNodesWithNullIDsInFront();
 
     switch (unavailableParentPolicy) {
       case NULL_REFERENCES:
@@ -546,7 +480,7 @@ public class JsonSerialization {
               originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
           originalList.stream()
               .filter(ci -> !knownIDs.contains(ci.getParentNodeID()))
-              .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
+              .forEach(effectivelyRoot -> deserializationStatus.place(effectivelyRoot));
           break;
         }
       case PROXY_NODES:
@@ -562,29 +496,29 @@ public class JsonSerialization {
           Set<String> unknownParentIDs = Sets.difference(parentIDs, knownIDs);
           originalList.stream()
               .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
-              .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
+              .forEach(effectivelyRoot -> deserializationStatus.place(effectivelyRoot));
 
-          unknownParentIDs.forEach(id -> sortingResult.createProxy(id));
+          unknownParentIDs.forEach(id -> deserializationStatus.createProxy(id));
           break;
         }
     }
 
     // We can start by putting at the start all the elements which either have no parent,
     // or had a parent already added to the list
-    while (sortingResult.howManySorted() < originalList.size()) {
-      int initialLength = sortingResult.howManySorted();
-      for (int i = 0; i < sortingResult.howManyToSort(); i++) {
-        SerializedClassifierInstance node = sortingResult.getNodeToSort(i);
+    while (deserializationStatus.howManySorted() < originalList.size()) {
+      int initialLength = deserializationStatus.howManySorted();
+      for (int i = 0; i < deserializationStatus.howManyToSort(); i++) {
+        SerializedClassifierInstance node = deserializationStatus.getNodeToSort(i);
         if (node.getParentNodeID() == null
-            || sortingResult
+            || deserializationStatus
                 .streamSorted()
                 .anyMatch(sn -> Objects.equals(sn.getID(), node.getParentNodeID()))) {
-          sortingResult.place(node);
+          deserializationStatus.place(node);
           i--;
         }
       }
-      if (initialLength == sortingResult.howManySorted()) {
-        if (sortingResult.howManySorted() == 0) {
+      if (initialLength == deserializationStatus.howManySorted()) {
+        if (deserializationStatus.howManySorted() == 0) {
           throw new DeserializationException(
               "No root found, we cannot deserialize this tree. Original list: " + originalList);
         } else {
@@ -596,8 +530,8 @@ public class JsonSerialization {
       }
     }
 
-    sortingResult.reverse();
-    return sortingResult;
+    deserializationStatus.reverse();
+    return deserializationStatus;
   }
 
   public List<ClassifierInstance<?>> deserializeSerializationBlock(
@@ -609,9 +543,9 @@ public class JsonSerialization {
       List<SerializedClassifierInstance> serializedClassifierInstances) {
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
-    SortingResult sortingResult = sortLeavesFirst(serializedClassifierInstances);
+    DeserializationStatus deserializationStatus = sortLeavesFirst(serializedClassifierInstances);
     List<SerializedClassifierInstance> sortedSerializedClassifierInstances =
-        sortingResult.sortedList;
+        deserializationStatus.sortedList;
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
@@ -638,20 +572,18 @@ public class JsonSerialization {
     ClassifierInstanceResolver classifierInstanceResolver =
         new CompositeClassifierInstanceResolver(
             new MapBasedResolver(deserializedByID), this.instanceResolver);
+    NodePopulator nodePopulator =
+        new NodePopulator(this, classifierInstanceResolver, deserializationStatus);
     serializedClassifierInstances.stream()
         .forEach(
             node -> {
-              populateClassifierInstance(
-                  node,
-                  serializedToInstanceMap.get(node),
-                  classifierInstanceResolver,
-                  sortingResult);
+              nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
               if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
                 // For real parents, the parent is not set directly, but it is set indirectly
                 // when adding the child to the parent. For proxy nodes instead we need to set
                 // the parent explicitly
-                ProxyNode proxyParent = sortingResult.proxyFor(node.getParentNodeID());
+                ProxyNode proxyParent = deserializationStatus.proxyFor(node.getParentNodeID());
                 if (proxyParent != null) {
                   if (classifierInstance instanceof DynamicNode) {
                     ((DynamicNode) classifierInstance).setParent(proxyParent);
@@ -682,7 +614,7 @@ public class JsonSerialization {
         serializedClassifierInstances.stream()
             .map(sn -> serializedToInstanceMap.get(sn))
             .collect(Collectors.toList());
-    nodesWithOriginalSorting.addAll(sortingResult.proxies);
+    nodesWithOriginalSorting.addAll(deserializationStatus.proxies);
     return nodesWithOriginalSorting;
   }
 
@@ -743,99 +675,6 @@ public class JsonSerialization {
             });
 
     return classifierInstance;
-  }
-
-  private void populateClassifierInstance(
-      SerializedClassifierInstance serializedClassifierInstance,
-      ClassifierInstance<?> node,
-      ClassifierInstanceResolver classifierInstanceResolver,
-      SortingResult sortingResult) {
-    populateContainments(serializedClassifierInstance, node, classifierInstanceResolver);
-    populateNodeReferences(
-        serializedClassifierInstance, node, classifierInstanceResolver, sortingResult);
-  }
-
-  private void populateContainments(
-      SerializedClassifierInstance serializedClassifierInstance,
-      ClassifierInstance<?> node,
-      ClassifierInstanceResolver classifierInstanceResolver) {
-    Classifier<?> concept = node.getClassifier();
-    serializedClassifierInstance
-        .getContainments()
-        .forEach(
-            serializedContainmentValue -> {
-              Containment containment =
-                  concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
-              Objects.requireNonNull(
-                  containment,
-                  "Unable to resolve containment "
-                      + serializedContainmentValue.getMetaPointer()
-                      + " in concept "
-                      + concept);
-              Objects.requireNonNull(
-                  serializedContainmentValue.getValue(),
-                  "The containment value should not be null");
-              List<ClassifierInstance<?>> deserializedValue =
-                  serializedContainmentValue.getValue().stream()
-                      .map(childNodeID -> classifierInstanceResolver.strictlyResolve(childNodeID))
-                      .collect(Collectors.toList());
-              if (!Objects.equals(deserializedValue, node.getChildren(containment))) {
-                deserializedValue.forEach(child -> node.addChild(containment, (Node) child));
-              }
-            });
-  }
-
-  private void populateNodeReferences(
-      SerializedClassifierInstance serializedClassifierInstance,
-      ClassifierInstance<?> node,
-      ClassifierInstanceResolver classifierInstanceResolver,
-      SortingResult sortingResult) {
-    Classifier<?> concept = node.getClassifier();
-    // TODO resolve references to Nodes in different models
-    serializedClassifierInstance
-        .getReferences()
-        .forEach(
-            serializedReferenceValue -> {
-              Reference reference =
-                  concept.getReferenceByMetaPointer(serializedReferenceValue.getMetaPointer());
-              if (reference == null) {
-                throw new IllegalStateException(
-                    "Unable to solve reference "
-                        + serializedReferenceValue.getMetaPointer()
-                        + ". Concept "
-                        + concept
-                        + ". SerializedNode "
-                        + serializedClassifierInstance);
-              }
-              serializedReferenceValue
-                  .getValue()
-                  .forEach(
-                      entry -> {
-                        Node referred =
-                            (Node) classifierInstanceResolver.resolve(entry.getReference());
-                        if (entry.getReference() != null && referred == null) {
-                          switch (unavailableReferenceTargetPolicy) {
-                            case NULL_REFERENCES:
-                              referred = null;
-                              break;
-                            case PROXY_NODES:
-                              referred = sortingResult.createProxy(entry.getReference());
-                              break;
-                            case THROW_ERROR:
-                              throw new DeserializationException(
-                                  "Unable to resolve reference to "
-                                      + entry.getReference()
-                                      + " for feature "
-                                      + serializedReferenceValue.getMetaPointer());
-                            default:
-                              throw new IllegalStateException("This should not happen");
-                          }
-                        }
-                        ReferenceValue referenceValue =
-                            new ReferenceValue(referred, entry.getResolveInfo());
-                        node.addReferenceValue(reference, referenceValue);
-                      });
-            });
   }
 
   public void registerLanguage(Language language) {
