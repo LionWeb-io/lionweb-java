@@ -32,7 +32,7 @@ dependencies {
     api("org.apache.commons:commons-math3:3.6.1")
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation("com.google.guava:guava:29.0-jre")
+    implementation("com.google.guava:guava:33.0.0-jre")
 
     javadocConfig(emf.ecore)
 

@@ -111,7 +111,7 @@ public class ProxyNode implements Node {
     throw cannotDoBecauseProxy();
   }
 
-  private IllegalStateException cannotDoBecauseProxy() {
+  private CannotDoBecauseProxyException cannotDoBecauseProxy() {
     return new CannotDoBecauseProxyException(this.id);
   }
 
