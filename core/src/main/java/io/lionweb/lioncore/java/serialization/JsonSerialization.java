@@ -536,30 +536,37 @@ public class JsonSerialization {
 
     sortingResult.putNodesWithNullIDsInFront();
 
-    if (unavailableParentPolicy == UnavailableNodePolicy.NULL_REFERENCES) {
-      // Let's find all the IDs of nodes present here. The nodes with parents not present here are
-      // effectively treated as roots and their parent will be set to null, as we cannot retrieve
-      // them or set them (until we decide to provide some sort of NodeResolver)
-      Set<String> knownIDs =
-          originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
-      originalList.stream()
-          .filter(ci -> !knownIDs.contains(ci.getParentNodeID()))
-          .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
-    } else if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
-      // Let's find all the IDs of nodes present here. The nodes with parents not present here are
-      // effectively treated as roots and their parent will be set to an instance of a ProxyNode,
-      // as we cannot retrieve them or set them (until we decide to provide some sort of
-      // NodeResolver)
-      Set<String> knownIDs =
-          originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
-      Set<String> parentIDs =
-          originalList.stream().map(n -> n.getParentNodeID()).collect(Collectors.toSet());
-      Set<String> unknownParentIDs = Sets.difference(parentIDs, knownIDs);
-      originalList.stream()
-          .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
-          .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
+    switch (unavailableParentPolicy) {
+      case NULL_REFERENCES:
+        {
+          // Let's find all the IDs of nodes present here. The nodes with parents not present here
+          // are effectively treated as roots and their parent will be set to null, as we cannot
+          // retrieve them or set them (until we decide to provide some sort of NodeResolver)
+          Set<String> knownIDs =
+              originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
+          originalList.stream()
+              .filter(ci -> !knownIDs.contains(ci.getParentNodeID()))
+              .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
+          break;
+        }
+      case PROXY_NODES:
+        {
+          // Let's find all the IDs of nodes present here. The nodes with parents not present here
+          // are effectively treated as roots and their parent will be set to an instance of a
+          // ProxyNode, as we cannot retrieve them or set them (until we decide to provide some
+          // sort of NodeResolver)
+          Set<String> knownIDs =
+              originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
+          Set<String> parentIDs =
+              originalList.stream().map(n -> n.getParentNodeID()).collect(Collectors.toSet());
+          Set<String> unknownParentIDs = Sets.difference(parentIDs, knownIDs);
+          originalList.stream()
+              .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
+              .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
 
-      unknownParentIDs.forEach(id -> sortingResult.createProxy(id));
+          unknownParentIDs.forEach(id -> sortingResult.createProxy(id));
+          break;
+        }
     }
 
     // We can start by putting at the start all the elements which either have no parent,
@@ -807,21 +814,21 @@ public class JsonSerialization {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          if (unavailableReferenceTargetPolicy
-                              == UnavailableNodePolicy.NULL_REFERENCES) {
-                            referred = null;
-                          } else if (unavailableReferenceTargetPolicy
-                              == UnavailableNodePolicy.PROXY_NODES) {
-                            referred = sortingResult.createProxy(entry.getReference());
-                          } else if (unavailableReferenceTargetPolicy
-                              == UnavailableNodePolicy.THROW_ERROR) {
-                            throw new DeserializationException(
-                                "Unable to resolve reference to "
-                                    + entry.getReference()
-                                    + " for feature "
-                                    + serializedReferenceValue.getMetaPointer());
-                          } else {
-                            throw new IllegalStateException("This should not happen");
+                          switch (unavailableReferenceTargetPolicy) {
+                            case NULL_REFERENCES:
+                              referred = null;
+                              break;
+                            case PROXY_NODES:
+                              referred = sortingResult.createProxy(entry.getReference());
+                              break;
+                            case THROW_ERROR:
+                              throw new DeserializationException(
+                                  "Unable to resolve reference to "
+                                      + entry.getReference()
+                                      + " for feature "
+                                      + serializedReferenceValue.getMetaPointer());
+                            default:
+                              throw new IllegalStateException("This should not happen");
                           }
                         }
                         ReferenceValue referenceValue =
