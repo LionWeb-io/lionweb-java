@@ -103,8 +103,6 @@ class NodePopulator {
                                       + entry.getReference()
                                       + " for feature "
                                       + serializedReferenceValue.getMetaPointer());
-                            default:
-                              throw new IllegalStateException("This should not happen");
                           }
                         }
                         ReferenceValue referenceValue =
