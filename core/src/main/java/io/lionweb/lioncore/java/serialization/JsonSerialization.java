@@ -11,6 +11,9 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance;
+import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.utils.NetworkUtils;
@@ -18,6 +21,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -100,7 +104,17 @@ public class JsonSerialization {
 
   private final LocalClassifierInstanceResolver instanceResolver;
 
-  private UnknownParentPolicy unknownParentPolicy = UnknownParentPolicy.THROW_ERROR;
+  /**
+   * This guides what we do when deserializing a sub-tree and not being able to resolve the parent.
+   */
+  private UnavailableNodePolicy unavailableParentPolicy = UnavailableNodePolicy.THROW_ERROR;
+
+  /**
+   * This guides what we do when deserializing a sub-tree and not being able to resolve a reference
+   * target.
+   */
+  private UnavailableNodePolicy unavailableReferenceTargetPolicy =
+      UnavailableNodePolicy.THROW_ERROR;
 
   private JsonSerialization() {
     // prevent public access
@@ -135,13 +149,23 @@ public class JsonSerialization {
     primitiveValuesSerialization.enableDynamicNodes();
   }
 
-  public @Nonnull UnknownParentPolicy getUnknownParentPolicy() {
-    return this.unknownParentPolicy;
+  public @Nonnull UnavailableNodePolicy getUnavailableParentPolicy() {
+    return this.unavailableParentPolicy;
   }
 
-  public void setUnknownParentPolicy(@Nonnull UnknownParentPolicy unknownParentPolicy) {
-    Objects.requireNonNull(unknownParentPolicy);
-    this.unknownParentPolicy = unknownParentPolicy;
+  public @Nonnull UnavailableNodePolicy getUnavailableReferenceTargetPolicy() {
+    return this.unavailableReferenceTargetPolicy;
+  }
+
+  public void setUnavailableParentPolicy(@Nonnull UnavailableNodePolicy unavailableParentPolicy) {
+    Objects.requireNonNull(unavailableParentPolicy);
+    this.unavailableParentPolicy = unavailableParentPolicy;
+  }
+
+  public void setUnavailableReferenceTargetPolicy(
+      @Nonnull UnavailableNodePolicy unavailableReferenceTargetPolicy) {
+    Objects.requireNonNull(unavailableReferenceTargetPolicy);
+    this.unavailableReferenceTargetPolicy = unavailableReferenceTargetPolicy;
   }
 
   //
@@ -423,56 +447,119 @@ public class JsonSerialization {
     }
   }
 
+  private class SortingResult {
+    List<SerializedClassifierInstance> sortedList;
+    List<SerializedClassifierInstance> nodesToSort;
+    List<ProxyNode> proxies = new ArrayList<>();
+
+    SortingResult(List<SerializedClassifierInstance> originalList) {
+      sortedList = new ArrayList<>();
+      nodesToSort = new ArrayList<>(originalList);
+    }
+
+    void putNodesWithNullIDsInFront() {
+      // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
+      // just
+      // be parent of other nodes, so we put all of them at the start (so they end up at the end
+      // when
+      // we reverse
+      // the list)
+      nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
+      nodesToSort.removeAll(sortedList);
+    }
+
+    void place(SerializedClassifierInstance node) {
+      sortedList.add(node);
+      nodesToSort.remove(node);
+    }
+
+    void reverse() {
+      Collections.reverse(sortedList);
+    }
+
+    int howManySorted() {
+      return sortedList.size();
+    }
+
+    int howManyToSort() {
+      return nodesToSort.size();
+    }
+
+    SerializedClassifierInstance getNodeToSort(int index) {
+      return nodesToSort.get(index);
+    }
+
+    Stream<SerializedClassifierInstance> streamSorted() {
+      return sortedList.stream();
+    }
+
+    void createProxy(String id) {
+      proxies.add(new ProxyNode(id));
+    }
+
+    @Nullable
+    ProxyNode proxyFor(String nodeID) {
+      return proxies.stream().filter(n -> n.getID().equals(nodeID)).findFirst().orElse(null);
+    }
+  }
+
   /**
    * This method returned a sorted version of the original list, so that leaves nodes comes first,
    * or in other words that a parent never precedes its children.
    */
-  private List<SerializedClassifierInstance> sortLeavesFirst(
-      List<SerializedClassifierInstance> originalList) {
-    List<SerializedClassifierInstance> sortedList = new ArrayList<>();
-    List<SerializedClassifierInstance> nodesToSort = new ArrayList<>(originalList);
+  private SortingResult sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
+    SortingResult sortingResult = new SortingResult(originalList);
+
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list
 
-    // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can just
-    // be parent of other nodes, so we put all of them at the start (so they end up at the end when
-    // we reverse
-    // the list)
-    nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
-    nodesToSort.removeAll(sortedList);
+    sortingResult.putNodesWithNullIDsInFront();
 
-    if (unknownParentPolicy == UnknownParentPolicy.NULL_REFERENCES) {
+    if (unavailableParentPolicy == UnavailableNodePolicy.NULL_REFERENCES) {
       // Let's find all the IDs of nodes present here. The nodes with parents not present here are
       // effectively treated as roots and their parent will be set to null, as we cannot retrieve
-      // them
-      // or set them (until we decide to provide some sort of NodeResolver)
+      // them or set them (until we decide to provide some sort of NodeResolver)
       Set<String> knownIDs =
           originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
       originalList.stream()
           .filter(ci -> !knownIDs.contains(ci.getParentNodeID()))
-          .forEach(
-              effectivelyRoot -> {
-                sortedList.add(effectivelyRoot);
-                nodesToSort.remove(effectivelyRoot);
-              });
+          .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
+    } else if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
+      // Let's find all the IDs of nodes present here. The nodes with parents not present here are
+      // effectively treated as roots and their parent will be set to an instance of a ProxyNode,
+      // as we cannot retrieve them or set them (until we decide to provide some sort of
+      // NodeResolver)
+      Set<String> knownIDs =
+          originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
+      Set<String> unknownParentIDs =
+          originalList.stream()
+              .map(n -> n.getParentNodeID())
+              .distinct()
+              .filter(id -> !knownIDs.contains(id))
+              .collect(Collectors.toSet());
+      originalList.stream()
+          .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
+          .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
+
+      unknownParentIDs.forEach(id -> sortingResult.createProxy(id));
     }
 
     // We can start by putting at the start all the elements which either have no parent,
     // or had a parent already added to the list
-    while (sortedList.size() < originalList.size()) {
-      int initialLength = sortedList.size();
-      for (int i = 0; i < nodesToSort.size(); i++) {
-        SerializedClassifierInstance node = nodesToSort.get(i);
+    while (sortingResult.howManySorted() < originalList.size()) {
+      int initialLength = sortingResult.howManySorted();
+      for (int i = 0; i < sortingResult.howManyToSort(); i++) {
+        SerializedClassifierInstance node = sortingResult.getNodeToSort(i);
         if (node.getParentNodeID() == null
-            || sortedList.stream()
+            || sortingResult
+                .streamSorted()
                 .anyMatch(sn -> Objects.equals(sn.getID(), node.getParentNodeID()))) {
-          sortedList.add(node);
-          nodesToSort.remove(i);
+          sortingResult.place(node);
           i--;
         }
       }
-      if (initialLength == sortedList.size()) {
-        if (sortedList.isEmpty()) {
+      if (initialLength == sortingResult.howManySorted()) {
+        if (sortingResult.howManySorted() == 0) {
           throw new DeserializationException(
               "No root found, we cannot deserialize this tree. Original list: " + originalList);
         } else {
@@ -484,8 +571,8 @@ public class JsonSerialization {
       }
     }
 
-    Collections.reverse(sortedList);
-    return sortedList;
+    sortingResult.reverse();
+    return sortingResult;
   }
 
   public List<ClassifierInstance<?>> deserializeSerializationBlock(
@@ -497,8 +584,9 @@ public class JsonSerialization {
       List<SerializedClassifierInstance> serializedClassifierInstances) {
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
+    SortingResult sortingResult = sortLeavesFirst(serializedClassifierInstances);
     List<SerializedClassifierInstance> sortedSerializedClassifierInstances =
-        sortLeavesFirst(serializedClassifierInstances);
+        sortingResult.sortedList;
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
@@ -531,6 +619,20 @@ public class JsonSerialization {
               populateClassifierInstance(
                   node, serializedToInstanceMap.get(node), classifierInstanceResolver);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
+              if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
+                // For real parents, the parent is not set directly, but it is set indirectly
+                // when adding the child to the parent. For proxy nodes instead we need to set the parent
+                // explicitly
+                ProxyNode proxyParent = sortingResult.proxyFor(node.getParentNodeID());
+                if (proxyParent != null) {
+                  if (classifierInstance instanceof DynamicNode) {
+                    ((DynamicNode)classifierInstance).setParent(proxyParent);
+                  } else {
+                    throw new UnsupportedOperationException("We do not know how to set explicitly the parent of "
+                            + classifierInstance);
+                  }
+                }
+              }
               if (classifierInstance instanceof AnnotationInstance) {
                 if (node == null) {
                   throw new IllegalStateException(
@@ -552,6 +654,7 @@ public class JsonSerialization {
         serializedClassifierInstances.stream()
             .map(sn -> serializedToInstanceMap.get(sn))
             .collect(Collectors.toList());
+    nodesWithOriginalSorting.addAll(sortingResult.proxies);
     return nodesWithOriginalSorting;
   }
 
