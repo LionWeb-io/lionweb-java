@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
+import com.google.common.collect.Sets;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -551,12 +552,9 @@ public class JsonSerialization {
       // NodeResolver)
       Set<String> knownIDs =
           originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
-      Set<String> unknownParentIDs =
-          originalList.stream()
-              .map(n -> n.getParentNodeID())
-              .distinct()
-              .filter(id -> !knownIDs.contains(id))
-              .collect(Collectors.toSet());
+      Set<String> parentIDs =
+          originalList.stream().map(n -> n.getParentNodeID()).collect(Collectors.toSet());
+      Set<String> unknownParentIDs = Sets.difference(parentIDs, knownIDs);
       originalList.stream()
           .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
           .forEach(effectivelyRoot -> sortingResult.place(effectivelyRoot));
