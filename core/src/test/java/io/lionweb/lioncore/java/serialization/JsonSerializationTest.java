@@ -11,6 +11,7 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
 import io.lionweb.lioncore.java.serialization.refsmm.RefNode;
@@ -605,7 +606,7 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void deserializePartialTreeSucceedsWithThePartialTreeFlag() {
+  public void deserializePartialTreeSucceedsWithNullReferencesUnavailableNodePolicy() {
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
@@ -614,8 +615,31 @@ public class JsonSerializationTest extends SerializationTest {
     InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
 
     js.enableDynamicNodes();
-    js.setUnknownParentPolicy(UnknownParentPolicy.NULL_REFERENCES);
+    js.setUnavailableParentPolicy(UnavailableNodePolicy.NULL_REFERENCES);
     List<Node> nodes = js.deserializeToNodes(is);
     assertEquals(4, nodes.size());
+  }
+
+  @Test
+  public void deserializePartialTreeSucceedsWithProxyNodesUnavailableNodePolicy() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    InputStream languageIs =
+        this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
+    Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
+    js.registerLanguage(propertiesLanguage);
+    InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
+
+    js.enableDynamicNodes();
+    js.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
+    List<Node> nodes = js.deserializeToNodes(is);
+    assertEquals(5, nodes.size());
+
+    Node pp1 = nodes.stream().filter(n -> n.getID().equals("pp1")).findFirst().get();
+    assertEquals(true, pp1 instanceof ProxyNode);
+
+    Node pf1 = nodes.stream().filter(n -> n.getID().equals("pf1")).findFirst().get();
+    assertEquals(pp1, pf1.getParent());
+
+    nodes.stream().filter(n -> n != pp1).allMatch(n -> !(n instanceof ProxyNode));
   }
 }
