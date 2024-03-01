@@ -110,7 +110,21 @@ public class ProxyNode implements Node {
   }
 
   private IllegalStateException cannotDoBecauseProxy() {
-    return new IllegalStateException(
-        "Replace the proxy node with a real node to perform this operation");
+    return new CannotDoBecauseProxyException(this.id);
+  }
+
+  /**
+   * Exception thrown when invoking most methods of a ProxyNode.
+   */
+  public class CannotDoBecauseProxyException extends IllegalStateException {
+    private @Nonnull String nodeID;
+
+    private CannotDoBecauseProxyException(@Nonnull String nodeID) {
+      super("Replace the proxy node with a real node to perform this operation (nodeID: " + nodeID + ")");
+    }
+
+    public @Nonnull String getNodeID() {
+      return this.nodeID;
+    }
   }
 }
