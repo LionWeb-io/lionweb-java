@@ -11,7 +11,6 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -447,14 +446,26 @@ public class JsonSerialization {
     }
   }
 
+  private ProxyNode createProxy(String nodeID) {
+    if (instanceResolver.resolve(nodeID) != null) {
+      throw new IllegalStateException();
+    }
+    ProxyNode proxyNode = new ProxyNode(nodeID);
+    instanceResolver.add(proxyNode);
+    return proxyNode;
+  }
+
   private class SortingResult {
     List<SerializedClassifierInstance> sortedList;
     List<SerializedClassifierInstance> nodesToSort;
-    List<ProxyNode> proxies = new ArrayList<>();
+    private List<ProxyNode> proxies = new ArrayList<>();
+    private JsonSerialization jsonSerialization;
 
-    SortingResult(List<SerializedClassifierInstance> originalList) {
+    SortingResult(
+        JsonSerialization jsonSerialization, List<SerializedClassifierInstance> originalList) {
       sortedList = new ArrayList<>();
       nodesToSort = new ArrayList<>(originalList);
+      this.jsonSerialization = jsonSerialization;
     }
 
     void putNodesWithNullIDsInFront() {
@@ -493,8 +504,10 @@ public class JsonSerialization {
       return sortedList.stream();
     }
 
-    void createProxy(String id) {
-      proxies.add(new ProxyNode(id));
+    private ProxyNode createProxy(String nodeID) {
+      ProxyNode proxyNode = this.jsonSerialization.createProxy(nodeID);
+      proxies.add(proxyNode);
+      return proxyNode;
     }
 
     @Nullable
@@ -508,7 +521,7 @@ public class JsonSerialization {
    * or in other words that a parent never precedes its children.
    */
   private SortingResult sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
-    SortingResult sortingResult = new SortingResult(originalList);
+    SortingResult sortingResult = new SortingResult(this, originalList);
 
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list
@@ -617,19 +630,23 @@ public class JsonSerialization {
         .forEach(
             node -> {
               populateClassifierInstance(
-                  node, serializedToInstanceMap.get(node), classifierInstanceResolver);
+                  node,
+                  serializedToInstanceMap.get(node),
+                  classifierInstanceResolver,
+                  sortingResult);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
               if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
                 // For real parents, the parent is not set directly, but it is set indirectly
-                // when adding the child to the parent. For proxy nodes instead we need to set the parent
+                // when adding the child to the parent. For proxy nodes instead we need to set the
+                // parent
                 // explicitly
                 ProxyNode proxyParent = sortingResult.proxyFor(node.getParentNodeID());
                 if (proxyParent != null) {
                   if (classifierInstance instanceof DynamicNode) {
-                    ((DynamicNode)classifierInstance).setParent(proxyParent);
+                    ((DynamicNode) classifierInstance).setParent(proxyParent);
                   } else {
-                    throw new UnsupportedOperationException("We do not know how to set explicitly the parent of "
-                            + classifierInstance);
+                    throw new UnsupportedOperationException(
+                        "We do not know how to set explicitly the parent of " + classifierInstance);
                   }
                 }
               }
@@ -720,9 +737,11 @@ public class JsonSerialization {
   private void populateClassifierInstance(
       SerializedClassifierInstance serializedClassifierInstance,
       ClassifierInstance<?> node,
-      ClassifierInstanceResolver classifierInstanceResolver) {
+      ClassifierInstanceResolver classifierInstanceResolver,
+      SortingResult sortingResult) {
     populateContainments(serializedClassifierInstance, node, classifierInstanceResolver);
-    populateNodeReferences(serializedClassifierInstance, node, classifierInstanceResolver);
+    populateNodeReferences(
+        serializedClassifierInstance, node, classifierInstanceResolver, sortingResult);
   }
 
   private void populateContainments(
@@ -758,7 +777,8 @@ public class JsonSerialization {
   private void populateNodeReferences(
       SerializedClassifierInstance serializedClassifierInstance,
       ClassifierInstance<?> node,
-      ClassifierInstanceResolver classifierInstanceResolver) {
+      ClassifierInstanceResolver classifierInstanceResolver,
+      SortingResult sortingResult) {
     Classifier<?> concept = node.getClassifier();
     // TODO resolve references to Nodes in different models
     serializedClassifierInstance
@@ -783,11 +803,19 @@ public class JsonSerialization {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          throw new DeserializationException(
-                              "Unable to resolve reference to "
-                                  + entry.getReference()
-                                  + " for feature "
-                                  + serializedReferenceValue.getMetaPointer());
+                          if (unavailableReferenceTargetPolicy
+                              == UnavailableNodePolicy.NULL_REFERENCES) {
+                            throw new UnsupportedOperationException("Not yet supported");
+                          } else if (unavailableReferenceTargetPolicy
+                              == UnavailableNodePolicy.PROXY_NODES) {
+                            referred = sortingResult.createProxy(entry.getReference());
+                          } else {
+                            throw new DeserializationException(
+                                "Unable to resolve reference to "
+                                    + entry.getReference()
+                                    + " for feature "
+                                    + serializedReferenceValue.getMetaPointer());
+                          }
                         }
                         ReferenceValue referenceValue =
                             new ReferenceValue(referred, entry.getResolveInfo());
