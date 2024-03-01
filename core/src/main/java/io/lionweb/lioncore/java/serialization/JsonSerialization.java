@@ -446,6 +446,7 @@ public class JsonSerialization {
     }
   }
 
+  /** Create a Proxy and from now on use it to resolve instances for this node ID. */
   private ProxyNode createProxy(String nodeID) {
     if (instanceResolver.resolve(nodeID) != null) {
       throw new IllegalStateException();
@@ -455,6 +456,11 @@ public class JsonSerialization {
     return proxyNode;
   }
 
+  /**
+   * This class is used to track the sorting operation. It is also used to track the proxies created
+   * while sorting this particular set of nodes, as the proxies created in this process will need to
+   * be returned together with the sorted list of unserialized nodes.
+   */
   private class SortingResult {
     List<SerializedClassifierInstance> sortedList;
     List<SerializedClassifierInstance> nodesToSort;
@@ -470,15 +476,13 @@ public class JsonSerialization {
 
     void putNodesWithNullIDsInFront() {
       // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
-      // just
-      // be parent of other nodes, so we put all of them at the start (so they end up at the end
-      // when
-      // we reverse
-      // the list)
+      // just be parent of other nodes, so we put all of them at the start (so they end up at the
+      // end when we reverse the list)
       nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
       nodesToSort.removeAll(sortedList);
     }
 
+    /** We place the node in the sorted list. */
     void place(SerializedClassifierInstance node) {
       sortedList.add(node);
       nodesToSort.remove(node);
@@ -637,9 +641,8 @@ public class JsonSerialization {
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
               if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
                 // For real parents, the parent is not set directly, but it is set indirectly
-                // when adding the child to the parent. For proxy nodes instead we need to set the
-                // parent
-                // explicitly
+                // when adding the child to the parent. For proxy nodes instead we need to set
+                // the parent explicitly
                 ProxyNode proxyParent = sortingResult.proxyFor(node.getParentNodeID());
                 if (proxyParent != null) {
                   if (classifierInstance instanceof DynamicNode) {
