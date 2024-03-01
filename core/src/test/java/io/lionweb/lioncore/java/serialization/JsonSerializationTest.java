@@ -710,4 +710,50 @@ public class JsonSerializationTest extends SerializationTest {
         Arrays.asList(new ReferenceValue(pr0td1, "garbage-out")),
         pr1td2.getReferenceValueByName("prerequisite"));
   }
+
+  @Test
+  public void deserializeTreeWithExternalReferencesSetToNullPolicyUnavailableNodePolicy() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    InputStream languageIs =
+        this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
+    Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
+    js.registerLanguage(todosLanguage);
+    InputStream is =
+        this.getClass().getResourceAsStream("/serialization/todosWithExternalReferences.json");
+
+    js.enableDynamicNodes();
+    js.setUnavailableParentPolicy(UnavailableNodePolicy.NULL_REFERENCES);
+    js.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.NULL_REFERENCES);
+    List<Node> nodes = js.deserializeToNodes(is);
+    assertEquals(4, nodes.size());
+
+    Node pr1td0 =
+        nodes.stream()
+            .filter(n -> n.getID().equals("synthetic_my-wonderful-partition_projects_1_todos_0"))
+            .findFirst()
+            .get();
+    assertTrue(pr1td0 instanceof DynamicNode);
+    Node pr1td1 =
+        nodes.stream()
+            .filter(n -> n.getID().equals("synthetic_my-wonderful-partition_projects_1_todos_1"))
+            .findFirst()
+            .get();
+    assertTrue(pr1td1 instanceof DynamicNode);
+    Node pr1td2 =
+        nodes.stream()
+            .filter(n -> n.getID().equals("synthetic_my-wonderful-partition_projects_1_todos_2"))
+            .findFirst()
+            .get();
+    assertTrue(pr1td1 instanceof DynamicNode);
+
+    // local reference
+    assertEquals(
+        Arrays.asList(new ReferenceValue(pr1td0, "BD")),
+        pr1td1.getReferenceValueByName("prerequisite"));
+
+    // external reference
+    assertEquals(
+        Arrays.asList(new ReferenceValue(null, "garbage-out")),
+        pr1td2.getReferenceValueByName("prerequisite"));
+  }
 }

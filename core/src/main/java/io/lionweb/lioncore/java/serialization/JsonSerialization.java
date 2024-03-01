@@ -805,16 +805,19 @@ public class JsonSerialization {
                         if (entry.getReference() != null && referred == null) {
                           if (unavailableReferenceTargetPolicy
                               == UnavailableNodePolicy.NULL_REFERENCES) {
-                            throw new UnsupportedOperationException("Not yet supported");
+                            referred = null;
                           } else if (unavailableReferenceTargetPolicy
                               == UnavailableNodePolicy.PROXY_NODES) {
                             referred = sortingResult.createProxy(entry.getReference());
-                          } else {
+                          } else if (unavailableReferenceTargetPolicy
+                              == UnavailableNodePolicy.THROW_ERROR) {
                             throw new DeserializationException(
                                 "Unable to resolve reference to "
                                     + entry.getReference()
                                     + " for feature "
                                     + serializedReferenceValue.getMetaPointer());
+                          } else {
+                            throw new IllegalStateException("This should not happen");
                           }
                         }
                         ReferenceValue referenceValue =
