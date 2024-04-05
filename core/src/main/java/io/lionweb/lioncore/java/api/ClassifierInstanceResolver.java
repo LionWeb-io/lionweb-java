@@ -28,10 +28,6 @@ public interface ClassifierInstanceResolver {
   @Nonnull
   default ClassifierInstance<?> resolveOrProxy(String instanceID) {
     ClassifierInstance<?> partial = resolve(instanceID);
-    if (partial == null) {
-      return new ProxyNode(instanceID);
-    } else {
-      return partial;
-    }
+    return partial == null ? new ProxyNode(instanceID) : partial;
   }
 }
