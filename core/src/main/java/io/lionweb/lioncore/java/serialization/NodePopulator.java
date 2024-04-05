@@ -56,7 +56,15 @@ class NodePopulator {
                   "The containment value should not be null");
               List<ClassifierInstance<?>> deserializedValue =
                   serializedContainmentValue.getValue().stream()
-                      .map(childNodeID -> classifierInstanceResolver.strictlyResolve(childNodeID))
+                      .map(
+                          childNodeID -> {
+                            if (jsonSerialization.getUnavailableChildrenPolicy()
+                                == UnavailableNodePolicy.PROXY_NODES) {
+                              return classifierInstanceResolver.resolveOrProxy(childNodeID);
+                            } else {
+                              return classifierInstanceResolver.strictlyResolve(childNodeID);
+                            }
+                          })
                       .collect(Collectors.toList());
               if (!Objects.equals(deserializedValue, node.getChildren(containment))) {
                 deserializedValue.forEach(child -> node.addChild(containment, (Node) child));

@@ -4,6 +4,7 @@ import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUti
 import static org.junit.Assert.*;
 
 import com.google.gson.*;
+import io.lionweb.lioncore.java.api.UnresolvedClassifierInstanceException;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
 
 /** Testing various functionalities of JsonSerialization. */
 public class JsonSerializationTest extends SerializationTest {
@@ -744,7 +746,7 @@ public class JsonSerializationTest extends SerializationTest {
             .filter(n -> n.getID().equals("synthetic_my-wonderful-partition_projects_1_todos_2"))
             .findFirst()
             .get();
-    assertTrue(pr1td1 instanceof DynamicNode);
+    assertTrue(pr1td2 instanceof DynamicNode);
 
     // local reference
     assertEquals(
@@ -755,5 +757,52 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         Arrays.asList(new ReferenceValue(null, "garbage-out")),
         pr1td2.getReferenceValueByName("prerequisite"));
+  }
+
+  @Test
+  public void deserializeTreesWithChildrenNotProvided() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    InputStream languageIs =
+        this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
+    Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
+    js.registerLanguage(todosLanguage);
+
+    js.enableDynamicNodes();
+    js.setUnavailableParentPolicy(UnavailableNodePolicy.NULL_REFERENCES);
+    js.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.NULL_REFERENCES);
+    assertThrows(
+        UnresolvedClassifierInstanceException.class,
+        new ThrowingRunnable() {
+          @Override
+          public void run() throws Throwable {
+            InputStream is =
+                this.getClass()
+                    .getResourceAsStream("/serialization/todosWithChildrenNotProvided.json");
+            List<Node> nodes = js.deserializeToNodes(is);
+          }
+        });
+
+    js.setUnavailableChildrenPolicy(UnavailableNodePolicy.PROXY_NODES);
+    InputStream is =
+        this.getClass().getResourceAsStream("/serialization/todosWithChildrenNotProvided.json");
+    List<Node> nodes = js.deserializeToNodes(is);
+    assertEquals(1, nodes.size());
+
+    Node root =
+        nodes.stream()
+            .filter(n -> n.getID().equals("synthetic_my-wonderful-partition_projects_1"))
+            .findFirst()
+            .get();
+    assertTrue(root instanceof DynamicNode);
+    assertEquals(3, root.getChildrenByContainmentName("todos").size());
+    Node pr1td0 = root.getChildrenByContainmentName("todos").get(0);
+    assertEquals("synthetic_my-wonderful-partition_projects_1_todos_0", pr1td0.getID());
+    assertTrue(pr1td0 instanceof ProxyNode);
+    Node pr1td1 = root.getChildrenByContainmentName("todos").get(1);
+    assertEquals("synthetic_my-wonderful-partition_projects_1_todos_1", pr1td1.getID());
+    assertTrue(pr1td1 instanceof ProxyNode);
+    Node pr1td2 = root.getChildrenByContainmentName("todos").get(2);
+    assertEquals("synthetic_my-wonderful-partition_projects_1_todos_2", pr1td2.getID());
+    assertTrue(pr1td2 instanceof ProxyNode);
   }
 }

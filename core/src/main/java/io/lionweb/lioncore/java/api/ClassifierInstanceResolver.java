@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.api;
 
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -19,6 +20,16 @@ public interface ClassifierInstanceResolver {
     ClassifierInstance<?> partial = resolve(instanceID);
     if (partial == null) {
       throw new UnresolvedClassifierInstanceException(instanceID);
+    } else {
+      return partial;
+    }
+  }
+
+  @Nonnull
+  default ClassifierInstance<?> resolveOrProxy(String instanceID) {
+    ClassifierInstance<?> partial = resolve(instanceID);
+    if (partial == null) {
+      return new ProxyNode(instanceID);
     } else {
       return partial;
     }

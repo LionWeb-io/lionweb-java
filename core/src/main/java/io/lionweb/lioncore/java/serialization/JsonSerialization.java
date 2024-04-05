@@ -108,6 +108,12 @@ public class JsonSerialization {
   private UnavailableNodePolicy unavailableParentPolicy = UnavailableNodePolicy.THROW_ERROR;
 
   /**
+   * This guides what we do when deserializing a sub-tree and not being able to resolve the
+   * children.
+   */
+  private UnavailableNodePolicy unavailableChildrenPolicy = UnavailableNodePolicy.THROW_ERROR;
+
+  /**
    * This guides what we do when deserializing a sub-tree and not being able to resolve a reference
    * target.
    */
@@ -155,9 +161,19 @@ public class JsonSerialization {
     return this.unavailableReferenceTargetPolicy;
   }
 
+  public @Nonnull UnavailableNodePolicy getUnavailableChildrenPolicy() {
+    return this.unavailableChildrenPolicy;
+  }
+
   public void setUnavailableParentPolicy(@Nonnull UnavailableNodePolicy unavailableParentPolicy) {
     Objects.requireNonNull(unavailableParentPolicy);
     this.unavailableParentPolicy = unavailableParentPolicy;
+  }
+
+  public void setUnavailableChildrenPolicy(
+      @Nonnull UnavailableNodePolicy unavailableChildrenPolicy) {
+    Objects.requireNonNull(unavailableChildrenPolicy);
+    this.unavailableChildrenPolicy = unavailableChildrenPolicy;
   }
 
   public void setUnavailableReferenceTargetPolicy(
