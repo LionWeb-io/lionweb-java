@@ -107,7 +107,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   private void addContainment(Containment link, Node value) {
     assert link.isMultiple();
-    ((DynamicNode) value).setParent((Node) this);
+    if (!(value instanceof ProxyNode)) {
+      ((DynamicNode) value).setParent((Node) this);
+    }
     if (containmentValues.containsKey(link.getID())) {
       containmentValues.get(link.getID()).add(value);
     } else {
