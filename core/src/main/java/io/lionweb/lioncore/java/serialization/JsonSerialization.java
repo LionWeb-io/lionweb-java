@@ -240,7 +240,13 @@ public class JsonSerialization {
   }
 
   public JsonElement serializeTreeToJsonElement(Node node) {
-    return serializeNodesToJsonElement(node.thisAndAllDescendants());
+    if (node instanceof ProxyNode) {
+      throw new IllegalArgumentException("Proxy nodes cannot be serialized");
+    }
+    return serializeNodesToJsonElement(
+        node.thisAndAllDescendants().stream()
+            .filter(n -> !(n instanceof ProxyNode))
+            .collect(Collectors.toList()));
   }
 
   public JsonElement serializeTreesToJsonElement(Node... roots) {
@@ -262,10 +268,14 @@ public class JsonSerialization {
                 }
               });
     }
-    return serializeNodesToJsonElement(allNodes);
+    return serializeNodesToJsonElement(
+        allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
   }
 
   public JsonElement serializeNodesToJsonElement(List<Node> nodes) {
+    if (nodes.stream().anyMatch(n -> n instanceof ProxyNode)) {
+      throw new IllegalArgumentException("Proxy nodes cannot be serialized");
+    }
     SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
     return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
   }

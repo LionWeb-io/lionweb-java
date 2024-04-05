@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -119,7 +120,9 @@ public interface Node extends ClassifierInstance<Concept> {
     List<Node> nodes = new ArrayList<>();
     nodes.add(this);
     for (Node child : this.getChildren()) {
-      nodes.addAll(child.thisAndAllDescendants());
+      if (!(child instanceof ProxyNode)) {
+        nodes.addAll(child.thisAndAllDescendants());
+      }
     }
     return nodes;
   }
