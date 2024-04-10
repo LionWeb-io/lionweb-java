@@ -135,6 +135,9 @@ public class PrimitiveValuesSerialization {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
     } else if (dynamicNodesEnabled && dataType instanceof Enumeration) {
+      if (serializedValue == null) {
+        return null;
+      }
       return new DynamicEnumerationValue((Enumeration) dataType, serializedValue);
     } else {
       throw new IllegalArgumentException(
@@ -156,7 +159,16 @@ public class PrimitiveValuesSerialization {
       // This is at least the default behavior, but the user can register specialized
       // primitiveSerializers,
       // if a different behavior is needed
-      return ((EnumerationLiteral) value).getKey();
+      EnumerationLiteral enumerationLiteral;
+      if (value instanceof DynamicEnumerationValue) {
+        enumerationLiteral = ((DynamicEnumerationValue) value).getEnumerationLiteral();
+      } else if (value instanceof EnumerationLiteral) {
+        enumerationLiteral = (EnumerationLiteral) value;
+      } else {
+        throw new IllegalStateException("The primitive value with primitiveTypeID " + primitiveTypeID
+                + " was expected to be either an EnumerationLiteral or a DynamicEnumerationValue. Instead it is: " + value);
+      }
+      return enumerationLiteral.getKey();
     } else {
       throw new IllegalArgumentException(
           "Unable to serialize primitive values of type "

@@ -1,7 +1,11 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.language.EnumerationLiteral;
+
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /** This represents an Enumeration Value when the actual Enum class is not available. */
@@ -37,5 +41,17 @@ public class DynamicEnumerationValue {
   @Override
   public int hashCode() {
     return Objects.hash(enumeration, serializedValue);
+  }
+
+  public EnumerationLiteral getEnumerationLiteral() {
+    Optional<EnumerationLiteral> literal = enumeration.getLiterals().stream().filter(l ->
+            serializedValue.equals(enumeration.getName() + "-" + l.getName())).findFirst();
+    if (!literal.isPresent()) {
+      throw new IllegalStateException(
+              "Serialized value is " + serializedValue +". Enumeration name is: " +
+                      enumeration.getName() + ", Literals name are: " + enumeration.getLiterals().stream().map(l -> l.getName())
+                      .collect(Collectors.joining(", ")));
+    }
+   return literal.get();
   }
 }
