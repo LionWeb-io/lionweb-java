@@ -5,7 +5,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
-import io.lionweb.lioncore.java.model.impl.DynamicEnumerationValue;
+import io.lionweb.lioncore.java.model.impl.EnumerationValue;
+import io.lionweb.lioncore.java.model.impl.EnumerationValueImpl;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +21,7 @@ public class PrimitiveValuesSerialization {
   // because that is unique
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
+  private boolean dynamicEnumerationValuesEnabled = true;
 
   public void registerLanguage(Language language) {
     language.getElements().stream()
@@ -29,6 +31,10 @@ public class PrimitiveValuesSerialization {
 
   public void enableDynamicNodes() {
     dynamicNodesEnabled = true;
+  }
+
+  public void disableDynamicEnumerationValuesNodes() {
+    dynamicEnumerationValuesEnabled = true;
   }
 
   public interface PrimitiveSerializer<V> {
@@ -121,24 +127,25 @@ public class PrimitiveValuesSerialization {
         return null;
       }
       // In this case, where we are dealing with primitive values, we want to use the literal _key_
-      // (and not the ID)
+      // (and not the ID).
       // This is at least the default behavior, but the user can register specialized
-      // primitiveDeserializers,
-      // if a different behavior is needed
+      // primitiveDeserializers, if a different behavior is needed
       Optional<EnumerationLiteral> enumerationLiteral =
           enumerationsByID.get(dataTypeID).getLiterals().stream()
               .filter(l -> Objects.equals(l.getKey(), serializedValue))
               .findFirst();
       if (enumerationLiteral.isPresent()) {
-        return enumerationLiteral.get();
+        if (dynamicEnumerationValuesEnabled) {
+          return new EnumerationValueImpl(enumerationLiteral.get());
+        } else {
+          throw new RuntimeException(
+              "Dynamic enumeration values are disabled, therefore we do not know how to produce the "
+                  + "enumeration value representing enumeration literal "
+                  + enumerationLiteral.get());
+        }
       } else {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
-    } else if (dynamicNodesEnabled && dataType instanceof Enumeration) {
-      if (serializedValue == null) {
-        return null;
-      }
-      return new DynamicEnumerationValue((Enumeration) dataType, serializedValue);
     } else {
       throw new IllegalArgumentException(
           "Unable to deserialize primitive values of type " + dataTypeID);
@@ -155,18 +162,18 @@ public class PrimitiveValuesSerialization {
         return null;
       }
       // In this case, where we are dealing with primitive values, we want to use the literal _key_
-      // (and not the ID)
+      // (and not the ID).
       // This is at least the default behavior, but the user can register specialized
-      // primitiveSerializers,
-      // if a different behavior is needed
+      // primitiveSerializers, if a different behavior is needed
       EnumerationLiteral enumerationLiteral;
-      if (value instanceof DynamicEnumerationValue) {
-        enumerationLiteral = ((DynamicEnumerationValue) value).getEnumerationLiteral();
-      } else if (value instanceof EnumerationLiteral) {
-        enumerationLiteral = (EnumerationLiteral) value;
+      if (value instanceof EnumerationValue) {
+        enumerationLiteral = ((EnumerationValue) value).getEnumerationLiteral();
       } else {
-        throw new IllegalStateException("The primitive value with primitiveTypeID " + primitiveTypeID
-                + " was expected to be either an EnumerationLiteral or a DynamicEnumerationValue. Instead it is: " + value);
+        throw new IllegalStateException(
+            "The primitive value with primitiveTypeID "
+                + primitiveTypeID
+                + " was expected to be an EnumerationValue. Instead it is: "
+                + value);
       }
       return enumerationLiteral.getKey();
     } else {
