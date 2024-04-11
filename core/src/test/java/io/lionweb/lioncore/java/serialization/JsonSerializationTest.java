@@ -363,7 +363,7 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void serializationOfEnumLiteral() {
+  public void serializationOfEnumLiteralUsingEnumerationValueInstances() {
     Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
@@ -434,8 +434,86 @@ public class JsonSerializationTest extends SerializationTest {
         je);
   }
 
+  enum MyEnum {
+    el1,
+    el2
+  }
+
   @Test
-  public void deserializeEnumerationLiterals() {
+  public void serializationOfEnumLiteralUsingEnumInstances() {
+
+    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
+
+    Enumeration e =
+        new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
+    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1").setID("el1_id").setKey("el1_key");
+    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2").setID("el2_id").setKey("el2_key");
+
+    Concept c = new Concept(mm, "my.concept").setID("concept_id").setKey("concept_key");
+    Property p =
+        Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
+    c.addFeature(p);
+    DynamicNode n1 = new DynamicNode("node1", c);
+    n1.setPropertyValue(p, MyEnum.el1);
+    DynamicNode n2 = new DynamicNode("node2", c);
+    n2.setPropertyValue(p, MyEnum.el2);
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    js.registerLanguage(mm);
+
+    JsonElement je = js.serializeNodesToJsonElement(n1, n2);
+    assertEquals(
+        JsonParser.parseString(
+            "{\n"
+                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"languages\": [{\n"
+                + "        \"version\": \"1\",\n"
+                + "        \"key\": \"mm_key\"\n"
+                + "    }],\n"
+                + "    \"nodes\": [{\n"
+                + "        \"id\": \"node1\",\n"
+                + "        \"classifier\": {\n"
+                + "            \"language\": \"mm_key\",\n"
+                + "            \"version\": \"1\",\n"
+                + "            \"key\": \"concept_key\"\n"
+                + "        },\n"
+                + "        \"properties\": [{\n"
+                + "            \"property\": {\n"
+                + "                \"language\": \"mm_key\",\n"
+                + "                \"version\": \"1\",\n"
+                + "                \"key\": \"property_key\"\n"
+                + "            },\n"
+                + "            \"value\": \"el1_key\"\n"
+                + "        }],\n"
+                + "        \"containments\": [],\n"
+                + "        \"references\": [],\n"
+                + "        \"annotations\": [],\n"
+                + "        \"parent\": null\n"
+                + "    }, {\n"
+                + "        \"id\": \"node2\",\n"
+                + "        \"classifier\": {\n"
+                + "            \"language\": \"mm_key\",\n"
+                + "            \"version\": \"1\",\n"
+                + "            \"key\": \"concept_key\"\n"
+                + "        },\n"
+                + "        \"properties\": [{\n"
+                + "            \"property\": {\n"
+                + "                \"language\": \"mm_key\",\n"
+                + "                \"version\": \"1\",\n"
+                + "                \"key\": \"property_key\"\n"
+                + "            },\n"
+                + "            \"value\": \"el2_key\"\n"
+                + "        }],\n"
+                + "        \"containments\": [],\n"
+                + "        \"references\": [],\n"
+                + "        \"annotations\": [],\n"
+                + "        \"parent\": null\n"
+                + "    }]\n"
+                + "}"),
+        je);
+  }
+
+  @Test
+  public void deserializeEnumerationLiteralsUsingEnumerationValueInstances() {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
@@ -505,6 +583,80 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(Arrays.asList(n1, n2), deserializedNodes);
     assertEquals(new EnumerationValueImpl(el1), deserializedNodes.get(0).getPropertyValue(p));
     assertEquals(new EnumerationValueImpl(el2), deserializedNodes.get(1).getPropertyValue(p));
+  }
+
+  @Test
+  public void deserializeEnumerationLiteralsUsingEnumInstances() {
+    JsonElement je =
+        JsonParser.parseString(
+            "{\n"
+                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"languages\": [{\n"
+                + "        \"version\": \"1\",\n"
+                + "        \"key\": \"mm_key\"\n"
+                + "    }],\n"
+                + "    \"nodes\": [{\n"
+                + "        \"id\": \"node1\",\n"
+                + "        \"classifier\": {\n"
+                + "            \"language\": \"mm_key\",\n"
+                + "            \"version\": \"1\",\n"
+                + "            \"key\": \"concept_key\"\n"
+                + "        },\n"
+                + "        \"properties\": [{\n"
+                + "            \"property\": {\n"
+                + "                \"language\": \"mm_key\",\n"
+                + "                \"version\": \"1\",\n"
+                + "                \"key\": \"property_key\"\n"
+                + "            },\n"
+                + "            \"value\": \"el1_key\"\n"
+                + "        }],\n"
+                + "        \"containments\": [],\n"
+                + "        \"references\": [],\n"
+                + "        \"parent\": null\n"
+                + "    }, {\n"
+                + "        \"id\": \"node2\",\n"
+                + "        \"classifier\": {\n"
+                + "            \"language\": \"mm_key\",\n"
+                + "            \"version\": \"1\",\n"
+                + "            \"key\": \"concept_key\"\n"
+                + "        },\n"
+                + "        \"properties\": [{\n"
+                + "            \"property\": {\n"
+                + "                \"language\": \"mm_key\",\n"
+                + "                \"version\": \"1\",\n"
+                + "                \"key\": \"property_key\"\n"
+                + "            },\n"
+                + "            \"value\": \"el2_key\"\n"
+                + "        }],\n"
+                + "        \"containments\": [],\n"
+                + "        \"references\": [],\n"
+                + "        \"parent\": null\n"
+                + "    }]\n"
+                + "}");
+    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
+
+    Enumeration e =
+        new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
+    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1").setID("el1_id").setKey("el1_key");
+    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2").setID("el2_id").setKey("el2_key");
+
+    Concept c = new Concept(mm, "my.concept").setID("concept_id").setKey("concept_key");
+    Property p =
+        Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
+    c.addFeature(p);
+    DynamicNode n1 = new DynamicNode("node1", c);
+    n1.setPropertyValue(p, MyEnum.el1);
+    DynamicNode n2 = new DynamicNode("node2", c);
+    n2.setPropertyValue(p, MyEnum.el2);
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    js.getPrimitiveValuesSerialization().registerEnumClass(MyEnum.class, e);
+    js.registerLanguage(mm);
+    js.getInstantiator().enableDynamicNodes();
+
+    List<Node> deserializedNodes = js.deserializeToNodes(je);
+    assertEquals(Arrays.asList(n1, n2), deserializedNodes);
+    assertEquals(MyEnum.el1, deserializedNodes.get(0).getPropertyValue(p));
+    assertEquals(MyEnum.el2, deserializedNodes.get(1).getPropertyValue(p));
   }
 
   @Test

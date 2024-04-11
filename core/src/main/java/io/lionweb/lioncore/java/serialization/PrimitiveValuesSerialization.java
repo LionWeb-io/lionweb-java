@@ -7,7 +7,10 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.impl.EnumerationValue;
 import io.lionweb.lioncore.java.model.impl.EnumerationValueImpl;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -156,11 +159,23 @@ public class PrimitiveValuesSerialization {
       if (value instanceof EnumerationValue) {
         EnumerationLiteral enumerationLiteral = ((EnumerationValue) value).getEnumerationLiteral();
         return enumerationLiteral.getKey();
+      } else if (value instanceof Enum<?>) {
+        Enumeration enumeration = enumerationsByID.get(primitiveTypeID);
+        if (enumeration == null) {
+          throw new RuntimeException(
+              "Cannot find enumeration with id "
+                  + primitiveTypeID
+                  + " while serializing primitive value "
+                  + value);
+        }
+        return PrimitiveValuesSerialization.<Enum>serializerFor(
+                (Class<Enum>) value.getClass(), enumeration)
+            .serialize(value);
       } else {
         throw new IllegalStateException(
             "The primitive value with primitiveTypeID "
                 + primitiveTypeID
-                + " was expected to be an EnumerationValue. Instead it is: "
+                + " was expected to be an EnumerationValue or an instance of Enum. Instead it is: "
                 + value);
       }
     } else {
@@ -173,7 +188,74 @@ public class PrimitiveValuesSerialization {
     }
   }
 
+  /** Please note that this will require support for reflection. */
+  public <E extends Enum<E>> void registerEnumClass(Class<E> enumClass, Enumeration enumeration) {
+    primitiveSerializers.put(enumeration.getID(), serializerFor(enumClass, enumeration));
+    primitiveDeserializers.put(enumeration.getID(), deserializerFor(enumClass, enumeration));
+  }
+
   private boolean isEnum(String primitiveTypeID) {
     return enumerationsByID.containsKey(primitiveTypeID);
+  }
+
+  public static <E extends Enum<E>> PrimitiveSerializer<E> serializerFor(
+      Class<E> enumClass, Enumeration enumeration) {
+    return value -> {
+      String enumerationLiteralName = value.name();
+      Optional<EnumerationLiteral> enumerationLiteral =
+          enumeration.getLiterals().stream()
+              .filter(l -> l.getName().equals(enumerationLiteralName))
+              .findFirst();
+      if (!enumerationLiteral.isPresent()) {
+        throw new IllegalArgumentException(
+            "Cannot serialize enum instance with name "
+                + enumerationLiteralName
+                + " as we cannot find an enumeration literal with the same name when considering enumeration "
+                + enumeration
+                + ". Literals available are: "
+                + enumeration.getLiterals().stream()
+                    .map(l -> l.getName())
+                    .collect(Collectors.joining(", ")));
+      }
+      return enumerationLiteral.get().getKey();
+    };
+  }
+
+  /** Please note that this will require support for reflection. */
+  public static <E extends Enum<E>> PrimitiveDeserializer<E> deserializerFor(
+      Class<E> enumClass, Enumeration enumeration) {
+    return serializedValue -> {
+      Optional<EnumerationLiteral> matchingEnumerationLiteral =
+          enumeration.getLiterals().stream()
+              .filter(l -> l.getKey().equals(serializedValue))
+              .findFirst();
+      if (!matchingEnumerationLiteral.isPresent()) {
+        throw new IllegalArgumentException(
+            "Cannot deserialize value "
+                + serializedValue
+                + " as we cannot find an enumeration literal with the same key when considering enumeration "
+                + enumeration
+                + ". Literals available are: "
+                + enumeration.getLiterals().stream()
+                    .map(l -> l.getKey())
+                    .collect(Collectors.joining(", ")));
+      }
+      Optional<Method> valueOf =
+          Arrays.stream(enumClass.getDeclaredMethods())
+              .filter(m -> m.getName().equals("valueOf") && m.getParameterCount() == 1)
+              .findFirst();
+      if (!valueOf.isPresent()) {
+        throw new IllegalStateException(
+            "Cannot find method valueOf(String) for class " + enumClass);
+      }
+      String literalName = matchingEnumerationLiteral.get().getName();
+      try {
+        E instance = (E) valueOf.get().invoke(null, literalName);
+        return instance;
+      } catch (IllegalAccessException | InvocationTargetException e) {
+        throw new RuntimeException(
+            "Issue while invoking valueOf on class " + enumClass + " with value " + literalName, e);
+      }
+    };
   }
 }
