@@ -37,6 +37,10 @@ public class EnumerationValueImpl implements EnumerationValue {
 
   @Override
   public String toString() {
-    return "EnumerationValue(" + enumerationLiteral.getEnumeration().getName() + "." + enumerationLiteral.getName() + ")";
+    return "EnumerationValue("
+        + enumerationLiteral.getEnumeration().getName()
+        + "."
+        + enumerationLiteral.getName()
+        + ")";
   }
 }
