@@ -21,7 +21,6 @@ public class PrimitiveValuesSerialization {
   // because that is unique
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
-  private boolean dynamicEnumerationValuesEnabled = true;
 
   public void registerLanguage(Language language) {
     language.getElements().stream()
@@ -31,10 +30,6 @@ public class PrimitiveValuesSerialization {
 
   public void enableDynamicNodes() {
     dynamicNodesEnabled = true;
-  }
-
-  public void disableDynamicEnumerationValuesNodes() {
-    dynamicEnumerationValuesEnabled = true;
   }
 
   public interface PrimitiveSerializer<V> {
@@ -135,14 +130,7 @@ public class PrimitiveValuesSerialization {
               .filter(l -> Objects.equals(l.getKey(), serializedValue))
               .findFirst();
       if (enumerationLiteral.isPresent()) {
-        if (dynamicEnumerationValuesEnabled) {
-          return new EnumerationValueImpl(enumerationLiteral.get());
-        } else {
-          throw new RuntimeException(
-              "Dynamic enumeration values are disabled, therefore we do not know how to produce the "
-                  + "enumeration value representing enumeration literal "
-                  + enumerationLiteral.get());
-        }
+        return new EnumerationValueImpl(enumerationLiteral.get());
       } else {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
@@ -165,9 +153,9 @@ public class PrimitiveValuesSerialization {
       // (and not the ID).
       // This is at least the default behavior, but the user can register specialized
       // primitiveSerializers, if a different behavior is needed
-      EnumerationLiteral enumerationLiteral;
       if (value instanceof EnumerationValue) {
-        enumerationLiteral = ((EnumerationValue) value).getEnumerationLiteral();
+        EnumerationLiteral enumerationLiteral = ((EnumerationValue) value).getEnumerationLiteral();
+        return enumerationLiteral.getKey();
       } else {
         throw new IllegalStateException(
             "The primitive value with primitiveTypeID "
@@ -175,7 +163,6 @@ public class PrimitiveValuesSerialization {
                 + " was expected to be an EnumerationValue. Instead it is: "
                 + value);
       }
-      return enumerationLiteral.getKey();
     } else {
       throw new IllegalArgumentException(
           "Unable to serialize primitive values of type "
