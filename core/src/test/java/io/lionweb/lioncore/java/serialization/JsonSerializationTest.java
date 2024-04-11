@@ -12,6 +12,7 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.model.impl.EnumerationValueImpl;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.refsmm.ContainerNode;
@@ -375,9 +376,9 @@ public class JsonSerializationTest extends SerializationTest {
         Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
     c.addFeature(p);
     DynamicNode n1 = new DynamicNode("node1", c);
-    n1.setPropertyValue(p, el1);
+    n1.setPropertyValue(p, new EnumerationValueImpl(el1));
     DynamicNode n2 = new DynamicNode("node2", c);
-    n2.setPropertyValue(p, el2);
+    n2.setPropertyValue(p, new EnumerationValueImpl(el2));
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     js.registerLanguage(mm);
 
@@ -493,17 +494,17 @@ public class JsonSerializationTest extends SerializationTest {
         Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
     c.addFeature(p);
     DynamicNode n1 = new DynamicNode("node1", c);
-    n1.setPropertyValue(p, el1);
+    n1.setPropertyValue(p, new EnumerationValueImpl(el1));
     DynamicNode n2 = new DynamicNode("node2", c);
-    n2.setPropertyValue(p, el2);
+    n2.setPropertyValue(p, new EnumerationValueImpl(el2));
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     js.registerLanguage(mm);
     js.getInstantiator().enableDynamicNodes();
 
     List<Node> deserializedNodes = js.deserializeToNodes(je);
     assertEquals(Arrays.asList(n1, n2), deserializedNodes);
-    assertEquals(el1, deserializedNodes.get(0).getPropertyValue(p));
-    assertEquals(el2, deserializedNodes.get(1).getPropertyValue(p));
+    assertEquals(new EnumerationValueImpl(el1), deserializedNodes.get(0).getPropertyValue(p));
+    assertEquals(new EnumerationValueImpl(el2), deserializedNodes.get(1).getPropertyValue(p));
   }
 
   @Test
