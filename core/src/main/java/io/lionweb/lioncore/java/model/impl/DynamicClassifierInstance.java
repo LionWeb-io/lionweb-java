@@ -91,6 +91,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     if (value == null) {
       containmentValues.remove(link.getID());
+    } else if (value instanceof ProxyNode) {
+      // Nothing to do here
     } else {
       ((DynamicNode) value).setParent((Node) this);
       containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
