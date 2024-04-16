@@ -10,8 +10,8 @@ import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -611,8 +611,8 @@ public class JsonSerialization {
                 // the parent explicitly
                 ProxyNode proxyParent = deserializationStatus.proxyFor(node.getParentNodeID());
                 if (proxyParent != null) {
-                  if (classifierInstance instanceof DynamicNode) {
-                    ((DynamicNode) classifierInstance).setParent(proxyParent);
+                  if (classifierInstance instanceof HasSettableParent) {
+                    ((HasSettableParent) classifierInstance).setParent(proxyParent);
                   } else {
                     throw new UnsupportedOperationException(
                         "We do not know how to set explicitly the parent of " + classifierInstance);
