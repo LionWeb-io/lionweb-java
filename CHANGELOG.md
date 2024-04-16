@@ -16,8 +16,19 @@ Import and export from and to EMF is a work in progress.
 
 * Convergence of Serialized{Annotation&Node}Instance into SerializedClassifierInstance
 
-
 ### Version 0.2.5
 
 * Model is renamed in Partition
 * Node.getModel is renamed in Node.getPartition
+
+### Version 0.2.10
+
+* Introducing Proxy Nodes
+
+### Version 0.2.11
+
+* Correct serialization of enums
+
+### Version 0.2.12
+
+* Introducing HasSettableParent
