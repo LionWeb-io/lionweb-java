@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
 import java.util.*;
@@ -10,7 +11,8 @@ import java.util.stream.Collectors;
  * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose
  * only homogeneous-APIs (e.g., getProperty('book')) and not heterogeneous-APIs (e.g., getBook()).
  */
-public class DynamicNode extends DynamicClassifierInstance<Concept> implements Node {
+public class DynamicNode extends DynamicClassifierInstance<Concept>
+    implements Node, HasSettableParent {
   private Node parent = null;
   private Concept concept = null;
 
@@ -39,6 +41,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept> implements N
     throw new UnsupportedOperationException();
   }
 
+  @Override
   public void setParent(Node parent) {
     this.parent = parent;
   }

@@ -1,10 +1,7 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -91,10 +88,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     if (value == null) {
       containmentValues.remove(link.getID());
-    } else if (value instanceof ProxyNode) {
-      // Nothing to do here
-    } else {
-      ((DynamicNode) value).setParent((Node) this);
+    } else if (value instanceof HasSettableParent) {
+      ((HasSettableParent) value).setParent((Node) this);
       containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
     }
   }
@@ -109,8 +104,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   private void addContainment(Containment link, Node value) {
     assert link.isMultiple();
-    if (!(value instanceof ProxyNode)) {
-      ((DynamicNode) value).setParent((Node) this);
+    if (value instanceof HasSettableParent) {
+      ((HasSettableParent) value).setParent((Node) this);
     }
     if (containmentValues.containsKey(link.getID())) {
       containmentValues.get(link.getID()).add(value);
@@ -136,7 +131,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
       if (entry.getValue().contains(node)) {
         entry.getValue().remove(node);
-        ((DynamicNode) node).setParent(null);
+        if (node instanceof HasSettableParent) {
+          ((HasSettableParent) node).setParent(null);
+        }
         return;
       }
     }
