@@ -518,7 +518,7 @@ public class JsonSerialization {
           Set<String> knownIDs =
               originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
           Set<String> parentIDs =
-              originalList.stream().map(n -> n.getParentNodeID()).collect(Collectors.toSet());
+              originalList.stream().map(n -> n.getParentNodeID()).filter(id -> id != null).collect(Collectors.toSet());
           Set<String> unknownParentIDs = Sets.difference(parentIDs, knownIDs);
           originalList.stream()
               .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
