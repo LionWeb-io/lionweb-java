@@ -130,4 +130,22 @@ public class ProxyNode implements Node {
       return this.nodeID;
     }
   }
+
+  @Override
+  public String toString() {
+    return "ProxyNode(" + id + ")";
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof ProxyNode)) return false;
+    ProxyNode proxyNode = (ProxyNode) o;
+    return Objects.equals(id, proxyNode.id);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(id);
+  }
 }
