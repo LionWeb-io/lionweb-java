@@ -4,6 +4,8 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
+
+import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -37,8 +39,17 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
+  @Nullable
   public Containment getContainmentFeature() {
-    throw new UnsupportedOperationException();
+    if (parent == null) {
+      return null;
+    }
+    for (Containment containment : parent.getConcept().allContainments()) {
+      if (parent.getChildren(containment).stream().anyMatch( it -> it ==this)) {
+        return containment;
+      }
+    }
+    throw new IllegalStateException("Unable to find the containment feature");
   }
 
   @Override
