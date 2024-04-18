@@ -32,3 +32,8 @@ Import and export from and to EMF is a work in progress.
 ### Version 0.2.12
 
 * Introducing HasSettableParent
+
+### Version 0.2.13
+
+* Minor improvements to DynamicNode
+* Fixes in serialization around null parents
