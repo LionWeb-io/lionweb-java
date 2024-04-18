@@ -5,6 +5,7 @@ import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,8 +19,17 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   private Node parent = null;
   private Concept concept = null;
 
-  public DynamicNode(String id, Concept concept) {
+  public DynamicNode(@Nonnull String id, @Nonnull Concept concept) {
     this.id = id;
+    this.concept = concept;
+  }
+
+  public DynamicNode() {
+    this.id = null;
+    this.concept = null;
+  }
+
+  public void setConcept(Concept concept) {
     this.concept = concept;
   }
 

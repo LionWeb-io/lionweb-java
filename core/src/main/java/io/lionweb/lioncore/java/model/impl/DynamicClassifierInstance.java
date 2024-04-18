@@ -16,6 +16,10 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
   protected final List<AnnotationInstance> annotations = new ArrayList<>();
 
+  public void setID(String id) {
+    this.id = id;
+  }
+
   @Override
   public Object getPropertyValue(@Nonnull Property property) {
     Objects.requireNonNull(property, "Property should not be null");
