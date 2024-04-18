@@ -9,14 +9,17 @@ import javax.annotation.Nullable;
 
 public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     implements ClassifierInstance<T> {
-  protected String id;
+  /** The ID should _eventually_ be not null. */
+  protected @Nullable String id;
+
   protected final Map<String, Object> propertyValues = new HashMap<>();
   protected final Map<String, List<Node>> containmentValues = new HashMap<>();
 
   protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
   protected final List<AnnotationInstance> annotations = new ArrayList<>();
 
-  public void setID(String id) {
+  /** The ID can be _temporarily_ set to null, but _eventually_ it should be not null. */
+  public void setID(@Nullable String id) {
     this.id = id;
   }
 
