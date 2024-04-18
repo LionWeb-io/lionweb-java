@@ -4,11 +4,10 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose
@@ -55,7 +54,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
       return null;
     }
     for (Containment containment : parent.getConcept().allContainments()) {
-      if (parent.getChildren(containment).stream().anyMatch( it -> it ==this)) {
+      if (parent.getChildren(containment).stream().anyMatch(it -> it == this)) {
         return containment;
       }
     }
