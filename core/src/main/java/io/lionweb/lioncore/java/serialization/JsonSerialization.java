@@ -1,27 +1,28 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonWriter;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.HasSettableParent;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.utils.NetworkUtils;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import java.util.stream.Stream;
 
 /**
  * This class is responsible for deserializing models.
@@ -37,7 +38,7 @@ import javax.annotation.Nullable;
  * concepts for which you do not have a corresponding Node subclass, then you need to enable that
  * behavior explicitly by calling getNodeInstantiator().enableDynamicNodes().
  */
-public class JsonSerialization {
+public class JsonSerialization implements ISerialization {
   public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
 
   public static void saveLanguageToFile(Language language, File file) throws IOException {
@@ -706,8 +707,101 @@ public class JsonSerialization {
     return classifierInstance;
   }
 
+  private void populateClassifierInstance(
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstance<?> node,
+      ClassifierInstanceResolver classifierInstanceResolver) {
+    populateContainments(serializedClassifierInstance, node, classifierInstanceResolver);
+    populateNodeReferences(serializedClassifierInstance, node, classifierInstanceResolver);
+  }
+
+  private void populateContainments(
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstance<?> node,
+      ClassifierInstanceResolver classifierInstanceResolver) {
+    Classifier<?> concept = node.getClassifier();
+    serializedClassifierInstance
+        .getContainments()
+        .forEach(
+            serializedContainmentValue -> {
+              Containment containment =
+                  concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
+              Objects.requireNonNull(
+                  containment,
+                  "Unable to resolve containment "
+                      + serializedContainmentValue.getMetaPointer()
+                      + " in concept "
+                      + concept);
+              Objects.requireNonNull(
+                  serializedContainmentValue.getValue(),
+                  "The containment value should not be null");
+              List<ClassifierInstance<?>> deserializedValue =
+                  serializedContainmentValue.getValue().stream()
+                      .map(childNodeID -> classifierInstanceResolver.strictlyResolve(childNodeID))
+                      .collect(Collectors.toList());
+              if (!Objects.equals(deserializedValue, node.getChildren(containment))) {
+                deserializedValue.forEach(child -> node.addChild(containment, (Node) child));
+              }
+            });
+  }
+
+  private void populateNodeReferences(
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstance<?> node,
+      ClassifierInstanceResolver classifierInstanceResolver) {
+    Classifier<?> concept = node.getClassifier();
+    // TODO resolve references to Nodes in different models
+    serializedClassifierInstance
+        .getReferences()
+        .forEach(
+            serializedReferenceValue -> {
+              Reference reference =
+                  concept.getReferenceByMetaPointer(serializedReferenceValue.getMetaPointer());
+              if (reference == null) {
+                throw new IllegalStateException(
+                    "Unable to solve reference "
+                        + serializedReferenceValue.getMetaPointer()
+                        + ". Concept "
+                        + concept
+                        + ". SerializedNode "
+                        + serializedClassifierInstance);
+              }
+              serializedReferenceValue
+                  .getValue()
+                  .forEach(
+                      entry -> {
+                        Node referred =
+                            (Node) classifierInstanceResolver.resolve(entry.getReference());
+                        if (entry.getReference() != null && referred == null) {
+                          throw new DeserializationException(
+                              "Unable to resolve reference to "
+                                  + entry.getReference()
+                                  + " for feature "
+                                  + serializedReferenceValue.getMetaPointer());
+                        }
+                        ReferenceValue referenceValue =
+                            new ReferenceValue(referred, entry.getResolveInfo());
+                        node.addReferenceValue(reference, referenceValue);
+                      });
+            });
+  }
+
+  @Override
   public void registerLanguage(Language language) {
     getClassifierResolver().registerLanguage(language);
     getPrimitiveValuesSerialization().registerLanguage(language);
+  }
+
+  @Override
+  public OutputStream serialize(Stream<Node> nodes, OutputStream out) {
+    Gson builder = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+    JsonWriter jsonWriter = new JsonWriter(new OutputStreamWriter(out));
+    builder.toJson(serializeNodesToJsonElement(nodes.toArray(i -> new Node[i])), jsonWriter);
+    return out;
+  }
+
+  @Override
+  public Stream<Node> deserialize(InputStream inputStream) {
+    return deserializeToNodes(inputStream).stream();
   }
 }

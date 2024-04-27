@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package lionweb;
+
+option java_multiple_files = true;
+option java_package = "io.lionweb.lioncore.java.serialization.protobuf";
+option java_outer_classname = "Protobuf";
+
+
+message SerializationChunk {
+  string serializationFormatVersion = 1;
+  map <uint32, bytes> idStrings = 2;
+  map <uint32, MetaPointer> metaPointers = 3;
+  repeated UsedLanguage languages = 4;
+  repeated Node nodes = 5;
+}
+
+message MetaPointer {
+  uint32 language = 1;
+  uint32 version = 2;
+  uint32 key = 3;
+}
+
+message UsedLanguage {
+  uint32 language = 1;
+  uint32 version = 2;
+}
+
+message Node {
+  uint32 id = 1;
+  uint32 parent = 2;
+  uint32 classifier = 3;
+  repeated Property properties = 4;
+  repeated Containment containments = 5;
+  repeated Reference references = 6;
+  repeated uint32 annotations = 7;
+}
+
+message Property {
+  uint32 metaPointer = 1;
+  string value = 2;
+}
+
+message Containment {
+  uint32 metaPointer = 1;
+  repeated uint32 children = 2;
+}
+
+message Reference {
+  uint32 metaPointer = 1;
+  repeated ReferenceTarget targets = 2;
+}
+
+message ReferenceTarget {
+  uint32 reference = 1;
+  string resolveInfo = 2;
+}
