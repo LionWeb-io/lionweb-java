@@ -9,6 +9,7 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.lioncore.java.serialization.data.UsedLanguage;
@@ -19,13 +20,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class ProtobufSerialization implements ISerialization {
+    private final Set<Language> languages = new HashSet<>();
 
     @Override
     public OutputStream serialize(Stream<Node> nodes, OutputStream out) {
@@ -47,6 +47,8 @@ public class ProtobufSerialization implements ISerialization {
 
         Serializer() {
             chunk = SerializationChunk.newBuilder();
+            primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+            primitiveValuesSerialization.enableDynamicNodes();
         }
 
         void serialize(Stream<Node> nodes, OutputStream out) throws IOException {
@@ -70,11 +72,15 @@ public class ProtobufSerialization implements ISerialization {
 
         private void serialize(io.lionweb.lioncore.java.serialization.protobuf.Node.Builder builder, Property property, Node node) {
             Object value = node.getPropertyValue(property);
-            if (value != null) {
+            if (value == null) {
                 return;
             }
             String serialized = primitiveValuesSerialization.serialize(property.getType().getID(), value);
-            builder.addPropertiesBuilder().setMetaPointer(metaPointer(MetaPointer.from(property))).setValue(serialized);
+            builder
+                    .addPropertiesBuilder()
+                    .setMetaPointer(metaPointer(MetaPointer.from(property)))
+                    .setValue(serialized)
+                    .build();
         }
 
         private void serialize(io.lionweb.lioncore.java.serialization.protobuf.Node.Builder builder, Containment c, Node node) {
@@ -98,6 +104,7 @@ public class ProtobufSerialization implements ISerialization {
                 if (v.getResolveInfo() != null) {
                     targetsBuilder.setResolveInfo(v.getResolveInfo());
                 }
+                targetsBuilder.build();
             });
         }
 
@@ -140,8 +147,8 @@ public class ProtobufSerialization implements ISerialization {
     @Override
     public Stream<Node> deserialize(InputStream inputStream) {
         try {
-            SerializationChunk chunk = SerializationChunk.parseDelimitedFrom(inputStream);
-            return new Deserializer(chunk).deserialize();
+            SerializationChunk chunk = SerializationChunk.parseFrom(inputStream);
+            return new Deserializer(chunk, languages).deserialize();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -156,9 +163,16 @@ public class ProtobufSerialization implements ISerialization {
         private final PrimitiveValuesSerialization primitiveValuesSerialization = new PrimitiveValuesSerialization();
         private final LocalClassifierInstanceResolver instanceResolver = new LocalClassifierInstanceResolver();
 
-        Deserializer(SerializationChunk chunk) {
-
+        Deserializer(SerializationChunk chunk, Collection<Language> languages) {
             this.chunk = chunk;
+            classifierResolver.registerLanguage(LionCore.getInstance());
+            instantiator.registerLionCoreCustomDeserializers();
+            primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+            for (Language language : languages) {
+                this.classifierResolver.registerLanguage(language);
+                this.instantiator.enableDynamicNodes();
+                this.primitiveValuesSerialization.registerLanguage(language);
+            }
         }
 
         public Stream<Node> deserialize() {
@@ -168,12 +182,13 @@ public class ProtobufSerialization implements ISerialization {
                     new CompositeClassifierInstanceResolver(
                             new MapBasedResolver(deserializedByID), this.instanceResolver);
 
-            return chunk.getNodesList().stream().map(this::link);
+            return chunk.getNodesList().stream().map(this::link).filter(Objects::nonNull);
         }
 
         private ClassifierInstance<?> deserialize(io.lionweb.lioncore.java.serialization.protobuf.Node node) {
             Classifier<?> classifier = classifier(node.getClassifier());
-            SerializedClassifierInstance instance = new SerializedClassifierInstance(idString(node.getId()), metaPointer(node.getClassifier()));
+            String id = idString(node.getId());
+            SerializedClassifierInstance instance = new SerializedClassifierInstance(id, metaPointer(node.getClassifier()));
 
             Map<Property, Object> propertiesValues = new HashMap<>();
             node.getPropertiesList().forEach(prop -> {
@@ -183,11 +198,18 @@ public class ProtobufSerialization implements ISerialization {
             });
 
             ClassifierInstance<?> result = instantiator.instantiate(classifier, instance, deserializedByID, propertiesValues);
+            propertiesValues.forEach((k, v) -> result.setPropertyValue(k, v));
+            deserializedByID.put(id, result);
             return result;
         }
 
         private Node link(io.lionweb.lioncore.java.serialization.protobuf.Node node) {
-            ClassifierInstance<?> instance = deserializedByID.get(idString(node.getId()));
+            String nodeId = idString(node.getId());
+            ClassifierInstance<?> instance = deserializedByID.get(nodeId);
+            if(instance == null){
+                System.err.println("Could not find node for " + nodeId);
+                return null;
+            }
             node.getContainmentsList().forEach(c -> {
                 Containment cont = (Containment) feature(instance.getClassifier(), c.getMetaPointer());
                 c.getChildrenList().forEach(child -> instance.addChild(cont, (Node) deserializedByID.get(idString(child))));
@@ -215,7 +237,7 @@ public class ProtobufSerialization implements ISerialization {
         }
 
         private MetaPointer metaPointer(io.lionweb.lioncore.java.serialization.protobuf.MetaPointer pr) {
-            return new MetaPointer(idString(pr.getLanguage()), idString(pr.getKey()), idString(pr.getKey()));
+            return new MetaPointer(idString(pr.getLanguage()), idString(pr.getVersion()), idString(pr.getKey()));
         }
 
         private String idString(int idStringIndex) {
@@ -226,6 +248,6 @@ public class ProtobufSerialization implements ISerialization {
 
     @Override
     public void registerLanguage(Language language) {
-
+        languages.add(language);
     }
 }
