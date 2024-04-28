@@ -11,8 +11,9 @@ message SerializationChunk {
   string serializationFormatVersion = 1;
   map <uint32, CompactedId> idStrings = 2;
   map <uint32, MetaPointer> metaPointers = 3;
-  repeated UsedLanguage languages = 4;
-  repeated Node nodes = 5;
+  map <uint32, string> versions = 4;
+  repeated UsedLanguage languages = 5;
+  repeated Node nodes = 6;
 }
 
 message CompactedId {

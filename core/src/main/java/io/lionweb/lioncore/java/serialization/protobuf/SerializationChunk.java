@@ -45,6 +45,8 @@ private static final long serialVersionUID = 0L;
         return internalGetIdStrings();
       case 3:
         return internalGetMetaPointers();
+      case 4:
+        return internalGetVersions();
       default:
         throw new RuntimeException(
             "Invalid map field number: " + number);
@@ -255,18 +257,97 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     return map.get(key);
   }
 
-  public static final int LANGUAGES_FIELD_NUMBER = 4;
+  public static final int VERSIONS_FIELD_NUMBER = 4;
+  private static final class VersionsDefaultEntryHolder {
+    static final com.google.protobuf.MapEntry<
+        java.lang.Integer, java.lang.String> defaultEntry =
+            com.google.protobuf.MapEntry
+            .<java.lang.Integer, java.lang.String>newDefaultInstance(
+                io.lionweb.lioncore.java.serialization.protobuf.Protobuf.internal_static_lionweb_SerializationChunk_VersionsEntry_descriptor, 
+                com.google.protobuf.WireFormat.FieldType.UINT32,
+                0,
+                com.google.protobuf.WireFormat.FieldType.STRING,
+                "");
+  }
+  @SuppressWarnings("serial")
+  private com.google.protobuf.MapField<
+      java.lang.Integer, java.lang.String> versions_;
+  private com.google.protobuf.MapField<java.lang.Integer, java.lang.String>
+  internalGetVersions() {
+    if (versions_ == null) {
+      return com.google.protobuf.MapField.emptyMapField(
+          VersionsDefaultEntryHolder.defaultEntry);
+    }
+    return versions_;
+  }
+  public int getVersionsCount() {
+    return internalGetVersions().getMap().size();
+  }
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  @java.lang.Override
+  public boolean containsVersions(
+      int key) {
+
+    return internalGetVersions().getMap().containsKey(key);
+  }
+  /**
+   * Use {@link #getVersionsMap()} instead.
+   */
+  @java.lang.Override
+  @java.lang.Deprecated
+  public java.util.Map<java.lang.Integer, java.lang.String> getVersions() {
+    return getVersionsMap();
+  }
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  @java.lang.Override
+  public java.util.Map<java.lang.Integer, java.lang.String> getVersionsMap() {
+    return internalGetVersions().getMap();
+  }
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  @java.lang.Override
+  public /* nullable */
+java.lang.String getVersionsOrDefault(
+      int key,
+      /* nullable */
+java.lang.String defaultValue) {
+
+    java.util.Map<java.lang.Integer, java.lang.String> map =
+        internalGetVersions().getMap();
+    return map.containsKey(key) ? map.get(key) : defaultValue;
+  }
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  @java.lang.Override
+  public java.lang.String getVersionsOrThrow(
+      int key) {
+
+    java.util.Map<java.lang.Integer, java.lang.String> map =
+        internalGetVersions().getMap();
+    if (!map.containsKey(key)) {
+      throw new java.lang.IllegalArgumentException();
+    }
+    return map.get(key);
+  }
+
+  public static final int LANGUAGES_FIELD_NUMBER = 5;
   @SuppressWarnings("serial")
   private java.util.List<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage> languages_;
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   @java.lang.Override
   public java.util.List<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage> getLanguagesList() {
     return languages_;
   }
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   @java.lang.Override
   public java.util.List<? extends io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder> 
@@ -274,21 +355,21 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     return languages_;
   }
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   @java.lang.Override
   public int getLanguagesCount() {
     return languages_.size();
   }
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   @java.lang.Override
   public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage getLanguages(int index) {
     return languages_.get(index);
   }
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   @java.lang.Override
   public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder getLanguagesOrBuilder(
@@ -296,18 +377,18 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     return languages_.get(index);
   }
 
-  public static final int NODES_FIELD_NUMBER = 5;
+  public static final int NODES_FIELD_NUMBER = 6;
   @SuppressWarnings("serial")
   private java.util.List<io.lionweb.lioncore.java.serialization.protobuf.Node> nodes_;
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   @java.lang.Override
   public java.util.List<io.lionweb.lioncore.java.serialization.protobuf.Node> getNodesList() {
     return nodes_;
   }
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   @java.lang.Override
   public java.util.List<? extends io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder> 
@@ -315,21 +396,21 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     return nodes_;
   }
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   @java.lang.Override
   public int getNodesCount() {
     return nodes_.size();
   }
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   @java.lang.Override
   public io.lionweb.lioncore.java.serialization.protobuf.Node getNodes(int index) {
     return nodes_.get(index);
   }
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   @java.lang.Override
   public io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder getNodesOrBuilder(
@@ -366,11 +447,17 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         internalGetMetaPointers(),
         MetaPointersDefaultEntryHolder.defaultEntry,
         3);
+    com.google.protobuf.GeneratedMessage
+      .serializeIntegerMapTo(
+        output,
+        internalGetVersions(),
+        VersionsDefaultEntryHolder.defaultEntry,
+        4);
     for (int i = 0; i < languages_.size(); i++) {
-      output.writeMessage(4, languages_.get(i));
+      output.writeMessage(5, languages_.get(i));
     }
     for (int i = 0; i < nodes_.size(); i++) {
-      output.writeMessage(5, nodes_.get(i));
+      output.writeMessage(6, nodes_.get(i));
     }
     getUnknownFields().writeTo(output);
   }
@@ -404,13 +491,23 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, metaPointers__);
     }
+    for (java.util.Map.Entry<java.lang.Integer, java.lang.String> entry
+         : internalGetVersions().getMap().entrySet()) {
+      com.google.protobuf.MapEntry<java.lang.Integer, java.lang.String>
+      versions__ = VersionsDefaultEntryHolder.defaultEntry.newBuilderForType()
+          .setKey(entry.getKey())
+          .setValue(entry.getValue())
+          .build();
+      size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(4, versions__);
+    }
     for (int i = 0; i < languages_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(4, languages_.get(i));
+        .computeMessageSize(5, languages_.get(i));
     }
     for (int i = 0; i < nodes_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
-        .computeMessageSize(5, nodes_.get(i));
+        .computeMessageSize(6, nodes_.get(i));
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -433,6 +530,8 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         other.internalGetIdStrings())) return false;
     if (!internalGetMetaPointers().equals(
         other.internalGetMetaPointers())) return false;
+    if (!internalGetVersions().equals(
+        other.internalGetVersions())) return false;
     if (!getLanguagesList()
         .equals(other.getLanguagesList())) return false;
     if (!getNodesList()
@@ -457,6 +556,10 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     if (!internalGetMetaPointers().getMap().isEmpty()) {
       hash = (37 * hash) + METAPOINTERS_FIELD_NUMBER;
       hash = (53 * hash) + internalGetMetaPointers().hashCode();
+    }
+    if (!internalGetVersions().getMap().isEmpty()) {
+      hash = (37 * hash) + VERSIONS_FIELD_NUMBER;
+      hash = (53 * hash) + internalGetVersions().hashCode();
     }
     if (getLanguagesCount() > 0) {
       hash = (37 * hash) + LANGUAGES_FIELD_NUMBER;
@@ -583,6 +686,8 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
           return internalGetIdStrings();
         case 3:
           return internalGetMetaPointers();
+        case 4:
+          return internalGetVersions();
         default:
           throw new RuntimeException(
               "Invalid map field number: " + number);
@@ -596,6 +701,8 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
           return internalGetMutableIdStrings();
         case 3:
           return internalGetMutableMetaPointers();
+        case 4:
+          return internalGetMutableVersions();
         default:
           throw new RuntimeException(
               "Invalid map field number: " + number);
@@ -626,20 +733,21 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       serializationFormatVersion_ = "";
       internalGetMutableIdStrings().clear();
       internalGetMutableMetaPointers().clear();
+      internalGetMutableVersions().clear();
       if (languagesBuilder_ == null) {
         languages_ = java.util.Collections.emptyList();
       } else {
         languages_ = null;
         languagesBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00000008);
+      bitField0_ = (bitField0_ & ~0x00000010);
       if (nodesBuilder_ == null) {
         nodes_ = java.util.Collections.emptyList();
       } else {
         nodes_ = null;
         nodesBuilder_.clear();
       }
-      bitField0_ = (bitField0_ & ~0x00000010);
+      bitField0_ = (bitField0_ & ~0x00000020);
       return this;
     }
 
@@ -674,18 +782,18 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
 
     private void buildPartialRepeatedFields(io.lionweb.lioncore.java.serialization.protobuf.SerializationChunk result) {
       if (languagesBuilder_ == null) {
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((bitField0_ & 0x00000010) != 0)) {
           languages_ = java.util.Collections.unmodifiableList(languages_);
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
         }
         result.languages_ = languages_;
       } else {
         result.languages_ = languagesBuilder_.build();
       }
       if (nodesBuilder_ == null) {
-        if (((bitField0_ & 0x00000010) != 0)) {
+        if (((bitField0_ & 0x00000020) != 0)) {
           nodes_ = java.util.Collections.unmodifiableList(nodes_);
-          bitField0_ = (bitField0_ & ~0x00000010);
+          bitField0_ = (bitField0_ & ~0x00000020);
         }
         result.nodes_ = nodes_;
       } else {
@@ -703,6 +811,10 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
       if (((from_bitField0_ & 0x00000004) != 0)) {
         result.metaPointers_ = internalGetMetaPointers().build(MetaPointersDefaultEntryHolder.defaultEntry);
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.versions_ = internalGetVersions();
+        result.versions_.makeImmutable();
       }
     }
 
@@ -729,11 +841,14 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       internalGetMutableMetaPointers().mergeFrom(
           other.internalGetMetaPointers());
       bitField0_ |= 0x00000004;
+      internalGetMutableVersions().mergeFrom(
+          other.internalGetVersions());
+      bitField0_ |= 0x00000008;
       if (languagesBuilder_ == null) {
         if (!other.languages_.isEmpty()) {
           if (languages_.isEmpty()) {
             languages_ = other.languages_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           } else {
             ensureLanguagesIsMutable();
             languages_.addAll(other.languages_);
@@ -746,7 +861,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
             languagesBuilder_.dispose();
             languagesBuilder_ = null;
             languages_ = other.languages_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
             languagesBuilder_ = 
               com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                  getLanguagesFieldBuilder() : null;
@@ -759,7 +874,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         if (!other.nodes_.isEmpty()) {
           if (nodes_.isEmpty()) {
             nodes_ = other.nodes_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
           } else {
             ensureNodesIsMutable();
             nodes_.addAll(other.nodes_);
@@ -772,7 +887,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
             nodesBuilder_.dispose();
             nodesBuilder_ = null;
             nodes_ = other.nodes_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ = (bitField0_ & ~0x00000020);
             nodesBuilder_ = 
               com.google.protobuf.GeneratedMessage.alwaysUseFieldBuilders ?
                  getNodesFieldBuilder() : null;
@@ -831,6 +946,15 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
               break;
             } // case 26
             case 34: {
+              com.google.protobuf.MapEntry<java.lang.Integer, java.lang.String>
+              versions__ = input.readMessage(
+                  VersionsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              internalGetMutableVersions().getMutableMap().put(
+                  versions__.getKey(), versions__.getValue());
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 34
+            case 42: {
               io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage m =
                   input.readMessage(
                       io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.parser(),
@@ -842,8 +966,8 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
                 languagesBuilder_.addMessage(m);
               }
               break;
-            } // case 34
-            case 42: {
+            } // case 42
+            case 50: {
               io.lionweb.lioncore.java.serialization.protobuf.Node m =
                   input.readMessage(
                       io.lionweb.lioncore.java.serialization.protobuf.Node.parser(),
@@ -855,7 +979,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
                 nodesBuilder_.addMessage(m);
               }
               break;
-            } // case 42
+            } // case 50
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -1255,12 +1379,139 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return (io.lionweb.lioncore.java.serialization.protobuf.MetaPointer.Builder) entry;
     }
 
+    private com.google.protobuf.MapField<
+        java.lang.Integer, java.lang.String> versions_;
+    private com.google.protobuf.MapField<java.lang.Integer, java.lang.String>
+        internalGetVersions() {
+      if (versions_ == null) {
+        return com.google.protobuf.MapField.emptyMapField(
+            VersionsDefaultEntryHolder.defaultEntry);
+      }
+      return versions_;
+    }
+    private com.google.protobuf.MapField<java.lang.Integer, java.lang.String>
+        internalGetMutableVersions() {
+      if (versions_ == null) {
+        versions_ = com.google.protobuf.MapField.newMapField(
+            VersionsDefaultEntryHolder.defaultEntry);
+      }
+      if (!versions_.isMutable()) {
+        versions_ = versions_.copy();
+      }
+      bitField0_ |= 0x00000008;
+      onChanged();
+      return versions_;
+    }
+    public int getVersionsCount() {
+      return internalGetVersions().getMap().size();
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    @java.lang.Override
+    public boolean containsVersions(
+        int key) {
+
+      return internalGetVersions().getMap().containsKey(key);
+    }
+    /**
+     * Use {@link #getVersionsMap()} instead.
+     */
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.Integer, java.lang.String> getVersions() {
+      return getVersionsMap();
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    @java.lang.Override
+    public java.util.Map<java.lang.Integer, java.lang.String> getVersionsMap() {
+      return internalGetVersions().getMap();
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    @java.lang.Override
+    public /* nullable */
+java.lang.String getVersionsOrDefault(
+        int key,
+        /* nullable */
+java.lang.String defaultValue) {
+
+      java.util.Map<java.lang.Integer, java.lang.String> map =
+          internalGetVersions().getMap();
+      return map.containsKey(key) ? map.get(key) : defaultValue;
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    @java.lang.Override
+    public java.lang.String getVersionsOrThrow(
+        int key) {
+
+      java.util.Map<java.lang.Integer, java.lang.String> map =
+          internalGetVersions().getMap();
+      if (!map.containsKey(key)) {
+        throw new java.lang.IllegalArgumentException();
+      }
+      return map.get(key);
+    }
+    public Builder clearVersions() {
+      bitField0_ = (bitField0_ & ~0x00000008);
+      internalGetMutableVersions().getMutableMap()
+          .clear();
+      return this;
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    public Builder removeVersions(
+        int key) {
+
+      internalGetMutableVersions().getMutableMap()
+          .remove(key);
+      return this;
+    }
+    /**
+     * Use alternate mutation accessors instead.
+     */
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.Integer, java.lang.String>
+        getMutableVersions() {
+      bitField0_ |= 0x00000008;
+      return internalGetMutableVersions().getMutableMap();
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    public Builder putVersions(
+        int key,
+        java.lang.String value) {
+
+      if (value == null) { throw new NullPointerException("map value"); }
+      internalGetMutableVersions().getMutableMap()
+          .put(key, value);
+      bitField0_ |= 0x00000008;
+      return this;
+    }
+    /**
+     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     */
+    public Builder putAllVersions(
+        java.util.Map<java.lang.Integer, java.lang.String> values) {
+      internalGetMutableVersions().getMutableMap()
+          .putAll(values);
+      bitField0_ |= 0x00000008;
+      return this;
+    }
+
     private java.util.List<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage> languages_ =
       java.util.Collections.emptyList();
     private void ensureLanguagesIsMutable() {
-      if (!((bitField0_ & 0x00000008) != 0)) {
+      if (!((bitField0_ & 0x00000010) != 0)) {
         languages_ = new java.util.ArrayList<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage>(languages_);
-        bitField0_ |= 0x00000008;
+        bitField0_ |= 0x00000010;
        }
     }
 
@@ -1268,7 +1519,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder> languagesBuilder_;
 
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public java.util.List<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage> getLanguagesList() {
       if (languagesBuilder_ == null) {
@@ -1278,7 +1529,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public int getLanguagesCount() {
       if (languagesBuilder_ == null) {
@@ -1288,7 +1539,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage getLanguages(int index) {
       if (languagesBuilder_ == null) {
@@ -1298,7 +1549,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder setLanguages(
         int index, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage value) {
@@ -1315,7 +1566,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder setLanguages(
         int index, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder builderForValue) {
@@ -1329,7 +1580,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder addLanguages(io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage value) {
       if (languagesBuilder_ == null) {
@@ -1345,7 +1596,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder addLanguages(
         int index, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage value) {
@@ -1362,7 +1613,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder addLanguages(
         io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder builderForValue) {
@@ -1376,7 +1627,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder addLanguages(
         int index, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder builderForValue) {
@@ -1390,7 +1641,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder addAllLanguages(
         java.lang.Iterable<? extends io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage> values) {
@@ -1405,12 +1656,12 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder clearLanguages() {
       if (languagesBuilder_ == null) {
         languages_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         onChanged();
       } else {
         languagesBuilder_.clear();
@@ -1418,7 +1669,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public Builder removeLanguages(int index) {
       if (languagesBuilder_ == null) {
@@ -1431,14 +1682,14 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder getLanguagesBuilder(
         int index) {
       return getLanguagesFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder getLanguagesOrBuilder(
         int index) {
@@ -1448,7 +1699,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public java.util.List<? extends io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder> 
          getLanguagesOrBuilderList() {
@@ -1459,14 +1710,14 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder addLanguagesBuilder() {
       return getLanguagesFieldBuilder().addBuilder(
           io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.getDefaultInstance());
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder addLanguagesBuilder(
         int index) {
@@ -1474,7 +1725,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
           index, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.getDefaultInstance());
     }
     /**
-     * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+     * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
      */
     public java.util.List<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder> 
          getLanguagesBuilderList() {
@@ -1487,7 +1738,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         languagesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
             io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder, io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder>(
                 languages_,
-                ((bitField0_ & 0x00000008) != 0),
+                ((bitField0_ & 0x00000010) != 0),
                 getParentForChildren(),
                 isClean());
         languages_ = null;
@@ -1498,9 +1749,9 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     private java.util.List<io.lionweb.lioncore.java.serialization.protobuf.Node> nodes_ =
       java.util.Collections.emptyList();
     private void ensureNodesIsMutable() {
-      if (!((bitField0_ & 0x00000010) != 0)) {
+      if (!((bitField0_ & 0x00000020) != 0)) {
         nodes_ = new java.util.ArrayList<io.lionweb.lioncore.java.serialization.protobuf.Node>(nodes_);
-        bitField0_ |= 0x00000010;
+        bitField0_ |= 0x00000020;
        }
     }
 
@@ -1508,7 +1759,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         io.lionweb.lioncore.java.serialization.protobuf.Node, io.lionweb.lioncore.java.serialization.protobuf.Node.Builder, io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder> nodesBuilder_;
 
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public java.util.List<io.lionweb.lioncore.java.serialization.protobuf.Node> getNodesList() {
       if (nodesBuilder_ == null) {
@@ -1518,7 +1769,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public int getNodesCount() {
       if (nodesBuilder_ == null) {
@@ -1528,7 +1779,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.Node getNodes(int index) {
       if (nodesBuilder_ == null) {
@@ -1538,7 +1789,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder setNodes(
         int index, io.lionweb.lioncore.java.serialization.protobuf.Node value) {
@@ -1555,7 +1806,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder setNodes(
         int index, io.lionweb.lioncore.java.serialization.protobuf.Node.Builder builderForValue) {
@@ -1569,7 +1820,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder addNodes(io.lionweb.lioncore.java.serialization.protobuf.Node value) {
       if (nodesBuilder_ == null) {
@@ -1585,7 +1836,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder addNodes(
         int index, io.lionweb.lioncore.java.serialization.protobuf.Node value) {
@@ -1602,7 +1853,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder addNodes(
         io.lionweb.lioncore.java.serialization.protobuf.Node.Builder builderForValue) {
@@ -1616,7 +1867,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder addNodes(
         int index, io.lionweb.lioncore.java.serialization.protobuf.Node.Builder builderForValue) {
@@ -1630,7 +1881,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder addAllNodes(
         java.lang.Iterable<? extends io.lionweb.lioncore.java.serialization.protobuf.Node> values) {
@@ -1645,12 +1896,12 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder clearNodes() {
       if (nodesBuilder_ == null) {
         nodes_ = java.util.Collections.emptyList();
-        bitField0_ = (bitField0_ & ~0x00000010);
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
       } else {
         nodesBuilder_.clear();
@@ -1658,7 +1909,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public Builder removeNodes(int index) {
       if (nodesBuilder_ == null) {
@@ -1671,14 +1922,14 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.Node.Builder getNodesBuilder(
         int index) {
       return getNodesFieldBuilder().getBuilder(index);
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder getNodesOrBuilder(
         int index) {
@@ -1688,7 +1939,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public java.util.List<? extends io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder> 
          getNodesOrBuilderList() {
@@ -1699,14 +1950,14 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       }
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.Node.Builder addNodesBuilder() {
       return getNodesFieldBuilder().addBuilder(
           io.lionweb.lioncore.java.serialization.protobuf.Node.getDefaultInstance());
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public io.lionweb.lioncore.java.serialization.protobuf.Node.Builder addNodesBuilder(
         int index) {
@@ -1714,7 +1965,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
           index, io.lionweb.lioncore.java.serialization.protobuf.Node.getDefaultInstance());
     }
     /**
-     * <code>repeated .lionweb.Node nodes = 5;</code>
+     * <code>repeated .lionweb.Node nodes = 6;</code>
      */
     public java.util.List<io.lionweb.lioncore.java.serialization.protobuf.Node.Builder> 
          getNodesBuilderList() {
@@ -1727,7 +1978,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         nodesBuilder_ = new com.google.protobuf.RepeatedFieldBuilder<
             io.lionweb.lioncore.java.serialization.protobuf.Node, io.lionweb.lioncore.java.serialization.protobuf.Node.Builder, io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder>(
                 nodes_,
-                ((bitField0_ & 0x00000010) != 0),
+                ((bitField0_ & 0x00000020) != 0),
                 getParentForChildren(),
                 isClean());
         nodes_ = null;

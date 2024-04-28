@@ -89,49 +89,83 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue);
       int key);
 
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  int getVersionsCount();
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  boolean containsVersions(
+      int key);
+  /**
+   * Use {@link #getVersionsMap()} instead.
+   */
+  @java.lang.Deprecated
+  java.util.Map<java.lang.Integer, java.lang.String>
+  getVersions();
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  java.util.Map<java.lang.Integer, java.lang.String>
+  getVersionsMap();
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  /* nullable */
+java.lang.String getVersionsOrDefault(
+      int key,
+      /* nullable */
+java.lang.String defaultValue);
+  /**
+   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   */
+  java.lang.String getVersionsOrThrow(
+      int key);
+
+  /**
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   java.util.List<io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage> 
       getLanguagesList();
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage getLanguages(int index);
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   int getLanguagesCount();
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   java.util.List<? extends io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder> 
       getLanguagesOrBuilderList();
   /**
-   * <code>repeated .lionweb.UsedLanguage languages = 4;</code>
+   * <code>repeated .lionweb.UsedLanguage languages = 5;</code>
    */
   io.lionweb.lioncore.java.serialization.protobuf.UsedLanguageOrBuilder getLanguagesOrBuilder(
       int index);
 
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   java.util.List<io.lionweb.lioncore.java.serialization.protobuf.Node> 
       getNodesList();
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   io.lionweb.lioncore.java.serialization.protobuf.Node getNodes(int index);
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   int getNodesCount();
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   java.util.List<? extends io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder> 
       getNodesOrBuilderList();
   /**
-   * <code>repeated .lionweb.Node nodes = 5;</code>
+   * <code>repeated .lionweb.Node nodes = 6;</code>
    */
   io.lionweb.lioncore.java.serialization.protobuf.NodeOrBuilder getNodesOrBuilder(
       int index);
