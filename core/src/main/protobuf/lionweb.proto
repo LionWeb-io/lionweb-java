@@ -9,10 +9,15 @@ option java_outer_classname = "Protobuf";
 
 message SerializationChunk {
   string serializationFormatVersion = 1;
-  map <uint32, bytes> idStrings = 2;
+  map <uint32, CompactedId> idStrings = 2;
   map <uint32, MetaPointer> metaPointers = 3;
   repeated UsedLanguage languages = 4;
   repeated Node nodes = 5;
+}
+
+message CompactedId {
+  uint32 length = 1;
+  bytes value = 2;
 }
 
 message MetaPointer {

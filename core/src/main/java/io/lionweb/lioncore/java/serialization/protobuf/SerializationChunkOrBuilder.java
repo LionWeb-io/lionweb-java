@@ -21,11 +21,11 @@ public interface SerializationChunkOrBuilder extends
       getSerializationFormatVersionBytes();
 
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   int getIdStringsCount();
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   boolean containsIdStrings(
       int key);
@@ -33,25 +33,25 @@ public interface SerializationChunkOrBuilder extends
    * Use {@link #getIdStringsMap()} instead.
    */
   @java.lang.Deprecated
-  java.util.Map<java.lang.Integer, com.google.protobuf.ByteString>
+  java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>
   getIdStrings();
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
-  java.util.Map<java.lang.Integer, com.google.protobuf.ByteString>
+  java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>
   getIdStringsMap();
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   /* nullable */
-com.google.protobuf.ByteString getIdStringsOrDefault(
+io.lionweb.lioncore.java.serialization.protobuf.CompactedId getIdStringsOrDefault(
       int key,
       /* nullable */
-com.google.protobuf.ByteString defaultValue);
+io.lionweb.lioncore.java.serialization.protobuf.CompactedId defaultValue);
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
-  com.google.protobuf.ByteString getIdStringsOrThrow(
+  io.lionweb.lioncore.java.serialization.protobuf.CompactedId getIdStringsOrThrow(
       int key);
 
   /**

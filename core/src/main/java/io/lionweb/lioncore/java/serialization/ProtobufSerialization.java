@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.serialization;
 
-import com.google.protobuf.ByteString;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
@@ -13,13 +12,13 @@ import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.lioncore.java.serialization.data.UsedLanguage;
+import io.lionweb.lioncore.java.serialization.protobuf.CompactedId;
 import io.lionweb.lioncore.java.serialization.protobuf.ReferenceTarget;
 import io.lionweb.lioncore.java.serialization.protobuf.SerializationChunk;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -110,10 +109,9 @@ public class ProtobufSerialization implements ISerialization {
 
         private int idString(String id) {
             return idStrings.computeIfAbsent(id, k -> {
-//                byte[] bytes = Base64.getUrlDecoder().decode(id);
-                byte[] bytes = id.getBytes(StandardCharsets.UTF_8);
+                CompactedId compactedId = IdCompactor.compact(id);
                 int key = chunk.getIdStringsCount();
-                chunk.putIdStrings(key, ByteString.copyFrom(bytes));
+                chunk.putIdStrings(key, compactedId);
                 return key;
             });
         }
@@ -241,7 +239,8 @@ public class ProtobufSerialization implements ISerialization {
         }
 
         private String idString(int idStringIndex) {
-            return chunk.getIdStringsOrThrow(idStringIndex).toStringUtf8();
+            CompactedId compactedId = chunk.getIdStringsOrThrow(idStringIndex);
+            return IdCompactor.expand(compactedId);
         }
     }
 

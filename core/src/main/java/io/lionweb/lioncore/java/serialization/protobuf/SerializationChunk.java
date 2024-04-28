@@ -100,19 +100,19 @@ private static final long serialVersionUID = 0L;
   public static final int IDSTRINGS_FIELD_NUMBER = 2;
   private static final class IdStringsDefaultEntryHolder {
     static final com.google.protobuf.MapEntry<
-        java.lang.Integer, com.google.protobuf.ByteString> defaultEntry =
+        java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> defaultEntry =
             com.google.protobuf.MapEntry
-            .<java.lang.Integer, com.google.protobuf.ByteString>newDefaultInstance(
+            .<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>newDefaultInstance(
                 io.lionweb.lioncore.java.serialization.protobuf.Protobuf.internal_static_lionweb_SerializationChunk_IdStringsEntry_descriptor, 
                 com.google.protobuf.WireFormat.FieldType.UINT32,
                 0,
-                com.google.protobuf.WireFormat.FieldType.BYTES,
-                com.google.protobuf.ByteString.EMPTY);
+                com.google.protobuf.WireFormat.FieldType.MESSAGE,
+                io.lionweb.lioncore.java.serialization.protobuf.CompactedId.getDefaultInstance());
   }
   @SuppressWarnings("serial")
   private com.google.protobuf.MapField<
-      java.lang.Integer, com.google.protobuf.ByteString> idStrings_;
-  private com.google.protobuf.MapField<java.lang.Integer, com.google.protobuf.ByteString>
+      java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> idStrings_;
+  private com.google.protobuf.MapField<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>
   internalGetIdStrings() {
     if (idStrings_ == null) {
       return com.google.protobuf.MapField.emptyMapField(
@@ -124,7 +124,7 @@ private static final long serialVersionUID = 0L;
     return internalGetIdStrings().getMap().size();
   }
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   @java.lang.Override
   public boolean containsIdStrings(
@@ -137,38 +137,38 @@ private static final long serialVersionUID = 0L;
    */
   @java.lang.Override
   @java.lang.Deprecated
-  public java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> getIdStrings() {
+  public java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> getIdStrings() {
     return getIdStringsMap();
   }
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   @java.lang.Override
-  public java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> getIdStringsMap() {
+  public java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> getIdStringsMap() {
     return internalGetIdStrings().getMap();
   }
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   @java.lang.Override
   public /* nullable */
-com.google.protobuf.ByteString getIdStringsOrDefault(
+io.lionweb.lioncore.java.serialization.protobuf.CompactedId getIdStringsOrDefault(
       int key,
       /* nullable */
-com.google.protobuf.ByteString defaultValue) {
+io.lionweb.lioncore.java.serialization.protobuf.CompactedId defaultValue) {
 
-    java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> map =
+    java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> map =
         internalGetIdStrings().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
   }
   /**
-   * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+   * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
    */
   @java.lang.Override
-  public com.google.protobuf.ByteString getIdStringsOrThrow(
+  public io.lionweb.lioncore.java.serialization.protobuf.CompactedId getIdStringsOrThrow(
       int key) {
 
-    java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> map =
+    java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> map =
         internalGetIdStrings().getMap();
     if (!map.containsKey(key)) {
       throw new java.lang.IllegalArgumentException();
@@ -384,9 +384,9 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     if (!com.google.protobuf.GeneratedMessage.isStringEmpty(serializationFormatVersion_)) {
       size += com.google.protobuf.GeneratedMessage.computeStringSize(1, serializationFormatVersion_);
     }
-    for (java.util.Map.Entry<java.lang.Integer, com.google.protobuf.ByteString> entry
+    for (java.util.Map.Entry<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> entry
          : internalGetIdStrings().getMap().entrySet()) {
-      com.google.protobuf.MapEntry<java.lang.Integer, com.google.protobuf.ByteString>
+      com.google.protobuf.MapEntry<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>
       idStrings__ = IdStringsDefaultEntryHolder.defaultEntry.newBuilderForType()
           .setKey(entry.getKey())
           .setValue(entry.getValue())
@@ -699,8 +699,7 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
         result.serializationFormatVersion_ = serializationFormatVersion_;
       }
       if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.idStrings_ = internalGetIdStrings();
-        result.idStrings_.makeImmutable();
+        result.idStrings_ = internalGetIdStrings().build(IdStringsDefaultEntryHolder.defaultEntry);
       }
       if (((from_bitField0_ & 0x00000004) != 0)) {
         result.metaPointers_ = internalGetMetaPointers().build(MetaPointersDefaultEntryHolder.defaultEntry);
@@ -814,10 +813,10 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
               break;
             } // case 10
             case 18: {
-              com.google.protobuf.MapEntry<java.lang.Integer, com.google.protobuf.ByteString>
+              com.google.protobuf.MapEntry<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>
               idStrings__ = input.readMessage(
                   IdStringsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              internalGetMutableIdStrings().getMutableMap().put(
+              internalGetMutableIdStrings().ensureBuilderMap().put(
                   idStrings__.getKey(), idStrings__.getValue());
               bitField0_ |= 0x00000002;
               break;
@@ -946,97 +945,103 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
       return this;
     }
 
-    private com.google.protobuf.MapField<
-        java.lang.Integer, com.google.protobuf.ByteString> idStrings_;
-    private com.google.protobuf.MapField<java.lang.Integer, com.google.protobuf.ByteString>
+    private static final class IdStringsConverter implements com.google.protobuf.MapFieldBuilder.Converter<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> {
+      @java.lang.Override
+      public io.lionweb.lioncore.java.serialization.protobuf.CompactedId build(io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder val) {
+        if (val instanceof io.lionweb.lioncore.java.serialization.protobuf.CompactedId) { return (io.lionweb.lioncore.java.serialization.protobuf.CompactedId) val; }
+        return ((io.lionweb.lioncore.java.serialization.protobuf.CompactedId.Builder) val).build();
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.MapEntry<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> defaultEntry() {
+        return IdStringsDefaultEntryHolder.defaultEntry;
+      }
+    };
+    private static final IdStringsConverter idStringsConverter = new IdStringsConverter();
+
+    private com.google.protobuf.MapFieldBuilder<
+        java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder, io.lionweb.lioncore.java.serialization.protobuf.CompactedId, io.lionweb.lioncore.java.serialization.protobuf.CompactedId.Builder> idStrings_;
+    private com.google.protobuf.MapFieldBuilder<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder, io.lionweb.lioncore.java.serialization.protobuf.CompactedId, io.lionweb.lioncore.java.serialization.protobuf.CompactedId.Builder>
         internalGetIdStrings() {
       if (idStrings_ == null) {
-        return com.google.protobuf.MapField.emptyMapField(
-            IdStringsDefaultEntryHolder.defaultEntry);
+        return new com.google.protobuf.MapFieldBuilder<>(idStringsConverter);
       }
       return idStrings_;
     }
-    private com.google.protobuf.MapField<java.lang.Integer, com.google.protobuf.ByteString>
+    private com.google.protobuf.MapFieldBuilder<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder, io.lionweb.lioncore.java.serialization.protobuf.CompactedId, io.lionweb.lioncore.java.serialization.protobuf.CompactedId.Builder>
         internalGetMutableIdStrings() {
       if (idStrings_ == null) {
-        idStrings_ = com.google.protobuf.MapField.newMapField(
-            IdStringsDefaultEntryHolder.defaultEntry);
-      }
-      if (!idStrings_.isMutable()) {
-        idStrings_ = idStrings_.copy();
+        idStrings_ = new com.google.protobuf.MapFieldBuilder<>(idStringsConverter);
       }
       bitField0_ |= 0x00000002;
       onChanged();
       return idStrings_;
     }
     public int getIdStringsCount() {
-      return internalGetIdStrings().getMap().size();
+      return internalGetIdStrings().ensureBuilderMap().size();
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     @java.lang.Override
     public boolean containsIdStrings(
         int key) {
 
-      return internalGetIdStrings().getMap().containsKey(key);
+      return internalGetIdStrings().ensureBuilderMap().containsKey(key);
     }
     /**
      * Use {@link #getIdStringsMap()} instead.
      */
     @java.lang.Override
     @java.lang.Deprecated
-    public java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> getIdStrings() {
+    public java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> getIdStrings() {
       return getIdStringsMap();
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     @java.lang.Override
-    public java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> getIdStringsMap() {
-      return internalGetIdStrings().getMap();
+    public java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> getIdStringsMap() {
+      return internalGetIdStrings().getImmutableMap();
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     @java.lang.Override
     public /* nullable */
-com.google.protobuf.ByteString getIdStringsOrDefault(
+io.lionweb.lioncore.java.serialization.protobuf.CompactedId getIdStringsOrDefault(
         int key,
         /* nullable */
-com.google.protobuf.ByteString defaultValue) {
+io.lionweb.lioncore.java.serialization.protobuf.CompactedId defaultValue) {
 
-      java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> map =
-          internalGetIdStrings().getMap();
-      return map.containsKey(key) ? map.get(key) : defaultValue;
+      java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder> map = internalGetMutableIdStrings().ensureBuilderMap();
+      return map.containsKey(key) ? idStringsConverter.build(map.get(key)) : defaultValue;
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     @java.lang.Override
-    public com.google.protobuf.ByteString getIdStringsOrThrow(
+    public io.lionweb.lioncore.java.serialization.protobuf.CompactedId getIdStringsOrThrow(
         int key) {
 
-      java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> map =
-          internalGetIdStrings().getMap();
+      java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder> map = internalGetMutableIdStrings().ensureBuilderMap();
       if (!map.containsKey(key)) {
         throw new java.lang.IllegalArgumentException();
       }
-      return map.get(key);
+      return idStringsConverter.build(map.get(key));
     }
     public Builder clearIdStrings() {
       bitField0_ = (bitField0_ & ~0x00000002);
-      internalGetMutableIdStrings().getMutableMap()
-          .clear();
+      internalGetMutableIdStrings().clear();
       return this;
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     public Builder removeIdStrings(
         int key) {
 
-      internalGetMutableIdStrings().getMutableMap()
+      internalGetMutableIdStrings().ensureBuilderMap()
           .remove(key);
       return this;
     }
@@ -1044,33 +1049,55 @@ com.google.protobuf.ByteString defaultValue) {
      * Use alternate mutation accessors instead.
      */
     @java.lang.Deprecated
-    public java.util.Map<java.lang.Integer, com.google.protobuf.ByteString>
+    public java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId>
         getMutableIdStrings() {
       bitField0_ |= 0x00000002;
-      return internalGetMutableIdStrings().getMutableMap();
+      return internalGetMutableIdStrings().ensureMessageMap();
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     public Builder putIdStrings(
         int key,
-        com.google.protobuf.ByteString value) {
+        io.lionweb.lioncore.java.serialization.protobuf.CompactedId value) {
 
       if (value == null) { throw new NullPointerException("map value"); }
-      internalGetMutableIdStrings().getMutableMap()
+      internalGetMutableIdStrings().ensureBuilderMap()
           .put(key, value);
       bitField0_ |= 0x00000002;
       return this;
     }
     /**
-     * <code>map&lt;uint32, bytes&gt; idStrings = 2;</code>
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
      */
     public Builder putAllIdStrings(
-        java.util.Map<java.lang.Integer, com.google.protobuf.ByteString> values) {
-      internalGetMutableIdStrings().getMutableMap()
+        java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> values) {
+      for (java.util.Map.Entry<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedId> e : values.entrySet()) {
+        if (e.getKey() == null || e.getValue() == null) {
+          throw new NullPointerException();
+        }
+      }
+      internalGetMutableIdStrings().ensureBuilderMap()
           .putAll(values);
       bitField0_ |= 0x00000002;
       return this;
+    }
+    /**
+     * <code>map&lt;uint32, .lionweb.CompactedId&gt; idStrings = 2;</code>
+     */
+    public io.lionweb.lioncore.java.serialization.protobuf.CompactedId.Builder putIdStringsBuilderIfAbsent(
+        int key) {
+      java.util.Map<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder> builderMap = internalGetMutableIdStrings().ensureBuilderMap();
+      io.lionweb.lioncore.java.serialization.protobuf.CompactedIdOrBuilder entry = builderMap.get(key);
+      if (entry == null) {
+        entry = io.lionweb.lioncore.java.serialization.protobuf.CompactedId.newBuilder();
+        builderMap.put(key, entry);
+      }
+      if (entry instanceof io.lionweb.lioncore.java.serialization.protobuf.CompactedId) {
+        entry = ((io.lionweb.lioncore.java.serialization.protobuf.CompactedId) entry).toBuilder();
+        builderMap.put(key, entry);
+      }
+      return (io.lionweb.lioncore.java.serialization.protobuf.CompactedId.Builder) entry;
     }
 
     private static final class MetaPointersConverter implements com.google.protobuf.MapFieldBuilder.Converter<java.lang.Integer, io.lionweb.lioncore.java.serialization.protobuf.MetaPointerOrBuilder, io.lionweb.lioncore.java.serialization.protobuf.MetaPointer> {
