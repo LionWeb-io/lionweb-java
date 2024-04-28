@@ -15,14 +15,8 @@ public interface PropertyOrBuilder extends
   int getMetaPointer();
 
   /**
-   * <code>string value = 2;</code>
+   * <code>uint32 value = 2;</code>
    * @return The value.
    */
-  java.lang.String getValue();
-  /**
-   * <code>string value = 2;</code>
-   * @return The bytes for value.
-   */
-  com.google.protobuf.ByteString
-      getValueBytes();
+  int getValue();
 }

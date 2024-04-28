@@ -89,37 +89,37 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue);
       int key);
 
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
-  int getVersionsCount();
+  int getStringsCount();
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
-  boolean containsVersions(
+  boolean containsStrings(
       int key);
   /**
-   * Use {@link #getVersionsMap()} instead.
+   * Use {@link #getStringsMap()} instead.
    */
   @java.lang.Deprecated
   java.util.Map<java.lang.Integer, java.lang.String>
-  getVersions();
+  getStrings();
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
   java.util.Map<java.lang.Integer, java.lang.String>
-  getVersionsMap();
+  getStringsMap();
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
   /* nullable */
-java.lang.String getVersionsOrDefault(
+java.lang.String getStringsOrDefault(
       int key,
       /* nullable */
 java.lang.String defaultValue);
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
-  java.lang.String getVersionsOrThrow(
+  java.lang.String getStringsOrThrow(
       int key);
 
   /**

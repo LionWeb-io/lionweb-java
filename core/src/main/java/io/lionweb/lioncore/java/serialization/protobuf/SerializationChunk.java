@@ -46,7 +46,7 @@ private static final long serialVersionUID = 0L;
       case 3:
         return internalGetMetaPointers();
       case 4:
-        return internalGetVersions();
+        return internalGetStrings();
       default:
         throw new RuntimeException(
             "Invalid map field number: " + number);
@@ -257,13 +257,13 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     return map.get(key);
   }
 
-  public static final int VERSIONS_FIELD_NUMBER = 4;
-  private static final class VersionsDefaultEntryHolder {
+  public static final int STRINGS_FIELD_NUMBER = 4;
+  private static final class StringsDefaultEntryHolder {
     static final com.google.protobuf.MapEntry<
         java.lang.Integer, java.lang.String> defaultEntry =
             com.google.protobuf.MapEntry
             .<java.lang.Integer, java.lang.String>newDefaultInstance(
-                io.lionweb.lioncore.java.serialization.protobuf.Protobuf.internal_static_lionweb_SerializationChunk_VersionsEntry_descriptor, 
+                io.lionweb.lioncore.java.serialization.protobuf.Protobuf.internal_static_lionweb_SerializationChunk_StringsEntry_descriptor, 
                 com.google.protobuf.WireFormat.FieldType.UINT32,
                 0,
                 com.google.protobuf.WireFormat.FieldType.STRING,
@@ -271,65 +271,65 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
   }
   @SuppressWarnings("serial")
   private com.google.protobuf.MapField<
-      java.lang.Integer, java.lang.String> versions_;
+      java.lang.Integer, java.lang.String> strings_;
   private com.google.protobuf.MapField<java.lang.Integer, java.lang.String>
-  internalGetVersions() {
-    if (versions_ == null) {
+  internalGetStrings() {
+    if (strings_ == null) {
       return com.google.protobuf.MapField.emptyMapField(
-          VersionsDefaultEntryHolder.defaultEntry);
+          StringsDefaultEntryHolder.defaultEntry);
     }
-    return versions_;
+    return strings_;
   }
-  public int getVersionsCount() {
-    return internalGetVersions().getMap().size();
+  public int getStringsCount() {
+    return internalGetStrings().getMap().size();
   }
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
   @java.lang.Override
-  public boolean containsVersions(
+  public boolean containsStrings(
       int key) {
 
-    return internalGetVersions().getMap().containsKey(key);
+    return internalGetStrings().getMap().containsKey(key);
   }
   /**
-   * Use {@link #getVersionsMap()} instead.
+   * Use {@link #getStringsMap()} instead.
    */
   @java.lang.Override
   @java.lang.Deprecated
-  public java.util.Map<java.lang.Integer, java.lang.String> getVersions() {
-    return getVersionsMap();
+  public java.util.Map<java.lang.Integer, java.lang.String> getStrings() {
+    return getStringsMap();
   }
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
   @java.lang.Override
-  public java.util.Map<java.lang.Integer, java.lang.String> getVersionsMap() {
-    return internalGetVersions().getMap();
+  public java.util.Map<java.lang.Integer, java.lang.String> getStringsMap() {
+    return internalGetStrings().getMap();
   }
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
   @java.lang.Override
   public /* nullable */
-java.lang.String getVersionsOrDefault(
+java.lang.String getStringsOrDefault(
       int key,
       /* nullable */
 java.lang.String defaultValue) {
 
     java.util.Map<java.lang.Integer, java.lang.String> map =
-        internalGetVersions().getMap();
+        internalGetStrings().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
   }
   /**
-   * <code>map&lt;uint32, string&gt; versions = 4;</code>
+   * <code>map&lt;uint32, string&gt; strings = 4;</code>
    */
   @java.lang.Override
-  public java.lang.String getVersionsOrThrow(
+  public java.lang.String getStringsOrThrow(
       int key) {
 
     java.util.Map<java.lang.Integer, java.lang.String> map =
-        internalGetVersions().getMap();
+        internalGetStrings().getMap();
     if (!map.containsKey(key)) {
       throw new java.lang.IllegalArgumentException();
     }
@@ -450,8 +450,8 @@ java.lang.String defaultValue) {
     com.google.protobuf.GeneratedMessage
       .serializeIntegerMapTo(
         output,
-        internalGetVersions(),
-        VersionsDefaultEntryHolder.defaultEntry,
+        internalGetStrings(),
+        StringsDefaultEntryHolder.defaultEntry,
         4);
     for (int i = 0; i < languages_.size(); i++) {
       output.writeMessage(5, languages_.get(i));
@@ -492,14 +492,14 @@ java.lang.String defaultValue) {
           .computeMessageSize(3, metaPointers__);
     }
     for (java.util.Map.Entry<java.lang.Integer, java.lang.String> entry
-         : internalGetVersions().getMap().entrySet()) {
+         : internalGetStrings().getMap().entrySet()) {
       com.google.protobuf.MapEntry<java.lang.Integer, java.lang.String>
-      versions__ = VersionsDefaultEntryHolder.defaultEntry.newBuilderForType()
+      strings__ = StringsDefaultEntryHolder.defaultEntry.newBuilderForType()
           .setKey(entry.getKey())
           .setValue(entry.getValue())
           .build();
       size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(4, versions__);
+          .computeMessageSize(4, strings__);
     }
     for (int i = 0; i < languages_.size(); i++) {
       size += com.google.protobuf.CodedOutputStream
@@ -530,8 +530,8 @@ java.lang.String defaultValue) {
         other.internalGetIdStrings())) return false;
     if (!internalGetMetaPointers().equals(
         other.internalGetMetaPointers())) return false;
-    if (!internalGetVersions().equals(
-        other.internalGetVersions())) return false;
+    if (!internalGetStrings().equals(
+        other.internalGetStrings())) return false;
     if (!getLanguagesList()
         .equals(other.getLanguagesList())) return false;
     if (!getNodesList()
@@ -557,9 +557,9 @@ java.lang.String defaultValue) {
       hash = (37 * hash) + METAPOINTERS_FIELD_NUMBER;
       hash = (53 * hash) + internalGetMetaPointers().hashCode();
     }
-    if (!internalGetVersions().getMap().isEmpty()) {
-      hash = (37 * hash) + VERSIONS_FIELD_NUMBER;
-      hash = (53 * hash) + internalGetVersions().hashCode();
+    if (!internalGetStrings().getMap().isEmpty()) {
+      hash = (37 * hash) + STRINGS_FIELD_NUMBER;
+      hash = (53 * hash) + internalGetStrings().hashCode();
     }
     if (getLanguagesCount() > 0) {
       hash = (37 * hash) + LANGUAGES_FIELD_NUMBER;
@@ -687,7 +687,7 @@ java.lang.String defaultValue) {
         case 3:
           return internalGetMetaPointers();
         case 4:
-          return internalGetVersions();
+          return internalGetStrings();
         default:
           throw new RuntimeException(
               "Invalid map field number: " + number);
@@ -702,7 +702,7 @@ java.lang.String defaultValue) {
         case 3:
           return internalGetMutableMetaPointers();
         case 4:
-          return internalGetMutableVersions();
+          return internalGetMutableStrings();
         default:
           throw new RuntimeException(
               "Invalid map field number: " + number);
@@ -733,7 +733,7 @@ java.lang.String defaultValue) {
       serializationFormatVersion_ = "";
       internalGetMutableIdStrings().clear();
       internalGetMutableMetaPointers().clear();
-      internalGetMutableVersions().clear();
+      internalGetMutableStrings().clear();
       if (languagesBuilder_ == null) {
         languages_ = java.util.Collections.emptyList();
       } else {
@@ -813,8 +813,8 @@ java.lang.String defaultValue) {
         result.metaPointers_ = internalGetMetaPointers().build(MetaPointersDefaultEntryHolder.defaultEntry);
       }
       if (((from_bitField0_ & 0x00000008) != 0)) {
-        result.versions_ = internalGetVersions();
-        result.versions_.makeImmutable();
+        result.strings_ = internalGetStrings();
+        result.strings_.makeImmutable();
       }
     }
 
@@ -841,8 +841,8 @@ java.lang.String defaultValue) {
       internalGetMutableMetaPointers().mergeFrom(
           other.internalGetMetaPointers());
       bitField0_ |= 0x00000004;
-      internalGetMutableVersions().mergeFrom(
-          other.internalGetVersions());
+      internalGetMutableStrings().mergeFrom(
+          other.internalGetStrings());
       bitField0_ |= 0x00000008;
       if (languagesBuilder_ == null) {
         if (!other.languages_.isEmpty()) {
@@ -947,10 +947,10 @@ java.lang.String defaultValue) {
             } // case 26
             case 34: {
               com.google.protobuf.MapEntry<java.lang.Integer, java.lang.String>
-              versions__ = input.readMessage(
-                  VersionsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              internalGetMutableVersions().getMutableMap().put(
-                  versions__.getKey(), versions__.getValue());
+              strings__ = input.readMessage(
+                  StringsDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              internalGetMutableStrings().getMutableMap().put(
+                  strings__.getKey(), strings__.getValue());
               bitField0_ |= 0x00000008;
               break;
             } // case 34
@@ -1380,96 +1380,96 @@ io.lionweb.lioncore.java.serialization.protobuf.MetaPointer defaultValue) {
     }
 
     private com.google.protobuf.MapField<
-        java.lang.Integer, java.lang.String> versions_;
+        java.lang.Integer, java.lang.String> strings_;
     private com.google.protobuf.MapField<java.lang.Integer, java.lang.String>
-        internalGetVersions() {
-      if (versions_ == null) {
+        internalGetStrings() {
+      if (strings_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
-            VersionsDefaultEntryHolder.defaultEntry);
+            StringsDefaultEntryHolder.defaultEntry);
       }
-      return versions_;
+      return strings_;
     }
     private com.google.protobuf.MapField<java.lang.Integer, java.lang.String>
-        internalGetMutableVersions() {
-      if (versions_ == null) {
-        versions_ = com.google.protobuf.MapField.newMapField(
-            VersionsDefaultEntryHolder.defaultEntry);
+        internalGetMutableStrings() {
+      if (strings_ == null) {
+        strings_ = com.google.protobuf.MapField.newMapField(
+            StringsDefaultEntryHolder.defaultEntry);
       }
-      if (!versions_.isMutable()) {
-        versions_ = versions_.copy();
+      if (!strings_.isMutable()) {
+        strings_ = strings_.copy();
       }
       bitField0_ |= 0x00000008;
       onChanged();
-      return versions_;
+      return strings_;
     }
-    public int getVersionsCount() {
-      return internalGetVersions().getMap().size();
+    public int getStringsCount() {
+      return internalGetStrings().getMap().size();
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
     @java.lang.Override
-    public boolean containsVersions(
+    public boolean containsStrings(
         int key) {
 
-      return internalGetVersions().getMap().containsKey(key);
+      return internalGetStrings().getMap().containsKey(key);
     }
     /**
-     * Use {@link #getVersionsMap()} instead.
+     * Use {@link #getStringsMap()} instead.
      */
     @java.lang.Override
     @java.lang.Deprecated
-    public java.util.Map<java.lang.Integer, java.lang.String> getVersions() {
-      return getVersionsMap();
+    public java.util.Map<java.lang.Integer, java.lang.String> getStrings() {
+      return getStringsMap();
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
     @java.lang.Override
-    public java.util.Map<java.lang.Integer, java.lang.String> getVersionsMap() {
-      return internalGetVersions().getMap();
+    public java.util.Map<java.lang.Integer, java.lang.String> getStringsMap() {
+      return internalGetStrings().getMap();
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
     @java.lang.Override
     public /* nullable */
-java.lang.String getVersionsOrDefault(
+java.lang.String getStringsOrDefault(
         int key,
         /* nullable */
 java.lang.String defaultValue) {
 
       java.util.Map<java.lang.Integer, java.lang.String> map =
-          internalGetVersions().getMap();
+          internalGetStrings().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
     @java.lang.Override
-    public java.lang.String getVersionsOrThrow(
+    public java.lang.String getStringsOrThrow(
         int key) {
 
       java.util.Map<java.lang.Integer, java.lang.String> map =
-          internalGetVersions().getMap();
+          internalGetStrings().getMap();
       if (!map.containsKey(key)) {
         throw new java.lang.IllegalArgumentException();
       }
       return map.get(key);
     }
-    public Builder clearVersions() {
+    public Builder clearStrings() {
       bitField0_ = (bitField0_ & ~0x00000008);
-      internalGetMutableVersions().getMutableMap()
+      internalGetMutableStrings().getMutableMap()
           .clear();
       return this;
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
-    public Builder removeVersions(
+    public Builder removeStrings(
         int key) {
 
-      internalGetMutableVersions().getMutableMap()
+      internalGetMutableStrings().getMutableMap()
           .remove(key);
       return this;
     }
@@ -1478,29 +1478,29 @@ java.lang.String defaultValue) {
      */
     @java.lang.Deprecated
     public java.util.Map<java.lang.Integer, java.lang.String>
-        getMutableVersions() {
+        getMutableStrings() {
       bitField0_ |= 0x00000008;
-      return internalGetMutableVersions().getMutableMap();
+      return internalGetMutableStrings().getMutableMap();
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
-    public Builder putVersions(
+    public Builder putStrings(
         int key,
         java.lang.String value) {
 
       if (value == null) { throw new NullPointerException("map value"); }
-      internalGetMutableVersions().getMutableMap()
+      internalGetMutableStrings().getMutableMap()
           .put(key, value);
       bitField0_ |= 0x00000008;
       return this;
     }
     /**
-     * <code>map&lt;uint32, string&gt; versions = 4;</code>
+     * <code>map&lt;uint32, string&gt; strings = 4;</code>
      */
-    public Builder putAllVersions(
+    public Builder putAllStrings(
         java.util.Map<java.lang.Integer, java.lang.String> values) {
-      internalGetMutableVersions().getMutableMap()
+      internalGetMutableStrings().getMutableMap()
           .putAll(values);
       bitField0_ |= 0x00000008;
       return this;

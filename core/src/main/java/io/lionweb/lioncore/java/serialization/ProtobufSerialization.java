@@ -79,7 +79,7 @@ public class ProtobufSerialization implements ISerialization {
             builder
                     .addPropertiesBuilder()
                     .setMetaPointer(metaPointer(MetaPointer.from(property)))
-                    .setValue(serialized)
+                    .setValue(string(serialized))
                     .build();
         }
 
@@ -102,7 +102,7 @@ public class ProtobufSerialization implements ISerialization {
                     targetsBuilder.setReference(idString(v.getReferredID()));
                 }
                 if (v.getResolveInfo() != null) {
-                    targetsBuilder.setResolveInfo(v.getResolveInfo());
+                    targetsBuilder.setResolveInfo(string(v.getResolveInfo()));
                 }
                 targetsBuilder.build();
             });
@@ -124,17 +124,17 @@ public class ProtobufSerialization implements ISerialization {
                 usedLanguage(new UsedLanguage(k.getLanguage(), k.getVersion()));
                 builder.setLanguage(language);
                 builder.setKey(idString(k.getKey()));
-                builder.setVersion(version(k.getVersion()));
+                builder.setVersion(string(k.getVersion()));
                 int key = chunk.getMetaPointersCount();
                 chunk.putMetaPointers(key, builder.build());
                 return key;
             });
         }
 
-        private int version(String version) {
-            return versions.computeIfAbsent(version, k -> {
-                int key = chunk.getVersionsCount();
-                chunk.putVersions(key, version);
+        private int string(String str) {
+            return versions.computeIfAbsent(str, k -> {
+                int key = chunk.getStringsCount();
+                chunk.putStrings(key, str);
                 return key;
             });
         }
@@ -143,7 +143,7 @@ public class ProtobufSerialization implements ISerialization {
             usedLanguages.computeIfAbsent(usedLanguage, k -> {
                 io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.Builder builder = io.lionweb.lioncore.java.serialization.protobuf.UsedLanguage.newBuilder();
                 builder.setLanguage(idString(k.getKey()));
-                builder.setVersion(version(k.getVersion()));
+                builder.setVersion(string(k.getVersion()));
                 int key = chunk.getLanguagesCount();
                 chunk.addLanguages(builder.build());
                 return key;
@@ -200,7 +200,7 @@ public class ProtobufSerialization implements ISerialization {
             Map<Property, Object> propertiesValues = new HashMap<>();
             node.getPropertiesList().forEach(prop -> {
                 Property property = classifier.getPropertyByMetaPointer(metaPointer(prop.getMetaPointer()));
-                Object deserializedValue = primitiveValuesSerialization.deserialize(property.getType(), prop.getValue(), property.isRequired());
+                Object deserializedValue = primitiveValuesSerialization.deserialize(property.getType(), string(prop.getValue()), property.isRequired());
                 propertiesValues.put(property, deserializedValue);
             });
 
@@ -223,7 +223,7 @@ public class ProtobufSerialization implements ISerialization {
             });
             node.getReferencesList().forEach(r -> {
                 Reference ref = (Reference) feature(instance.getClassifier(), r.getMetaPointer());
-                r.getTargetsList().forEach(t -> instance.addReferenceValue(ref, new ReferenceValue((Node) deserializedByID.get(idString(t.getReference())), t.getResolveInfo())));
+                r.getTargetsList().forEach(t -> instance.addReferenceValue(ref, new ReferenceValue((Node) deserializedByID.get(idString(t.getReference())), string(t.getResolveInfo()))));
             });
             node.getAnnotationsList().forEach(a -> instance.getAnnotations().add((AnnotationInstance) deserializedByID.get(idString(a))));
 
@@ -244,7 +244,7 @@ public class ProtobufSerialization implements ISerialization {
         }
 
         private MetaPointer metaPointer(io.lionweb.lioncore.java.serialization.protobuf.MetaPointer pr) {
-            return new MetaPointer(idString(pr.getLanguage()), version(pr.getVersion()), idString(pr.getKey()));
+            return new MetaPointer(idString(pr.getLanguage()), string(pr.getVersion()), idString(pr.getKey()));
         }
 
         private String idString(int idStringIndex) {
@@ -252,8 +252,8 @@ public class ProtobufSerialization implements ISerialization {
             return IdCompactor.expand(compactedId);
         }
 
-        private String version(int versionIndex) {
-            return chunk.getVersionsOrThrow(versionIndex);
+        private String string(int stringIndex) {
+            return chunk.getStringsOrThrow(stringIndex);
         }
     }
 

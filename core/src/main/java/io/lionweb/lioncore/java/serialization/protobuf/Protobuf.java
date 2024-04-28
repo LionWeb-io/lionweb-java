@@ -40,10 +40,10 @@ public final class Protobuf {
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internal_static_lionweb_SerializationChunk_MetaPointersEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_lionweb_SerializationChunk_VersionsEntry_descriptor;
+    internal_static_lionweb_SerializationChunk_StringsEntry_descriptor;
   static final 
     com.google.protobuf.GeneratedMessage.FieldAccessorTable
-      internal_static_lionweb_SerializationChunk_VersionsEntry_fieldAccessorTable;
+      internal_static_lionweb_SerializationChunk_StringsEntry_fieldAccessorTable;
   static final com.google.protobuf.Descriptors.Descriptor
     internal_static_lionweb_CompactedId_descriptor;
   static final 
@@ -93,37 +93,37 @@ public final class Protobuf {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\rlionweb.proto\022\007lionweb\"\205\004\n\022Serializati" +
+      "\n\rlionweb.proto\022\007lionweb\"\202\004\n\022Serializati" +
       "onChunk\022\"\n\032serializationFormatVersion\030\001 " +
       "\001(\t\022=\n\tidStrings\030\002 \003(\0132*.lionweb.Seriali" +
       "zationChunk.IdStringsEntry\022C\n\014metaPointe" +
       "rs\030\003 \003(\0132-.lionweb.SerializationChunk.Me" +
-      "taPointersEntry\022;\n\010versions\030\004 \003(\0132).lion" +
-      "web.SerializationChunk.VersionsEntry\022(\n\t" +
-      "languages\030\005 \003(\0132\025.lionweb.UsedLanguage\022\034" +
-      "\n\005nodes\030\006 \003(\0132\r.lionweb.Node\032F\n\016IdString" +
-      "sEntry\022\013\n\003key\030\001 \001(\r\022#\n\005value\030\002 \001(\0132\024.lio" +
-      "nweb.CompactedId:\0028\001\032I\n\021MetaPointersEntr" +
-      "y\022\013\n\003key\030\001 \001(\r\022#\n\005value\030\002 \001(\0132\024.lionweb." +
-      "MetaPointer:\0028\001\032/\n\rVersionsEntry\022\013\n\003key\030" +
-      "\001 \001(\r\022\r\n\005value\030\002 \001(\t:\0028\001\",\n\013CompactedId\022" +
-      "\016\n\006length\030\001 \001(\r\022\r\n\005value\030\002 \001(\014\"=\n\013MetaPo" +
-      "inter\022\020\n\010language\030\001 \001(\r\022\017\n\007version\030\002 \001(\r" +
-      "\022\013\n\003key\030\003 \001(\r\"1\n\014UsedLanguage\022\020\n\010languag" +
-      "e\030\001 \001(\r\022\017\n\007version\030\002 \001(\r\"\306\001\n\004Node\022\n\n\002id\030" +
-      "\001 \001(\r\022\016\n\006parent\030\002 \001(\r\022\022\n\nclassifier\030\003 \001(" +
-      "\r\022%\n\nproperties\030\004 \003(\0132\021.lionweb.Property" +
-      "\022*\n\014containments\030\005 \003(\0132\024.lionweb.Contain" +
-      "ment\022&\n\nreferences\030\006 \003(\0132\022.lionweb.Refer" +
-      "ence\022\023\n\013annotations\030\007 \003(\r\".\n\010Property\022\023\n" +
-      "\013metaPointer\030\001 \001(\r\022\r\n\005value\030\002 \001(\t\"4\n\013Con" +
-      "tainment\022\023\n\013metaPointer\030\001 \001(\r\022\020\n\010childre" +
-      "n\030\002 \003(\r\"K\n\tReference\022\023\n\013metaPointer\030\001 \001(" +
-      "\r\022)\n\007targets\030\002 \003(\0132\030.lionweb.ReferenceTa" +
-      "rget\"9\n\017ReferenceTarget\022\021\n\treference\030\001 \001" +
-      "(\r\022\023\n\013resolveInfo\030\002 \001(\tB=\n/io.lionweb.li" +
-      "oncore.java.serialization.protobufB\010Prot" +
-      "obufP\001b\006proto3"
+      "taPointersEntry\0229\n\007strings\030\004 \003(\0132(.lionw" +
+      "eb.SerializationChunk.StringsEntry\022(\n\tla" +
+      "nguages\030\005 \003(\0132\025.lionweb.UsedLanguage\022\034\n\005" +
+      "nodes\030\006 \003(\0132\r.lionweb.Node\032F\n\016IdStringsE" +
+      "ntry\022\013\n\003key\030\001 \001(\r\022#\n\005value\030\002 \001(\0132\024.lionw" +
+      "eb.CompactedId:\0028\001\032I\n\021MetaPointersEntry\022" +
+      "\013\n\003key\030\001 \001(\r\022#\n\005value\030\002 \001(\0132\024.lionweb.Me" +
+      "taPointer:\0028\001\032.\n\014StringsEntry\022\013\n\003key\030\001 \001" +
+      "(\r\022\r\n\005value\030\002 \001(\t:\0028\001\",\n\013CompactedId\022\016\n\006" +
+      "length\030\001 \001(\r\022\r\n\005value\030\002 \001(\014\"=\n\013MetaPoint" +
+      "er\022\020\n\010language\030\001 \001(\r\022\017\n\007version\030\002 \001(\r\022\013\n" +
+      "\003key\030\003 \001(\r\"1\n\014UsedLanguage\022\020\n\010language\030\001" +
+      " \001(\r\022\017\n\007version\030\002 \001(\r\"\306\001\n\004Node\022\n\n\002id\030\001 \001" +
+      "(\r\022\016\n\006parent\030\002 \001(\r\022\022\n\nclassifier\030\003 \001(\r\022%" +
+      "\n\nproperties\030\004 \003(\0132\021.lionweb.Property\022*\n" +
+      "\014containments\030\005 \003(\0132\024.lionweb.Containmen" +
+      "t\022&\n\nreferences\030\006 \003(\0132\022.lionweb.Referenc" +
+      "e\022\023\n\013annotations\030\007 \003(\r\".\n\010Property\022\023\n\013me" +
+      "taPointer\030\001 \001(\r\022\r\n\005value\030\002 \001(\r\"4\n\013Contai" +
+      "nment\022\023\n\013metaPointer\030\001 \001(\r\022\020\n\010children\030\002" +
+      " \003(\r\"K\n\tReference\022\023\n\013metaPointer\030\001 \001(\r\022)" +
+      "\n\007targets\030\002 \003(\0132\030.lionweb.ReferenceTarge" +
+      "t\"9\n\017ReferenceTarget\022\021\n\treference\030\001 \001(\r\022" +
+      "\023\n\013resolveInfo\030\002 \001(\rB=\n/io.lionweb.lionc" +
+      "ore.java.serialization.protobufB\010Protobu" +
+      "fP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -134,7 +134,7 @@ public final class Protobuf {
     internal_static_lionweb_SerializationChunk_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_lionweb_SerializationChunk_descriptor,
-        new java.lang.String[] { "SerializationFormatVersion", "IdStrings", "MetaPointers", "Versions", "Languages", "Nodes", });
+        new java.lang.String[] { "SerializationFormatVersion", "IdStrings", "MetaPointers", "Strings", "Languages", "Nodes", });
     internal_static_lionweb_SerializationChunk_IdStringsEntry_descriptor =
       internal_static_lionweb_SerializationChunk_descriptor.getNestedTypes().get(0);
     internal_static_lionweb_SerializationChunk_IdStringsEntry_fieldAccessorTable = new
@@ -147,11 +147,11 @@ public final class Protobuf {
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_lionweb_SerializationChunk_MetaPointersEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
-    internal_static_lionweb_SerializationChunk_VersionsEntry_descriptor =
+    internal_static_lionweb_SerializationChunk_StringsEntry_descriptor =
       internal_static_lionweb_SerializationChunk_descriptor.getNestedTypes().get(2);
-    internal_static_lionweb_SerializationChunk_VersionsEntry_fieldAccessorTable = new
+    internal_static_lionweb_SerializationChunk_StringsEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
-        internal_static_lionweb_SerializationChunk_VersionsEntry_descriptor,
+        internal_static_lionweb_SerializationChunk_StringsEntry_descriptor,
         new java.lang.String[] { "Key", "Value", });
     internal_static_lionweb_CompactedId_descriptor =
       getDescriptor().getMessageTypes().get(1);

@@ -26,7 +26,6 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private ReferenceTarget() {
-    resolveInfo_ = "";
   }
 
   public static final com.google.protobuf.Descriptors.Descriptor
@@ -54,42 +53,14 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int RESOLVEINFO_FIELD_NUMBER = 2;
-  @SuppressWarnings("serial")
-  private volatile java.lang.Object resolveInfo_ = "";
+  private int resolveInfo_ = 0;
   /**
-   * <code>string resolveInfo = 2;</code>
+   * <code>uint32 resolveInfo = 2;</code>
    * @return The resolveInfo.
    */
   @java.lang.Override
-  public java.lang.String getResolveInfo() {
-    java.lang.Object ref = resolveInfo_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      resolveInfo_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string resolveInfo = 2;</code>
-   * @return The bytes for resolveInfo.
-   */
-  @java.lang.Override
-  public com.google.protobuf.ByteString
-      getResolveInfoBytes() {
-    java.lang.Object ref = resolveInfo_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      resolveInfo_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public int getResolveInfo() {
+    return resolveInfo_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -109,8 +80,8 @@ private static final long serialVersionUID = 0L;
     if (reference_ != 0) {
       output.writeUInt32(1, reference_);
     }
-    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(resolveInfo_)) {
-      com.google.protobuf.GeneratedMessage.writeString(output, 2, resolveInfo_);
+    if (resolveInfo_ != 0) {
+      output.writeUInt32(2, resolveInfo_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -125,8 +96,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeUInt32Size(1, reference_);
     }
-    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(resolveInfo_)) {
-      size += com.google.protobuf.GeneratedMessage.computeStringSize(2, resolveInfo_);
+    if (resolveInfo_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt32Size(2, resolveInfo_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -145,8 +117,8 @@ private static final long serialVersionUID = 0L;
 
     if (getReference()
         != other.getReference()) return false;
-    if (!getResolveInfo()
-        .equals(other.getResolveInfo())) return false;
+    if (getResolveInfo()
+        != other.getResolveInfo()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -161,7 +133,7 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + REFERENCE_FIELD_NUMBER;
     hash = (53 * hash) + getReference();
     hash = (37 * hash) + RESOLVEINFO_FIELD_NUMBER;
-    hash = (53 * hash) + getResolveInfo().hashCode();
+    hash = (53 * hash) + getResolveInfo();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -294,7 +266,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       reference_ = 0;
-      resolveInfo_ = "";
+      resolveInfo_ = 0;
       return this;
     }
 
@@ -351,10 +323,8 @@ private static final long serialVersionUID = 0L;
       if (other.getReference() != 0) {
         setReference(other.getReference());
       }
-      if (!other.getResolveInfo().isEmpty()) {
-        resolveInfo_ = other.resolveInfo_;
-        bitField0_ |= 0x00000002;
-        onChanged();
+      if (other.getResolveInfo() != 0) {
+        setResolveInfo(other.getResolveInfo());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -387,11 +357,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000001;
               break;
             } // case 8
-            case 18: {
-              resolveInfo_ = input.readStringRequireUtf8();
+            case 16: {
+              resolveInfo_ = input.readUInt32();
               bitField0_ |= 0x00000002;
               break;
-            } // case 18
+            } // case 16
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -441,74 +411,34 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object resolveInfo_ = "";
+    private int resolveInfo_ ;
     /**
-     * <code>string resolveInfo = 2;</code>
+     * <code>uint32 resolveInfo = 2;</code>
      * @return The resolveInfo.
      */
-    public java.lang.String getResolveInfo() {
-      java.lang.Object ref = resolveInfo_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        resolveInfo_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    @java.lang.Override
+    public int getResolveInfo() {
+      return resolveInfo_;
     }
     /**
-     * <code>string resolveInfo = 2;</code>
-     * @return The bytes for resolveInfo.
-     */
-    public com.google.protobuf.ByteString
-        getResolveInfoBytes() {
-      java.lang.Object ref = resolveInfo_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        resolveInfo_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string resolveInfo = 2;</code>
+     * <code>uint32 resolveInfo = 2;</code>
      * @param value The resolveInfo to set.
      * @return This builder for chaining.
      */
-    public Builder setResolveInfo(
-        java.lang.String value) {
-      if (value == null) { throw new NullPointerException(); }
+    public Builder setResolveInfo(int value) {
+
       resolveInfo_ = value;
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>string resolveInfo = 2;</code>
+     * <code>uint32 resolveInfo = 2;</code>
      * @return This builder for chaining.
      */
     public Builder clearResolveInfo() {
-      resolveInfo_ = getDefaultInstance().getResolveInfo();
       bitField0_ = (bitField0_ & ~0x00000002);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string resolveInfo = 2;</code>
-     * @param value The bytes for resolveInfo to set.
-     * @return This builder for chaining.
-     */
-    public Builder setResolveInfoBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) { throw new NullPointerException(); }
-      checkByteStringIsUtf8(value);
-      resolveInfo_ = value;
-      bitField0_ |= 0x00000002;
+      resolveInfo_ = 0;
       onChanged();
       return this;
     }

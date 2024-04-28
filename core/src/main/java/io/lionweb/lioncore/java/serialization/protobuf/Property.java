@@ -26,7 +26,6 @@ private static final long serialVersionUID = 0L;
     super(builder);
   }
   private Property() {
-    value_ = "";
   }
 
   public static final com.google.protobuf.Descriptors.Descriptor
@@ -54,42 +53,14 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int VALUE_FIELD_NUMBER = 2;
-  @SuppressWarnings("serial")
-  private volatile java.lang.Object value_ = "";
+  private int value_ = 0;
   /**
-   * <code>string value = 2;</code>
+   * <code>uint32 value = 2;</code>
    * @return The value.
    */
   @java.lang.Override
-  public java.lang.String getValue() {
-    java.lang.Object ref = value_;
-    if (ref instanceof java.lang.String) {
-      return (java.lang.String) ref;
-    } else {
-      com.google.protobuf.ByteString bs = 
-          (com.google.protobuf.ByteString) ref;
-      java.lang.String s = bs.toStringUtf8();
-      value_ = s;
-      return s;
-    }
-  }
-  /**
-   * <code>string value = 2;</code>
-   * @return The bytes for value.
-   */
-  @java.lang.Override
-  public com.google.protobuf.ByteString
-      getValueBytes() {
-    java.lang.Object ref = value_;
-    if (ref instanceof java.lang.String) {
-      com.google.protobuf.ByteString b = 
-          com.google.protobuf.ByteString.copyFromUtf8(
-              (java.lang.String) ref);
-      value_ = b;
-      return b;
-    } else {
-      return (com.google.protobuf.ByteString) ref;
-    }
+  public int getValue() {
+    return value_;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -109,8 +80,8 @@ private static final long serialVersionUID = 0L;
     if (metaPointer_ != 0) {
       output.writeUInt32(1, metaPointer_);
     }
-    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(value_)) {
-      com.google.protobuf.GeneratedMessage.writeString(output, 2, value_);
+    if (value_ != 0) {
+      output.writeUInt32(2, value_);
     }
     getUnknownFields().writeTo(output);
   }
@@ -125,8 +96,9 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeUInt32Size(1, metaPointer_);
     }
-    if (!com.google.protobuf.GeneratedMessage.isStringEmpty(value_)) {
-      size += com.google.protobuf.GeneratedMessage.computeStringSize(2, value_);
+    if (value_ != 0) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt32Size(2, value_);
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -145,8 +117,8 @@ private static final long serialVersionUID = 0L;
 
     if (getMetaPointer()
         != other.getMetaPointer()) return false;
-    if (!getValue()
-        .equals(other.getValue())) return false;
+    if (getValue()
+        != other.getValue()) return false;
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -161,7 +133,7 @@ private static final long serialVersionUID = 0L;
     hash = (37 * hash) + METAPOINTER_FIELD_NUMBER;
     hash = (53 * hash) + getMetaPointer();
     hash = (37 * hash) + VALUE_FIELD_NUMBER;
-    hash = (53 * hash) + getValue().hashCode();
+    hash = (53 * hash) + getValue();
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -294,7 +266,7 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       metaPointer_ = 0;
-      value_ = "";
+      value_ = 0;
       return this;
     }
 
@@ -351,10 +323,8 @@ private static final long serialVersionUID = 0L;
       if (other.getMetaPointer() != 0) {
         setMetaPointer(other.getMetaPointer());
       }
-      if (!other.getValue().isEmpty()) {
-        value_ = other.value_;
-        bitField0_ |= 0x00000002;
-        onChanged();
+      if (other.getValue() != 0) {
+        setValue(other.getValue());
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -387,11 +357,11 @@ private static final long serialVersionUID = 0L;
               bitField0_ |= 0x00000001;
               break;
             } // case 8
-            case 18: {
-              value_ = input.readStringRequireUtf8();
+            case 16: {
+              value_ = input.readUInt32();
               bitField0_ |= 0x00000002;
               break;
-            } // case 18
+            } // case 16
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -441,74 +411,34 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private java.lang.Object value_ = "";
+    private int value_ ;
     /**
-     * <code>string value = 2;</code>
+     * <code>uint32 value = 2;</code>
      * @return The value.
      */
-    public java.lang.String getValue() {
-      java.lang.Object ref = value_;
-      if (!(ref instanceof java.lang.String)) {
-        com.google.protobuf.ByteString bs =
-            (com.google.protobuf.ByteString) ref;
-        java.lang.String s = bs.toStringUtf8();
-        value_ = s;
-        return s;
-      } else {
-        return (java.lang.String) ref;
-      }
+    @java.lang.Override
+    public int getValue() {
+      return value_;
     }
     /**
-     * <code>string value = 2;</code>
-     * @return The bytes for value.
-     */
-    public com.google.protobuf.ByteString
-        getValueBytes() {
-      java.lang.Object ref = value_;
-      if (ref instanceof String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
-        value_ = b;
-        return b;
-      } else {
-        return (com.google.protobuf.ByteString) ref;
-      }
-    }
-    /**
-     * <code>string value = 2;</code>
+     * <code>uint32 value = 2;</code>
      * @param value The value to set.
      * @return This builder for chaining.
      */
-    public Builder setValue(
-        java.lang.String value) {
-      if (value == null) { throw new NullPointerException(); }
+    public Builder setValue(int value) {
+
       value_ = value;
       bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>string value = 2;</code>
+     * <code>uint32 value = 2;</code>
      * @return This builder for chaining.
      */
     public Builder clearValue() {
-      value_ = getDefaultInstance().getValue();
       bitField0_ = (bitField0_ & ~0x00000002);
-      onChanged();
-      return this;
-    }
-    /**
-     * <code>string value = 2;</code>
-     * @param value The bytes for value to set.
-     * @return This builder for chaining.
-     */
-    public Builder setValueBytes(
-        com.google.protobuf.ByteString value) {
-      if (value == null) { throw new NullPointerException(); }
-      checkByteStringIsUtf8(value);
-      value_ = value;
-      bitField0_ |= 0x00000002;
+      value_ = 0;
       onChanged();
       return this;
     }

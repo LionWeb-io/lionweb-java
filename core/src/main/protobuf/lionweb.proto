@@ -11,7 +11,7 @@ message SerializationChunk {
   string serializationFormatVersion = 1;
   map <uint32, CompactedId> idStrings = 2;
   map <uint32, MetaPointer> metaPointers = 3;
-  map <uint32, string> versions = 4;
+  map <uint32, string> strings = 4;
   repeated UsedLanguage languages = 5;
   repeated Node nodes = 6;
 }
@@ -44,7 +44,7 @@ message Node {
 
 message Property {
   uint32 metaPointer = 1;
-  string value = 2;
+  uint32 value = 2;
 }
 
 message Containment {
@@ -59,5 +59,5 @@ message Reference {
 
 message ReferenceTarget {
   uint32 reference = 1;
-  string resolveInfo = 2;
+  uint32 resolveInfo = 2;
 }

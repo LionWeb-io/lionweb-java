@@ -15,14 +15,8 @@ public interface ReferenceTargetOrBuilder extends
   int getReference();
 
   /**
-   * <code>string resolveInfo = 2;</code>
+   * <code>uint32 resolveInfo = 2;</code>
    * @return The resolveInfo.
    */
-  java.lang.String getResolveInfo();
-  /**
-   * <code>string resolveInfo = 2;</code>
-   * @return The bytes for resolveInfo.
-   */
-  com.google.protobuf.ByteString
-      getResolveInfoBytes();
+  int getResolveInfo();
 }

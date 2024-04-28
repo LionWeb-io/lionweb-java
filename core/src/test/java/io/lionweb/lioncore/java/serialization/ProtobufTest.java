@@ -24,16 +24,16 @@ public class ProtobufTest {
         library.addBook(de);
         library.addBook(bfd);
 
-        try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("library_s.protobuf"))) {
+        try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("library_ss.protobuf"))) {
             new ProtobufSerialization().serialize(Stream.of(library, mv, mb, de, bfd), outputStream);
         }
 
-        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream("library_s.protobuf"))) {
+        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream("library_ss.protobuf"))) {
             ProtobufSerialization protobufSerialization = new ProtobufSerialization();
             protobufSerialization.registerLanguage(LibraryLanguage.LIBRARY_MM);
             Stream<Node> stream = protobufSerialization.deserialize(inputStream);
 
-            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("library2_s.protobuf"))) {
+            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("library2_ss.protobuf"))) {
                 new ProtobufSerialization().serialize(stream, outputStream);
             }
         }
@@ -43,7 +43,7 @@ public class ProtobufTest {
     public void convertToProtobuf() throws IOException {
         try (InputStream inputStream = this.getClass().getResourceAsStream("/serialization/TestLang-language.json")) {
             List<Node> nodes = JsonSerialization.getStandardSerialization().deserializeToNodes(inputStream);
-            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("export_s.protobuf"))) {
+            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("export_ss.protobuf"))) {
                 new ProtobufSerialization().serialize(nodes.stream(), outputStream);
             }
         }
@@ -51,9 +51,9 @@ public class ProtobufTest {
 
     @Test
     public void convertToJson() throws IOException {
-        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream("export_s.protobuf"))) {
+        try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream("export_ss.protobuf"))) {
             Stream<Node> nodes = new ProtobufSerialization().deserialize(inputStream);
-            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("export_s.json"))) {
+            try (BufferedOutputStream outputStream = new BufferedOutputStream(new FileOutputStream("export_ss.json"))) {
                 JsonSerialization.getStandardSerialization().serialize(nodes, outputStream);
             }
         }
