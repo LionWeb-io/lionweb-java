@@ -75,12 +75,19 @@ public class ProtobufSerialization implements ISerialization {
             if (value == null) {
                 return;
             }
-            String serialized = primitiveValuesSerialization.serialize(property.getType().getID(), value);
-            builder
+
+            io.lionweb.lioncore.java.serialization.protobuf.Property.Builder propBuilder = builder
                     .addPropertiesBuilder()
-                    .setMetaPointer(metaPointer(MetaPointer.from(property)))
-                    .setValue(string(serialized))
-                    .build();
+                    .setMetaPointer(metaPointer(MetaPointer.from(property)));
+            if (value instanceof Boolean) {
+                propBuilder.setBoolean((Boolean) value);
+            } else if (value instanceof Integer) {
+                propBuilder.setInteger((Integer) value);
+            } else {
+                String serialized = primitiveValuesSerialization.serialize(property.getType().getID(), value);
+                propBuilder
+                        .setString(string(serialized));
+            }
         }
 
         private void serialize(io.lionweb.lioncore.java.serialization.protobuf.Node.Builder builder, Containment c, Node node) {
@@ -200,7 +207,18 @@ public class ProtobufSerialization implements ISerialization {
             Map<Property, Object> propertiesValues = new HashMap<>();
             node.getPropertiesList().forEach(prop -> {
                 Property property = classifier.getPropertyByMetaPointer(metaPointer(prop.getMetaPointer()));
-                Object deserializedValue = primitiveValuesSerialization.deserialize(property.getType(), string(prop.getValue()), property.isRequired());
+                Object deserializedValue;
+                switch (prop.getValueCase()) {
+                    case BOOLEAN:
+                        deserializedValue = prop.getBoolean();
+                        break;
+                    case INTEGER:
+                        deserializedValue = prop.getInteger();
+                        break;
+                    default:
+                        deserializedValue = primitiveValuesSerialization.deserialize(property.getType(), string(prop.getString()), property.isRequired());
+                        break;
+                }
                 propertiesValues.put(property, deserializedValue);
             });
 
@@ -213,7 +231,7 @@ public class ProtobufSerialization implements ISerialization {
         private Node link(io.lionweb.lioncore.java.serialization.protobuf.Node node) {
             String nodeId = idString(node.getId());
             ClassifierInstance<?> instance = deserializedByID.get(nodeId);
-            if(instance == null){
+            if (instance == null) {
                 System.err.println("Could not find node for " + nodeId);
                 return null;
             }

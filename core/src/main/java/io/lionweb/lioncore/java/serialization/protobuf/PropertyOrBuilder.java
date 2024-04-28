@@ -15,8 +15,37 @@ public interface PropertyOrBuilder extends
   int getMetaPointer();
 
   /**
-   * <code>uint32 value = 2;</code>
-   * @return The value.
+   * <code>bool boolean = 2;</code>
+   * @return Whether the boolean field is set.
    */
-  int getValue();
+  boolean hasBoolean();
+  /**
+   * <code>bool boolean = 2;</code>
+   * @return The boolean.
+   */
+  boolean getBoolean();
+
+  /**
+   * <code>int32 integer = 3;</code>
+   * @return Whether the integer field is set.
+   */
+  boolean hasInteger();
+  /**
+   * <code>int32 integer = 3;</code>
+   * @return The integer.
+   */
+  int getInteger();
+
+  /**
+   * <code>uint32 string = 4;</code>
+   * @return Whether the string field is set.
+   */
+  boolean hasString();
+  /**
+   * <code>uint32 string = 4;</code>
+   * @return The string.
+   */
+  int getString();
+
+  io.lionweb.lioncore.java.serialization.protobuf.Property.ValueCase getValueCase();
 }

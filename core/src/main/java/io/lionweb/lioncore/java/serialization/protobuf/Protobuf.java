@@ -115,15 +115,16 @@ public final class Protobuf {
       "\n\nproperties\030\004 \003(\0132\021.lionweb.Property\022*\n" +
       "\014containments\030\005 \003(\0132\024.lionweb.Containmen" +
       "t\022&\n\nreferences\030\006 \003(\0132\022.lionweb.Referenc" +
-      "e\022\023\n\013annotations\030\007 \003(\r\".\n\010Property\022\023\n\013me" +
-      "taPointer\030\001 \001(\r\022\r\n\005value\030\002 \001(\r\"4\n\013Contai" +
-      "nment\022\023\n\013metaPointer\030\001 \001(\r\022\020\n\010children\030\002" +
-      " \003(\r\"K\n\tReference\022\023\n\013metaPointer\030\001 \001(\r\022)" +
-      "\n\007targets\030\002 \003(\0132\030.lionweb.ReferenceTarge" +
-      "t\"9\n\017ReferenceTarget\022\021\n\treference\030\001 \001(\r\022" +
-      "\023\n\013resolveInfo\030\002 \001(\rB=\n/io.lionweb.lionc" +
-      "ore.java.serialization.protobufB\010Protobu" +
-      "fP\001b\006proto3"
+      "e\022\023\n\013annotations\030\007 \003(\r\"`\n\010Property\022\023\n\013me" +
+      "taPointer\030\001 \001(\r\022\021\n\007boolean\030\002 \001(\010H\000\022\021\n\007in" +
+      "teger\030\003 \001(\005H\000\022\020\n\006string\030\004 \001(\rH\000B\007\n\005value" +
+      "\"4\n\013Containment\022\023\n\013metaPointer\030\001 \001(\r\022\020\n\010" +
+      "children\030\002 \003(\r\"K\n\tReference\022\023\n\013metaPoint" +
+      "er\030\001 \001(\r\022)\n\007targets\030\002 \003(\0132\030.lionweb.Refe" +
+      "renceTarget\"9\n\017ReferenceTarget\022\021\n\trefere" +
+      "nce\030\001 \001(\r\022\023\n\013resolveInfo\030\002 \001(\rB=\n/io.lio" +
+      "nweb.lioncore.java.serialization.protobu" +
+      "fB\010ProtobufP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -182,7 +183,7 @@ public final class Protobuf {
     internal_static_lionweb_Property_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessage.FieldAccessorTable(
         internal_static_lionweb_Property_descriptor,
-        new java.lang.String[] { "MetaPointer", "Value", });
+        new java.lang.String[] { "MetaPointer", "Boolean", "Integer", "String", "Value", });
     internal_static_lionweb_Containment_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_lionweb_Containment_fieldAccessorTable = new

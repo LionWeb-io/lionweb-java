@@ -41,6 +41,50 @@ private static final long serialVersionUID = 0L;
             io.lionweb.lioncore.java.serialization.protobuf.Property.class, io.lionweb.lioncore.java.serialization.protobuf.Property.Builder.class);
   }
 
+  private int valueCase_ = 0;
+  @SuppressWarnings("serial")
+  private java.lang.Object value_;
+  public enum ValueCase
+      implements com.google.protobuf.Internal.EnumLite,
+          com.google.protobuf.AbstractMessage.InternalOneOfEnum {
+    BOOLEAN(2),
+    INTEGER(3),
+    STRING(4),
+    VALUE_NOT_SET(0);
+    private final int value;
+    private ValueCase(int value) {
+      this.value = value;
+    }
+    /**
+     * @param value The number of the enum to look for.
+     * @return The enum associated with the given number.
+     * @deprecated Use {@link #forNumber(int)} instead.
+     */
+    @java.lang.Deprecated
+    public static ValueCase valueOf(int value) {
+      return forNumber(value);
+    }
+
+    public static ValueCase forNumber(int value) {
+      switch (value) {
+        case 2: return BOOLEAN;
+        case 3: return INTEGER;
+        case 4: return STRING;
+        case 0: return VALUE_NOT_SET;
+        default: return null;
+      }
+    }
+    public int getNumber() {
+      return this.value;
+    }
+  };
+
+  public ValueCase
+  getValueCase() {
+    return ValueCase.forNumber(
+        valueCase_);
+  }
+
   public static final int METAPOINTER_FIELD_NUMBER = 1;
   private int metaPointer_ = 0;
   /**
@@ -52,15 +96,67 @@ private static final long serialVersionUID = 0L;
     return metaPointer_;
   }
 
-  public static final int VALUE_FIELD_NUMBER = 2;
-  private int value_ = 0;
+  public static final int BOOLEAN_FIELD_NUMBER = 2;
   /**
-   * <code>uint32 value = 2;</code>
-   * @return The value.
+   * <code>bool boolean = 2;</code>
+   * @return Whether the boolean field is set.
    */
   @java.lang.Override
-  public int getValue() {
-    return value_;
+  public boolean hasBoolean() {
+    return valueCase_ == 2;
+  }
+  /**
+   * <code>bool boolean = 2;</code>
+   * @return The boolean.
+   */
+  @java.lang.Override
+  public boolean getBoolean() {
+    if (valueCase_ == 2) {
+      return (java.lang.Boolean) value_;
+    }
+    return false;
+  }
+
+  public static final int INTEGER_FIELD_NUMBER = 3;
+  /**
+   * <code>int32 integer = 3;</code>
+   * @return Whether the integer field is set.
+   */
+  @java.lang.Override
+  public boolean hasInteger() {
+    return valueCase_ == 3;
+  }
+  /**
+   * <code>int32 integer = 3;</code>
+   * @return The integer.
+   */
+  @java.lang.Override
+  public int getInteger() {
+    if (valueCase_ == 3) {
+      return (java.lang.Integer) value_;
+    }
+    return 0;
+  }
+
+  public static final int STRING_FIELD_NUMBER = 4;
+  /**
+   * <code>uint32 string = 4;</code>
+   * @return Whether the string field is set.
+   */
+  @java.lang.Override
+  public boolean hasString() {
+    return valueCase_ == 4;
+  }
+  /**
+   * <code>uint32 string = 4;</code>
+   * @return The string.
+   */
+  @java.lang.Override
+  public int getString() {
+    if (valueCase_ == 4) {
+      return (java.lang.Integer) value_;
+    }
+    return 0;
   }
 
   private byte memoizedIsInitialized = -1;
@@ -80,8 +176,17 @@ private static final long serialVersionUID = 0L;
     if (metaPointer_ != 0) {
       output.writeUInt32(1, metaPointer_);
     }
-    if (value_ != 0) {
-      output.writeUInt32(2, value_);
+    if (valueCase_ == 2) {
+      output.writeBool(
+          2, (boolean)((java.lang.Boolean) value_));
+    }
+    if (valueCase_ == 3) {
+      output.writeInt32(
+          3, (int)((java.lang.Integer) value_));
+    }
+    if (valueCase_ == 4) {
+      output.writeUInt32(
+          4, (int)((java.lang.Integer) value_));
     }
     getUnknownFields().writeTo(output);
   }
@@ -96,9 +201,20 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
         .computeUInt32Size(1, metaPointer_);
     }
-    if (value_ != 0) {
+    if (valueCase_ == 2) {
       size += com.google.protobuf.CodedOutputStream
-        .computeUInt32Size(2, value_);
+        .computeBoolSize(
+            2, (boolean)((java.lang.Boolean) value_));
+    }
+    if (valueCase_ == 3) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeInt32Size(
+            3, (int)((java.lang.Integer) value_));
+    }
+    if (valueCase_ == 4) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeUInt32Size(
+            4, (int)((java.lang.Integer) value_));
     }
     size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
@@ -117,8 +233,23 @@ private static final long serialVersionUID = 0L;
 
     if (getMetaPointer()
         != other.getMetaPointer()) return false;
-    if (getValue()
-        != other.getValue()) return false;
+    if (!getValueCase().equals(other.getValueCase())) return false;
+    switch (valueCase_) {
+      case 2:
+        if (getBoolean()
+            != other.getBoolean()) return false;
+        break;
+      case 3:
+        if (getInteger()
+            != other.getInteger()) return false;
+        break;
+      case 4:
+        if (getString()
+            != other.getString()) return false;
+        break;
+      case 0:
+      default:
+    }
     if (!getUnknownFields().equals(other.getUnknownFields())) return false;
     return true;
   }
@@ -132,8 +263,23 @@ private static final long serialVersionUID = 0L;
     hash = (19 * hash) + getDescriptor().hashCode();
     hash = (37 * hash) + METAPOINTER_FIELD_NUMBER;
     hash = (53 * hash) + getMetaPointer();
-    hash = (37 * hash) + VALUE_FIELD_NUMBER;
-    hash = (53 * hash) + getValue();
+    switch (valueCase_) {
+      case 2:
+        hash = (37 * hash) + BOOLEAN_FIELD_NUMBER;
+        hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
+            getBoolean());
+        break;
+      case 3:
+        hash = (37 * hash) + INTEGER_FIELD_NUMBER;
+        hash = (53 * hash) + getInteger();
+        break;
+      case 4:
+        hash = (37 * hash) + STRING_FIELD_NUMBER;
+        hash = (53 * hash) + getString();
+        break;
+      case 0:
+      default:
+    }
     hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
@@ -266,7 +412,8 @@ private static final long serialVersionUID = 0L;
       super.clear();
       bitField0_ = 0;
       metaPointer_ = 0;
-      value_ = 0;
+      valueCase_ = 0;
+      value_ = null;
       return this;
     }
 
@@ -294,6 +441,7 @@ private static final long serialVersionUID = 0L;
     public io.lionweb.lioncore.java.serialization.protobuf.Property buildPartial() {
       io.lionweb.lioncore.java.serialization.protobuf.Property result = new io.lionweb.lioncore.java.serialization.protobuf.Property(this);
       if (bitField0_ != 0) { buildPartial0(result); }
+      buildPartialOneofs(result);
       onBuilt();
       return result;
     }
@@ -303,9 +451,11 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000001) != 0)) {
         result.metaPointer_ = metaPointer_;
       }
-      if (((from_bitField0_ & 0x00000002) != 0)) {
-        result.value_ = value_;
-      }
+    }
+
+    private void buildPartialOneofs(io.lionweb.lioncore.java.serialization.protobuf.Property result) {
+      result.valueCase_ = valueCase_;
+      result.value_ = this.value_;
     }
 
     @java.lang.Override
@@ -323,8 +473,22 @@ private static final long serialVersionUID = 0L;
       if (other.getMetaPointer() != 0) {
         setMetaPointer(other.getMetaPointer());
       }
-      if (other.getValue() != 0) {
-        setValue(other.getValue());
+      switch (other.getValueCase()) {
+        case BOOLEAN: {
+          setBoolean(other.getBoolean());
+          break;
+        }
+        case INTEGER: {
+          setInteger(other.getInteger());
+          break;
+        }
+        case STRING: {
+          setString(other.getString());
+          break;
+        }
+        case VALUE_NOT_SET: {
+          break;
+        }
       }
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
@@ -358,10 +522,20 @@ private static final long serialVersionUID = 0L;
               break;
             } // case 8
             case 16: {
-              value_ = input.readUInt32();
-              bitField0_ |= 0x00000002;
+              value_ = input.readBool();
+              valueCase_ = 2;
               break;
             } // case 16
+            case 24: {
+              value_ = input.readInt32();
+              valueCase_ = 3;
+              break;
+            } // case 24
+            case 32: {
+              value_ = input.readUInt32();
+              valueCase_ = 4;
+              break;
+            } // case 32
             default: {
               if (!super.parseUnknownField(input, extensionRegistry, tag)) {
                 done = true; // was an endgroup tag
@@ -377,6 +551,21 @@ private static final long serialVersionUID = 0L;
       } // finally
       return this;
     }
+    private int valueCase_ = 0;
+    private java.lang.Object value_;
+    public ValueCase
+        getValueCase() {
+      return ValueCase.forNumber(
+          valueCase_);
+    }
+
+    public Builder clearValue() {
+      valueCase_ = 0;
+      value_ = null;
+      onChanged();
+      return this;
+    }
+
     private int bitField0_;
 
     private int metaPointer_ ;
@@ -411,35 +600,129 @@ private static final long serialVersionUID = 0L;
       return this;
     }
 
-    private int value_ ;
     /**
-     * <code>uint32 value = 2;</code>
-     * @return The value.
+     * <code>bool boolean = 2;</code>
+     * @return Whether the boolean field is set.
      */
-    @java.lang.Override
-    public int getValue() {
-      return value_;
+    public boolean hasBoolean() {
+      return valueCase_ == 2;
     }
     /**
-     * <code>uint32 value = 2;</code>
-     * @param value The value to set.
+     * <code>bool boolean = 2;</code>
+     * @return The boolean.
+     */
+    public boolean getBoolean() {
+      if (valueCase_ == 2) {
+        return (java.lang.Boolean) value_;
+      }
+      return false;
+    }
+    /**
+     * <code>bool boolean = 2;</code>
+     * @param value The boolean to set.
      * @return This builder for chaining.
      */
-    public Builder setValue(int value) {
+    public Builder setBoolean(boolean value) {
 
+      valueCase_ = 2;
       value_ = value;
-      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
-     * <code>uint32 value = 2;</code>
+     * <code>bool boolean = 2;</code>
      * @return This builder for chaining.
      */
-    public Builder clearValue() {
-      bitField0_ = (bitField0_ & ~0x00000002);
-      value_ = 0;
+    public Builder clearBoolean() {
+      if (valueCase_ == 2) {
+        valueCase_ = 0;
+        value_ = null;
+        onChanged();
+      }
+      return this;
+    }
+
+    /**
+     * <code>int32 integer = 3;</code>
+     * @return Whether the integer field is set.
+     */
+    public boolean hasInteger() {
+      return valueCase_ == 3;
+    }
+    /**
+     * <code>int32 integer = 3;</code>
+     * @return The integer.
+     */
+    public int getInteger() {
+      if (valueCase_ == 3) {
+        return (java.lang.Integer) value_;
+      }
+      return 0;
+    }
+    /**
+     * <code>int32 integer = 3;</code>
+     * @param value The integer to set.
+     * @return This builder for chaining.
+     */
+    public Builder setInteger(int value) {
+
+      valueCase_ = 3;
+      value_ = value;
       onChanged();
+      return this;
+    }
+    /**
+     * <code>int32 integer = 3;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearInteger() {
+      if (valueCase_ == 3) {
+        valueCase_ = 0;
+        value_ = null;
+        onChanged();
+      }
+      return this;
+    }
+
+    /**
+     * <code>uint32 string = 4;</code>
+     * @return Whether the string field is set.
+     */
+    public boolean hasString() {
+      return valueCase_ == 4;
+    }
+    /**
+     * <code>uint32 string = 4;</code>
+     * @return The string.
+     */
+    public int getString() {
+      if (valueCase_ == 4) {
+        return (java.lang.Integer) value_;
+      }
+      return 0;
+    }
+    /**
+     * <code>uint32 string = 4;</code>
+     * @param value The string to set.
+     * @return This builder for chaining.
+     */
+    public Builder setString(int value) {
+
+      valueCase_ = 4;
+      value_ = value;
+      onChanged();
+      return this;
+    }
+    /**
+     * <code>uint32 string = 4;</code>
+     * @return This builder for chaining.
+     */
+    public Builder clearString() {
+      if (valueCase_ == 4) {
+        valueCase_ = 0;
+        value_ = null;
+        onChanged();
+      }
       return this;
     }
 

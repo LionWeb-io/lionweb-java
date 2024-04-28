@@ -44,7 +44,11 @@ message Node {
 
 message Property {
   uint32 metaPointer = 1;
-  uint32 value = 2;
+  oneof value {
+    bool boolean = 2;
+    int32 integer = 3;
+    uint32 string = 4;
+  }
 }
 
 message Containment {
