@@ -3,15 +3,14 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.common.collect.Sets;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonWriter;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.HasSettableParent;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -19,7 +18,9 @@ import io.lionweb.lioncore.java.utils.NetworkUtils;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -191,38 +192,47 @@ public class JsonSerialization {
   }
 
   public SerializedChunk serializeNodesToSerializationBlock(List<Node> nodes) {
+    return serializeNodesToSerializationBlock(nodes.stream());
+  }
+
+  public SerializedChunk serializeNodesToSerializationBlock(Stream<Node> nodes) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
-    for (Node node : nodes) {
+    nodes.forEach(node -> {
+      try {
+        if (Integer.parseInt(node.getID()) % 10_000 == 0) {
+          System.out.println(node.getID());
+        }} catch (NumberFormatException e) {
+      }
       Objects.requireNonNull(node, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(node));
       node.getAnnotations()
-          .forEach(
-              annotationInstance -> {
-                serializedChunk.addClassifierInstance(
-                    serializeAnnotationInstance(annotationInstance));
-              });
+              .forEach(
+                      annotationInstance -> {
+                        serializedChunk.addClassifierInstance(
+                                serializeAnnotationInstance(annotationInstance));
+                      });
       Objects.requireNonNull(
-          node.getConcept(), "A node should have a concept in order to be serialized");
+              node.getConcept(), "A node should have a concept in order to be serialized");
       Objects.requireNonNull(
-          node.getConcept().getLanguage(),
-          "A Concept should be part of a Language in order to be serialized. Concept "
-              + node.getConcept()
-              + " is not");
+              node.getConcept().getLanguage(),
+              "A Concept should be part of a Language in order to be serialized. Concept "
+                      + node.getConcept()
+                      + " is not");
       considerLanguageDuringSerialization(serializedChunk, node.getConcept().getLanguage());
       node.getConcept()
-          .allFeatures()
-          .forEach(
-              f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
+              .allFeatures()
+              .forEach(
+                      f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
       node.getConcept()
-          .allProperties()
-          .forEach(
-              p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
+              .allProperties()
+              .forEach(
+                      p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
       node.getConcept()
-          .allLinks()
-          .forEach(
-              l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
-    }
+              .allLinks()
+              .forEach(
+                      l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
+    });
     return serializedChunk;
   }
 
@@ -251,31 +261,45 @@ public class JsonSerialization {
 
   public JsonElement serializeTreesToJsonElement(Node... roots) {
     Set<String> nodesIDs = new HashSet<>();
-    List<Node> allNodes = new ArrayList<>();
-    for (Node root : roots) {
-      root.thisAndAllDescendants()
-          .forEach(
-              n -> {
+    Stream<Node> allNodes = Arrays.stream(roots)
+            .flatMap(this::thisAndAllDescendants)
+            .filter(n -> !(n instanceof ProxyNode))
+            .filter(n -> {
                 // We support serialization of incorrect nodes, so we allow nodes without ID to be
                 // serialized
                 if (n.getID() != null) {
                   if (!nodesIDs.contains(n.getID())) {
-                    allNodes.add(n);
-                    nodesIDs.add(n.getID());
+                                        nodesIDs.add(n.getID());
+                                        return true;
                   }
                 } else {
-                  allNodes.add(n);
+                  return true;
                 }
+                return false;
               });
-    }
-    return serializeNodesToJsonElement(
-        allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
+
+    return serializeNodesToJsonElement(        allNodes);
+  }
+
+  private Stream<Node> thisAndAllDescendants(Node root) {
+    return Stream.concat(Stream.of(root), root.getChildren().stream());
   }
 
   public JsonElement serializeNodesToJsonElement(List<Node> nodes) {
     if (nodes.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
+    SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
+    return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
+  }
+
+  public JsonElement serializeNodesToJsonElement(Stream<Node> nodes) {
+    nodes = nodes.filter(n ->  {
+                  if(n instanceof ProxyNode) {
+                      throw new IllegalArgumentException("Proxy nodes cannot be serialized");
+                  }
+                  return true;
+    });
     SerializedChunk serializationBlock = serializeNodesToSerializationBlock(nodes);
     return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
   }
@@ -320,11 +344,138 @@ public class JsonSerialization {
     serializeJsonElement(outputStream, serializeTreeToJsonElement(node));
   }
 
-  public void serializeTreesToJson(OutputStream outputStream, Node... nodes) {
-    serializeJsonElement(outputStream, serializeTreesToJsonElement(nodes));
-  }
+    public void serializeTreesToJson(OutputStream outputStream, Node... nodes) {
+        Set<String> nodesIDs = new HashSet<>();
+        Supplier<Stream<Node>> allNodes = () -> Arrays.stream(nodes)
+                .flatMap(this::thisAndAllDescendants)
+                .filter(n -> !(n instanceof ProxyNode))
+                .filter(n -> {
+                    // We support serialization of incorrect nodes, so we allow nodes without ID to be
+                    // serialized
+                    try {
+                        if (Integer.parseInt(n.getID()) % 10_000 == 0) {
+                            System.out.println(n.getID());
+                        }
+                    } catch (NumberFormatException e) {
+                    }
+                    if (n.getID() != null) {
+                        if (!nodesIDs.contains(n.getID())) {
+                            nodesIDs.add(n.getID());
+                            return true;
+                        }
+                    } else {
+                        return true;
+                    }
+                    return false;
+                });
+        Stream<Language> languages = allNodes.get().flatMap(n ->
+                        Stream.concat(Stream.of(n.getClassifier().getLanguage()), n.getConcept()
+                                .allFeatures()
+                                .stream()
+                                .flatMap(f -> Stream.of(
+                                        f.getDeclaringLanguage(),
+                                        f instanceof Property ?
+                                                ((Property) f).getType().getLanguage() :
+                                                ((Link) f).getType().getLanguage())
+                                )))
+                .distinct();
 
-  public void serializeNodesToJson(OutputStream outputStream, List<Node> nodes) {
+        try (JsonWriter writer = new JsonWriter(new OutputStreamWriter(outputStream))) {
+            writer.setSerializeNulls(true);
+            writer.setIndent("  ");
+            writer.beginObject();
+            {
+                writer.name("serializationFormatVersion").value(DEFAULT_SERIALIZATION_FORMAT);
+                writer.name("languages").beginArray();
+                for (Language l : (Iterable<Language>) languages::iterator) {
+                    writer.beginObject();
+                    writer.name("key").value(l.getKey());
+                    writer.name("version").value(l.getVersion());
+                    writer.endObject();
+                }
+
+                nodesIDs.clear();
+
+                writer.endArray();
+                writer.name("nodes").beginArray();
+                writer.beginObject();
+                for (Node n : (Iterable<Node>) allNodes.get()::iterator) {
+                    writer.name("id").value(n.getID());
+                    writer.name("classifier");
+                    serializeToJsonElement(writer, MetaPointer.from(n.getClassifier()));
+                    writer.name("properties").beginArray();
+                    for (Property p : n.getClassifier().allProperties()) {
+                        writer.beginObject();
+                        {
+                            writer.name("property");
+                            serializeToJsonElement(writer, MetaPointer.from(p));
+                            writer.name("value").value(serializePropertyValue(p.getType(), n.getPropertyValue(p)));
+                        }
+                        writer.endObject();
+                    }
+                    writer.endArray();
+                    writer.name("containments").beginArray();
+                    for (Containment c : n.getClassifier().allContainments()) {
+                        writer.beginObject();
+                        {
+                            writer.name("containment");
+                            serializeToJsonElement(writer, MetaPointer.from(c));
+                            writer.name("children").beginArray();
+                            for (Node ch : n.getChildren(c)) {
+                                writer.value(ch.getID());
+                            }
+                            writer.endArray();
+                        }
+                        writer.endObject();
+                    }
+                    writer.endArray();
+                    writer.name("references").beginArray();
+                    for (Reference r : n.getClassifier().allReferences()) {
+                        writer.beginObject();
+                        {
+                            writer.name("reference");
+                            serializeToJsonElement(writer, MetaPointer.from(r));
+                            writer.name("targets").beginArray();
+                            for (ReferenceValue rv : n.getReferenceValues(r)) {
+                                writer.beginObject();
+                                writer.name("resolveInfo").value(rv.getResolveInfo());
+                                writer.name("reference").value(rv.getReferredID());
+                                writer.endObject();
+                            }
+                            writer.endArray();
+                        }
+                        writer.endObject();
+                    }
+                    writer.endArray();
+                    writer.name("annotations").beginArray();
+                    for (AnnotationInstance a : n.getAnnotations()) {
+                        writer.value(a.getID());
+                    }
+                    writer.endArray();
+                    writer.name("parent").value(n.getParent() != null ? n.getParent().getID() : null);
+                }
+                writer.endObject();
+                writer.endArray();
+            }
+            writer.endObject();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void serializeToJsonElement(JsonWriter writer, MetaPointer metapointer) throws IOException {
+      writer.beginObject();
+        {
+            writer.name("language").value(metapointer.getLanguage());
+            writer.name("version").value(metapointer.getVersion());
+            writer.name("key").value(metapointer.getKey());
+
+        }
+        writer.endObject();
+    }
+
+
+    public void serializeNodesToJson(OutputStream outputStream, List<Node> nodes) {
     serializeJsonElement(outputStream, serializeNodesToJsonElement(nodes));
   }
 

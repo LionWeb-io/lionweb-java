@@ -92,55 +92,46 @@ public class LowLevelJsonSerialization {
     topLevel.addProperty(
         "serializationFormatVersion", serializedChunk.getSerializationFormatVersion());
 
-    JsonArray languages = new JsonArray();
+    JsonArray languages = new JsonArray(serializedChunk.getLanguages().size());
     serializedChunk.getLanguages().forEach(m -> languages.add(serializeToJsonElement(m)));
     topLevel.add("languages", languages);
 
-    JsonArray nodes = new JsonArray();
-    for (SerializedClassifierInstance node : serializedChunk.getClassifierInstances()) {
-      JsonObject nodeJson = new JsonObject();
-      nodeJson.addProperty("id", node.getID());
-
-      nodeJson.add("classifier", serializeToJsonElement(node.getClassifier()));
-
-      JsonArray properties = new JsonArray();
-      for (SerializedPropertyValue propertyValue : node.getProperties()) {
-        JsonObject property = new JsonObject();
-        property.add("property", serializeToJsonElement(propertyValue.getMetaPointer()));
-        property.addProperty("value", propertyValue.getValue());
-        properties.add(property);
-      }
-      nodeJson.add("properties", properties);
-
-      JsonArray containments = new JsonArray();
-      for (SerializedContainmentValue childrenValue : node.getContainments()) {
-        JsonObject children = new JsonObject();
-        children.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
-        children.add("children", SerializationUtils.toJsonArray(childrenValue.getValue()));
-        containments.add(children);
-      }
-      nodeJson.add("containments", containments);
-
-      JsonArray references = new JsonArray();
-      for (SerializedReferenceValue referenceValue : node.getReferences()) {
-        JsonObject reference = new JsonObject();
-        reference.add("reference", serializeToJsonElement(referenceValue.getMetaPointer()));
-        reference.add(
-            "targets", SerializationUtils.toJsonArrayOfReferenceValues(referenceValue.getValue()));
-        references.add(reference);
-      }
-      nodeJson.add("references", references);
-
-      JsonArray annotations = new JsonArray();
-      for (String annotationID : node.getAnnotations()) {
-        annotations.add(annotationID);
-      }
-      nodeJson.add("annotations", annotations);
-
-      nodeJson.addProperty("parent", node.getParentNodeID());
-
-      nodes.add(nodeJson);
-    }
+    JsonArray nodes = new JsonArray(serializedChunk.getClassifierInstances().size());
+      serializedChunk.getClassifierInstances().forEach(node -> {
+          JsonObject nodeJson = new JsonObject();
+          nodeJson.addProperty("id", node.getID());
+          nodeJson.add("classifier", serializeToJsonElement(node.getClassifier()));
+          JsonArray properties = new JsonArray(node.getProperties().size());
+          node.getProperties().forEach(propertyValue -> {
+              JsonObject property = new JsonObject();
+              property.add("property", serializeToJsonElement(propertyValue.getMetaPointer()));
+              property.addProperty("value", propertyValue.getValue());
+              properties.add(property);
+          });
+          nodeJson.add("properties", properties);
+          JsonArray containments = new JsonArray(node.getContainments().size());
+          node.getContainments().forEach(childrenValue -> {
+              JsonObject children = new JsonObject();
+              children.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
+              children.add("children", SerializationUtils.toJsonArray(childrenValue.getValue()));
+              containments.add(children);
+          });
+          nodeJson.add("containments", containments);
+          JsonArray references = new JsonArray(node.getReferences().size());
+          node.getReferences().forEach(referenceValue -> {
+              JsonObject reference = new JsonObject();
+              reference.add("reference", serializeToJsonElement(referenceValue.getMetaPointer()));
+              reference.add(
+                      "targets", SerializationUtils.toJsonArrayOfReferenceValues(referenceValue.getValue()));
+              references.add(reference);
+          });
+          nodeJson.add("references", references);
+          JsonArray annotations = new JsonArray(node.getAnnotations().size());
+          node.getAnnotations().forEach(annotations::add);
+          nodeJson.add("annotations", annotations);
+          nodeJson.addProperty("parent", node.getParentNodeID());
+          nodes.add(nodeJson);
+      });
     topLevel.add("nodes", nodes);
 
     return topLevel;

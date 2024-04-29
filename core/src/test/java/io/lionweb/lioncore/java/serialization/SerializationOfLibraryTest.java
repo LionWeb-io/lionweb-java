@@ -9,8 +9,8 @@ import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.Node;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+
+import java.io.*;
 import java.util.List;
 import org.junit.Test;
 
@@ -88,6 +88,29 @@ public class SerializationOfLibraryTest extends SerializationTest {
     JsonObject jsonRead =
         JsonParser.parseReader(new InputStreamReader(inputStream)).getAsJsonObject();
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(jsonRead, jsonSerialized);
+  }
+
+  @Test
+  public void serializeHugeModel() throws IOException {
+    Library library = new Library("lib-1", "Language Engineering Library");
+
+    Writer wrt = new Writer("Wrt", "Wri Ter");
+
+
+    for (int i = 0; i < 542_674 * 1.4; i++) {
+//    for (int i = 0; i < 200_000; i++) {
+      if (i % 10_000 == 0) {
+//        System.out.println(i);
+      }
+      library.addBook(new Book(""+i, "book "+ i, wrt));
+    }
+
+    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    try(OutputStream os = new BufferedOutputStream(new FileOutputStream("bigfile.json"))) {
+      jsonSerialization.serializeTreesToJson(os, library);
+    }
+
+    System.out.println("File size: "+ new File("bigfile.json").length());
   }
 
   @Test(expected = IllegalStateException.class)
