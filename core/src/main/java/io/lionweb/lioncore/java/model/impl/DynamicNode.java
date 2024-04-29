@@ -4,6 +4,8 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
+import io.lionweb.lioncore.java.model.ReferenceValue;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -15,6 +17,22 @@ import javax.annotation.Nullable;
  */
 public class DynamicNode extends DynamicClassifierInstance<Concept>
     implements Node, HasSettableParent {
+
+  public static DynamicNode shallowClone(Node originalNode) {
+    Concept concept = originalNode.getConcept();
+    DynamicNode clone = new DynamicNode(originalNode.getID(), concept);
+    concept.allProperties().forEach(p -> clone.setPropertyValue(p, originalNode.getPropertyValue(p)));
+    concept.allContainments().forEach(c -> {
+      List<? extends Node> children = originalNode.getChildren(c);
+      children.forEach(child -> clone.addChild(c, child));
+    });
+    concept.allReferences().forEach(r -> {
+      List<ReferenceValue> referenceValues = originalNode.getReferenceValues(r);
+      referenceValues.forEach(rv -> clone.addReferenceValue(r, rv));
+    });
+    return clone;
+  }
+
   private Node parent = null;
   private Concept concept = null;
 
