@@ -41,11 +41,10 @@ public class JsonSerialization {
   public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
 
   public static void saveLanguageToFile(Language language, File file) throws IOException {
-    String content = getStandardSerialization().serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
-    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
-    writer.write(content);
-    writer.close();
+    try (OutputStream os = new BufferedOutputStream(new FileOutputStream(file))) {
+      getStandardSerialization().serializeTreesToJson(os, language);
+    }
   }
 
   /**
@@ -53,9 +52,10 @@ public class JsonSerialization {
    * thrown.
    */
   public Language loadLanguage(File file) throws IOException {
-    FileInputStream fileInputStream = new FileInputStream(file);
-    Language language = loadLanguage(fileInputStream);
-    fileInputStream.close();
+    Language language;
+    try (FileInputStream fileInputStream = new FileInputStream(file)) {
+      language = loadLanguage(fileInputStream);
+    }
     return language;
   }
 
@@ -284,28 +284,68 @@ public class JsonSerialization {
     return serializeNodesToJsonElement(Arrays.asList(nodes));
   }
 
+  /**
+   * @deprecated Use {@link #serializeTreeToJson(OutputStream, Node)}
+   */
+  @Deprecated()
   public String serializeTreeToJsonString(Node node) {
     return jsonElementToString(serializeTreeToJsonElement(node));
   }
 
+  /**
+   * @deprecated Use {@link #serializeTreesToJson(OutputStream, Node...)}
+   */
+  @Deprecated()
   public String serializeTreesToJsonString(Node... nodes) {
     return jsonElementToString(serializeTreesToJsonElement(nodes));
   }
 
+  /**
+   * @deprecated Use {@link #serializeNodesToJson(OutputStream, List<Node>)}
+   */
+  @Deprecated()
   public String serializeNodesToJsonString(List<Node> nodes) {
     return jsonElementToString(serializeNodesToJsonElement(nodes));
   }
 
+  /**
+   * @deprecated Use {@link #serializeNodesToJson(OutputStream, Node...)}
+   */
+  @Deprecated()
   public String serializeNodesToJsonString(Node... nodes) {
     return jsonElementToString(serializeNodesToJsonElement(nodes));
+  }
+
+  public void serializeTreeToJson(OutputStream outputStream, Node node) {
+    serializeJsonElement(outputStream, serializeTreeToJsonElement(node));
+  }
+
+  public void serializeTreesToJson(OutputStream outputStream, Node... nodes) {
+    serializeJsonElement(outputStream, serializeTreesToJsonElement(nodes));
+  }
+
+  public void serializeNodesToJson(OutputStream outputStream, List<Node> nodes) {
+    serializeJsonElement(outputStream, serializeNodesToJsonElement(nodes));
+  }
+
+  public void serializeNodesToJson(OutputStream outputStream, Node... nodes) {
+    serializeJsonElement(outputStream, serializeNodesToJsonElement(nodes));
   }
 
   //
   // Serialization - Private
   //
 
+  /**
+   * @deprecated Use {@link #serializeJsonElement(OutputStream, JsonElement)}
+   */
+  @Deprecated
   private String jsonElementToString(JsonElement element) {
     return new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(element);
+  }
+
+  private void serializeJsonElement(OutputStream outputStream, JsonElement element) {
+    new GsonBuilder().serializeNulls().create().toJson(element, new OutputStreamWriter(outputStream));
   }
 
   private SerializedClassifierInstance serializeNode(@Nonnull Node node) {
@@ -438,10 +478,15 @@ public class JsonSerialization {
   }
 
   public List<Node> deserializeToNodes(URL url) throws IOException {
-    String content = NetworkUtils.getStringFromUrl(url);
-    return deserializeToNodes(content);
+    try (InputStream is = NetworkUtils.urlToInputStream(url, null)) {
+      return deserializeToNodes(is);
+    }
   }
 
+  /**
+   * @deprecated Use {{@link #deserializeToNodes(InputStream)}}
+   */
+  @Deprecated
   public List<Node> deserializeToNodes(String json) {
     return deserializeToNodes(JsonParser.parseString(json));
   }

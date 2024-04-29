@@ -14,10 +14,18 @@ public class NetworkUtils {
     // Prevent instantiation
   }
 
+  /**
+   * @deprecated Use {@link #urlToInputStream(URL, Map)}
+   */
+  @Deprecated
   public static String getStringFromUrl(URL url) throws IOException {
     return inputStreamToString(urlToInputStream(url, null));
   }
 
+  /**
+   * @deprecated Use {@link #urlToInputStream(URL, Map)}
+   */
+  @Deprecated
   private static String inputStreamToString(InputStream inputStream) throws IOException {
     try (ByteArrayOutputStream result = new ByteArrayOutputStream()) {
       byte[] buffer = new byte[1024];
@@ -30,7 +38,7 @@ public class NetworkUtils {
     }
   }
 
-  private static InputStream urlToInputStream(URL url, Map<String, String> args) {
+  public static InputStream urlToInputStream(URL url, Map<String, String> args) {
     HttpURLConnection con = null;
     InputStream inputStream = null;
     try {

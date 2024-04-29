@@ -5,6 +5,12 @@ import io.lionweb.lioncore.java.serialization.data.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -52,9 +58,19 @@ public class LowLevelJsonSerialization {
    *
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
+   * @deprecated Use {@link #deserializeSerializationBlock(InputStream)}
    */
+  @Deprecated
   public SerializedChunk deserializeSerializationBlock(String json) {
     return deserializeSerializationBlock(JsonParser.parseString(json));
+  }
+
+  public SerializedChunk deserializeSerializationBlock(InputStream json) {
+    try (InputStreamReader reader = new InputStreamReader(json)) {
+      return deserializeSerializationBlock(JsonParser.parseReader(reader));
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /**
@@ -130,12 +146,28 @@ public class LowLevelJsonSerialization {
     return topLevel;
   }
 
+  /**
+   * @deprecated Use {link {@link #serializeToJson(OutputStream, SerializedChunk)}}
+   */
+  @Deprecated
   public String serializeToJsonString(SerializedChunk serializedChunk) {
     return new GsonBuilder()
-        .serializeNulls()
-        .setPrettyPrinting()
-        .create()
-        .toJson(serializeToJsonElement(serializedChunk));
+            .serializeNulls()
+            .setPrettyPrinting()
+            .create()
+            .toJson(serializeToJsonElement(serializedChunk));
+  }
+
+  public void serializeToJson(OutputStream outputStream, SerializedChunk serializedChunk) {
+    try (Writer writer = new OutputStreamWriter(outputStream)) {
+      new GsonBuilder()
+              .serializeNulls()
+              .setPrettyPrinting()
+              .create()
+              .toJson(serializeToJsonElement(serializedChunk), writer);
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   //
