@@ -20,7 +20,8 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     this.annotation = annotation;
   }
 
-  public DynamicAnnotationInstance(String id, Annotation annotation, ClassifierInstance<?> annotated) {
+  public DynamicAnnotationInstance(
+      String id, Annotation annotation, ClassifierInstance<?> annotated) {
     this(id, annotation);
     setAnnotated(annotated);
   }

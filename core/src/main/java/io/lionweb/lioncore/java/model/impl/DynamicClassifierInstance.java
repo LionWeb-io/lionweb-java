@@ -5,14 +5,12 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
-public abstract class DynamicClassifierInstance<T extends Classifier<T>>
-    extends AnnotatedNode<T>
+public abstract class DynamicClassifierInstance<T extends Classifier<T>> extends AnnotatedNode<T>
     implements ClassifierInstance<T> {
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;

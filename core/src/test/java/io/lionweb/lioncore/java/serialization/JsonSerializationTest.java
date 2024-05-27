@@ -754,9 +754,7 @@ public class JsonSerializationTest extends SerializationTest {
     ClassifierInstance<?> deserializedAnn = deserialized.get(4);
     assertInstancesAreEquals(ann, deserializedAnn);
     assertEquals(deserializedC, deserializedAnn.getParent());
-    assertEquals(
-            Arrays.asList(deserializedAnn),
-            deserializedC.getAnnotations());
+    assertEquals(Arrays.asList(deserializedAnn), deserializedC.getAnnotations());
   }
 
   @Test

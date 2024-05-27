@@ -7,13 +7,12 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class SimpleNode implements Node {
 

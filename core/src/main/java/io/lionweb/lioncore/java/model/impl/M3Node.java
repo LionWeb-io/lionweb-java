@@ -7,11 +7,10 @@ import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Base class to help implements Node in the language package.

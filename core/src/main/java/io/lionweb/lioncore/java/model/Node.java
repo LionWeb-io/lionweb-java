@@ -2,13 +2,12 @@ package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A node is an instance of a Concept. It contains all the values associated to that instance.
@@ -104,8 +103,9 @@ public interface Node extends ClassifierInstance<Concept> {
     return result;
   }
 
-  /**Return a list containing this node and all its descendants. */
-  static @Nonnull <T extends ClassifierInstance<?>> void selfAndAllDescendants(T self, boolean includeAnnotations, Collection<T> result) {
+  /** Return a list containing this node and all its descendants. */
+  static @Nonnull <T extends ClassifierInstance<?>> void selfAndAllDescendants(
+      T self, boolean includeAnnotations, Collection<T> result) {
     result.add(self);
     if (includeAnnotations) {
       for (AnnotationInstance annotation : self.getAnnotations()) {
