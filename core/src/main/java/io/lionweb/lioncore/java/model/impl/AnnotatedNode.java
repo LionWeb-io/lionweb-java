@@ -20,6 +20,10 @@ public abstract class AnnotatedNode<T extends Classifier<T>> implements Classifi
         return Collections.unmodifiableList(annotations);
     }
 
+    /**
+     * Given a specific Annotation type it returns either the list of instances of that Annotation
+     * associated to the Node.
+     */
     @Nonnull
     public List<AnnotationInstance> getAnnotations(@Nonnull Annotation annotation) {
         return annotations.stream()
@@ -27,6 +31,14 @@ public abstract class AnnotatedNode<T extends Classifier<T>> implements Classifi
                 .collect(Collectors.toList());
     }
 
+    /**
+     * If an annotation instance was already associated under the Annotation link used by this
+     * AnnotationInstance, and the annotation does not support multiple values, then the existing
+     * instance will be removed and replaced by the instance specified in the call to this method.
+     *
+     * <p>In case the specified Annotation link cannot be used on Nodes of this Concept, then the
+     * exception IllegalArgumentException will be thrown.
+     */
     public void addAnnotation(@Nonnull AnnotationInstance instance) {
         Objects.requireNonNull(instance);
         if (this.annotations.contains(instance)) {

@@ -1,13 +1,14 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.impl.AnnotatedNode;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * A node is an instance of a Concept. It contains all the values associated to that instance.
@@ -57,9 +58,6 @@ public interface Node extends ClassifierInstance<Concept> {
   /** The concept of which this Node is an instance. The Concept should not be abstract. */
   Concept getConcept();
 
-  /** Return all the annotations associated to this Node. */
-  List<AnnotationInstance> getAnnotations();
-
   /**
    * Return the Containment feature used to hold this Node within its parent. This will be null only
    * for root nodes or dangling nodes (which are not distinguishable by looking at the node itself).
@@ -69,23 +67,6 @@ public interface Node extends ClassifierInstance<Concept> {
    *     equivalent <i>EObject.eContainingFeature</i> in documentation</a>.
    */
   Containment getContainmentFeature();
-
-  /**
-   * Given a specific Annotation type it returns either the list of instances of that Annotation
-   * associated to the Node.
-   */
-  @Nonnull
-  List<AnnotationInstance> getAnnotations(Annotation annotation);
-
-  /**
-   * If an annotation instance was already associated under the Annotation link used by this
-   * AnnotationInstance, and the annotation does not support multiple values, then the existing
-   * instance will be removed and replaced by the instance specified in the call to this method.
-   *
-   * <p>In case the specified Annotation link cannot be used on Nodes of this Concept, then the
-   * exception IllegalArgumentException will be thrown.
-   */
-  void addAnnotation(AnnotationInstance instance);
 
   default Object getPropertyValueByName(String propertyName) {
     Property property = this.getConcept().getPropertyByName(propertyName);
@@ -118,24 +99,24 @@ public interface Node extends ClassifierInstance<Concept> {
 
   /** Return a list containing this node and all its descendants. */
   default @Nonnull List<Node> thisAndAllDescendants() {
-    return thisAndAllDescendants(false);
+    List<Node> result = new ArrayList<>();
+    selfAndAllDescendants(this, false, result);
+    return result;
   }
 
   /**Return a list containing this node and all its descendants. */
-  default @Nonnull <T extends AnnotatedNode> List<T> thisAndAllDescendants(boolean includeAnnotations) {
-    List<T> nodes = new ArrayList<>();
-    nodes.add((T) this);
+  static @Nonnull <T extends ClassifierInstance<?>> void selfAndAllDescendants(T self, boolean includeAnnotations, Collection<T> result) {
+    result.add(self);
     if (includeAnnotations) {
-      for (AnnotationInstance annotation : this.getAnnotations()) {
-        nodes.add((T) annotation);
+      for (AnnotationInstance annotation : self.getAnnotations()) {
+        selfAndAllDescendants((T) annotation, includeAnnotations, result);
       }
     }
-    for (Node child : this.getChildren()) {
+    for (Node child : self.getChildren()) {
       if (!(child instanceof ProxyNode)) {
-        nodes.addAll(child.thisAndAllDescendants(includeAnnotations));
+        selfAndAllDescendants((T) child, includeAnnotations, result);
       }
     }
-    return nodes;
   }
 
   default List<? extends Node> getChildrenByContainmentName(String containmentName) {

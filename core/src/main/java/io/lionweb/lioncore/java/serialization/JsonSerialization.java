@@ -187,39 +187,44 @@ public class JsonSerialization {
   // Serialization
   //
 
-  public SerializedChunk serializeTreeToSerializationBlock(Node root) {
-    return serializeNodesToSerializationBlock(root.thisAndAllDescendants(true));
+  public <T extends ClassifierInstance<?>> SerializedChunk serializeTreeToSerializationBlock(T root) {
+    Set<ClassifierInstance<?>> nodes = new LinkedHashSet<>();
+    Node.selfAndAllDescendants(root, true, nodes);
+    return serializeNodesToSerializationBlock(nodes);
   }
 
-  public <T extends ClassifierInstance> SerializedChunk serializeNodesToSerializationBlock(List<T> nodes) {
+  public <T extends ClassifierInstance<?>> SerializedChunk serializeNodesToSerializationBlock(Collection<T> nodes) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
     for (T node : nodes) {
       Objects.requireNonNull(node, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(node));
       node.getAnnotations()
+          .stream()
+          .filter(a -> !nodes.contains(a))
           .forEach(
               annotationInstance -> {
                 serializedChunk.addClassifierInstance(
                     serializeAnnotationInstance(annotationInstance));
+                considerLanguageDuringSerialization(serializedChunk, annotationInstance.getClassifier().getLanguage());
               });
       Objects.requireNonNull(
-          node.getConcept(), "A node should have a concept in order to be serialized");
+          node.getClassifier(), "A node should have a concept in order to be serialized");
       Objects.requireNonNull(
-          node.getConcept().getLanguage(),
+          node.getClassifier().getLanguage(),
           "A Concept should be part of a Language in order to be serialized. Concept "
-              + node.getConcept()
+              + node.getClassifier()
               + " is not");
-      considerLanguageDuringSerialization(serializedChunk, node.getConcept().getLanguage());
-      node.getConcept()
+      considerLanguageDuringSerialization(serializedChunk, node.getClassifier().getLanguage());
+      node.getClassifier()
           .allFeatures()
           .forEach(
               f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
-      node.getConcept()
+      node.getClassifier()
           .allProperties()
           .forEach(
               p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
-      node.getConcept()
+      node.getClassifier()
           .allLinks()
           .forEach(
               l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
@@ -236,36 +241,41 @@ public class JsonSerialization {
     }
   }
 
-  public SerializedChunk serializeNodesToSerializationBlock(Node... nodes) {
+  public <T extends ClassifierInstance<?>> SerializedChunk serializeNodesToSerializationBlock(T... nodes) {
     return serializeNodesToSerializationBlock(Arrays.asList(nodes));
   }
 
-  public JsonElement serializeTreeToJsonElement(Node node) {
+  public <T extends ClassifierInstance<?>> JsonElement serializeTreeToJsonElement(T node) {
     if (node instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
+    Set<ClassifierInstance<?>> nodes = new LinkedHashSet<>();
+    Node.selfAndAllDescendants(node, true, nodes);
+
     return serializeNodesToJsonElement(
-        node.thisAndAllDescendants().stream()
+        nodes.stream()
             .filter(n -> !(n instanceof ProxyNode))
             .collect(Collectors.toList()));
   }
 
-  public JsonElement serializeTreesToJsonElement(Node... roots) {
+  public <T extends ClassifierInstance<?>> JsonElement serializeTreesToJsonElement(T... roots) {
     Set<String> nodesIDs = new HashSet<>();
-    List<Node> allNodes = new ArrayList<>();
-    for (Node root : roots) {
-      root.thisAndAllDescendants()
+    List<T> allNodes = new ArrayList<>();
+    for (T root : roots) {
+      Set<ClassifierInstance<?>> nodes = new LinkedHashSet<>();
+      Node.selfAndAllDescendants(root, true, nodes);
+      nodes
           .forEach(
               n -> {
                 // We support serialization of incorrect nodes, so we allow nodes without ID to be
                 // serialized
                 if (n.getID() != null) {
                   if (!nodesIDs.contains(n.getID())) {
-                    allNodes.add(n);
+                    allNodes.add((T) n);
                     nodesIDs.add(n.getID());
                   }
                 } else {
-                  allNodes.add(n);
+                  allNodes.add((T) n);
                 }
               });
     }
@@ -273,7 +283,7 @@ public class JsonSerialization {
         allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
   }
 
-  public JsonElement serializeNodesToJsonElement(List<Node> nodes) {
+  public <T extends ClassifierInstance<?>> JsonElement serializeNodesToJsonElement(List<T> nodes) {
     if (nodes.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -281,23 +291,23 @@ public class JsonSerialization {
     return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
   }
 
-  public JsonElement serializeNodesToJsonElement(Node... nodes) {
+  public <T extends ClassifierInstance<?>> JsonElement serializeNodesToJsonElement(T... nodes) {
     return serializeNodesToJsonElement(Arrays.asList(nodes));
   }
 
-  public String serializeTreeToJsonString(Node node) {
+  public <T extends ClassifierInstance<?>> String serializeTreeToJsonString(T node) {
     return jsonElementToString(serializeTreeToJsonElement(node));
   }
 
-  public String serializeTreesToJsonString(Node... nodes) {
+  public <T extends ClassifierInstance<?>> String serializeTreesToJsonString(T... nodes) {
     return jsonElementToString(serializeTreesToJsonElement(nodes));
   }
 
-  public String serializeNodesToJsonString(List<Node> nodes) {
+  public <T extends ClassifierInstance<?>> String serializeNodesToJsonString(List<T> nodes) {
     return jsonElementToString(serializeNodesToJsonElement(nodes));
   }
 
-  public String serializeNodesToJsonString(Node... nodes) {
+  public <T extends ClassifierInstance<?>> String serializeNodesToJsonString(T... nodes) {
     return jsonElementToString(serializeNodesToJsonElement(nodes));
   }
 
@@ -309,11 +319,11 @@ public class JsonSerialization {
     return new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(element);
   }
 
-  private <T extends ClassifierInstance> SerializedClassifierInstance serializeNode(@Nonnull T node) {
+  private <T extends ClassifierInstance<?>> SerializedClassifierInstance serializeNode(@Nonnull T node) {
     Objects.requireNonNull(node, "Node should not be null");
     SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
     serializedClassifierInstance.setID(node.getID());
-    serializedClassifierInstance.setClassifier(MetaPointer.from(node.getConcept()));
+    serializedClassifierInstance.setClassifier(MetaPointer.from(node.getClassifier()));
     if (node.getParent() != null) {
       serializedClassifierInstance.setParentNodeID(node.getParent().getID());
     }

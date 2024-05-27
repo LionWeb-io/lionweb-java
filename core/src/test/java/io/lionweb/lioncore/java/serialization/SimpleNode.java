@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
@@ -8,12 +7,13 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public abstract class SimpleNode implements Node {
 
@@ -57,17 +57,6 @@ public abstract class SimpleNode implements Node {
 
   @Override
   public Containment getContainmentFeature() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nonnull
-  @Override
-  public List<AnnotationInstance> getAnnotations(Annotation annotation) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void addAnnotation(AnnotationInstance instance) {
     throw new UnsupportedOperationException();
   }
 
