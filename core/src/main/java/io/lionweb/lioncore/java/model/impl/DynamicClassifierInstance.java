@@ -1,13 +1,18 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.HasSettableParent;
+import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.ReferenceValue;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class DynamicClassifierInstance<T extends Classifier<T>>
+    extends AnnotatedNode<T>
     implements ClassifierInstance<T> {
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;
@@ -16,7 +21,6 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   protected final Map<String, List<Node>> containmentValues = new HashMap<>();
 
   protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
-  protected final List<AnnotationInstance> annotations = new ArrayList<>();
 
   /** The ID can be _temporarily_ set to null, but _eventually_ it should be not null. */
   public void setID(@Nullable String id) {
@@ -180,57 +184,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  @Override
-  public List<AnnotationInstance> getAnnotations() {
-    return annotations;
-  }
-
-  @Nonnull
-  public List<AnnotationInstance> getAnnotations(Annotation annotation) {
-    return annotations.stream()
-        .filter(a -> a.getAnnotationDefinition() == annotation)
-        .collect(Collectors.toList());
-  }
-
   @Nullable
   public String getID() {
     return id;
-  }
-
-  public void addAnnotation(@Nonnull AnnotationInstance instance) {
-    Objects.requireNonNull(instance);
-    if (this.annotations.contains(instance)) {
-      // necessary to avoid infinite loops and duplicate insertions
-      return;
-    }
-    if (instance instanceof DynamicAnnotationInstance) {
-      ((DynamicAnnotationInstance) instance).setAnnotated(this);
-    }
-    if (this.annotations.contains(instance)) {
-      // necessary to avoid infinite loops and duplicate insertions
-      // the previous setAnnotated could potentially have already set annotations
-      return;
-    }
-    this.annotations.add(instance);
-  }
-
-  public void removeAnnotation(@Nonnull AnnotationInstance instance) {
-    Objects.requireNonNull(instance);
-    if (!this.annotations.remove(instance)) {
-      throw new IllegalArgumentException();
-    }
-    if (instance instanceof DynamicAnnotationInstance) {
-      ((DynamicAnnotationInstance) instance).setAnnotated(null);
-    }
-  }
-
-  void tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
-    Objects.requireNonNull(instance);
-    if (!this.annotations.remove(instance)) {
-      return;
-    }
-    if (instance instanceof DynamicAnnotationInstance) {
-      ((DynamicAnnotationInstance) instance).setAnnotated(null);
-    }
   }
 }

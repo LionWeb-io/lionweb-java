@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.impl.AnnotatedNode;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -117,11 +118,21 @@ public interface Node extends ClassifierInstance<Concept> {
 
   /** Return a list containing this node and all its descendants. */
   default @Nonnull List<Node> thisAndAllDescendants() {
-    List<Node> nodes = new ArrayList<>();
-    nodes.add(this);
+    return thisAndAllDescendants(false);
+  }
+
+  /**Return a list containing this node and all its descendants. */
+  default @Nonnull <T extends AnnotatedNode> List<T> thisAndAllDescendants(boolean includeAnnotations) {
+    List<T> nodes = new ArrayList<>();
+    nodes.add((T) this);
+    if (includeAnnotations) {
+      for (AnnotationInstance annotation : this.getAnnotations()) {
+        nodes.add((T) annotation);
+      }
+    }
     for (Node child : this.getChildren()) {
       if (!(child instanceof ProxyNode)) {
-        nodes.addAll(child.thisAndAllDescendants());
+        nodes.addAll(child.thisAndAllDescendants(includeAnnotations));
       }
     }
     return nodes;

@@ -1,17 +1,17 @@
 package io.lionweb.lioncore.java.model.impl;
 
-import io.lionweb.lioncore.java.language.Annotation;
+import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-import java.util.*;
-import java.util.stream.Collectors;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Base class to help implements Node in the language package.
@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * to be used by other implementation and it should be as reusable, basic, and unopinionated as
  * possible.
  */
-public abstract class M3Node<T extends M3Node> implements Node {
+public abstract class M3Node<T extends M3Node> extends AnnotatedNode<Concept> implements Node {
   private String id;
   private Node parent;
 
@@ -32,8 +32,6 @@ public abstract class M3Node<T extends M3Node> implements Node {
   private final Map<String, Object> propertyValues = new HashMap<>();
   private final Map<String, List<Node>> containmentValues = new HashMap<>();
   private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
-
-  private final List<AnnotationInstance> annotationInstances = new LinkedList<>();
 
   public T setID(String id) {
     this.id = id;
@@ -64,26 +62,8 @@ public abstract class M3Node<T extends M3Node> implements Node {
   }
 
   @Override
-  public List<AnnotationInstance> getAnnotations() {
-    return this.annotationInstances;
-  }
-
-  @Override
   public Containment getContainmentFeature() {
     throw new UnsupportedOperationException();
-  }
-
-  @Nonnull
-  @Override
-  public List<AnnotationInstance> getAnnotations(Annotation annotation) {
-    return annotationInstances.stream()
-        .filter(a -> a.getAnnotationDefinition() == annotation)
-        .collect(Collectors.toList());
-  }
-
-  @Override
-  public void addAnnotation(AnnotationInstance instance) {
-    annotationInstances.add(instance);
   }
 
   @Override

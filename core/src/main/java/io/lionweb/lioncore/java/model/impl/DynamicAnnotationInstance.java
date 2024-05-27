@@ -61,8 +61,8 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
       ((DynamicNode) this.annotated).tryToRemoveAnnotation(this);
     }
     this.annotated = annotated;
-    if (this.annotated != null && this.annotated instanceof DynamicNode) {
-      ((DynamicNode) this.annotated).addAnnotation(this);
+    if (this.annotated != null && this.annotated instanceof AnnotatedNode) {
+      ((AnnotatedNode) this.annotated).addAnnotation(this);
     }
   }
 

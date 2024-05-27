@@ -12,6 +12,7 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.impl.AnnotatedNode;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -187,13 +188,13 @@ public class JsonSerialization {
   //
 
   public SerializedChunk serializeTreeToSerializationBlock(Node root) {
-    return serializeNodesToSerializationBlock(root.thisAndAllDescendants());
+    return serializeNodesToSerializationBlock(root.thisAndAllDescendants(true));
   }
 
-  public SerializedChunk serializeNodesToSerializationBlock(List<Node> nodes) {
+  public <T extends ClassifierInstance> SerializedChunk serializeNodesToSerializationBlock(List<T> nodes) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
-    for (Node node : nodes) {
+    for (T node : nodes) {
       Objects.requireNonNull(node, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(node));
       node.getAnnotations()
@@ -308,7 +309,7 @@ public class JsonSerialization {
     return new GsonBuilder().setPrettyPrinting().serializeNulls().create().toJson(element);
   }
 
-  private SerializedClassifierInstance serializeNode(@Nonnull Node node) {
+  private <T extends ClassifierInstance> SerializedClassifierInstance serializeNode(@Nonnull T node) {
     Objects.requireNonNull(node, "Node should not be null");
     SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
     serializedClassifierInstance.setID(node.getID());
@@ -627,7 +628,7 @@ public class JsonSerialization {
                   throw new IllegalStateException(
                       "Dangling annotation instance found (annotated node is null). ");
                 }
-                Node annotatedNode = (Node) deserializedByID.get(node.getParentNodeID());
+                AnnotatedNode annotatedNode = (AnnotatedNode) deserializedByID.get(node.getParentNodeID());
                 AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
                 if (annotatedNode != null) {
                   annotatedNode.addAnnotation(annotationInstance);
