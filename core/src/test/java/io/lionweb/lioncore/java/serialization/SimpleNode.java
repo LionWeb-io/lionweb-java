@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
@@ -57,17 +56,6 @@ public abstract class SimpleNode implements Node {
 
   @Override
   public Containment getContainmentFeature() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nonnull
-  @Override
-  public List<AnnotationInstance> getAnnotations(Annotation annotation) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void addAnnotation(AnnotationInstance instance) {
     throw new UnsupportedOperationException();
   }
 

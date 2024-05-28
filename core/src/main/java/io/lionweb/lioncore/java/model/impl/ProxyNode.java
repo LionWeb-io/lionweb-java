@@ -100,17 +100,6 @@ public class ProxyNode implements Node {
     throw cannotDoBecauseProxy();
   }
 
-  @Nonnull
-  @Override
-  public List<AnnotationInstance> getAnnotations(Annotation annotation) {
-    throw cannotDoBecauseProxy();
-  }
-
-  @Override
-  public void addAnnotation(AnnotationInstance instance) {
-    throw cannotDoBecauseProxy();
-  }
-
   private CannotDoBecauseProxyException cannotDoBecauseProxy() {
     return new CannotDoBecauseProxyException(this.id);
   }

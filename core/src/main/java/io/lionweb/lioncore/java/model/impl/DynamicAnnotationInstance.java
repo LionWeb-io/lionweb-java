@@ -9,7 +9,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     implements AnnotationInstance {
 
   private Annotation annotation;
-  private ClassifierInstance annotated;
+  private ClassifierInstance<?> annotated;
 
   public DynamicAnnotationInstance(String id) {
     this.id = id;
@@ -20,7 +20,8 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     this.annotation = annotation;
   }
 
-  public DynamicAnnotationInstance(String id, Annotation annotation, ClassifierInstance annotated) {
+  public DynamicAnnotationInstance(
+      String id, Annotation annotation, ClassifierInstance<?> annotated) {
     this(id, annotation);
     setAnnotated(annotated);
   }
@@ -52,7 +53,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     this.annotation = annotation;
   }
 
-  public void setAnnotated(ClassifierInstance annotated) {
+  public void setAnnotated(ClassifierInstance<?> annotated) {
     if (annotated == this.annotated) {
       // necessary to avoid infinite loops
       return;
@@ -61,8 +62,8 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
       ((DynamicNode) this.annotated).tryToRemoveAnnotation(this);
     }
     this.annotated = annotated;
-    if (this.annotated != null && this.annotated instanceof DynamicNode) {
-      ((DynamicNode) this.annotated).addAnnotation(this);
+    if (this.annotated != null && this.annotated instanceof AbstractClassifierInstance) {
+      ((AbstractClassifierInstance<?>) this.annotated).addAnnotation(this);
     }
   }
 

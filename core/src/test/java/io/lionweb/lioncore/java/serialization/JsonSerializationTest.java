@@ -721,6 +721,43 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
+  public void serializeLanguage() {
+    Language metaLang = new Language("metaLang", "metaLang", "metaLang", "1");
+    Annotation metaAnn = new Annotation(metaLang, "metaAnn", "metaAnn", "metaAnn");
+
+    Language l = new Language("l", "l", "l", "1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+    DynamicAnnotationInstance ann = new DynamicAnnotationInstance("metaAnn_1", metaAnn, c);
+    c.addAnnotation(ann);
+
+    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    hjs.enableDynamicNodes();
+    SerializedChunk serializedChunk = hjs.serializeTreeToSerializationBlock(l);
+
+    assertEquals(5, serializedChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
+    assertEquals("l", serializedL.getID());
+    assertNull(serializedL.getParentNodeID());
+
+    SerializedClassifierInstance serializedC = serializedChunk.getInstanceByID("c");
+    assertEquals("c", serializedC.getID());
+    assertEquals(Arrays.asList("metaAnn_1"), serializedC.getAnnotations());
+
+    hjs.registerLanguage(metaLang);
+    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationBlock(serializedChunk);
+    assertEquals(5, deserialized.size());
+    ClassifierInstance<?> deserializedC = deserialized.get(3);
+    assertInstancesAreEquals(c, deserializedC);
+    assertEquals(deserialized.get(0), deserializedC.getParent());
+    ClassifierInstance<?> deserializedAnn = deserialized.get(4);
+    assertInstancesAreEquals(ann, deserializedAnn);
+    assertEquals(deserializedC, deserializedAnn.getParent());
+    assertEquals(Arrays.asList(deserializedAnn), deserializedC.getAnnotations());
+  }
+
+  @Test
   public void serializationIncludeBuiltinsWhenUsedInProperties() {
     Language l = new Language("l", "l", "l", "1");
     Concept c = new Concept(l, "c", "c", "c");
