@@ -20,7 +20,8 @@ import javax.annotation.Nullable;
  * to be used by other implementation and it should be as reusable, basic, and unopinionated as
  * possible.
  */
-public abstract class M3Node<T extends M3Node> extends AnnotatedNode<Concept> implements Node {
+public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
+    implements Node {
   private String id;
   private Node parent;
 

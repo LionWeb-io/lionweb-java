@@ -11,7 +11,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
-public abstract class AnnotatedNode<T extends Classifier<T>> implements ClassifierInstance<T> {
+public abstract class AbstractClassifierInstance<T extends Classifier<T>>
+    implements ClassifierInstance<T> {
   protected final List<AnnotationInstance> annotations = new ArrayList<>();
 
   @Override
@@ -35,8 +36,8 @@ public abstract class AnnotatedNode<T extends Classifier<T>> implements Classifi
    * AnnotationInstance, and the annotation does not support multiple values, then the existing
    * instance will be removed and replaced by the instance specified in the call to this method.
    *
-   * <p>In case the specified Annotation link cannot be used on Nodes of this Concept, then the
-   * exception IllegalArgumentException will be thrown.
+   * @throws IllegalArgumentException In case the specified Annotation link cannot be used on Nodes
+   *     of this Concept.
    */
   public void addAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);

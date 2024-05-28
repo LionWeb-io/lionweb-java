@@ -10,8 +10,8 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class DynamicClassifierInstance<T extends Classifier<T>> extends AnnotatedNode<T>
-    implements ClassifierInstance<T> {
+public abstract class DynamicClassifierInstance<T extends Classifier<T>>
+    extends AbstractClassifierInstance<T> implements ClassifierInstance<T> {
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;
 

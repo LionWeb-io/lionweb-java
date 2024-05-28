@@ -1,9 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import javax.annotation.Nonnull;
@@ -96,27 +94,14 @@ public interface Node extends ClassifierInstance<Concept> {
     return getPropertyValue(property);
   }
 
-  /** Return a list containing this node and all its descendants. */
+  /**
+   * Return a list containing this node and all its descendants. Does <i>not</i> include
+   * annotations.
+   */
   default @Nonnull List<Node> thisAndAllDescendants() {
     List<Node> result = new ArrayList<>();
-    selfAndAllDescendants(this, false, result);
+    ClassifierInstance.collectSelfAndDescendants(this, false, result);
     return result;
-  }
-
-  /** Return a list containing this node and all its descendants. */
-  static @Nonnull <T extends ClassifierInstance<?>> void selfAndAllDescendants(
-      T self, boolean includeAnnotations, Collection<T> result) {
-    result.add(self);
-    if (includeAnnotations) {
-      for (AnnotationInstance annotation : self.getAnnotations()) {
-        selfAndAllDescendants((T) annotation, includeAnnotations, result);
-      }
-    }
-    for (Node child : self.getChildren()) {
-      if (!(child instanceof ProxyNode)) {
-        selfAndAllDescendants((T) child, includeAnnotations, result);
-      }
-    }
   }
 
   default List<? extends Node> getChildrenByContainmentName(String containmentName) {
