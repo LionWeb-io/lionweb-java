@@ -292,4 +292,32 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
   }
+
+  @Override
+  public void removeChild(@Nonnull Containment containment, int index) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nonnull
+  @Override
+  public List<ReferenceValue> getReferenceValues() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nonnull
+  @Override
+  public List<Node> getReferredNodes() {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void removeReferenceValue(
+      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void removeReferenceValue(@Nonnull Reference reference, int index) {
+    throw new UnsupportedOperationException();
+  }
 }

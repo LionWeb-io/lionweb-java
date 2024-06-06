@@ -131,6 +131,17 @@ public interface Node extends ClassifierInstance<Concept> {
     return getReferenceValues(reference);
   }
 
+  default @Nullable ReferenceValue getOnlyReferenceValueByReferenceName(String referenceName) {
+    List<ReferenceValue> referenceValues = getReferenceValueByName(referenceName);
+    if (referenceValues.size() > 1) {
+      throw new IllegalStateException();
+    } else if (referenceValues.isEmpty()) {
+      return null;
+    } else {
+      return referenceValues.get(0);
+    }
+  }
+
   default Classifier<Concept> getClassifier() {
     return getConcept();
   }

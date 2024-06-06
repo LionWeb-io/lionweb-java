@@ -20,10 +20,17 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
 
+  @Nullable
+  public String getID() {
+    return id;
+  }
+
   /** The ID can be _temporarily_ set to null, but _eventually_ it should be not null. */
   public void setID(@Nullable String id) {
     this.id = id;
   }
+
+  // Public methods for properties
 
   @Override
   public Object getPropertyValue(@Nonnull Property property) {
@@ -49,15 +56,17 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
-      // DynamicNode can be
-      // simplified
+      // DynamicNode can be simplified
       propertyValues.remove(property.getID());
     } else {
       propertyValues.put(property.getID(), value);
     }
   }
 
+  // Public methods for containments
+
   @Override
+  @Nonnull
   public List<Node> getChildren() {
     List<Node> allChildren = new LinkedList<>();
     getClassifier().allContainments().stream()
@@ -89,52 +98,6 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  private void setContainmentSingleValue(Containment link, Node value) {
-    List<Node> prevValue = containmentValues.get(link.getID());
-    if (prevValue != null) {
-      List<Node> copy = new LinkedList<>(prevValue);
-      copy.forEach(c -> this.removeChild(c));
-    }
-    if (value == null) {
-      containmentValues.remove(link.getID());
-    } else if (value instanceof HasSettableParent) {
-      ((HasSettableParent) value).setParent((Node) this);
-      containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
-    }
-  }
-
-  private void setReferenceSingleValue(Reference link, ReferenceValue value) {
-    if (value == null) {
-      referenceValues.remove(link.getID());
-    } else {
-      referenceValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
-    }
-  }
-
-  private void addContainment(Containment link, Node value) {
-    assert link.isMultiple();
-    if (value instanceof HasSettableParent) {
-      ((HasSettableParent) value).setParent((Node) this);
-    }
-    if (containmentValues.containsKey(link.getID())) {
-      containmentValues.get(link.getID()).add(value);
-    } else {
-      containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
-    }
-  }
-
-  private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
-    assert link.isMultiple();
-    if (referenceValue == null) {
-      return;
-    }
-    if (referenceValues.containsKey(link.getID())) {
-      referenceValues.get(link.getID()).add(referenceValue);
-    } else {
-      referenceValues.put(link.getID(), new ArrayList(Arrays.asList(referenceValue)));
-    }
-  }
-
   @Override
   public void removeChild(Node node) {
     for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
@@ -149,11 +112,24 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     throw new IllegalArgumentException("The given node is not a child of this node");
   }
 
+  // Public methods for references
+
   @Nonnull
   @Override
-  public List<Node> getReferredNodes(@Nonnull Reference reference) {
-    return getReferenceValues(reference).stream()
-        .map(v -> v.getReferred())
+  public List<ReferenceValue> getReferenceValues() {
+    List<ReferenceValue> allReferredValues = new LinkedList<>();
+    getClassifier().allReferences().stream()
+        .map(r -> getReferenceValues(r))
+        .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
+    return allReferredValues;
+  }
+
+  @Nonnull
+  @Override
+  public List<Node> getReferredNodes() {
+    return getReferenceValues().stream()
+        .map(rv -> rv.getReferred())
+        .filter(n -> n != null)
         .collect(Collectors.toList());
   }
 
@@ -170,6 +146,14 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
+  @Nonnull
+  @Override
+  public List<Node> getReferredNodes(@Nonnull Reference reference) {
+    return getReferenceValues(reference).stream()
+        .map(v -> v.getReferred())
+        .collect(Collectors.toList());
+  }
+
   @Override
   public void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
     Objects.requireNonNull(reference, "Reference should not be null");
@@ -182,8 +166,90 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  @Nullable
-  public String getID() {
-    return id;
+  @Override
+  public void removeReferenceValue(
+      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    if (referenceValues.containsKey(reference.getID())) {
+      List<ReferenceValue> referrenceValuesOfInterest = referenceValues.get(reference.getID());
+      for (int i = 0; i < referrenceValuesOfInterest.size(); i++) {
+        ReferenceValue rv = referrenceValuesOfInterest.get(i);
+        if (referenceValue == null) {
+          if (rv == null) {
+            referrenceValuesOfInterest.remove(i);
+            return;
+          }
+        } else {
+          if (referenceValue.equals(rv)) {
+            referrenceValuesOfInterest.remove(i);
+            return;
+          }
+        }
+      }
+    }
+    throw new IllegalArgumentException(
+        "The given reference value could not be found under reference " + reference.getName());
+  }
+
+  // Private methods for containments
+
+  private void addContainment(Containment link, Node value) {
+    assert link.isMultiple();
+    if (value instanceof HasSettableParent) {
+      ((HasSettableParent) value).setParent((Node) this);
+    }
+    if (containmentValues.containsKey(link.getID())) {
+      containmentValues.get(link.getID()).add(value);
+    } else {
+      containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+    }
+  }
+
+  private void setContainmentSingleValue(Containment link, Node value) {
+    List<Node> prevValue = containmentValues.get(link.getID());
+    if (prevValue != null) {
+      List<Node> copy = new LinkedList<>(prevValue);
+      copy.forEach(c -> this.removeChild(c));
+    }
+    if (value == null) {
+      containmentValues.remove(link.getID());
+    } else if (value instanceof HasSettableParent) {
+      ((HasSettableParent) value).setParent((Node) this);
+      containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+    }
+  }
+
+  // Private methods for references
+
+  private void setReferenceSingleValue(Reference link, ReferenceValue value) {
+    if (value == null) {
+      referenceValues.remove(link.getID());
+    } else {
+      referenceValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
+    }
+  }
+
+  private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
+    assert link.isMultiple();
+    if (referenceValue == null) {
+      return;
+    }
+    if (referenceValues.containsKey(link.getID())) {
+      referenceValues.get(link.getID()).add(referenceValue);
+    } else {
+      referenceValues.put(link.getID(), new ArrayList(Arrays.asList(referenceValue)));
+    }
+  }
+
+  @Override
+  public void removeChild(@Nonnull Containment containment, int index) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void removeReferenceValue(@Nonnull Reference reference, int index) {
+    throw new UnsupportedOperationException();
   }
 }
