@@ -271,15 +271,15 @@ public class ModelComparator {
     if (!Objects.equals(nodeA.getID(), nodeB.getID())) {
       comparisonResult.markDifferentIDs(context, nodeA.getID(), nodeB.getID());
     } else {
-      if (Objects.equals(nodeA.getConcept().getID(), nodeB.getConcept().getID())) {
-        Concept concept = nodeA.getConcept();
+      if (Objects.equals(nodeA.getClassifier().getID(), nodeB.getClassifier().getID())) {
+        Concept concept = nodeA.getClassifier();
         compareProperties(concept, nodeA, nodeB, comparisonResult, context);
         compareReferences(concept, nodeA, nodeB, comparisonResult, context);
         compareContainments(concept, nodeA, nodeB, comparisonResult, context);
         compareAnnotations(concept, nodeA, nodeB, comparisonResult, context);
       } else {
         comparisonResult.markDifferentConcept(
-            context, nodeA.getID(), nodeA.getConcept().getID(), nodeB.getConcept().getID());
+            context, nodeA.getID(), nodeA.getClassifier().getID(), nodeB.getClassifier().getID());
       }
     }
   }

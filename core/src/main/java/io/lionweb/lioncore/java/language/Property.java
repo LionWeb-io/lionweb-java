@@ -93,7 +93,7 @@ public class Property extends Feature<Property> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getProperty();
   }
 }

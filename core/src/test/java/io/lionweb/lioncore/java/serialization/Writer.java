@@ -20,7 +20,7 @@ public class Writer extends DynamicNode {
   }
 
   public void setName(String name) {
-    this.setPropertyValue(getConcept().getPropertyByName("name"), name);
+    this.setPropertyValue(getClassifier().getPropertyByName("name"), name);
   }
 
   public String getName() {
@@ -28,7 +28,7 @@ public class Writer extends DynamicNode {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LibraryLanguage.WRITER;
   }
 }

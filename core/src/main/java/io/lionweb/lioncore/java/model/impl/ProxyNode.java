@@ -81,12 +81,7 @@ public class ProxyNode implements Node {
   }
 
   @Override
-  public Partition getPartition() {
-    throw cannotDoBecauseProxy();
-  }
-
-  @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     throw cannotDoBecauseProxy();
   }
 

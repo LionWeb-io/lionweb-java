@@ -27,7 +27,7 @@ public class ContainerNode extends SimpleNode {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return RefsLanguage.CONTAINER_NODE;
   }
 

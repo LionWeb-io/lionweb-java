@@ -25,7 +25,7 @@ public class Sum extends SimpleNode {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return SimpleMathLanguage.SUM;
   }
 

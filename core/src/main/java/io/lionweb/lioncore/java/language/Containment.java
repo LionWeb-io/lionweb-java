@@ -107,7 +107,7 @@ public class Containment extends Link<Containment> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getContainment();
   }
 }

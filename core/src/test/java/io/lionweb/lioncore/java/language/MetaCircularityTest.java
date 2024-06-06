@@ -9,32 +9,34 @@ public class MetaCircularityTest {
 
   @Test
   public void eachElementOfM3HasRightConcept() {
-    assertSame(LionCore.getConcept(), LionCore.getConcept().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getInterface().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getContainment().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getDataType().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getEnumeration().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getEnumerationLiteral().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getFeature().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getClassifier().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getLink().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getLanguage().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getLanguageEntity().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getPrimitiveType().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getProperty().getConcept());
-    assertSame(LionCore.getConcept(), LionCore.getReference().getConcept());
+    assertSame(LionCore.getConcept(), LionCore.getConcept().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getInterface().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getContainment().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getDataType().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getEnumeration().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getEnumerationLiteral().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getFeature().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getClassifier().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getLink().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getLanguage().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getLanguageEntity().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getPrimitiveType().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getProperty().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getReference().getClassifier());
+    assertSame(LionCore.getConcept(), LionCore.getAnnotation().getClassifier());
   }
 
   @Test
   public void eachElementOfM2HasRightConcept() {
-    assertSame(LionCore.getConcept(), new Concept().getConcept());
-    assertSame(LionCore.getInterface(), new Interface().getConcept());
-    assertSame(LionCore.getContainment(), new Containment().getConcept());
-    assertSame(LionCore.getEnumeration(), new Enumeration().getConcept());
-    assertSame(LionCore.getEnumerationLiteral(), new EnumerationLiteral().getConcept());
-    assertSame(LionCore.getLanguage(), new Language().getConcept());
-    assertSame(LionCore.getPrimitiveType(), new PrimitiveType().getConcept());
-    assertSame(LionCore.getProperty(), new Property().getConcept());
-    assertSame(LionCore.getReference(), new Reference().getConcept());
+    assertSame(LionCore.getConcept(), new Concept().getClassifier());
+    assertSame(LionCore.getInterface(), new Interface().getClassifier());
+    assertSame(LionCore.getContainment(), new Containment().getClassifier());
+    assertSame(LionCore.getEnumeration(), new Enumeration().getClassifier());
+    assertSame(LionCore.getEnumerationLiteral(), new EnumerationLiteral().getClassifier());
+    assertSame(LionCore.getLanguage(), new Language().getClassifier());
+    assertSame(LionCore.getPrimitiveType(), new PrimitiveType().getClassifier());
+    assertSame(LionCore.getProperty(), new Property().getClassifier());
+    assertSame(LionCore.getReference(), new Reference().getClassifier());
+    assertSame(LionCore.getAnnotation(), new Annotation().getClassifier());
   }
 }

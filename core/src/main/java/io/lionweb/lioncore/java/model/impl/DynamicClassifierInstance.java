@@ -112,6 +112,11 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     throw new IllegalArgumentException("The given node is not a child of this node");
   }
 
+  @Override
+  public void removeChild(@Nonnull Containment containment, int index) {
+    throw new UnsupportedOperationException();
+  }
+
   // Public methods for references
 
   @Nonnull
@@ -193,6 +198,11 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
         "The given reference value could not be found under reference " + reference.getName());
   }
 
+  @Override
+  public void removeReferenceValue(@Nonnull Reference reference, int index) {
+    throw new UnsupportedOperationException();
+  }
+
   // Private methods for containments
 
   private void addContainment(Containment link, Node value) {
@@ -241,15 +251,5 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     } else {
       referenceValues.put(link.getID(), new ArrayList(Arrays.asList(referenceValue)));
     }
-  }
-
-  @Override
-  public void removeChild(@Nonnull Containment containment, int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void removeReferenceValue(@Nonnull Reference reference, int index) {
-    throw new UnsupportedOperationException();
   }
 }

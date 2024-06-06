@@ -30,7 +30,7 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getEnumeration();
   }
 }

@@ -20,7 +20,7 @@ public class NodeTreeValidator extends Validator<Node> {
     }
     if (node.isRoot()) {
       validationResult.checkForError(
-          !node.getConcept().isPartition(),
+          !node.getClassifier().isPartition(),
           "A root node should be an instance of a Partition concept",
           node);
     }

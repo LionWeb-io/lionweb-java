@@ -36,7 +36,7 @@ public class PrimitiveType extends DataType<PrimitiveType> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getPrimitiveType();
   }
 }

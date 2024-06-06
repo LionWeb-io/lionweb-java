@@ -26,7 +26,7 @@ public class RefNode extends SimpleNode {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return RefsLanguage.REF_NODE;
   }
 
