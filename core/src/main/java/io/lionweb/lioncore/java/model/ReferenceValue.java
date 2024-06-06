@@ -56,7 +56,7 @@ public class ReferenceValue {
   public String toString() {
     return "ReferenceValue{"
         + "referred="
-        + referred
+        + (referred == null ? "null" : referred.getID())
         + ", resolveInfo='"
         + resolveInfo
         + '\''

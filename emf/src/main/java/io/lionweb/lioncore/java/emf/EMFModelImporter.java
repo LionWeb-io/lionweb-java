@@ -74,7 +74,7 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
                   EReference eReference = (EReference) eStructuralFeature;
                   if (eReference.isContainment()) {
                     Containment containment =
-                        node.getConcept().requireContainmentByName(eStructuralFeature.getName());
+                        node.getClassifier().requireContainmentByName(eStructuralFeature.getName());
                     if (eReference.isMany()) {
                       List<EObject> values = (List<EObject>) sfValue;
                       values.forEach(

@@ -62,7 +62,7 @@ public interface HasFeatureValues {
    * by this Node's Model.
    *
    * <p>Please note that this will not return null values, differently from the variant taking a
-   * Reference.
+   * Reference. It may contain duplicates.
    */
   @Nonnull
   List<Node> getReferredNodes();
@@ -109,4 +109,8 @@ public interface HasFeatureValues {
    * <p>If there is no match the exception IllegalArgumentException will be thrown.
    */
   void removeReferenceValue(@Nonnull Reference reference, int index);
+
+  void setOnlyReferenceValueByName(String referenceName, @Nullable ReferenceValue value);
+
+  void setReferenceValuesByName(String referenceName, @Nonnull List<ReferenceValue> values);
 }

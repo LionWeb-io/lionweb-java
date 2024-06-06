@@ -35,10 +35,13 @@ public class EMFModelExporter extends AbstractEMFExporter {
 
   /** This export the root received to a single EObject tree. */
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
-    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(root.getConcept());
+    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(root.getClassifier());
     if (eClass == null) {
       throw new IllegalStateException(
-          "Cannot find EClass corresponding to " + root.getConcept().getName() + ". Node: " + root);
+          "Cannot find EClass corresponding to "
+              + root.getClassifier().getName()
+              + ". Node: "
+              + root);
     }
     EObject eObject = eClass.getEPackage().getEFactoryInstance().create(eClass);
     referencesPostponer.trackMapping(root, eObject);
@@ -122,7 +125,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
             Reference reference =
                 postponedReference
                     .node
-                    .getConcept()
+                    .getClassifier()
                     .getReferenceByName(postponedReference.eReference.getName());
             List<ReferenceValue> referenceValues =
                 postponedReference.node.getReferenceValues(reference);
