@@ -137,4 +137,32 @@ public class ProxyNode implements Node {
   public int hashCode() {
     return Objects.hashCode(id);
   }
+
+  @Override
+  public void removeChild(@Nonnull Containment containment, int index) {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Nonnull
+  @Override
+  public List<ReferenceValue> getReferenceValues() {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Nonnull
+  @Override
+  public List<Node> getReferredNodes() {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public void removeReferenceValue(
+      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public void removeReferenceValue(@Nonnull Reference reference, int index) {
+    throw cannotDoBecauseProxy();
+  }
 }
