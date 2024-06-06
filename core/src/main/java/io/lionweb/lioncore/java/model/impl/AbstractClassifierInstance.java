@@ -2,10 +2,9 @@ package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -90,6 +89,33 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     return allChildren;
   }
 
+  @Override
+  public void removeChild(Node child) {
+    for (Containment containment : this.getClassifier().allContainments()) {
+      List<? extends Node> children = this.getChildren(containment);
+      if (children.remove(child)) {
+        if (child instanceof HasSettableParent) {
+          ((HasSettableParent) child).setParent(null);
+        }
+        return;
+      }
+    }
+  }
+
+  @Override
+  public void removeChild(@Nonnull Containment containment, int index) {
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
+    List<? extends Node> children = this.getChildren(containment);
+    if (children.size() > index) {
+      children.remove(index);
+    } else {
+      throw new IllegalArgumentException(
+          "Invalid index " + index + " when children are " + children.size());
+    }
+  }
+
   // Public methods for references
 
   @Nonnull
@@ -117,4 +143,24 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   @Override
   public void setReferenceValuesByName(
       String referenceName, @Nonnull List<ReferenceValue> values) {}
+
+  @Override
+  public void removeReferenceValue(@Nonnull Reference reference, int index) {
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    getReferenceValues(reference).remove(index);
+  }
+
+  @Override
+  public void removeReferenceValue(
+      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    if (!getReferenceValues(reference).remove(referenceValue)) {
+      throw new IllegalArgumentException(
+          "The given reference value could not be found under reference " + reference.getName());
+    }
+  }
 }
