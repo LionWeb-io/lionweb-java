@@ -4,16 +4,18 @@ import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.ReferenceValue;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     implements ClassifierInstance<T> {
   protected final List<AnnotationInstance> annotations = new ArrayList<>();
+
+  // Public methods for annotations
 
   @Override
   public List<AnnotationInstance> getAnnotations() {
@@ -75,4 +77,44 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
   }
+
+  // Public methods for containments
+
+  @Override
+  @Nonnull
+  public List<Node> getChildren() {
+    List<Node> allChildren = new LinkedList<>();
+    getClassifier().allContainments().stream()
+        .map(c -> getChildren(c))
+        .forEach(children -> allChildren.addAll(children));
+    return allChildren;
+  }
+
+  // Public methods for references
+
+  @Nonnull
+  @Override
+  public List<ReferenceValue> getReferenceValues() {
+    List<ReferenceValue> allReferredValues = new LinkedList<>();
+    getClassifier().allReferences().stream()
+        .map(r -> getReferenceValues(r))
+        .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
+    return allReferredValues;
+  }
+
+  @Nonnull
+  @Override
+  public List<Node> getReferredNodes() {
+    return getReferenceValues().stream()
+        .map(rv -> rv.getReferred())
+        .filter(n -> n != null)
+        .collect(Collectors.toList());
+  }
+
+  @Override
+  public void setOnlyReferenceValueByName(String referenceName, @Nullable ReferenceValue value) {}
+
+  @Override
+  public void setReferenceValuesByName(
+      String referenceName, @Nonnull List<ReferenceValue> values) {}
 }

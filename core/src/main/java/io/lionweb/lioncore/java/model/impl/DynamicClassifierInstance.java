@@ -66,16 +66,6 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   // Public methods for containments
 
   @Override
-  @Nonnull
-  public List<Node> getChildren() {
-    List<Node> allChildren = new LinkedList<>();
-    getClassifier().allContainments().stream()
-        .map(c -> getChildren(c))
-        .forEach(children -> allChildren.addAll(children));
-    return allChildren;
-  }
-
-  @Override
   public List<Node> getChildren(@Nonnull Containment containment) {
     Objects.requireNonNull(containment, "Containment should not be null");
     if (!getClassifier().allContainments().contains(containment)) {
@@ -114,28 +104,18 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeChild(@Nonnull Containment containment, int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  // Public methods for references
-
-  @Nonnull
-  @Override
-  public List<ReferenceValue> getReferenceValues() {
-    List<ReferenceValue> allReferredValues = new LinkedList<>();
-    getClassifier().allReferences().stream()
-        .map(r -> getReferenceValues(r))
-        .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
-    return allReferredValues;
-  }
-
-  @Nonnull
-  @Override
-  public List<Node> getReferredNodes() {
-    return getReferenceValues().stream()
-        .map(rv -> rv.getReferred())
-        .filter(n -> n != null)
-        .collect(Collectors.toList());
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
+    if (containmentValues.containsKey(containment.getID())) {
+      List<Node> children = containmentValues.get(containment.getID());
+      if (children.size() > index) {
+        children.remove(index);
+      } else {
+        throw new IllegalArgumentException(
+            "Invalid index " + index + " when children are " + children.size());
+      }
+    }
   }
 
   @Nonnull
@@ -178,17 +158,17 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     if (referenceValues.containsKey(reference.getID())) {
-      List<ReferenceValue> referrenceValuesOfInterest = referenceValues.get(reference.getID());
-      for (int i = 0; i < referrenceValuesOfInterest.size(); i++) {
-        ReferenceValue rv = referrenceValuesOfInterest.get(i);
+      List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getID());
+      for (int i = 0; i < referenceValuesOfInterest.size(); i++) {
+        ReferenceValue rv = referenceValuesOfInterest.get(i);
         if (referenceValue == null) {
           if (rv == null) {
-            referrenceValuesOfInterest.remove(i);
+            referenceValuesOfInterest.remove(i);
             return;
           }
         } else {
           if (referenceValue.equals(rv)) {
-            referrenceValuesOfInterest.remove(i);
+            referenceValuesOfInterest.remove(i);
             return;
           }
         }
@@ -200,7 +180,21 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
-    throw new UnsupportedOperationException();
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    if (referenceValues.containsKey(reference.getID())) {
+      List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getID());
+      if (referenceValuesOfInterest.size() > index) {
+        referenceValuesOfInterest.remove(index);
+      } else {
+        throw new IllegalArgumentException(
+            "Invalid index "
+                + index
+                + " when reference values are "
+                + referenceValuesOfInterest.size());
+      }
+    }
   }
 
   // Private methods for containments
