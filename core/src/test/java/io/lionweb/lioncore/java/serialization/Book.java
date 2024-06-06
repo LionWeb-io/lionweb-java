@@ -17,11 +17,11 @@ public class Book extends DynamicNode {
   }
 
   public void setTitle(String title) {
-    this.setPropertyValue(getConcept().getPropertyByName("title"), title);
+    this.setPropertyValue(getClassifier().getPropertyByName("title"), title);
   }
 
   public Book setPages(int pages) {
-    this.setPropertyValue(getConcept().getPropertyByName("pages"), pages);
+    this.setPropertyValue(getClassifier().getPropertyByName("pages"), pages);
     return this;
   }
 
@@ -31,11 +31,11 @@ public class Book extends DynamicNode {
 
   public void setAuthor(Writer author) {
     this.addReferenceValue(
-        getConcept().getReferenceByName("author"), new ReferenceValue(author, author.getName()));
+        getClassifier().getReferenceByName("author"), new ReferenceValue(author, author.getName()));
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LibraryLanguage.BOOK;
   }
 }

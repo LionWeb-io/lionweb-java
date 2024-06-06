@@ -3,7 +3,6 @@ package io.lionweb.lioncore.java.model.impl;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.Partition;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -33,17 +32,12 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public Partition getPartition() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Node getParent() {
     return this.parent;
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return this.concept;
   }
 
@@ -53,7 +47,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
     if (parent == null) {
       return null;
     }
-    for (Containment containment : parent.getConcept().allContainments()) {
+    for (Containment containment : parent.getClassifier().allContainments()) {
       if (parent.getChildren(containment).stream().anyMatch(it -> it == this)) {
         return containment;
       }

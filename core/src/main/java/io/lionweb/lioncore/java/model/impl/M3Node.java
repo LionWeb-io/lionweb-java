@@ -5,7 +5,6 @@ import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -44,11 +43,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public Partition getPartition() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Node getRoot() {
     if (getParent() == null) {
       return this;
@@ -68,7 +62,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Override
   public Object getPropertyValue(Property property) {
-    if (!getConcept().allProperties().contains(property)) {
+    if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept: " + property);
     }
     return propertyValues.get(property.getName());
@@ -93,7 +87,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Override
   public void setPropertyValue(Property property, Object value) {
-    if (!getConcept().allProperties().contains(property)) {
+    if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
     setPropertyValue(property.getName(), value);
@@ -106,7 +100,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   @Override
   public List<Node> getChildren() {
     List<Node> allChildren = new LinkedList<>();
-    getConcept().allContainments().stream()
+    getClassifier().allContainments().stream()
         .map(c -> getChildren(c))
         .forEach(children -> allChildren.addAll(children));
     return allChildren;
@@ -114,7 +108,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Override
   public List<Node> getChildren(Containment containment) {
-    if (!getConcept().allContainments().contains(containment)) {
+    if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
     return containmentValues.getOrDefault(containment.getName(), Collections.emptyList());
@@ -146,7 +140,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   @Override
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
     Objects.requireNonNull(reference, "reference should not be null");
-    if (!getConcept().allReferences().contains(reference)) {
+    if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     return referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
@@ -156,7 +150,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   public void addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
     Objects.requireNonNull(reference, "reference should not be null");
-    if (!getConcept().allReferences().contains(reference)) {
+    if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
     }
     if (reference.isMultiple()) {

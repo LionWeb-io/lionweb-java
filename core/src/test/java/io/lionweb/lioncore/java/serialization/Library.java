@@ -11,15 +11,15 @@ public class Library extends DynamicNode {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LibraryLanguage.LIBRARY;
   }
 
   public void addBook(Book book) {
-    this.addChild(getConcept().getContainmentByName("books"), book);
+    this.addChild(getClassifier().getContainmentByName("books"), book);
   }
 
   public void setName(String name) {
-    this.setPropertyValue(getConcept().getPropertyByName("name"), name);
+    this.setPropertyValue(getClassifier().getPropertyByName("name"), name);
   }
 }

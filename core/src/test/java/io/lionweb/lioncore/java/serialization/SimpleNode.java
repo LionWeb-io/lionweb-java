@@ -5,7 +5,6 @@ import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.Partition;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,11 +39,6 @@ public abstract class SimpleNode implements Node {
   }
 
   @Override
-  public Partition getPartition() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Node getParent() {
     return parent;
   }
@@ -76,7 +70,7 @@ public abstract class SimpleNode implements Node {
 
   @Override
   public Object getPropertyValue(Property property) {
-    if (!getConcept().allProperties().contains(property)) {
+    if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
     return concreteGetPropertyValue(property);
@@ -93,7 +87,7 @@ public abstract class SimpleNode implements Node {
 
   @Override
   public List<? extends Node> getChildren(Containment containment) {
-    if (!getConcept().allContainments().contains(containment)) {
+    if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
     return concreteGetChildren(containment);
@@ -122,7 +116,7 @@ public abstract class SimpleNode implements Node {
   @Nonnull
   @Override
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
-    if (!getConcept().allReferences().contains(reference)) {
+    if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     return concreteGetReferenceValues(reference);
@@ -135,7 +129,7 @@ public abstract class SimpleNode implements Node {
   @Override
   public void addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
-    if (!getConcept().allReferences().contains(reference)) {
+    if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     concreteAddReferenceValue(reference, referredNode);
@@ -154,7 +148,7 @@ public abstract class SimpleNode implements Node {
   @Override
   public List<Node> getChildren() {
     List<Node> allChildren = new LinkedList<>();
-    getConcept().allContainments().stream()
+    getClassifier().allContainments().stream()
         .map(c -> getChildren(c))
         .forEach(children -> allChildren.addAll(children));
     return allChildren;

@@ -72,7 +72,7 @@ public class Interface extends Classifier<Interface> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getInterface();
   }
 

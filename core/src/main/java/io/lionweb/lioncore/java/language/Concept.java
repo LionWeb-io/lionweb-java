@@ -121,7 +121,7 @@ public class Concept extends Classifier<Concept> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getConcept();
   }
 }

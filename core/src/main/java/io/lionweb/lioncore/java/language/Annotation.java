@@ -120,7 +120,7 @@ public class Annotation extends Classifier<Annotation> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getAnnotation();
   }
 }

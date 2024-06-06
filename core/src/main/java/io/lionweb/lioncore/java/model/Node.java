@@ -28,12 +28,6 @@ public interface Node extends ClassifierInstance<Concept> {
   String getID();
 
   /**
-   * The Partition in which the Node is contained. A Node is contained into a Partition when it is a
-   * root node of that Node or if one of its ancestors is.
-   */
-  Partition getPartition();
-
-  /**
    * If a Node is a root node in a Model, this method returns the node itself. Otherwise it returns
    * the ancestor which is a root node. This method should return null only if the Node is not
    * inserted in a Model and it is therefore considered a dangling Node.
@@ -52,8 +46,12 @@ public interface Node extends ClassifierInstance<Concept> {
     return ancestors.get(ancestors.size() - 1);
   }
 
+  default boolean isRoot() {
+    return getParent() == null;
+  }
+
   /** The concept of which this Node is an instance. The Concept should not be abstract. */
-  Concept getConcept();
+  Concept getClassifier();
 
   /**
    * Return the Containment feature used to hold this Node within its parent. This will be null only
@@ -65,35 +63,6 @@ public interface Node extends ClassifierInstance<Concept> {
    */
   Containment getContainmentFeature();
 
-  default Object getPropertyValueByName(String propertyName) {
-    Property property = this.getConcept().getPropertyByName(propertyName);
-    if (property == null) {
-      throw new IllegalArgumentException(
-          "Concept "
-              + this.getConcept().qualifiedName()
-              + " does not contained a property named "
-              + propertyName);
-    }
-    return getPropertyValue(property);
-  }
-
-  default void setPropertyValueByName(String propertyName, Object value) {
-    Property property = this.getConcept().getPropertyByName(propertyName);
-    if (property == null) {
-      throw new IllegalArgumentException(
-          "Concept "
-              + this.getConcept().qualifiedName()
-              + " does not contained a property named "
-              + propertyName);
-    }
-    setPropertyValue(property, value);
-  }
-
-  default Object getPropertyValueByID(String propertyID) {
-    Property property = this.getConcept().getPropertyByID(propertyID);
-    return getPropertyValue(property);
-  }
-
   /**
    * Return a list containing this node and all its descendants. Does <i>not</i> include
    * annotations.
@@ -104,8 +73,41 @@ public interface Node extends ClassifierInstance<Concept> {
     return result;
   }
 
+  // Properties methods
+
+  default Object getPropertyValueByName(String propertyName) {
+    Property property = this.getClassifier().getPropertyByName(propertyName);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + this.getClassifier().qualifiedName()
+              + " does not contained a property named "
+              + propertyName);
+    }
+    return getPropertyValue(property);
+  }
+
+  default void setPropertyValueByName(String propertyName, Object value) {
+    Property property = this.getClassifier().getPropertyByName(propertyName);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + this.getClassifier().qualifiedName()
+              + " does not contained a property named "
+              + propertyName);
+    }
+    setPropertyValue(property, value);
+  }
+
+  default Object getPropertyValueByID(String propertyID) {
+    Property property = this.getClassifier().getPropertyByID(propertyID);
+    return getPropertyValue(property);
+  }
+
+  // Containments methods
+
   default List<? extends Node> getChildrenByContainmentName(String containmentName) {
-    return getChildren(getConcept().requireContainmentByName(containmentName));
+    return getChildren(getClassifier().requireContainmentByName(containmentName));
   }
 
   default @Nullable Node getOnlyChildByContainmentName(String containmentName) {
@@ -119,12 +121,14 @@ public interface Node extends ClassifierInstance<Concept> {
     }
   }
 
+  // References methods
+
   default List<ReferenceValue> getReferenceValueByName(String referenceName) {
-    Reference reference = this.getConcept().getReferenceByName(referenceName);
+    Reference reference = this.getClassifier().getReferenceByName(referenceName);
     if (reference == null) {
       throw new IllegalArgumentException(
           "Concept "
-              + this.getConcept().qualifiedName()
+              + this.getClassifier().qualifiedName()
               + " does not contained a property named "
               + referenceName);
     }
@@ -140,13 +144,5 @@ public interface Node extends ClassifierInstance<Concept> {
     } else {
       return referenceValues.get(0);
     }
-  }
-
-  default Classifier<Concept> getClassifier() {
-    return getConcept();
-  }
-
-  default boolean isRoot() {
-    return getParent() == null;
   }
 }

@@ -104,7 +104,7 @@ public class Reference extends Link<Reference> {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getReference();
   }
 }

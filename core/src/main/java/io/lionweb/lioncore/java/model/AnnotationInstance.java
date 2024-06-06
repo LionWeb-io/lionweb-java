@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.Annotation;
-import io.lionweb.lioncore.java.language.Classifier;
 
 /**
  * While an AnnotationInstance implements HasFeatureValues, it is forbidden to hold any children, as
@@ -10,7 +9,7 @@ import io.lionweb.lioncore.java.language.Classifier;
 public interface AnnotationInstance extends ClassifierInstance<Annotation> {
   Annotation getAnnotationDefinition();
 
-  default Classifier<Annotation> getClassifier() {
+  default Annotation getClassifier() {
     return getAnnotationDefinition();
   }
 }

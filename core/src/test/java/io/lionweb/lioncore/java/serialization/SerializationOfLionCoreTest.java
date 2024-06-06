@@ -124,7 +124,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Language lioncore = (Language) deserializedNodes.get(0);
-    assertEquals(LionCore.getLanguage(), lioncore.getConcept());
+    assertEquals(LionCore.getLanguage(), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getName());
     assertEquals(16, lioncore.getChildren().size());
@@ -148,7 +148,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     DynamicNode lioncore = (DynamicNode) deserializedNodes.get(0);
-    assertEquals(LionCore.getLanguage(), lioncore.getConcept());
+    assertEquals(LionCore.getLanguage(), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getPropertyValueByName("name"));
     assertEquals(16, lioncore.getChildren().size());

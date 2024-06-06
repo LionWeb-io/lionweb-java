@@ -162,7 +162,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LionCore.getLanguage();
   }
 

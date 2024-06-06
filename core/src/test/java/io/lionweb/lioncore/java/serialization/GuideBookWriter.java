@@ -8,11 +8,11 @@ public class GuideBookWriter extends Writer {
   }
 
   public void setCountries(String countries) {
-    setPropertyValue(getConcept().getPropertyByName("countries"), countries);
+    setPropertyValue(getClassifier().getPropertyByName("countries"), countries);
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return LibraryLanguage.GUIDE_BOOK_WRITER;
   }
 }

@@ -19,7 +19,7 @@ public class IntLiteral extends SimpleNode {
   }
 
   @Override
-  public Concept getConcept() {
+  public Concept getClassifier() {
     return SimpleMathLanguage.INT_LITERAL;
   }
 
