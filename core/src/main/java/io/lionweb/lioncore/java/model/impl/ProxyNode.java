@@ -178,4 +178,9 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
       String referenceName, @Nonnull List<? extends ReferenceValue> values) {
     throw cannotDoBecauseProxy();
   }
+
+  @Override
+  public void setOnlyChildByContainmentName(@Nonnull String containmentName, @Nullable Node child) {
+    throw cannotDoBecauseProxy();
+  }
 }

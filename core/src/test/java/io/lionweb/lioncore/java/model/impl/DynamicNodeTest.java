@@ -8,6 +8,7 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
 import io.lionweb.lioncore.java.serialization.MyNodeWithReferences;
+import io.lionweb.lioncore.java.serialization.MyNodeWithSelfContainment;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -451,5 +452,21 @@ public class DynamicNodeTest {
     n1.removeReferenceValue(r2, 0);
     assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
     assertEquals(Arrays.asList(), n1.getReferenceValues(r2));
+  }
+
+  @Test
+  public void testGetContainmentFeature() {
+    MyNodeWithSelfContainment n1 = new MyNodeWithSelfContainment("n1");
+    MyNodeWithSelfContainment n2 = new MyNodeWithSelfContainment("n1");
+    MyNodeWithSelfContainment n3 = new MyNodeWithSelfContainment("n1");
+    n1.setAnother(n2);
+    n2.setAnother(n3);
+    assertEquals(null, n1.getContainmentFeature());
+    assertEquals("another", n2.getContainmentFeature().getName());
+    assertEquals("another-id", n2.getContainmentFeature().getID());
+    assertEquals("another-key", n2.getContainmentFeature().getKey());
+    assertEquals("another", n3.getContainmentFeature().getName());
+    assertEquals("another-id", n3.getContainmentFeature().getID());
+    assertEquals("another-key", n3.getContainmentFeature().getKey());
   }
 }

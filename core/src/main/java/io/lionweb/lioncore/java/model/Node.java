@@ -133,6 +133,8 @@ public interface Node extends ClassifierInstance<Concept> {
     }
   }
 
+  void setOnlyChildByContainmentName(@Nonnull String containmentName, @Nullable Node child);
+
   // References methods
 
   default List<ReferenceValue> getReferenceValueByName(String referenceName) {
