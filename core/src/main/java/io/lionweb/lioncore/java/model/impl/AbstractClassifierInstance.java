@@ -139,13 +139,19 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
-    setReferenceValues(reference, Arrays.asList(value));
+    if (value == null) {
+      setReferenceValues(reference, Collections.emptyList());
+    } else {
+      setReferenceValues(reference, Arrays.asList(value));
+    }
   }
 
   @Override
   public void setOnlyReferenceValueByName(
       @Nonnull String referenceName, @Nullable ReferenceValue value) {
-    setReferenceValuesByName(referenceName, Arrays.asList(value));
+    Objects.requireNonNull(referenceName, "referenceName should not be null");
+    Reference reference = this.getClassifier().requireReferenceByName(referenceName);
+    setOnlyReferenceValue(reference, value);
   }
 
   @Override
