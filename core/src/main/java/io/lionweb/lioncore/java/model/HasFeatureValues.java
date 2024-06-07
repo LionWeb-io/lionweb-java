@@ -112,5 +112,6 @@ public interface HasFeatureValues {
 
   void setOnlyReferenceValueByName(String referenceName, @Nullable ReferenceValue value);
 
-  void setReferenceValuesByName(String referenceName, @Nonnull List<ReferenceValue> values);
+  void setReferenceValuesByName(
+      String referenceName, @Nonnull List<? extends ReferenceValue> values);
 }
