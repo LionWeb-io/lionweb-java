@@ -22,7 +22,7 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   }
 
   @Override
-  public ClassifierInstance<Concept> getParent() {
+  public Node getParent() {
     throw cannotDoBecauseProxy();
   }
 
