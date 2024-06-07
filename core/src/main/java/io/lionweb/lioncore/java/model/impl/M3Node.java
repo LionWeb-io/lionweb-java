@@ -160,6 +160,16 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     }
   }
 
+  @Override
+  public void setReferenceValues(
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+    Objects.requireNonNull(reference, "reference should not be null");
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
+  }
+
   @Nullable
   @Override
   public String getID() {

@@ -181,7 +181,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   @Override
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
     if (!getClassifier().allReferences().contains(reference)) {
-      throw new IllegalArgumentException("Reference not belonging to this concept");
+      throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
     if (referenceValues.containsKey(reference.getID())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getID());
@@ -195,6 +195,15 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
                 + referenceValuesOfInterest.size());
       }
     }
+  }
+
+  @Override
+  public void setReferenceValues(
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this classifier");
+    }
+    referenceValues.put(reference.getID(), (List<ReferenceValue>) values);
   }
 
   // Private methods for containments
