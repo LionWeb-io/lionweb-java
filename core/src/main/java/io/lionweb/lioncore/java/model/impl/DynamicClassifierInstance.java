@@ -228,8 +228,10 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     if (value == null) {
       containmentValues.remove(link.getID());
-    } else if (value instanceof HasSettableParent) {
-      ((HasSettableParent) value).setParent((Node) this);
+    } else {
+      if (value instanceof HasSettableParent) {
+        ((HasSettableParent) value).setParent((Node) this);
+      }
       containmentValues.put(link.getID(), new ArrayList(Arrays.asList(value)));
     }
   }
