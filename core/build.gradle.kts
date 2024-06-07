@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import org.apache.tools.ant.taskdefs.condition.Os
 import java.net.URI
 
 plugins {
@@ -7,11 +6,12 @@ plugins {
     id("signing")
     id("com.github.johnrengelman.shadow") version "7.1.1"
     id("com.vanniktech.maven.publish")
+    jacoco
 }
 
 repositories {
     mavenCentral()
-    // Required for MPS OpenAPI and Modelix"s Model API
+    // Required for MPS OpenAPI and Modelix's Model API
     maven {
         url = URI("https://artifacts.itemis.cloud/repository/maven-mps/")
     }
@@ -181,4 +181,8 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
     testClassesDirs = integrationTestSourceSet.output.classesDirs
     classpath = integrationTestSourceSet.runtimeClasspath
     environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
 }
