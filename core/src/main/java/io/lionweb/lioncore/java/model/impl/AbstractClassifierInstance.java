@@ -142,7 +142,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void setReferenceValuesByName(
-      String referenceName, @Nonnull List<ReferenceValue> values) {}
+      String referenceName, @Nonnull List<? extends ReferenceValue> values) {}
 
   @Override
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
