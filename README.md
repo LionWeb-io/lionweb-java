@@ -38,3 +38,8 @@ The language's _nsURI_ is `http://lionweb.io/lionweb-java/emf/core/builtins/2023
 ## Changelog
 
 The Chancelog is [here](CHANGELOG.md).
+
+## Testing
+
+To ensure proper testing coverage we configured Jacoco.
+You can run `./gradlew jacocoTestReport` and then find the report for each module, under `build/reports/jacoco`.
