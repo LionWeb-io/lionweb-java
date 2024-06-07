@@ -37,3 +37,11 @@ Import and export from and to EMF is a work in progress.
 
 * Minor improvements to DynamicNode
 * Fixes in serialization around null parents
+
+### Version 0.2.14
+
+* Improve support for annotations, in particular for M3 Nodes
+
+### Version 0.2.15
+
+* Revise support for homogeneous APIs in Node, especially for references
