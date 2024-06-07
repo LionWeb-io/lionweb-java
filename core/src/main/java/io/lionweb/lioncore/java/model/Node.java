@@ -133,7 +133,16 @@ public interface Node extends ClassifierInstance<Concept> {
   // References methods
 
   default List<ReferenceValue> getReferenceValueByName(String referenceName) {
-    Reference reference = this.getClassifier().getReferenceByName(referenceName);
+    Classifier<?> classifier = this.getClassifier();
+    if (classifier == null) {
+      throw new IllegalStateException(
+          "Concept should not be null for "
+              + this
+              + " (class "
+              + this.getClass().getCanonicalName()
+              + ")");
+    }
+    Reference reference = classifier.getReferenceByName(referenceName);
     if (reference == null) {
       throw new IllegalArgumentException(
           "Concept "
