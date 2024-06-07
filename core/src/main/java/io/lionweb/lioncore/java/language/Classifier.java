@@ -188,9 +188,18 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     Containment containment = getContainmentByName(containmentName);
     if (containment == null) {
       throw new IllegalArgumentException(
-          "Containment " + containmentName + " not found in Concept " + getName());
+          "Containment " + containmentName + " not found in Classifier " + getName());
     }
     return containment;
+  }
+
+  public @Nonnull Reference requireReferenceByName(@Nonnull String referenceName) {
+    Reference reference = getReferenceByName(referenceName);
+    if (reference == null) {
+      throw new IllegalArgumentException(
+          "Reference " + referenceName + " not found in Classifier " + getName());
+    }
+    return reference;
   }
 
   public @Nullable Link getLinkByName(@Nonnull String linkName) {

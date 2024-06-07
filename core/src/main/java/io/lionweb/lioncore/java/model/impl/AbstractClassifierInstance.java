@@ -138,11 +138,15 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void setOnlyReferenceValueByName(String referenceName, @Nullable ReferenceValue value) {}
+  public void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
+    setReferenceValues(reference, Arrays.asList(value));
+  }
 
   @Override
-  public void setReferenceValuesByName(
-      String referenceName, @Nonnull List<? extends ReferenceValue> values) {}
+  public void setOnlyReferenceValueByName(
+      @Nonnull String referenceName, @Nullable ReferenceValue value) {
+    setReferenceValuesByName(referenceName, Arrays.asList(value));
+  }
 
   @Override
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
@@ -162,5 +166,13 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException(
           "The given reference value could not be found under reference " + reference.getName());
     }
+  }
+
+  @Override
+  public void setReferenceValuesByName(
+      String referenceName, @Nonnull List<? extends ReferenceValue> values) {
+    Objects.requireNonNull(referenceName, "referenceName should not be null");
+    Reference reference = this.getClassifier().requireReferenceByName(referenceName);
+    setReferenceValues(reference, values);
   }
 }

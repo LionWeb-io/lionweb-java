@@ -183,4 +183,10 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
     throw new UnsupportedOperationException();
   }
+
+  @Override
+  public void setReferenceValues(
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+    throw new UnsupportedOperationException();
+  }
 }
