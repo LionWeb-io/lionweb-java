@@ -88,7 +88,16 @@ public interface Node extends ClassifierInstance<Concept> {
   }
 
   default void setPropertyValueByName(String propertyName, Object value) {
-    Property property = this.getClassifier().getPropertyByName(propertyName);
+    Classifier<?> classifier = this.getClassifier();
+    if (classifier == null) {
+      throw new IllegalStateException(
+          "Classifier should not be null for "
+              + this
+              + " (class "
+              + this.getClass().getCanonicalName()
+              + ")");
+    }
+    Property property = classifier.getPropertyByName(propertyName);
     if (property == null) {
       throw new IllegalArgumentException(
           "Concept "
