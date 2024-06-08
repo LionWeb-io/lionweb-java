@@ -578,6 +578,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     js.registerLanguage(mm);
     js.getInstantiator().enableDynamicNodes();
+    js.getPrimitiveValuesSerialization().enableDynamicNodes();
 
     List<Node> deserializedNodes = js.deserializeToNodes(je);
     assertEquals(Arrays.asList(n1, n2), deserializedNodes);
