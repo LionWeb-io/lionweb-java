@@ -20,8 +20,8 @@ import javax.annotation.Nullable;
  */
 public class PrimitiveValuesSerialization {
   // We use the ID, and not the key, to classify the enumerations internally within
-  // PrimitiveValuesSerialization
-  // because that is unique
+  // PrimitiveValuesSerialization because that is unique. In two versions of the language we may
+  // have two PrimitiveTypes with the same key, that are different.
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
 
@@ -50,7 +50,10 @@ public class PrimitiveValuesSerialization {
   public interface PrimitiveValueSerializerAndDeserializer<V>
       extends PrimitiveSerializer<V>, PrimitiveDeserializer<V> {}
 
+  /** Indexed by ID */
   private final Map<String, PrimitiveDeserializer<?>> primitiveDeserializers = new HashMap<>();
+
+  /** Indexed by ID */
   private final Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
   public PrimitiveValuesSerialization registerDeserializer(
@@ -120,12 +123,11 @@ public class PrimitiveValuesSerialization {
     String dataTypeID = dataType.getID();
     if (primitiveDeserializers.containsKey(dataTypeID)) {
       return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue, isRequired);
-    } else if (enumerationsByID.containsKey(dataTypeID)) {
+    } else if (enumerationsByID.containsKey(dataTypeID) && dynamicNodesEnabled) {
       if (serializedValue == null) {
         return null;
       }
-      // In this case, where we are dealing with primitive values, we want to use the literal _key_
-      // (and not the ID).
+      // While we map types by IDs, we map literals by key.
       // This is at least the default behavior, but the user can register specialized
       // primitiveDeserializers, if a different behavior is needed
       Optional<EnumerationLiteral> enumerationLiteral =
@@ -139,7 +141,7 @@ public class PrimitiveValuesSerialization {
       }
     } else {
       throw new IllegalArgumentException(
-          "Unable to deserialize primitive values of type " + dataTypeID);
+          "Unable to deserialize primitive values of type " + dataType);
     }
   }
 
@@ -170,7 +172,7 @@ public class PrimitiveValuesSerialization {
         }
         return PrimitiveValuesSerialization.<Enum>serializerFor(
                 (Class<Enum>) value.getClass(), enumeration)
-            .serialize(value);
+            .serialize((Enum) value);
       } else {
         throw new IllegalStateException(
             "The primitive value with primitiveTypeID "
