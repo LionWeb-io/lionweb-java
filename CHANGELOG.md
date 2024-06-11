@@ -45,3 +45,4 @@ Import and export from and to EMF is a work in progress.
 ### Version 0.2.15
 
 * Revise support for homogeneous APIs in Node, especially for references
+* Introduced ClassifierInstanceUtils
