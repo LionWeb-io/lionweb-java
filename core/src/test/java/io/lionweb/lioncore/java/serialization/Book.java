@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
@@ -26,7 +27,7 @@ public class Book extends DynamicNode {
   }
 
   public String getTitle() {
-    return (String) this.getPropertyValueByName("title");
+    return (String) ClassifierInstanceUtils.getPropertyValueByName(this, "title");
   }
 
   public void setAuthor(Writer author) {

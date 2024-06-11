@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Property;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -31,8 +32,8 @@ public class SerializationOfLibraryTest extends SerializationTest {
 
     Node book =
         deserializedNodes.stream().filter(n -> n.getID().equals("library-Book")).findFirst().get();
-    assertEquals("Book", book.getPropertyValueByName("name"));
-    assertEquals("library-Book", book.getPropertyValueByName("key"));
+    assertEquals("Book", ClassifierInstanceUtils.getPropertyValueByName(book, "name"));
+    assertEquals("library-Book", ClassifierInstanceUtils.getPropertyValueByName(book, "key"));
 
     Concept guidedBookWriter =
         (Concept)
@@ -40,7 +41,9 @@ public class SerializationOfLibraryTest extends SerializationTest {
                 .filter(n -> n.getID().equals("library-GuideBookWriter"))
                 .findFirst()
                 .get();
-    assertEquals("GuideBookWriter", guidedBookWriter.getPropertyValueByName("name"));
+    assertEquals(
+        "GuideBookWriter",
+        ClassifierInstanceUtils.getPropertyValueByName(guidedBookWriter, "name"));
     assertNotNull(guidedBookWriter.getExtendedConcept());
   }
 

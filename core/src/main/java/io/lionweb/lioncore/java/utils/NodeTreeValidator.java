@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.utils;
 
-import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +25,7 @@ public class NodeTreeValidator extends Validator<Node> {
           "A root node should be an instance of a Partition concept",
           node);
     }
-    ClassifieInstanceUtils.getChildren(node)
+    ClassifierInstanceUtils.getChildren(node)
         .forEach(child -> validateNodeAndDescendants(child, validationResult));
   }
 

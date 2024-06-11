@@ -68,7 +68,7 @@ public class JsonSerializationTest extends SerializationTest {
     jackLondon.setCountries("Alaska");
     Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
     bobsLibrary.addBook(explorerBook);
-    assertEquals(Arrays.asList(explorerBook), ClassifieInstanceUtils.getChildren(bobsLibrary));
+    assertEquals(Arrays.asList(explorerBook), ClassifierInstanceUtils.getChildren(bobsLibrary));
 
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
@@ -158,7 +158,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals("SideTransformInfo", sideTransformInfo.getName());
     assertEquals(false, sideTransformInfo.isAbstract());
     assertEquals(3, sideTransformInfo.getFeatures().size());
-    assertEquals(3, ClassifieInstanceUtils.getChildren(sideTransformInfo).size());
+    assertEquals(3, ClassifierInstanceUtils.getChildren(sideTransformInfo).size());
   }
 
   @Test
@@ -342,8 +342,8 @@ public class JsonSerializationTest extends SerializationTest {
 
     assertEquals(c2, c1.getParent());
     assertEquals(c1, c2.getParent());
-    Assert.assertEquals(Arrays.asList(c2), ClassifieInstanceUtils.getChildren(c1));
-    Assert.assertEquals(Arrays.asList(c1), ClassifieInstanceUtils.getChildren(c2));
+    Assert.assertEquals(Arrays.asList(c2), ClassifierInstanceUtils.getChildren(c1));
+    Assert.assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
 
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(c1, c2);
@@ -762,7 +762,7 @@ public class JsonSerializationTest extends SerializationTest {
     c.addFeature(Property.createRequired("foo", LionCoreBuiltins.getString()));
 
     DynamicNode n1 = new DynamicNode("n1", c);
-    n1.setPropertyValueByName("foo", "abc");
+    ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
 
     JsonSerialization hjs = JsonSerialization.getStandardSerialization();
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
