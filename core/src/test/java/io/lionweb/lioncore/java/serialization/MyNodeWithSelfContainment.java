@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 
 public class MyNodeWithSelfContainment extends DynamicNode {
@@ -24,10 +25,11 @@ public class MyNodeWithSelfContainment extends DynamicNode {
   }
 
   public MyNodeWithSelfContainment getAnother() {
-    return (MyNodeWithSelfContainment) this.getOnlyChildByContainmentName("another");
+    return (MyNodeWithSelfContainment)
+        ClassifierInstanceUtils.getOnlyChildByContainmentName(this, "another");
   }
 
   public void setAnother(MyNodeWithSelfContainment another) {
-    this.setOnlyChildByContainmentName("another", another);
+    ClassifierInstanceUtils.setOnlyChildByContainmentName(this, "another", another);
   }
 }

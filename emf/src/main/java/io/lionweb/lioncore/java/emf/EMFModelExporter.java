@@ -63,7 +63,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
                 if (eReference.isContainment()) {
                   if (eReference.isMany()) {
                     List<? extends Node> childrenInLW =
-                        root.getChildrenByContainmentName(eReference.getName());
+                        ClassifierInstanceUtils.getChildrenByContainmentName(
+                            root, eReference.getName());
                     List<EObject> childrenInEmf =
                         childrenInLW.stream()
                             .map(clw -> exportTree(clw, referencesPostponer))
@@ -71,7 +72,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
                     eObject.eSet(eReference, childrenInEmf);
                   } else {
                     List<? extends Node> childrenInLW =
-                        root.getChildrenByContainmentName(eReference.getName());
+                        ClassifierInstanceUtils.getChildrenByContainmentName(
+                            root, eReference.getName());
                     if (childrenInLW.size() > 1) {
                       throw new IllegalStateException(
                           "More than one child found in eReference "

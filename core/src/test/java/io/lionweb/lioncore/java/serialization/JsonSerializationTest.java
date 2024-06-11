@@ -982,14 +982,14 @@ public class JsonSerializationTest extends SerializationTest {
             .findFirst()
             .get();
     assertTrue(root instanceof DynamicNode);
-    assertEquals(3, root.getChildrenByContainmentName("todos").size());
-    Node pr1td0 = root.getChildrenByContainmentName("todos").get(0);
+    assertEquals(3, ClassifierInstanceUtils.getChildrenByContainmentName(root, "todos").size());
+    Node pr1td0 = ClassifierInstanceUtils.getChildrenByContainmentName(root, "todos").get(0);
     assertEquals("synthetic_my-wonderful-partition_projects_1_todos_0", pr1td0.getID());
     assertTrue(pr1td0 instanceof ProxyNode);
-    Node pr1td1 = root.getChildrenByContainmentName("todos").get(1);
+    Node pr1td1 = ClassifierInstanceUtils.getChildrenByContainmentName(root, "todos").get(1);
     assertEquals("synthetic_my-wonderful-partition_projects_1_todos_1", pr1td1.getID());
     assertTrue(pr1td1 instanceof ProxyNode);
-    Node pr1td2 = root.getChildrenByContainmentName("todos").get(2);
+    Node pr1td2 = ClassifierInstanceUtils.getChildrenByContainmentName(root, "todos").get(2);
     assertEquals("synthetic_my-wonderful-partition_projects_1_todos_2", pr1td2.getID());
     assertTrue(pr1td2 instanceof ProxyNode);
   }
