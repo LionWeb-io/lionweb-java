@@ -8,7 +8,6 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.AbstractNode;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
@@ -141,22 +140,7 @@ public abstract class SimpleNode extends AbstractNode {
   }
 
   @Override
-  public List<Node> getChildren() {
-    List<Node> allChildren = new LinkedList<>();
-    getClassifier().allContainments().stream()
-        .map(c -> getChildren(c))
-        .forEach(children -> allChildren.addAll(children));
-    return allChildren;
-  }
-
-  @Override
   public void removeChild(@Nonnull Containment containment, int index) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nonnull
-  @Override
-  public List<ReferenceValue> getReferenceValues() {
     throw new UnsupportedOperationException();
   }
 

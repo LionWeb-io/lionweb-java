@@ -8,6 +8,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -127,7 +128,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getLanguage(), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getName());
-    assertEquals(16, lioncore.getChildren().size());
+    assertEquals(16, ClassifieInstanceUtils.getChildren(lioncore).size());
     assertNull(lioncore.getParent());
   }
 
@@ -151,7 +152,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(LionCore.getLanguage(), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());
     assertEquals("LionCore_M3", lioncore.getPropertyValueByName("name"));
-    assertEquals(16, lioncore.getChildren().size());
+    assertEquals(16, ClassifieInstanceUtils.getChildren(lioncore).size());
     assertNull(lioncore.getParent());
   }
 

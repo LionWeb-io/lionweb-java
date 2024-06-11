@@ -127,12 +127,6 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
     throw cannotDoBecauseProxy();
   }
 
-  @Nonnull
-  @Override
-  public List<ReferenceValue> getReferenceValues() {
-    throw cannotDoBecauseProxy();
-  }
-
   @Override
   public void removeReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {

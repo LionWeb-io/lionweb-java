@@ -96,15 +96,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode {
   }
 
   @Override
-  public List<Node> getChildren() {
-    List<Node> allChildren = new LinkedList<>();
-    getClassifier().allContainments().stream()
-        .map(c -> getChildren(c))
-        .forEach(children -> allChildren.addAll(children));
-    return allChildren;
-  }
-
-  @Override
   public List<Node> getChildren(Containment containment) {
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");

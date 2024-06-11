@@ -6,10 +6,7 @@ import static org.junit.Assert.*;
 import com.google.gson.*;
 import io.lionweb.lioncore.java.api.UnresolvedClassifierInstanceException;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.model.impl.EnumerationValueImpl;
@@ -71,7 +68,7 @@ public class JsonSerializationTest extends SerializationTest {
     jackLondon.setCountries("Alaska");
     Book explorerBook = new Book("eb", "Explorer Book", jackLondon);
     bobsLibrary.addBook(explorerBook);
-    assertEquals(Arrays.asList(explorerBook), bobsLibrary.getChildren());
+    assertEquals(Arrays.asList(explorerBook), ClassifieInstanceUtils.getChildren(bobsLibrary));
 
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
@@ -161,7 +158,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals("SideTransformInfo", sideTransformInfo.getName());
     assertEquals(false, sideTransformInfo.isAbstract());
     assertEquals(3, sideTransformInfo.getFeatures().size());
-    assertEquals(3, sideTransformInfo.getChildren().size());
+    assertEquals(3, ClassifieInstanceUtils.getChildren(sideTransformInfo).size());
   }
 
   @Test
@@ -345,8 +342,8 @@ public class JsonSerializationTest extends SerializationTest {
 
     assertEquals(c2, c1.getParent());
     assertEquals(c1, c2.getParent());
-    Assert.assertEquals(Arrays.asList(c2), c1.getChildren());
-    Assert.assertEquals(Arrays.asList(c1), c2.getChildren());
+    Assert.assertEquals(Arrays.asList(c2), ClassifieInstanceUtils.getChildren(c1));
+    Assert.assertEquals(Arrays.asList(c1), ClassifieInstanceUtils.getChildren(c2));
 
     JsonSerialization js = JsonSerialization.getStandardSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(c1, c2);
