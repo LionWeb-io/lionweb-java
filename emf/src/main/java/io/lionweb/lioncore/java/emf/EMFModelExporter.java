@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
@@ -53,7 +54,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
             eStructuralFeature -> {
               if (eStructuralFeature instanceof EAttribute) {
                 EAttribute eAttribute = (EAttribute) eStructuralFeature;
-                Object propertyValue = root.getPropertyValueByName(eAttribute.getName());
+                Object propertyValue =
+                    ClassifierInstanceUtils.getPropertyValueByName(root, eAttribute.getName());
                 Object attributeValue = convertAttributeValue(propertyValue);
                 eObject.eSet(eAttribute, attributeValue);
               } else if (eStructuralFeature instanceof EReference) {

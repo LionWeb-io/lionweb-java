@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.IOException;
 import java.io.InputStream;
@@ -65,16 +66,17 @@ public class EMFModelImporterTest {
     assertEquals("Position", rootPosition.getClassifier().getName());
 
     Node rootPositionStart = rootPosition.getOnlyChildByContainmentName("start");
-    assertEquals(1, rootPositionStart.getPropertyValueByName("line"));
-    assertEquals(0, rootPositionStart.getPropertyValueByName("column"));
+    assertEquals(1, ClassifierInstanceUtils.getPropertyValueByName(rootPositionStart, "line"));
+    assertEquals(0, ClassifierInstanceUtils.getPropertyValueByName(rootPositionStart, "column"));
 
     Node rootPositionEnd = rootPosition.getOnlyChildByContainmentName("end");
-    assertEquals(280, rootPositionEnd.getPropertyValueByName("line"));
-    assertEquals(0, rootPositionEnd.getPropertyValueByName("column"));
+    assertEquals(280, ClassifierInstanceUtils.getPropertyValueByName(rootPositionEnd, "line"));
+    assertEquals(0, ClassifierInstanceUtils.getPropertyValueByName(rootPositionEnd, "column"));
 
     Node rootElement = root.getOnlyChildByContainmentName("elements");
     assertEquals("KClassDeclaration", rootElement.getClassifier().getName());
-    assertEquals("KotlinPrinter", rootElement.getPropertyValueByName("name"));
+    assertEquals(
+        "KotlinPrinter", ClassifierInstanceUtils.getPropertyValueByName(rootElement, "name"));
 
     Node rootElementPrimaryConstructor =
         rootElement.getOnlyChildByContainmentName("primaryConstructor");

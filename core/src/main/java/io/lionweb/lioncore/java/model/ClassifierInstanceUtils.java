@@ -1,12 +1,65 @@
 package io.lionweb.lioncore.java.model;
 
+import io.lionweb.lioncore.java.language.Classifier;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ClassifieInstanceUtils {
+public class ClassifierInstanceUtils {
+
+  // Public methods about properties
+
+  @Nullable
+  public static Object getPropertyValueByName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String propertyName) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(propertyName, "propertyName should not be null");
+    Property property = _this.getClassifier().getPropertyByName(propertyName);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property named "
+              + propertyName);
+    }
+    return _this.getPropertyValue(property);
+  }
+
+  public static void setPropertyValueByName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String propertyName, @Nullable Object value) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(propertyName, "propertyName should not be null");
+    Classifier<?> classifier = _this.getClassifier();
+    if (classifier == null) {
+      throw new IllegalStateException(
+          "Classifier should not be null for "
+              + _this
+              + " (class "
+              + _this.getClass().getCanonicalName()
+              + ")");
+    }
+    Property property = classifier.getPropertyByName(propertyName);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property named "
+              + propertyName);
+    }
+    _this.setPropertyValue(property, value);
+  }
+
+  @Nullable
+  public static Object getPropertyValueByID(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String propertyID) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(propertyID, "propertyID should not be null");
+    Property property = _this.getClassifier().getPropertyByID(propertyID);
+    return _this.getPropertyValue(property);
+  }
 
   // Public methods about containments
 

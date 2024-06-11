@@ -54,21 +54,6 @@ public abstract class SimpleNode extends AbstractNode {
   }
 
   @Override
-  public Object getPropertyValueByName(String propertyName) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void setPropertyValueByName(String propertyName, Object value) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public Object getPropertyValueByID(String propertyID) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
   public Object getPropertyValue(Property property) {
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");

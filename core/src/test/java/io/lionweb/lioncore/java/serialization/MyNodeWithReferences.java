@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import java.util.List;
@@ -37,10 +37,10 @@ public class MyNodeWithReferences extends DynamicNode {
   }
 
   public void setP1(ReferenceValue value) {
-    ClassifieInstanceUtils.setOnlyReferenceValueByName(this, "r1", value);
+    ClassifierInstanceUtils.setOnlyReferenceValueByName(this, "r1", value);
   }
 
   public void setR2(List<ReferenceValue> values) {
-    ClassifieInstanceUtils.setReferenceValuesByName(this, "r1", values);
+    ClassifierInstanceUtils.setReferenceValuesByName(this, "r1", values);
   }
 }

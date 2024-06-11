@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.language;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
-import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
@@ -58,10 +58,10 @@ public class ConceptReflectionTest {
     Reference reference = LionCore.getConcept().getReferenceByName("extends");
     concept.setExtendedConcept(null);
     assertEquals(
-        Collections.emptyList(), ClassifieInstanceUtils.getReferredNodes(concept, reference));
+        Collections.emptyList(), ClassifierInstanceUtils.getReferredNodes(concept, reference));
     concept.setExtendedConcept(otherConcept);
     assertEquals(
-        Arrays.asList(otherConcept), ClassifieInstanceUtils.getReferredNodes(concept, reference));
+        Arrays.asList(otherConcept), ClassifierInstanceUtils.getReferredNodes(concept, reference));
   }
 
   @Test
@@ -84,12 +84,12 @@ public class ConceptReflectionTest {
     Interface i2 = new Interface(language, "I2");
     Reference reference = LionCore.getConcept().getReferenceByName("implements");
     assertEquals(
-        Collections.emptyList(), ClassifieInstanceUtils.getReferredNodes(concept, reference));
+        Collections.emptyList(), ClassifierInstanceUtils.getReferredNodes(concept, reference));
     concept.addImplementedInterface(i1);
-    assertEquals(Arrays.asList(i1), ClassifieInstanceUtils.getReferredNodes(concept, reference));
+    assertEquals(Arrays.asList(i1), ClassifierInstanceUtils.getReferredNodes(concept, reference));
     concept.addImplementedInterface(i2);
     assertEquals(
-        Arrays.asList(i1, i2), ClassifieInstanceUtils.getReferredNodes(concept, reference));
+        Arrays.asList(i1, i2), ClassifierInstanceUtils.getReferredNodes(concept, reference));
   }
 
   @Test
