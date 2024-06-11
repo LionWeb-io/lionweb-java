@@ -893,12 +893,12 @@ public class JsonSerializationTest extends SerializationTest {
     // local reference
     assertEquals(
         Arrays.asList(new ReferenceValue(pr1td0, "BD")),
-        pr1td1.getReferenceValueByName("prerequisite"));
+        ClassifierInstanceUtils.getReferenceValueByName(pr1td1, "prerequisite"));
 
     // external reference
     assertEquals(
         Arrays.asList(new ReferenceValue(pr0td1, "garbage-out")),
-        pr1td2.getReferenceValueByName("prerequisite"));
+        ClassifierInstanceUtils.getReferenceValueByName(pr1td2, "prerequisite"));
   }
 
   @Test
@@ -939,12 +939,12 @@ public class JsonSerializationTest extends SerializationTest {
     // local reference
     assertEquals(
         Arrays.asList(new ReferenceValue(pr1td0, "BD")),
-        pr1td1.getReferenceValueByName("prerequisite"));
+        ClassifierInstanceUtils.getReferenceValueByName(pr1td1, "prerequisite"));
 
     // external reference
     assertEquals(
         Arrays.asList(new ReferenceValue(null, "garbage-out")),
-        pr1td2.getReferenceValueByName("prerequisite"));
+        ClassifierInstanceUtils.getReferenceValueByName(pr1td2, "prerequisite"));
   }
 
   @Test

@@ -29,11 +29,11 @@ public class MyNodeWithReferences extends DynamicNode {
   }
 
   public ReferenceValue getR1() {
-    return this.getOnlyReferenceValueByReferenceName("r1");
+    return ClassifierInstanceUtils.getOnlyReferenceValueByReferenceName(this, "r1");
   }
 
   public List<ReferenceValue> getR2() {
-    return this.getReferenceValueByName("r2");
+    return ClassifierInstanceUtils.getReferenceValueByName(this, "r2");
   }
 
   public void setP1(ReferenceValue value) {
