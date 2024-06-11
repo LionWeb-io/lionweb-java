@@ -139,11 +139,6 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   }
 
   @Override
-  public void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
-    throw cannotDoBecauseProxy();
-  }
-
-  @Override
   public void setReferenceValues(
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
     throw cannotDoBecauseProxy();

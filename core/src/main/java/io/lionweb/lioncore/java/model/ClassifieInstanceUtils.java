@@ -1,9 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.Reference;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -35,6 +33,18 @@ public class ClassifieInstanceUtils {
     return allReferredValues;
   }
 
+  public static void setOnlyReferenceValue(
+      @Nonnull ClassifierInstance<?> _this,
+      @Nonnull Reference reference,
+      @Nullable ReferenceValue value) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    if (value == null) {
+      _this.setReferenceValues(reference, Collections.emptyList());
+    } else {
+      _this.setReferenceValues(reference, Arrays.asList(value));
+    }
+  }
+
   public static void setOnlyReferenceValueByName(
       @Nonnull ClassifierInstance<?> _this,
       @Nonnull String referenceName,
@@ -42,7 +52,7 @@ public class ClassifieInstanceUtils {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
     Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
-    _this.setOnlyReferenceValue(reference, value);
+    setOnlyReferenceValue(_this, reference, value);
   }
 
   public static void setReferenceValuesByName(
