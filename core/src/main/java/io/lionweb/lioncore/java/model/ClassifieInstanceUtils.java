@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.Reference;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -8,6 +9,31 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ClassifieInstanceUtils {
+
+  // Public methods about containments
+
+  /** This return all the Nodes directly contained into this Node. */
+  @Nonnull
+  public static List<Node> getChildren(@Nonnull ClassifierInstance<?> _this) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    List<Node> allChildren = new LinkedList<>();
+    _this.getClassifier().allContainments().stream()
+        .map(c -> _this.getChildren(c))
+        .forEach(children -> allChildren.addAll(children));
+    return allChildren;
+  }
+
+  // Public methods about references
+
+  @Nonnull
+  public static List<ReferenceValue> getReferenceValues(@Nonnull ClassifierInstance<?> _this) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    List<ReferenceValue> allReferredValues = new LinkedList<>();
+    _this.getClassifier().allReferences().stream()
+        .map(r -> _this.getReferenceValues(r))
+        .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
+    return allReferredValues;
+  }
 
   public static void setOnlyReferenceValueByName(
       @Nonnull ClassifierInstance<?> _this,
@@ -62,7 +88,7 @@ public class ClassifieInstanceUtils {
   @Nonnull
   public static List<Node> getReferredNodes(@Nonnull ClassifierInstance<?> _this) {
     Objects.requireNonNull(_this, "_this should not be null");
-    return _this.getReferenceValues().stream()
+    return getReferenceValues(_this).stream()
         .map(rv -> rv.getReferred())
         .filter(n -> n != null)
         .collect(Collectors.toList());

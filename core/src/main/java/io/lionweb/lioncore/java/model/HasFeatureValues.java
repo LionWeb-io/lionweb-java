@@ -18,9 +18,6 @@ public interface HasFeatureValues {
   /** If the value is not compatible with the type of the property, the exception */
   void setPropertyValue(Property property, Object value);
 
-  /** This return all the Nodes directly contained into this Node. */
-  List<? extends Node> getChildren();
-
   /**
    * This return all the Nodes directly contained into this Node under the specific Containment
    * relation specified.
@@ -50,9 +47,6 @@ public interface HasFeatureValues {
    * <p>If there is no match the exception IllegalArgumentException will be thrown.
    */
   void removeChild(@Nonnull Containment containment, int index);
-
-  @Nonnull
-  List<ReferenceValue> getReferenceValues();
 
   @Nonnull
   List<ReferenceValue> getReferenceValues(@Nonnull Reference reference);

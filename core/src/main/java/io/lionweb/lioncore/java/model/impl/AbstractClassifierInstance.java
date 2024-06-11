@@ -80,16 +80,6 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   // Public methods for containments
 
   @Override
-  @Nonnull
-  public List<Node> getChildren() {
-    List<Node> allChildren = new LinkedList<>();
-    getClassifier().allContainments().stream()
-        .map(c -> getChildren(c))
-        .forEach(children -> allChildren.addAll(children));
-    return allChildren;
-  }
-
-  @Override
   public void removeChild(Node child) {
     for (Containment containment : this.getClassifier().allContainments()) {
       List<? extends Node> children = this.getChildren(containment);
@@ -117,16 +107,6 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   }
 
   // Public methods for references
-
-  @Nonnull
-  @Override
-  public List<ReferenceValue> getReferenceValues() {
-    List<ReferenceValue> allReferredValues = new LinkedList<>();
-    getClassifier().allReferences().stream()
-        .map(r -> getReferenceValues(r))
-        .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
-    return allReferredValues;
-  }
 
   @Override
   public void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {

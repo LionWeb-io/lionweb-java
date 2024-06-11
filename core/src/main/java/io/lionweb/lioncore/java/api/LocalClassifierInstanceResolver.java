@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.api;
 
+import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.Arrays;
@@ -47,6 +48,6 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
 
   public void addTree(@Nonnull Node root) {
     add(root);
-    root.getChildren().forEach(c -> addTree(c));
+    ClassifieInstanceUtils.getChildren(root).forEach(c -> addTree(c));
   }
 }

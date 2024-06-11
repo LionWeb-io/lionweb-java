@@ -25,7 +25,7 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
         collectSelfAndDescendants((T) annotation, includeAnnotations, result);
       }
     }
-    for (Node child : self.getChildren()) {
+    for (Node child : ClassifieInstanceUtils.getChildren(self)) {
       if (!(child instanceof ProxyNode)) {
         collectSelfAndDescendants((T) child, includeAnnotations, result);
       }
