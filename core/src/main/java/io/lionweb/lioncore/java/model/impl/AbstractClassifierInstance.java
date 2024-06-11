@@ -109,15 +109,6 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   // Public methods for references
 
   @Override
-  public void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
-    if (value == null) {
-      setReferenceValues(reference, Collections.emptyList());
-    } else {
-      setReferenceValues(reference, Arrays.asList(value));
-    }
-  }
-
-  @Override
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");

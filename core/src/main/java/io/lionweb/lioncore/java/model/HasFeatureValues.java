@@ -78,8 +78,6 @@ public interface HasFeatureValues {
    */
   void removeReferenceValue(@Nonnull Reference reference, int index);
 
-  void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value);
-
   void setReferenceValues(
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values);
 }
