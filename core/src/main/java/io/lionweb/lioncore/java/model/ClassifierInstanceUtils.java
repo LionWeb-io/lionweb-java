@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.Classifier;
+import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
 import java.util.*;
@@ -72,6 +73,48 @@ public class ClassifierInstanceUtils {
         .map(c -> _this.getChildren(c))
         .forEach(children -> allChildren.addAll(children));
     return allChildren;
+  }
+
+  @Nonnull
+  public static List<? extends Node> getChildrenByContainmentName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(containmentName, "containmentName should not be null");
+    return _this.getChildren(_this.getClassifier().requireContainmentByName(containmentName));
+  }
+
+  @Nullable
+  public static Node getOnlyChildByContainmentName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(containmentName, "containmentName should not be null");
+    List<? extends Node> children = getChildrenByContainmentName(_this, containmentName);
+    if (children.size() > 1) {
+      throw new IllegalStateException();
+    } else if (children.isEmpty()) {
+      return null;
+    } else {
+      return children.get(0);
+    }
+  }
+
+  public static void setOnlyChildByContainmentName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName, @Nullable Node child) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(containmentName, "containmentName should not be null");
+    Containment containment = _this.getClassifier().requireContainmentByName(containmentName);
+    if (containment.isMultiple()) {
+      throw new IllegalArgumentException("Cannot invoke this method with a multiple containment");
+    }
+    List<? extends Node> children = _this.getChildren(containment);
+    if (children.size() > 1) {
+      throw new IllegalStateException(
+          "The node should not have multiple children under containment " + containment);
+    }
+    if (children.size() > 0) {
+      _this.removeChild(children.get(0));
+    }
+    _this.addChild(containment, child);
   }
 
   // Public methods about references

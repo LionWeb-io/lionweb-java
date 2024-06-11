@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
@@ -18,7 +19,8 @@ import javax.annotation.Nullable;
  * to be used by other implementation and it should be as reusable, basic, and unopinionated as
  * possible.
  */
-public abstract class M3Node<T extends M3Node> extends AbstractNode {
+public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
+    implements Node {
   private String id;
   private Node parent;
 
