@@ -199,4 +199,44 @@ public class ClassifierInstanceUtils {
         .filter(n -> n != null)
         .collect(Collectors.toList());
   }
+
+  @Nonnull
+  public static List<ReferenceValue> getReferenceValueByName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(referenceName, "referenceName should not be null");
+    Classifier<?> classifier = _this.getClassifier();
+    if (classifier == null) {
+      throw new IllegalStateException(
+          "Concept should not be null for "
+              + _this
+              + " (class "
+              + _this.getClass().getCanonicalName()
+              + ")");
+    }
+    Reference reference = classifier.getReferenceByName(referenceName);
+    if (reference == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property named "
+              + referenceName);
+    }
+    return _this.getReferenceValues(reference);
+  }
+
+  @Nullable
+  public static ReferenceValue getOnlyReferenceValueByReferenceName(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(referenceName, "referenceName should not be null");
+    List<ReferenceValue> referenceValues = getReferenceValueByName(_this, referenceName);
+    if (referenceValues.size() > 1) {
+      throw new IllegalStateException();
+    } else if (referenceValues.isEmpty()) {
+      return null;
+    } else {
+      return referenceValues.get(0);
+    }
+  }
 }

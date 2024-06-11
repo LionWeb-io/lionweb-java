@@ -78,35 +78,4 @@ public interface Node extends ClassifierInstance<Concept> {
 
   // References methods
 
-  default List<ReferenceValue> getReferenceValueByName(String referenceName) {
-    Classifier<?> classifier = this.getClassifier();
-    if (classifier == null) {
-      throw new IllegalStateException(
-          "Concept should not be null for "
-              + this
-              + " (class "
-              + this.getClass().getCanonicalName()
-              + ")");
-    }
-    Reference reference = classifier.getReferenceByName(referenceName);
-    if (reference == null) {
-      throw new IllegalArgumentException(
-          "Concept "
-              + this.getClassifier().qualifiedName()
-              + " does not contained a property named "
-              + referenceName);
-    }
-    return getReferenceValues(reference);
-  }
-
-  default @Nullable ReferenceValue getOnlyReferenceValueByReferenceName(String referenceName) {
-    List<ReferenceValue> referenceValues = getReferenceValueByName(referenceName);
-    if (referenceValues.size() > 1) {
-      throw new IllegalStateException();
-    } else if (referenceValues.isEmpty()) {
-      return null;
-    } else {
-      return referenceValues.get(0);
-    }
-  }
 }
