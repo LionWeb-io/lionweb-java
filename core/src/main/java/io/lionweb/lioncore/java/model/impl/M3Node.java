@@ -128,14 +128,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode {
 
   @Nonnull
   @Override
-  public List<Node> getReferredNodes(@Nonnull Reference reference) {
-    return getReferenceValues(reference).stream()
-        .map(v -> v.getReferred())
-        .collect(Collectors.toList());
-  }
-
-  @Nonnull
-  @Override
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {

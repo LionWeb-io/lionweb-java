@@ -6,7 +6,6 @@ import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -129,14 +128,6 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     } else {
       return Collections.emptyList();
     }
-  }
-
-  @Nonnull
-  @Override
-  public List<Node> getReferredNodes(@Nonnull Reference reference) {
-    return getReferenceValues(reference).stream()
-        .map(v -> v.getReferred())
-        .collect(Collectors.toList());
   }
 
   @Override

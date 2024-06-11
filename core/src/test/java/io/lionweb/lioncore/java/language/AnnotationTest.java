@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.language;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
@@ -34,13 +35,15 @@ public class AnnotationTest extends BaseTest {
     Annotation annotation = new Annotation(language, "MyAnnotation");
     assertEquals(
         Arrays.asList(),
-        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("annotates")));
+        ClassifieInstanceUtils.getReferredNodes(
+            annotation, LionCore.getAnnotation().getReferenceByName("annotates")));
 
     Concept myConcept = new Concept(language, "myc");
     annotation.setAnnotates(myConcept);
     assertEquals(
         Arrays.asList(myConcept),
-        annotation.getReferredNodes(LionCore.getAnnotation().getReferenceByName("annotates")));
+        ClassifieInstanceUtils.getReferredNodes(
+            annotation, LionCore.getAnnotation().getReferenceByName("annotates")));
   }
 
   @Test

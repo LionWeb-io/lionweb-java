@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import com.google.gson.JsonArray;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
+import io.lionweb.lioncore.java.model.ClassifieInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
 import io.lionweb.lioncore.java.serialization.MyNodeWithReferences;
@@ -336,16 +337,16 @@ public class DynamicNodeTest {
     assertEquals(Collections.emptyList(), n1.getReferenceValues());
 
     n1.addReferenceValue(r2, new ReferenceValue(n1, "bar"));
-    assertEquals(Arrays.asList(n1), n1.getReferredNodes());
+    assertEquals(Arrays.asList(n1), ClassifieInstanceUtils.getReferredNodes(n1));
 
     n1.addReferenceValue(r1, new ReferenceValue(n2, "foo"));
-    assertEquals(Arrays.asList(n2, n1), n1.getReferredNodes());
+    assertEquals(Arrays.asList(n2, n1), ClassifieInstanceUtils.getReferredNodes(n1));
 
     n1.addReferenceValue(r2, new ReferenceValue(n2, "baz"));
-    assertEquals(Arrays.asList(n2, n1, n2), n1.getReferredNodes());
+    assertEquals(Arrays.asList(n2, n1, n2), ClassifieInstanceUtils.getReferredNodes(n1));
 
     n1.addReferenceValue(r2, new ReferenceValue(null, "baz3"));
-    assertEquals(Arrays.asList(n2, n1, n2), n1.getReferredNodes());
+    assertEquals(Arrays.asList(n2, n1, n2), ClassifieInstanceUtils.getReferredNodes(n1));
   }
 
   @Test
@@ -358,20 +359,20 @@ public class DynamicNodeTest {
     assertEquals(Collections.emptyList(), n1.getReferenceValues());
 
     n1.addReferenceValue(r2, new ReferenceValue(n1, "bar"));
-    assertEquals(Arrays.asList(), n1.getReferredNodes(r1));
-    assertEquals(Arrays.asList(n1), n1.getReferredNodes(r2));
+    assertEquals(Arrays.asList(), ClassifieInstanceUtils.getReferredNodes(n1, r1));
+    assertEquals(Arrays.asList(n1), ClassifieInstanceUtils.getReferredNodes(n1, r2));
 
     n1.addReferenceValue(r1, new ReferenceValue(n2, "foo"));
-    assertEquals(Arrays.asList(n2), n1.getReferredNodes(r1));
-    assertEquals(Arrays.asList(n1), n1.getReferredNodes(r2));
+    assertEquals(Arrays.asList(n2), ClassifieInstanceUtils.getReferredNodes(n1, r1));
+    assertEquals(Arrays.asList(n1), ClassifieInstanceUtils.getReferredNodes(n1, r2));
 
     n1.addReferenceValue(r2, new ReferenceValue(n2, "baz"));
-    assertEquals(Arrays.asList(n2), n1.getReferredNodes(r1));
-    assertEquals(Arrays.asList(n1, n2), n1.getReferredNodes(r2));
+    assertEquals(Arrays.asList(n2), ClassifieInstanceUtils.getReferredNodes(n1, r1));
+    assertEquals(Arrays.asList(n1, n2), ClassifieInstanceUtils.getReferredNodes(n1, r2));
 
     n1.addReferenceValue(r2, new ReferenceValue(null, "baz3"));
-    assertEquals(Arrays.asList(n2), n1.getReferredNodes(r1));
-    assertEquals(Arrays.asList(n1, n2, null), n1.getReferredNodes(r2));
+    assertEquals(Arrays.asList(n2), ClassifieInstanceUtils.getReferredNodes(n1, r1));
+    assertEquals(Arrays.asList(n1, n2, null), ClassifieInstanceUtils.getReferredNodes(n1, r2));
   }
 
   @Test

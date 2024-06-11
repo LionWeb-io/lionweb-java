@@ -54,34 +54,8 @@ public interface HasFeatureValues {
   @Nonnull
   List<ReferenceValue> getReferenceValues();
 
-  /**
-   * Return the Nodes referred to under any Reference link. This returns an empty list if no Node is
-   * referred by this Node.
-   *
-   * <p>The Node returned is guaranteed to be either part of this Node's Model or of Models imported
-   * by this Node's Model.
-   *
-   * <p>Please note that this will not return null values, differently from the variant taking a
-   * Reference. It may contain duplicates.
-   */
-  @Nonnull
-  List<Node> getReferredNodes();
-
   @Nonnull
   List<ReferenceValue> getReferenceValues(@Nonnull Reference reference);
-
-  /**
-   * Return the Nodes referred to under the specified Reference link. This returns an empty list if
-   * no Node is associated with the specified Reference link.
-   *
-   * <p>The Node returned is guaranteed to be either part of this Node's Model or of Models imported
-   * by this Node's Model.
-   *
-   * <p>Please note that it may contain null values in case of ReferenceValue with a null referred
-   * field.
-   */
-  @Nonnull
-  List<Node> getReferredNodes(@Nonnull Reference reference);
 
   /**
    * Add the Node to the list of Nodes referred to from this Node under the given Reference.
@@ -112,11 +86,6 @@ public interface HasFeatureValues {
 
   void setOnlyReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value);
 
-  void setOnlyReferenceValueByName(String referenceName, @Nullable ReferenceValue value);
-
   void setReferenceValues(
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values);
-
-  void setReferenceValuesByName(
-      String referenceName, @Nonnull List<? extends ReferenceValue> values);
 }

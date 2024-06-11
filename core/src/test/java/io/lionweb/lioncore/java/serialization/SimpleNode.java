@@ -110,12 +110,6 @@ public abstract class SimpleNode extends AbstractNode {
 
   @Nonnull
   @Override
-  public List<Node> getReferredNodes(@Nonnull Reference reference) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nonnull
-  @Override
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
@@ -163,12 +157,6 @@ public abstract class SimpleNode extends AbstractNode {
   @Nonnull
   @Override
   public List<ReferenceValue> getReferenceValues() {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nonnull
-  @Override
-  public List<Node> getReferredNodes() {
     throw new UnsupportedOperationException();
   }
 
