@@ -627,11 +627,14 @@ public class JsonSerialization {
             node -> {
               nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
-              if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
+              ClassifierInstance<?> parent =
+                  classifierInstanceResolver.resolve(node.getParentNodeID());
+              if (parent instanceof ProxyNode
+                  && unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
                 // For real parents, the parent is not set directly, but it is set indirectly
                 // when adding the child to the parent. For proxy nodes instead we need to set
                 // the parent explicitly
-                ProxyNode proxyParent = deserializationStatus.proxyFor(node.getParentNodeID());
+                ProxyNode proxyParent = (ProxyNode) parent;
                 if (proxyParent != null) {
                   if (classifierInstance instanceof HasSettableParent) {
                     ((HasSettableParent) classifierInstance).setParent(proxyParent);
