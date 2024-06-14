@@ -22,6 +22,7 @@ import io.lionweb.lioncore.java.utils.LanguageValidator;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Assert;
@@ -828,6 +829,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(true, pp1 instanceof ProxyNode);
 
     Node pf1 = nodes.stream().filter(n -> n.getID().equals("pf1")).findFirst().get();
+    assertEquals(false, pf1 instanceof ProxyNode);
     assertEquals(pp1, pf1.getParent());
 
     nodes.stream().filter(n -> n != pp1).allMatch(n -> !(n instanceof ProxyNode));
@@ -992,5 +994,52 @@ public class JsonSerializationTest extends SerializationTest {
     Node pr1td2 = ClassifierInstanceUtils.getChildrenByContainmentName(root, "todos").get(2);
     assertEquals("synthetic_my-wonderful-partition_projects_1_todos_2", pr1td2.getID());
     assertTrue(pr1td2 instanceof ProxyNode);
+  }
+
+  @Test
+  public void deserializeMultipleReferencesToProxiedNode() {
+    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    InputStream languageIs =
+        this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
+    Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
+    js.registerLanguage(todosLanguage);
+
+    js.enableDynamicNodes();
+    js.setUnavailableChildrenPolicy(UnavailableNodePolicy.PROXY_NODES);
+    js.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
+    js.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.PROXY_NODES);
+    InputStream is =
+        this.getClass().getResourceAsStream("/serialization/todosWithMultipleProxies.json");
+    List<Node> nodes = js.deserializeToNodes(is);
+    assertEquals(5, nodes.size());
+
+    Node todo0 = nodes.get(0);
+    assertEquals(new ProxyNode("synthetic_my-wonderful-partition_projects_1"), todo0.getParent());
+    List<ReferenceValue> prerequisiteTodo0 =
+        ClassifierInstanceUtils.getReferenceValueByName(todo0, "prerequisite");
+    assertEquals(
+        Arrays.asList(new ReferenceValue(new ProxyNode("external-1"), null)), prerequisiteTodo0);
+
+    Node todo1 = nodes.get(1);
+    assertEquals(new ProxyNode("synthetic_my-wonderful-partition_projects_1"), todo1.getParent());
+    List<ReferenceValue> prerequisiteTodo1 =
+        ClassifierInstanceUtils.getReferenceValueByName(todo1, "prerequisite");
+    assertEquals(
+        Arrays.asList(new ReferenceValue(new ProxyNode("external-1"), null)), prerequisiteTodo1);
+
+    Node todo2 = nodes.get(2);
+    assertEquals(new ProxyNode("synthetic_my-wonderful-partition_projects_1"), todo2.getParent());
+    List<ReferenceValue> prerequisiteTodo2 =
+        ClassifierInstanceUtils.getReferenceValueByName(todo2, "prerequisite");
+    assertEquals(
+        Arrays.asList(new ReferenceValue(new ProxyNode("external-1"), null)), prerequisiteTodo2);
+
+    assertTrue(nodes.get(3) instanceof ProxyNode);
+    assertTrue(nodes.get(4) instanceof ProxyNode);
+    ProxyNode n3 = (ProxyNode) nodes.get(3);
+    ProxyNode n4 = (ProxyNode) nodes.get(4);
+    assertEquals(
+        new HashSet(Arrays.asList("synthetic_my-wonderful-partition_projects_1", "external-1")),
+        new HashSet(Arrays.asList(n3.getID(), n4.getID())));
   }
 }

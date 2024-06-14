@@ -103,7 +103,7 @@ class NodePopulator {
                               referred = null;
                               break;
                             case PROXY_NODES:
-                              referred = deserializationStatus.createProxy(entry.getReference());
+                              referred = deserializationStatus.resolve(entry.getReference());
                               break;
                             case THROW_ERROR:
                               throw new DeserializationException(

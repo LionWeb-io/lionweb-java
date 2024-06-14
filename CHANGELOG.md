@@ -46,3 +46,7 @@ Import and export from and to EMF is a work in progress.
 
 * Revise support for homogeneous APIs in Node, especially for references
 * Introduced ClassifierInstanceUtils
+
+### Version 0.2.15
+
+* Support presence of multiple references to the same proxied node during serialization

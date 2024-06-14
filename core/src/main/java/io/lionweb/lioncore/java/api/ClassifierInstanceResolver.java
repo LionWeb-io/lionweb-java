@@ -15,6 +15,10 @@ public interface ClassifierInstanceResolver {
   @Nullable
   ClassifierInstance<?> resolve(String instanceID);
 
+  default boolean canResolve(String instanceID) {
+    return resolve(instanceID) != null;
+  }
+
   @Nonnull
   default ClassifierInstance<?> strictlyResolve(String instanceID) {
     ClassifierInstance<?> partial = resolve(instanceID);
