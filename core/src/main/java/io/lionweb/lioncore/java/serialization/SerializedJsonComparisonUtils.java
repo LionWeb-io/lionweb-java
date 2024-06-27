@@ -1,18 +1,14 @@
 package io.lionweb.lioncore.java.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
-import org.junit.Assert;
-
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import org.junit.Assert;
 
 public class SerializedJsonComparisonUtils {
 
@@ -98,7 +94,8 @@ public class SerializedJsonComparisonUtils {
               actual.get("classifier"));
           break;
         case "id":
-          Assert.assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
+          Assert.assertEquals(
+              "(" + context + ") different id", expected.get("id"), actual.get("id"));
           break;
         case "references":
           assertEquivalentUnorderedArrays(
@@ -154,7 +151,8 @@ public class SerializedJsonComparisonUtils {
         }
       }
       if (!matchFound) {
-        Assert.fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
+        Assert.fail(
+            context + " element " + i + " : no equivalent to " + expectedElement + " found");
       }
     }
   }
