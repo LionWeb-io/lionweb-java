@@ -7,16 +7,18 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
+import org.junit.Assert;
+
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class SerializedJsonComparisonUtils {
+public class SerializedJsonComparisonUtils {
 
   private SerializedJsonComparisonUtils() {}
 
-  static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
+  public static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
     Set<String> keys =
         new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "languages"));
     if (!expected.keySet().equals(keys)) {
@@ -25,7 +27,7 @@ class SerializedJsonComparisonUtils {
     if (!actual.keySet().equals(keys)) {
       throw new RuntimeException("The actual object has irregular keys: " + actual.keySet());
     }
-    assertEquals(
+    Assert.assertEquals(
         "serializationFormatVersion",
         expected.get("serializationFormatVersion"),
         actual.get("serializationFormatVersion"));
@@ -54,7 +56,7 @@ class SerializedJsonComparisonUtils {
     if (!missingIDs.isEmpty()) {
       throw new AssertionError("Missing IDs found: " + missingIDs);
     }
-    assertEquals("The number of nodes is different", expected.size(), actual.size());
+    Assert.assertEquals("The number of nodes is different", expected.size(), actual.size());
     for (String id : expectedElements.keySet()) {
       JsonObject expectedElement = expectedElements.get(id);
       JsonObject actualElement = actualElements.get(id);
@@ -86,17 +88,17 @@ class SerializedJsonComparisonUtils {
     for (String key : actualMeaningfulKeys) {
       switch (key) {
         case "parent":
-          assertEquals(
+          Assert.assertEquals(
               "(" + context + ") different parent", expected.get("parent"), actual.get("parent"));
           break;
         case "classifier":
-          assertEquals(
+          Assert.assertEquals(
               "(" + context + ") different classifier",
               expected.get("classifier"),
               actual.get("classifier"));
           break;
         case "id":
-          assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
+          Assert.assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
           break;
         case "references":
           assertEquivalentUnorderedArrays(
@@ -152,7 +154,7 @@ class SerializedJsonComparisonUtils {
         }
       }
       if (!matchFound) {
-        fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
+        Assert.fail(context + " element " + i + " : no equivalent to " + expectedElement + " found");
       }
     }
   }
@@ -196,7 +198,7 @@ class SerializedJsonComparisonUtils {
       throw new AssertionError("(" + context + ") Missing keys found: " + missingKeys);
     }
     for (String key : actualMeaningfulKeys) {
-      assertEquals(
+      Assert.assertEquals(
           "(" + context + ") Different values for key " + key, expected.get(key), actual.get(key));
     }
   }

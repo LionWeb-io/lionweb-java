@@ -694,8 +694,8 @@ public class JsonSerialization {
                       + serializedPropertyValue.getMetaPointer()
                       + " not found in classifier "
                       + classifier
-                      + ". SerializedNode: "
-                      + serializedClassifierInstance);
+                      + ". Properties: "
+                      + classifier.allProperties().stream().map(p -> MetaPointer.from(p)).collect(Collectors.toList()));
               Object deserializedValue =
                   primitiveValuesSerialization.deserialize(
                       property.getType(),
