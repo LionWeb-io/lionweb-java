@@ -1,4 +1,4 @@
-package com.strumenta.lwrepoclient.base
+package io.lionweb.repoclient
 
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType

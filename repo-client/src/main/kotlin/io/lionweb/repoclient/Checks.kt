@@ -1,4 +1,4 @@
-package com.strumenta.lwrepoclient.base
+package io.lionweb.repoclient
 
 import com.strumenta.lionweb.kotlin.children
 import io.lionweb.lioncore.java.model.Node

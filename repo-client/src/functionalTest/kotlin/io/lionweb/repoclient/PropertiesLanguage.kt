@@ -1,3 +1,5 @@
+package io.lionweb.repoclient
+
 import com.strumenta.lionweb.kotlin.Multiplicity
 import com.strumenta.lionweb.kotlin.addConcept
 import com.strumenta.lionweb.kotlin.addContainment

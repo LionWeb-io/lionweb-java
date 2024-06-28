@@ -1,4 +1,4 @@
-package com.strumenta.lwrepoclient.base
+package io.lionweb.repoclient
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser

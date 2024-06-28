@@ -1,4 +1,4 @@
-package com.strumenta.lwrepoclient.base
+package io.lionweb.repoclient
 
 import java.io.File
 

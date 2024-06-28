@@ -41,7 +41,6 @@ val kotlinVersion = extra["kotlinVersion"]
 dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
-    implementation(project(":kotlinlib"))
     implementation(libs.gson)
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
     testImplementation(kotlin("test"))
@@ -56,7 +55,6 @@ testing {
         register<JvmTestSuite>("functionalTest") {
             dependencies {
                 implementation(project())
-                implementation(project(":kotlinlib"))
                 // implementation(libs.kolasucore)
                 implementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
                 implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")

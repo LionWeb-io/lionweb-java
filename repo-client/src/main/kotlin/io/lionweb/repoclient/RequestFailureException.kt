@@ -1,4 +1,4 @@
-package com.strumenta.lwrepoclient.base
+package io.lionweb.repoclient
 
 data class RequestFailureException(
     val url: String,
