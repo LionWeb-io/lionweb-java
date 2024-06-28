@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'java-library'
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.superPublish)
     id "eclipse"
     id 'signing'
 }

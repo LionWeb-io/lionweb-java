@@ -45,10 +45,11 @@ abstract class BaseNode : DynamicNode() {
                             return referenceValues[0] as SpecificReferenceValue<T>
                         } else {
                             SpecificReferenceValue(T::class)
-                            val res = SpecificReferenceValue.create<T>(
-                                referenceValues[0].resolveInfo,
-                                referenceValues[0].referred
-                            )
+                            val res =
+                                SpecificReferenceValue.create<T>(
+                                    referenceValues[0].resolveInfo,
+                                    referenceValues[0].referred,
+                                )
                             return res
                         }
                     }

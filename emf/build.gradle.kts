@@ -2,7 +2,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("java-library")
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.superPublish)
     id("signing")
 }
 

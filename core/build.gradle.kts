@@ -5,7 +5,7 @@ plugins {
     id("java-library")
     id("signing")
     id("com.github.johnrengelman.shadow") version "7.1.1"
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.superPublish)
     jacoco
 }
 

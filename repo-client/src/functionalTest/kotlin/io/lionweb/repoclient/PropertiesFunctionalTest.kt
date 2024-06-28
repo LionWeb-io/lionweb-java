@@ -1,8 +1,8 @@
 package io.lionweb.repoclient
 
+import com.strumenta.lwrepoclient.base.FunctionalTestBuildConfig
 import io.lionweb.kotlinlib.dynamicNode
 import io.lionweb.kotlinlib.setPropertyValueByName
-import com.strumenta.lwrepoclient.base.FunctionalTestBuildConfig
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.Testcontainers.exposeHostPorts
 import org.testcontainers.containers.GenericContainer
