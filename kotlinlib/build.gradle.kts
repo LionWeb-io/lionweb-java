@@ -1,3 +1,5 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     java
     `jvm-test-suite`
@@ -5,8 +7,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
-    // alias(libs.plugins.superPublish)
-    alias(libs.plugins.buildConfig)
+    alias(libs.plugins.superPublish)
 }
 
 repositories {
@@ -42,81 +43,62 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
-    testImplementation(kotlin("test"))
+    implementation(libs.ktestjunit)
 }
 
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
+val specsVersion: String by project
+
+mavenPublishing {
+    coordinates(
+        groupId = "io.lionweb.lionweb-java",
+        artifactId = "lionweb-java-$specsVersion-" + project.name,
+        version = project.version as String,
+    )
+
+    pom {
+        name.set("lionweb-java-" + project.name)
+        description.set("Bindings to facilitate usage of LionWeb Java from Kotlin")
+        version = project.version as String
+        packaging = "jar"
+        url.set("https://github.com/LionWeb-io/lionweb-java")
+
+        scm {
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
+            url.set("https://github.com/LionWeb-io/lionweb-java.git")
         }
 
-        register<JvmTestSuite>("functionalTest") {
-            dependencies {
-                implementation(project())
-                implementation(libs.ktestjunit)
-                implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
-                implementation("io.kotest:kotest-assertions-core:5.8.0")
-                implementation("io.kotest:kotest-property:5.8.0")
-                implementation("org.testcontainers:testcontainers:1.19.5")
-                implementation("org.testcontainers:junit-jupiter:1.19.5")
-                implementation("org.testcontainers:postgresql:1.19.5")
-                implementation(project(":core"))
+        licenses {
+            license {
+                name.set("Apache Licenve V2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                distribution.set("repo")
             }
+        }
 
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
+        // The developers entry is strictly required by Maven Central
+        developers {
+            developer {
+                id.set("ftomassetti")
+                name.set("Federico Tomassetti")
+                email.set("federico@strumenta.com")
+            }
+            developer {
+                id.set("dslmeinte")
+                name.set("Meinte Boersma")
+                email.set("meinte.boersma@gmail.com")
+            }
+            developer {
+                id.set("enikao")
+                name.set("Niko Stotz")
+                email.set("github-public@nikostotz.de")
             }
         }
     }
+    publishToMavenCentral(SonatypeHost.S01, true)
+    signAllPublications()
 }
 
-// //publishing {
-// //    repositories {
-// //        maven {
-// //            url = URI("https://maven.pkg.github.com/Strumenta/starlasu-lionweb-repository-client")
-// //            credentials {
-// //                username = (project.findProperty("starlasu.github.user") ?: System.getenv("starlasu_github_user")) as String?
-// //                password = (project.findProperty("starlasu.github.token") ?: System.getenv("starlasu_github_token")) as String?
-// //            }
-// //        }
-// //    }
-// //}
-// //
-// //mavenPublishing {
-// //    coordinates("com.strumenta.lwrepoclient", "lwrepoclient-base", version as String)
-// //
-// //    pom {
-// //        name.set("lwrepoclient-base")
-// //        description.set("The Kotlin client for the lionweb-repository")
-// //        inceptionYear.set("2023")
-// //        url.set("https://github.com/Strumenta/starlasu-lionweb-repository-client")
-// //        licenses {
-// //            license {
-// //                name.set("The Apache License, Version 2.0")
-// //                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-// //                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-// //            }
-// //        }
-// //        developers {
-// //            developer {
-// //                id.set("ftomassetti")
-// //                name.set("Federico Tomassetti")
-// //                url.set("https://github.com/ftomassetti/")
-// //            }
-// //        }
-// //        scm {
-// //            url.set("https://github.com/Strumenta/starlasu-lionweb-repository-client/")
-// //            connection.set("scm:git:git://github.com/Strumenta/starlasu-lionweb-repository-client.git")
-// //            developerConnection.set("scm:git:ssh://git@github.com/Strumenta/starlasu-lionweb-repository-client.git")
-// //        }
-// //    }
-// //}
-// //
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
     targetCompatibility = JavaVersion.toVersion(jvmVersion)
@@ -134,26 +116,16 @@ kotlin {
     }
 }
 
-// afterEvaluate {
-//    tasks {
-//        named("generateMetadataFileForMavenPublication") {
-//            dependsOn("kotlinSourcesJar")
-//        }
-//    }
-// }
-//
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
+afterEvaluate {
+    tasks {
+        named("generateMetadataFileForMavenPublication") {
+            dependsOn("kotlinSourcesJar")
+        }
+    }
 }
 
-val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
-
-buildConfig {
-    sourceSets.getByName("functionalTest") {
-        packageName("com.strumenta.lwrepoclient.base")
-        buildConfigField("String", "LIONWEB_REPOSITORY_COMMIT_ID", "\"${lionwebRepositoryCommitID}\"")
-        useKotlinOutput()
-    }
+tasks.withType<Test>().configureEach {
+    useJUnitPlatform()
 }
 
 tasks.withType<Test> {

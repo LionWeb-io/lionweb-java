@@ -1,12 +1,14 @@
+import com.vanniktech.maven.publish.SonatypeHost
+
 plugins {
     java
     `jvm-test-suite`
-    alias(libs.plugins.kotlinJvm)
+
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
-    // For some reason this prevent the plugin the build to be loaded
     alias(libs.plugins.superPublish)
+    alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.buildConfig)
 }
 
@@ -78,87 +80,88 @@ testing {
     }
 }
 
-// //mavenPublishing {
-// //    coordinates("com.strumenta.lwrepoclient", "lwrepoclient-base", version as String)
-// //
-// //    pom {
-// //        name.set("lwrepoclient-base")
-// //        description.set("The Kotlin client for the lionweb-repository")
-// //        inceptionYear.set("2023")
-// //        url.set("https://github.com/Strumenta/starlasu-lionweb-repository-client")
-// //        licenses {
-// //            license {
-// //                name.set("The Apache License, Version 2.0")
-// //                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-// //                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
-// //            }
-// //        }
-// //        developers {
-// //            developer {
-// //                id.set("ftomassetti")
-// //                name.set("Federico Tomassetti")
-// //                url.set("https://github.com/ftomassetti/")
-// //            }
-// //        }
-// //        scm {
-// //            url.set("https://github.com/Strumenta/starlasu-lionweb-repository-client/")
-// //            connection.set("scm:git:git://github.com/Strumenta/starlasu-lionweb-repository-client.git")
-// //            developerConnection.set("scm:git:ssh://git@github.com/Strumenta/starlasu-lionweb-repository-client.git")
-// //        }
-// //    }
-// //}
-// //
+mavenPublishing {
+    coordinates("com.strumenta.lwrepoclient", "lwrepoclient-base", version as String)
 
-// mavenPublishing {
-//    coordinates(
-//        groupId = "io.lionweb.lionweb-java",
-//        artifactId = "lionweb-java-${specsVersion}-" + project.name,
-//        version = project.version as String,
-//    )
-//
-//    pom {
-//        name.set("lionweb-java-" + project.name)
-//        description.set("Java APIs for the LionWeb system")
-//        version = project.version as String
-//        packaging = "jar"
-//        url.set("https://github.com/LionWeb-io/lionweb-java")
-//
-//        scm {
-//            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-//            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-//            url.set("https://github.com/LionWeb-io/lionweb-java.git")
-//        }
-//
-//        licenses {
-//            license {
-//                name.set("Apache Licenve V2.0")
-//                url.set("https://www.apache.org/licenses/LICENSE-2.0")
-//                distribution.set("repo")
-//            }
-//        }
-//
-//        // The developers entry is strictly required by Maven Central
-//        developers {
-//            developer {
-//                id.set("ftomassetti")
-//                name.set("Federico Tomassetti")
-//                email.set("federico@strumenta.com")
-//            }
-//            developer {
-//                id.set("dslmeinte")
-//                name.set("Meinte Boersma")
-//                email.set("meinte.boersma@gmail.com")
-//            }
-//            developer {
-//                id.set("enikao")
-//                name.set("Niko Stotz")
-//                email.set("github-public@nikostotz.de")
-//            }
-//        }
-//    }
-//    publishToMavenCentral(SonatypeHost.S01, true)
-//    signAllPublications()
-// }
+    pom {
+        name.set("lwrepoclient-base")
+        description.set("The Kotlin client for the lionweb-repository")
+        inceptionYear.set("2023")
+        url.set("https://github.com/Strumenta/starlasu-lionweb-repository-client")
+        licenses {
+            license {
+                name.set("The Apache License, Version 2.0")
+                url.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("http://www.apache.org/licenses/LICENSE-2.0.txt")
+            }
+        }
+        developers {
+            developer {
+                id.set("ftomassetti")
+                name.set("Federico Tomassetti")
+                url.set("https://github.com/ftomassetti/")
+            }
+        }
+        scm {
+            url.set("https://github.com/Strumenta/starlasu-lionweb-repository-client/")
+            connection.set("scm:git:git://github.com/Strumenta/starlasu-lionweb-repository-client.git")
+            developerConnection.set("scm:git:ssh://git@github.com/Strumenta/starlasu-lionweb-repository-client.git")
+        }
+    }
+}
+
+val specsVersion: String by project
+
+mavenPublishing {
+    coordinates(
+        groupId = "io.lionweb.lionweb-java",
+        artifactId = "lionweb-java-$specsVersion-" + project.name,
+        version = project.version as String,
+    )
+
+    pom {
+        name.set("lionweb-java-" + project.name)
+        description.set("Client library to connect to the LionWeb Repository")
+        version = project.version as String
+        packaging = "jar"
+        url.set("https://github.com/LionWeb-io/lionweb-java")
+
+        scm {
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
+            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+        }
+
+        licenses {
+            license {
+                name.set("Apache Licenve V2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                distribution.set("repo")
+            }
+        }
+
+        // The developers entry is strictly required by Maven Central
+        developers {
+            developer {
+                id.set("ftomassetti")
+                name.set("Federico Tomassetti")
+                email.set("federico@strumenta.com")
+            }
+            developer {
+                id.set("dslmeinte")
+                name.set("Meinte Boersma")
+                email.set("meinte.boersma@gmail.com")
+            }
+            developer {
+                id.set("enikao")
+                name.set("Niko Stotz")
+                email.set("github-public@nikostotz.de")
+            }
+        }
+    }
+    publishToMavenCentral(SonatypeHost.S01, true)
+    signAllPublications()
+}
 
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
@@ -177,14 +180,14 @@ kotlin {
     }
 }
 
-// afterEvaluate {
-//    tasks {
-//        named("generateMetadataFileForMavenPublication") {
-//            dependsOn("kotlinSourcesJar")
-//        }
-//    }
-// }
-//
+afterEvaluate {
+    tasks {
+        named("generateMetadataFileForMavenPublication") {
+            dependsOn("kotlinSourcesJar")
+        }
+    }
+}
+
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }

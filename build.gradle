@@ -3,6 +3,7 @@ plugins {
     id "java"
     id 'net.researchgate.release' version '3.0.2'
     alias(libs.plugins.superPublish) apply false
+    alias(libs.plugins.kotlinJvm) apply false
 }
 
 repositories {
@@ -10,13 +11,13 @@ repositories {
 }
 
 subprojects {
-    apply plugin: 'com.diffplug.spotless'
-    spotless {
-        java {
-            googleJavaFormat()
-            targetExclude("**/src-gen/**", "**/build/**")
-        }
-    }
+//    apply plugin: 'com.diffplug.spotless'
+//    spotless {
+//        java {
+//            googleJavaFormat()
+//            targetExclude("**/src-gen/**", "**/build/**")
+//        }
+//    }
 
 }
 
