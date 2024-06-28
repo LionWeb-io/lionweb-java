@@ -4,6 +4,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.BuildConfig;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
@@ -39,7 +40,7 @@ import javax.annotation.Nullable;
  * behavior explicitly by calling getNodeInstantiator().enableDynamicNodes().
  */
 public class JsonSerialization {
-  public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
+  public static final String DEFAULT_SERIALIZATION_FORMAT = BuildConfig.CURRENT_SPECS_VERSION;
 
   public static void saveLanguageToFile(Language language, File file) throws IOException {
     String content = getStandardSerialization().serializeTreesToJsonString(language);

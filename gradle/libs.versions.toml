@@ -1,0 +1,5 @@
+[plugins]
+buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
+release = { id = "net.researchgate.release", version = "3.0.2" }
+superPublish = { id = "com.vanniktech.maven.publish", version = "0.28.0" }
+

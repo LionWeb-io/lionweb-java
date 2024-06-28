@@ -1,8 +1,8 @@
 plugins {
     id "com.diffplug.spotless" version "5.1.0"
     id "java"
-    id 'net.researchgate.release' version '3.0.2'
-    id("com.vanniktech.maven.publish") version "0.26.0" apply false
+    alias(libs.plugins.release)
+    alias(libs.plugins.superPublish) apply(false)
 }
 
 repositories {
