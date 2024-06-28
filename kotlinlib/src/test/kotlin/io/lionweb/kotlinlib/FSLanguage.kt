@@ -1,4 +1,4 @@
-package com.strumenta.lionweb.kotlin
+package io.lionweb.kotlinlib
 
 import java.lang.IllegalStateException
 

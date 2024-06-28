@@ -1,9 +1,9 @@
 package io.lionweb.repoclient
 
-import com.strumenta.lionweb.kotlin.Multiplicity
-import com.strumenta.lionweb.kotlin.addConcept
-import com.strumenta.lionweb.kotlin.addContainment
-import com.strumenta.lionweb.kotlin.lwLanguage
+import io.lionweb.kotlinlib.Multiplicity
+import io.lionweb.kotlinlib.addConcept
+import io.lionweb.kotlinlib.addContainment
+import io.lionweb.kotlinlib.lwLanguage
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.LionCoreBuiltins
 

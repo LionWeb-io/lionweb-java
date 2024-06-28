@@ -1,4 +1,4 @@
-package com.strumenta.lionweb.kotlin
+package io.lionweb.kotlinlib
 
 class MLSimpleNode() : BaseNode() {
     var value: Int? by property("value")

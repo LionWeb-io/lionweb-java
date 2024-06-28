@@ -1,4 +1,4 @@
-package com.strumenta.lionweb.kotlin
+package io.lionweb.kotlinlib
 
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Reference

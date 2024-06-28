@@ -1,4 +1,4 @@
-package com.strumenta.lionweb.kotlin
+package io.lionweb.kotlinlib
 
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue

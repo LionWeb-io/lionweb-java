@@ -2,12 +2,12 @@ package io.lionweb.repoclient
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import com.strumenta.lionweb.kotlin.MetamodelRegistry
-import com.strumenta.lionweb.kotlin.children
-import com.strumenta.lionweb.kotlin.getChildrenByContainmentName
-import com.strumenta.lionweb.kotlin.getReferenceValueByName
-import com.strumenta.lionweb.kotlin.setPropertyValueByName
-import com.strumenta.lionweb.kotlin.setReferenceValuesByName
+import io.lionweb.kotlinlib.MetamodelRegistry
+import io.lionweb.kotlinlib.children
+import io.lionweb.kotlinlib.getChildrenByContainmentName
+import io.lionweb.kotlinlib.getReferenceValueByName
+import io.lionweb.kotlinlib.setPropertyValueByName
+import io.lionweb.kotlinlib.setReferenceValuesByName
 import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
