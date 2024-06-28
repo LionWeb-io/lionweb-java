@@ -19,7 +19,4 @@ jobs:
           distribution: 'adopt'
           java-version: ${{ matrix.java }}
       - name: Functional Tests
-        env:
-          STRUMENTA_PACKAGES_USER: ${{ secrets.STRUMENTA_PACKAGES_USER }}
-          STRUMENTA_PACKAGES_TOKEN: ${{ secrets.STRUMENTA_PACKAGES_TOKEN }}
         run: ./gradlew functionalTest --stacktrace
