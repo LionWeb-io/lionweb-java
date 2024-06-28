@@ -14,8 +14,7 @@ subprojects {
     spotless {
         java {
             googleJavaFormat()
-            targetExclude ("**/src-gen/**")
-            targetExclude ("**/build/**")
+            targetExclude("**/src-gen/**", "**/build/**")
         }
     }
 
