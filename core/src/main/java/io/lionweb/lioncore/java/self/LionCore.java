@@ -78,7 +78,8 @@ public class LionCore {
       INSTANCE = new Language("LionCore_M3");
       INSTANCE.setID("-id-LionCore-M3");
       INSTANCE.setKey("LionCore-M3");
-      INSTANCE.setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
+      // TODO we should move to the current version
+      INSTANCE.setVersion(JsonSerialization.SERIALIZATION_FORMAT_2023_1);
 
       // We first instantiate all Concepts and Interfaces
       // we add features only after as the features will have references to these elements

@@ -30,7 +30,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     SerializedChunk serializedChunk =
         jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
 
-    assertEquals("2023.1", serializedChunk.getSerializationFormatVersion());
+    assertEquals("2024.1", serializedChunk.getSerializationFormatVersion());
 
     assertEquals(2, serializedChunk.getLanguages().size());
     Assert.assertEquals(

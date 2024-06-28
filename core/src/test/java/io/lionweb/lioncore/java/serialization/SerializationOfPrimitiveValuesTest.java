@@ -24,7 +24,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -89,7 +89,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -161,7 +161,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -227,7 +227,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -298,7 +298,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -364,7 +364,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -439,7 +439,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -508,7 +508,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"

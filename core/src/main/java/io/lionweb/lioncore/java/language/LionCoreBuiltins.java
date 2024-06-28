@@ -10,7 +10,8 @@ public class LionCoreBuiltins extends Language {
     super("LionCore_builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
-    setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
+    // TODO we should move to the current version
+    setVersion(JsonSerialization.SERIALIZATION_FORMAT_2023_1);
     PrimitiveType string = new PrimitiveType(this, "String");
     new PrimitiveType(this, "Boolean");
     new PrimitiveType(this, "Integer");

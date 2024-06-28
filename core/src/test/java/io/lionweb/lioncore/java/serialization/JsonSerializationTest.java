@@ -384,7 +384,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -462,7 +462,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -515,7 +515,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -589,7 +589,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
