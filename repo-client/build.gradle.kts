@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
+    // For some reason this prevent the plugin the build to be loaded
     // alias(libs.plugins.superPublish)
     alias(libs.plugins.buildConfig)
 }
@@ -57,10 +58,8 @@ testing {
             dependencies {
                 implementation(project())
                 implementation(project(":kotlinlib"))
-                // implementation(libs.kolasucore)
                 implementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
                 implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
-                // implementation("io.kotest.extensions:kotest-extensions-testcontainers:$kotestVersion")
                 implementation("io.kotest:kotest-assertions-core:5.8.0")
                 implementation("io.kotest:kotest-property:5.8.0")
                 implementation("org.testcontainers:testcontainers:1.19.5")
@@ -80,18 +79,6 @@ testing {
     }
 }
 
-// //publishing {
-// //    repositories {
-// //        maven {
-// //            url = URI("https://maven.pkg.github.com/Strumenta/starlasu-lionweb-repository-client")
-// //            credentials {
-// //                username = (project.findProperty("starlasu.github.user") ?: System.getenv("starlasu_github_user")) as String?
-// //                password = (project.findProperty("starlasu.github.token") ?: System.getenv("starlasu_github_token")) as String?
-// //            }
-// //        }
-// //    }
-// //}
-// //
 // //mavenPublishing {
 // //    coordinates("com.strumenta.lwrepoclient", "lwrepoclient-base", version as String)
 // //
@@ -122,6 +109,58 @@ testing {
 // //    }
 // //}
 // //
+
+// mavenPublishing {
+//    coordinates(
+//        groupId = "io.lionweb.lionweb-java",
+//        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+//        version = project.version as String,
+//    )
+//
+//    pom {
+//        name.set("lionweb-java-" + project.name)
+//        description.set("Java APIs for the LionWeb system")
+//        version = project.version as String
+//        packaging = "jar"
+//        url.set("https://github.com/LionWeb-io/lionweb-java")
+//
+//        scm {
+//            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
+//            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
+//            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+//        }
+//
+//        licenses {
+//            license {
+//                name.set("Apache Licenve V2.0")
+//                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+//                distribution.set("repo")
+//            }
+//        }
+//
+//        // The developers entry is strictly required by Maven Central
+//        developers {
+//            developer {
+//                id.set("ftomassetti")
+//                name.set("Federico Tomassetti")
+//                email.set("federico@strumenta.com")
+//            }
+//            developer {
+//                id.set("dslmeinte")
+//                name.set("Meinte Boersma")
+//                email.set("meinte.boersma@gmail.com")
+//            }
+//            developer {
+//                id.set("enikao")
+//                name.set("Niko Stotz")
+//                email.set("github-public@nikostotz.de")
+//            }
+//        }
+//    }
+//    publishToMavenCentral(SonatypeHost.S01, true)
+//    signAllPublications()
+// }
+
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
     targetCompatibility = JavaVersion.toVersion(jvmVersion)
