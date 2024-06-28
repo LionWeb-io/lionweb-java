@@ -186,3 +186,9 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
+
+tasks.withType<Test> {
+    testLogging {
+        events("standardOut", "passed", "skipped", "failed")
+    }
+}

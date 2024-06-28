@@ -158,3 +158,9 @@ buildConfig {
         useKotlinOutput()
     }
 }
+
+tasks.withType<Test> {
+    testLogging {
+        events("standardOut", "passed", "skipped", "failed")
+    }
+}

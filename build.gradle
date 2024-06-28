@@ -15,8 +15,10 @@ subprojects {
         java {
             googleJavaFormat()
             targetExclude ("**/src-gen/**")
+            targetExclude ("**/build/**")
         }
     }
+
 }
 
 release {

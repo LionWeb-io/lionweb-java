@@ -115,3 +115,9 @@ mavenPublishing {
     publishToMavenCentral(SonatypeHost.S01, true)
     signAllPublications()
 }
+
+tasks.withType<Test> {
+    testLogging {
+        events("standardOut", "passed", "skipped", "failed")
+    }
+}
