@@ -1,7 +1,5 @@
 import com.vanniktech.maven.publish.SonatypeHost
 import java.net.URI
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.exclude
-import org.gradle.internal.impldep.org.junit.experimental.categories.Categories.CategoryFilter.include
 
 plugins {
     id("java-library")
