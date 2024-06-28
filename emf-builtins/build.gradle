@@ -18,9 +18,9 @@ configurations {
 }
 
 dependencies {
-    api emf.common
-    api emf.ecore
-    api emf.ecore.xmi
+    api libs.emfcommon
+    api libs.ecore
+    api libs.ecore.xmi
     api("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
     api("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     api("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")

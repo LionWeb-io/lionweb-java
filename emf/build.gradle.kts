@@ -18,11 +18,11 @@ dependencies {
     api(project(":core"))
     api(project(":emf-builtins"))
 
-    api(emf.common)
-    api(emf.ecore)
-    api(emf.ecore.xmi)
+    api(libs.emfcommon)
+    api(libs.ecore)
+    api(libs.ecore.xmi)
 
-    api(emf.emfjson)
+    api(libs.emfjson)
 
     implementation(libs.gson)
     implementation(libs.annotations)

@@ -34,7 +34,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:33.0.0-jre")
 
-    javadocConfig(emf.ecore)
+    javadocConfig(libs.ecore)
 
     // Please note that this forces us to use Java 11 for the javadoc tasks
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
