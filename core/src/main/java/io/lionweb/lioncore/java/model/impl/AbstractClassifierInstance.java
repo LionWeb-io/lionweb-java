@@ -17,7 +17,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   // Public methods for annotations
 
   @Override
-  public List<AnnotationInstance> getAnnotations() {
+  public @Nonnull List<AnnotationInstance> getAnnotations() {
     return Collections.unmodifiableList(annotations);
   }
 
@@ -25,21 +25,14 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
    * Given a specific Annotation type it returns either the list of instances of that Annotation
    * associated to the Node.
    */
-  @Nonnull
-  public List<AnnotationInstance> getAnnotations(@Nonnull Annotation annotation) {
+  @Override
+  public @Nonnull List<AnnotationInstance> getAnnotations(@Nonnull Annotation annotation) {
     return annotations.stream()
         .filter(a -> a.getAnnotationDefinition() == annotation)
         .collect(Collectors.toList());
   }
 
-  /**
-   * If an annotation instance was already associated under the Annotation link used by this
-   * AnnotationInstance, and the annotation does not support multiple values, then the existing
-   * instance will be removed and replaced by the instance specified in the call to this method.
-   *
-   * @throws IllegalArgumentException In case the specified Annotation link cannot be used on Nodes
-   *     of this Concept.
-   */
+  @Override
   public void addAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
     if (this.annotations.contains(instance)) {
@@ -57,6 +50,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     this.annotations.add(instance);
   }
 
+  @Override
   public void removeAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
     if (!this.annotations.remove(instance)) {
