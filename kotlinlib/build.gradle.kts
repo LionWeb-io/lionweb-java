@@ -36,13 +36,12 @@ ktlint {
 
 val jvmVersion = extra["jvmVersion"] as String
 val kotestVersion = extra["kotestVersion"]
-val kotlinVersion = extra["kotlinVersion"]
 
 dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
     implementation(libs.gson)
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
 }
 
@@ -55,10 +54,8 @@ testing {
         register<JvmTestSuite>("functionalTest") {
             dependencies {
                 implementation(project())
-                // implementation(libs.kolasucore)
-                implementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
+                implementation(libs.ktestjunit)
                 implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
-                // implementation("io.kotest.extensions:kotest-extensions-testcontainers:$kotestVersion")
                 implementation("io.kotest:kotest-assertions-core:5.8.0")
                 implementation("io.kotest:kotest-property:5.8.0")
                 implementation("org.testcontainers:testcontainers:1.19.5")

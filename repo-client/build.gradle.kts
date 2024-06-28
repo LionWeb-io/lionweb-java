@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.ktlint)
     id("java-library")
     // For some reason this prevent the plugin the build to be loaded
-    // alias(libs.plugins.superPublish)
+    alias(libs.plugins.superPublish)
     alias(libs.plugins.buildConfig)
 }
 
@@ -37,14 +37,13 @@ ktlint {
 
 val jvmVersion = extra["jvmVersion"] as String
 val kotestVersion = extra["kotestVersion"]
-val kotlinVersion = extra["kotlinVersion"]
 
 dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
     implementation(project(":kotlinlib"))
     implementation(libs.gson)
-    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion")
+    implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
 }
 
@@ -58,7 +57,7 @@ testing {
             dependencies {
                 implementation(project())
                 implementation(project(":kotlinlib"))
-                implementation("org.jetbrains.kotlin:kotlin-test-junit5:$kotlinVersion")
+                implementation(libs.ktestjunit)
                 implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
                 implementation("io.kotest:kotest-assertions-core:5.8.0")
                 implementation("io.kotest:kotest-property:5.8.0")
