@@ -149,8 +149,8 @@ public abstract class DynamicNodeTestsBase {
         return getFeatureByKey(getClassifierByKey("key-ReferenceGeometry"), "key-shapes-references");
     }
 
-    protected Feature Geometry_shapes() {
-        return getFeatureByKey(getClassifierByKey("key-Geometry"), "key-shapes");
+    protected Containment Geometry_shapes() {
+        return (Containment) getFeatureByKey(getClassifierByKey("key-Geometry"), "key-shapes");
     }
 
     protected Feature CompositeShape_parts() {
