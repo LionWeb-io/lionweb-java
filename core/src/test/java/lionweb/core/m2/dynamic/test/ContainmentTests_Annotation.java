@@ -26,9 +26,10 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 
 public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
-//    #region Single
+////    #region Single
 
     @Test
     public void Single_Add() {
@@ -44,12 +45,12 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance bom = newBillOfMaterials("myId");
-//        Assert.assertThrows(InvalidValueException>(() -> parent.Set(null, bom));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.Set(null, bom));
 //        Assert.assertEquals(null, bom.getParent());
 //        Assert.assertFalse(parent.getAnnotations().contains(bom));
 //    }
 
-//    #region Insert
+////    #region Insert
 
 //    @Test
 //    public void Single_Insert_Empty()
@@ -92,7 +93,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertEquals(parent, bom.getParent());
 //        Assert.assertTrue(parent.getAnnotations().contains(bom));
-//        CollectionAssert.AreEqual(Lists.newArrayList( bom, doc }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( bom, doc }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -106,7 +107,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertEquals(parent, bom.getParent());
 //        Assert.assertTrue(parent.getAnnotations().contains(bom));
-//        CollectionAssert.AreEqual(Lists.newArrayList( doc, bom }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( doc, bom }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -122,7 +123,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertEquals(parent, bom.getParent());
 //        Assert.assertTrue(parent.getAnnotations().contains(bom));
-//        CollectionAssert.AreEqual(Lists.newArrayList( bom, docA, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( bom, docA, docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -138,7 +139,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertEquals(parent, bom.getParent());
 //        Assert.assertTrue(parent.getAnnotations().contains(bom));
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, bom, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, bom, docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -154,12 +155,12 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertEquals(parent, bom.getParent());
 //        Assert.assertTrue(parent.getAnnotations().contains(bom));
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, docB, bom }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, docB, bom }, parent.getAnnotations());
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region Remove
+////    #region Remove
 
     @Test
     public void Single_Remove_Empty() {
@@ -234,11 +235,11 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
         CollectionAssert.AreEqual(Lists.newArrayList(docA, docB), parent.getAnnotations());
     }
 
-//    #endregion
+////    #endregion
 
-//    #endregion
+////    #endregion
 
-//    #region Null
+////    #region Null
 
     @Test
     public void Null() {
@@ -250,14 +251,14 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    public void Null_Reflective()
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
-//        Assert.assertThrows(InvalidValueException>(() -> parent.Set(null, null));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.Set(null, null));
 //    }
 
 //    @Test
 //    public void Null_Insert_Empty()
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
-//        Assert.assertThrows(InvalidValueException>(() -> parent.InsertAnnotations(0, null));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.InsertAnnotations(0, null));
 //    }
 
 //    @Test
@@ -273,9 +274,9 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
         Assert.assertThrows(NullPointerException.class, () -> parent.removeAnnotation(null));
     }
 
-//    #endregion
+////    #endregion
 
-//    #region EmptyCollection
+////    #region EmptyCollection
 
 //    @Test
 //    public void EmptyArray()
@@ -340,16 +341,16 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region NullCollection
+////    #region NullCollection
 
 //    @Test
 //    public void NullArray()
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance[] values = new AbstractClassifierInstance[] { null };
-//        Assert.assertThrows(InvalidValueException>(() -> parent.addAnnotation(values));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.addAnnotation(values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
 
@@ -358,7 +359,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance[] values = new AbstractClassifierInstance[] { null };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -368,7 +369,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance[] values = new AbstractClassifierInstance[] { null };
-//        Assert.assertThrows(InvalidValueException>(() -> parent.InsertAnnotations(0, values));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.InsertAnnotations(0, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
 
@@ -377,7 +378,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance[] values = new AbstractClassifierInstance[] { null };
-//        Assert.assertThrows(InvalidValueException>(() -> parent.RemoveAnnotations(values));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.RemoveAnnotations(values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
 
@@ -386,7 +387,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance values = new ArrayList() { null };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -396,7 +397,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance values = new List<INode>() { null };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -406,14 +407,14 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //    {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance values = new HashSet<INode>() { null };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region SingleCollection
+////    #region SingleCollection
 
 //    @Test
 //    public void SingleArray()
@@ -448,7 +449,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.Set(null, values);
 //        Assert.assertNull(doc.getParent());
 //        Assert.assertEquals(parent, value.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( value }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( value }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -462,7 +463,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertTrue(parent.getAnnotations().contains(value));
 //    }
 
-//    #region Remove
+////    #region Remove
 
 //    @Test
 //    public void SingleArray_Remove_Empty()
@@ -484,7 +485,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AnnotationInstance[] values = new AnnotationInstance[]{ bom };
 //        parent.RemoveAnnotations(values);
 //        Assert.assertNull(bom.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -498,7 +499,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.RemoveAnnotations(values);
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertNull(bom.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( doc }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( doc }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -512,7 +513,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.RemoveAnnotations(values);
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertNull(bom.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( doc }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( doc }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -528,10 +529,10 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docA.getParent());
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertNull(bom.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, docB }, parent.getAnnotations());
 //    }
 
-//    #endregion
+////    #endregion
 
 //    @Test
 //    public void SingleUntypedArray_Reflective()
@@ -583,7 +584,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance value = newCoord("c");
 //        AbstractClassifierInstance values = new ArrayList<INode>() { value };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -594,7 +595,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance value = newCoord("c");
 //        AbstractClassifierInstance values = new ArrayList() { value };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -605,14 +606,14 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance parent = newLine("g");
 //        AbstractClassifierInstance value = newCoord("c");
 //        Object[] values = new Object[] { value };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region MultipleCollection
+////    #region MultipleCollection
 
 //    @Test
 //    public void MultipleArray()
@@ -642,7 +643,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertTrue(parent.getAnnotations().contains(valueB));
 //    }
 
-//    #region Insert
+////    #region Insert
 
 //    @Test
 //    public void Multiple_Insert_ListMatchingType()
@@ -654,7 +655,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.InsertAnnotations(0, values);
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -667,7 +668,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.InsertAnnotations(0, values);
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -680,7 +681,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.InsertAnnotations(0, values);
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -693,7 +694,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.InsertAnnotations(0, values);
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( valueA, valueB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -709,7 +710,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( valueA, valueB, doc }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( valueA, valueB, doc }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -725,7 +726,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( doc, valueA, valueB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( doc, valueA, valueB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -743,7 +744,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( valueA, valueB, docA, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( valueA, valueB, docA, docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -761,7 +762,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, valueA, valueB, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, valueA, valueB, docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -779,12 +780,12 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertEquals(parent, valueA.getParent());
 //        Assert.assertEquals(parent, valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, docB, valueA, valueB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, docB, valueA, valueB }, parent.getAnnotations());
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region Remove
+////    #region Remove
 
 //    @Test
 //    public void Multiple_Remove_ListMatchingType()
@@ -857,7 +858,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -873,7 +874,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(docA.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -887,7 +888,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        parent.RemoveAnnotations(values);
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -903,7 +904,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( doc }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( doc }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -919,7 +920,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, doc.getParent());
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( doc }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( doc }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -937,7 +938,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, docB }, parent.getAnnotations());
 //    }
 
 //    @Test
@@ -955,10 +956,10 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        Assert.assertEquals(parent, docB.getParent());
 //        Assert.assertNull(valueA.getParent());
 //        Assert.assertNull(valueB.getParent());
-//        CollectionAssert.AreEqual(Lists.newArrayList( docA, docB }, parent.getAnnotations());
+//        CollectionAssert.assertEquals(Lists.newArrayList( docA, docB }, parent.getAnnotations());
 //    }
 
-//    #endregion
+////    #endregion
 
 //    @Test
 //    public void MultipleUntypedArray_Reflective()
@@ -1079,7 +1080,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance valueA = newCoord("cA");
 //        AbstractClassifierInstance valueB = newCoord("cB");
 //        AbstractClassifierInstance values = new ArrayList<INode>() { valueA, valueB };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -1091,7 +1092,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance valueA = newCoord("cA");
 //        AbstractClassifierInstance valueB = newCoord("cB");
 //        AbstractClassifierInstance values = new ArrayList() { valueA, valueB };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -1103,7 +1104,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance valueA = newCoord("cA");
 //        AbstractClassifierInstance valueB = newCoord("cB");
 //        Object[] values = new Object[] { valueA, valueB };
-//        Assert.assertThrows(InvalidValueException>(
+//        Assert.assertThrows(IllegalArgumentException.class, 
 //            () -> parent.Set(null, values));
 //        Assert.assertTrue(parent.getAnnotations().size() == 0);
 //    }
@@ -1114,7 +1115,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance parent = newGeometry("g");
 //        AnnotationInstance value = newDocumentation("sA");
 //        AbstractClassifierInstance values = new ArrayList<INode>() { value };
-//        Assert.assertThrows(InvalidValueException>(() -> parent.addAnnotation(values));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.addAnnotation(values));
 //        Assert.assertNull(value.getParent());
 //        Assert.assertFalse(parent.getAnnotations().contains(value));
 //    }
@@ -1125,7 +1126,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance parent = newGeometry("g");
 //        AnnotationInstance value = newDocumentation("sA");
 //        AbstractClassifierInstance values = new ArrayList<INode>() { value };
-//        Assert.assertThrows(InvalidValueException>(() -> parent.Set(null, values));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.Set(null, values));
 //        Assert.assertNull(value.getParent());
 //        Assert.assertFalse(parent.getAnnotations().contains(value));
 //    }
@@ -1136,7 +1137,7 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AbstractClassifierInstance parent = newGeometry("g");
 //        AnnotationInstance value = newDocumentation("sA");
 //        AbstractClassifierInstance values = new ArrayList<INode>() { value };
-//        Assert.assertThrows(InvalidValueException>(() -> parent.InsertAnnotations(0, values));
+//        Assert.assertThrows(IllegalArgumentException.class, () -> parent.InsertAnnotations(0, values));
 //        Assert.assertNull(value.getParent());
 //        Assert.assertFalse(parent.getAnnotations().contains(value));
 //    }
@@ -1161,28 +1162,30 @@ public class ContainmentTests_Annotation extends DynamicNodeTestsBase {
 //        AnnotationInstance[] values = new AnnotationInstance[]{ valueA, valueB };
 //        parent.Set(null, values);
 //        AbstractClassifierInstance result = parent.Get(null);
-//        CollectionAssert.AreEqual(new List<INode>() {valueA, valueB}, (result as IList<INode>).ToList());
+//        CollectionAssert.assertEquals(new List<INode>() {valueA, valueB}, (result as IList<INode>).ToList());
 //    }
 
-//    @Test
-//    public void ResultUnmodifiable_Set()
-//    {
-//        AbstractClassifierInstance parent = newLine("g");
-//        AnnotationInstance valueA = newBillOfMaterials("sA");
-//        AnnotationInstance valueB = newBillOfMaterials("sB");
-//        AnnotationInstance[] values = new AnnotationInstance[]{ valueA, valueB };
-//        parent.Set(null, values);
-//        AbstractClassifierInstance result = parent.Get(null);
-//        Assert.IsInstanceOfType<IReadOnlyList<INode>>(result);
-//    }
+    @Test
+    public void ResultUnmodifiable_Set()
+    {
+        AbstractClassifierInstance parent = newLine("g");
+        AnnotationInstance valueA = newBillOfMaterials("sA");
+        AnnotationInstance valueB = newBillOfMaterials("sB");
+        AnnotationInstance[] values = new AnnotationInstance[]{ valueA, valueB };
+        parent.addAnnotation(valueA);
+        parent.addAnnotation(valueB);
+        List result = parent.getAnnotations();
+        Assert.assertThrows(UnsupportedOperationException.class, () -> result.add(valueA));
+    }
 
-//    @Test
-//    public void ResultUnmodifiable_Unset()
-//    {
-//        AbstractClassifierInstance parent = newLine("g");
-//        AbstractClassifierInstance result = parent.Get(null);
-//        Assert.IsInstanceOfType<IReadOnlyList<INode>>(result);
-//    }
+    @Test
+    public void ResultUnmodifiable_Unset()
+    {
+        AnnotationInstance valueA = newBillOfMaterials("sA");
+        AbstractClassifierInstance parent = newLine("g");
+        List result = parent.getAnnotations();
+        Assert.assertThrows(UnsupportedOperationException.class, () -> result.add(valueA));
+    }
 
-//    #endregion
+////    #endregion
 }

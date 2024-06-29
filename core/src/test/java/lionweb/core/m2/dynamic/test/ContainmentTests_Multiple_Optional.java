@@ -26,7 +26,7 @@ import java.util.List;
 
 public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
 {
-//    #region Single
+////    #region Single
 
     @Test
     public void Single_Reflective()
@@ -41,9 +41,9 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
         Assert.assertTrue((parent.getChildren(Geometry_shapes())).contains(line));
     }
 
-//    #endregion
+////    #endregion
 
-//    #region Null
+////    #region Null
 
     @Test
     public void Null_Reflective()
@@ -52,9 +52,9 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
         Assert.assertThrows(IllegalArgumentException.class, () -> parent.addChild(Geometry_shapes(), null));
     }
 
-//    #endregion
+////    #endregion
 
-//    #region EmptyCollection
+////    #region EmptyCollection
 
 //    @Test
 //    public void EmptyArray_Reflective()
@@ -120,9 +120,9 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
 //        Assert.assertTrue((parent.getChildren(Geometry_shapes())).size() == 0);
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region NullCollection
+////    #region NullCollection
 
 //    @Test
 //    public void NullArray_Reflective()
@@ -184,9 +184,9 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
 //        Assert.assertTrue((parent.getChildren(Geometry_shapes())).size() == 0);
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region SingleCollection
+////    #region SingleCollection
 
 //    @Test
 //    public void SingleArray_Reflective()
@@ -210,7 +210,7 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
 //        parent.addChild(Geometry_shapes(), values);
 //        Assert.assertNull(circle.getParent());
 //        Assert.assertSame(parent, value.getParent());
-//        CollectionAssert.AreEqual(new List<DynamicNode> { value },
+//        CollectionAssert.assertEquals(new List<DynamicNode> { value },
 //            (parent.getChildren(Geometry_shapes())).ToList());
 //    }
 
@@ -302,9 +302,9 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
 //        Assert.assertTrue((parent.getChildren(Geometry_shapes())).size() == 0);
 //    }
 
-//    #endregion
+////    #endregion
 
-//    #region MultipleCollection
+////    #region MultipleCollection
 
 //    @Test
 //    public void MultipleArray_Reflective()
@@ -461,5 +461,5 @@ public class ContainmentTests_Multiple_Optional extends DynamicNodeTestsBase
         Assert.assertThrows(UnsupportedOperationException.class, () -> result.add(valueA));
     }
 
-//    #endregion
+////    #endregion
 }

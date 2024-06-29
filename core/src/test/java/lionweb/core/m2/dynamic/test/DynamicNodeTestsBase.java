@@ -19,12 +19,14 @@ package lionweb.core.m2.dynamic.test;
 
 import examples.shapes.dynamic.ShapesDynamic;
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.Instantiator;
 import org.junit.Before;
 
+import java.sql.Ref;
 import java.util.List;
 
 public abstract class DynamicNodeTestsBase {
@@ -145,142 +147,149 @@ public abstract class DynamicNodeTestsBase {
         return node;
     }
     
-    protected Feature ReferenceGeometry_shapes() {
-        return getFeatureByKey(getClassifierByKey("key-ReferenceGeometry"), "key-shapes-references");
+    protected Reference ReferenceGeometry_shapes() {
+        return (Reference) getFeatureByKey(getClassifierByKey("key-ReferenceGeometry"), "key-shapes-references");
     }
 
     protected Containment Geometry_shapes() {
         return (Containment) getFeatureByKey(getClassifierByKey("key-Geometry"), "key-shapes");
     }
 
-    protected Feature CompositeShape_parts() {
-        return getFeatureByKey(getClassifierByKey("key-CompositeShape"), "key-parts");
+    protected Containment CompositeShape_parts() {
+        return (Containment) getFeatureByKey(getClassifierByKey("key-CompositeShape"), "key-parts");
     }
 
-    protected Feature CompositeShape_disabledParts() {
-        return getFeatureByKey(getClassifierByKey("key-CompositeShape"), "key-disabled-parts");
+    protected Containment CompositeShape_disabledParts() {
+        return (Containment) getFeatureByKey(getClassifierByKey("key-CompositeShape"), "key-disabled-parts");
     }
 
-    protected Feature CompositeShape_evilPart() {
-        return getFeatureByKey(getClassifierByKey("key-CompositeShape"), "key-evil-part");
+    protected Containment CompositeShape_evilPart() {
+        return (Containment) getFeatureByKey(getClassifierByKey("key-CompositeShape"), "key-evil-part");
     }
 
-    protected Feature Geometry_documentation() {
-        return getFeatureByKey(getClassifierByKey("key-Geometry"), "key-documentation");
+    protected Containment Geometry_documentation() {
+        return (Containment) getFeatureByKey(getClassifierByKey("key-Geometry"), "key-documentation");
     }
 
-    protected Feature OffsetDuplicate_offset() {
-        return getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-offset");
+    protected Containment OffsetDuplicate_offset() {
+        return (Containment) getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-offset");
     }
 
-    protected Feature Documentation_technical()
+    protected Property Documentation_technical()
     {
-        return getFeatureByKey(getClassifierByKey("key-Documentation"), "key-technical");
+        return (Property) getFeatureByKey(getClassifierByKey("key-Documentation"), "key-technical");
     }
 
-    protected Feature MaterialGroup_matterState()
+    protected Property MaterialGroup_matterState()
     {
-        return getFeatureByKey(getClassifierByKey("key-MaterialGroup"), "key-matter-state");
+        return (Property) getFeatureByKey(getClassifierByKey("key-MaterialGroup"), "key-matter-state");
     }
 
-    protected Feature MaterialGroup_defaultShape()
+    protected Containment MaterialGroup_defaultShape()
     {
-        return getFeatureByKey(getClassifierByKey("key-MaterialGroup"), "key-default-shape");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-MaterialGroup"), "key-default-shape");
     }
 
-    protected Feature Circle_r()
+    protected Property Circle_r()
     {
-        return getFeatureByKey(getClassifierByKey("key-Circle"), "key-r");
+        return (Property) getFeatureByKey(getClassifierByKey("key-Circle"), "key-r");
     }
 
-    protected Feature Circle_center()
+    protected Containment Circle_center()
     {
-        return getFeatureByKey(getClassifierByKey("key-Circle"), "key-center");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-Circle"), "key-center");
     }
 
-    protected Feature Line_start()
+    protected Containment Line_start()
     {
-        return getFeatureByKey(getClassifierByKey("key-Line"), "key-start");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-Line"), "key-start");
     }
 
-    protected Feature Line_end()
+    protected Containment Line_end()
     {
-        return getFeatureByKey(getClassifierByKey("key-Line"), "key-end");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-Line"), "key-end");
     }
 
-    protected Feature Documentation_text()
+    protected Property Documentation_text()
     {
-        return getFeatureByKey(getClassifierByKey("key-Documentation"), "key-text");
+        return (Property) getFeatureByKey(getClassifierByKey("key-Documentation"), "key-text");
     }
 
-    protected Feature MaterialGroup_materials()
+    protected Reference MaterialGroup_materials()
     {
-        return getFeatureByKey(getClassifierByKey("key-MaterialGroup"), "key-group-materials");
+        return (Reference) getFeatureByKey(getClassifierByKey("key-MaterialGroup"), "key-group-materials");
     }
 
-    protected Feature OffsetDuplicate_altSource()
+    protected Reference OffsetDuplicate_altSource()
     {
-        return getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-alt-source");
+        return (Reference) getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-alt-source");
     }
 
-    protected Feature OffsetDuplicate_source()
+    protected Reference OffsetDuplicate_source()
     {
-        return getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-source");
+        return (Reference) getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-source");
     }
 
-    protected Feature OffsetDuplicate_docs()
+    protected Containment OffsetDuplicate_docs()
     {
-        return getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-docs");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-docs");
     }
 
-    protected Feature OffsetDuplicate_secretDocs()
+    protected Containment OffsetDuplicate_secretDocs()
     {
-        return getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-secret-docs");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-OffsetDuplicate"), "key-secret-docs");
     }
 
-    protected Feature BillOfMaterials_groups()
+    protected Containment BillOfMaterials_groups()
     {
-        return getFeatureByKey(getClassifierByKey("key-BillOfMaterials"), "key-groups");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-BillOfMaterials"), "key-groups");
     }
 
-    protected Feature BillOfMaterials_altGroups()
+    protected Containment BillOfMaterials_altGroups()
     {
-        return getFeatureByKey(getClassifierByKey("key-BillOfMaterials"), "key-alt-groups");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-BillOfMaterials"), "key-alt-groups");
     }
 
-    protected Feature BillOfMaterials_defaultGroup()
+    protected Containment BillOfMaterials_defaultGroup()
     {
-        return getFeatureByKey(getClassifierByKey("key-BillOfMaterials"), "key-default-group");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-BillOfMaterials"), "key-default-group");
     }
 
-    protected Feature Shape_shapeDocs()
+    protected Containment Shape_shapeDocs()
     {
-        return getFeatureByKey(getClassifierByKey("key-Shape"), "key-shape-docs");
+        return (Containment) getFeatureByKey(getClassifierByKey("key-Shape"), "key-shape-docs");
     }
 
-//    protected Enum MatterState_Gas()
-//    {
+    protected Enum MatterState_Gas()
+    {
+        return null;
 //        return getGetFactory().GetEnumerationLiteral(
 //            MatterState
 //                    .Literals
 //                    .First(l => l.Key == "key-gas")
 //        );
-//    }
-//
-//    protected Enum MatterState_Liquid()
-//    {
+    }
+
+    protected Enum MatterState_Liquid()
+    {
+        return null;
 //        return getGetFactory().GetEnumerationLiteral(
 //            MatterState
 //                    .Literals
 //                    .First(l => l.Key == "key-liquid")
 //        );
-//    }
-//
-//    private Enumeration MatterState() {
-//        _lang
-//                .Enumerations()
-//                .First(e = > e.Key == "key-MatterState");
-//    }
+    }
+
+    private Enumeration MatterState() {
+        return _lang
+                .getElements()
+                .stream()
+                .filter(e -> e instanceof Enumeration)
+                .map(e -> (Enumeration) e)
+                .filter(e -> e.getKey().equals("key-MatterState"))
+                .findFirst()
+                .orElse(null);
+    }
 
 }
 
