@@ -29,6 +29,8 @@ import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
+val MAX_DEPTH = Integer.MAX_VALUE
+
 class LionWebClient(
     val hostname: String = "localhost",
     val port: Int = 3005,
@@ -207,7 +209,7 @@ class LionWebClient(
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         val limit =
             when (retrievalMode) {
-                RetrievalMode.ENTIRE_SUBTREE -> "99"
+                RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH.toString()
                 RetrievalMode.SINGLE_NODE -> "1"
             }
         urlBuilder.addQueryParameter("depthLimit", limit)
