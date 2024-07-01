@@ -223,6 +223,7 @@ class LionWebClient(
             if (response.code == HttpURLConnection.HTTP_OK) {
                 val data =
                     (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
+                // Note that ids are calculated exclusively for debugging reasons
                 var ids = rootIds.toString()
                 if (ids.length > 100) {
                     ids = ids.substring(0, 100)
