@@ -20,8 +20,8 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
   List<AnnotationInstance> getAnnotations(@Nonnull Annotation annotation);
 
   /**
-   * Add the annotation. Note that we can always have multiple annotation instances of the same annotation type
-   * attached to a node, so this will never replace an existing annotation instance.
+   * Add the annotation. Note that we can always have multiple annotation instances of the same
+   * annotation type attached to a node, so this will never replace an existing annotation instance.
    *
    * @throws IllegalArgumentException In case the specified Annotation link cannot be used on Nodes
    *     of this Concept.
