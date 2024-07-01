@@ -188,53 +188,9 @@ class LionWebClient(
         retrievalMode: RetrievalMode = RetrievalMode.ENTIRE_SUBTREE,
     ): Node {
         require(rootId.isNotBlank())
-        val body: RequestBody = "{\"ids\":[\"$rootId\"] }".toRequestBody(JSON)
-        val url = "http://$hostname:$port/bulk/retrieve"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        val limit =
-            when (retrievalMode) {
-                RetrievalMode.ENTIRE_SUBTREE -> "99"
-                RetrievalMode.SINGLE_NODE -> "1"
-            }
-        urlBuilder.addQueryParameter("depthLimit", limit)
-        val request: Request =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .post(body)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code == HttpURLConnection.HTTP_OK) {
-                val data =
-                    (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
-                debugFile("retrieved-$rootId.json") { data }
-
-                return processChunkResponse(data) {
-                    val js = jsonSerialization
-                    js.unavailableParentPolicy =
-                        if (withProxyParent) {
-                            UnavailableNodePolicy.PROXY_NODES
-                        } else {
-                            UnavailableNodePolicy.NULL_REFERENCES
-                        }
-                    js.unavailableReferenceTargetPolicy = UnavailableNodePolicy.PROXY_NODES
-                    js.unavailableChildrenPolicy =
-                        when (retrievalMode) {
-                            RetrievalMode.ENTIRE_SUBTREE -> UnavailableNodePolicy.THROW_ERROR
-                            RetrievalMode.SINGLE_NODE -> UnavailableNodePolicy.PROXY_NODES
-                        }
-                    val nodes = js.deserializeToNodes(it)
-                    nodes.find { it.id == rootId } ?: throw IllegalArgumentException(
-                        "When requesting a subtree with rootId=$rootId we got back an answer without such ID. " +
-                            "IDs we got back: ${nodes.map { it.id }.joinToString(", ")}",
-                    )
-                }
-            } else {
-                throw RuntimeException(
-                    "Something went wrong while querying $url: http code ${response.code}, body: ${response.body?.string()}",
-                )
-            }
-        }
+        val result = retrieve(listOf(rootId), withProxyParent, retrievalMode)
+        require(result.size == 1)
+        return result.first()
     }
 
     fun retrieve(
