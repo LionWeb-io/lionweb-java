@@ -29,6 +29,9 @@ import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
+// This number must be lower than Number.MAX_SAFE_INTEGER, or the LionWeb Repo would crash
+// Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
+// Integer.MAX_VALUE       =         2,147,483,647
 val MAX_DEPTH = Integer.MAX_VALUE
 
 class LionWebClient(
