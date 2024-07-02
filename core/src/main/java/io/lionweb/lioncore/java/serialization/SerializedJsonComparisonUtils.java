@@ -1,8 +1,5 @@
 package io.lionweb.lioncore.java.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
@@ -12,11 +9,11 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-class SerializedJsonComparisonUtils {
+public class SerializedJsonComparisonUtils {
 
   private SerializedJsonComparisonUtils() {}
 
-  static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
+  public static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
     Set<String> keys =
         new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "languages"));
     if (!expected.keySet().equals(keys)) {
@@ -199,5 +196,15 @@ class SerializedJsonComparisonUtils {
       assertEquals(
           "(" + context + ") Different values for key " + key, expected.get(key), actual.get(key));
     }
+  }
+
+  private static void assertEquals(String message, Object expected, Object actual) {
+    if (!Objects.equals(expected, actual)) {
+      throw new AssertionError(message + ": expected " + expected + " but found" + actual);
+    }
+  }
+
+  private static void fail(String message) {
+    throw new AssertionError("Comparison failed. " + message);
   }
 }
