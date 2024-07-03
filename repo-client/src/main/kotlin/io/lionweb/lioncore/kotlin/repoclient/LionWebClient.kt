@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
+import com.google.gson.Gson
+import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.language.Language
@@ -16,18 +18,19 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.EMPTY_REQUEST
+import java.lang.reflect.Field
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.internal.EMPTY_REQUEST
 
 // This number must be lower than Number.MAX_SAFE_INTEGER, or the LionWeb Repo would crash
 // Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
@@ -43,6 +46,7 @@ class LionWebClient(
     val callTimeoutInSeconds: Long = 60,
     val authorizationToken: String? = null,
 ) {
+
     // Fields
 
     /**
@@ -588,6 +592,54 @@ class LionWebClient(
             lwNode.removeChild(it)
         }
         storeTree(lwNode)
+    }
+
+    // Additional APIs
+
+    fun nodeTree(nodeIDs: List<String>, depthLimit: Int? = null) {
+        val url = "http://$hostname:$port/additional/getNodeTree"
+        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
+        if (depthLimit != null) {
+            urlBuilder.addQueryParameter("depthLimit", depthLimit.toString())
+        }
+        val ids = JsonArray()
+        nodeIDs.forEach { ids.add(it) }
+        val idsJson = Gson().toJson(ids)
+        val builder = Request.Builder()
+            .url(urlBuilder.build())
+            .considerAuthenticationToken()
+            .method("POST", idsJson.toRequestBody(JSON))
+
+//        val field: Field = Request.Builder::class.java.getField("method")
+//        field.setAccessible(true)
+//        field.set(builder, "GET")
+        println(Request.Builder::class.java.methods.map { it.name }.joinToString(", "))
+        val method = Request.Builder::class.java.methods.find { it.name == "setMethod${'$'}okhttp" }!!
+        method.setAccessible(true)
+        method.invoke(builder, "GET")
+
+
+        val request: Request =
+            builder
+                .build()
+
+        OkHttpClient().newCall(request).execute().use { response ->
+            val body = response.body?.string()
+            if (response.code != HttpURLConnection.HTTP_OK) {
+                throw RuntimeException("${response.code}: $body")
+            }
+
+            val data = JsonParser.parseString(body)
+            println("GOT DATA $data")
+//            val result = mutableMapOf<ClassifierKey, ClassifierResult>()
+//            data.asJsonArray.map { it.asJsonObject }.forEach { entry ->
+//                val classifierKey = ClassifierKey(entry["language"].asString, entry["classifier"].asString)
+//                val ids: Set<String> = entry["ids"].asJsonArray.map { it.asString }.toSet()
+//                result[classifierKey] = ClassifierResult(ids, entry["size"].asInt)
+//            }
+//            return result
+            TODO()
+        }
     }
 
     // Private methods
