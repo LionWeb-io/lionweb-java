@@ -3,6 +3,8 @@ package io.lionweb.lioncore.kotlin.repoclient
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
+import com.google.gson.JsonNull
+import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.model.Node
@@ -18,12 +20,6 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
-import java.net.ConnectException
-import java.net.HttpURLConnection
-import java.util.LinkedList
-import java.util.concurrent.TimeUnit
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -32,7 +28,12 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
-
+import java.net.ConnectException
+import java.net.HttpURLConnection
+import java.util.LinkedList
+import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 // This number must be lower than Number.MAX_SAFE_INTEGER, or the LionWeb Repo would crash
 // Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
@@ -48,9 +49,8 @@ class LionWebClient(
     val callTimeoutInSeconds: Long = 60,
     val authorizationToken: String? = null,
     var clientID: String = "GenericKotlinBasedLionWebClient",
-    var repository: String = "default"
+    var repository: String = "default",
 ) {
-
     // Fields
 
     /**
@@ -136,13 +136,13 @@ class LionWebClient(
         }
     }
 
-    private fun String.addClientIdQueryParam() : HttpUrl {
+    private fun String.addClientIdQueryParam(): HttpUrl {
         val urlBuilder = this.toHttpUrl().newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
         return urlBuilder.build()
     }
 
-    private fun HttpUrl.addRepositoryQueryParam() : HttpUrl {
+    private fun HttpUrl.addRepositoryQueryParam(): HttpUrl {
         val urlBuilder = this.newBuilder()
         urlBuilder.addQueryParameter("repository", repository)
         return urlBuilder.build()
@@ -582,24 +582,34 @@ class LionWebClient(
 
     // Additional APIs
 
-    fun nodeTree(nodeID: String, depthLimit: Int? = null) {
+    fun nodeTree(
+        nodeID: String,
+        depthLimit: Int? = null,
+    ): List<NodeInfo> {
         return nodeTree(listOf(nodeID), depthLimit = depthLimit)
     }
 
-    fun nodeTree(nodeIDs: List<String>, depthLimit: Int? = null) {
+    fun nodeTree(
+        nodeIDs: List<String>,
+        depthLimit: Int? = null,
+    ): List<NodeInfo> {
         val url = "http://$hostname:$port/additional/getNodeTree"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         if (depthLimit != null) {
             urlBuilder.addQueryParameter("depthLimit", depthLimit.toString())
         }
         urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
+        val body = JsonObject()
         val ids = JsonArray()
         nodeIDs.forEach { ids.add(it) }
-        val idsJson = Gson().toJson(ids)
-        val builder = Request.Builder()
-            .url(urlBuilder.build())
-            .considerAuthenticationToken()
-            .method("POST", idsJson.toRequestBody(JSON))
+        body.add("ids", ids)
+        val bodyJson = Gson().toJson(body)
+        val builder =
+            Request.Builder()
+                .url(urlBuilder.build())
+                .considerAuthenticationToken()
+                .post(bodyJson.toRequestBody(JSON))
 
         val request: Request =
             builder
@@ -611,16 +621,18 @@ class LionWebClient(
                 throw RuntimeException("${response.code}: $body")
             }
 
-            val data = JsonParser.parseString(body)
-            println("GOT DATA $data")
-//            val result = mutableMapOf<ClassifierKey, ClassifierResult>()
-//            data.asJsonArray.map { it.asJsonObject }.forEach { entry ->
-//                val classifierKey = ClassifierKey(entry["language"].asString, entry["classifier"].asString)
-//                val ids: Set<String> = entry["ids"].asJsonArray.map { it.asString }.toSet()
-//                result[classifierKey] = ClassifierResult(ids, entry["size"].asInt)
-//            }
-//            return result
-            TODO()
+            val data = JsonParser.parseString(body).asJsonObject.get("data").asJsonArray
+            return data.map { it.asJsonObject }.map { dataElement ->
+                val parent =
+                    if (dataElement.has("parent") && dataElement.get("parent") !is JsonNull) {
+                        dataElement.get(
+                            "parent",
+                        ).asString
+                    } else {
+                        null
+                    }
+                NodeInfo(dataElement.get("id").asString, parent, dataElement.get("depth").asInt)
+            }
         }
     }
 
@@ -728,3 +740,5 @@ class LionWebClient(
         return chunkProcessor.invoke(chunkJson)
     }
 }
+
+data class NodeInfo(val id: String, val parent: String?, val depth: Int)

@@ -304,7 +304,25 @@ class PropertiesFunctionalTest {
             }
         client.storeTree(pf)
 
-        val nodeTree1 = client.nodeTree("pf1")
-        val nodeTree2 = client.nodeTree(listOf("pp1","prop1"))
+        assertEquals(
+            listOf(
+                NodeInfo("pf1", "pp1", 0),
+                NodeInfo("prop1", "pf1", 1),
+                NodeInfo("prop2", "pf1", 1),
+                NodeInfo("prop3", "pf1", 1),
+            ),
+            client.nodeTree("pf1"),
+        )
+        assertEquals(
+            listOf(
+                NodeInfo("pp1", null, 0),
+                NodeInfo("prop1", "pf1", 0),
+                NodeInfo("pf1", "pp1", 1),
+                NodeInfo("prop1", "pf1", 2),
+                NodeInfo("prop2", "pf1", 2),
+                NodeInfo("prop3", "pf1", 2),
+            ),
+            client.nodeTree(listOf("pp1", "prop1")),
+        )
     }
 }
