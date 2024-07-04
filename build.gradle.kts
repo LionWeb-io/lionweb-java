@@ -22,6 +22,10 @@ allprojects {
 }
 
 release {
+    buildTasks = listOf(":core:publishAllPublicationsToMavenCentralRepository",
+        ":repo-client:publishAllPublicationsToMavenCentralRepository",
+        ":repo-client-testing:publishAllPublicationsToMavenCentralRepository")
+    versionPropertyFile = "./gradle.properties"
     git {
         requireBranch.set("main")
         pushToRemote.set("origin")
