@@ -18,19 +18,21 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
-import java.lang.reflect.Field
 import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.util.LinkedList
 import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
+import okhttp3.HttpUrl
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
+
 
 // This number must be lower than Number.MAX_SAFE_INTEGER, or the LionWeb Repo would crash
 // Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
@@ -45,6 +47,8 @@ class LionWebClient(
     val connectTimeOutInSeconds: Long = 60,
     val callTimeoutInSeconds: Long = 60,
     val authorizationToken: String? = null,
+    var clientID: String = "GenericKotlinBasedLionWebClient",
+    var repository: String = "default"
 ) {
 
     // Fields
@@ -76,45 +80,11 @@ class LionWebClient(
 
     // Setup
 
-    /**
-     * To be called exactly once, to ensure the Model Repository is initialized.
-     * Note that it causes all content of the Model Repository to be lost!
-     */
-    fun modelRepositoryInit() {
-        val url = "http://$hostname:$port/init"
-        val request: Request =
-            Request.Builder()
-                .url(url)
-                .considerAuthenticationToken()
-                .post("".toRequestBody())
-                .build()
-        OkHttpClient().newCall(request).execute().use { response ->
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("DB initialization failed, HTTP ${response.code}: ${response.body?.string()}")
-            }
-        }
-    }
-
-    fun createDatabase() {
-        val url = "http://$hostname:$port/createDatabase"
-        val request: Request =
-            Request.Builder()
-                .url(url)
-                .considerAuthenticationToken()
-                .post(EMPTY_REQUEST)
-                .build()
-        OkHttpClient().newCall(request).execute().use { response ->
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("DB initialization failed, HTTP ${response.code}: ${response.body?.string()}")
-            }
-        }
-    }
-
     fun createRepository(history: Boolean = false) {
         val url = "http://$hostname:$port/createRepository?history=$history"
         val request: Request =
             Request.Builder()
-                .url(url)
+                .url(url.addClientIdQueryParam())
                 .considerAuthenticationToken()
                 .post(EMPTY_REQUEST)
                 .build()
@@ -142,7 +112,7 @@ class LionWebClient(
         val body: RequestBody = "[\"$nodeID\"]".toRequestBody(JSON)
         val request: Request =
             Request.Builder()
-                .url("http://$hostname:$port/bulk/deletePartitions")
+                .url("http://$hostname:$port/bulk/deletePartitions".addClientIdQueryParam())
                 .considerAuthenticationToken()
                 .post(body)
                 .build()
@@ -166,11 +136,23 @@ class LionWebClient(
         }
     }
 
+    private fun String.addClientIdQueryParam() : HttpUrl {
+        val urlBuilder = this.toHttpUrl().newBuilder()
+        urlBuilder.addQueryParameter("clientId", clientID)
+        return urlBuilder.build()
+    }
+
+    private fun HttpUrl.addRepositoryQueryParam() : HttpUrl {
+        val urlBuilder = this.newBuilder()
+        urlBuilder.addQueryParameter("repository", repository)
+        return urlBuilder.build()
+    }
+
     fun getPartitionIDs(): List<String> {
         val url = "http://$hostname:$port/bulk/listPartitions"
         val request: Request =
             Request.Builder()
-                .url(url)
+                .url(url.addClientIdQueryParam())
                 .considerAuthenticationToken()
                 .addHeader("Accept-Encoding", "gzip")
                 .post(EMPTY_REQUEST)
@@ -220,6 +202,7 @@ class LionWebClient(
                 RetrievalMode.SINGLE_NODE -> "1"
             }
         urlBuilder.addQueryParameter("depthLimit", limit)
+        urlBuilder.addQueryParameter("clientId", clientID)
         val request: Request =
             Request.Builder()
                 .url(urlBuilder.build())
@@ -309,6 +292,7 @@ class LionWebClient(
         val url = "http://$hostname:$port/bulk/retrieve"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("depthLimit", "0")
+        urlBuilder.addQueryParameter("clientId", clientID)
         val request: Request =
             Request.Builder()
                 .url(urlBuilder.build())
@@ -338,6 +322,7 @@ class LionWebClient(
         val url = "http://$hostname:$port/bulk/retrieve"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("depthLimit", "0")
+        urlBuilder.addQueryParameter("clientId", clientID)
         val request: Request =
             Request.Builder()
                 .url(urlBuilder.build())
@@ -546,6 +531,7 @@ class LionWebClient(
     fun nodesByClassifier(limit: Int? = null): Map<ClassifierKey, ClassifierResult> {
         val url = "http://$hostname:$port/inspection/nodesByClassifier"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
+        urlBuilder.addQueryParameter("clientId", clientID)
         if (limit != null) {
             urlBuilder.addQueryParameter("limit", limit.toString())
         }
@@ -596,12 +582,17 @@ class LionWebClient(
 
     // Additional APIs
 
+    fun nodeTree(nodeID: String, depthLimit: Int? = null) {
+        return nodeTree(listOf(nodeID), depthLimit = depthLimit)
+    }
+
     fun nodeTree(nodeIDs: List<String>, depthLimit: Int? = null) {
         val url = "http://$hostname:$port/additional/getNodeTree"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         if (depthLimit != null) {
             urlBuilder.addQueryParameter("depthLimit", depthLimit.toString())
         }
+        urlBuilder.addQueryParameter("clientId", clientID)
         val ids = JsonArray()
         nodeIDs.forEach { ids.add(it) }
         val idsJson = Gson().toJson(ids)
@@ -609,15 +600,6 @@ class LionWebClient(
             .url(urlBuilder.build())
             .considerAuthenticationToken()
             .method("POST", idsJson.toRequestBody(JSON))
-
-//        val field: Field = Request.Builder::class.java.getField("method")
-//        field.setAccessible(true)
-//        field.set(builder, "GET")
-        println(Request.Builder::class.java.methods.map { it.name }.joinToString(", "))
-        val method = Request.Builder::class.java.methods.find { it.name == "setMethod${'$'}okhttp" }!!
-        method.setAccessible(true)
-        method.invoke(builder, "GET")
-
 
         val request: Request =
             builder
@@ -695,7 +677,7 @@ class LionWebClient(
         val url = "http://$hostname:$port/bulk/$operation"
         val request: Request =
             Request.Builder()
-                .url(url)
+                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
                 .considerAuthenticationToken()
                 .addHeader("Content-Encoding", "gzip")
                 .post(body)

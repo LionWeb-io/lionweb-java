@@ -52,6 +52,7 @@ class PropertiesFunctionalTest {
             GenericContainer(
                 ImageFromDockerfile()
                     .withFileFromClasspath("Dockerfile", "lionweb-repository-Dockerfile")
+                    .withFileFromClasspath("config-gen.py", "config-gen.py")
                     .withBuildArg("lionwebRepositoryCommitId", FunctionalTestBuildConfig.LIONWEB_REPOSITORY_COMMIT_ID),
             )
                 .dependsOn(db)
@@ -59,6 +60,7 @@ class PropertiesFunctionalTest {
                 .withEnv("PGHOST", "mypgdb")
                 .withEnv("PGPORT", DB_CONTAINER_PORT.toString())
                 .withEnv("PGUSER", "postgres")
+                .withEnv("PGPASSWORD", "")
                 .withEnv("PGDB", "lionweb_test")
                 .withExposedPorts(3005).apply {
                     this.logConsumers =
@@ -75,10 +77,10 @@ class PropertiesFunctionalTest {
 
         // Initialization may change in the future (see https://github.com/LionWeb-io/lionweb-repository/issues/61)
         val client = LionWebClient(port = modelRepository!!.firstMappedPort)
-        // We need to create the database
-        client.createDatabase()
-        // We then need to create a default database
-        client.createRepository(history = false)
+//        // We need to create the database
+//        client.createDatabase()
+//        // We then need to create a default database
+//        client.createRepository(history = false)
     }
 
     @AfterTest
@@ -271,5 +273,38 @@ class PropertiesFunctionalTest {
         assertEquals(null, prop3retrievedWithoutProxyParent.parent)
         val prop3retrievedWithProxyParent = client.retrieve("prop3", withProxyParent = true)
         assertEquals("pf1", prop3retrievedWithProxyParent.parent.id)
+    }
+
+    @Test
+    fun getNodeTree() {
+        val client = LionWebClient(port = modelRepository!!.firstMappedPort)
+        client.registerLanguage(propertiesLanguage)
+
+        val pp1 = propertiesPartition.dynamicNode("pp1")
+        client.createPartition(pp1)
+
+        val pf =
+            propertiesFile.dynamicNode("pf1").apply {
+                parent = pp1
+            }
+        val prop1 =
+            property.dynamicNode("prop1").apply {
+                setPropertyValueByName("name", "Prop1")
+                pf.addChild(pf.classifier.getContainmentByName("properties")!!, this)
+            }
+        val prop2 =
+            property.dynamicNode("prop2").apply {
+                setPropertyValueByName("name", "Prop2")
+                pf.addChild(pf.classifier.getContainmentByName("properties")!!, this)
+            }
+        val prop3 =
+            property.dynamicNode("prop3").apply {
+                setPropertyValueByName("name", "Prop3")
+                pf.addChild(pf.classifier.getContainmentByName("properties")!!, this)
+            }
+        client.storeTree(pf)
+
+        val nodeTree1 = client.nodeTree("pf1")
+        val nodeTree2 = client.nodeTree(listOf("pp1","prop1"))
     }
 }
