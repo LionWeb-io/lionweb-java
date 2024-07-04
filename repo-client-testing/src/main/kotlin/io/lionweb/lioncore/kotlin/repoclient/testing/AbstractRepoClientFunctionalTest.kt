@@ -45,7 +45,7 @@ abstract class AbstractRepoClientFunctionalTest {
         modelRepository =
             GenericContainer(
                 ImageFromDockerfile()
-                    .withFileFromClasspath("Dockerfile", "lionweb-repository-Dockerfile")
+                    .withFileFromClasspath("Dockerfile", "repoclienttesting-lionweb-repository-Dockerfile")
                     .withFileFromClasspath("config-gen.py", "config-gen.py")
                     .withBuildArg(
                         "lionwebRepositoryCommitId",
@@ -57,7 +57,7 @@ abstract class AbstractRepoClientFunctionalTest {
                 .withEnv("PGHOST", "mypgdb")
                 .withEnv("PGPORT", DB_CONTAINER_PORT.toString())
                 .withEnv("PGUSER", "postgres")
-                .withEnv("PGPASSWORD", "")
+                .withEnv("PGPASSWORD", "lionweb")
                 .withEnv("PGDB", "lionweb_test")
                 .withExposedPorts(3005).apply {
                     this.logConsumers =
