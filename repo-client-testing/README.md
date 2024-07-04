@@ -1,0 +1,1 @@
+This module contains facility for testing connections to the LionWeb Repository, as it requires non trivial configuration.

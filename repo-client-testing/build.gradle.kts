@@ -46,38 +46,13 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
-}
-
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-            dependencies {
-                implementation(project())
-                implementation(project(":core"))
-                implementation(project(":repo-client-testing"))
-                implementation(libs.lwjavacore)
-                implementation(libs.ktestjunit)
-                implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
-                implementation("io.kotest:kotest-assertions-core:5.8.0")
-                implementation("io.kotest:kotest-property:5.8.0")
-                implementation("org.testcontainers:testcontainers:1.19.5")
-                implementation("org.testcontainers:junit-jupiter:1.19.5")
-                implementation("org.testcontainers:postgresql:1.19.5")
-            }
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
-        }
-    }
+    implementation(libs.ktestjunit)
+    implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
+    implementation("io.kotest:kotest-assertions-core:5.8.0")
+    implementation("io.kotest:kotest-property:5.8.0")
+    implementation("org.testcontainers:testcontainers:1.19.5")
+    implementation("org.testcontainers:junit-jupiter:1.19.5")
+    implementation("org.testcontainers:postgresql:1.19.5")
 }
 
 val specsVersion: String by project
@@ -155,8 +130,8 @@ tasks.withType<Test>().configureEach {
 val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
 
 buildConfig {
-    sourceSets.getByName("functionalTest") {
-        packageName("io.lionweb.lioncore.kotlin.repoclient")
+    sourceSets.getByName("main") {
+        packageName("io.lionweb.lioncore.kotlin.repoclient.testing")
         buildConfigField("String", "LIONWEB_REPOSITORY_COMMIT_ID", "\"${lionwebRepositoryCommitID}\"")
         useKotlinOutput()
     }
