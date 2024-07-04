@@ -7,11 +7,6 @@ RUN git checkout ${lionwebRepositoryCommitId}
 RUN npm install
 RUN npm run build
 RUN echo "cd packages/server" >> run.sh
-RUN echo "echo \"CIAO\"" >> run.sh
-RUN echo "ls" >> run.sh
 RUN echo "python config-gen.py" >> run.sh
-RUN echo "ls" >> run.sh
-RUN echo "cat server-config.json" >> run.sh
-RUN echo "ls" >> run.sh
 RUN echo "npm run dev" >> run.sh
 CMD ["sh", "run.sh"]

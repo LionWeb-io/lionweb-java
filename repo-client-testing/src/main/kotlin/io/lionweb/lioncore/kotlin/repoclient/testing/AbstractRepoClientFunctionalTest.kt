@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.kotlin.repoclient.testing
 
+import io.lionweb.lioncore.java.model.Node
+import io.lionweb.lioncore.java.utils.ModelComparator
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
@@ -13,7 +15,7 @@ import kotlin.test.BeforeTest
 private const val DB_CONTAINER_PORT = 5432
 
 @Testcontainers
-abstract class AbstractRepoClientFunctionalTest {
+abstract class AbstractRepoClientFunctionalTest(val modelRepoDebug: Boolean = true) {
     @JvmField
     var db: PostgreSQLContainer<*>? = null
 
@@ -64,17 +66,33 @@ abstract class AbstractRepoClientFunctionalTest {
                         listOf(
                             object : Consumer<OutputFrame> {
                                 override fun accept(t: OutputFrame) {
-                                    println("MODEL REPO: ${t.utf8String.trimEnd()}")
+                                    if (modelRepoDebug) {
+                                        println("MODEL REPO: ${t.utf8String.trimEnd()}")
+                                    }
                                 }
                             },
                         )
                 }
         modelRepository!!.withCommand()
         modelRepository!!.start()
+        System.setProperty("MODEL_REPO_PORT", modelRepoPort.toString())
     }
 
     @AfterTest
     fun teardown() {
         modelRepository!!.stop()
+    }
+
+    val modelRepoPort: Int
+        get() = modelRepository!!.getMappedPort(3005)
+
+    fun assertLWTreesAreEqual(
+        a: Node,
+        b: Node,
+    ) {
+        val comparison = ModelComparator().compare(a, b)
+        assert(comparison.areEquivalent()) {
+            "Differences between $a and $b: $comparison"
+        }
     }
 }
