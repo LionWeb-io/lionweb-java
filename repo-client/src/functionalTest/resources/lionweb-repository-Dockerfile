@@ -1,12 +1,12 @@
-FROM node
+FROM nikolaik/python-nodejs:python3.12-nodejs22
 ARG lionwebRepositoryCommitId=xxxxxx
 RUN git clone https://github.com/LionWeb-io/lionweb-repository.git
+ADD config-gen.py lionweb-repository/packages/server
 WORKDIR lionweb-repository
 RUN git checkout ${lionwebRepositoryCommitId}
 RUN npm install
 RUN npm run build
-RUN echo "npm run database create" > run.sh
-RUN echo "npm run database init" >> run.sh
 RUN echo "cd packages/server" >> run.sh
+RUN echo "python config-gen.py" >> run.sh
 RUN echo "npm run dev" >> run.sh
 CMD ["sh", "run.sh"]
