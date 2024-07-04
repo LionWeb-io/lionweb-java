@@ -1,14 +1,14 @@
 package io.lionweb.lioncore.kotlin.repoclient.testing
 
-import java.util.function.Consumer
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
 import org.testcontainers.containers.PostgreSQLContainer
 import org.testcontainers.containers.output.OutputFrame
 import org.testcontainers.images.builder.ImageFromDockerfile
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.util.function.Consumer
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 
 private const val DB_CONTAINER_PORT = 5432
 
@@ -49,7 +49,7 @@ abstract class AbstractRepoClientFunctionalTest {
                     .withFileFromClasspath("config-gen.py", "config-gen.py")
                     .withBuildArg(
                         "lionwebRepositoryCommitId",
-                        BuildConfig.LIONWEB_REPOSITORY_COMMIT_ID
+                        BuildConfig.LIONWEB_REPOSITORY_COMMIT_ID,
                     ),
             )
                 .dependsOn(db)
@@ -77,5 +77,4 @@ abstract class AbstractRepoClientFunctionalTest {
     fun teardown() {
         modelRepository!!.stop()
     }
-
 }

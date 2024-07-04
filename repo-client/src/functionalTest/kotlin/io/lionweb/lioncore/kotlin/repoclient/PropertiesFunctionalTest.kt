@@ -3,14 +3,13 @@ package io.lionweb.lioncore.kotlin.repoclient
 import io.lionweb.lioncore.kotlin.dynamicNode
 import io.lionweb.lioncore.kotlin.repoclient.testing.AbstractRepoClientFunctionalTest
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.junit.jupiter.Testcontainers
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 @Testcontainers
 class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
-
     @Test
     fun noPartitionsOnNewModelRepository() {
         val client = LionWebClient(port = modelRepository!!.firstMappedPort)
