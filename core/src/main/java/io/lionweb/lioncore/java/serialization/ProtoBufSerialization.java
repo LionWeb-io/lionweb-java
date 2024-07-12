@@ -63,13 +63,18 @@ public class ProtoBufSerialization {
                         .setVersion(n.getClassifier().getVersion())
                         .setLanguage(n.getClassifier().getLanguage())
                     .build());
-            nodeBuilder.setParent(n.getParentNodeID());
+            if (n.getParentNodeID() != null) {
+                nodeBuilder.setParent(n.getParentNodeID());
+            }
             //TODO n.getAnnotations()
-            n.getProperties().forEach(p ->
-                    nodeBuilder.addProperties(Property.newBuilder()
-                                    .setValue(p.getValue())
-                                    .setMetaPointerIndex(metaPointerIndexer.apply(p.getMetaPointer()))
-                            .build())
+            n.getProperties().forEach(p -> {
+                        Property.Builder b = Property.newBuilder();
+                        if (p.getValue() != null) {
+                            b.setValue(p.getValue());
+                        }
+                        b.setMetaPointerIndex(metaPointerIndexer.apply(p.getMetaPointer()));
+                        nodeBuilder.addProperties(b.build());
+                    }
                     );
             n.getContainments().forEach(p ->
                     nodeBuilder.addContainments(Containment.newBuilder()
@@ -79,10 +84,15 @@ public class ProtoBufSerialization {
             );
             n.getReferences().forEach(p ->
                     nodeBuilder.addReferences(Reference.newBuilder()
-                                    .addAllValues(p.getValue().stream().map(rf -> ReferenceValue.newBuilder()
-                                            .setReferred(rf.getReference())
-                                            .setResolveInfo(rf.getResolveInfo())
-                                            .build()).collect(Collectors.toList()))
+                                    .addAllValues(p.getValue().stream().map(rf ->{ ReferenceValue.Builder b = ReferenceValue.newBuilder();
+                                        if (rf.getReference() != null) {
+                                            b.setReferred(rf.getReference());
+                                        }
+                                        if (rf.getResolveInfo() != null) {
+                                            b.setResolveInfo(rf.getResolveInfo());
+                                        }
+                                            return b.build();
+                                    }).collect(Collectors.toList()))
                             .setMetaPointerIndex(metaPointerIndexer.apply(p.getMetaPointer()))
                             .build())
             );
