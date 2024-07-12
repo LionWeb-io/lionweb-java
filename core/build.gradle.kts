@@ -200,3 +200,7 @@ protobuf {
         }
     }
 }
+
+tasks {
+    getByName("sourcesJar").dependsOn("generateProto")
+}
