@@ -1,0 +1,75 @@
+syntax = "proto3";
+
+package io.lionweb.lioncore.protobuf;
+
+option java_multiple_files = true;
+option java_package = "io.lionweb.lioncore.protobuf";
+option java_outer_classname = "ChunkProtos";
+
+message Chunk {
+  string serializationFormatVersion = 1;
+  repeated Language languages = 2;
+  repeated Node nodes = 3;
+  repeated MetaPointerDef metaPointerDefs = 4;
+}
+
+message MetaPointerDef {
+  string language = 1;
+  string version = 2;
+  string key = 3;
+  uint32 index = 4;
+}
+
+message Language {
+  string key = 1;
+  string version = 2;
+}
+
+message Node {
+  string id = 1;
+  Classifier classifier = 2;
+  repeated Property properties = 3;
+  repeated Containment containments = 4;
+  repeated Reference references = 5;
+  repeated Annotation annotations = 6;
+  /*optinal*/ string parent = 7;
+}
+
+message Classifier {
+  string language = 1;
+  string version = 2;
+  string key = 3;
+}
+
+message MetaPointer {
+  string language = 1;
+  string version = 2;
+  string key = 3;
+}
+
+message Property {
+  // MetaPointer metapointer = 1;
+  uint32 metaPointerIndex = 1;
+  /*optinal*/ string value = 2;
+}
+
+message Containment {
+  //MetaPointer metapointer = 1;
+  uint32 metaPointerIndex = 1;
+  repeated string children = 2;
+}
+
+message Reference {
+  //MetaPointer metapointer = 1;
+  uint32 metaPointerIndex = 1;
+  repeated ReferenceValue values = 2;
+}
+
+message Annotation {
+
+}
+
+message ReferenceValue {
+  /*optinal*/ string resolveInfo = 1;
+  /*optinal*/ string referred = 2;
+}

@@ -7,6 +7,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.1"
     id("com.vanniktech.maven.publish")
     jacoco
+    id("com.google.protobuf") version "0.9.4"
 }
 
 repositories {
@@ -185,4 +186,15 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+protobuf {
+    protoc {
+        // The artifact spec for the Protobuf Compiler
+        artifact = "com.google.protobuf:protoc:3.6.1"
+    }
+    generateProtoTasks {
+        ofSourceSet("main").forEach {
+        }
+    }
 }
