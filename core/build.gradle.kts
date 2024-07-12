@@ -47,6 +47,8 @@ dependencies {
     implementation(libs.gson)
 
     implementation("com.networknt:json-schema-validator:1.0.77")
+
+    implementation("com.google.protobuf:protobuf-java:3.6.1")
 }
 
 tasks.register<Javadoc>("myJavadoc") {
