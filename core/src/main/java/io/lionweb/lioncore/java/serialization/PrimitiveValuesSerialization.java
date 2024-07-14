@@ -137,6 +137,9 @@ public class PrimitiveValuesSerialization {
       if (enumerationLiteral.isPresent()) {
         return new EnumerationValueImpl(enumerationLiteral.get());
       } else {
+        if (serializedValue.equals("")) {
+          return null;
+        }
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
     } else {
