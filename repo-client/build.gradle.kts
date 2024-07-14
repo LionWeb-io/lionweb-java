@@ -46,6 +46,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
+    implementation("com.google.protobuf:protobuf-java:3.6.1")
 }
 
 testing {

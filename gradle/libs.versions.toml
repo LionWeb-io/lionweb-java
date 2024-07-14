@@ -16,7 +16,7 @@ annotations = { group = "org.jetbrains", name="annotations", version="24.0.0" }
 junit = { group = "junit", name="junit", version="4.13" }
 kotlinreflect = { group = "org.jetbrains.kotlin", name="kotlin-reflect", version.ref = "kotlinVersion" }
 ktestjunit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlinVersion" }
-lwjavacore = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2023.1-core", version = "0.2.17"}
+lwjavacore = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2023.1-core", version = "0.2.18-SNAPSHOT"}
 
 emfcommon = { group = "org.eclipse.emf", name="org.eclipse.emf.common", version="2.28.0" }
 ecore = { group = "org.eclipse.emf", name="org.eclipse.emf.ecore", version="2.33.0" }
