@@ -7,72 +7,74 @@ option java_package = "io.lionweb.lioncore.protobuf";
 option java_outer_classname = "ChunkProtos";
 
 message BulkImport {
-  repeated MetaPointerDef metaPointerDefs = 1;
+  repeated MetaPointer metaPointerDefs = 1;
   repeated BulkImportElement elements = 2;
 }
 
 message BulkImportElement {
   string container = 1;
-  uint32 metaPointerIndex = 2;
+  int32 metaPointerIndex = 2;
   repeated Node tree = 3;
 }
 
 message Chunk {
   string serializationFormatVersion = 1;
-  repeated Language languages = 2;
-  repeated Node nodes = 3;
-  repeated MetaPointerDef metaPointerDefs = 4;
+  // We use this mechanism both to save space and to represent nulls (identified by -1)
+  repeated string stringValues = 2;
+  repeated MetaPointer metaPointers= 3;
+  repeated Language languages = 4;
+  repeated Node nodes = 5;
+
 }
 
-message MetaPointerDef {
-  string language = 1;
-  string version = 2;
-  string key = 3;
-  uint32 index = 4;
-}
+/*message MetaPointerDef {
+  int32 language = 1;
+  int32 version = 2;
+  int32 key = 3;
+}*/
 
 message Language {
-  string key = 1;
-  string version = 2;
+  int32 key = 1;
+  int32 version = 2;
 }
 
 message Node {
-  string id = 1;
-  Classifier classifier = 2;
+  int32 id = 1;
+  int32 classifier = 2;
   repeated Property properties = 3;
   repeated Containment containments = 4;
   repeated Reference references = 5;
   repeated Annotation annotations = 6;
-  /*optinal*/ string parent = 7;
+  /*optinal*/ int32 parent = 7;
 }
 
-message Classifier {
+/*message Classifier {
   string language = 1;
   string version = 2;
   string key = 3;
-}
+}*/
 
 message MetaPointer {
-  string language = 1;
-  string version = 2;
-  string key = 3;
+  int32 language = 1;
+  int32 version = 2;
+  int32 key = 3;
 }
 
 message Property {
   // MetaPointer metapointer = 1;
-  uint32 metaPointerIndex = 1;
-  /*optinal*/ string value = 2;
+  int32 metaPointerIndex = 1;
+  /*optional*/ int32 value = 2;
 }
 
 message Containment {
   //MetaPointer metapointer = 1;
-  uint32 metaPointerIndex = 1;
-  repeated string children = 2;
+  int32 metaPointerIndex = 1;
+  repeated int32 children = 2;
 }
 
 message Reference {
   //MetaPointer metapointer = 1;
-  uint32 metaPointerIndex = 1;
+  int32 metaPointerIndex = 1;
   repeated ReferenceValue values = 2;
 }
 
@@ -81,6 +83,6 @@ message Annotation {
 }
 
 message ReferenceValue {
-  /*optinal*/ string resolveInfo = 1;
-  /*optinal*/ string referred = 2;
+  /*optional*/ int32 resolveInfo = 1;
+  /*optional*/ int32 referred = 2;
 }

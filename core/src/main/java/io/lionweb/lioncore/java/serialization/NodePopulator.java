@@ -17,15 +17,15 @@ import java.util.stream.Collectors;
  * deserializing it.
  */
 class NodePopulator {
-  private final JsonSerialization jsonSerialization;
+  private final AbstractSerialization serialization;
   private final ClassifierInstanceResolver classifierInstanceResolver;
   private final DeserializationStatus deserializationStatus;
 
   NodePopulator(
-      JsonSerialization jsonSerialization,
+      AbstractSerialization serialization,
       ClassifierInstanceResolver classifierInstanceResolver,
       DeserializationStatus deserializationStatus) {
-    this.jsonSerialization = jsonSerialization;
+    this.serialization = serialization;
     this.classifierInstanceResolver = classifierInstanceResolver;
     this.deserializationStatus = deserializationStatus;
   }
@@ -58,7 +58,7 @@ class NodePopulator {
                   serializedContainmentValue.getValue().stream()
                       .map(
                           childNodeID -> {
-                            if (jsonSerialization.getUnavailableChildrenPolicy()
+                            if (serialization.getUnavailableChildrenPolicy()
                                 == UnavailableNodePolicy.PROXY_NODES) {
                               return classifierInstanceResolver.resolveOrProxy(childNodeID);
                             } else {
@@ -98,7 +98,7 @@ class NodePopulator {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          switch (jsonSerialization.getUnavailableReferenceTargetPolicy()) {
+                          switch (serialization.getUnavailableReferenceTargetPolicy()) {
                             case NULL_REFERENCES:
                               referred = null;
                               break;

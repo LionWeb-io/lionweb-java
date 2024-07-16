@@ -22,13 +22,13 @@ class DeserializationStatus {
   final List<SerializedClassifierInstance> sortedList;
   final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
-  private final JsonSerialization jsonSerialization;
+  private final AbstractSerialization serialization;
 
   DeserializationStatus(
-      JsonSerialization jsonSerialization, List<SerializedClassifierInstance> originalList) {
+          AbstractSerialization serialization, List<SerializedClassifierInstance> originalList) {
     sortedList = new ArrayList<>();
     nodesToSort = new ArrayList<>(originalList);
-    this.jsonSerialization = jsonSerialization;
+    this.serialization = serialization;
   }
 
   void putNodesWithNullIDsInFront() {
@@ -74,7 +74,7 @@ class DeserializationStatus {
     if (nodeID == null) {
       return null;
     }
-    ClassifierInstance<?> resolved = jsonSerialization.getInstanceResolver().resolve(nodeID);
+    ClassifierInstance<?> resolved = serialization.getInstanceResolver().resolve(nodeID);
     if (resolved == null) {
       return createProxy(nodeID);
     } else if (resolved instanceof Node) {
@@ -92,7 +92,7 @@ class DeserializationStatus {
   @Nonnull
   ProxyNode createProxy(@Nonnull String nodeID) {
     Objects.requireNonNull(nodeID, "nodeID should not be null");
-    ProxyNode proxyNode = this.jsonSerialization.createProxy(nodeID);
+    ProxyNode proxyNode = this.serialization.createProxy(nodeID);
     proxies.add(proxyNode);
     return proxyNode;
   }
