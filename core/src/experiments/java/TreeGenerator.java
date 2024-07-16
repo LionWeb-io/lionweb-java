@@ -37,14 +37,14 @@ public class TreeGenerator {
 
     private String randomString() {
         String s = "";
-        if (generatedStrings.size() > 0 && random.nextFloat() < 0.7) {
+        if (generatedStrings.size() > 0 && random.nextFloat() < 0.85) {
             // We want to skew towards some strings
             int index = random.nextInt(generatedStrings.size());
             index = Math.min(index, random.nextInt(generatedStrings.size()));
             index = Math.min(index, random.nextInt(generatedStrings.size()));
             return generatedStrings.get(index);
         } else {
-            for (int i = 0; i < random.nextInt(50); i++) {
+            for (int i = 0; i < random.nextInt(25); i++) {
                 s += CHARS.charAt(random.nextInt(CHARS.length()));
             }
             generatedStrings.add(s);

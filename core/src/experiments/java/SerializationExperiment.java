@@ -69,12 +69,12 @@ public class SerializationExperiment {
         System.out.println("= JSON serialization (with compression) =");
         long ct0 = System.currentTimeMillis();
         JsonSerialization jsonSerializationCompress = JsonSerialization.getStandardSerialization();
-        jsonSerialization.enableDynamicNodes();
+        jsonSerializationCompress.enableDynamicNodes();
         byte[] compressed = compress(jsonSerializationCompress.serializeTreesToJsonString(tree));
         long ct1 = System.currentTimeMillis();
         System.out.println("  serialized in " + (ct1 - ct0) + "ms");
         System.out.println("  size " + compressed.length + " bytes");
-        Node cUnserializedTree = jsonSerialization.deserializeToNodes(decompress(compressed)).get(0);
+        Node cUnserializedTree = jsonSerializationCompress.deserializeToNodes(decompress(compressed)).get(0);
         long ct2 = System.currentTimeMillis();
         System.out.println("  unserialized in " + (ct2 - ct1) + "ms");
         assertInstancesAreEquals(tree, cUnserializedTree);
@@ -92,13 +92,25 @@ public class SerializationExperiment {
         System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
         assertInstancesAreEquals(tree, pUnserializedTree);
 
-        System.out.println("= Comparison =");
-        double serializationTimeRatio = ((double)(pt1 - pt0) * 100)/(jt1 - jt0);
-        double deserializationTimeRatio = ((double)(pt2 - pt1) * 100)/(jt2 - jt1);
-        double sizeRatio = ((double)(bytes.length) * 100)/(json.getBytes().length);
-        System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio)  + "%");
-        System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio)  + "%");
-        System.out.println("  size: " + String.format("%.2f", sizeRatio)  + "%");
+        System.out.println("= Comparison (protobuf against uncompressed JSON)=");
+        {
+            double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (jt1 - jt0);
+            double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (jt2 - jt1);
+            double sizeRatio = ((double) (bytes.length) * 100) / (json.getBytes().length);
+            System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
+            System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
+            System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
+        }
+
+        System.out.println("= Comparison (protobuf against compressed JSON)=");
+        {
+            double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (ct1 - ct0);
+            double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (ct2 - ct1);
+            double sizeRatio = ((double) (bytes.length) * 100) / (compressed.length);
+            System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
+            System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
+            System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
+        }
     }
 
     private static void assertInstancesAreEquals(ClassifierInstance<?> a, ClassifierInstance<?> b) {
