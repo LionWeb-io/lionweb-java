@@ -206,3 +206,11 @@ protobuf {
 tasks {
     getByName("sourcesJar").dependsOn("generateProto")
 }
+
+sourceSets {
+    create("experiments") {
+        dependencies {
+            project(":")
+        }
+    }
+}
