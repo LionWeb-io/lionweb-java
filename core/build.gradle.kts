@@ -209,8 +209,13 @@ tasks {
 
 sourceSets {
     create("experiments") {
+        compileClasspath += sourceSets.main.get().output
+        compileClasspath += sourceSets.main.get().compileClasspath
+        runtimeClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().runtimeClasspath
         dependencies {
-            project(":")
+            implementation(libs.gson)
+            implementation("com.google.guava:guava:33.0.0-jre")
         }
     }
 }
