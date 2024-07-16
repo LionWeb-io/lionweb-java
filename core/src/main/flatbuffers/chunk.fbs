@@ -1,0 +1,58 @@
+// Example IDL file for our monster's schema.
+
+namespace io.lionweb.lioncore.java.serialization.flatbuffers;
+
+table FBChunk {
+    serializationFormatVersion: string;
+    stringValues:[string];
+    metapointers:[FBMetaPointer];
+    languages:[FBLanguage];
+    nodes:[FBNode];
+}
+
+table FBLanguage {
+    key:int32;
+    version:int32;
+}
+
+table FBMetaPointer {
+    language:int32;
+    key:int32;
+    version:int32;
+}
+
+table FBNode {
+    id:int32;
+    classifier:int32;
+    properties:[FBProperty];
+    containments:[FBContainment];
+    references:[FBReference];
+    annotations:[FBAnnotation];
+    parent:int32;
+}
+
+table FBProperty {
+  metaPointerIndex:int32;
+  value:int32;
+}
+
+table FBContainment {
+  metaPointerIndex:int32;
+  children:[int32];
+}
+
+table FBReference {
+  metaPointerIndex:int32;
+  values:[FBReferenceValue];
+}
+
+table FBAnnotation {
+
+}
+
+table FBReferenceValue {
+  resolveInfo:int32;
+  referred:int32;
+}
+
+root_type FBChunk;

@@ -49,6 +49,9 @@ dependencies {
     implementation("com.networknt:json-schema-validator:1.0.77")
 
     implementation("com.google.protobuf:protobuf-java:4.27.2")
+
+    implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
+
 }
 
 tasks.register<Javadoc>("myJavadoc") {
