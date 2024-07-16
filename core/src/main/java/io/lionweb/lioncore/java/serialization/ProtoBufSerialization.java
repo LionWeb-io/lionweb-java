@@ -112,7 +112,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                     SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
                     entry.setReference(stringsMap.get(rv.getReferred()));
                     entry.setResolveInfo(stringsMap.get(rv.getResolveInfo()));
-                    srv.getValue().add(entry);
+                    srv.addValue(entry);
                 });
                 srv.setMetaPointer(metapointersMap.get(r.getMetaPointerIndex()));
                 sci.addReferenceValue(srv);
