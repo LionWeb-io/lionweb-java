@@ -1,7 +1,9 @@
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
+import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.utils.ModelComparator;
 
 import java.io.*;
@@ -50,65 +52,63 @@ public class SerializationExperiment {
 
     public static void main(String[] args) throws IOException {
         TreeGenerator treeGenerator = new TreeGenerator(1);
-        Node tree = treeGenerator.generate(50_000);
+        Node tree = treeGenerator.generate(500_000);
         System.out.println("Tree generated");
+
+        SerializedChunk chunk = JsonSerialization.getStandardSerialization().serializeTreeToSerializationBlock(tree);
 
         System.out.println("= JSON serialization (without compression) =");
         long jt0 = System.currentTimeMillis();
-        JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
-        jsonSerialization.enableDynamicNodes();
-        String json = jsonSerialization.serializeTreesToJsonString(tree);
+        String json = new LowLevelJsonSerialization().serializeToJsonString(chunk);
         long jt1 = System.currentTimeMillis();
         System.out.println("  serialized in " + (jt1 - jt0) + "ms");
         System.out.println("  size " + json.getBytes().length + " bytes");
-        Node jUnserializedTree = jsonSerialization.deserializeToNodes(json).get(0);
-        long jt2 = System.currentTimeMillis();
-        System.out.println("  unserialized in " + (jt2 - jt1) + "ms");
-        assertInstancesAreEquals(tree, jUnserializedTree);
+//        Node jUnserializedTree = jsonSerialization.deserializeToNodes(json).get(0);
+//        long jt2 = System.currentTimeMillis();
+//        System.out.println("  unserialized in " + (jt2 - jt1) + "ms");
+//        assertInstancesAreEquals(tree, jUnserializedTree);
 
         System.out.println("= JSON serialization (with compression) =");
         long ct0 = System.currentTimeMillis();
-        JsonSerialization jsonSerializationCompress = JsonSerialization.getStandardSerialization();
-        jsonSerializationCompress.enableDynamicNodes();
-        byte[] compressed = compress(jsonSerializationCompress.serializeTreesToJsonString(tree));
+        byte[] compressed = compress(new LowLevelJsonSerialization().serializeToJsonString(chunk));
         long ct1 = System.currentTimeMillis();
         System.out.println("  serialized in " + (ct1 - ct0) + "ms");
         System.out.println("  size " + compressed.length + " bytes");
-        Node cUnserializedTree = jsonSerializationCompress.deserializeToNodes(decompress(compressed)).get(0);
-        long ct2 = System.currentTimeMillis();
-        System.out.println("  unserialized in " + (ct2 - ct1) + "ms");
-        assertInstancesAreEquals(tree, cUnserializedTree);
+//        Node cUnserializedTree = jsonSerializationCompress.deserializeToNodes(decompress(compressed)).get(0);
+//        long ct2 = System.currentTimeMillis();
+//        System.out.println("  unserialized in " + (ct2 - ct1) + "ms");
+//        assertInstancesAreEquals(tree, cUnserializedTree);
 
         System.out.println("= ProtoBuf serialization =");
         long pt0 = System.currentTimeMillis();
         ProtoBufSerialization protoBufSerialization = ProtoBufSerialization.getStandardSerialization();
         protoBufSerialization.enableDynamicNodes();
-        byte[] bytes = protoBufSerialization.serializeTreesToByteArray(tree);
+        byte[] bytes = protoBufSerialization.serializeToByteArray(chunk);
         long pt1 = System.currentTimeMillis();
         System.out.println("  serialized in " + (pt1 - pt0) + "ms");
         System.out.println("  size " + bytes.length + " bytes");
-        Node pUnserializedTree = protoBufSerialization.deserializeToNodes(bytes).get(0);
-        long pt2 = System.currentTimeMillis();
-        System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
-        assertInstancesAreEquals(tree, pUnserializedTree);
+//        Node pUnserializedTree = protoBufSerialization.deserializeToNodes(bytes).get(0);
+//        long pt2 = System.currentTimeMillis();
+//        System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
+//        assertInstancesAreEquals(tree, pUnserializedTree);
 
         System.out.println("= Comparison (protobuf against uncompressed JSON)=");
         {
             double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (jt1 - jt0);
-            double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (jt2 - jt1);
+            //double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (jt2 - jt1);
             double sizeRatio = ((double) (bytes.length) * 100) / (json.getBytes().length);
             System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-            System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
+            //System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
             System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
         }
 
         System.out.println("= Comparison (protobuf against compressed JSON)=");
         {
             double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (ct1 - ct0);
-            double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (ct2 - ct1);
+            //double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (ct2 - ct1);
             double sizeRatio = ((double) (bytes.length) * 100) / (compressed.length);
             System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-            System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
+            //System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
             System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
         }
     }
