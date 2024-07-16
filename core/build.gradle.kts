@@ -48,7 +48,7 @@ dependencies {
 
     implementation("com.networknt:json-schema-validator:1.0.77")
 
-    implementation("com.google.protobuf:protobuf-java:3.6.1")
+    implementation("com.google.protobuf:protobuf-java:4.27.2")
 }
 
 tasks.register<Javadoc>("myJavadoc") {
@@ -192,8 +192,10 @@ tasks.jacocoTestReport {
 
 protobuf {
     protoc {
-        // The artifact spec for the Protobuf Compiler
-        artifact = "com.google.protobuf:protoc:3.6.1"
+        protoc {
+            // Apple Silicon processor would look for an unexisting platform-specific variant
+            artifact = "com.google.protobuf:protoc:4.27.2" + if (osdetector.os == "osx") ":osx-x86_64" else ""
+        }
     }
     generateProtoTasks {
         ofSourceSet("main").forEach {
