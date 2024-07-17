@@ -60,12 +60,12 @@ public class Sum extends SimpleNode {
     return super.concreteGetChildren(containment);
   }
 
-//  @Override
-//  public void addChild(Containment containment, Node child) {
-//    if (containment.getName().equals("right")){
-//      right = (IntLiteral) child;
-//    } else {
-//      throw new IllegalArgumentException();
-//    }
-//  }
+  //  @Override
+  //  public void addChild(Containment containment, Node child) {
+  //    if (containment.getName().equals("right")){
+  //      right = (IntLiteral) child;
+  //    } else {
+  //      throw new IllegalArgumentException();
+  //    }
+  //  }
 }

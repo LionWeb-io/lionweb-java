@@ -240,12 +240,12 @@ public class ClassifierInstanceUtils {
     }
   }
 
-    public static void addChild(@Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName,
-                                @Nonnull Node child) {
-      Objects.requireNonNull(_this, "_this should not be null");
-      Objects.requireNonNull(containmentName, "containmentName should not be null");
-      Objects.requireNonNull(child, "child should not be null");
-      Containment containment = _this.getClassifier().getContainmentByName(containmentName);
-      _this.addChild(containment, child);
-    }
+  public static void addChild(
+      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName, @Nonnull Node child) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(containmentName, "containmentName should not be null");
+    Objects.requireNonNull(child, "child should not be null");
+    Containment containment = _this.getClassifier().getContainmentByName(containmentName);
+    _this.addChild(containment, child);
+  }
 }

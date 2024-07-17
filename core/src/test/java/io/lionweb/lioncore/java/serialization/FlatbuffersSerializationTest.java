@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
+import static org.junit.Assert.*;
+
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
@@ -14,15 +16,12 @@ import io.lionweb.lioncore.java.serialization.refsmm.RefsLanguage;
 import io.lionweb.lioncore.java.serialization.simplemath.IntLiteral;
 import io.lionweb.lioncore.java.serialization.simplemath.SimpleMathLanguage;
 import io.lionweb.lioncore.java.serialization.simplemath.Sum;
-import org.junit.Assert;
-import org.junit.Test;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.*;
+import org.junit.Assert;
+import org.junit.Test;
 
 /** Testing various functionalities of FlatBuffersSerialization. */
 public class FlatbuffersSerializationTest extends SerializationTest {
@@ -126,7 +125,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     IntLiteral il2 = new IntLiteral(2, null);
     Sum sum1 = new Sum(il1, il2, null);
     FlatBuffersSerialization serialization = FlatBuffersSerialization.getStandardSerialization();
-      byte[] serialized = serialization.serializeNodesToByteArray(sum1, il1, il2);
+    byte[] serialized = serialization.serializeNodesToByteArray(sum1, il1, il2);
     prepareDeserializationOfSimpleMath(serialization);
     List<Node> deserialized = serialization.deserializeToNodes(serialized);
     assertEquals(Arrays.asList(sum1, il1, il2), deserialized);
@@ -194,23 +193,22 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     prepareDeserializationOfRefMM(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
   }
-//
-//  @Test(expected = DeserializationException.class)
-//  public void deserializeTreeWithoutRoot() {
-//    FlatBuffersSerialization js = FlatBuffersSerialization.getStandardSerialization();
-//    List<Node> nodes =
-//        js.deserializeToNodes(
-//            this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
-//  }
-//
+  //
+  //  @Test(expected = DeserializationException.class)
+  //  public void deserializeTreeWithoutRoot() {
+  //    FlatBuffersSerialization js = FlatBuffersSerialization.getStandardSerialization();
+  //    List<Node> nodes =
+  //        js.deserializeToNodes(
+  //            this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
+  //  }
+  //
 
-//
-//  enum MyEnum {
-//    el1,
-//    el2
-//  }
-//
-
+  //
+  //  enum MyEnum {
+  //    el1,
+  //    el2
+  //  }
+  //
 
   @Test
   public void serializationOfLanguageVersionsWithImports() {
@@ -336,5 +334,4 @@ public class FlatbuffersSerializationTest extends SerializationTest {
                     entry.getKey().equals(language.getKey())
                         && entry.getVersion().equals(language.getVersion())));
   }
-
 }

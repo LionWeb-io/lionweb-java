@@ -133,8 +133,6 @@ mavenPublishing {
 }
 
 java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 val integrationTestSourceSet = sourceSets.create("integrationTest") {

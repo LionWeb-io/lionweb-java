@@ -25,7 +25,7 @@ class DeserializationStatus {
   private final AbstractSerialization serialization;
 
   DeserializationStatus(
-          AbstractSerialization serialization, List<SerializedClassifierInstance> originalList) {
+      AbstractSerialization serialization, List<SerializedClassifierInstance> originalList) {
     sortedList = new ArrayList<>();
     nodesToSort = new ArrayList<>(originalList);
     this.serialization = serialization;

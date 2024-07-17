@@ -3,59 +3,99 @@
 package io.lionweb.lioncore.java.serialization.flatbuffers;
 
 import com.google.flatbuffers.BaseVector;
-import com.google.flatbuffers.BooleanVector;
-import com.google.flatbuffers.ByteVector;
 import com.google.flatbuffers.Constants;
-import com.google.flatbuffers.DoubleVector;
 import com.google.flatbuffers.FlatBufferBuilder;
-import com.google.flatbuffers.FloatVector;
-import com.google.flatbuffers.IntVector;
-import com.google.flatbuffers.LongVector;
-import com.google.flatbuffers.ShortVector;
-import com.google.flatbuffers.StringVector;
-import com.google.flatbuffers.Struct;
 import com.google.flatbuffers.Table;
-import com.google.flatbuffers.UnionVector;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
 @SuppressWarnings("unused")
 public final class FBReferenceValue extends Table {
-  public static void ValidateVersion() { Constants.FLATBUFFERS_24_3_25(); }
-  public static FBReferenceValue getRootAsFBReferenceValue(ByteBuffer _bb) { return getRootAsFBReferenceValue(_bb, new FBReferenceValue()); }
-  public static FBReferenceValue getRootAsFBReferenceValue(ByteBuffer _bb, FBReferenceValue obj) { _bb.order(ByteOrder.LITTLE_ENDIAN); return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb)); }
-  public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
-  public FBReferenceValue __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
+  public static void ValidateVersion() {
+    Constants.FLATBUFFERS_24_3_25();
+  }
 
-  public String resolveInfo() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
-  public ByteBuffer resolveInfoAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
-  public ByteBuffer resolveInfoInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
-  public String referred() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
-  public ByteBuffer referredAsByteBuffer() { return __vector_as_bytebuffer(6, 1); }
-  public ByteBuffer referredInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 6, 1); }
+  public static FBReferenceValue getRootAsFBReferenceValue(ByteBuffer _bb) {
+    return getRootAsFBReferenceValue(_bb, new FBReferenceValue());
+  }
 
-  public static int createFBReferenceValue(FlatBufferBuilder builder,
-      int resolveInfoOffset,
-      int referredOffset) {
+  public static FBReferenceValue getRootAsFBReferenceValue(ByteBuffer _bb, FBReferenceValue obj) {
+    _bb.order(ByteOrder.LITTLE_ENDIAN);
+    return (obj.__assign(_bb.getInt(_bb.position()) + _bb.position(), _bb));
+  }
+
+  public void __init(int _i, ByteBuffer _bb) {
+    __reset(_i, _bb);
+  }
+
+  public FBReferenceValue __assign(int _i, ByteBuffer _bb) {
+    __init(_i, _bb);
+    return this;
+  }
+
+  public String resolveInfo() {
+    int o = __offset(4);
+    return o != 0 ? __string(o + bb_pos) : null;
+  }
+
+  public ByteBuffer resolveInfoAsByteBuffer() {
+    return __vector_as_bytebuffer(4, 1);
+  }
+
+  public ByteBuffer resolveInfoInByteBuffer(ByteBuffer _bb) {
+    return __vector_in_bytebuffer(_bb, 4, 1);
+  }
+
+  public String referred() {
+    int o = __offset(6);
+    return o != 0 ? __string(o + bb_pos) : null;
+  }
+
+  public ByteBuffer referredAsByteBuffer() {
+    return __vector_as_bytebuffer(6, 1);
+  }
+
+  public ByteBuffer referredInByteBuffer(ByteBuffer _bb) {
+    return __vector_in_bytebuffer(_bb, 6, 1);
+  }
+
+  public static int createFBReferenceValue(
+      FlatBufferBuilder builder, int resolveInfoOffset, int referredOffset) {
     builder.startTable(2);
     FBReferenceValue.addReferred(builder, referredOffset);
     FBReferenceValue.addResolveInfo(builder, resolveInfoOffset);
     return FBReferenceValue.endFBReferenceValue(builder);
   }
 
-  public static void startFBReferenceValue(FlatBufferBuilder builder) { builder.startTable(2); }
-  public static void addResolveInfo(FlatBufferBuilder builder, int resolveInfoOffset) { builder.addOffset(0, resolveInfoOffset, 0); }
-  public static void addReferred(FlatBufferBuilder builder, int referredOffset) { builder.addOffset(1, referredOffset, 0); }
+  public static void startFBReferenceValue(FlatBufferBuilder builder) {
+    builder.startTable(2);
+  }
+
+  public static void addResolveInfo(FlatBufferBuilder builder, int resolveInfoOffset) {
+    builder.addOffset(0, resolveInfoOffset, 0);
+  }
+
+  public static void addReferred(FlatBufferBuilder builder, int referredOffset) {
+    builder.addOffset(1, referredOffset, 0);
+  }
+
   public static int endFBReferenceValue(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;
   }
 
   public static final class Vector extends BaseVector {
-    public Vector __assign(int _vector, int _element_size, ByteBuffer _bb) { __reset(_vector, _element_size, _bb); return this; }
+    public Vector __assign(int _vector, int _element_size, ByteBuffer _bb) {
+      __reset(_vector, _element_size, _bb);
+      return this;
+    }
 
-    public FBReferenceValue get(int j) { return get(new FBReferenceValue(), j); }
-    public FBReferenceValue get(FBReferenceValue obj, int j) {  return obj.__assign(__indirect(__element(j), bb), bb); }
+    public FBReferenceValue get(int j) {
+      return get(new FBReferenceValue(), j);
+    }
+
+    public FBReferenceValue get(FBReferenceValue obj, int j) {
+      return obj.__assign(__indirect(__element(j), bb), bb);
+    }
   }
 }
-

@@ -1,7 +1,5 @@
 package io.lionweb.lioncore.java.serialization;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
@@ -9,258 +7,269 @@ import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.protobuf.*;
-
 import java.io.*;
 import java.util.*;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ProtoBufSerialization extends AbstractSerialization {
 
-    /**
-     * This has specific support for LionCore or LionCoreBuiltins.
-     */
-    public static ProtoBufSerialization getStandardSerialization() {
-        ProtoBufSerialization serialization = new ProtoBufSerialization();
-        serialization.classifierResolver.registerLanguage(LionCore.getInstance());
-        serialization.instantiator.registerLionCoreCustomDeserializers();
-        serialization.primitiveValuesSerialization
-                .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
-        serialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
-        serialization.instanceResolver.addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
-        return serialization;
+  /** This has specific support for LionCore or LionCoreBuiltins. */
+  public static ProtoBufSerialization getStandardSerialization() {
+    ProtoBufSerialization serialization = new ProtoBufSerialization();
+    serialization.classifierResolver.registerLanguage(LionCore.getInstance());
+    serialization.instantiator.registerLionCoreCustomDeserializers();
+    serialization.primitiveValuesSerialization
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+    serialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
+    serialization.instanceResolver.addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
+    return serialization;
+  }
+
+  /** This has no specific support for LionCore or LionCoreBuiltins. */
+  public static ProtoBufSerialization getBasicSerialization() {
+    ProtoBufSerialization serialization = new ProtoBufSerialization();
+    return serialization;
+  }
+
+  public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(byte[] bytes)
+      throws IOException {
+    return deserializeToNodes(new ByteArrayInputStream(bytes));
+  }
+
+  public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(File file)
+      throws IOException {
+    return deserializeToNodes(new FileInputStream(file));
+  }
+
+  public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(InputStream inputStream)
+      throws IOException {
+    return deserializeToNodes(PBChunk.parseFrom(inputStream));
+  }
+
+  public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(PBChunk chunk) {
+    return deserializeToClassifierInstances(chunk).stream()
+        .filter(ci -> ci instanceof io.lionweb.lioncore.java.model.Node)
+        .map(ci -> (io.lionweb.lioncore.java.model.Node) ci)
+        .collect(Collectors.toList());
+  }
+
+  public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
+    SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
+    validateSerializationBlock(serializationBlock);
+    return deserializeSerializationBlock(serializationBlock);
+  }
+
+  private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
+    Map<Integer, String> stringsMap = new HashMap<>();
+    for (int i = 0; i < chunk.getStringValuesCount(); i++) {
+      stringsMap.put(i, chunk.getStringValues(i));
     }
-
-    /**
-     * This has no specific support for LionCore or LionCoreBuiltins.
-     */
-    public static ProtoBufSerialization getBasicSerialization() {
-        ProtoBufSerialization serialization = new ProtoBufSerialization();
-        return serialization;
+    Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
+    for (int i = 0; i < chunk.getMetaPointersCount(); i++) {
+      PBMetaPointer mp = chunk.getMetaPointers(i);
+      MetaPointer metaPointer = new MetaPointer();
+      metaPointer.setKey(stringsMap.get(mp.getKey()));
+      metaPointer.setLanguage(stringsMap.get(mp.getLanguage()));
+      metaPointer.setVersion(stringsMap.get(mp.getVersion()));
+      metapointersMap.put(i, metaPointer);
     }
+    ;
 
-    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(byte[] bytes) throws IOException {
-        return deserializeToNodes(new ByteArrayInputStream(bytes));
-    }
-
-    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(File file) throws IOException {
-        return deserializeToNodes(new FileInputStream(file));
-    }
-
-    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(InputStream inputStream) throws IOException {
-        return deserializeToNodes(PBChunk.parseFrom(inputStream));
-    }
-
-    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(PBChunk chunk) {
-        return deserializeToClassifierInstances(chunk).stream()
-                .filter(ci -> ci instanceof io.lionweb.lioncore.java.model.Node)
-                .map(ci -> (io.lionweb.lioncore.java.model.Node) ci)
-                .collect(Collectors.toList());
-    }
-
-    public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
-        SerializedChunk serializationBlock =
-                deserializeSerializationChunk(chunk);
-        validateSerializationBlock(serializationBlock);
-        return deserializeSerializationBlock(serializationBlock);
-    }
-
-    private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
-        Map<Integer, String> stringsMap = new HashMap<>();
-        for (int i = 0; i < chunk.getStringValuesCount(); i++) {
-            stringsMap.put(i, chunk.getStringValues(i));
-        }
-        Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
-        for (int i = 0; i < chunk.getMetaPointersCount(); i++) {
-            PBMetaPointer mp = chunk.getMetaPointers(i);
-            MetaPointer metaPointer = new MetaPointer();
-            metaPointer.setKey(stringsMap.get(mp.getKey()));
-            metaPointer.setLanguage(stringsMap.get(mp.getLanguage()));
-            metaPointer.setVersion(stringsMap.get(mp.getVersion()));
-            metapointersMap.put(i, metaPointer);
-        };
-
-        SerializedChunk serializedChunk = new SerializedChunk();
-        serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
-        chunk.getLanguagesList().forEach(l -> {
-            UsedLanguage usedLanguage = new UsedLanguage();
-            usedLanguage.setKey(stringsMap.get(l.getKey()));
-            usedLanguage.setVersion(stringsMap.get(l.getVersion()));
-            serializedChunk.addLanguage(usedLanguage);
-        });
-
-        chunk.getNodesList().forEach(n -> {
-            SerializedClassifierInstance sci = new SerializedClassifierInstance();
-            sci.setID(stringsMap.get(n.getId()));
-            sci.setParentNodeID(stringsMap.get(n.getParent()));
-            sci.setClassifier(metapointersMap.get(n.getClassifier()));
-            n.getPropertiesList().forEach(p -> {
-                SerializedPropertyValue spv = new SerializedPropertyValue();
-                spv.setValue(stringsMap.get(p.getValue()));
-                spv.setMetaPointer(metapointersMap.get(p.getMetaPointerIndex()));
-                sci.addPropertyValue(spv);
+    SerializedChunk serializedChunk = new SerializedChunk();
+    serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
+    chunk
+        .getLanguagesList()
+        .forEach(
+            l -> {
+              UsedLanguage usedLanguage = new UsedLanguage();
+              usedLanguage.setKey(stringsMap.get(l.getKey()));
+              usedLanguage.setVersion(stringsMap.get(l.getVersion()));
+              serializedChunk.addLanguage(usedLanguage);
             });
-            n.getContainmentsList().forEach(c -> {
-                SerializedContainmentValue scv = new SerializedContainmentValue();
-                if (c.getChildrenList().stream().anyMatch(el -> el < 0)) {
-                    throw new DeserializationException(
-                            "Unable to deserialize child identified by Null ID");
-                }
-                scv.setValue(c.getChildrenList().stream().map(el -> stringsMap.get(el)).collect(Collectors.toList()));
-                scv.setMetaPointer(metapointersMap.get(c.getMetaPointerIndex()));
-                sci.addContainmentValue(scv);
-            });
-            n.getReferencesList().forEach(r -> {
-                SerializedReferenceValue srv = new SerializedReferenceValue();
-                r.getValuesList().forEach(rv -> {
-                    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
-                    entry.setReference(stringsMap.get(rv.getReferred()));
-                    entry.setResolveInfo(stringsMap.get(rv.getResolveInfo()));
-                    srv.addValue(entry);
-                });
-                srv.setMetaPointer(metapointersMap.get(r.getMetaPointerIndex()));
-                sci.addReferenceValue(srv);
-            });
-            // TODO
-//          n.getAnnotationsList().forEach(a -> {
-//              sci.getAnnotations().add(a);
-//          });
-            serializedChunk.addClassifierInstance(sci);
-        });
-        return serializedChunk;
-    }
 
-    public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
-        Set<String> nodesIDs = new HashSet<>();
-        List<ClassifierInstance<?>> allNodes = new ArrayList<>();
-        for (ClassifierInstance<?> root : roots) {
-            Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
-            ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
-            classifierInstances.forEach(
-                    n -> {
-                        // We support serialization of incorrect nodes, so we allow nodes without ID to be
-                        // serialized
-                        if (n.getID() != null) {
-                            if (!nodesIDs.contains(n.getID())) {
-                                allNodes.add(n);
-                                nodesIDs.add(n.getID());
-                            }
-                        } else {
-                            allNodes.add(n);
+    chunk
+        .getNodesList()
+        .forEach(
+            n -> {
+              SerializedClassifierInstance sci = new SerializedClassifierInstance();
+              sci.setID(stringsMap.get(n.getId()));
+              sci.setParentNodeID(stringsMap.get(n.getParent()));
+              sci.setClassifier(metapointersMap.get(n.getClassifier()));
+              n.getPropertiesList()
+                  .forEach(
+                      p -> {
+                        SerializedPropertyValue spv = new SerializedPropertyValue();
+                        spv.setValue(stringsMap.get(p.getValue()));
+                        spv.setMetaPointer(metapointersMap.get(p.getMetaPointerIndex()));
+                        sci.addPropertyValue(spv);
+                      });
+              n.getContainmentsList()
+                  .forEach(
+                      c -> {
+                        SerializedContainmentValue scv = new SerializedContainmentValue();
+                        if (c.getChildrenList().stream().anyMatch(el -> el < 0)) {
+                          throw new DeserializationException(
+                              "Unable to deserialize child identified by Null ID");
                         }
-                    });
-        }
-        return serializeNodesToByteArray(
-                allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
-    }
+                        scv.setValue(
+                            c.getChildrenList().stream()
+                                .map(el -> stringsMap.get(el))
+                                .collect(Collectors.toList()));
+                        scv.setMetaPointer(metapointersMap.get(c.getMetaPointerIndex()));
+                        sci.addContainmentValue(scv);
+                      });
+              n.getReferencesList()
+                  .forEach(
+                      r -> {
+                        SerializedReferenceValue srv = new SerializedReferenceValue();
+                        r.getValuesList()
+                            .forEach(
+                                rv -> {
+                                  SerializedReferenceValue.Entry entry =
+                                      new SerializedReferenceValue.Entry();
+                                  entry.setReference(stringsMap.get(rv.getReferred()));
+                                  entry.setResolveInfo(stringsMap.get(rv.getResolveInfo()));
+                                  srv.addValue(entry);
+                                });
+                        srv.setMetaPointer(metapointersMap.get(r.getMetaPointerIndex()));
+                        sci.addReferenceValue(srv);
+                      });
+              // TODO
+              //          n.getAnnotationsList().forEach(a -> {
+              //              sci.getAnnotations().add(a);
+              //          });
+              serializedChunk.addClassifierInstance(sci);
+            });
+    return serializedChunk;
+  }
 
-    public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
-        if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
-            throw new IllegalArgumentException("Proxy nodes cannot be serialized");
-        }
-        SerializedChunk serializationBlock = serializeNodesToSerializationBlock(classifierInstances);
-        return serializeToByteArray(serializationBlock);
-    }
-
-    public byte[] serializeNodesToByteArray(ClassifierInstance<?>... classifierInstances) {
-        return serializeNodesToByteArray(Arrays.asList(classifierInstances));
-    }
-
-    public byte[] serializeToByteArray(SerializedChunk serializedChunk) {
-        return serialize(serializedChunk).toByteArray();
-    }
-
-    private class SerializeHelper {
-        final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
-        final Map<String, Integer> strings = new HashMap<>();
-
-        int stringIndexer(String string) {
-            if (string == null) {
-                return -1;
+  public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
+    Set<String> nodesIDs = new HashSet<>();
+    List<ClassifierInstance<?>> allNodes = new ArrayList<>();
+    for (ClassifierInstance<?> root : roots) {
+      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+      ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
+      classifierInstances.forEach(
+          n -> {
+            // We support serialization of incorrect nodes, so we allow nodes without ID to be
+            // serialized
+            if (n.getID() != null) {
+              if (!nodesIDs.contains(n.getID())) {
+                allNodes.add(n);
+                nodesIDs.add(n.getID());
+              }
+            } else {
+              allNodes.add(n);
             }
-            if (strings.containsKey(string)) {
-                return strings.get(string);
-            }
-            int index = strings.size();
-            strings.put(string, index);
-            return index;
-        }
+          });
+    }
+    return serializeNodesToByteArray(
+        allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
+  }
 
-        ;
+  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
+    if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
+      throw new IllegalArgumentException("Proxy nodes cannot be serialized");
+    }
+    SerializedChunk serializationBlock = serializeNodesToSerializationBlock(classifierInstances);
+    return serializeToByteArray(serializationBlock);
+  }
 
-        int metaPointerIndexer(MetaPointer metaPointer) {
-            if (metaPointers.containsKey(metaPointer)) {
-                return metaPointers.get(metaPointer);
-            }
-            PBMetaPointer metaPointerDef =
-                    PBMetaPointer.newBuilder()
-                            .setKey(stringIndexer(metaPointer.getKey()))
-                            .setVersion(stringIndexer(metaPointer.getVersion()))
-                            .setLanguage(stringIndexer(metaPointer.getLanguage()))
-                            .build();
-            int index = metaPointers.size();
-            metaPointers.put(metaPointer, index);
-            return index;
-        }
+  public byte[] serializeNodesToByteArray(ClassifierInstance<?>... classifierInstances) {
+    return serializeNodesToByteArray(Arrays.asList(classifierInstances));
+  }
 
-        PBNode serializeNode(SerializedClassifierInstance n) {
-            PBNode.Builder nodeBuilder = PBNode.newBuilder();
-            nodeBuilder.setId(this.stringIndexer(n.getID()));
-            nodeBuilder.setClassifier(this.metaPointerIndexer((n.getClassifier())));
-            nodeBuilder.setParent(this.stringIndexer(n.getParentNodeID()));
-            // TODO n.getAnnotations()
-            n.getProperties()
-                    .forEach(
-                            p -> {
-                                PBProperty.Builder b = PBProperty.newBuilder();
-                                b.setValue(this.stringIndexer(p.getValue()));
-                                b.setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())));
-                                nodeBuilder.addProperties(b.build());
-                            });
-            n.getContainments()
-                    .forEach(
-                            p ->
-                                    nodeBuilder.addContainments(
-                                            PBContainment.newBuilder()
-                                                    .addAllChildren(p.getValue().stream().map(v -> this.stringIndexer(v)).collect(Collectors.toList()))
-                                                    .setMetaPointerIndex(
-                                                            this.metaPointerIndexer((p.getMetaPointer())))
-                                                    .build()));
-            n.getReferences()
-                    .forEach(
-                            p ->
-                                    nodeBuilder.addReferences(
-                                            PBReference.newBuilder()
-                                                    .addAllValues(
-                                                            p.getValue().stream()
-                                                                    .map(
-                                                                            rf -> {
-                                                                                PBReferenceValue.Builder b =
-                                                                                        PBReferenceValue.newBuilder();
-                                                                                b.setReferred(this.stringIndexer(rf.getReference()));
-                                                                                b.setResolveInfo(this.stringIndexer(rf.getResolveInfo()));
-                                                                                return b.build();
-                                                                            })
-                                                                    .collect(Collectors.toList()))
-                                                    .setMetaPointerIndex(
-                                                            this.metaPointerIndexer((p.getMetaPointer())))
-                                                    .build()));
-            return nodeBuilder.build();
-        }
+  public byte[] serializeToByteArray(SerializedChunk serializedChunk) {
+    return serialize(serializedChunk).toByteArray();
+  }
+
+  private class SerializeHelper {
+    final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
+    final Map<String, Integer> strings = new HashMap<>();
+
+    int stringIndexer(String string) {
+      if (string == null) {
+        return -1;
+      }
+      if (strings.containsKey(string)) {
+        return strings.get(string);
+      }
+      int index = strings.size();
+      strings.put(string, index);
+      return index;
+    };
+
+    int metaPointerIndexer(MetaPointer metaPointer) {
+      if (metaPointers.containsKey(metaPointer)) {
+        return metaPointers.get(metaPointer);
+      }
+      PBMetaPointer metaPointerDef =
+          PBMetaPointer.newBuilder()
+              .setKey(stringIndexer(metaPointer.getKey()))
+              .setVersion(stringIndexer(metaPointer.getVersion()))
+              .setLanguage(stringIndexer(metaPointer.getLanguage()))
+              .build();
+      int index = metaPointers.size();
+      metaPointers.put(metaPointer, index);
+      return index;
     }
 
-
+    PBNode serializeNode(SerializedClassifierInstance n) {
+      PBNode.Builder nodeBuilder = PBNode.newBuilder();
+      nodeBuilder.setId(this.stringIndexer(n.getID()));
+      nodeBuilder.setClassifier(this.metaPointerIndexer((n.getClassifier())));
+      nodeBuilder.setParent(this.stringIndexer(n.getParentNodeID()));
+      // TODO n.getAnnotations()
+      n.getProperties()
+          .forEach(
+              p -> {
+                PBProperty.Builder b = PBProperty.newBuilder();
+                b.setValue(this.stringIndexer(p.getValue()));
+                b.setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())));
+                nodeBuilder.addProperties(b.build());
+              });
+      n.getContainments()
+          .forEach(
+              p ->
+                  nodeBuilder.addContainments(
+                      PBContainment.newBuilder()
+                          .addAllChildren(
+                              p.getValue().stream()
+                                  .map(v -> this.stringIndexer(v))
+                                  .collect(Collectors.toList()))
+                          .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))
+                          .build()));
+      n.getReferences()
+          .forEach(
+              p ->
+                  nodeBuilder.addReferences(
+                      PBReference.newBuilder()
+                          .addAllValues(
+                              p.getValue().stream()
+                                  .map(
+                                      rf -> {
+                                        PBReferenceValue.Builder b = PBReferenceValue.newBuilder();
+                                        b.setReferred(this.stringIndexer(rf.getReference()));
+                                        b.setResolveInfo(this.stringIndexer(rf.getResolveInfo()));
+                                        return b.build();
+                                      })
+                                  .collect(Collectors.toList()))
+                          .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))
+                          .build()));
+      return nodeBuilder.build();
+    }
+  }
 
   public PBBulkImport serializeBulkImport(List<BulkImportElement> elements) {
-      PBBulkImport.Builder bulkImportBuilder = PBBulkImport.newBuilder();
-      ProtoBufSerialization.SerializeHelper serializeHelper = new ProtoBufSerialization.SerializeHelper();
+    PBBulkImport.Builder bulkImportBuilder = PBBulkImport.newBuilder();
+    ProtoBufSerialization.SerializeHelper serializeHelper =
+        new ProtoBufSerialization.SerializeHelper();
 
     elements.forEach(
         bulkImportElement -> {
-          PBBulkImportElement.Builder bulkImportElementBuilder =
-              PBBulkImportElement.newBuilder();
+          PBBulkImportElement.Builder bulkImportElementBuilder = PBBulkImportElement.newBuilder();
           bulkImportElementBuilder.setMetaPointerIndex(
-                  serializeHelper.metaPointerIndexer(bulkImportElement.containment));
+              serializeHelper.metaPointerIndexer(bulkImportElement.containment));
           SerializedChunk serializedChunk =
               serializeTreeToSerializationBlock(bulkImportElement.tree);
 
@@ -268,46 +277,57 @@ public class ProtoBufSerialization extends AbstractSerialization {
               .getClassifierInstances()
               .forEach(
                   n -> {
-                      PBNode.Builder nodeBuilder = PBNode.newBuilder();
+                    PBNode.Builder nodeBuilder = PBNode.newBuilder();
                     nodeBuilder.setId(serializeHelper.stringIndexer(n.getID()));
-                    nodeBuilder.setClassifier(serializeHelper.metaPointerIndexer((n.getClassifier())));
+                    nodeBuilder.setClassifier(
+                        serializeHelper.metaPointerIndexer((n.getClassifier())));
                     nodeBuilder.setParent(serializeHelper.stringIndexer(n.getParentNodeID()));
                     // TODO n.getAnnotations()
                     n.getProperties()
                         .forEach(
                             p -> {
-                                PBProperty.Builder b = PBProperty.newBuilder();
+                              PBProperty.Builder b = PBProperty.newBuilder();
                               b.setValue(serializeHelper.stringIndexer(p.getValue()));
-                              b.setMetaPointerIndex(serializeHelper.metaPointerIndexer((p.getMetaPointer())));
+                              b.setMetaPointerIndex(
+                                  serializeHelper.metaPointerIndexer((p.getMetaPointer())));
                               nodeBuilder.addProperties(b.build());
                             });
                     n.getContainments()
                         .forEach(
                             p ->
                                 nodeBuilder.addContainments(
-                                        PBContainment.newBuilder()
-                                        .addAllChildren(p.getValue().stream().map(v -> serializeHelper.stringIndexer(v)).collect(Collectors.toList()))
+                                    PBContainment.newBuilder()
+                                        .addAllChildren(
+                                            p.getValue().stream()
+                                                .map(v -> serializeHelper.stringIndexer(v))
+                                                .collect(Collectors.toList()))
                                         .setMetaPointerIndex(
-                                            serializeHelper.metaPointerIndexer((p.getMetaPointer())))
+                                            serializeHelper.metaPointerIndexer(
+                                                (p.getMetaPointer())))
                                         .build()));
                     n.getReferences()
                         .forEach(
                             p ->
                                 nodeBuilder.addReferences(
-                                        PBReference.newBuilder()
+                                    PBReference.newBuilder()
                                         .addAllValues(
                                             p.getValue().stream()
                                                 .map(
                                                     rf -> {
-                                                        PBReferenceValue.Builder b =
-                                                                PBReferenceValue.newBuilder();
-                                                      b.setReferred(serializeHelper.stringIndexer(rf.getReference()));
-                                                        b.setResolveInfo(serializeHelper.stringIndexer(rf.getResolveInfo()));
+                                                      PBReferenceValue.Builder b =
+                                                          PBReferenceValue.newBuilder();
+                                                      b.setReferred(
+                                                          serializeHelper.stringIndexer(
+                                                              rf.getReference()));
+                                                      b.setResolveInfo(
+                                                          serializeHelper.stringIndexer(
+                                                              rf.getResolveInfo()));
                                                       return b.build();
                                                     })
                                                 .collect(Collectors.toList()))
                                         .setMetaPointerIndex(
-                                            serializeHelper.metaPointerIndexer((p.getMetaPointer())))
+                                            serializeHelper.metaPointerIndexer(
+                                                (p.getMetaPointer())))
                                         .build()));
                     bulkImportElementBuilder.addTree(nodeBuilder.build());
                   });
@@ -315,9 +335,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
           bulkImportBuilder.addElements(bulkImportElementBuilder.build());
         });
 
-    serializeHelper.metaPointers
-        .entrySet()
-            .stream().sorted()
+    serializeHelper.metaPointers.entrySet().stream()
+        .sorted()
         .forEach(
             entry ->
                 bulkImportBuilder.addMetaPointerDefs(
@@ -345,7 +364,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public PBChunk serialize(SerializedChunk serializedChunk) {
-      PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
+    PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
     chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
     SerializeHelper serializeHelper = new SerializeHelper();
     serializedChunk
@@ -353,27 +372,32 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .forEach(
             ul -> {
               chunkBuilder.addLanguages(
-                      PBLanguage.newBuilder()
-                          .setKey(serializeHelper.stringIndexer(ul.getKey()))
-                          .setVersion(serializeHelper.stringIndexer(ul.getVersion()))
-                          .build());
+                  PBLanguage.newBuilder()
+                      .setKey(serializeHelper.stringIndexer(ul.getKey()))
+                      .setVersion(serializeHelper.stringIndexer(ul.getVersion()))
+                      .build());
             });
 
     serializedChunk
         .getClassifierInstances()
-        .forEach(
-            n -> chunkBuilder.addNodes(serializeHelper.serializeNode(n)));
+        .forEach(n -> chunkBuilder.addNodes(serializeHelper.serializeNode(n)));
 
-    serializeHelper.strings.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
-        chunkBuilder.addStringValues(entry.getKey());
-    });
-      serializeHelper.metaPointers.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
-          PBMetaPointer.Builder metaPointer = PBMetaPointer.newBuilder();
-          metaPointer.setKey(serializeHelper.stringIndexer(entry.getKey().getKey()));
-          metaPointer.setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()));
-          metaPointer.setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()));
-          chunkBuilder.addMetaPointers(metaPointer.build());
-      });
+    serializeHelper.strings.entrySet().stream()
+        .sorted(Map.Entry.comparingByValue())
+        .forEach(
+            entry -> {
+              chunkBuilder.addStringValues(entry.getKey());
+            });
+    serializeHelper.metaPointers.entrySet().stream()
+        .sorted(Map.Entry.comparingByValue())
+        .forEach(
+            entry -> {
+              PBMetaPointer.Builder metaPointer = PBMetaPointer.newBuilder();
+              metaPointer.setKey(serializeHelper.stringIndexer(entry.getKey().getKey()));
+              metaPointer.setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()));
+              metaPointer.setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()));
+              chunkBuilder.addMetaPointers(metaPointer.build());
+            });
     return chunkBuilder.build();
   }
 }

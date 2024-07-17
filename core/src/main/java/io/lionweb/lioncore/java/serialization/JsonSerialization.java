@@ -203,5 +203,4 @@ public class JsonSerialization extends AbstractSerialization {
   public List<Node> deserializeToNodes(InputStream inputStream) {
     return deserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
   }
-
 }
