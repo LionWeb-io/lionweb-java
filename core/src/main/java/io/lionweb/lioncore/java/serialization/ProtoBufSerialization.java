@@ -252,9 +252,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                   .collect(Collectors.toList()))
                           .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))
                           .build()));
-      n.getAnnotations().forEach(a -> nodeBuilder.addAnnotations(
-              this.stringIndexer(a)
-      ));
+      n.getAnnotations().forEach(a -> nodeBuilder.addAnnotations(this.stringIndexer(a)));
       return nodeBuilder.build();
     }
   }
@@ -274,8 +272,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
 
           serializedChunk
               .getClassifierInstances()
-              .forEach(
-                  n -> bulkImportElementBuilder.addTree(serializeHelper.serializeNode(n)));
+              .forEach(n -> bulkImportElementBuilder.addTree(serializeHelper.serializeNode(n)));
 
           bulkImportBuilder.addElements(bulkImportElementBuilder.build());
         });
