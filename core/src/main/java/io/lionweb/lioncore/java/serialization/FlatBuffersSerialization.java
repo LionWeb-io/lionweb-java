@@ -101,7 +101,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       usedLanguage.setVersion(l.version());
       serializedChunk.addLanguage(usedLanguage);
     }
-    ;
 
     for (int i = 0; i < chunk.nodesLength(); i++) {
       FBNode n = chunk.nodes(i);
@@ -116,12 +115,12 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         spv.setMetaPointer(helper.deserialize(p.metaPointer()));
         sci.addPropertyValue(spv);
       }
-      ;
+
       for (int j = 0; j < n.containmentsLength(); j++) {
         FBContainment c = n.containments(j);
         sci.addContainmentValue(helper.deserialize(c));
       }
-      ;
+
       for (int j = 0; j < n.referencesLength(); j++) {
         FBReference r = n.references(j);
         SerializedReferenceValue srv = new SerializedReferenceValue();
@@ -132,15 +131,14 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           entry.setResolveInfo(rv.resolveInfo());
           srv.addValue(entry);
         }
-        ;
+
         srv.setMetaPointer(helper.deserialize(r.metaPointer()));
         sci.addReferenceValue(srv);
       }
-      ;
-      // TODO
-      //          n.getAnnotationsList().forEach(a -> {
-      //              sci.getAnnotations().add(a);
-      //          });
+      for (int j = 0; j < n.annotationsLength(); j++) {
+        String annotationID = n.annotations(j);
+        sci.addAnnotation(annotationID);
+      }
       serializedChunk.addClassifierInstance(sci);
     }
     ;
@@ -183,93 +181,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return serializeNodesToByteArray(Arrays.asList(classifierInstances));
   }
 
-  //  public BulkImport serializeBulkImport(List<BulkImportElement> elements) {
-  //    BulkImport.Builder bulkImportBuilder = BulkImport.newBuilder();
-  //      FlatBuffersSerialization.SerializeHelper serializeHelper = new
-  // FlatBuffersSerialization.SerializeHelper();
-  //
-  //    elements.forEach(
-  //        bulkImportElement -> {
-  //          io.lionweb.lioncore.protobuf.BulkImportElement.Builder bulkImportElementBuilder =
-  //              io.lionweb.lioncore.protobuf.BulkImportElement.newBuilder();
-  //          bulkImportElementBuilder.setMetaPointerIndex(
-  //                  serializeHelper.metaPointerIndexer(bulkImportElement.containment));
-  //          SerializedChunk serializedChunk =
-  //              serializeTreeToSerializationBlock(bulkImportElement.tree);
-  //
-  //          serializedChunk
-  //              .getClassifierInstances()
-  //              .forEach(
-  //                  n -> {
-  //                    Node.Builder nodeBuilder = Node.newBuilder();
-  //                    nodeBuilder.setId(serializeHelper.stringIndexer(n.getID()));
-  //
-  // nodeBuilder.setClassifier(serializeHelper.metaPointerIndexer((n.getClassifier())));
-  //                    nodeBuilder.setParent(serializeHelper.stringIndexer(n.getParentNodeID()));
-  //                    // TODO n.getAnnotations()
-  //                    n.getProperties()
-  //                        .forEach(
-  //                            p -> {
-  //                              Property.Builder b = Property.newBuilder();
-  //                              b.setValue(serializeHelper.stringIndexer(p.getValue()));
-  //
-  // b.setMetaPointerIndex(serializeHelper.metaPointerIndexer((p.getMetaPointer())));
-  //                              nodeBuilder.addProperties(b.build());
-  //                            });
-  //                    n.getContainments()
-  //                        .forEach(
-  //                            p ->
-  //                                nodeBuilder.addContainments(
-  //                                    Containment.newBuilder()
-  //                                        .addAllChildren(p.getValue().stream().map(v ->
-  // serializeHelper.stringIndexer(v)).collect(Collectors.toList()))
-  //                                        .setMetaPointerIndex(
-  //
-  // serializeHelper.metaPointerIndexer((p.getMetaPointer())))
-  //                                        .build()));
-  //                    n.getReferences()
-  //                        .forEach(
-  //                            p ->
-  //                                nodeBuilder.addReferences(
-  //                                    Reference.newBuilder()
-  //                                        .addAllValues(
-  //                                            p.getValue().stream()
-  //                                                .map(
-  //                                                    rf -> {
-  //                                                      ReferenceValue.Builder b =
-  //                                                          ReferenceValue.newBuilder();
-  //
-  // b.setReferred(serializeHelper.stringIndexer(rf.getReference()));
-  //
-  // b.setResolveInfo(serializeHelper.stringIndexer(rf.getResolveInfo()));
-  //                                                      return b.build();
-  //                                                    })
-  //                                                .collect(Collectors.toList()))
-  //                                        .setMetaPointerIndex(
-  //
-  // serializeHelper.metaPointerIndexer((p.getMetaPointer())))
-  //                                        .build()));
-  //                    bulkImportElementBuilder.addTree(nodeBuilder.build());
-  //                  });
-  //
-  //          bulkImportBuilder.addElements(bulkImportElementBuilder.build());
-  //        });
-  //
-  //    serializeHelper.metaPointers
-  //        .entrySet()
-  //            .stream().sorted()
-  //        .forEach(
-  //            entry ->
-  //                bulkImportBuilder.addMetaPointerDefs(
-  //                    io.lionweb.lioncore.protobuf.MetaPointer.newBuilder()
-  //
-  // .setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()))
-  //                        .setKey(serializeHelper.stringIndexer(entry.getKey().getKey()))
-  //                        .setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()))
-  //                        .build()));
-  //    return bulkImportBuilder.build();
-  //  }
-
   public byte[] serializeTree(ClassifierInstance<?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
@@ -307,13 +218,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         serializedMetapointers.put(metaPointer, fbMetapointer);
       }
       return serializedMetapointers.get(metaPointer);
-    }
-
-    int offsetForLanguage(UsedLanguage usedLanguage) {
-      return FBLanguage.createFBLanguage(
-          builder,
-          builder.createSharedString(usedLanguage.getKey()),
-          builder.createSharedString(usedLanguage.getVersion()));
     }
 
     int[] languagesVector(List<UsedLanguage> usedLanguages) {

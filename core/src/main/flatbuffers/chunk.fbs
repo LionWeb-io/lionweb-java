@@ -23,7 +23,7 @@ table FBNode {
     properties:[FBProperty];
     containments:[FBContainment];
     references:[FBReference];
-    annotations:[FBAnnotation];
+    annotations:[string];
     parent:string;
 }
 
@@ -40,10 +40,6 @@ table FBContainment {
 table FBReference {
   metaPointer:FBMetaPointer;
   values:[FBReferenceValue];
-}
-
-table FBAnnotation {
-
 }
 
 table FBReferenceValue {

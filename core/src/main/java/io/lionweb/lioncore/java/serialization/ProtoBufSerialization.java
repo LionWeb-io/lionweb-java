@@ -134,10 +134,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         srv.setMetaPointer(metapointersMap.get(r.getMetaPointerIndex()));
                         sci.addReferenceValue(srv);
                       });
-              // TODO
-              //          n.getAnnotationsList().forEach(a -> {
-              //              sci.getAnnotations().add(a);
-              //          });
+              n.getAnnotationsList().forEach(a -> sci.addAnnotation(stringsMap.get(a)));
               serializedChunk.addClassifierInstance(sci);
             });
     return serializedChunk;
@@ -219,7 +216,6 @@ public class ProtoBufSerialization extends AbstractSerialization {
       nodeBuilder.setId(this.stringIndexer(n.getID()));
       nodeBuilder.setClassifier(this.metaPointerIndexer((n.getClassifier())));
       nodeBuilder.setParent(this.stringIndexer(n.getParentNodeID()));
-      // TODO n.getAnnotations()
       n.getProperties()
           .forEach(
               p -> {
@@ -256,6 +252,9 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                   .collect(Collectors.toList()))
                           .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))
                           .build()));
+      n.getAnnotations().forEach(a -> nodeBuilder.addAnnotations(
+              this.stringIndexer(a)
+      ));
       return nodeBuilder.build();
     }
   }
@@ -276,61 +275,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
           serializedChunk
               .getClassifierInstances()
               .forEach(
-                  n -> {
-                    PBNode.Builder nodeBuilder = PBNode.newBuilder();
-                    nodeBuilder.setId(serializeHelper.stringIndexer(n.getID()));
-                    nodeBuilder.setClassifier(
-                        serializeHelper.metaPointerIndexer((n.getClassifier())));
-                    nodeBuilder.setParent(serializeHelper.stringIndexer(n.getParentNodeID()));
-                    // TODO n.getAnnotations()
-                    n.getProperties()
-                        .forEach(
-                            p -> {
-                              PBProperty.Builder b = PBProperty.newBuilder();
-                              b.setValue(serializeHelper.stringIndexer(p.getValue()));
-                              b.setMetaPointerIndex(
-                                  serializeHelper.metaPointerIndexer((p.getMetaPointer())));
-                              nodeBuilder.addProperties(b.build());
-                            });
-                    n.getContainments()
-                        .forEach(
-                            p ->
-                                nodeBuilder.addContainments(
-                                    PBContainment.newBuilder()
-                                        .addAllChildren(
-                                            p.getValue().stream()
-                                                .map(v -> serializeHelper.stringIndexer(v))
-                                                .collect(Collectors.toList()))
-                                        .setMetaPointerIndex(
-                                            serializeHelper.metaPointerIndexer(
-                                                (p.getMetaPointer())))
-                                        .build()));
-                    n.getReferences()
-                        .forEach(
-                            p ->
-                                nodeBuilder.addReferences(
-                                    PBReference.newBuilder()
-                                        .addAllValues(
-                                            p.getValue().stream()
-                                                .map(
-                                                    rf -> {
-                                                      PBReferenceValue.Builder b =
-                                                          PBReferenceValue.newBuilder();
-                                                      b.setReferred(
-                                                          serializeHelper.stringIndexer(
-                                                              rf.getReference()));
-                                                      b.setResolveInfo(
-                                                          serializeHelper.stringIndexer(
-                                                              rf.getResolveInfo()));
-                                                      return b.build();
-                                                    })
-                                                .collect(Collectors.toList()))
-                                        .setMetaPointerIndex(
-                                            serializeHelper.metaPointerIndexer(
-                                                (p.getMetaPointer())))
-                                        .build()));
-                    bulkImportElementBuilder.addTree(nodeBuilder.build());
-                  });
+                  n -> bulkImportElementBuilder.addTree(serializeHelper.serializeNode(n)));
 
           bulkImportBuilder.addElements(bulkImportElementBuilder.build());
         });

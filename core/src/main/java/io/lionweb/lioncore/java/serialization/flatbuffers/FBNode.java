@@ -5,6 +5,7 @@ package io.lionweb.lioncore.java.serialization.flatbuffers;
 import com.google.flatbuffers.BaseVector;
 import com.google.flatbuffers.Constants;
 import com.google.flatbuffers.FlatBufferBuilder;
+import com.google.flatbuffers.StringVector;
 import com.google.flatbuffers.Table;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -135,14 +136,9 @@ public final class FBNode extends Table {
     return o != 0 ? obj.__assign(__vector(o), 4, bb) : null;
   }
 
-  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation annotations(int j) {
-    return annotations(new io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation(), j);
-  }
-
-  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation annotations(
-      io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation obj, int j) {
+  public String annotations(int j) {
     int o = __offset(14);
-    return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null;
+    return o != 0 ? __string(__vector(o) + j * 4) : null;
   }
 
   public int annotationsLength() {
@@ -150,14 +146,11 @@ public final class FBNode extends Table {
     return o != 0 ? __vector_len(o) : 0;
   }
 
-  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector
-      annotationsVector() {
-    return annotationsVector(
-        new io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector());
+  public StringVector annotationsVector() {
+    return annotationsVector(new StringVector());
   }
 
-  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector annotationsVector(
-      io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector obj) {
+  public StringVector annotationsVector(StringVector obj) {
     int o = __offset(14);
     return o != 0 ? obj.__assign(__vector(o), 4, bb) : null;
   }
