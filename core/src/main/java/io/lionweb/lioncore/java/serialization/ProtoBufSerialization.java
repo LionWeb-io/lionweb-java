@@ -48,31 +48,31 @@ public class ProtoBufSerialization extends AbstractSerialization {
     }
 
     public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(InputStream inputStream) throws IOException {
-        return deserializeToNodes(Chunk.parseFrom(inputStream));
+        return deserializeToNodes(PBChunk.parseFrom(inputStream));
     }
 
-    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(Chunk chunk) {
+    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(PBChunk chunk) {
         return deserializeToClassifierInstances(chunk).stream()
                 .filter(ci -> ci instanceof io.lionweb.lioncore.java.model.Node)
                 .map(ci -> (io.lionweb.lioncore.java.model.Node) ci)
                 .collect(Collectors.toList());
     }
 
-    public List<ClassifierInstance<?>> deserializeToClassifierInstances(Chunk chunk) {
+    public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
         SerializedChunk serializationBlock =
                 deserializeSerializationChunk(chunk);
         validateSerializationBlock(serializationBlock);
         return deserializeSerializationBlock(serializationBlock);
     }
 
-    private SerializedChunk deserializeSerializationChunk(Chunk chunk) {
+    private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
         Map<Integer, String> stringsMap = new HashMap<>();
         for (int i = 0; i < chunk.getStringValuesCount(); i++) {
             stringsMap.put(i, chunk.getStringValues(i));
         }
         Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
         for (int i = 0; i < chunk.getMetaPointersCount(); i++) {
-            io.lionweb.lioncore.protobuf.MetaPointer mp = chunk.getMetaPointers(i);
+            PBMetaPointer mp = chunk.getMetaPointers(i);
             MetaPointer metaPointer = new MetaPointer();
             metaPointer.setKey(stringsMap.get(mp.getKey()));
             metaPointer.setLanguage(stringsMap.get(mp.getLanguage()));
@@ -192,8 +192,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
             if (metaPointers.containsKey(metaPointer)) {
                 return metaPointers.get(metaPointer);
             }
-            io.lionweb.lioncore.protobuf.MetaPointer metaPointerDef =
-                    io.lionweb.lioncore.protobuf.MetaPointer.newBuilder()
+            PBMetaPointer metaPointerDef =
+                    PBMetaPointer.newBuilder()
                             .setKey(stringIndexer(metaPointer.getKey()))
                             .setVersion(stringIndexer(metaPointer.getVersion()))
                             .setLanguage(stringIndexer(metaPointer.getLanguage()))
@@ -203,8 +203,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
             return index;
         }
 
-        Node serializeNode(SerializedClassifierInstance n) {
-            Node.Builder nodeBuilder = Node.newBuilder();
+        PBNode serializeNode(SerializedClassifierInstance n) {
+            PBNode.Builder nodeBuilder = PBNode.newBuilder();
             nodeBuilder.setId(this.stringIndexer(n.getID()));
             nodeBuilder.setClassifier(this.metaPointerIndexer((n.getClassifier())));
             nodeBuilder.setParent(this.stringIndexer(n.getParentNodeID()));
@@ -212,7 +212,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
             n.getProperties()
                     .forEach(
                             p -> {
-                                Property.Builder b = Property.newBuilder();
+                                PBProperty.Builder b = PBProperty.newBuilder();
                                 b.setValue(this.stringIndexer(p.getValue()));
                                 b.setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())));
                                 nodeBuilder.addProperties(b.build());
@@ -221,7 +221,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                     .forEach(
                             p ->
                                     nodeBuilder.addContainments(
-                                            Containment.newBuilder()
+                                            PBContainment.newBuilder()
                                                     .addAllChildren(p.getValue().stream().map(v -> this.stringIndexer(v)).collect(Collectors.toList()))
                                                     .setMetaPointerIndex(
                                                             this.metaPointerIndexer((p.getMetaPointer())))
@@ -230,13 +230,13 @@ public class ProtoBufSerialization extends AbstractSerialization {
                     .forEach(
                             p ->
                                     nodeBuilder.addReferences(
-                                            Reference.newBuilder()
+                                            PBReference.newBuilder()
                                                     .addAllValues(
                                                             p.getValue().stream()
                                                                     .map(
                                                                             rf -> {
-                                                                                ReferenceValue.Builder b =
-                                                                                        ReferenceValue.newBuilder();
+                                                                                PBReferenceValue.Builder b =
+                                                                                        PBReferenceValue.newBuilder();
                                                                                 b.setReferred(this.stringIndexer(rf.getReference()));
                                                                                 b.setResolveInfo(this.stringIndexer(rf.getResolveInfo()));
                                                                                 return b.build();
@@ -251,14 +251,14 @@ public class ProtoBufSerialization extends AbstractSerialization {
 
 
 
-  public BulkImport serializeBulkImport(List<BulkImportElement> elements) {
-    BulkImport.Builder bulkImportBuilder = BulkImport.newBuilder();
+  public PBBulkImport serializeBulkImport(List<BulkImportElement> elements) {
+      PBBulkImport.Builder bulkImportBuilder = PBBulkImport.newBuilder();
       ProtoBufSerialization.SerializeHelper serializeHelper = new ProtoBufSerialization.SerializeHelper();
 
     elements.forEach(
         bulkImportElement -> {
-          io.lionweb.lioncore.protobuf.BulkImportElement.Builder bulkImportElementBuilder =
-              io.lionweb.lioncore.protobuf.BulkImportElement.newBuilder();
+          PBBulkImportElement.Builder bulkImportElementBuilder =
+              PBBulkImportElement.newBuilder();
           bulkImportElementBuilder.setMetaPointerIndex(
                   serializeHelper.metaPointerIndexer(bulkImportElement.containment));
           SerializedChunk serializedChunk =
@@ -268,7 +268,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
               .getClassifierInstances()
               .forEach(
                   n -> {
-                    Node.Builder nodeBuilder = Node.newBuilder();
+                      PBNode.Builder nodeBuilder = PBNode.newBuilder();
                     nodeBuilder.setId(serializeHelper.stringIndexer(n.getID()));
                     nodeBuilder.setClassifier(serializeHelper.metaPointerIndexer((n.getClassifier())));
                     nodeBuilder.setParent(serializeHelper.stringIndexer(n.getParentNodeID()));
@@ -276,7 +276,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                     n.getProperties()
                         .forEach(
                             p -> {
-                              Property.Builder b = Property.newBuilder();
+                                PBProperty.Builder b = PBProperty.newBuilder();
                               b.setValue(serializeHelper.stringIndexer(p.getValue()));
                               b.setMetaPointerIndex(serializeHelper.metaPointerIndexer((p.getMetaPointer())));
                               nodeBuilder.addProperties(b.build());
@@ -285,7 +285,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         .forEach(
                             p ->
                                 nodeBuilder.addContainments(
-                                    Containment.newBuilder()
+                                        PBContainment.newBuilder()
                                         .addAllChildren(p.getValue().stream().map(v -> serializeHelper.stringIndexer(v)).collect(Collectors.toList()))
                                         .setMetaPointerIndex(
                                             serializeHelper.metaPointerIndexer((p.getMetaPointer())))
@@ -294,13 +294,13 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         .forEach(
                             p ->
                                 nodeBuilder.addReferences(
-                                    Reference.newBuilder()
+                                        PBReference.newBuilder()
                                         .addAllValues(
                                             p.getValue().stream()
                                                 .map(
                                                     rf -> {
-                                                      ReferenceValue.Builder b =
-                                                          ReferenceValue.newBuilder();
+                                                        PBReferenceValue.Builder b =
+                                                                PBReferenceValue.newBuilder();
                                                       b.setReferred(serializeHelper.stringIndexer(rf.getReference()));
                                                         b.setResolveInfo(serializeHelper.stringIndexer(rf.getResolveInfo()));
                                                       return b.build();
@@ -321,7 +321,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .forEach(
             entry ->
                 bulkImportBuilder.addMetaPointerDefs(
-                    io.lionweb.lioncore.protobuf.MetaPointer.newBuilder()
+                    PBMetaPointer.newBuilder()
                         .setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()))
                         .setKey(serializeHelper.stringIndexer(entry.getKey().getKey()))
                         .setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()))
@@ -329,7 +329,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return bulkImportBuilder.build();
   }
 
-  public Chunk serializeTree(ClassifierInstance<?> classifierInstance) {
+  public PBChunk serializeTree(ClassifierInstance<?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -344,8 +344,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serialize(serializedChunk);
   }
 
-  public Chunk serialize(SerializedChunk serializedChunk) {
-    Chunk.Builder chunkBuilder = Chunk.newBuilder();
+  public PBChunk serialize(SerializedChunk serializedChunk) {
+      PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
     chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
     SerializeHelper serializeHelper = new SerializeHelper();
     serializedChunk
@@ -353,7 +353,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .forEach(
             ul -> {
               chunkBuilder.addLanguages(
-                  Language.newBuilder()
+                      PBLanguage.newBuilder()
                           .setKey(serializeHelper.stringIndexer(ul.getKey()))
                           .setVersion(serializeHelper.stringIndexer(ul.getVersion()))
                           .build());
@@ -368,7 +368,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
         chunkBuilder.addStringValues(entry.getKey());
     });
       serializeHelper.metaPointers.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
-          io.lionweb.lioncore.protobuf.MetaPointer.Builder metaPointer = io.lionweb.lioncore.protobuf.MetaPointer.newBuilder();
+          PBMetaPointer.Builder metaPointer = PBMetaPointer.newBuilder();
           metaPointer.setKey(serializeHelper.stringIndexer(entry.getKey().getKey()));
           metaPointer.setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()));
           metaPointer.setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()));
