@@ -237,31 +237,41 @@ public class ProtoBufSerialization extends AbstractSerialization {
     }
   }
 
-  public PBBulkImport serializeBulkImport(List<BulkImportElement> elements) {
+  public PBBulkImport serializeBulkImport(BulkImport bulkImport) {
     PBBulkImport.Builder bulkImportBuilder = PBBulkImport.newBuilder();
     ProtoBufSerialization.SerializeHelper serializeHelper =
         new ProtoBufSerialization.SerializeHelper();
 
-    elements.forEach(
-        bulkImportElement -> {
-          PBBulkImportElement.Builder bulkImportElementBuilder = PBBulkImportElement.newBuilder();
-          bulkImportElementBuilder.setMetaPointerIndex(
-              serializeHelper.metaPointerIndexer(bulkImportElement.containment));
-          SerializedChunk serializedChunk =
-              serializeTreeToSerializationBlock(bulkImportElement.tree);
+    bulkImport
+        .getAttachPoints()
+        .forEach(
+            attachPoint -> {
+              PBAttachPoint.Builder attachPointBuilder = PBAttachPoint.newBuilder();
+              attachPointBuilder.setContainer(serializeHelper.stringIndexer(attachPoint.container));
+              attachPointBuilder.setRootId(serializeHelper.stringIndexer(attachPoint.rootId));
+              attachPointBuilder.setMetaPointerIndex(
+                  serializeHelper.metaPointerIndexer(attachPoint.containment));
+              bulkImportBuilder.addAttachPoints(attachPointBuilder.build());
+            });
 
-          serializedChunk
-              .getClassifierInstances()
-              .forEach(n -> bulkImportElementBuilder.addTree(serializeHelper.serializeNode(n)));
+    SerializedChunk serializedChunk = serializeNodesToSerializationBlock(bulkImport.getNodes());
 
-          bulkImportBuilder.addElements(bulkImportElementBuilder.build());
-        });
+    serializedChunk
+        .getClassifierInstances()
+        .forEach(
+            serializedNode -> {
+              bulkImportBuilder.addNodes(serializeHelper.serializeNode(serializedNode));
+            });
+
+    serializeHelper.strings.entrySet().stream()
+        .sorted(Map.Entry.comparingByValue())
+        .forEach(entry -> bulkImportBuilder.addStringValues(entry.getKey()));
 
     serializeHelper.metaPointers.entrySet().stream()
-        .sorted()
+        .sorted(Map.Entry.comparingByValue())
         .forEach(
             entry ->
-                bulkImportBuilder.addMetaPointerDefs(
+                bulkImportBuilder.addMetaPointers(
                     PBMetaPointer.newBuilder()
                         .setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()))
                         .setKey(serializeHelper.stringIndexer(entry.getKey().getKey()))
