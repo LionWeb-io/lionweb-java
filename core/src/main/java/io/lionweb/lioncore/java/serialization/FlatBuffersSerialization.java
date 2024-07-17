@@ -405,7 +405,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     for (int i = 0; i < serializedChunk.getClassifierInstances().size(); i++) {
       SerializedClassifierInstance sci = serializedChunk.getClassifierInstances().get(i);
 
-      // nodesOffsets[i] = builder.offset();
       int idOffset = sci.getID() == null ? -1 : builder.createSharedString(sci.getID());
       int classifierOffset = helper.offsetForMetaPointer(sci.getClassifier());
       int parentOffset =

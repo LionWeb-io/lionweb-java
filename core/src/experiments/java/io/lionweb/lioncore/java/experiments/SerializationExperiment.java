@@ -1,18 +1,15 @@
 package io.lionweb.lioncore.java.experiments;
 
-import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
-import io.lionweb.lioncore.java.utils.ModelComparator;
-import java.io.*;
 
 public class SerializationExperiment {
 
-  public static void main(String[] args) throws IOException {
+  public static void main(String[] args) {
     TreeGenerator treeGenerator = new TreeGenerator(1);
     Node tree = treeGenerator.generate(500_000);
     System.out.println("Tree generated");
@@ -88,14 +85,6 @@ public class SerializationExperiment {
       System.out.println(
           "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
       System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
-  }
-
-  private static void assertInstancesAreEquals(ClassifierInstance<?> a, ClassifierInstance<?> b) {
-    ModelComparator modelComparator = new ModelComparator();
-    ModelComparator.ComparisonResult comparisonResult = modelComparator.compare(a, b);
-    if (!comparisonResult.areEquivalent()) {
-      throw new RuntimeException(comparisonResult.toString());
     }
   }
 }
