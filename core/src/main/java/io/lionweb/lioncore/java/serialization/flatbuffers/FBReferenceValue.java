@@ -27,21 +27,25 @@ public final class FBReferenceValue extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBReferenceValue __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int resolveInfo() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int referred() { int o = __offset(6); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
+  public String resolveInfo() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer resolveInfoAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
+  public ByteBuffer resolveInfoInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
+  public String referred() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer referredAsByteBuffer() { return __vector_as_bytebuffer(6, 1); }
+  public ByteBuffer referredInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 6, 1); }
 
   public static int createFBReferenceValue(FlatBufferBuilder builder,
-      int resolveInfo,
-      int referred) {
+      int resolveInfoOffset,
+      int referredOffset) {
     builder.startTable(2);
-    FBReferenceValue.addReferred(builder, referred);
-    FBReferenceValue.addResolveInfo(builder, resolveInfo);
+    FBReferenceValue.addReferred(builder, referredOffset);
+    FBReferenceValue.addResolveInfo(builder, resolveInfoOffset);
     return FBReferenceValue.endFBReferenceValue(builder);
   }
 
   public static void startFBReferenceValue(FlatBufferBuilder builder) { builder.startTable(2); }
-  public static void addResolveInfo(FlatBufferBuilder builder, int resolveInfo) { builder.addInt(0, resolveInfo, 0); }
-  public static void addReferred(FlatBufferBuilder builder, int referred) { builder.addInt(1, referred, 0); }
+  public static void addResolveInfo(FlatBufferBuilder builder, int resolveInfoOffset) { builder.addOffset(0, resolveInfoOffset, 0); }
+  public static void addReferred(FlatBufferBuilder builder, int referredOffset) { builder.addOffset(1, referredOffset, 0); }
   public static int endFBReferenceValue(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;

@@ -27,52 +27,57 @@ public final class FBNode extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBNode __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int id() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int classifier() { int o = __offset(6); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public FBProperty properties(int j) { return properties(new FBProperty(), j); }
-  public FBProperty properties(FBProperty obj, int j) { int o = __offset(8); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public String id() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer idAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
+  public ByteBuffer idInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer classifier() { return classifier(new io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer classifier(io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer obj) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty properties(int j) { return properties(new io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty properties(io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty obj, int j) { int o = __offset(8); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
   public int propertiesLength() { int o = __offset(8); return o != 0 ? __vector_len(o) : 0; }
-  public FBProperty.Vector propertiesVector() { return propertiesVector(new FBProperty.Vector()); }
-  public FBProperty.Vector propertiesVector(FBProperty.Vector obj) { int o = __offset(8); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public FBContainment containments(int j) { return containments(new FBContainment(), j); }
-  public FBContainment containments(FBContainment obj, int j) { int o = __offset(10); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty.Vector propertiesVector() { return propertiesVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty.Vector propertiesVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBProperty.Vector obj) { int o = __offset(8); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment containments(int j) { return containments(new io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment containments(io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment obj, int j) { int o = __offset(10); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
   public int containmentsLength() { int o = __offset(10); return o != 0 ? __vector_len(o) : 0; }
-  public FBContainment.Vector containmentsVector() { return containmentsVector(new FBContainment.Vector()); }
-  public FBContainment.Vector containmentsVector(FBContainment.Vector obj) { int o = __offset(10); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public FBReference references(int j) { return references(new FBReference(), j); }
-  public FBReference references(FBReference obj, int j) { int o = __offset(12); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment.Vector containmentsVector() { return containmentsVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment.Vector containmentsVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBContainment.Vector obj) { int o = __offset(10); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReference references(int j) { return references(new io.lionweb.lioncore.java.serialization.flatbuffers.FBReference(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReference references(io.lionweb.lioncore.java.serialization.flatbuffers.FBReference obj, int j) { int o = __offset(12); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
   public int referencesLength() { int o = __offset(12); return o != 0 ? __vector_len(o) : 0; }
-  public FBReference.Vector referencesVector() { return referencesVector(new FBReference.Vector()); }
-  public FBReference.Vector referencesVector(FBReference.Vector obj) { int o = __offset(12); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public FBAnnotation annotations(int j) { return annotations(new FBAnnotation(), j); }
-  public FBAnnotation annotations(FBAnnotation obj, int j) { int o = __offset(14); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReference.Vector referencesVector() { return referencesVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBReference.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReference.Vector referencesVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBReference.Vector obj) { int o = __offset(12); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation annotations(int j) { return annotations(new io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation annotations(io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation obj, int j) { int o = __offset(14); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
   public int annotationsLength() { int o = __offset(14); return o != 0 ? __vector_len(o) : 0; }
-  public FBAnnotation.Vector annotationsVector() { return annotationsVector(new FBAnnotation.Vector()); }
-  public FBAnnotation.Vector annotationsVector(FBAnnotation.Vector obj) { int o = __offset(14); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public int parent() { int o = __offset(16); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector annotationsVector() { return annotationsVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector annotationsVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBAnnotation.Vector obj) { int o = __offset(14); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public String parent() { int o = __offset(16); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer parentAsByteBuffer() { return __vector_as_bytebuffer(16, 1); }
+  public ByteBuffer parentInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 16, 1); }
 
   public static int createFBNode(FlatBufferBuilder builder,
-      int id,
-      int classifier,
+      int idOffset,
+      int classifierOffset,
       int propertiesOffset,
       int containmentsOffset,
       int referencesOffset,
       int annotationsOffset,
-      int parent) {
+      int parentOffset) {
     builder.startTable(7);
-    FBNode.addParent(builder, parent);
+    FBNode.addParent(builder, parentOffset);
     FBNode.addAnnotations(builder, annotationsOffset);
     FBNode.addReferences(builder, referencesOffset);
     FBNode.addContainments(builder, containmentsOffset);
     FBNode.addProperties(builder, propertiesOffset);
-    FBNode.addClassifier(builder, classifier);
-    FBNode.addId(builder, id);
+    FBNode.addClassifier(builder, classifierOffset);
+    FBNode.addId(builder, idOffset);
     return FBNode.endFBNode(builder);
   }
 
   public static void startFBNode(FlatBufferBuilder builder) { builder.startTable(7); }
-  public static void addId(FlatBufferBuilder builder, int id) { builder.addInt(0, id, 0); }
-  public static void addClassifier(FlatBufferBuilder builder, int classifier) { builder.addInt(1, classifier, 0); }
+  public static void addId(FlatBufferBuilder builder, int idOffset) { builder.addOffset(0, idOffset, 0); }
+  public static void addClassifier(FlatBufferBuilder builder, int classifierOffset) { builder.addOffset(1, classifierOffset, 0); }
   public static void addProperties(FlatBufferBuilder builder, int propertiesOffset) { builder.addOffset(2, propertiesOffset, 0); }
   public static int createPropertiesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startPropertiesVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
@@ -85,7 +90,7 @@ public final class FBNode extends Table {
   public static void addAnnotations(FlatBufferBuilder builder, int annotationsOffset) { builder.addOffset(5, annotationsOffset, 0); }
   public static int createAnnotationsVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startAnnotationsVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
-  public static void addParent(FlatBufferBuilder builder, int parent) { builder.addInt(6, parent, 0); }
+  public static void addParent(FlatBufferBuilder builder, int parentOffset) { builder.addOffset(6, parentOffset, 0); }
   public static int endFBNode(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;

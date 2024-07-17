@@ -27,21 +27,25 @@ public final class FBLanguage extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBLanguage __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int key() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int version() { int o = __offset(6); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
+  public String key() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer keyAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
+  public ByteBuffer keyInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
+  public String version() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer versionAsByteBuffer() { return __vector_as_bytebuffer(6, 1); }
+  public ByteBuffer versionInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 6, 1); }
 
   public static int createFBLanguage(FlatBufferBuilder builder,
-      int key,
-      int version) {
+      int keyOffset,
+      int versionOffset) {
     builder.startTable(2);
-    FBLanguage.addVersion(builder, version);
-    FBLanguage.addKey(builder, key);
+    FBLanguage.addVersion(builder, versionOffset);
+    FBLanguage.addKey(builder, keyOffset);
     return FBLanguage.endFBLanguage(builder);
   }
 
   public static void startFBLanguage(FlatBufferBuilder builder) { builder.startTable(2); }
-  public static void addKey(FlatBufferBuilder builder, int key) { builder.addInt(0, key, 0); }
-  public static void addVersion(FlatBufferBuilder builder, int version) { builder.addInt(1, version, 0); }
+  public static void addKey(FlatBufferBuilder builder, int keyOffset) { builder.addOffset(0, keyOffset, 0); }
+  public static void addVersion(FlatBufferBuilder builder, int versionOffset) { builder.addOffset(1, versionOffset, 0); }
   public static int endFBLanguage(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;

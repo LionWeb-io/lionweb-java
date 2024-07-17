@@ -13,6 +13,7 @@ import io.lionweb.lioncore.protobuf.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class FlatBuffersSerialization extends AbstractSerialization {
@@ -44,15 +45,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         return deserializeToNodes(FBChunk.getRootAsFBChunk(bb));
     }
 
-//    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(File file) throws IOException {
-//        return deserializeToNodes(new FileInputStream(file));
-//    }
-//
-//    public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(InputStream inputStream) throws IOException {
-//
-//        return deserializeToNodes(FBChunk..parseFrom(inputStream));
-//    }
-
     public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(FBChunk chunk) {
         return deserializeToClassifierInstances(chunk).stream()
                 .filter(ci -> ci instanceof io.lionweb.lioncore.java.model.Node)
@@ -67,55 +59,54 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         return deserializeSerializationBlock(serializationBlock);
     }
 
-    private SerializedChunk deserializeSerializationChunk(FBChunk chunk) {
-        Map<Integer, String> stringsMap = new HashMap<>();
-        for (int i = 0; i < chunk.stringValuesLength(); i++) {
-            stringsMap.put(i, chunk.stringValues(i));
+    private class DeserializationHelper {
+
+        public MetaPointer deserialize(FBMetaPointer classifier) {
+            throw new UnsupportedOperationException();
         }
-        Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
-        for (int i = 0; i < chunk.metapointersLength(); i++) {
-            FBMetaPointer mp = chunk.metapointers(i);
-            MetaPointer metaPointer = new MetaPointer();
-            metaPointer.setKey(stringsMap.get(mp.key()));
-            metaPointer.setLanguage(stringsMap.get(mp.language()));
-            metaPointer.setVersion(stringsMap.get(mp.version()));
-            metapointersMap.put(i, metaPointer);
-        };
+
+        public SerializedContainmentValue deserialize(FBContainment containment) {
+            SerializedContainmentValue scv = new SerializedContainmentValue();
+            List<String> children = new ArrayList<>(containment.childrenLength());
+            for (int k = 0; k < containment.childrenLength(); k++) {
+                String child = containment.children(k);
+                children.set(k, child);
+            }
+            scv.setValue(children);
+            scv.setMetaPointer(deserialize(containment.metaPointer()));
+            return scv;
+        }
+    }
+
+    private SerializedChunk deserializeSerializationChunk(FBChunk chunk) {
+        DeserializationHelper helper = new DeserializationHelper();
 
         SerializedChunk serializedChunk = new SerializedChunk();
         serializedChunk.setSerializationFormatVersion(chunk.serializationFormatVersion());
         for (int i = 0; i < chunk.languagesLength(); i++) {
             FBLanguage l = chunk.languages(i);
             UsedLanguage usedLanguage = new UsedLanguage();
-            usedLanguage.setKey(stringsMap.get(l.key()));
-            usedLanguage.setVersion(stringsMap.get(l.version()));
+            usedLanguage.setKey(l.key());
+            usedLanguage.setVersion(l.version());
             serializedChunk.addLanguage(usedLanguage);
         };
 
         for (int i = 0; i < chunk.nodesLength(); i++) {
             FBNode n = chunk.nodes(i);
             SerializedClassifierInstance sci = new SerializedClassifierInstance();
-            sci.setID(stringsMap.get(n.id()));
-            sci.setParentNodeID(stringsMap.get(n.parent()));
-            sci.setClassifier(metapointersMap.get(n.classifier()));
+            sci.setID(n.id());
+            sci.setParentNodeID(n.parent());
+            sci.setClassifier(helper.deserialize(n.classifier()));
             for (int j = 0; j < n.propertiesLength(); j++) {
                 FBProperty p = n.properties(j);
                 SerializedPropertyValue spv = new SerializedPropertyValue();
-                spv.setValue(stringsMap.get(p.value()));
-                spv.setMetaPointer(metapointersMap.get(p.metaPointerIndex()));
+                spv.setValue(p.value());
+                spv.setMetaPointer(helper.deserialize(p.metaPointer()));
                 sci.addPropertyValue(spv);
             };
             for (int j = 0; j < n.containmentsLength(); j++) {
                 FBContainment c = n.containments(j);
-                SerializedContainmentValue scv = new SerializedContainmentValue();
-                List<String> children = new ArrayList<>(c.childrenLength());
-                for (int k = 0; k < c.childrenLength(); k++) {
-                    String child = stringsMap.get(c.children(k));
-                    children.set(k, child);
-                }
-                scv.setValue(children);
-                scv.setMetaPointer(metapointersMap.get(c.metaPointerIndex()));
-                sci.addContainmentValue(scv);
+                sci.addContainmentValue(helper.deserialize(c));
             };
             for (int j = 0; j < n.referencesLength(); j++) {
                 FBReference r = n.references(j);
@@ -168,94 +159,14 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             throw new IllegalArgumentException("Proxy nodes cannot be serialized");
         }
         SerializedChunk serializationBlock = serializeNodesToSerializationBlock(classifierInstances);
-        return serializeToByteArray(serializationBlock);
+        return serialize(serializationBlock);
     }
 
     public byte[] serializeNodesToByteArray(ClassifierInstance<?>... classifierInstances) {
         return serializeNodesToByteArray(Arrays.asList(classifierInstances));
     }
 
-    public byte[] serializeToByteArray(SerializedChunk serializedChunk) {
-        return serialize(serializedChunk).getByteBuffer().array();
-    }
 
-    private class SerializeHelper {
-        final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
-        final Map<String, Integer> strings = new HashMap<>();
-
-        int stringIndexer(String string) {
-            if (string == null) {
-                return -1;
-            }
-            if (strings.containsKey(string)) {
-                return strings.get(string);
-            }
-            int index = strings.size();
-            strings.put(string, index);
-            return index;
-        }
-
-        ;
-
-        int metaPointerIndexer(MetaPointer metaPointer, FlatBufferBuilder flatBufferBuilder) {
-            if (metaPointers.containsKey(metaPointer)) {
-                return metaPointers.get(metaPointer);
-            }
-            FBMetaPointer.startFBMetaPointer(flatBufferBuilder);
-            FBMetaPointer.addKey(flatBufferBuilder, stringIndexer(metaPointer.getKey()));
-            FBMetaPointer.addVersion(flatBufferBuilder, stringIndexer(metaPointer.getVersion()));
-            FBMetaPointer.addLanguage(flatBufferBuilder, stringIndexer(metaPointer.getLanguage()));
-            FBMetaPointer.endFBMetaPointer(flatBufferBuilder);
-            int index = metaPointers.size();
-            metaPointers.put(metaPointer, index);
-            return index;
-        }
-
-        Node serializeNode(SerializedClassifierInstance n) {
-            Node.Builder nodeBuilder = Node.newBuilder();
-            nodeBuilder.setId(this.stringIndexer(n.getID()));
-            nodeBuilder.setClassifier(this.metaPointerIndexer((n.getClassifier())));
-            nodeBuilder.setParent(this.stringIndexer(n.getParentNodeID()));
-            // TODO n.getAnnotations()
-            n.getProperties()
-                    .forEach(
-                            p -> {
-                                Property.Builder b = Property.newBuilder();
-                                b.setValue(this.stringIndexer(p.getValue()));
-                                b.setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())));
-                                nodeBuilder.addProperties(b.build());
-                            });
-            n.getContainments()
-                    .forEach(
-                            p ->
-                                    nodeBuilder.addContainments(
-                                            Containment.newBuilder()
-                                                    .addAllChildren(p.getValue().stream().map(v -> this.stringIndexer(v)).collect(Collectors.toList()))
-                                                    .setMetaPointerIndex(
-                                                            this.metaPointerIndexer((p.getMetaPointer())))
-                                                    .build()));
-            n.getReferences()
-                    .forEach(
-                            p ->
-                                    nodeBuilder.addReferences(
-                                            Reference.newBuilder()
-                                                    .addAllValues(
-                                                            p.getValue().stream()
-                                                                    .map(
-                                                                            rf -> {
-                                                                                ReferenceValue.Builder b =
-                                                                                        ReferenceValue.newBuilder();
-                                                                                b.setReferred(this.stringIndexer(rf.getReference()));
-                                                                                b.setResolveInfo(this.stringIndexer(rf.getResolveInfo()));
-                                                                                return b.build();
-                                                                            })
-                                                                    .collect(Collectors.toList()))
-                                                    .setMetaPointerIndex(
-                                                            this.metaPointerIndexer((p.getMetaPointer())))
-                                                    .build()));
-            return nodeBuilder.build();
-        }
-    }
 
 
 
@@ -337,7 +248,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
 //    return bulkImportBuilder.build();
 //  }
 
-  public FBChunk serializeTree(ClassifierInstance<?> classifierInstance) {
+  public byte[] serializeTree(ClassifierInstance<?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -352,40 +263,129 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return serialize(serializedChunk);
   }
 
-  public FBChunk serialize(SerializedChunk serializedChunk) {
+  private class FBHelper {
+        FlatBufferBuilder builder;
+        Map<MetaPointer, Integer> serializedMetapointers = new HashMap<>();
+        FBHelper(FlatBufferBuilder builder) {
+            this.builder = builder;
+        }
+
+        /**
+         * This method can create objects, so it should not be nested inside another object creation.
+         */
+        int offsetForMetaPointer(MetaPointer metaPointer) {
+            if (!serializedMetapointers.containsKey(metaPointer)) {
+                int fbMetapointer = FBMetaPointer.createFBMetaPointer(builder,
+                        builder.createSharedString(metaPointer.getLanguage()),
+                        builder.createSharedString(metaPointer.getKey()),
+                        builder.createSharedString(metaPointer.getVersion()));
+                serializedMetapointers.put(metaPointer, fbMetapointer);
+            }
+            return serializedMetapointers.get(metaPointer);
+        }
+
+        int offsetForLanguage(UsedLanguage usedLanguage) {
+            return FBLanguage.createFBLanguage(builder,
+                    builder.createSharedString(usedLanguage.getKey()), builder.createSharedString(usedLanguage.getVersion()));
+        }
+
+        int[] languagesVector(List<UsedLanguage> usedLanguages) {
+            int[] languagesOffsets = new int[usedLanguages.size()];
+            for (int i = 0; i < usedLanguages.size(); i++) {
+                UsedLanguage ul = usedLanguages.get(i);
+                languagesOffsets[i] = FBLanguage.createFBLanguage(builder,
+                        builder.createSharedString(ul.getKey()), builder.createSharedString(ul.getVersion()));
+            }
+            return languagesOffsets;
+        }
+
+        int[] propsVector(List<SerializedPropertyValue> properties) {
+            int[] props = new int[properties.size()];
+            for (int j = 0; j < properties.size(); j++) {
+                SerializedPropertyValue el = properties.get(j);
+                props[j] = FBProperty.createFBProperty(builder, offsetForMetaPointer(el.getMetaPointer()),
+                        builder.createSharedString(el.getValue()));
+            }
+            return props;
+        }
+
+        int[] containmentsVector(List<SerializedContainmentValue> containments) {
+            int[] cons = new int[containments.size()];
+            for (int j = 0; j < containments.size(); j++) {
+                SerializedContainmentValue el =containments.get(j);
+                int[] children = new int[el.getValue().size()];
+                for (int k = 0; k < el.getValue().size(); k++) {
+                    children[k] = builder.createSharedString(el.getValue().get(k));
+                }
+                cons[j] = FBContainment.createFBContainment(builder, offsetForMetaPointer(el.getMetaPointer()),
+                        FBContainment.createChildrenVector(builder, children));
+            }
+            return cons;
+        }
+
+        int[] referencesVector(List<SerializedReferenceValue> references) {
+            int[] refs = new int[references.size()];
+            for (int j = 0; j < references.size(); j++) {
+                SerializedReferenceValue el = references.get(j);
+                int[] values = new int[el.getValue().size()];
+                for (int k = 0; k < el.getValue().size(); k++) {
+                    values[k] = FBReferenceValue.createFBReferenceValue(builder,
+                            builder.createSharedString(el.getValue().get(k).getResolveInfo()),
+                            builder.createSharedString(el.getValue().get(k).getReference()));
+                }
+                refs[j] = FBReference.createFBReference(builder, offsetForMetaPointer(el.getMetaPointer()),
+                        FBReference.createValuesVector(builder, values));
+            }
+            return refs;
+        }
+
+        int[] annotationsVector(List<String> annotations) {
+            int[] anns = new int[annotations.size()];
+            if (anns.length > 0) {
+                throw new UnsupportedOperationException();
+            }
+            return anns;
+        }
+    }
+
+  public byte[] serialize(SerializedChunk serializedChunk) {
       FlatBufferBuilder builder = new FlatBufferBuilder(1024);
-      FBChunk.createFBChunk(builder,
-        builder.createSharedString(serializedChunk.getSerializationFormatVersion());
 
-    Chunk.Builder chunkBuilder = Chunk.newBuilder();
-    chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
-    SerializeHelper serializeHelper = new SerializeHelper();
-    serializedChunk
-        .getLanguages()
-        .forEach(
-            ul -> {
-              chunkBuilder.addLanguages(
-                  Language.newBuilder()
-                          .setKey(serializeHelper.stringIndexer(ul.getKey()))
-                          .setVersion(serializeHelper.stringIndexer(ul.getVersion()))
-                          .build());
-            });
+      FBHelper helper = new FBHelper(builder);
 
-    serializedChunk
-        .getClassifierInstances()
-        .forEach(
-            n -> chunkBuilder.addNodes(serializeHelper.serializeNode(n)));
+      int[] languagesOffsets = helper.languagesVector(serializedChunk.getLanguages());
 
-    serializeHelper.strings.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
-        chunkBuilder.addStringValues(entry.getKey());
-    });
-      serializeHelper.metaPointers.entrySet().stream().sorted(Map.Entry.comparingByValue()).forEach(entry -> {
-          io.lionweb.lioncore.protobuf.MetaPointer.Builder metaPointer = io.lionweb.lioncore.protobuf.MetaPointer.newBuilder();
-          metaPointer.setKey(serializeHelper.stringIndexer(entry.getKey().getKey()));
-          metaPointer.setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()));
-          metaPointer.setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()));
-          chunkBuilder.addMetaPointers(metaPointer.build());
-      });
-    return chunkBuilder.build();
+      int[] nodesOffsets = new int[serializedChunk.getClassifierInstances().size()];
+      for (int i = 0; i < serializedChunk.getClassifierInstances().size(); i++) {
+          SerializedClassifierInstance sci = serializedChunk.getClassifierInstances().get(i);
+
+          nodesOffsets[i] = builder.offset();
+          int idOffset = builder.createSharedString(sci.getID());
+          int parentOffset = sci.getParentNodeID() == null ? -1 : builder.createSharedString(sci.getParentNodeID());
+          int propsVector = FBNode.createPropertiesVector(builder, helper.propsVector(sci.getProperties()));
+          int consVector = FBNode.createContainmentsVector(builder, helper.containmentsVector(sci.getContainments()));
+          int refsVector = FBNode.createReferencesVector(builder, helper.referencesVector(sci.getReferences()));
+          int annsVector = FBNode.createAnnotationsVector(builder, helper.annotationsVector(sci.getAnnotations()));
+          FBNode.startFBNode(builder);
+          FBNode.addId(builder, idOffset);
+          FBNode.addProperties(builder, propsVector);
+          FBNode.addContainments(builder, consVector);
+          FBNode.addReferences(builder, refsVector);
+          FBNode.addAnnotations(builder, annsVector);
+
+          if (parentOffset != -1) {
+              FBNode.addParent(builder, parentOffset);
+          }
+          FBNode.endFBNode(builder);
+      }
+
+      int chunk = FBChunk.createFBChunk(builder,
+        builder.createSharedString(serializedChunk.getSerializationFormatVersion()),
+              FBChunk.createLanguagesVector(builder, languagesOffsets),
+              FBChunk.createNodesVector(builder, nodesOffsets)
+              );
+
+    builder.finish(chunk);
+    return builder.dataBuffer().array();
   }
 }

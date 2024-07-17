@@ -30,53 +30,34 @@ public final class FBChunk extends Table {
   public String serializationFormatVersion() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
   public ByteBuffer serializationFormatVersionAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
   public ByteBuffer serializationFormatVersionInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
-  public String stringValues(int j) { int o = __offset(6); return o != 0 ? __string(__vector(o) + j * 4) : null; }
-  public int stringValuesLength() { int o = __offset(6); return o != 0 ? __vector_len(o) : 0; }
-  public StringVector stringValuesVector() { return stringValuesVector(new StringVector()); }
-  public StringVector stringValuesVector(StringVector obj) { int o = __offset(6); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public FBMetaPointer metapointers(int j) { return metapointers(new FBMetaPointer(), j); }
-  public FBMetaPointer metapointers(FBMetaPointer obj, int j) { int o = __offset(8); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int metapointersLength() { int o = __offset(8); return o != 0 ? __vector_len(o) : 0; }
-  public FBMetaPointer.Vector metapointersVector() { return metapointersVector(new FBMetaPointer.Vector()); }
-  public FBMetaPointer.Vector metapointersVector(FBMetaPointer.Vector obj) { int o = __offset(8); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public FBLanguage languages(int j) { return languages(new FBLanguage(), j); }
-  public FBLanguage languages(FBLanguage obj, int j) { int o = __offset(10); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int languagesLength() { int o = __offset(10); return o != 0 ? __vector_len(o) : 0; }
-  public FBLanguage.Vector languagesVector() { return languagesVector(new FBLanguage.Vector()); }
-  public FBLanguage.Vector languagesVector(FBLanguage.Vector obj) { int o = __offset(10); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
-  public FBNode nodes(int j) { return nodes(new FBNode(), j); }
-  public FBNode nodes(FBNode obj, int j) { int o = __offset(12); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
-  public int nodesLength() { int o = __offset(12); return o != 0 ? __vector_len(o) : 0; }
-  public FBNode.Vector nodesVector() { return nodesVector(new FBNode.Vector()); }
-  public FBNode.Vector nodesVector(FBNode.Vector obj) { int o = __offset(12); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage languages(int j) { return languages(new io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage languages(io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage obj, int j) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public int languagesLength() { int o = __offset(6); return o != 0 ? __vector_len(o) : 0; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage.Vector languagesVector() { return languagesVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage.Vector languagesVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBLanguage.Vector obj) { int o = __offset(6); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBNode nodes(int j) { return nodes(new io.lionweb.lioncore.java.serialization.flatbuffers.FBNode(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBNode nodes(io.lionweb.lioncore.java.serialization.flatbuffers.FBNode obj, int j) { int o = __offset(8); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public int nodesLength() { int o = __offset(8); return o != 0 ? __vector_len(o) : 0; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBNode.Vector nodesVector() { return nodesVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBNode.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBNode.Vector nodesVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBNode.Vector obj) { int o = __offset(8); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
 
   public static int createFBChunk(FlatBufferBuilder builder,
       int serializationFormatVersionOffset,
-      int stringValuesOffset,
-      int metapointersOffset,
       int languagesOffset,
       int nodesOffset) {
-    builder.startTable(5);
+    builder.startTable(3);
     FBChunk.addNodes(builder, nodesOffset);
     FBChunk.addLanguages(builder, languagesOffset);
-    FBChunk.addMetapointers(builder, metapointersOffset);
-    FBChunk.addStringValues(builder, stringValuesOffset);
     FBChunk.addSerializationFormatVersion(builder, serializationFormatVersionOffset);
     return FBChunk.endFBChunk(builder);
   }
 
-  public static void startFBChunk(FlatBufferBuilder builder) { builder.startTable(5); }
+  public static void startFBChunk(FlatBufferBuilder builder) { builder.startTable(3); }
   public static void addSerializationFormatVersion(FlatBufferBuilder builder, int serializationFormatVersionOffset) { builder.addOffset(0, serializationFormatVersionOffset, 0); }
-  public static void addStringValues(FlatBufferBuilder builder, int stringValuesOffset) { builder.addOffset(1, stringValuesOffset, 0); }
-  public static int createStringValuesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
-  public static void startStringValuesVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
-  public static void addMetapointers(FlatBufferBuilder builder, int metapointersOffset) { builder.addOffset(2, metapointersOffset, 0); }
-  public static int createMetapointersVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
-  public static void startMetapointersVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
-  public static void addLanguages(FlatBufferBuilder builder, int languagesOffset) { builder.addOffset(3, languagesOffset, 0); }
+  public static void addLanguages(FlatBufferBuilder builder, int languagesOffset) { builder.addOffset(1, languagesOffset, 0); }
   public static int createLanguagesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startLanguagesVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
-  public static void addNodes(FlatBufferBuilder builder, int nodesOffset) { builder.addOffset(4, nodesOffset, 0); }
+  public static void addNodes(FlatBufferBuilder builder, int nodesOffset) { builder.addOffset(2, nodesOffset, 0); }
   public static int createNodesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startNodesVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
   public static int endFBChunk(FlatBufferBuilder builder) {

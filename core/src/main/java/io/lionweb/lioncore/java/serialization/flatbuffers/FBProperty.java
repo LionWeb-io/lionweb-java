@@ -27,21 +27,24 @@ public final class FBProperty extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBProperty __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int metaPointerIndex() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int value() { int o = __offset(6); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer metaPointer() { return metaPointer(new io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer metaPointer(io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer obj) { int o = __offset(4); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
+  public String value() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer valueAsByteBuffer() { return __vector_as_bytebuffer(6, 1); }
+  public ByteBuffer valueInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 6, 1); }
 
   public static int createFBProperty(FlatBufferBuilder builder,
-      int metaPointerIndex,
-      int value) {
+      int metaPointerOffset,
+      int valueOffset) {
     builder.startTable(2);
-    FBProperty.addValue(builder, value);
-    FBProperty.addMetaPointerIndex(builder, metaPointerIndex);
+    FBProperty.addValue(builder, valueOffset);
+    FBProperty.addMetaPointer(builder, metaPointerOffset);
     return FBProperty.endFBProperty(builder);
   }
 
   public static void startFBProperty(FlatBufferBuilder builder) { builder.startTable(2); }
-  public static void addMetaPointerIndex(FlatBufferBuilder builder, int metaPointerIndex) { builder.addInt(0, metaPointerIndex, 0); }
-  public static void addValue(FlatBufferBuilder builder, int value) { builder.addInt(1, value, 0); }
+  public static void addMetaPointer(FlatBufferBuilder builder, int metaPointerOffset) { builder.addOffset(0, metaPointerOffset, 0); }
+  public static void addValue(FlatBufferBuilder builder, int valueOffset) { builder.addOffset(1, valueOffset, 0); }
   public static int endFBProperty(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;

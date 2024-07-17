@@ -27,25 +27,31 @@ public final class FBMetaPointer extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBMetaPointer __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int language() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int key() { int o = __offset(6); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int version() { int o = __offset(8); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
+  public String language() { int o = __offset(4); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer languageAsByteBuffer() { return __vector_as_bytebuffer(4, 1); }
+  public ByteBuffer languageInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 4, 1); }
+  public String key() { int o = __offset(6); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer keyAsByteBuffer() { return __vector_as_bytebuffer(6, 1); }
+  public ByteBuffer keyInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 6, 1); }
+  public String version() { int o = __offset(8); return o != 0 ? __string(o + bb_pos) : null; }
+  public ByteBuffer versionAsByteBuffer() { return __vector_as_bytebuffer(8, 1); }
+  public ByteBuffer versionInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 8, 1); }
 
   public static int createFBMetaPointer(FlatBufferBuilder builder,
-      int language,
-      int key,
-      int version) {
+      int languageOffset,
+      int keyOffset,
+      int versionOffset) {
     builder.startTable(3);
-    FBMetaPointer.addVersion(builder, version);
-    FBMetaPointer.addKey(builder, key);
-    FBMetaPointer.addLanguage(builder, language);
+    FBMetaPointer.addVersion(builder, versionOffset);
+    FBMetaPointer.addKey(builder, keyOffset);
+    FBMetaPointer.addLanguage(builder, languageOffset);
     return FBMetaPointer.endFBMetaPointer(builder);
   }
 
   public static void startFBMetaPointer(FlatBufferBuilder builder) { builder.startTable(3); }
-  public static void addLanguage(FlatBufferBuilder builder, int language) { builder.addInt(0, language, 0); }
-  public static void addKey(FlatBufferBuilder builder, int key) { builder.addInt(1, key, 0); }
-  public static void addVersion(FlatBufferBuilder builder, int version) { builder.addInt(2, version, 0); }
+  public static void addLanguage(FlatBufferBuilder builder, int languageOffset) { builder.addOffset(0, languageOffset, 0); }
+  public static void addKey(FlatBufferBuilder builder, int keyOffset) { builder.addOffset(1, keyOffset, 0); }
+  public static void addVersion(FlatBufferBuilder builder, int versionOffset) { builder.addOffset(2, versionOffset, 0); }
   public static int endFBMetaPointer(FlatBufferBuilder builder) {
     int o = builder.endTable();
     return o;

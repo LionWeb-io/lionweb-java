@@ -27,24 +27,25 @@ public final class FBReference extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBReference __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int metaPointerIndex() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public FBReferenceValue values(int j) { return values(new FBReferenceValue(), j); }
-  public FBReferenceValue values(FBReferenceValue obj, int j) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer metaPointer() { return metaPointer(new io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer metaPointer(io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer obj) { int o = __offset(4); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue values(int j) { return values(new io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue(), j); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue values(io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue obj, int j) { int o = __offset(6); return o != 0 ? obj.__assign(__indirect(__vector(o) + j * 4), bb) : null; }
   public int valuesLength() { int o = __offset(6); return o != 0 ? __vector_len(o) : 0; }
-  public FBReferenceValue.Vector valuesVector() { return valuesVector(new FBReferenceValue.Vector()); }
-  public FBReferenceValue.Vector valuesVector(FBReferenceValue.Vector obj) { int o = __offset(6); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue.Vector valuesVector() { return valuesVector(new io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue.Vector()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue.Vector valuesVector(io.lionweb.lioncore.java.serialization.flatbuffers.FBReferenceValue.Vector obj) { int o = __offset(6); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
 
   public static int createFBReference(FlatBufferBuilder builder,
-      int metaPointerIndex,
+      int metaPointerOffset,
       int valuesOffset) {
     builder.startTable(2);
     FBReference.addValues(builder, valuesOffset);
-    FBReference.addMetaPointerIndex(builder, metaPointerIndex);
+    FBReference.addMetaPointer(builder, metaPointerOffset);
     return FBReference.endFBReference(builder);
   }
 
   public static void startFBReference(FlatBufferBuilder builder) { builder.startTable(2); }
-  public static void addMetaPointerIndex(FlatBufferBuilder builder, int metaPointerIndex) { builder.addInt(0, metaPointerIndex, 0); }
+  public static void addMetaPointer(FlatBufferBuilder builder, int metaPointerOffset) { builder.addOffset(0, metaPointerOffset, 0); }
   public static void addValues(FlatBufferBuilder builder, int valuesOffset) { builder.addOffset(1, valuesOffset, 0); }
   public static int createValuesVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startValuesVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }

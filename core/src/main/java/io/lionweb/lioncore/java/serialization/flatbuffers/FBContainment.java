@@ -27,27 +27,26 @@ public final class FBContainment extends Table {
   public void __init(int _i, ByteBuffer _bb) { __reset(_i, _bb); }
   public FBContainment __assign(int _i, ByteBuffer _bb) { __init(_i, _bb); return this; }
 
-  public int metaPointerIndex() { int o = __offset(4); return o != 0 ? bb.getInt(o + bb_pos) : 0; }
-  public int children(int j) { int o = __offset(6); return o != 0 ? bb.getInt(__vector(o) + j * 4) : 0; }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer metaPointer() { return metaPointer(new io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer()); }
+  public io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer metaPointer(io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer obj) { int o = __offset(4); return o != 0 ? obj.__assign(__indirect(o + bb_pos), bb) : null; }
+  public String children(int j) { int o = __offset(6); return o != 0 ? __string(__vector(o) + j * 4) : null; }
   public int childrenLength() { int o = __offset(6); return o != 0 ? __vector_len(o) : 0; }
-  public IntVector childrenVector() { return childrenVector(new IntVector()); }
-  public IntVector childrenVector(IntVector obj) { int o = __offset(6); return o != 0 ? obj.__assign(__vector(o), bb) : null; }
-  public ByteBuffer childrenAsByteBuffer() { return __vector_as_bytebuffer(6, 4); }
-  public ByteBuffer childrenInByteBuffer(ByteBuffer _bb) { return __vector_in_bytebuffer(_bb, 6, 4); }
+  public StringVector childrenVector() { return childrenVector(new StringVector()); }
+  public StringVector childrenVector(StringVector obj) { int o = __offset(6); return o != 0 ? obj.__assign(__vector(o), 4, bb) : null; }
 
   public static int createFBContainment(FlatBufferBuilder builder,
-      int metaPointerIndex,
+      int metaPointerOffset,
       int childrenOffset) {
     builder.startTable(2);
     FBContainment.addChildren(builder, childrenOffset);
-    FBContainment.addMetaPointerIndex(builder, metaPointerIndex);
+    FBContainment.addMetaPointer(builder, metaPointerOffset);
     return FBContainment.endFBContainment(builder);
   }
 
   public static void startFBContainment(FlatBufferBuilder builder) { builder.startTable(2); }
-  public static void addMetaPointerIndex(FlatBufferBuilder builder, int metaPointerIndex) { builder.addInt(0, metaPointerIndex, 0); }
+  public static void addMetaPointer(FlatBufferBuilder builder, int metaPointerOffset) { builder.addOffset(0, metaPointerOffset, 0); }
   public static void addChildren(FlatBufferBuilder builder, int childrenOffset) { builder.addOffset(1, childrenOffset, 0); }
-  public static int createChildrenVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addInt(data[i]); return builder.endVector(); }
+  public static int createChildrenVector(FlatBufferBuilder builder, int[] data) { builder.startVector(4, data.length, 4); for (int i = data.length - 1; i >= 0; i--) builder.addOffset(data[i]); return builder.endVector(); }
   public static void startChildrenVector(FlatBufferBuilder builder, int numElems) { builder.startVector(4, numElems, 4); }
   public static int endFBContainment(FlatBufferBuilder builder) {
     int o = builder.endTable();
