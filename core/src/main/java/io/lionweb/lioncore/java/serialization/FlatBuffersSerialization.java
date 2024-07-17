@@ -8,7 +8,6 @@ import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.flatbuffers.*;
-import io.lionweb.lioncore.protobuf.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;

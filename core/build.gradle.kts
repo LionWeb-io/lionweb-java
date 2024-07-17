@@ -133,6 +133,8 @@ mavenPublishing {
 }
 
 java {
+    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
+    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 val integrationTestSourceSet = sourceSets.create("integrationTest") {
@@ -214,9 +216,5 @@ sourceSets {
         compileClasspath += sourceSets.main.get().compileClasspath
         runtimeClasspath += sourceSets.main.get().output
         runtimeClasspath += sourceSets.main.get().runtimeClasspath
-        dependencies {
-            implementation(libs.gson)
-            implementation("com.google.guava:guava:33.0.0-jre")
-        }
     }
 }

@@ -1,5 +1,3 @@
-// Example IDL file for our monster's schema.
-
 namespace io.lionweb.lioncore.java.serialization.flatbuffers;
 
 table FBChunk {
