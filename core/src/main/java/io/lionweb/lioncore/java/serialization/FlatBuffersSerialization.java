@@ -84,7 +84,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             List<String> children = new ArrayList<>(containment.childrenLength());
             for (int k = 0; k < containment.childrenLength(); k++) {
                 String child = containment.children(k);
-                if (child == NULL_CONSTANT) {
+                if (child.equals(NULL_CONSTANT)) {
                     children.add(null);
                 } else {
                     children.add(child);
