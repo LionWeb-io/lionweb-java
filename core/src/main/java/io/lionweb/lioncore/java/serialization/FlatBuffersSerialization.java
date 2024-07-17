@@ -85,7 +85,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             for (int k = 0; k < containment.childrenLength(); k++) {
                 String child = containment.children(k);
                 if (child.equals(NULL_CONSTANT)) {
-                    children.add(null);
+                    throw new DeserializationException(
+                            "Unable to deserialize child identified by Null ID");
                 } else {
                     children.add(child);
                 }

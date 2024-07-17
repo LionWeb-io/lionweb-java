@@ -102,6 +102,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
             });
             n.getContainmentsList().forEach(c -> {
                 SerializedContainmentValue scv = new SerializedContainmentValue();
+                if (c.getChildrenList().stream().anyMatch(el -> el < 0)) {
+                    throw new DeserializationException(
+                            "Unable to deserialize child identified by Null ID");
+                }
                 scv.setValue(c.getChildrenList().stream().map(el -> stringsMap.get(el)).collect(Collectors.toList()));
                 scv.setMetaPointer(metapointersMap.get(c.getMetaPointerIndex()));
                 sci.addContainmentValue(scv);
