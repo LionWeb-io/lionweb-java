@@ -18,6 +18,8 @@ import java.util.stream.Collectors;
 
 public class FlatBuffersSerialization extends AbstractSerialization {
 
+    private static final String NULL_CONSTANT = "NULL";
+
     /**
      * This has specific support for LionCore or LionCoreBuiltins.
      */
@@ -61,8 +63,20 @@ public class FlatBuffersSerialization extends AbstractSerialization {
 
     private class DeserializationHelper {
 
+        private IdentityHashMap<FBMetaPointer, MetaPointer> metaPointersCache = new IdentityHashMap<>();
+
         public MetaPointer deserialize(FBMetaPointer classifier) {
-            throw new UnsupportedOperationException();
+            if (classifier == null) {
+                throw new IllegalStateException("Classifier should not be null");
+            }
+            if (!metaPointersCache.containsKey(classifier)) {
+                MetaPointer metaPointer = new MetaPointer();
+                metaPointer.setKey(classifier.key());
+                metaPointer.setLanguage(classifier.language());
+                metaPointer.setVersion(classifier.version());
+                metaPointersCache.put(classifier, metaPointer);
+            }
+            return metaPointersCache.get(classifier);
         }
 
         public SerializedContainmentValue deserialize(FBContainment containment) {
@@ -70,7 +84,11 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             List<String> children = new ArrayList<>(containment.childrenLength());
             for (int k = 0; k < containment.childrenLength(); k++) {
                 String child = containment.children(k);
-                children.set(k, child);
+                if (child == NULL_CONSTANT) {
+                    children.add(null);
+                } else {
+                    children.add(child);
+                }
             }
             scv.setValue(children);
             scv.setMetaPointer(deserialize(containment.metaPointer()));
@@ -114,11 +132,11 @@ public class FlatBuffersSerialization extends AbstractSerialization {
                 for (int k = 0; k < r.valuesLength(); k++) {
                     FBReferenceValue rv = r.values(k);
                     SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
-                    entry.setReference(stringsMap.get(rv.referred()));
-                    entry.setResolveInfo(stringsMap.get(rv.resolveInfo()));
+                    entry.setReference(rv.referred());
+                    entry.setResolveInfo(rv.resolveInfo());
                     srv.addValue(entry);
                 };
-                srv.setMetaPointer(metapointersMap.get(r.metaPointerIndex()));
+                srv.setMetaPointer(helper.deserialize(r.metaPointer()));
                 sci.addReferenceValue(srv);
             };
             // TODO
@@ -315,7 +333,11 @@ public class FlatBuffersSerialization extends AbstractSerialization {
                 SerializedContainmentValue el =containments.get(j);
                 int[] children = new int[el.getValue().size()];
                 for (int k = 0; k < el.getValue().size(); k++) {
-                    children[k] = builder.createSharedString(el.getValue().get(k));
+                    if (el.getValue().get(k) == null) {
+                        children[k] = builder.createSharedString(NULL_CONSTANT);
+                    } else {
+                        children[k] = builder.createSharedString(el.getValue().get(k));
+                    }
                 }
                 cons[j] = FBContainment.createFBContainment(builder, offsetForMetaPointer(el.getMetaPointer()),
                         FBContainment.createChildrenVector(builder, children));
@@ -359,15 +381,20 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       for (int i = 0; i < serializedChunk.getClassifierInstances().size(); i++) {
           SerializedClassifierInstance sci = serializedChunk.getClassifierInstances().get(i);
 
-          nodesOffsets[i] = builder.offset();
-          int idOffset = builder.createSharedString(sci.getID());
+          //nodesOffsets[i] = builder.offset();
+          int idOffset =sci.getID() == null ? -1 : builder.createSharedString(sci.getID());
+          int classifierOffset = helper.offsetForMetaPointer(sci.getClassifier());
           int parentOffset = sci.getParentNodeID() == null ? -1 : builder.createSharedString(sci.getParentNodeID());
           int propsVector = FBNode.createPropertiesVector(builder, helper.propsVector(sci.getProperties()));
           int consVector = FBNode.createContainmentsVector(builder, helper.containmentsVector(sci.getContainments()));
           int refsVector = FBNode.createReferencesVector(builder, helper.referencesVector(sci.getReferences()));
           int annsVector = FBNode.createAnnotationsVector(builder, helper.annotationsVector(sci.getAnnotations()));
           FBNode.startFBNode(builder);
-          FBNode.addId(builder, idOffset);
+          if (idOffset != -1) {
+              FBNode.addId(builder, idOffset);
+          }
+
+          FBNode.addClassifier(builder, classifierOffset);
           FBNode.addProperties(builder, propsVector);
           FBNode.addContainments(builder, consVector);
           FBNode.addReferences(builder, refsVector);
@@ -376,7 +403,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           if (parentOffset != -1) {
               FBNode.addParent(builder, parentOffset);
           }
-          FBNode.endFBNode(builder);
+          nodesOffsets[i] = FBNode.endFBNode(builder);
       }
 
       int chunk = FBChunk.createFBChunk(builder,
@@ -386,6 +413,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
               );
 
     builder.finish(chunk);
-    return builder.dataBuffer().array();
+    return builder.dataBuffer().compact().array();
   }
 }

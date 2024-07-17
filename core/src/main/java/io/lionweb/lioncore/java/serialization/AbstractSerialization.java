@@ -302,7 +302,12 @@ public abstract class AbstractSerialization {
     // Deserialization - Protected and Private
     //
 
-    protected void validateSerializationBlock(SerializedChunk serializationBlock) {
+    protected void validateSerializationBlock(@Nonnull SerializedChunk serializationBlock) {
+        Objects.requireNonNull(
+                serializationBlock, "serializationBlock should not be null");
+        if (serializationBlock.getSerializationFormatVersion() == null) {
+            throw new IllegalArgumentException("The serializationFormatVersion should not be null");
+        }
         if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)) {
             throw new IllegalArgumentException(
                     "Only serializationFormatVersion = '" + DEFAULT_SERIALIZATION_FORMAT + "' is supported");

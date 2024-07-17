@@ -1,5 +1,6 @@
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
@@ -52,7 +53,7 @@ public class SerializationExperiment {
 
     public static void main(String[] args) throws IOException {
         TreeGenerator treeGenerator = new TreeGenerator(1);
-        Node tree = treeGenerator.generate(500_000);
+        Node tree = treeGenerator.generate(150_000);
         System.out.println("Tree generated");
 
         SerializedChunk chunk = JsonSerialization.getStandardSerialization().serializeTreeToSerializationBlock(tree);
@@ -92,6 +93,19 @@ public class SerializationExperiment {
 //        System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
 //        assertInstancesAreEquals(tree, pUnserializedTree);
 
+        System.out.println("= Flatbuffers serialization =");
+        long ft0 = System.currentTimeMillis();
+        FlatBuffersSerialization flatBuffersSerialization = FlatBuffersSerialization.getStandardSerialization();
+        flatBuffersSerialization.enableDynamicNodes();
+        byte[] fbytes = flatBuffersSerialization.serialize(chunk);
+        long ft1 = System.currentTimeMillis();
+        System.out.println("  serialized in " + (ft1 - ft0) + "ms");
+        System.out.println("  size " + fbytes.length + " bytes");
+//        Node pUnserializedTree = protoBufSerialization.deserializeToNodes(bytes).get(0);
+//        long pt2 = System.currentTimeMillis();
+//        System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
+//        assertInstancesAreEquals(tree, pUnserializedTree);
+
         System.out.println("= Comparison (protobuf against uncompressed JSON)=");
         {
             double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (jt1 - jt0);
@@ -107,6 +121,26 @@ public class SerializationExperiment {
             double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (ct1 - ct0);
             //double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (ct2 - ct1);
             double sizeRatio = ((double) (bytes.length) * 100) / (compressed.length);
+            System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
+            //System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
+            System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
+        }
+
+        System.out.println("= Comparison (flatbuffers against uncompressed JSON)=");
+        {
+            double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (jt1 - jt0);
+            //double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (jt2 - jt1);
+            double sizeRatio = ((double) (fbytes.length) * 100) / (json.getBytes().length);
+            System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
+            //System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
+            System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
+        }
+
+        System.out.println("= Comparison (flatbuffers against compressed JSON)=");
+        {
+            double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (ct1 - ct0);
+            //double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (ct2 - ct1);
+            double sizeRatio = ((double) (fbytes.length) * 100) / (compressed.length);
             System.out.println("  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
             //System.out.println("  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
             System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
