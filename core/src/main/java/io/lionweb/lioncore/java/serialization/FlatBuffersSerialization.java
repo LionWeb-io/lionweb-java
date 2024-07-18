@@ -62,14 +62,15 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       if (classifier == null) {
         throw new IllegalStateException("Classifier should not be null");
       }
-      if (!metaPointersCache.containsKey(classifier)) {
-        MetaPointer metaPointer = new MetaPointer();
-        metaPointer.setKey(classifier.key());
-        metaPointer.setLanguage(classifier.language());
-        metaPointer.setVersion(classifier.version());
-        metaPointersCache.put(classifier, metaPointer);
-      }
-      return metaPointersCache.get(classifier);
+      return metaPointersCache.computeIfAbsent(
+          classifier,
+          fbMetaPointer -> {
+            MetaPointer metaPointer = new MetaPointer();
+            metaPointer.setKey(classifier.key());
+            metaPointer.setLanguage(classifier.language());
+            metaPointer.setVersion(classifier.version());
+            return metaPointer;
+          });
     }
 
     public SerializedContainmentValue deserialize(FBContainment containment) {

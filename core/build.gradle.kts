@@ -41,17 +41,11 @@ dependencies {
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
     // on Maven
     javadocConfig("com.jetbrains:mps-openapi:2021.3.1")
-
     javadocConfig("org.modelix:model-api:1.3.2")
-
     implementation(libs.gson)
-
     implementation("com.networknt:json-schema-validator:1.0.77")
-
     implementation("com.google.protobuf:protobuf-java:4.27.2")
-
     implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
-
 }
 
 tasks.register<Javadoc>("myJavadoc") {
