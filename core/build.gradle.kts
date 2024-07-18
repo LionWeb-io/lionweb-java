@@ -7,6 +7,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.1"
     id("com.vanniktech.maven.publish")
     jacoco
+    id("com.google.protobuf") version "0.9.4"
 }
 
 repositories {
@@ -40,12 +41,11 @@ dependencies {
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
     // on Maven
     javadocConfig("com.jetbrains:mps-openapi:2021.3.1")
-
     javadocConfig("org.modelix:model-api:1.3.2")
-
     implementation(libs.gson)
-
     implementation("com.networknt:json-schema-validator:1.0.77")
+    implementation("com.google.protobuf:protobuf-java:4.27.2")
+    implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
 }
 
 tasks.register<Javadoc>("myJavadoc") {
@@ -185,4 +185,30 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+protobuf {
+    protoc {
+        protoc {
+            // Apple Silicon processor would look for an unexisting platform-specific variant
+            artifact = "com.google.protobuf:protoc:4.27.2" + if (osdetector.os == "osx") ":osx-x86_64" else ""
+        }
+    }
+    generateProtoTasks {
+        ofSourceSet("main").forEach {
+        }
+    }
+}
+
+tasks {
+    getByName("sourcesJar").dependsOn("generateProto")
+}
+
+sourceSets {
+    create("experiments") {
+        compileClasspath += sourceSets.main.get().output
+        compileClasspath += sourceSets.main.get().compileClasspath
+        runtimeClasspath += sourceSets.main.get().output
+        runtimeClasspath += sourceSets.main.get().runtimeClasspath
+    }
 }

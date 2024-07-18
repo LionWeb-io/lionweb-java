@@ -23,7 +23,7 @@ public class LibraryLanguage {
     InputStream inputStream =
         LibraryLanguage.class.getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     LIBRARY_MM =
         deserializedNodes.stream()

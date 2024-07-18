@@ -91,6 +91,10 @@ public class SerializedReferenceValue {
     this.value.addAll(value);
   }
 
+  public void addValue(Entry value) {
+    this.value.add(value);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;

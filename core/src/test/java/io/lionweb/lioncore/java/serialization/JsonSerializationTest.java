@@ -42,7 +42,7 @@ public class JsonSerializationTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -74,7 +74,7 @@ public class JsonSerializationTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -105,7 +105,7 @@ public class JsonSerializationTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -132,7 +132,7 @@ public class JsonSerializationTest extends SerializationTest {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/TestLang-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Enumeration testEnumeration1 =
@@ -164,7 +164,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeLanguageWithDependencies() {
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     Language starlasu =
         (Language)
             jsonSerialization
@@ -215,7 +215,7 @@ public class JsonSerializationTest extends SerializationTest {
   public void deserializeMultipleRoots() {
     Sum sum1 = new Sum(new IntLiteral(1), new IntLiteral(2));
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
     assertEquals(2, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
@@ -234,7 +234,7 @@ public class JsonSerializationTest extends SerializationTest {
     IntLiteral il2 = new IntLiteral(2, null);
     IntLiteral il3 = new IntLiteral(3, null);
     IntLiteral il4 = new IntLiteral(4, null);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(il1, il2, il3, il4);
     prepareDeserializationOfSimpleMath(js);
     List<IntLiteral> deserialized =
@@ -252,7 +252,7 @@ public class JsonSerializationTest extends SerializationTest {
     IntLiteral il3 = new IntLiteral(3, "int_3");
     IntLiteral il4 = new IntLiteral(4, "int_4");
     Sum sum2 = new Sum(il3, il4, null);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
     prepareDeserializationOfSimpleMath(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
@@ -269,7 +269,7 @@ public class JsonSerializationTest extends SerializationTest {
     IntLiteral il3 = new IntLiteral(3, "int_3");
     IntLiteral il4 = new IntLiteral(4, "int_4");
     Sum sum2 = new Sum(il3, il4, null);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(il4, il1, sum1, il2, sum2, il3);
     prepareDeserializationOfSimpleMath(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
@@ -282,7 +282,7 @@ public class JsonSerializationTest extends SerializationTest {
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, null);
     Sum sum1 = new Sum(il1, il2, null);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(sum1, il1, il2);
     prepareDeserializationOfSimpleMath(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
@@ -311,7 +311,7 @@ public class JsonSerializationTest extends SerializationTest {
     RefNode r1 = new RefNode();
     RefNode r2 = new RefNode();
     r1.setReferred(r2);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(r1);
     prepareDeserializationOfRefMM(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
@@ -325,7 +325,7 @@ public class JsonSerializationTest extends SerializationTest {
     r1.setReferred(r2);
     r2.setReferred(r3);
     r3.setReferred(r1);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(r1, r2, r3);
     prepareDeserializationOfRefMM(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
@@ -346,7 +346,7 @@ public class JsonSerializationTest extends SerializationTest {
     Assert.assertEquals(Arrays.asList(c2), ClassifierInstanceUtils.getChildren(c1));
     Assert.assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
 
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(c1, c2);
     prepareDeserializationOfRefMM(js);
     List<Node> deserialized = js.deserializeToNodes(serialized);
@@ -354,7 +354,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test(expected = DeserializationException.class)
   public void deserializeTreeWithoutRoot() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     List<Node> nodes =
         js.deserializeToNodes(
             this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
@@ -377,7 +377,7 @@ public class JsonSerializationTest extends SerializationTest {
     n1.setPropertyValue(p, new EnumerationValueImpl(el1));
     DynamicNode n2 = new DynamicNode("node2", c);
     n2.setPropertyValue(p, new EnumerationValueImpl(el2));
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     js.registerLanguage(mm);
 
     JsonElement je = js.serializeNodesToJsonElement(n1, n2);
@@ -455,7 +455,7 @@ public class JsonSerializationTest extends SerializationTest {
     n1.setPropertyValue(p, MyEnum.el1);
     DynamicNode n2 = new DynamicNode("node2", c);
     n2.setPropertyValue(p, MyEnum.el2);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     js.registerLanguage(mm);
 
     JsonElement je = js.serializeNodesToJsonElement(n1, n2);
@@ -573,7 +573,7 @@ public class JsonSerializationTest extends SerializationTest {
     n1.setPropertyValue(p, new EnumerationValueImpl(el1));
     DynamicNode n2 = new DynamicNode("node2", c);
     n2.setPropertyValue(p, new EnumerationValueImpl(el2));
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     js.registerLanguage(mm);
     js.getInstantiator().enableDynamicNodes();
     js.getPrimitiveValuesSerialization().enableDynamicNodes();
@@ -647,7 +647,7 @@ public class JsonSerializationTest extends SerializationTest {
     n1.setPropertyValue(p, MyEnum.el1);
     DynamicNode n2 = new DynamicNode("node2", c);
     n2.setPropertyValue(p, MyEnum.el2);
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     js.getPrimitiveValuesSerialization().registerEnumClass(MyEnum.class, e);
     js.registerLanguage(mm);
     js.getInstantiator().enableDynamicNodes();
@@ -668,7 +668,7 @@ public class JsonSerializationTest extends SerializationTest {
     myLanguage.addElement(myConcept);
 
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
-    JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSer = SerializationProvider.getStandardJsonSerialization();
     SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationBlock(myInstance);
     assertEquals(1, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
@@ -693,7 +693,7 @@ public class JsonSerializationTest extends SerializationTest {
     AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
     AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
 
-    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     hjs.enableDynamicNodes();
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
@@ -731,7 +731,7 @@ public class JsonSerializationTest extends SerializationTest {
     DynamicAnnotationInstance ann = new DynamicAnnotationInstance("metaAnn_1", metaAnn, c);
     c.addAnnotation(ann);
 
-    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     hjs.enableDynamicNodes();
     SerializedChunk serializedChunk = hjs.serializeTreeToSerializationBlock(l);
 
@@ -765,7 +765,7 @@ public class JsonSerializationTest extends SerializationTest {
     DynamicNode n1 = new DynamicNode("n1", c);
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
 
-    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
     assertEquals(2, serializedChunk.getLanguages().size());
@@ -785,7 +785,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test(expected = DeserializationException.class)
   public void deserializePartialTreeFailsByDefault() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
     Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -798,7 +798,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializePartialTreeSucceedsWithNullReferencesUnavailableNodePolicy() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
     Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -813,7 +813,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializePartialTreeSucceedsWithProxyNodesUnavailableNodePolicy() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
     Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -837,7 +837,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test(expected = DeserializationException.class)
   public void deserializeTreeWithExternalReferencesWithThrowErrorsUnavailableNodePolicy() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -853,7 +853,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeTreeWithExternalReferencesWithProxyNodesUnavailableNodePolicy() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -905,7 +905,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeTreeWithExternalReferencesSetToNullPolicyUnavailableNodePolicy() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -951,7 +951,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeTreesWithChildrenNotProvided() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -998,7 +998,7 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeMultipleReferencesToProxiedNode() {
-    JsonSerialization js = JsonSerialization.getStandardSerialization();
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);

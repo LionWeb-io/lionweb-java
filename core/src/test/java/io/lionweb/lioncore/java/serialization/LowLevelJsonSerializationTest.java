@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
+import static io.lionweb.lioncore.java.serialization.SerializationProvider.getStandardJsonSerialization;
 import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -99,7 +100,7 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
     AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
 
-    JsonSerialization hjs = JsonSerialization.getStandardSerialization();
+    JsonSerialization hjs = getStandardJsonSerialization();
     hjs.enableDynamicNodes();
 
     JsonElement je = hjs.serializeNodesToJsonElement(n1);

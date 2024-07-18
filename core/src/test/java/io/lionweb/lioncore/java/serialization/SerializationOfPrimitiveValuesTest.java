@@ -76,7 +76,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(expected, serialized);
   }
@@ -141,7 +141,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
@@ -213,7 +213,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(expected, serialized);
   }
@@ -278,7 +278,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
@@ -350,7 +350,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(expected, serialized);
   }
@@ -416,7 +416,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()
@@ -491,7 +491,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(expected, serialized);
   }
@@ -560,7 +560,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
     jsonSerialization
         .getInstantiator()

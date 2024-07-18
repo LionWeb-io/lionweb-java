@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.self;
 
+import static io.lionweb.lioncore.java.serialization.SerializationProvider.getStandardJsonSerialization;
 import static org.junit.Assert.assertTrue;
 
 import io.lionweb.lioncore.java.language.Language;
@@ -19,7 +20,7 @@ public class CorrespondanceWithDocumentationTest {
 
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo() throws IOException {
-    JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSer = getStandardJsonSerialization();
 
     URL url =
         new URL(
@@ -40,7 +41,7 @@ public class CorrespondanceWithDocumentationTest {
 
   @Test
   public void builtInIsTheSameAsInTheOrganizationRepo() throws IOException {
-    JsonSerialization jsonSer = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSer = getStandardJsonSerialization();
 
     URL url =
         new URL(

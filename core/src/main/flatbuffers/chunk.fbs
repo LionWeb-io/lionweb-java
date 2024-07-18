@@ -1,0 +1,50 @@
+namespace io.lionweb.lioncore.java.serialization.flatbuffers;
+
+table FBChunk {
+    serializationFormatVersion: string;
+    languages:[FBLanguage];
+    nodes:[FBNode];
+}
+
+table FBLanguage {
+    key:string;
+    version:string;
+}
+
+table FBMetaPointer {
+    language:string;
+    key:string;
+    version:string;
+}
+
+table FBNode {
+    id:string;
+    classifier:FBMetaPointer;
+    properties:[FBProperty];
+    containments:[FBContainment];
+    references:[FBReference];
+    annotations:[string];
+    parent:string;
+}
+
+table FBProperty {
+  metaPointer:FBMetaPointer;
+  value:string;
+}
+
+table FBContainment {
+  metaPointer:FBMetaPointer;
+  children:[string];
+}
+
+table FBReference {
+  metaPointer:FBMetaPointer;
+  values:[FBReferenceValue];
+}
+
+table FBReferenceValue {
+  resolveInfo:string;
+  referred:string;
+}
+
+root_type FBChunk;

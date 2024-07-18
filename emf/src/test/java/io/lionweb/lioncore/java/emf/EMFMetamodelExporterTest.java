@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import io.lionweb.java.emf.builtins.BuiltinsPackage;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
@@ -25,7 +25,7 @@ public class EMFMetamodelExporterTest {
   public void exportLibraryLanguage() {
     Language libraryLang =
         (Language)
-            JsonSerialization.getStandardSerialization()
+            SerializationProvider.getStandardJsonSerialization()
                 .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
                 .get(0);
 
@@ -155,7 +155,7 @@ public class EMFMetamodelExporterTest {
 
     Language propertiesLang =
         (Language)
-            JsonSerialization.getStandardSerialization()
+            SerializationProvider.getStandardJsonSerialization()
                 .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-language.json"))
                 .get(0);
@@ -260,7 +260,7 @@ public class EMFMetamodelExporterTest {
   public void storePropertiesLangWithINamed() throws IOException {
     Language propertiesLang =
         (Language)
-            JsonSerialization.getStandardSerialization()
+            SerializationProvider.getStandardJsonSerialization()
                 .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-language.json"))
                 .get(0);
