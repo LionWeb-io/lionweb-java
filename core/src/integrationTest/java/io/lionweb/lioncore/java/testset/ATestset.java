@@ -6,6 +6,7 @@ import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.NodeTreeValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
@@ -31,7 +32,8 @@ public abstract class ATestset {
   }
 
   protected static Language loadLanguage(Path path) {
-    Node firstNode = parse(path, JsonSerialization.getStandardSerialization()).iterator().next();
+    Node firstNode =
+        parse(path, SerializationProvider.getStandardJsonSerialization()).iterator().next();
     assertTrue(firstNode.getClass().toString(), firstNode instanceof Language);
     Language result = (Language) firstNode;
     LanguageValidator.ensureIsValid(result);
@@ -90,7 +92,7 @@ public abstract class ATestset {
 
   protected void assertIsNotValid(Path path) {
     try {
-      List<Node> nodes = parse(path, JsonSerialization.getStandardSerialization());
+      List<Node> nodes = parse(path, SerializationProvider.getStandardJsonSerialization());
       for (Node n : nodes) {
         if (!new NodeTreeValidator().isValid(n)) {
           // Good, at least a node is not valid
