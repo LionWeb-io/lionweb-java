@@ -62,7 +62,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
   public void deserializeMultipleRoots() throws IOException {
     Sum sum1 = new Sum(new IntLiteral(1), new IntLiteral(2));
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
-    FlatBuffersSerialization serialization = FlatBuffersSerialization.getStandardSerialization();
+    FlatBuffersSerialization serialization =
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = serialization.serializeTreesToByteArray(sum1, sum2);
     prepareDeserializationOfSimpleMath(serialization);
     List<Sum> deserialized =
@@ -79,7 +80,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     IntLiteral il2 = new IntLiteral(2, null);
     IntLiteral il3 = new IntLiteral(3, null);
     IntLiteral il4 = new IntLiteral(4, null);
-    FlatBuffersSerialization serialization = FlatBuffersSerialization.getStandardSerialization();
+    FlatBuffersSerialization serialization =
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = serialization.serializeTreesToByteArray(il1, il2, il3, il4);
     prepareDeserializationOfSimpleMath(serialization);
     List<IntLiteral> deserialized =
@@ -97,7 +99,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     IntLiteral il3 = new IntLiteral(3, "int_3");
     IntLiteral il4 = new IntLiteral(4, "int_4");
     Sum sum2 = new Sum(il3, il4, null);
-    FlatBuffersSerialization serialization = FlatBuffersSerialization.getStandardSerialization();
+    FlatBuffersSerialization serialization =
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = serialization.serializeTreesToByteArray(sum1, sum2);
     prepareDeserializationOfSimpleMath(serialization);
     List<Node> deserialized = serialization.deserializeToNodes(serialized);
@@ -114,7 +117,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     IntLiteral il3 = new IntLiteral(3, "int_3");
     IntLiteral il4 = new IntLiteral(4, "int_4");
     Sum sum2 = new Sum(il3, il4, null);
-    FlatBuffersSerialization serialization = FlatBuffersSerialization.getStandardSerialization();
+    FlatBuffersSerialization serialization =
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = serialization.serializeNodesToByteArray(il4, il1, sum1, il2, sum2, il3);
     prepareDeserializationOfSimpleMath(serialization);
     List<Node> deserialized = serialization.deserializeToNodes(serialized);
@@ -127,7 +131,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, null);
     Sum sum1 = new Sum(il1, il2, null);
-    FlatBuffersSerialization serialization = FlatBuffersSerialization.getStandardSerialization();
+    FlatBuffersSerialization serialization =
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = serialization.serializeNodesToByteArray(sum1, il1, il2);
     prepareDeserializationOfSimpleMath(serialization);
     List<Node> deserialized = serialization.deserializeToNodes(serialized);
@@ -159,7 +164,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     RefNode r2 = new RefNode();
     r1.setReferred(r2);
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = flatBuffersSerialization.serializeNodesToByteArray(r1);
     prepareDeserializationOfRefMM(flatBuffersSerialization);
     List<Node> deserialized = flatBuffersSerialization.deserializeToNodes(serialized);
@@ -174,7 +179,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     r2.setReferred(r3);
     r3.setReferred(r1);
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = flatBuffersSerialization.serializeNodesToByteArray(r1, r2, r3);
     prepareDeserializationOfRefMM(flatBuffersSerialization);
     List<Node> deserialized = flatBuffersSerialization.deserializeToNodes(serialized);
@@ -196,7 +201,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     Assert.assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
 
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     byte[] serialized = flatBuffersSerialization.serializeNodesToByteArray(c1, c2);
     prepareDeserializationOfRefMM(flatBuffersSerialization);
     List<Node> deserialized = flatBuffersSerialization.deserializeToNodes(serialized);
@@ -213,7 +218,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
 
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     SerializedChunk serializedChunk =
         flatBuffersSerialization.serializeNodesToSerializationBlock(myInstance);
     assertEquals(1, serializedChunk.getClassifierInstances().size());
@@ -240,7 +245,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
 
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
     SerializedChunk serializedChunk =
         flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
@@ -281,7 +286,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     c.addAnnotation(ann);
 
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
     SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationBlock(l);
 
@@ -317,7 +322,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
 
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     SerializedChunk serializedChunk =
         flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
 

@@ -26,7 +26,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
   @Test
   public void serializeLionCoreToSerializedChunk() {
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     SerializedChunk serializedChunk =
         jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
 
@@ -94,7 +94,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void serializeLionCoreToJSON() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement serializedElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     JsonElement reserialized = jsonSerialization.serializeTreeToJsonElement(LionCore.getInstance());
     assertEquivalentLionWebJson(
         serializedElement.getAsJsonObject(), reserialized.getAsJsonObject());
@@ -121,7 +121,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void deserializeLionCoreToConcreteClasses() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Language lioncore = (Language) deserializedNodes.get(0);
@@ -136,7 +136,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void deserializeLionCoreToDynamicNodes() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getBasicJsonSerialization();
     jsonSerialization.getInstanceResolver().addAll(LionCore.getInstance().thisAndAllDescendants());
     jsonSerialization
         .getInstanceResolver()
@@ -160,7 +160,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void deserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getBasicSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getBasicJsonSerialization();
     jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization
         .getPrimitiveValuesSerialization()

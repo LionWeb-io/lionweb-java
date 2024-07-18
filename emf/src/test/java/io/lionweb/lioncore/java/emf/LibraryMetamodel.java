@@ -6,6 +6,7 @@ import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
@@ -23,7 +24,7 @@ public class LibraryMetamodel {
   static {
     InputStream inputStream = LibraryMetamodel.class.getResourceAsStream("/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     LIBRARY_LANG =
         deserializedNodes.stream()

@@ -23,7 +23,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Concept library = conceptByID(deserializedNodes, "library-Library");
@@ -52,7 +52,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     JsonElement reserialized =
         jsonSerialization.serializeTreeToJsonElement(deserializedNodes.get(0));
@@ -73,7 +73,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -97,7 +97,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
   public void deserializeLanguageWithDuplicateIDs() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language-with-duplicate.json");
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.deserializeToNodes(inputStream);
   }
 }

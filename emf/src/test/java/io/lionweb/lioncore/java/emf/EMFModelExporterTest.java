@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import java.io.InputStream;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,7 +18,7 @@ public class EMFModelExporterTest {
 
   @Test
   public void exportLibraryInstance() {
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
     jsonSerialization.getInstantiator().enableDynamicNodes();
     List<Node> nodes =
@@ -67,7 +68,7 @@ public class EMFModelExporterTest {
   @Test
   public void exportSingleContainment() {
     InputStream languageIs = this.getClass().getResourceAsStream("/properties.lmm.json");
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     Language propertiesLanguage = jsonSerialization.loadLanguage(languageIs);
     jsonSerialization.registerLanguage(propertiesLanguage);
     jsonSerialization.getInstantiator().enableDynamicNodes();
@@ -84,10 +85,10 @@ public class EMFModelExporterTest {
   @Test
   public void exportPropertiesInstance() {
     Language propertiesLang =
-        JsonSerialization.getStandardSerialization()
+        SerializationProvider.getStandardJsonSerialization()
             .loadLanguage(this.getClass().getResourceAsStream("/properties-language.json"));
 
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.registerLanguage(propertiesLang);
     jsonSerialization.getInstantiator().enableDynamicNodes();
 

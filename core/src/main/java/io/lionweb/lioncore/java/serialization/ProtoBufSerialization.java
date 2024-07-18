@@ -1,9 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
-import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.protobuf.*;
@@ -12,24 +10,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProtoBufSerialization extends AbstractSerialization {
-
-  /** This has specific support for LionCore or LionCoreBuiltins. */
-  public static ProtoBufSerialization getStandardSerialization() {
-    ProtoBufSerialization serialization = new ProtoBufSerialization();
-    serialization.classifierResolver.registerLanguage(LionCore.getInstance());
-    serialization.instantiator.registerLionCoreCustomDeserializers();
-    serialization.primitiveValuesSerialization
-        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
-    serialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
-    serialization.instanceResolver.addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
-    return serialization;
-  }
-
-  /** This has no specific support for LionCore or LionCoreBuiltins. */
-  public static ProtoBufSerialization getBasicSerialization() {
-    ProtoBufSerialization serialization = new ProtoBufSerialization();
-    return serialization;
-  }
 
   public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(byte[] bytes)
       throws IOException {

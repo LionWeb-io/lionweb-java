@@ -54,3 +54,4 @@ Import and export from and to EMF is a work in progress.
 ### Version 0.2.18
 
 * Introduce support for serialization based on ProtoBuffer and FlatBuffers
+* Introduce SerializationProvider

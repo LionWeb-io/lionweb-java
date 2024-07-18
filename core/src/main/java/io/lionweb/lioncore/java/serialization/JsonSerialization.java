@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
+import static io.lionweb.lioncore.java.serialization.SerializationProvider.getStandardJsonSerialization;
+
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -7,7 +9,6 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
-import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.utils.NetworkUtils;
 import java.io.*;
@@ -32,7 +33,7 @@ import java.util.stream.Collectors;
 public class JsonSerialization extends AbstractSerialization {
 
   public static void saveLanguageToFile(Language language, File file) throws IOException {
-    String content = getStandardSerialization().serializeTreesToJsonString(language);
+    String content = getStandardJsonSerialization().serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
     BufferedWriter writer = new BufferedWriter(new FileWriter(file));
     writer.write(content);
@@ -55,7 +56,7 @@ public class JsonSerialization extends AbstractSerialization {
    * an exception is thrown.
    */
   public Language loadLanguage(InputStream inputStream) {
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = getStandardJsonSerialization();
     List<Node> lNodes = jsonSerialization.deserializeToNodes(inputStream);
     List<Language> languages =
         lNodes.stream()
@@ -68,26 +69,11 @@ public class JsonSerialization extends AbstractSerialization {
     return languages.get(0);
   }
 
-  /** This has specific support for LionCore or LionCoreBuiltins. */
-  public static JsonSerialization getStandardSerialization() {
-    JsonSerialization jsonSerialization = new JsonSerialization();
-    jsonSerialization.classifierResolver.registerLanguage(LionCore.getInstance());
-    jsonSerialization.instantiator.registerLionCoreCustomDeserializers();
-    jsonSerialization.primitiveValuesSerialization
-        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
-    jsonSerialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
-    jsonSerialization.instanceResolver.addAll(
-        LionCoreBuiltins.getInstance().thisAndAllDescendants());
-    return jsonSerialization;
-  }
-
-  /** This has no specific support for LionCore or LionCoreBuiltins. */
-  public static JsonSerialization getBasicSerialization() {
-    JsonSerialization jsonSerialization = new JsonSerialization();
-    return jsonSerialization;
-  }
-
-  private JsonSerialization() {
+  /**
+   * We want to protect this from access, as the default constructor would not add the lioncore and
+   * lioncore builtins support which most users may expect.
+   */
+  JsonSerialization() {
     // prevent public access
     super();
   }
