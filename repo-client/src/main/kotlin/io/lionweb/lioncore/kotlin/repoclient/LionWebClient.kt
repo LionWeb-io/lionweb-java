@@ -11,7 +11,6 @@ import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.model.impl.ProxyNode
-import io.lionweb.lioncore.java.serialization.AbstractSerialization
 import io.lionweb.lioncore.java.serialization.BulkImport
 import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization
 import io.lionweb.lioncore.java.serialization.JsonSerialization
@@ -25,13 +24,6 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
-import java.io.File
-import java.net.ConnectException
-import java.net.HttpURLConnection
-import java.util.LinkedList
-import java.util.concurrent.TimeUnit
-import kotlin.reflect.KClass
-import kotlin.reflect.KProperty
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -40,6 +32,12 @@ import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.internal.EMPTY_REQUEST
+import java.net.ConnectException
+import java.net.HttpURLConnection
+import java.util.LinkedList
+import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
+import kotlin.reflect.KProperty
 
 // This number must be lower than Number.MAX_SAFE_INTEGER, or the LionWeb Repo would crash
 // Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
@@ -650,7 +648,10 @@ class LionWebClient(
         }
     }
 
-    private fun bulkImportUsingJson(bulkImport: BulkImport, compress: Boolean = false) {
+    private fun bulkImportUsingJson(
+        bulkImport: BulkImport,
+        compress: Boolean = false,
+    ) {
         val url = "http://$hostname:$port/additional/bulkImport"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
@@ -698,21 +699,25 @@ class LionWebClient(
         }
     }
 
-    private fun bulkImportUsingProtobuf(bulkImport: BulkImport, compress: Boolean = false) {
+    private fun bulkImportUsingProtobuf(
+        bulkImport: BulkImport,
+        compress: Boolean = false,
+    ) {
         val url = "http://$hostname:$port/additional/bulkImport"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
         urlBuilder.addQueryParameter("repository", repository)
 
-        val bytes = ProtoBufSerialization().apply {
-            this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
-            this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
-            this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
-            this.classifierResolver = jsonSerialization.classifierResolver
-            this.instanceResolver = jsonSerialization.instanceResolver
-            this.instantiator = jsonSerialization.instantiator
-            this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
-        }.serializeBulkImport(bulkImport).toByteArray()
+        val bytes =
+            ProtoBufSerialization().apply {
+                this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
+                this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
+                this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
+                this.classifierResolver = jsonSerialization.classifierResolver
+                this.instanceResolver = jsonSerialization.instanceResolver
+                this.instantiator = jsonSerialization.instantiator
+                this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
+            }.serializeBulkImport(bulkImport).toByteArray()
 
         val requestBody = bytes.toRequestBody(PROTOBUF).considerCompression(compress)
         val builder =
@@ -739,21 +744,25 @@ class LionWebClient(
         }
     }
 
-    private fun bulkImportUsingFlatBuffers(bulkImport: BulkImport, compress: Boolean = false) {
+    private fun bulkImportUsingFlatBuffers(
+        bulkImport: BulkImport,
+        compress: Boolean = false,
+    ) {
         val url = "http://$hostname:$port/additional/bulkImport"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
         urlBuilder.addQueryParameter("repository", repository)
 
-        val bytes = FlatBuffersSerialization().apply {
-            this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
-            this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
-            this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
-            this.classifierResolver = jsonSerialization.classifierResolver
-            this.instanceResolver = jsonSerialization.instanceResolver
-            this.instantiator = jsonSerialization.instantiator
-            this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
-        }.serializeBulkImport(bulkImport)
+        val bytes =
+            FlatBuffersSerialization().apply {
+                this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
+                this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
+                this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
+                this.classifierResolver = jsonSerialization.classifierResolver
+                this.instanceResolver = jsonSerialization.instanceResolver
+                this.instantiator = jsonSerialization.instantiator
+                this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
+            }.serializeBulkImport(bulkImport)
 
         val requestBody = bytes.toRequestBody(FLATBUFFERS).considerCompression(compress)
         val builder =
@@ -780,9 +789,11 @@ class LionWebClient(
         }
     }
 
-    fun bulkImport(bulkImport: BulkImport,
-                   transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
-                   compress: Boolean = false) {
+    fun bulkImport(
+        bulkImport: BulkImport,
+        transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
+        compress: Boolean = false,
+    ) {
         when (transferFormat) {
             TransferFormat.JSON -> bulkImportUsingJson(bulkImport, compress)
             TransferFormat.PROTOBUF -> bulkImportUsingProtobuf(bulkImport, compress)
@@ -900,15 +911,15 @@ data class NodeInfo(val id: String, val parent: String?, val depth: Int)
 enum class TransferFormat {
     JSON,
     PROTOBUF,
-    FLATBUFFERS
+    FLATBUFFERS,
 }
 
-fun Request.Builder.addGZipCompressionHeader() : Request.Builder {
+fun Request.Builder.addGZipCompressionHeader(): Request.Builder {
     this.addHeader("Content-Encoding", "gzip")
     return this
 }
 
-fun RequestBody.considerCompression(compress: Boolean) : RequestBody {
+fun RequestBody.considerCompression(compress: Boolean): RequestBody {
     return if (compress) {
         this.compress()
     } else {

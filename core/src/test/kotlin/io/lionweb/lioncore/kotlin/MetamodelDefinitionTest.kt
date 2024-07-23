@@ -2,7 +2,7 @@ package io.lionweb.lioncore.kotlin
 
 import io.lionweb.lioncore.java.language.LionCoreBuiltins
 import io.lionweb.lioncore.java.model.impl.ProxyNode
-import io.lionweb.lioncore.java.serialization.JsonSerialization
+import io.lionweb.lioncore.java.serialization.SerializationProvider
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -147,7 +147,7 @@ class MetamodelDefinitionTest {
         val root = Root()
 
         val jsonSerialization =
-            JsonSerialization.getStandardSerialization().apply {
+            SerializationProvider.getStandardJsonSerialization().apply {
                 MetamodelRegistry.prepareJsonSerialization(this)
             }
 
@@ -190,7 +190,7 @@ class MetamodelDefinitionTest {
         assertEquals("ROOT____foo___MyFile", textFile.id)
 
         val jsonSerialization =
-            JsonSerialization.getStandardSerialization().apply {
+            SerializationProvider.getStandardJsonSerialization().apply {
                 MetamodelRegistry.prepareJsonSerialization(this)
                 unavailableParentPolicy = UnavailableNodePolicy.PROXY_NODES
             }
@@ -238,7 +238,7 @@ class MetamodelDefinitionTest {
         assertEquals("ROOT____foo___MyFile", textFile.id)
 
         val jsonSerialization =
-            JsonSerialization.getStandardSerialization().apply {
+            SerializationProvider.getStandardJsonSerialization().apply {
                 MetamodelRegistry.prepareJsonSerialization(this)
                 unavailableParentPolicy = UnavailableNodePolicy.PROXY_NODES
             }

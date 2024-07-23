@@ -9,6 +9,7 @@ import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.serialization.JsonSerialization
+import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
@@ -21,6 +22,8 @@ import kotlin.reflect.full.primaryConstructor
 object MetamodelRegistry {
     private val classToClassifier = mutableMapOf<KClass<*>, Classifier<*>>()
     private val classToPrimitiveType = mutableMapOf<KClass<*>, PrimitiveType>()
+    private val serializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveSerializer<*>>()
+    private val deserializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveDeserializer<*>>()
 
     init {
         registerMapping(Node::class, LionCoreBuiltins.getNode())
@@ -39,16 +42,33 @@ object MetamodelRegistry {
     fun registerMapping(
         kClass: KClass<*>,
         primitiveType: PrimitiveType,
+        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>? = null,
+        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>? = null,
     ) {
         require(!kClass.isSubclassOf(Node::class))
         classToPrimitiveType[kClass] = primitiveType
+        if (serializer != null) {
+            serializers[primitiveType] = serializer
+        }
+        if (deserializer != null) {
+            deserializers[primitiveType] = deserializer
+        }
+    }
+
+    fun addSerializerAndDeserializer(
+        primitiveType: PrimitiveType,
+        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>,
+        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>,
+    ) {
+        serializers[primitiveType] = serializer
+        deserializers[primitiveType] = deserializer
     }
 
     fun getConcept(kClass: KClass<out Node>): Concept? = getClassifier(kClass)?.let { it as Concept }
 
     fun getClassifier(kClass: KClass<out Node>): Classifier<*>? = classToClassifier[kClass]
 
-    fun getPrimitiveType(kClass: KClass<out Node>): PrimitiveType? = classToPrimitiveType[kClass]
+    fun getPrimitiveType(kClass: KClass<*>): PrimitiveType? = classToPrimitiveType[kClass]
 
     fun prepareJsonSerialization(jsonSerialization: JsonSerialization) {
         classToClassifier.forEach { (kClass, concept) ->
@@ -63,6 +83,16 @@ object MetamodelRegistry {
                     result.id = serializedClassifierInstance.id
                 }
                 result
+            }
+        }
+        classToPrimitiveType.forEach { (kClass, primitiveType) ->
+            val serializer = serializers[primitiveType]
+            val deserializer = deserializers[primitiveType]
+            if (serializer != null) {
+                jsonSerialization.primitiveValuesSerialization.registerSerializer(primitiveType.id, serializer)
+            }
+            if (deserializer != null) {
+                jsonSerialization.primitiveValuesSerialization.registerDeserializer(primitiveType.id, deserializer)
             }
         }
     }
