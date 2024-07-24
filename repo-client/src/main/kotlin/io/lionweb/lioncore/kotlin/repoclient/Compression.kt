@@ -11,7 +11,6 @@ import okio.buffer
 import java.io.IOException
 
 val JSON: MediaType = "application/json".toMediaType()
-
 val PROTOBUF: MediaType = "application/protobuf".toMediaType()
 val FLATBUFFERS: MediaType = "application/flatbuffers".toMediaType()
 

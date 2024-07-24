@@ -376,6 +376,10 @@ class LionWebClient(
         treeStoringOperation(node, "store")
     }
 
+    fun storeNodes(nodes: List<Node>) {
+        nodesStoringOperation(nodes, "store")
+    }
+
     /**
      * This operation is not atomic. We hope that no one is changing the parent at the very
      * same time.
@@ -473,6 +477,40 @@ class LionWebClient(
 
         // 3. Store the parent
         storeTree(referrer)
+    }
+
+    data class ReferenceData(val targetIDs: List<String>,
+                             val containerID: String,
+                             val referenceName: String)
+
+    /**
+     * This is useful to set multiple references at once
+     */
+    fun setReferences(
+        data: List<ReferenceData>
+    ) {
+        if (data.isEmpty()) {
+            return
+        }
+        // 1. Retrieve the referrer
+        val referrers = retrieve(data.map { it.containerID }, withProxyParent = true, retrievalMode = RetrievalMode.SINGLE_NODE)
+
+        // 2. Add the reference to the referrer
+        data.mapIndexed { index, referenceData ->
+            val referrer = referrers[index]
+            val referenceName = referenceData.referenceName
+            val targetIDs = referenceData.targetIDs
+            val reference =
+                referrer.classifier.getReferenceByName(referenceName)
+                    ?: throw IllegalArgumentException("The referrer has not containment named $referenceName")
+            if (reference.isMultiple) {
+                throw IllegalArgumentException("The indicated reference ${reference.name} is multiple")
+            }
+            referrer.setReferenceValues(reference, targetIDs.map { ReferenceValue(ProxyNode(it), null) })
+        }
+
+        // 3. Store the referrers
+        storeNodes(referrers)
     }
 
     fun setSingleReference(
@@ -816,6 +854,59 @@ class LionWebClient(
     private fun log(message: String) {
         if (debug) {
             println(message)
+        }
+    }
+
+    private fun nodesStoringOperation(
+        nodes: List<Node>,
+        operation: String,
+    ) {
+        fun verifyNode(node: Node) {
+            require(node.id != null) { "Node $node should not have a null ID" }
+            if (node !is ProxyNode) {
+                if (node.children.any { it == null }) {
+                    throw java.lang.IllegalStateException("Node $node has a null child")
+                }
+                node.children.forEach {
+                    verifyNode(it)
+                }
+            }
+        }
+
+        nodes.forEach {  node -> verifyNode(node) }
+
+        val json = jsonSerialization.serializeNodesToJsonString(nodes)
+
+        val body: RequestBody = json.compress()
+
+        // TODO control with flag http or https
+        val url = "http://$hostname:$port/bulk/$operation"
+        val request: Request =
+            Request.Builder()
+                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
+                .considerAuthenticationToken()
+                .addGZipCompressionHeader()
+                .post(body)
+                .build()
+        try {
+            httpClient.newCall(request).execute().use { response ->
+                if (response.code != HttpURLConnection.HTTP_OK) {
+                    val body = response.body?.string()
+                    if (debug) {
+                        println("  Response: ${response.code}")
+                        println("  Response: $body")
+                    }
+                    throw RequestFailureException(url, json, response.code, body)
+                }
+            }
+        } catch (e: ConnectException) {
+            val jsonExcept =
+                if (json.length > 10000) {
+                    json.substring(0, 1000) + "..."
+                } else {
+                    json
+                }
+            throw RuntimeException("Cannot get answer from the client when contacting at URL $url. Body: $jsonExcept", e)
         }
     }
 

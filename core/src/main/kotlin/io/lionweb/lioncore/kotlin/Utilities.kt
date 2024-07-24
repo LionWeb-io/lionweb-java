@@ -77,9 +77,10 @@ fun Node.setPropertyValueByName(
     value: Any?,
 ) = ClassifierInstanceUtils.setPropertyValueByName(this, propertyName, value)
 
-fun Node.getChildrenByContainmentName(propertyName: String) = ClassifierInstanceUtils.getChildrenByContainmentName(this, propertyName)
+fun Node.getChildrenByContainmentName(propertyName: String) : List<Node> = ClassifierInstanceUtils.getChildrenByContainmentName(this, propertyName)
 
 fun Node.getReferenceValueByName(propertyName: String) = ClassifierInstanceUtils.getReferenceValueByName(this, propertyName)
 
 val Node.children
     get() = ClassifierInstanceUtils.getChildren(this)
+
