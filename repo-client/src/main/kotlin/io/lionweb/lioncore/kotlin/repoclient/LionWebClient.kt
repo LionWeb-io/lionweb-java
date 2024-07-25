@@ -479,16 +479,16 @@ class LionWebClient(
         storeTree(referrer)
     }
 
-    data class ReferenceData(val targetIDs: List<String>,
-                             val containerID: String,
-                             val referenceName: String)
+    data class ReferenceData(
+        val targetIDs: List<String>,
+        val containerID: String,
+        val referenceName: String,
+    )
 
     /**
      * This is useful to set multiple references at once
      */
-    fun setReferences(
-        data: List<ReferenceData>
-    ) {
+    fun setReferences(data: List<ReferenceData>) {
         if (data.isEmpty()) {
             return
         }
@@ -873,7 +873,7 @@ class LionWebClient(
             }
         }
 
-        nodes.forEach {  node -> verifyNode(node) }
+        nodes.forEach { node -> verifyNode(node) }
 
         val json = jsonSerialization.serializeNodesToJsonString(nodes)
 

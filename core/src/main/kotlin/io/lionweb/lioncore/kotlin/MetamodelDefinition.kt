@@ -153,7 +153,7 @@ fun Language.addPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>) {
     }
 }
 
-fun <T:Any> Language.addSerializerAndDeserializer(
+fun <T : Any> Language.addSerializerAndDeserializer(
     primitiveTypeClass: KClass<T>,
     serializer: PrimitiveSerializer<T?>,
     deserializer: PrimitiveDeserializer<T?>,
