@@ -142,6 +142,14 @@ class LionWebClient(
         }
     }
 
+    private fun Request.Builder.considerCompression(compress: Boolean): Request.Builder {
+        return if (compress) {
+            this.addGZipCompressionHeader()
+        } else {
+            this
+        }
+    }
+
     private fun String.addClientIdQueryParam(): HttpUrl {
         val urlBuilder = this.toHttpUrl().newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
@@ -642,7 +650,7 @@ class LionWebClient(
         }
     }
 
-    private fun bulkImportUsingJson(bulkImport: BulkImport) {
+    private fun bulkImportUsingJson(bulkImport: BulkImport, compress: Boolean = false) {
         val url = "http://$hostname:$port/additional/bulkImport"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
@@ -665,12 +673,12 @@ class LionWebClient(
         body.add("attachPoints", bodyAttachPoints)
         body.add("nodes", bodyNodes)
         val bodyJson = Gson().toJson(body)
-        File("bulkImportBody").writeText(bodyJson)
-        val requestBody = bodyJson.toRequestBody(JSON)
+        val requestBody = bodyJson.toRequestBody(JSON).considerCompression(compress)
         val builder =
             Request.Builder()
                 .url(urlBuilder.build())
                 .considerAuthenticationToken()
+                .considerCompression(compress)
                 .post(requestBody)
 
         val request: Request =
@@ -690,7 +698,7 @@ class LionWebClient(
         }
     }
 
-    private fun bulkImportUsingProtobuf(bulkImport: BulkImport) {
+    private fun bulkImportUsingProtobuf(bulkImport: BulkImport, compress: Boolean = false) {
         val url = "http://$hostname:$port/additional/bulkImport"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
@@ -706,12 +714,12 @@ class LionWebClient(
             this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
         }.serializeBulkImport(bulkImport).toByteArray()
 
-        val requestBody = bytes.toRequestBody(PROTOBUF)
-        //println("bulk Import body ${requestBody.contentLength()}")
+        val requestBody = bytes.toRequestBody(PROTOBUF).considerCompression(compress)
         val builder =
             Request.Builder()
                 .url(urlBuilder.build())
                 .considerAuthenticationToken()
+                .considerCompression(compress)
                 .post(requestBody)
 
         val request: Request =
@@ -731,7 +739,7 @@ class LionWebClient(
         }
     }
 
-    private fun bulkImportUsingFlatBuffers(bulkImport: BulkImport) {
+    private fun bulkImportUsingFlatBuffers(bulkImport: BulkImport, compress: Boolean = false) {
         val url = "http://$hostname:$port/additional/bulkImport"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
@@ -747,11 +755,12 @@ class LionWebClient(
             this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
         }.serializeBulkImport(bulkImport)
 
-        val requestBody = bytes.toRequestBody(FLATBUFFERS)
+        val requestBody = bytes.toRequestBody(FLATBUFFERS).considerCompression(compress)
         val builder =
             Request.Builder()
                 .url(urlBuilder.build())
                 .considerAuthenticationToken()
+                .considerCompression(compress)
                 .post(requestBody)
 
         val request: Request =
@@ -771,11 +780,13 @@ class LionWebClient(
         }
     }
 
-    fun bulkImport(bulkImport: BulkImport, transferFormat: TransferFormat = TransferFormat.FLATBUFFERS) {
+    fun bulkImport(bulkImport: BulkImport,
+                   transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
+                   compress: Boolean = false) {
         when (transferFormat) {
-            TransferFormat.JSON -> bulkImportUsingJson(bulkImport)
-            TransferFormat.PROTOBUF -> bulkImportUsingProtobuf(bulkImport)
-            TransferFormat.FLATBUFFERS -> bulkImportUsingFlatBuffers(bulkImport)
+            TransferFormat.JSON -> bulkImportUsingJson(bulkImport, compress)
+            TransferFormat.PROTOBUF -> bulkImportUsingProtobuf(bulkImport, compress)
+            TransferFormat.FLATBUFFERS -> bulkImportUsingFlatBuffers(bulkImport, compress)
         }
     }
 
@@ -834,7 +845,7 @@ class LionWebClient(
             Request.Builder()
                 .url(url.addClientIdQueryParam().addRepositoryQueryParam())
                 .considerAuthenticationToken()
-                .addHeader("Content-Encoding", "gzip")
+                .addGZipCompressionHeader()
                 .post(body)
                 .build()
         try {
@@ -886,12 +897,21 @@ class LionWebClient(
 
 data class NodeInfo(val id: String, val parent: String?, val depth: Int)
 
-//data class AttachPoint(val container: String, val containment: Containment, val rootId: String)
-
-//data class BulkImport(val attachPoints: List<AttachPoint>, val nodes: List<Node>)
-
 enum class TransferFormat {
     JSON,
     PROTOBUF,
     FLATBUFFERS
+}
+
+fun Request.Builder.addGZipCompressionHeader() : Request.Builder {
+    this.addHeader("Content-Encoding", "gzip")
+    return this
+}
+
+fun RequestBody.considerCompression(compress: Boolean) : RequestBody {
+    return if (compress) {
+        this.compress()
+    } else {
+        this
+    }
 }
