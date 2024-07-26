@@ -1,4 +1,4 @@
-package io.lionweb.lioncore.java.serialization.extras;
+package io.lionweb.serialization.extensions;
 
 import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
@@ -12,8 +12,7 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
 
   public PBBulkImport serializeBulkImport(BulkImport bulkImport) {
     PBBulkImport.Builder bulkImportBuilder = PBBulkImport.newBuilder();
-    ProtoBufSerialization.SerializeHelper serializeHelper =
-        new ProtoBufSerialization.SerializeHelper();
+    SerializeHelper serializeHelper = new SerializeHelper();
 
     bulkImport
         .getAttachPoints()

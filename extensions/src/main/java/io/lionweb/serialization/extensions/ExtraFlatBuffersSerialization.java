@@ -1,4 +1,4 @@
-package io.lionweb.lioncore.java.serialization.extras;
+package io.lionweb.serialization.extensions;
 
 import com.google.flatbuffers.FlatBufferBuilder;
 import io.lionweb.lioncore.java.language.Containment;
@@ -11,7 +11,7 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
-import io.lionweb.lioncore.java.serialization.flatbuffers.*;
+import io.lionweb.serialization.flatbuffers.FBBulkImport;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,11 +32,12 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
       int containment = helper.offsetForMetaPointer(attachPoint.containment);
       int container = builder.createSharedString(attachPoint.container);
       int root = builder.createSharedString(attachPoint.rootId);
-      FBAttachPoint.startFBAttachPoint(builder);
-      FBAttachPoint.addContainer(builder, container);
-      FBAttachPoint.addContainment(builder, containment);
-      FBAttachPoint.addRoot(builder, root);
-      attachPointOffsets[i] = FBAttachPoint.endFBAttachPoint(builder);
+      io.lionweb.serialization.flatbuffers.FBAttachPoint.startFBAttachPoint(builder);
+      io.lionweb.serialization.flatbuffers.FBAttachPoint.addContainer(builder, container);
+      io.lionweb.serialization.flatbuffers.FBAttachPoint.addContainment(builder, containment);
+      io.lionweb.serialization.flatbuffers.FBAttachPoint.addRoot(builder, root);
+      attachPointOffsets[i] =
+          io.lionweb.serialization.flatbuffers.FBAttachPoint.endFBAttachPoint(builder);
       i++;
       containerByAttached.put(attachPoint.rootId, attachPoint.container);
     }
@@ -74,12 +75,12 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
                     property.getType().getID(), propertyValue);
             propertyValueOffset = builder.createSharedString(propertyValueStr);
           }
-          FBProperty.startFBProperty(builder);
-          FBProperty.addMetaPointer(builder, metaPointer);
+          io.lionweb.serialization.flatbuffers.FBProperty.startFBProperty(builder);
+          io.lionweb.serialization.flatbuffers.FBProperty.addMetaPointer(builder, metaPointer);
           if (propertyValueOffset != -1) {
-            FBProperty.addValue(builder, propertyValueOffset);
+            io.lionweb.serialization.flatbuffers.FBProperty.addValue(builder, propertyValueOffset);
           }
-          propOffsets[fi] = FBProperty.endFBProperty(builder);
+          propOffsets[fi] = io.lionweb.serialization.flatbuffers.FBProperty.endFBProperty(builder);
           fi++;
         }
       }
@@ -97,11 +98,14 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
           }
 
           int metaPointer = helper.offsetForMetaPointer(MetaPointer.from(containment));
-          int childrenVector = FBContainment.createChildrenVector(builder, childOffsets);
-          FBContainment.startFBContainment(builder);
-          FBContainment.addMetaPointer(builder, metaPointer);
-          FBContainment.addChildren(builder, childrenVector);
-          contOffsets[fi] = FBContainment.endFBContainment(builder);
+          int childrenVector =
+              io.lionweb.serialization.flatbuffers.FBContainment.createChildrenVector(
+                  builder, childOffsets);
+          io.lionweb.serialization.flatbuffers.FBContainment.startFBContainment(builder);
+          io.lionweb.serialization.flatbuffers.FBContainment.addMetaPointer(builder, metaPointer);
+          io.lionweb.serialization.flatbuffers.FBContainment.addChildren(builder, childrenVector);
+          contOffsets[fi] =
+              io.lionweb.serialization.flatbuffers.FBContainment.endFBContainment(builder);
           fi++;
         }
       }
@@ -122,23 +126,29 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
             if (referenceValue.getReferredID() != null) {
               referredID = builder.createSharedString(referenceValue.getReferredID());
             }
-            FBReferenceValue.startFBReferenceValue(builder);
+            io.lionweb.serialization.flatbuffers.FBReferenceValue.startFBReferenceValue(builder);
             if (resolveInfo != -1) {
-              FBReferenceValue.addResolveInfo(builder, resolveInfo);
+              io.lionweb.serialization.flatbuffers.FBReferenceValue.addResolveInfo(
+                  builder, resolveInfo);
             }
             if (referredID != -1) {
-              FBReferenceValue.addReferred(builder, referredID);
+              io.lionweb.serialization.flatbuffers.FBReferenceValue.addReferred(
+                  builder, referredID);
             }
-            refValuesOffsets[ci] = FBReferenceValue.endFBReferenceValue(builder);
+            refValuesOffsets[ci] =
+                io.lionweb.serialization.flatbuffers.FBReferenceValue.endFBReferenceValue(builder);
             ci++;
           }
 
           int metaPointer = helper.offsetForMetaPointer(MetaPointer.from(reference));
-          int valuesVector = FBReference.createValuesVector(builder, refValuesOffsets);
-          FBReference.startFBReference(builder);
-          FBReference.addMetaPointer(builder, metaPointer);
-          FBReference.addValues(builder, valuesVector);
-          refeOffsets[fi] = FBReference.endFBReference(builder);
+          int valuesVector =
+              io.lionweb.serialization.flatbuffers.FBReference.createValuesVector(
+                  builder, refValuesOffsets);
+          io.lionweb.serialization.flatbuffers.FBReference.startFBReference(builder);
+          io.lionweb.serialization.flatbuffers.FBReference.addMetaPointer(builder, metaPointer);
+          io.lionweb.serialization.flatbuffers.FBReference.addValues(builder, valuesVector);
+          refeOffsets[fi] =
+              io.lionweb.serialization.flatbuffers.FBReference.endFBReference(builder);
           fi++;
         }
       }
@@ -151,33 +161,41 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
 
       int classifier = helper.offsetForMetaPointer(MetaPointer.from(node.getClassifier()));
       int id = builder.createSharedString(node.getID());
-      int propsVector = FBNode.createPropertiesVector(builder, propOffsets);
-      int consVector = FBNode.createContainmentsVector(builder, contOffsets);
-      int refsVector = FBNode.createReferencesVector(builder, refeOffsets);
-      int annsVector = FBNode.createAnnotationsVector(builder, annOffsets);
+      int propsVector =
+          io.lionweb.serialization.flatbuffers.FBNode.createPropertiesVector(builder, propOffsets);
+      int consVector =
+          io.lionweb.serialization.flatbuffers.FBNode.createContainmentsVector(
+              builder, contOffsets);
+      int refsVector =
+          io.lionweb.serialization.flatbuffers.FBNode.createReferencesVector(builder, refeOffsets);
+      int annsVector =
+          io.lionweb.serialization.flatbuffers.FBNode.createAnnotationsVector(builder, annOffsets);
       String parentID =
           node.getParent() == null
               ? containerByAttached.get(node.getID())
               : node.getParent().getID();
       int parent = builder.createSharedString(parentID);
-      FBNode.startFBNode(builder);
-      FBNode.addId(builder, id);
-      FBNode.addClassifier(builder, classifier);
-      FBNode.addProperties(builder, propsVector);
-      FBNode.addContainments(builder, consVector);
-      FBNode.addReferences(builder, refsVector);
-      FBNode.addAnnotations(builder, annsVector);
-      FBNode.addParent(builder, parent);
+      io.lionweb.serialization.flatbuffers.FBNode.startFBNode(builder);
+      io.lionweb.serialization.flatbuffers.FBNode.addId(builder, id);
+      io.lionweb.serialization.flatbuffers.FBNode.addClassifier(builder, classifier);
+      io.lionweb.serialization.flatbuffers.FBNode.addProperties(builder, propsVector);
+      io.lionweb.serialization.flatbuffers.FBNode.addContainments(builder, consVector);
+      io.lionweb.serialization.flatbuffers.FBNode.addReferences(builder, refsVector);
+      io.lionweb.serialization.flatbuffers.FBNode.addAnnotations(builder, annsVector);
+      io.lionweb.serialization.flatbuffers.FBNode.addParent(builder, parent);
 
-      nodesOffsets[i] = FBNode.endFBNode(builder);
+      nodesOffsets[i] = io.lionweb.serialization.flatbuffers.FBNode.endFBNode(builder);
       i++;
     }
     int attachPointsVectorOffset =
-        FBBulkImport.createAttachPointsVector(builder, attachPointOffsets);
-    int nodesVectorOffset = FBBulkImport.createNodesVector(builder, nodesOffsets);
-    FBBulkImport.startFBBulkImport(builder);
-    FBBulkImport.addAttachPoints(builder, attachPointsVectorOffset);
-    FBBulkImport.addNodes(builder, nodesVectorOffset);
+        io.lionweb.serialization.flatbuffers.FBBulkImport.createAttachPointsVector(
+            builder, attachPointOffsets);
+    int nodesVectorOffset =
+        io.lionweb.serialization.flatbuffers.FBBulkImport.createNodesVector(builder, nodesOffsets);
+    io.lionweb.serialization.flatbuffers.FBBulkImport.startFBBulkImport(builder);
+    io.lionweb.serialization.flatbuffers.FBBulkImport.addAttachPoints(
+        builder, attachPointsVectorOffset);
+    io.lionweb.serialization.flatbuffers.FBBulkImport.addNodes(builder, nodesVectorOffset);
     builder.finish(FBBulkImport.endFBBulkImport(builder));
     return builder.dataBuffer().compact().array();
   }

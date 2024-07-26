@@ -43,3 +43,11 @@ The Chancelog is [here](CHANGELOG.md).
 
 To ensure proper testing coverage we configured Jacoco.
 You can run `./gradlew jacocoTestReport` and then find the report for each module, under `build/reports/jacoco`.
+
+## Update FlatBuffers generated classes
+
+Run from the root of the project:
+```
+flatc --java -o core/src/main/java core/src/main/flatbuffers/chunk.fbs
+flatc --java -o extensions/src/main/java extensions/src/main/flatbuffers/bulkimport.fbs
+```

@@ -1,4 +1,4 @@
-package io.lionweb.lioncore.java.serialization.extras;
+package io.lionweb.serialization.extensions;
 
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;

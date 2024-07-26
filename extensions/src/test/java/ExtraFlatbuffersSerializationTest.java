@@ -1,24 +1,21 @@
-package io.lionweb.lioncore.java.serialization.extra;
-
 import static org.junit.Assert.*;
 
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
-import io.lionweb.lioncore.java.serialization.SerializationTest;
 import io.lionweb.lioncore.java.serialization.data.*;
-import io.lionweb.lioncore.java.serialization.extras.BulkImport;
-import io.lionweb.lioncore.java.serialization.extras.ExtraFlatBuffersSerialization;
 import io.lionweb.lioncore.java.serialization.flatbuffers.FBAttachPoint;
 import io.lionweb.lioncore.java.serialization.flatbuffers.FBBulkImport;
 import io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer;
 import io.lionweb.lioncore.java.serialization.flatbuffers.FBNode;
+import io.lionweb.serialization.extensions.BulkImport;
+import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization;
+import io.lionweb.serialization.extensions.ExtraSerializationProvider;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 
 /** Testing various functionalities of FlatBuffersSerialization. */
-public class ExtraFlatbuffersSerializationTest extends SerializationTest {
+public class ExtraFlatbuffersSerializationTest {
 
   @Test
   public void bulkImportSerialization() {
@@ -38,7 +35,7 @@ public class ExtraFlatbuffersSerializationTest extends SerializationTest {
         new BulkImport.AttachPoint("n2", new MetaPointer("Foo", "1", "c-key"), "n1"));
 
     ExtraFlatBuffersSerialization flatBuffersSerialization =
-        SerializationProvider.getExtraStandardFlatBuffersSerialization();
+        ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization();
     byte[] bytes = flatBuffersSerialization.serializeBulkImport(bulkImport);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);

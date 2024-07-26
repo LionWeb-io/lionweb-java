@@ -1,8 +1,13 @@
+pluginManagement {
+    plugins {
+        id 'org.jetbrains.kotlin.jvm' version '2.0.0'
+    }
+}
 rootProject.name = 'lionweb-java'
 include('core')
 include('emf')
 include('emf-builtins')
-
+include('extensions')
 
 dependencyResolutionManagement {
     versionCatalogs {

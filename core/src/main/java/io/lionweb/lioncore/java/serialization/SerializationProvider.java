@@ -2,8 +2,6 @@ package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.self.LionCore;
-import io.lionweb.lioncore.java.serialization.extras.ExtraFlatBuffersSerialization;
-import io.lionweb.lioncore.java.serialization.extras.ExtraProtoBufSerialization;
 
 public class SerializationProvider {
 
@@ -38,24 +36,12 @@ public class SerializationProvider {
     return serialization;
   }
 
-  public static ExtraFlatBuffersSerialization getExtraStandardFlatBuffersSerialization() {
-    ExtraFlatBuffersSerialization serialization = new ExtraFlatBuffersSerialization();
-    standardInitialization(serialization);
-    return serialization;
-  }
-
-  public static ExtraProtoBufSerialization getExtraStandardProtoBufSerialization() {
-    ExtraProtoBufSerialization serialization = new ExtraProtoBufSerialization();
-    standardInitialization(serialization);
-    return serialization;
-  }
-
   /** This has no specific support for LionCore or LionCoreBuiltins. */
   public static FlatBuffersSerialization getBasicFlatBuffersSerialization() {
     return new FlatBuffersSerialization();
   }
 
-  private static void standardInitialization(AbstractSerialization serialization) {
+  protected static void standardInitialization(AbstractSerialization serialization) {
     serialization.classifierResolver.registerLanguage(LionCore.getInstance());
     serialization.instantiator.registerLionCoreCustomDeserializers();
     serialization.primitiveValuesSerialization
