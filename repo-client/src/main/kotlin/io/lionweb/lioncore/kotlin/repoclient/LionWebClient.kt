@@ -11,11 +11,8 @@ import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.model.impl.ProxyNode
-import io.lionweb.lioncore.java.serialization.BulkImport
-import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization
 import io.lionweb.lioncore.java.serialization.JsonSerialization
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization
-import io.lionweb.lioncore.java.serialization.ProtoBufSerialization
 import io.lionweb.lioncore.java.serialization.SerializationProvider
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy
 import io.lionweb.lioncore.kotlin.MetamodelRegistry
@@ -24,6 +21,9 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
+import io.lionweb.serialization.extensions.BulkImport
+import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization
+import io.lionweb.serialization.extensions.ExtraProtoBufSerialization
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -747,7 +747,7 @@ class LionWebClient(
         urlBuilder.addQueryParameter("repository", repository)
 
         val bytes =
-            ProtoBufSerialization().apply {
+            ExtraProtoBufSerialization().apply {
                 this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
                 this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
                 this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
@@ -792,7 +792,7 @@ class LionWebClient(
         urlBuilder.addQueryParameter("repository", repository)
 
         val bytes =
-            FlatBuffersSerialization().apply {
+            ExtraFlatBuffersSerialization().apply {
                 this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
                 this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
                 this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
