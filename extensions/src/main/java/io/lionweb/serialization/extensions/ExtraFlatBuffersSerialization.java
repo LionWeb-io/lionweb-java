@@ -26,20 +26,27 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
     FBHelper helper = new FBHelper(builder);
     Map<String, String> containerByAttached = new HashMap<>();
 
-    int[] attachPointOffsets = new int[bulkImport.getAttachPoints().size()];
-    int i = 0;
-    for (BulkImport.AttachPoint attachPoint : bulkImport.getAttachPoints()) {
-      int containment = helper.offsetForMetaPointer(attachPoint.containment);
-      int container = builder.createSharedString(attachPoint.container);
-      int root = builder.createSharedString(attachPoint.rootId);
-      FBAttachPoint.startFBAttachPoint(builder);
-      FBAttachPoint.addContainer(builder, container);
-      FBAttachPoint.addContainment(builder, containment);
-      FBAttachPoint.addRoot(builder, root);
-      attachPointOffsets[i] = FBAttachPoint.endFBAttachPoint(builder);
-      i++;
-      containerByAttached.put(attachPoint.rootId, attachPoint.container);
-    }
+    int[] attachPointOffsets =
+        serializeAttachPoints(bulkImport, helper, builder, containerByAttached);
+    int attachPointsVectorOffset =
+        FBBulkImport.createAttachPointsVector(builder, attachPointOffsets);
+
+    int[] nodesOffsets = serializeNodes(bulkImport, helper, builder, containerByAttached);
+    int nodesVectorOffset = FBBulkImport.createNodesVector(builder, nodesOffsets);
+
+    FBBulkImport.startFBBulkImport(builder);
+    FBBulkImport.addAttachPoints(builder, attachPointsVectorOffset);
+    FBBulkImport.addNodes(builder, nodesVectorOffset);
+    builder.finish(FBBulkImport.endFBBulkImport(builder));
+    return builder.dataBuffer().compact().array();
+  }
+
+  private int[] serializeNodes(
+      BulkImport bulkImport,
+      FBHelper helper,
+      FlatBufferBuilder builder,
+      Map<String, String> containerByAttached) {
+    int i;
 
     int[] nodesOffsets = new int[bulkImport.getNodes().size()];
     i = 0;
@@ -172,13 +179,28 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
       nodesOffsets[i] = FBNode.endFBNode(builder);
       i++;
     }
-    int attachPointsVectorOffset =
-        FBBulkImport.createAttachPointsVector(builder, attachPointOffsets);
-    int nodesVectorOffset = FBBulkImport.createNodesVector(builder, nodesOffsets);
-    FBBulkImport.startFBBulkImport(builder);
-    FBBulkImport.addAttachPoints(builder, attachPointsVectorOffset);
-    FBBulkImport.addNodes(builder, nodesVectorOffset);
-    builder.finish(FBBulkImport.endFBBulkImport(builder));
-    return builder.dataBuffer().compact().array();
+    return nodesOffsets;
+  }
+
+  private static int[] serializeAttachPoints(
+      BulkImport bulkImport,
+      FBHelper helper,
+      FlatBufferBuilder builder,
+      Map<String, String> containerByAttached) {
+    int[] attachPointOffsets = new int[bulkImport.getAttachPoints().size()];
+    int i = 0;
+    for (BulkImport.AttachPoint attachPoint : bulkImport.getAttachPoints()) {
+      int containment = helper.offsetForMetaPointer(attachPoint.containment);
+      int container = builder.createSharedString(attachPoint.container);
+      int root = builder.createSharedString(attachPoint.rootId);
+      FBAttachPoint.startFBAttachPoint(builder);
+      FBAttachPoint.addContainer(builder, container);
+      FBAttachPoint.addContainment(builder, containment);
+      FBAttachPoint.addRoot(builder, root);
+      attachPointOffsets[i] = FBAttachPoint.endFBAttachPoint(builder);
+      i++;
+      containerByAttached.put(attachPoint.rootId, attachPoint.container);
+    }
+    return attachPointOffsets;
   }
 }
