@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package io.lionweb.lioncore.protobuf;
+
+option java_multiple_files = true;
+option java_package = "io.lionweb.lioncore.protobuf";
+option java_outer_classname = "BulkImportProtos";
+
+import "io/lionweb/lioncore/protobuf/Chunk.proto";
+
+
+message PBBulkImport {
+  // We use this mechanism both to save space and to represent nulls (identified by -1)
+  repeated string stringValues = 1;
+  repeated PBMetaPointer metaPointers= 2;
+  repeated PBAttachPoint attachPoints = 3;
+  repeated PBNode nodes = 4;
+}
+
+message PBAttachPoint {
+  int32 container = 1;
+  int32 metaPointerIndex = 2;
+  int32 rootId = 3;
+}

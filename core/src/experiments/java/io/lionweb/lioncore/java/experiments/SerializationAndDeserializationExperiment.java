@@ -4,10 +4,7 @@ import static io.lionweb.lioncore.java.experiments.GZipFacade.decompress;
 
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
-import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
+import io.lionweb.lioncore.java.serialization.*;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.utils.ModelComparator;
 import java.io.*;
@@ -20,7 +17,8 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("Tree generated");
 
     SerializedChunk chunk =
-        JsonSerialization.getStandardSerialization().serializeTreeToSerializationBlock(tree);
+        SerializationProvider.getStandardJsonSerialization()
+            .serializeTreeToSerializationBlock(tree);
 
     System.out.println("= JSON serialization (without compression) =");
     long jt0 = System.currentTimeMillis();
@@ -31,7 +29,7 @@ public class SerializationAndDeserializationExperiment {
 
     // Note that this method include the transformation from SerializedChunk to node,
     // which is common to all deserialization operations
-    JsonSerialization jsonSerialization = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.enableDynamicNodes();
     jsonSerialization.registerLanguage(SimpleLanguage.language);
     Node jUnserializedTree = jsonSerialization.deserializeToNodes(json).get(0);
@@ -49,7 +47,8 @@ public class SerializationAndDeserializationExperiment {
 
     // Note that this method include the transformation from SerializedChunk to node,
     // which is common to all deserialization operations
-    JsonSerialization jsonSerializationCompress = JsonSerialization.getStandardSerialization();
+    JsonSerialization jsonSerializationCompress =
+        SerializationProvider.getStandardJsonSerialization();
     jsonSerializationCompress.enableDynamicNodes();
     jsonSerializationCompress.registerLanguage(SimpleLanguage.language);
     Node cUnserializedTree =
@@ -60,7 +59,8 @@ public class SerializationAndDeserializationExperiment {
 
     System.out.println("= ProtoBuf serialization =");
     long pt0 = System.currentTimeMillis();
-    ProtoBufSerialization protoBufSerialization = ProtoBufSerialization.getStandardSerialization();
+    ProtoBufSerialization protoBufSerialization =
+        SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerialization.enableDynamicNodes();
     byte[] bytes = protoBufSerialization.serializeToByteArray(chunk);
     long pt1 = System.currentTimeMillis();
@@ -70,7 +70,7 @@ public class SerializationAndDeserializationExperiment {
     // Note that this method include the transformation from SerializedChunk to node,
     // which is common to all deserialization operations
     ProtoBufSerialization protoBufSerializationForDeserialization =
-        ProtoBufSerialization.getStandardSerialization();
+        SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerializationForDeserialization.registerLanguage(SimpleLanguage.language);
     protoBufSerializationForDeserialization.enableDynamicNodes();
     Node pUnserializedTree =
@@ -82,7 +82,7 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("= Flatbuffers serialization =");
     long ft0 = System.currentTimeMillis();
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
     byte[] fbytes = flatBuffersSerialization.serialize(chunk);
     long ft1 = System.currentTimeMillis();
@@ -91,7 +91,7 @@ public class SerializationAndDeserializationExperiment {
     // Note that this method include the transformation from SerializedChunk to node,
     // which is common to all deserialization operations
     FlatBuffersSerialization flatBuffersSerializationForDeserialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerializationForDeserialization.registerLanguage(SimpleLanguage.language);
     flatBuffersSerializationForDeserialization.enableDynamicNodes();
     Node fUnserializedTree =

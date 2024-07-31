@@ -1,11 +1,11 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
-import io.lionweb.lioncore.java.serialization.flatbuffers.*;
+import io.lionweb.serialization.flatbuffers.gen.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -177,18 +177,18 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return serialize(serializedChunk);
   }
 
-  private class FBHelper {
+  protected class FBHelper {
     FlatBufferBuilder builder;
     Map<MetaPointer, Integer> serializedMetapointers = new HashMap<>();
 
-    FBHelper(FlatBufferBuilder builder) {
+    public FBHelper(FlatBufferBuilder builder) {
       this.builder = builder;
     }
 
     /**
      * This method can create objects, so it should not be nested inside another object creation.
      */
-    int offsetForMetaPointer(MetaPointer metaPointer) {
+    public int offsetForMetaPointer(MetaPointer metaPointer) {
       if (!serializedMetapointers.containsKey(metaPointer)) {
         int fbMetapointer =
             FBMetaPointer.createFBMetaPointer(
@@ -201,7 +201,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return serializedMetapointers.get(metaPointer);
     }
 
-    int[] languagesVector(List<UsedLanguage> usedLanguages) {
+    public int[] languagesVector(List<UsedLanguage> usedLanguages) {
       int[] languagesOffsets = new int[usedLanguages.size()];
       for (int i = 0; i < usedLanguages.size(); i++) {
         UsedLanguage ul = usedLanguages.get(i);
@@ -214,7 +214,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return languagesOffsets;
     }
 
-    int[] propsVector(List<SerializedPropertyValue> properties) {
+    public int[] propsVector(List<SerializedPropertyValue> properties) {
       int[] props = new int[properties.size()];
       for (int j = 0; j < properties.size(); j++) {
         SerializedPropertyValue el = properties.get(j);
@@ -227,7 +227,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return props;
     }
 
-    int[] containmentsVector(List<SerializedContainmentValue> containments) {
+    public int[] containmentsVector(List<SerializedContainmentValue> containments) {
       int[] cons = new int[containments.size()];
       for (int j = 0; j < containments.size(); j++) {
         SerializedContainmentValue el = containments.get(j);
@@ -248,7 +248,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return cons;
     }
 
-    int[] referencesVector(List<SerializedReferenceValue> references) {
+    public int[] referencesVector(List<SerializedReferenceValue> references) {
       int[] refs = new int[references.size()];
       for (int j = 0; j < references.size(); j++) {
         SerializedReferenceValue el = references.get(j);
@@ -269,7 +269,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return refs;
     }
 
-    int[] annotationsVector(List<String> annotations) {
+    public int[] annotationsVector(List<String> annotations) {
       int[] anns = new int[annotations.size()];
       if (anns.length > 0) {
         throw new UnsupportedOperationException();

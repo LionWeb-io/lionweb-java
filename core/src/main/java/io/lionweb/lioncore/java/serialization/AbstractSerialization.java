@@ -24,11 +24,11 @@ import javax.annotation.Nullable;
 public abstract class AbstractSerialization {
   public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
 
-  protected final ClassifierResolver classifierResolver;
-  protected final Instantiator instantiator;
-  protected final PrimitiveValuesSerialization primitiveValuesSerialization;
+  protected ClassifierResolver classifierResolver;
+  protected Instantiator instantiator;
+  protected PrimitiveValuesSerialization primitiveValuesSerialization;
 
-  protected final LocalClassifierInstanceResolver instanceResolver;
+  protected LocalClassifierInstanceResolver instanceResolver;
 
   /**
    * This guides what we do when deserializing a sub-tree and not being able to resolve the parent.
@@ -62,6 +62,23 @@ public abstract class AbstractSerialization {
 
   public ClassifierResolver getClassifierResolver() {
     return classifierResolver;
+  }
+
+  public void setClassifierResolver(ClassifierResolver classifierResolver) {
+    this.classifierResolver = classifierResolver;
+  }
+
+  public void setInstantiator(Instantiator instantiator) {
+    this.instantiator = instantiator;
+  }
+
+  public void setPrimitiveValuesSerialization(
+      PrimitiveValuesSerialization primitiveValuesSerialization) {
+    this.primitiveValuesSerialization = primitiveValuesSerialization;
+  }
+
+  public void setInstanceResolver(LocalClassifierInstanceResolver instanceResolver) {
+    this.instanceResolver = instanceResolver;
   }
 
   public Instantiator getInstantiator() {

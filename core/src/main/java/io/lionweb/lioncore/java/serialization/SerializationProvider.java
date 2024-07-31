@@ -41,7 +41,7 @@ public class SerializationProvider {
     return new FlatBuffersSerialization();
   }
 
-  private static void standardInitialization(AbstractSerialization serialization) {
+  protected static void standardInitialization(AbstractSerialization serialization) {
     serialization.classifierResolver.registerLanguage(LionCore.getInstance());
     serialization.instantiator.registerLionCoreCustomDeserializers();
     serialization.primitiveValuesSerialization

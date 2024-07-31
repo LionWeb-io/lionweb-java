@@ -160,11 +160,21 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serialize(serializedChunk).toByteArray();
   }
 
-  private class SerializeHelper {
-    final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
-    final Map<String, Integer> strings = new HashMap<>();
+  protected class SerializeHelper {
+    private final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
+    private final Map<String, Integer> strings = new HashMap<>();
 
-    int stringIndexer(String string) {
+    public Map<MetaPointer, Integer> getMetaPointers() {
+      return metaPointers;
+    }
+
+    public Map<String, Integer> getStrings() {
+      return strings;
+    }
+
+    public SerializeHelper() {}
+
+    public int stringIndexer(String string) {
       if (string == null) {
         return -1;
       }
@@ -176,7 +186,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
       return index;
     };
 
-    int metaPointerIndexer(MetaPointer metaPointer) {
+    public int metaPointerIndexer(MetaPointer metaPointer) {
       if (metaPointers.containsKey(metaPointer)) {
         return metaPointers.get(metaPointer);
       }
@@ -191,7 +201,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
       return index;
     }
 
-    PBNode serializeNode(SerializedClassifierInstance n) {
+    public PBNode serializeNode(SerializedClassifierInstance n) {
       PBNode.Builder nodeBuilder = PBNode.newBuilder();
       nodeBuilder.setId(this.stringIndexer(n.getID()));
       nodeBuilder.setClassifier(this.metaPointerIndexer((n.getClassifier())));
@@ -235,39 +245,6 @@ public class ProtoBufSerialization extends AbstractSerialization {
       n.getAnnotations().forEach(a -> nodeBuilder.addAnnotations(this.stringIndexer(a)));
       return nodeBuilder.build();
     }
-  }
-
-  public PBBulkImport serializeBulkImport(List<BulkImportElement> elements) {
-    PBBulkImport.Builder bulkImportBuilder = PBBulkImport.newBuilder();
-    ProtoBufSerialization.SerializeHelper serializeHelper =
-        new ProtoBufSerialization.SerializeHelper();
-
-    elements.forEach(
-        bulkImportElement -> {
-          PBBulkImportElement.Builder bulkImportElementBuilder = PBBulkImportElement.newBuilder();
-          bulkImportElementBuilder.setMetaPointerIndex(
-              serializeHelper.metaPointerIndexer(bulkImportElement.containment));
-          SerializedChunk serializedChunk =
-              serializeTreeToSerializationBlock(bulkImportElement.tree);
-
-          serializedChunk
-              .getClassifierInstances()
-              .forEach(n -> bulkImportElementBuilder.addTree(serializeHelper.serializeNode(n)));
-
-          bulkImportBuilder.addElements(bulkImportElementBuilder.build());
-        });
-
-    serializeHelper.metaPointers.entrySet().stream()
-        .sorted()
-        .forEach(
-            entry ->
-                bulkImportBuilder.addMetaPointerDefs(
-                    PBMetaPointer.newBuilder()
-                        .setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()))
-                        .setKey(serializeHelper.stringIndexer(entry.getKey().getKey()))
-                        .setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()))
-                        .build()));
-    return bulkImportBuilder.build();
   }
 
   public PBChunk serializeTree(ClassifierInstance<?> classifierInstance) {

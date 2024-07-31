@@ -6,17 +6,6 @@ option java_multiple_files = true;
 option java_package = "io.lionweb.lioncore.protobuf";
 option java_outer_classname = "ChunkProtos";
 
-message PBBulkImport {
-  repeated PBMetaPointer metaPointerDefs = 1;
-  repeated PBBulkImportElement elements = 2;
-}
-
-message PBBulkImportElement {
-  string container = 1;
-  int32 metaPointerIndex = 2;
-  repeated PBNode tree = 3;
-}
-
 message PBChunk {
   string serializationFormatVersion = 1;
   // We use this mechanism both to save space and to represent nulls (identified by -1)

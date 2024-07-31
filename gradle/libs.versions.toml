@@ -1,0 +1,11 @@
+[versions]
+protobufVersion = "4.27.2"
+
+[plugins]
+shadow = { id = "com.github.johnrengelman.shadow", version = "7.1.1"}
+protobuf = { id = "com.google.protobuf", version = "0.9.4"}
+
+[libraries]
+protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobufVersion" }
+flatbuffers = { group = "com.google.flatbuffers", name = "flatbuffers-java", version = "24.3.25" }
+
