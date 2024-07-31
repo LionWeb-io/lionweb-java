@@ -4,10 +4,10 @@ import java.net.URI
 plugins {
     id("java-library")
     id("signing")
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    alias(libs.plugins.shadow)
     id("com.vanniktech.maven.publish")
     jacoco
-    id("com.google.protobuf") version "0.9.4"
+    alias(libs.plugins.protobuf)
 }
 
 repositories {
@@ -27,8 +27,8 @@ dependencies {
     // Use JUnit test framework.
     testImplementation(libs.junit)
 
-    implementation("com.google.protobuf:protobuf-java:4.27.2")
-    implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
+    implementation(libs.protobuf)
+    implementation(libs.flatbuffers)
 }
 
 val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
@@ -100,13 +100,12 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
 
+val protobufVersion: String = libs.versions.protobufVersion.get()
+
 protobuf {
     protoc {
-        protoc {
-            // Apple Silicon processor would look for an unexisting platform-specific variant
-            artifact = "com.google.protobuf:protoc:4.27.2" + if (osdetector.os == "osx") ":osx-x86_64" else ""
-
-        }
+        // Apple Silicon processor would look for an unexisting platform-specific variant
+        artifact = "com.google.protobuf:protoc:${protobufVersion}" + if (osdetector.os == "osx") ":osx-x86_64" else ""
     }
     generateProtoTasks {
         ofSourceSet("main").forEach {

@@ -161,8 +161,16 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   protected class SerializeHelper {
-    public final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
-    public final Map<String, Integer> strings = new HashMap<>();
+    private final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
+    private final Map<String, Integer> strings = new HashMap<>();
+
+    public Map<MetaPointer, Integer> getMetaPointers() {
+      return metaPointers;
+    }
+
+    public Map<String, Integer> getStrings() {
+      return strings;
+    }
 
     public SerializeHelper() {}
 

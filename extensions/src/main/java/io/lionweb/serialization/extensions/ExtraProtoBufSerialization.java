@@ -35,11 +35,11 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
               bulkImportBuilder.addNodes(serializeHelper.serializeNode(serializedNode));
             });
 
-    serializeHelper.strings.entrySet().stream()
+    serializeHelper.getStrings().entrySet().stream()
         .sorted(Map.Entry.comparingByValue())
         .forEach(entry -> bulkImportBuilder.addStringValues(entry.getKey()));
 
-    serializeHelper.metaPointers.entrySet().stream()
+    serializeHelper.getMetaPointers().entrySet().stream()
         .sorted(Map.Entry.comparingByValue())
         .forEach(
             entry ->
