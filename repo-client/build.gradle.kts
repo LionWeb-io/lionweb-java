@@ -43,9 +43,11 @@ dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
     implementation(libs.lwjavacore)
+    implementation(libs.lwjavaextensions)
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
+    implementation("com.google.protobuf:protobuf-java:3.6.1")
 }
 
 testing {
@@ -60,6 +62,7 @@ testing {
                 implementation(project(":core"))
                 implementation(project(":repo-client-testing"))
                 implementation(libs.lwjavacore)
+                implementation(libs.lwjavaextensions)
                 implementation(libs.ktestjunit)
                 implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
                 implementation("io.kotest:kotest-assertions-core:5.8.0")

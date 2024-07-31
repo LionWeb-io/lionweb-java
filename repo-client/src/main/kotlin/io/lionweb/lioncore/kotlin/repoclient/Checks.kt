@@ -20,7 +20,7 @@ fun treeSanityChecks(
     }
     try {
         if (parents.containsKey(node.id!!)) {
-            throw IllegalStateException("Node with ID ${node.id} has already a parent")
+            throw IllegalStateException("Node with ID ${node.id} has already been encountered")
         }
         parents[node.id!!] = node.parent?.id
         node.classifier.allContainments().forEach { containment ->
@@ -35,7 +35,11 @@ fun treeSanityChecks(
         }
     } catch (t: Throwable) {
         // This method is called when in debug mode, so let's save this file to help debugging
-        File("error.json").writeText(jsonSerialization.serializeTreesToJsonString(node.root))
+        try {
+            File("error.json").writeText(jsonSerialization.serializeTreesToJsonString(node.root))
+        } catch (e: Exception) {
+            System.err.println("Unable to save tree: ${e.message}")
+        }
         throw RuntimeException(t)
     }
 }

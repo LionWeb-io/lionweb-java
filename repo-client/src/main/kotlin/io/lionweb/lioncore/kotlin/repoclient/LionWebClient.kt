@@ -13,6 +13,7 @@ import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.model.impl.ProxyNode
 import io.lionweb.lioncore.java.serialization.JsonSerialization
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization
+import io.lionweb.lioncore.java.serialization.SerializationProvider
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy
 import io.lionweb.lioncore.kotlin.MetamodelRegistry
 import io.lionweb.lioncore.kotlin.children
@@ -20,6 +21,9 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
+import io.lionweb.serialization.extensions.BulkImport
+import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization
+import io.lionweb.serialization.extensions.ExtraProtoBufSerialization
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -57,7 +61,7 @@ class LionWebClient(
      * Exposed for testing purposes
      */
     val defaultJsonSerialization =
-        JsonSerialization.getStandardSerialization().apply {
+        SerializationProvider.getStandardJsonSerialization().apply {
             enableDynamicNodes()
         }
 
@@ -133,6 +137,14 @@ class LionWebClient(
             this
         } else {
             this.addHeader("Authorization", authorizationToken)
+        }
+    }
+
+    private fun Request.Builder.considerCompression(compress: Boolean): Request.Builder {
+        return if (compress) {
+            this.addGZipCompressionHeader()
+        } else {
+            this
         }
     }
 
@@ -364,6 +376,10 @@ class LionWebClient(
         treeStoringOperation(node, "store")
     }
 
+    fun storeNodes(nodes: List<Node>) {
+        nodesStoringOperation(nodes, "store")
+    }
+
     /**
      * This operation is not atomic. We hope that no one is changing the parent at the very
      * same time.
@@ -461,6 +477,40 @@ class LionWebClient(
 
         // 3. Store the parent
         storeTree(referrer)
+    }
+
+    data class ReferenceData(
+        val targetIDs: List<String>,
+        val containerID: String,
+        val referenceName: String,
+    )
+
+    /**
+     * This is useful to set multiple references at once
+     */
+    fun setReferences(data: List<ReferenceData>) {
+        if (data.isEmpty()) {
+            return
+        }
+        // 1. Retrieve the referrer
+        val referrers = retrieve(data.map { it.containerID }, withProxyParent = true, retrievalMode = RetrievalMode.SINGLE_NODE)
+
+        // 2. Add the reference to the referrer
+        data.mapIndexed { index, referenceData ->
+            val referrer = referrers[index]
+            val referenceName = referenceData.referenceName
+            val targetIDs = referenceData.targetIDs
+            val reference =
+                referrer.classifier.getReferenceByName(referenceName)
+                    ?: throw IllegalArgumentException("The referrer has not containment named $referenceName")
+            if (reference.isMultiple) {
+                throw IllegalArgumentException("The indicated reference ${reference.name} is multiple")
+            }
+            referrer.setReferenceValues(reference, targetIDs.map { ReferenceValue(ProxyNode(it), null) })
+        }
+
+        // 3. Store the referrers
+        storeNodes(referrers)
     }
 
     fun setSingleReference(
@@ -636,6 +686,159 @@ class LionWebClient(
         }
     }
 
+    private fun bulkImportUsingJson(
+        bulkImport: BulkImport,
+        compress: Boolean = false,
+    ) {
+        val url = "http://$hostname:$port/additional/bulkImport"
+        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
+        urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
+        val body = JsonObject()
+        val bodyAttachPoints = JsonArray()
+        bulkImport.attachPoints.forEach { attachPoint ->
+            val jContainment = JsonObject()
+            jContainment.addProperty("language", attachPoint.containment.language)
+            jContainment.addProperty("version", attachPoint.containment.version)
+            jContainment.addProperty("key", attachPoint.containment.key)
+
+            val jEl = JsonObject()
+            jEl.addProperty("container", attachPoint.container)
+            jEl.addProperty("root", attachPoint.rootId)
+            jEl.add("containment", jContainment)
+            bodyAttachPoints.add(jEl)
+        }
+        val bodyNodes = jsonSerialization.serializeNodesToJsonElement(bulkImport.nodes).asJsonObject.get("nodes").asJsonArray
+        body.add("attachPoints", bodyAttachPoints)
+        body.add("nodes", bodyNodes)
+        val bodyJson = Gson().toJson(body)
+        val requestBody = bodyJson.toRequestBody(JSON).considerCompression(compress)
+        val builder =
+            Request.Builder()
+                .url(urlBuilder.build())
+                .considerAuthenticationToken()
+                .considerCompression(compress)
+                .post(requestBody)
+
+        val request: Request =
+            builder
+                .build()
+
+        httpClient.newCall(request).execute().use { response ->
+            val body = response.body?.string()
+            if (response.code != HttpURLConnection.HTTP_OK) {
+                throw RuntimeException("${response.code}: $body")
+            }
+
+            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
+            if (!success) {
+                throw RuntimeException("Request failed")
+            }
+        }
+    }
+
+    private fun bulkImportUsingProtobuf(
+        bulkImport: BulkImport,
+        compress: Boolean = false,
+    ) {
+        val url = "http://$hostname:$port/additional/bulkImport"
+        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
+        urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
+
+        val bytes =
+            ExtraProtoBufSerialization().apply {
+                this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
+                this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
+                this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
+                this.classifierResolver = jsonSerialization.classifierResolver
+                this.instanceResolver = jsonSerialization.instanceResolver
+                this.instantiator = jsonSerialization.instantiator
+                this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
+            }.serializeBulkImport(bulkImport).toByteArray()
+
+        val requestBody = bytes.toRequestBody(PROTOBUF).considerCompression(compress)
+        val builder =
+            Request.Builder()
+                .url(urlBuilder.build())
+                .considerAuthenticationToken()
+                .considerCompression(compress)
+                .post(requestBody)
+
+        val request: Request =
+            builder
+                .build()
+
+        httpClient.newCall(request).execute().use { response ->
+            val body = response.body?.string()
+            if (response.code != HttpURLConnection.HTTP_OK) {
+                throw RuntimeException("${response.code}: $body")
+            }
+
+            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
+            if (!success) {
+                throw RuntimeException("Request failed")
+            }
+        }
+    }
+
+    private fun bulkImportUsingFlatBuffers(
+        bulkImport: BulkImport,
+        compress: Boolean = false,
+    ) {
+        val url = "http://$hostname:$port/additional/bulkImport"
+        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
+        urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
+
+        val bytes =
+            ExtraFlatBuffersSerialization().apply {
+                this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
+                this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
+                this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
+                this.classifierResolver = jsonSerialization.classifierResolver
+                this.instanceResolver = jsonSerialization.instanceResolver
+                this.instantiator = jsonSerialization.instantiator
+                this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
+            }.serializeBulkImport(bulkImport)
+
+        val requestBody = bytes.toRequestBody(FLATBUFFERS).considerCompression(compress)
+        val builder =
+            Request.Builder()
+                .url(urlBuilder.build())
+                .considerAuthenticationToken()
+                .considerCompression(compress)
+                .post(requestBody)
+
+        val request: Request =
+            builder
+                .build()
+
+        httpClient.newCall(request).execute().use { response ->
+            val body = response.body?.string()
+            if (response.code != HttpURLConnection.HTTP_OK) {
+                throw RuntimeException("${response.code}: $body")
+            }
+
+            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
+            if (!success) {
+                throw RuntimeException("Request failed")
+            }
+        }
+    }
+
+    fun bulkImport(
+        bulkImport: BulkImport,
+        transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
+        compress: Boolean = false,
+    ) {
+        when (transferFormat) {
+            TransferFormat.JSON -> bulkImportUsingJson(bulkImport, compress)
+            TransferFormat.PROTOBUF -> bulkImportUsingProtobuf(bulkImport, compress)
+            TransferFormat.FLATBUFFERS -> bulkImportUsingFlatBuffers(bulkImport, compress)
+        }
+    }
+
     // Private methods
 
     private var httpClient: OkHttpClient =
@@ -651,6 +854,59 @@ class LionWebClient(
     private fun log(message: String) {
         if (debug) {
             println(message)
+        }
+    }
+
+    private fun nodesStoringOperation(
+        nodes: List<Node>,
+        operation: String,
+    ) {
+        fun verifyNode(node: Node) {
+            require(node.id != null) { "Node $node should not have a null ID" }
+            if (node !is ProxyNode) {
+                if (node.children.any { it == null }) {
+                    throw java.lang.IllegalStateException("Node $node has a null child")
+                }
+                node.children.forEach {
+                    verifyNode(it)
+                }
+            }
+        }
+
+        nodes.forEach { node -> verifyNode(node) }
+
+        val json = jsonSerialization.serializeNodesToJsonString(nodes)
+
+        val body: RequestBody = json.compress()
+
+        // TODO control with flag http or https
+        val url = "http://$hostname:$port/bulk/$operation"
+        val request: Request =
+            Request.Builder()
+                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
+                .considerAuthenticationToken()
+                .addGZipCompressionHeader()
+                .post(body)
+                .build()
+        try {
+            httpClient.newCall(request).execute().use { response ->
+                if (response.code != HttpURLConnection.HTTP_OK) {
+                    val body = response.body?.string()
+                    if (debug) {
+                        println("  Response: ${response.code}")
+                        println("  Response: $body")
+                    }
+                    throw RequestFailureException(url, json, response.code, body)
+                }
+            }
+        } catch (e: ConnectException) {
+            val jsonExcept =
+                if (json.length > 10000) {
+                    json.substring(0, 1000) + "..."
+                } else {
+                    json
+                }
+            throw RuntimeException("Cannot get answer from the client when contacting at URL $url. Body: $jsonExcept", e)
         }
     }
 
@@ -691,7 +947,7 @@ class LionWebClient(
             Request.Builder()
                 .url(url.addClientIdQueryParam().addRepositoryQueryParam())
                 .considerAuthenticationToken()
-                .addHeader("Content-Encoding", "gzip")
+                .addGZipCompressionHeader()
                 .post(body)
                 .build()
         try {
@@ -742,3 +998,22 @@ class LionWebClient(
 }
 
 data class NodeInfo(val id: String, val parent: String?, val depth: Int)
+
+enum class TransferFormat {
+    JSON,
+    PROTOBUF,
+    FLATBUFFERS,
+}
+
+fun Request.Builder.addGZipCompressionHeader(): Request.Builder {
+    this.addHeader("Content-Encoding", "gzip")
+    return this
+}
+
+fun RequestBody.considerCompression(compress: Boolean): RequestBody {
+    return if (compress) {
+        this.compress()
+    } else {
+        this
+    }
+}

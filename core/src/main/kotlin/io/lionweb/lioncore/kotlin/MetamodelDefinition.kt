@@ -9,6 +9,8 @@ import io.lionweb.lioncore.java.language.Property
 import io.lionweb.lioncore.java.language.Reference
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
+import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
+import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveSerializer
 import java.lang.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
@@ -147,14 +149,33 @@ fun Language.addConcepts(vararg conceptClasses: KClass<out Node>) {
 
 fun Language.addPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>) {
     primitiveTypeClasses.forEach { primitiveTypeClass ->
-        require(!primitiveTypeClass.isSubclassOf(Node::class))
-        val primitiveType =
-            addPrimitiveType(
-                primitiveTypeClass.simpleName
-                    ?: throw IllegalArgumentException("Given primitiveTypeClass has no name"),
-            )
-        MetamodelRegistry.registerMapping(primitiveTypeClass, primitiveType)
+        addPrimitiveType(primitiveTypeClass)
     }
+}
+
+fun <T : Any> Language.addSerializerAndDeserializer(
+    primitiveTypeClass: KClass<T>,
+    serializer: PrimitiveSerializer<T?>,
+    deserializer: PrimitiveDeserializer<T?>,
+) {
+    val primitiveType =
+        MetamodelRegistry.getPrimitiveType(primitiveTypeClass)
+            ?: throw IllegalStateException("Unknown primitive type class $primitiveTypeClass")
+    MetamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
+}
+
+fun Language.addPrimitiveType(
+    primitiveTypeClass: KClass<*>,
+    serializer: PrimitiveSerializer<*>? = null,
+    deserializer: PrimitiveDeserializer<*>? = null,
+) {
+    require(!primitiveTypeClass.isSubclassOf(Node::class))
+    val primitiveType =
+        addPrimitiveType(
+            primitiveTypeClass.simpleName
+                ?: throw IllegalArgumentException("Given primitiveTypeClass has no name"),
+        )
+    MetamodelRegistry.registerMapping(primitiveTypeClass, primitiveType, serializer, deserializer)
 }
 
 enum class Multiplicity(val optional: Boolean, val multiple: Boolean) {
