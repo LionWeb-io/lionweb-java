@@ -1,9 +1,9 @@
 [versions]
-kotlinVersion="1.9.22"
-lwJavaVersion="0.2.18-SNAPSHOT"
+kotlinVersion="1.9.25"
+lwJavaVersion="0.2.18"
 
 [plugins]
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.0" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.1" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
 superPublish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
