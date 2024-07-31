@@ -1,12 +1,11 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
-import io.lionweb.lioncore.java.serialization.flatbuffers.*;
+import io.lionweb.serialization.flatbuffers.gen.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;

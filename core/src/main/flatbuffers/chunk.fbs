@@ -1,4 +1,4 @@
-namespace io.lionweb.serialization.flatbuffers;
+namespace io.lionweb.serialization.flatbuffers.gen;
 
 table FBChunk {
     serializationFormatVersion: string;

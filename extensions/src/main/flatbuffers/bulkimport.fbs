@@ -1,6 +1,6 @@
 include "../../../../core/src/main/flatbuffers/chunk.fbs";
 
-namespace io.lionweb.serialization.flatbuffers;
+namespace io.lionweb.serialization.flatbuffers.gen;
 
 table FBBulkImport {
     attachPoints: [FBAttachPoint];

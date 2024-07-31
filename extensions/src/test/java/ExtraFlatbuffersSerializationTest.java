@@ -4,13 +4,13 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.*;
-import io.lionweb.lioncore.java.serialization.flatbuffers.FBAttachPoint;
-import io.lionweb.lioncore.java.serialization.flatbuffers.FBBulkImport;
-import io.lionweb.lioncore.java.serialization.flatbuffers.FBMetaPointer;
-import io.lionweb.lioncore.java.serialization.flatbuffers.FBNode;
 import io.lionweb.serialization.extensions.BulkImport;
 import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization;
 import io.lionweb.serialization.extensions.ExtraSerializationProvider;
+import io.lionweb.serialization.flatbuffers.gen.FBAttachPoint;
+import io.lionweb.serialization.flatbuffers.gen.FBBulkImport;
+import io.lionweb.serialization.flatbuffers.gen.FBMetaPointer;
+import io.lionweb.serialization.flatbuffers.gen.FBNode;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 
