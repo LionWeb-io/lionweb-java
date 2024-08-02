@@ -822,7 +822,7 @@ class LionWebClient(
 
             val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
             if (!success) {
-                throw RuntimeException("Request failed")
+                throw RuntimeException("Request failed: $body")
             }
         }
     }
