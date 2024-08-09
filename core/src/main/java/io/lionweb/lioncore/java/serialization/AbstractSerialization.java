@@ -335,25 +335,13 @@ public abstract class AbstractSerialization {
     }
   }
 
-  /** Create a Proxy and from now on use it to resolve instances for this node ID. */
-  ProxyNode createProxy(String nodeID) {
-    if (instanceResolver.resolve(nodeID) != null) {
-      throw new IllegalStateException(
-          "Cannot create a Proxy for node ID "
-              + nodeID
-              + " has there is already a Classifier Instance available for such ID");
-    }
-    ProxyNode proxyNode = new ProxyNode(nodeID);
-    instanceResolver.add(proxyNode);
-    return proxyNode;
-  }
-
   /**
    * This method returned a sorted version of the original list, so that leaves nodes comes first,
    * or in other words that a parent never precedes its children.
    */
   private DeserializationStatus sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
-    DeserializationStatus deserializationStatus = new DeserializationStatus(this, originalList);
+    DeserializationStatus deserializationStatus =
+        new DeserializationStatus(originalList, instanceResolver);
 
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list
@@ -464,13 +452,16 @@ public abstract class AbstractSerialization {
     }
     ClassifierInstanceResolver classifierInstanceResolver =
         new CompositeClassifierInstanceResolver(
-            new MapBasedResolver(deserializedByID), this.instanceResolver);
+            new MapBasedResolver(deserializedByID),
+            deserializationStatus.getProxiesInstanceResolver(),
+            this.instanceResolver);
     NodePopulator nodePopulator =
         new NodePopulator(this, classifierInstanceResolver, deserializationStatus);
     serializedClassifierInstances.stream()
         .forEach(
             node -> {
-              nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
+              nodePopulator.populateClassifierInstance(
+                  serializedToInstanceMap.get(node), node, classifierInstanceResolver);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
               ClassifierInstance<?> parent =
                   classifierInstanceResolver.resolve(node.getParentNodeID());
