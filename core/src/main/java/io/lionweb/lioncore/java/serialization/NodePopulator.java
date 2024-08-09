@@ -31,13 +31,17 @@ class NodePopulator {
   }
 
   void populateClassifierInstance(
-      ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
-    populateContainments(node, serializedClassifierInstance);
-    populateNodeReferences(node, serializedClassifierInstance);
+      ClassifierInstance<?> node,
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstanceResolver classifierInstanceResolver) {
+    populateContainments(node, serializedClassifierInstance, classifierInstanceResolver);
+    populateNodeReferences(node, serializedClassifierInstance, classifierInstanceResolver);
   }
 
   private void populateContainments(
-      ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
+      ClassifierInstance<?> node,
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstanceResolver classifierInstanceResolver) {
     Classifier<?> concept = node.getClassifier();
     serializedClassifierInstance
         .getContainments()
@@ -73,7 +77,9 @@ class NodePopulator {
   }
 
   private void populateNodeReferences(
-      ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
+      ClassifierInstance<?> node,
+      SerializedClassifierInstance serializedClassifierInstance,
+      ClassifierInstanceResolver classifierInstanceResolver) {
     Classifier<?> concept = node.getClassifier();
     // TODO resolve references to Nodes in different models
     serializedClassifierInstance
