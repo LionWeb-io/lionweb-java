@@ -3,7 +3,6 @@ package io.lionweb.lioncore.kotlin.repoclient
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.language.Language
@@ -24,18 +23,7 @@ import io.lionweb.lioncore.kotlin.setReferenceValuesByName
 import io.lionweb.serialization.extensions.BulkImport
 import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization
 import io.lionweb.serialization.extensions.ExtraProtoBufSerialization
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.RequestBody
-import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.EMPTY_REQUEST
-import java.net.ConnectException
-import java.net.HttpURLConnection
 import java.util.LinkedList
-import java.util.concurrent.TimeUnit
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
 
@@ -43,6 +31,8 @@ import kotlin.reflect.KProperty
 // Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
 // Integer.MAX_VALUE       =         2,147,483,647
 val MAX_DEPTH = Integer.MAX_VALUE
+
+typealias SerializationDecorator = (JsonSerialization) -> Unit
 
 class LionWebClient(
     val hostname: String = "localhost",
@@ -52,10 +42,24 @@ class LionWebClient(
     val connectTimeOutInSeconds: Long = 60,
     val callTimeoutInSeconds: Long = 60,
     val authorizationToken: String? = null,
-    var clientID: String = "GenericKotlinBasedLionWebClient",
-    var repository: String = "default",
+    val clientID: String = "GenericKotlinBasedLionWebClient",
+    val repository: String = "default",
 ) {
     // Fields
+    private val languages = mutableListOf<Language>()
+    private val serializationDecorators = mutableListOf<SerializationDecorator>()
+
+    private val lowLevelRepoClient =
+        LowLevelRepoClient(
+            hostname = hostname,
+            port = port,
+            authorizationToken = authorizationToken,
+            clientID = clientID,
+            repository = repository,
+            connectTimeOutInSeconds = connectTimeOutInSeconds,
+            callTimeoutInSeconds = callTimeoutInSeconds,
+            debug = debug,
+        )
 
     /**
      * Exposed for testing purposes
@@ -65,38 +69,46 @@ class LionWebClient(
             enableDynamicNodes()
         }
 
-    // TODO avoid re-instantiating jsonSerialization a ton of times
-    val jsonSerialization: JsonSerialization
-        get() {
-            val jsonSerialization = jsonSerializationProvider?.invoke() ?: defaultJsonSerialization
+    init {
+        registerSerializationDecorator { jsonSerialization ->
             languages.forEach {
                 jsonSerialization.registerLanguage(it)
             }
             MetamodelRegistry.prepareJsonSerialization(jsonSerialization)
-            return jsonSerialization
         }
+    }
+
+    var jsonSerialization: JsonSerialization = calculateJsonSerialization()
+        private set
 
     // Configuration
+
+    private fun calculateJsonSerialization(): JsonSerialization {
+        val jsonSerialization = jsonSerializationProvider?.invoke() ?: defaultJsonSerialization
+        serializationDecorators.forEach { serializationDecorator -> serializationDecorator.invoke(jsonSerialization) }
+        return jsonSerialization
+    }
+
+    fun updateJsonSerialization() {
+        this.jsonSerialization = calculateJsonSerialization()
+    }
 
     fun registerLanguage(language: Language) {
         languages.add(language)
     }
 
+    fun registerSerializationDecorator(decorator: SerializationDecorator) {
+        serializationDecorators.add(decorator)
+    }
+
+    fun cleanSerializationDecorators() {
+        serializationDecorators.clear()
+    }
+
     // Setup
 
     fun createRepository(history: Boolean = false) {
-        val url = "http://$hostname:$port/createRepository?history=$history"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam())
-                .considerAuthenticationToken()
-                .post(EMPTY_REQUEST)
-                .build()
-        OkHttpClient().newCall(request).execute().use { response ->
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("DB initialization failed, HTTP ${response.code}: ${response.body?.string()}")
-            }
-        }
+        lowLevelRepoClient.createRepository(history)
     }
 
     // Partitions
@@ -113,73 +125,14 @@ class LionWebClient(
     }
 
     fun deletePartition(nodeID: String) {
-        val body: RequestBody = "[\"$nodeID\"]".toRequestBody(JSON)
-        val request: Request =
-            Request.Builder()
-                .url("http://$hostname:$port/bulk/deletePartitions".addClientIdQueryParam())
-                .considerAuthenticationToken()
-                .post(body)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                val body = response.body?.string()
-                if (debug) {
-                    println("  Response: ${response.code}")
-                    println("  Response: $body")
-                }
-                throw RuntimeException("Request failed with code ${response.code}: $body")
-            }
-        }
-    }
-
-    private fun Request.Builder.considerAuthenticationToken(): Request.Builder {
-        return if (authorizationToken == null) {
-            this
-        } else {
-            this.addHeader("Authorization", authorizationToken)
-        }
-    }
-
-    private fun Request.Builder.considerCompression(compress: Boolean): Request.Builder {
-        return if (compress) {
-            this.addGZipCompressionHeader()
-        } else {
-            this
-        }
-    }
-
-    private fun String.addClientIdQueryParam(): HttpUrl {
-        val urlBuilder = this.toHttpUrl().newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        return urlBuilder.build()
-    }
-
-    private fun HttpUrl.addRepositoryQueryParam(): HttpUrl {
-        val urlBuilder = this.newBuilder()
-        urlBuilder.addQueryParameter("repository", repository)
-        return urlBuilder.build()
+        lowLevelRepoClient.deletePartition(nodeID)
     }
 
     fun getPartitionIDs(): List<String> {
-        val url = "http://$hostname:$port/bulk/listPartitions"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam())
-                .considerAuthenticationToken()
-                .addHeader("Accept-Encoding", "gzip")
-                .post(EMPTY_REQUEST)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code == HttpURLConnection.HTTP_OK) {
-                val data =
-                    (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
-                return processChunkResponse(data) {
-                    val chunk = LowLevelJsonSerialization().deserializeSerializationBlock(it)
-                    chunk.classifierInstances.mapNotNull { it.id }
-                }
-            } else {
-                throw RuntimeException("Got back ${response.code}: ${response.body?.string()}")
-            }
+        val data = lowLevelRepoClient.getPartitionIDs()
+        return processChunkResponse(data) {
+            val chunk = LowLevelJsonSerialization().deserializeSerializationBlock(it)
+            chunk.classifierInstances.mapNotNull { it.id }
         }
     }
 
@@ -204,59 +157,32 @@ class LionWebClient(
         if (rootIds.isEmpty()) {
             return emptyList()
         }
-        require(rootIds.all { it.isNotBlank() })
-        val body: RequestBody = "{\"ids\":[${rootIds.joinToString(", "){"\"$it\""}}] }".toRequestBody(JSON)
-        val url = "http://$hostname:$port/bulk/retrieve"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         val limit =
             when (retrievalMode) {
-                RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH.toString()
-                RetrievalMode.SINGLE_NODE -> "1"
+                RetrievalMode.SINGLE_NODE -> 1
+                RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH
             }
-        urlBuilder.addQueryParameter("depthLimit", limit)
-        urlBuilder.addQueryParameter("clientId", clientID)
-        val request: Request =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .post(body)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code == HttpURLConnection.HTTP_OK) {
-                val data =
-                    (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
-                // Note that ids are calculated exclusively for debugging reasons
-                var ids = rootIds.toString()
-                if (ids.length > 100) {
-                    ids = ids.substring(0, 100)
-                }
-                debugFile("retrieved-$ids.json") { data }
+        val data = lowLevelRepoClient.retrieve(rootIds, limit)
 
-                return processChunkResponse(data) {
-                    val js = jsonSerialization
-                    js.unavailableParentPolicy =
-                        if (withProxyParent) {
-                            UnavailableNodePolicy.PROXY_NODES
-                        } else {
-                            UnavailableNodePolicy.NULL_REFERENCES
-                        }
-                    js.unavailableReferenceTargetPolicy = UnavailableNodePolicy.PROXY_NODES
-                    js.unavailableChildrenPolicy =
-                        when (retrievalMode) {
-                            RetrievalMode.ENTIRE_SUBTREE -> UnavailableNodePolicy.THROW_ERROR
-                            RetrievalMode.SINGLE_NODE -> UnavailableNodePolicy.PROXY_NODES
-                        }
-                    val nodes = js.deserializeToNodes(it)
-                    rootIds.map { rootId ->
-                        nodes.find { node -> node.id == rootId } ?: throw IllegalArgumentException(
-                            "When requesting a subtree with rootId=$rootId we got back an answer without such ID. " +
-                                "IDs we got back: ${nodes.map { node -> node.id }.joinToString(", ")}",
-                        )
-                    }
+        return processChunkResponse(data) {
+            val js = jsonSerialization
+            js.unavailableParentPolicy =
+                if (withProxyParent) {
+                    UnavailableNodePolicy.PROXY_NODES
+                } else {
+                    UnavailableNodePolicy.NULL_REFERENCES
                 }
-            } else {
-                throw RuntimeException(
-                    "Something went wrong while querying $url: http code ${response.code}, body: ${response.body?.string()}",
+            js.unavailableReferenceTargetPolicy = UnavailableNodePolicy.PROXY_NODES
+            js.unavailableChildrenPolicy =
+                when (retrievalMode) {
+                    RetrievalMode.ENTIRE_SUBTREE -> UnavailableNodePolicy.THROW_ERROR
+                    RetrievalMode.SINGLE_NODE -> UnavailableNodePolicy.PROXY_NODES
+                }
+            val nodes = js.deserializeToNodes(it)
+            rootIds.map { rootId ->
+                nodes.find { node -> node.id == rootId } ?: throw IllegalArgumentException(
+                    "When requesting a subtree with rootId=$rootId we got back an answer without such ID. " +
+                        "IDs we got back: ${nodes.map { node -> node.id }.joinToString(", ")}",
                 )
             }
         }
@@ -300,74 +226,33 @@ class LionWebClient(
 
     fun isNodeExisting(nodeID: String): Boolean {
         require(nodeID.isNotBlank())
-        val body: RequestBody = "{\"ids\":[\"$nodeID\"] }".toRequestBody(JSON)
-        val url = "http://$hostname:$port/bulk/retrieve"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("depthLimit", "0")
-        urlBuilder.addQueryParameter("clientId", clientID)
-        val request: Request =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .post(body)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code == HttpURLConnection.HTTP_OK) {
-                val data =
-                    (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
-                debugFile("isNodeExisting-$nodeID.json") { data }
-                return processChunkResponse(data) { chunk ->
-                    val nodes = chunk.asJsonObject.get("nodes").asJsonArray
-                    !nodes.isEmpty
-                }
-            } else {
-                throw RuntimeException(
-                    "Something went wrong while querying $url: http code ${response.code}, body: ${response.body?.string()}",
-                )
-            }
+
+        val data = lowLevelRepoClient.retrieve(listOf(nodeID), limit = 0)
+        return processChunkResponse(data) { chunk ->
+            val nodes = chunk.asJsonObject.get("nodes").asJsonArray
+            !nodes.isEmpty
         }
     }
 
     fun getParentId(nodeID: String): String? {
         require(nodeID.isNotBlank())
-        val body: RequestBody = "{\"ids\":[\"$nodeID\"] }".toRequestBody(JSON)
-        val url = "http://$hostname:$port/bulk/retrieve"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("depthLimit", "0")
-        urlBuilder.addQueryParameter("clientId", clientID)
-        val request: Request =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .post(body)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code == HttpURLConnection.HTTP_OK) {
-                val data =
-                    (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
-                debugFile("getParentId-$nodeID.json") { data }
-                return processChunkResponse(data) { chunk ->
-                    val nodes = chunk.asJsonObject.get("nodes").asJsonArray
-                    if (nodes.size() != 1) {
-                        throw UnexistingNodeException(
-                            nodeID,
-                            "When asking for the parent Id of $nodeID we were expecting to get one node back. " +
-                                "We got ${nodes.size()}",
-                        )
-                    }
-                    val node = nodes.get(0).asJsonObject
-                    require(nodeID == node.get("id").asString)
-                    val parentNode = node.get("parent")
-                    if (parentNode.isJsonNull) {
-                        null
-                    } else {
-                        parentNode.asString
-                    }
-                }
-            } else {
-                throw RuntimeException(
-                    "Something went wrong while querying $url: http code ${response.code}, body: ${response.body?.string()}",
+        val data = lowLevelRepoClient.retrieve(listOf(nodeID), limit = 0)
+        return processChunkResponse(data) { chunk ->
+            val nodes = chunk.asJsonObject.get("nodes").asJsonArray
+            if (nodes.size() != 1) {
+                throw UnexistingNodeException(
+                    nodeID,
+                    "When asking for the parent Id of $nodeID we were expecting to get one node back. " +
+                        "We got ${nodes.size()}",
                 )
+            }
+            val node = nodes.get(0).asJsonObject
+            require(nodeID == node.get("id").asString)
+            val parentNode = node.get("parent")
+            if (parentNode.isJsonNull) {
+                null
+            } else {
+                parentNode.asString
             }
         }
     }
@@ -579,32 +464,7 @@ class LionWebClient(
     }
 
     fun nodesByClassifier(limit: Int? = null): Map<ClassifierKey, ClassifierResult> {
-        val url = "http://$hostname:$port/inspection/nodesByClassifier"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        if (limit != null) {
-            urlBuilder.addQueryParameter("limit", limit.toString())
-        }
-        val request: Request =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .get()
-                .build()
-        OkHttpClient().newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("DB initialization failed, HTTP ${response.code}: $body")
-            }
-            val data = JsonParser.parseString(body)
-            val result = mutableMapOf<ClassifierKey, ClassifierResult>()
-            data.asJsonArray.map { it.asJsonObject }.forEach { entry ->
-                val classifierKey = ClassifierKey(entry["language"].asString, entry["classifier"].asString)
-                val ids: Set<String> = entry["ids"].asJsonArray.map { it.asString }.toSet()
-                result[classifierKey] = ClassifierResult(ids, entry["size"].asInt)
-            }
-            return result
-        }
+        return lowLevelRepoClient.nodesByClassifier(limit = limit)
     }
 
     fun childrenInContainment(
@@ -643,57 +503,13 @@ class LionWebClient(
         nodeIDs: List<String>,
         depthLimit: Int? = null,
     ): List<NodeInfo> {
-        val url = "http://$hostname:$port/additional/getNodeTree"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        if (depthLimit != null) {
-            urlBuilder.addQueryParameter("depthLimit", depthLimit.toString())
-        }
-        urlBuilder.addQueryParameter("clientId", clientID)
-        urlBuilder.addQueryParameter("repository", repository)
-        val body = JsonObject()
-        val ids = JsonArray()
-        nodeIDs.forEach { ids.add(it) }
-        body.add("ids", ids)
-        val bodyJson = Gson().toJson(body)
-        val builder =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .post(bodyJson.toRequestBody(JSON))
-
-        val request: Request =
-            builder
-                .build()
-
-        OkHttpClient().newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("${response.code}: $body")
-            }
-
-            val data = JsonParser.parseString(body).asJsonObject.get("data").asJsonArray
-            return data.map { it.asJsonObject }.map { dataElement ->
-                val parent =
-                    if (dataElement.has("parent") && dataElement.get("parent") !is JsonNull) {
-                        dataElement.get(
-                            "parent",
-                        ).asString
-                    } else {
-                        null
-                    }
-                NodeInfo(dataElement.get("id").asString, parent, dataElement.get("depth").asInt)
-            }
-        }
+        return lowLevelRepoClient.nodeTree(nodeIDs, depthLimit)
     }
 
     private fun bulkImportUsingJson(
         bulkImport: BulkImport,
         compress: Boolean = false,
     ) {
-        val url = "http://$hostname:$port/additional/bulkImport"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        urlBuilder.addQueryParameter("repository", repository)
         val body = JsonObject()
         val bodyAttachPoints = JsonArray()
         bulkImport.attachPoints.forEach { attachPoint ->
@@ -712,40 +528,13 @@ class LionWebClient(
         body.add("attachPoints", bodyAttachPoints)
         body.add("nodes", bodyNodes)
         val bodyJson = Gson().toJson(body)
-        val requestBody = bodyJson.toRequestBody(JSON).considerCompression(compress)
-        val builder =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .considerCompression(compress)
-                .post(requestBody)
-
-        val request: Request =
-            builder
-                .build()
-
-        httpClient.newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("${response.code}: $body")
-            }
-
-            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
-            if (!success) {
-                throw RuntimeException("Request failed: $body")
-            }
-        }
+        return lowLevelRepoClient.bulkImportUsingJson(bodyJson, compress = compress)
     }
 
     private fun bulkImportUsingProtobuf(
         bulkImport: BulkImport,
         compress: Boolean = false,
     ) {
-        val url = "http://$hostname:$port/additional/bulkImport"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        urlBuilder.addQueryParameter("repository", repository)
-
         val bytes =
             ExtraProtoBufSerialization().apply {
                 this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
@@ -756,41 +545,13 @@ class LionWebClient(
                 this.instantiator = jsonSerialization.instantiator
                 this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
             }.serializeBulkImport(bulkImport).toByteArray()
-
-        val requestBody = bytes.toRequestBody(PROTOBUF).considerCompression(compress)
-        val builder =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .considerCompression(compress)
-                .post(requestBody)
-
-        val request: Request =
-            builder
-                .build()
-
-        httpClient.newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("${response.code}: $body")
-            }
-
-            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
-            if (!success) {
-                throw RuntimeException("Request failed")
-            }
-        }
+        lowLevelRepoClient.bulkImportUsingProtobuf(bytes, compress = compress)
     }
 
     private fun bulkImportUsingFlatBuffers(
         bulkImport: BulkImport,
         compress: Boolean = false,
     ) {
-        val url = "http://$hostname:$port/additional/bulkImport"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        urlBuilder.addQueryParameter("repository", repository)
-
         val bytes =
             ExtraFlatBuffersSerialization().apply {
                 this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
@@ -801,30 +562,7 @@ class LionWebClient(
                 this.instantiator = jsonSerialization.instantiator
                 this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
             }.serializeBulkImport(bulkImport)
-
-        val requestBody = bytes.toRequestBody(FLATBUFFERS).considerCompression(compress)
-        val builder =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .considerCompression(compress)
-                .post(requestBody)
-
-        val request: Request =
-            builder
-                .build()
-
-        httpClient.newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("${response.code}: $body")
-            }
-
-            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
-            if (!success) {
-                throw RuntimeException("Request failed: $body")
-            }
-        }
+        lowLevelRepoClient.bulkImportUsingFlatBuffers(bytes, compress = compress)
     }
 
     fun bulkImport(
@@ -840,16 +578,6 @@ class LionWebClient(
     }
 
     // Private methods
-
-    private var httpClient: OkHttpClient =
-        OkHttpClient.Builder()
-            .callTimeout(
-                callTimeoutInSeconds,
-                TimeUnit.SECONDS,
-            ).readTimeout(callTimeoutInSeconds, TimeUnit.SECONDS)
-            .writeTimeout(callTimeoutInSeconds, TimeUnit.SECONDS)
-            .connectTimeout(connectTimeOutInSeconds, TimeUnit.SECONDS).build()
-    private val languages = mutableListOf<Language>()
 
     private fun log(message: String) {
         if (debug) {
@@ -877,37 +605,7 @@ class LionWebClient(
 
         val json = jsonSerialization.serializeNodesToJsonString(nodes)
 
-        val body: RequestBody = json.compress()
-
-        // TODO control with flag http or https
-        val url = "http://$hostname:$port/bulk/$operation"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
-                .considerAuthenticationToken()
-                .addGZipCompressionHeader()
-                .post(body)
-                .build()
-        try {
-            httpClient.newCall(request).execute().use { response ->
-                if (response.code != HttpURLConnection.HTTP_OK) {
-                    val body = response.body?.string()
-                    if (debug) {
-                        println("  Response: ${response.code}")
-                        println("  Response: $body")
-                    }
-                    throw RequestFailureException(url, json, response.code, body)
-                }
-            }
-        } catch (e: ConnectException) {
-            val jsonExcept =
-                if (json.length > 10000) {
-                    json.substring(0, 1000) + "..."
-                } else {
-                    json
-                }
-            throw RuntimeException("Cannot get answer from the client when contacting at URL $url. Body: $jsonExcept", e)
-        }
+        lowLevelRepoClient.nodesStoringOperation(json, operation)
     }
 
     private fun treeStoringOperation(
@@ -939,37 +637,7 @@ class LionWebClient(
         val json = jsonSerialization.serializeTreesToJsonString(node)
         debugFile("sent.json") { json }
 
-        val body: RequestBody = json.compress()
-
-        // TODO control with flag http or https
-        val url = "http://$hostname:$port/bulk/$operation"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
-                .considerAuthenticationToken()
-                .addGZipCompressionHeader()
-                .post(body)
-                .build()
-        try {
-            httpClient.newCall(request).execute().use { response ->
-                if (response.code != HttpURLConnection.HTTP_OK) {
-                    val body = response.body?.string()
-                    if (debug) {
-                        println("  Response: ${response.code}")
-                        println("  Response: $body")
-                    }
-                    throw RequestFailureException(url, json, response.code, body)
-                }
-            }
-        } catch (e: ConnectException) {
-            val jsonExcept =
-                if (json.length > 10000) {
-                    json.substring(0, 1000) + "..."
-                } else {
-                    json
-                }
-            throw RuntimeException("Cannot get answer from the client when contacting at URL $url. Body: $jsonExcept", e)
-        }
+        lowLevelRepoClient.nodesStoringOperation(json, operation)
     }
 
     private fun debugFile(
@@ -1003,17 +671,4 @@ enum class TransferFormat {
     JSON,
     PROTOBUF,
     FLATBUFFERS,
-}
-
-fun Request.Builder.addGZipCompressionHeader(): Request.Builder {
-    this.addHeader("Content-Encoding", "gzip")
-    return this
-}
-
-fun RequestBody.considerCompression(compress: Boolean): RequestBody {
-    return if (compress) {
-        this.compress()
-    } else {
-        this
-    }
 }

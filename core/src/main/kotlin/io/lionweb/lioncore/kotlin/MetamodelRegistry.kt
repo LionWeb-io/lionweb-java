@@ -8,7 +8,8 @@ import io.lionweb.lioncore.java.language.Property
 import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.impl.DynamicNode
-import io.lionweb.lioncore.java.serialization.JsonSerialization
+import io.lionweb.lioncore.java.serialization.AbstractSerialization
+import io.lionweb.lioncore.java.serialization.Instantiator
 import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance
 import kotlin.reflect.KClass
@@ -70,13 +71,13 @@ object MetamodelRegistry {
 
     fun getPrimitiveType(kClass: KClass<*>): PrimitiveType? = classToPrimitiveType[kClass]
 
-    fun prepareJsonSerialization(jsonSerialization: JsonSerialization) {
+    fun prepareInstantiator(instantiator: Instantiator) {
         classToClassifier.forEach { (kClass, concept) ->
-            jsonSerialization.instantiator.registerCustomDeserializer(concept.id!!) {
-                    classifier: Classifier<*>,
+            instantiator.registerCustomDeserializer(concept.id!!) {
+                    _: Classifier<*>,
                     serializedClassifierInstance: SerializedClassifierInstance,
-                    nodes: MutableMap<String, ClassifierInstance<*>>,
-                    propertyValues: MutableMap<Property, Any>,
+                    _: MutableMap<String, ClassifierInstance<*>>,
+                    _: MutableMap<Property, Any>,
                 ->
                 val result = kClass.primaryConstructor!!.callBy(emptyMap()) as Node
                 if (result is DynamicNode) {
@@ -85,15 +86,19 @@ object MetamodelRegistry {
                 result
             }
         }
-        classToPrimitiveType.forEach { (kClass, primitiveType) ->
-            val serializer = serializers[primitiveType]
-            val deserializer = deserializers[primitiveType]
-            if (serializer != null) {
-                jsonSerialization.primitiveValuesSerialization.registerSerializer(primitiveType.id, serializer)
-            }
-            if (deserializer != null) {
-                jsonSerialization.primitiveValuesSerialization.registerDeserializer(primitiveType.id, deserializer)
-            }
+    }
+
+    fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization) {
+        serializers.forEach { primitiveType, serializer ->
+            primitiveValuesSerialization.registerSerializer(primitiveType.id, serializer)
         }
+        deserializers.forEach { primitiveType, deserializer ->
+            primitiveValuesSerialization.registerDeserializer(primitiveType.id, deserializer)
+        }
+    }
+
+    fun prepareJsonSerialization(serialization: AbstractSerialization) {
+        prepareInstantiator(serialization.instantiator)
+        preparePrimitiveValuesSerialization(serialization.primitiveValuesSerialization)
     }
 }
