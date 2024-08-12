@@ -460,8 +460,7 @@ public abstract class AbstractSerialization {
     serializedClassifierInstances.stream()
         .forEach(
             node -> {
-              nodePopulator.populateClassifierInstance(
-                  serializedToInstanceMap.get(node), node, classifierInstanceResolver);
+              nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
               ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
               ClassifierInstance<?> parent =
                   classifierInstanceResolver.resolve(node.getParentNodeID());

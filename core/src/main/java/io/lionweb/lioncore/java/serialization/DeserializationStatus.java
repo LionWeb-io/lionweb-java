@@ -26,7 +26,12 @@ class DeserializationStatus {
   final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
   private LocalClassifierInstanceResolver proxiesInstanceResolver;
-  private ClassifierInstanceResolver complexiveInstanceResolver;
+  /**
+   * Represent the combination of different ways to solve an instances resolver. It considers the
+   * instances that are not connected to this deserialization process (outsideInstancesResolver),
+   * and the proxies created during this deserialization process.
+   */
+  private ClassifierInstanceResolver globalInstanceResolver;
 
   DeserializationStatus(
       List<SerializedClassifierInstance> originalList,
@@ -34,7 +39,7 @@ class DeserializationStatus {
     sortedList = new ArrayList<>();
     nodesToSort = new ArrayList<>(originalList);
     this.proxiesInstanceResolver = new LocalClassifierInstanceResolver();
-    this.complexiveInstanceResolver =
+    this.globalInstanceResolver =
         new CompositeClassifierInstanceResolver(outsideInstancesResolver, proxiesInstanceResolver);
   }
 
@@ -81,7 +86,7 @@ class DeserializationStatus {
     if (nodeID == null) {
       return null;
     }
-    ClassifierInstance<?> resolved = complexiveInstanceResolver.resolve(nodeID);
+    ClassifierInstance<?> resolved = globalInstanceResolver.resolve(nodeID);
     if (resolved == null) {
       return createProxy(nodeID);
     } else if (resolved instanceof Node) {
@@ -99,11 +104,11 @@ class DeserializationStatus {
   @Nonnull
   ProxyNode createProxy(@Nonnull String nodeID) {
     Objects.requireNonNull(nodeID, "nodeID should not be null");
-    if (complexiveInstanceResolver.resolve(nodeID) != null) {
+    if (globalInstanceResolver.resolve(nodeID) != null) {
       throw new IllegalStateException(
           "Cannot create a Proxy for node ID "
               + nodeID
-              + " has there is already a Classifier Instance available for such ID");
+              + " as there is already a Classifier Instance available for such ID");
     }
     ProxyNode proxyNode = new ProxyNode(nodeID);
     proxiesInstanceResolver.add(proxyNode);
