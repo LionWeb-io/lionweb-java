@@ -146,7 +146,11 @@ class LionWebClient(
         require(rootId.isNotBlank())
         val result = retrieve(listOf(rootId), withProxyParent, retrievalMode)
         require(result.size == 1)
-        return result.first()
+        val value = result.first()
+        require(value !is ProxyNode) {
+            "retrieve should produce a full node and not a Proxy Node"
+        }
+        return value
     }
 
     fun retrieve(
@@ -164,7 +168,7 @@ class LionWebClient(
             }
         val data = lowLevelRepoClient.retrieve(rootIds, limit)
 
-        return processChunkResponse(data) {
+        val res = processChunkResponse(data) {
             val js = jsonSerialization
             js.unavailableParentPolicy =
                 if (withProxyParent) {
@@ -186,6 +190,7 @@ class LionWebClient(
                 )
             }
         }
+        return res
     }
 
     fun getAncestorsId(nodeID: String): List<String> {
