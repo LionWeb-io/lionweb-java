@@ -37,7 +37,6 @@ ktlint {
 }
 
 val jvmVersion = extra["jvmVersion"] as String
-val kotestVersion = extra["kotestVersion"]
 
 dependencies {
     implementation(libs.okhttp)

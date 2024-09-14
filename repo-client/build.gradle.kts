@@ -37,7 +37,6 @@ ktlint {
 }
 
 val jvmVersion = extra["jvmVersion"] as String
-val kotestVersion = extra["kotestVersion"]
 
 dependencies {
     implementation(libs.okhttp)
@@ -47,7 +46,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
-    implementation("com.google.protobuf:protobuf-java:3.6.1")
+    implementation("com.google.protobuf:protobuf-java:4.28.1")
 }
 
 testing {
@@ -64,12 +63,12 @@ testing {
                 implementation(libs.lwjavacore)
                 implementation(libs.lwjavaextensions)
                 implementation(libs.ktestjunit)
-                implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
-                implementation("io.kotest:kotest-assertions-core:5.8.0")
-                implementation("io.kotest:kotest-property:5.8.0")
-                implementation("org.testcontainers:testcontainers:1.19.5")
-                implementation("org.testcontainers:junit-jupiter:1.19.5")
-                implementation("org.testcontainers:postgresql:1.19.5")
+                implementation(libs.kotestrunner)
+                implementation(libs.kotestassertions)
+                implementation(libs.kotestproperty)
+                implementation(libs.testcontainers)
+                implementation(libs.testcontainersjunit)
+                implementation(libs.testcontainerspg)
             }
 
             targets {

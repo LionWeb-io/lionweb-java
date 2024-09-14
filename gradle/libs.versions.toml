@@ -1,6 +1,8 @@
 [versions]
 kotlinVersion="1.9.25"
 lwJavaVersion="0.2.19"
+kotestVersion="5.8.0"
+testcontainersVersion="1.19.5"
 
 [plugins]
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.1" }
@@ -13,14 +15,13 @@ release = { id = "net.researchgate.release", version = "3.0.2"}
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name="okhttp", version="4.12.0"}
 gson = { group = "com.google.code.gson", name="gson", version="2.10.1" }
-annotations = { group = "org.jetbrains", name="annotations", version="24.0.0" }
-junit = { group = "junit", name="junit", version="4.13" }
 kotlinreflect = { group = "org.jetbrains.kotlin", name="kotlin-reflect", version.ref = "kotlinVersion" }
 ktestjunit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlinVersion" }
 lwjavacore = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2023.1-core", version.ref = "lwJavaVersion"}
 lwjavaextensions = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2023.1-extensions", version.ref = "lwJavaVersion"}
-
-emfcommon = { group = "org.eclipse.emf", name="org.eclipse.emf.common", version="2.28.0" }
-ecore = { group = "org.eclipse.emf", name="org.eclipse.emf.ecore", version="2.33.0" }
-ecore-xmi = { group = "org.eclipse.emf", name="org.eclipse.emf.ecore.xmi", version="2.18.0" }
-emfjson = { group = "org.eclipse.emfcloud", name="emfjson-jackson", version="2.2.0" }
+kotestrunner = { module="io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVersion"}
+kotestassertions = { module="io.kotest:kotest-assertions-core", version.ref = "kotestVersion"}
+kotestproperty = { module="io.kotest:kotest-property", version.ref = "kotestVersion" }
+testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainersVersion" }
+testcontainersjunit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainersVersion" }
+testcontainerspg = { module="org.testcontainers:postgresql", version.ref = "testcontainersVersion" }
