@@ -46,12 +46,12 @@ dependencies {
     implementation(libs.kotlinreflect)
     testImplementation(kotlin("test"))
     implementation(libs.ktestjunit)
-    implementation("io.kotest:kotest-runner-junit5-jvm:5.8.0")
-    implementation("io.kotest:kotest-assertions-core:5.8.0")
-    implementation("io.kotest:kotest-property:5.8.0")
-    implementation("org.testcontainers:testcontainers:1.19.5")
-    implementation("org.testcontainers:junit-jupiter:1.19.5")
-    implementation("org.testcontainers:postgresql:1.19.5")
+    implementation(libs.kotestrunner)
+    implementation(libs.kotestassertions)
+    implementation(libs.kotestproperty)
+    implementation(libs.testcontainers)
+    implementation(libs.testcontainersjunit)
+    implementation(libs.testcontainerspg)
 }
 
 val specsVersion: String by project

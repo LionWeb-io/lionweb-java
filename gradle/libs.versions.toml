@@ -25,3 +25,4 @@ kotestproperty = { module="io.kotest:kotest-property", version.ref = "kotestVers
 testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainersVersion" }
 testcontainersjunit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainersVersion" }
 testcontainerspg = { module="org.testcontainers:postgresql", version.ref = "testcontainersVersion" }
+protobuf = { module="com.google.protobuf:protobuf-java", version = "4.28.1" }
