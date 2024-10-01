@@ -146,17 +146,45 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
-        Property property = new Property(eFeature.getName(), classifier);
-        property.setID(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-        property.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-        classifier.addFeature(property);
-        property.setOptional(!eAttribute.isRequired());
-        DataType<DataType> propertyType =
-            dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
-        Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
-        property.setType(propertyType);
-        if (eAttribute.isMany()) {
-          throw new IllegalArgumentException("EAttributes with upper bound > 1 are not supported");
+        // EAttributes with upper bound > 1 are not supported in LionWeb
+        if (!eAttribute.isMany()) {
+          Property property = new Property(eFeature.getName(), classifier);
+          property.setID(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          property.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          classifier.addFeature(property);
+          property.setOptional(!eAttribute.isRequired());
+          DataType<DataType> propertyType =
+                  dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
+          Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
+          property.setType(propertyType);
+        }
+        // The work-around for multiple EAttributes: introduce an intermediate containment with the upper bound > 1
+        else {
+          String featureName =
+                  eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
+          Concept holderConcept = new Concept( featureName + "Container");
+          holderConcept.setID(ePackage.getName() + "-" + holderConcept.getName());
+          holderConcept.setKey(ePackage.getName() + "-" + holderConcept.getName());
+          holderConcept.setAbstract(false);
+          classifier.getLanguage().addElement(holderConcept);
+
+          Property property = new Property("content", holderConcept);
+          property.setID(ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
+          property.setKey(ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
+          holderConcept.addFeature(property);
+          property.setOptional(false);
+          DataType<DataType> propertyType =
+                  dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
+          Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
+          property.setType(propertyType);
+
+          Containment containment = new Containment(eFeature.getName(), classifier);
+          containment.setID(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          containment.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          classifier.addFeature(containment);
+          containment.setOptional(!eAttribute.isRequired());
+          containment.setMultiple(eAttribute.isMany());
+          containment.setType(holderConcept);
         }
       } else if (eFeature.eClass().getName().equals(EcorePackage.Literals.EREFERENCE.getName())) {
         EReference eReference = (EReference) eFeature;
