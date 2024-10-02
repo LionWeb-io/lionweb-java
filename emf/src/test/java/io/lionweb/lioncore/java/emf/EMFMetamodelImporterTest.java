@@ -167,6 +167,10 @@ public class EMFMetamodelImporterTest {
     assertEquals(
         new HashSet(Arrays.asList("LEXICAL", "SYNTACTIC", "SEMANTIC")),
         issueType.getLiterals().stream().map(l -> l.getName()).collect(Collectors.toSet()));
+
+    EnumerationLiteral literal = issueType.getLiterals().get(0);
+    assertEquals(issueType.getID() + "-" + literal.getName(), literal.getKey());
+    assertEquals(issueType.getID() + "-" + literal.getName(), literal.getID());
   }
 
   @Test
