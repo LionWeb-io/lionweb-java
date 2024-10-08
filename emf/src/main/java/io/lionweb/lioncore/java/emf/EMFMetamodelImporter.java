@@ -121,6 +121,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
           enumerationLiteral.setID(enumeration.getID() + "-" + enumLiteral.getName());
+          enumerationLiteral.setKey(enumeration.getID() + "-" + enumLiteral.getName());
           enumeration.addLiteral(enumerationLiteral);
         }
       } else if (eClassifier instanceof EDataType) {
