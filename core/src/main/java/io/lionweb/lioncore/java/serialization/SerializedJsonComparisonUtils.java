@@ -200,7 +200,7 @@ public class SerializedJsonComparisonUtils {
 
   private static void assertEquals(String message, Object expected, Object actual) {
     if (!Objects.equals(expected, actual)) {
-      throw new AssertionError(message + ": expected " + expected + " but found" + actual);
+      throw new AssertionError(message + ": expected " + expected + " but found " + actual);
     }
   }
 

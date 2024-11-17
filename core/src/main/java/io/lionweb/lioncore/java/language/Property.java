@@ -22,6 +22,14 @@ import javax.annotation.Nullable;
  */
 public class Property extends Feature<Property> {
 
+  public static Property createOptional(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType type) {
+    Property property = new Property(lionWebVersion, name, null);
+    property.setOptional(true);
+    property.setType(type);
+    return property;
+  }
+
   public static Property createOptional(@Nullable String name, @Nullable DataType type) {
     Property property = new Property(name, null);
     property.setOptional(true);

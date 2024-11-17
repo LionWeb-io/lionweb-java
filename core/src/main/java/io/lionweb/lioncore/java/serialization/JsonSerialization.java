@@ -12,12 +12,11 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.utils.NetworkUtils;
-
-import javax.annotation.Nonnull;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * This class is responsible for deserializing models.

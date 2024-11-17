@@ -32,7 +32,8 @@ public class CorrespondanceWithDocumentationTest {
 
     Language deserializedLioncore = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
-        new ModelComparator().compare(deserializedLioncore, LionCore.getInstance(LionWebVersion.v2023_1));
+        new ModelComparator()
+            .compare(deserializedLioncore, LionCore.getInstance(LionWebVersion.v2023_1));
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
@@ -41,7 +42,7 @@ public class CorrespondanceWithDocumentationTest {
   }
 
   @Test
-  public void builtInIsTheSameAsInTheOrganizationRepo() throws IOException {
+  public void builtInIsTheSameAsInTheOrganizationRepo2023_1() throws IOException {
     JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2023_1);
 
     URL url =
@@ -53,7 +54,8 @@ public class CorrespondanceWithDocumentationTest {
 
     Language deserializedBuiltins = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
-        new ModelComparator().compare(deserializedBuiltins, LionCoreBuiltins.getInstance());
+        new ModelComparator()
+            .compare(deserializedBuiltins, LionCoreBuiltins.getInstance(LionWebVersion.v2023_1));
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);

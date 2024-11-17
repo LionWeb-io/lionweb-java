@@ -31,7 +31,8 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     super(id);
   }
 
-  public PrimitiveType(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+  public PrimitiveType(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
     super(lionWebVersion, language, name);
   }
 
@@ -46,6 +47,6 @@ public class PrimitiveType extends DataType<PrimitiveType> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getPrimitiveType();
+    return LionCore.getPrimitiveType(getLionWebVersion());
   }
 }

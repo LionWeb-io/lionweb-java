@@ -69,7 +69,8 @@ public class PrimitiveValuesSerialization {
     return this;
   }
 
-  public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(@Nonnull LionWebVersion lionWebVersion) {
+  public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
+      @Nonnull LionWebVersion lionWebVersion) {
     primitiveDeserializers.put(
         LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
         new PrimitiveDeserializer<Boolean>() {
@@ -90,14 +91,14 @@ public class PrimitiveValuesSerialization {
     primitiveDeserializers.put(LionCoreBuiltins.getString(lionWebVersion).getID(), s -> s);
     if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
       primitiveDeserializers.put(
-              LionCoreBuiltins.getJSON(lionWebVersion).getID(),
-              (PrimitiveDeserializer<JsonElement>)
-                      serializedValue -> {
-                        if (serializedValue == null) {
-                          return null;
-                        }
-                        return JsonParser.parseString(serializedValue);
-                      });
+          LionCoreBuiltins.getJSON(lionWebVersion).getID(),
+          (PrimitiveDeserializer<JsonElement>)
+              serializedValue -> {
+                if (serializedValue == null) {
+                  return null;
+                }
+                return JsonParser.parseString(serializedValue);
+              });
     }
     primitiveDeserializers.put(
         LionCoreBuiltins.getInteger(lionWebVersion).getID(),
@@ -114,17 +115,20 @@ public class PrimitiveValuesSerialization {
         (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
     if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
       primitiveSerializers.put(
-              LionCoreBuiltins.getJSON(lionWebVersion).getID(),
-              (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
+          LionCoreBuiltins.getJSON(lionWebVersion).getID(),
+          (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
     }
     primitiveSerializers.put(
-        LionCoreBuiltins.getString(lionWebVersion).getID(), (PrimitiveSerializer<String>) value -> value);
+        LionCoreBuiltins.getString(lionWebVersion).getID(),
+        (PrimitiveSerializer<String>) value -> value);
     primitiveSerializers.put(
         LionCoreBuiltins.getInteger(lionWebVersion).getID(),
         (PrimitiveSerializer<Integer>) value -> value.toString());
   }
 
-  public Object deserialize(DataType dataType, String serializedValue, boolean isRequired) {
+  public Object deserialize(
+      @Nonnull DataType dataType, String serializedValue, boolean isRequired) {
+    Objects.requireNonNull(dataType, "dataType should not be null");
     String dataTypeID = dataType.getID();
     if (primitiveDeserializers.containsKey(dataTypeID)) {
       return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue, isRequired);

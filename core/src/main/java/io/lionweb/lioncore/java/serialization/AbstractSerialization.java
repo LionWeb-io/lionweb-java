@@ -66,7 +66,7 @@ public abstract class AbstractSerialization {
     this.lionWebVersion = lionWebVersion;
     // prevent public access
     classifierResolver = new ClassifierResolver();
-    instantiator = new Instantiator();
+    instantiator = new Instantiator(lionWebVersion);
     primitiveValuesSerialization = new PrimitiveValuesSerialization();
     instanceResolver = new LocalClassifierInstanceResolver();
   }
@@ -160,7 +160,7 @@ public abstract class AbstractSerialization {
   public SerializedChunk serializeNodesToSerializationBlock(
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
+    serializedChunk.setSerializationFormatVersion(lionWebVersion.getValue());
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(classifierInstance));
@@ -348,7 +348,9 @@ public abstract class AbstractSerialization {
       throw new IllegalArgumentException(
           "Only serializationFormatVersion supported by this instance of Serialization is '"
               + lionWebVersion.getValue()
-              + "' but we found '" + serializationBlock.getSerializationFormatVersion() + "'");
+              + "' but we found '"
+              + serializationBlock.getSerializationFormatVersion()
+              + "'");
     }
   }
 
@@ -534,8 +536,7 @@ public abstract class AbstractSerialization {
     if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
     }
-    Classifier<?> classifier =
-        getClassifierResolver().resolveClassifier(serializedClassifier);
+    Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifier);
 
     // We prepare all the properties values and pass them to instantiator, as it could use them to
     // build the node
@@ -556,6 +557,7 @@ public abstract class AbstractSerialization {
                       + classifier.allProperties().stream()
                           .map(p -> MetaPointer.from(p))
                           .collect(Collectors.toList()));
+              Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
                   primitiveValuesSerialization.deserialize(
                       property.getType(),

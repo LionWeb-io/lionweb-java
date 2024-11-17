@@ -58,7 +58,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getEnumerationLiteral();
+    return LionCore.getEnumerationLiteral(getLionWebVersion());
   }
 
   @Override

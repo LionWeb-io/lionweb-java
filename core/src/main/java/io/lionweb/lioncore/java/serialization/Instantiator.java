@@ -18,6 +18,7 @@ import javax.annotation.Nonnull;
  */
 public class Instantiator {
 
+  // TODO: not sure this is needed
   private @Nonnull LionWebVersion lionWebVersion;
 
   public interface ClassifierSpecificInstantiator<T extends ClassifierInstance<?>> {

@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Concept;

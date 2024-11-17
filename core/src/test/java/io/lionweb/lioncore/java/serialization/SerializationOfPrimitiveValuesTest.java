@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.Arrays;
 import java.util.List;
@@ -24,7 +25,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -56,14 +57,6 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"language\": \"mylanguage\",\n"
                     + "            \"version\": \"1\",\n"
                     + "            \"key\": \"p3\"\n"
-                    + "          },\n"
-                    + "          \"value\": null\n"
-                    + "        },\n"
-                    + "        {\n"
-                    + "          \"property\": {\n"
-                    + "            \"language\": \"mylanguage\",\n"
-                    + "            \"version\": \"1\",\n"
-                    + "            \"key\": \"p4\"\n"
                     + "          },\n"
                     + "          \"value\": null\n"
                     + "        }\n"
@@ -89,7 +82,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -121,14 +114,6 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"language\": \"mylanguage\",\n"
                     + "            \"version\": \"1\",\n"
                     + "            \"key\": \"p3\"\n"
-                    + "          },\n"
-                    + "          \"value\": null\n"
-                    + "        },\n"
-                    + "        {\n"
-                    + "          \"property\": {\n"
-                    + "            \"language\": \"mylanguage\",\n"
-                    + "            \"version\": \"1\",\n"
-                    + "            \"key\": \"p4\"\n"
                     + "          },\n"
                     + "          \"value\": null\n"
                     + "        }\n"
@@ -161,7 +146,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -195,14 +180,6 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"key\": \"p3\"\n"
                     + "          },\n"
                     + "          \"value\": \"qwerty\"\n"
-                    + "        },\n"
-                    + "        {\n"
-                    + "          \"property\": {\n"
-                    + "            \"language\": \"mylanguage\",\n"
-                    + "            \"version\": \"1\",\n"
-                    + "            \"key\": \"p4\"\n"
-                    + "          },\n"
-                    + "          \"value\": null\n"
                     + "        }\n"
                     + "      ],\n"
                     + "      \"containments\": [],\n"
@@ -227,7 +204,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -261,14 +238,6 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"key\": \"p3\"\n"
                     + "          },\n"
                     + "          \"value\": \"qwerty\"\n"
-                    + "        },\n"
-                    + "        {\n"
-                    + "          \"property\": {\n"
-                    + "            \"language\": \"mylanguage\",\n"
-                    + "            \"version\": \"1\",\n"
-                    + "            \"key\": \"p4\"\n"
-                    + "          },\n"
-                    + "          \"value\": null\n"
                     + "        }\n"
                     + "      ],\n"
                     + "      \"containments\": [],\n"
@@ -298,7 +267,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -332,14 +301,6 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"key\": \"p3\"\n"
                     + "          },\n"
                     + "          \"value\": null\n"
-                    + "        },\n"
-                    + "        {\n"
-                    + "          \"property\": {\n"
-                    + "            \"language\": \"mylanguage\",\n"
-                    + "            \"version\": \"1\",\n"
-                    + "            \"key\": \"p4\"\n"
-                    + "          },\n"
-                    + "          \"value\": null\n"
                     + "        }\n"
                     + "      ],\n"
                     + "      \"containments\": [],\n"
@@ -364,7 +325,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "  \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "  \"serializationFormatVersion\": \"2024.1\",\n"
                     + "  \"languages\": [],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
@@ -398,14 +359,6 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "            \"key\": \"p3\"\n"
                     + "          },\n"
                     + "          \"value\": null\n"
-                    + "        },\n"
-                    + "        {\n"
-                    + "          \"property\": {\n"
-                    + "            \"language\": \"mylanguage\",\n"
-                    + "            \"version\": \"1\",\n"
-                    + "            \"key\": \"p4\"\n"
-                    + "          },\n"
-                    + "          \"value\": null\n"
                     + "        }\n"
                     + "      ],\n"
                     + "      \"containments\": [],\n"
@@ -430,7 +383,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
 
   @Test
   public void serializeJSON() {
-    MyNodeWithProperties node = new MyNodeWithProperties("n1");
+    MyNodeWithProperties2023 node = new MyNodeWithProperties2023("n1");
     JsonArray ja = new JsonArray();
     ja.add(1);
     ja.add("foo");
@@ -491,14 +444,15 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(node).getAsJsonObject();
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(expected, serialized);
   }
 
   @Test
   public void deserializeJSON() {
-    MyNodeWithProperties node = new MyNodeWithProperties("n1");
+    MyNodeWithProperties2023 node = new MyNodeWithProperties2023("n1");
     JsonArray ja = new JsonArray();
     ja.add(1);
     ja.add("foo");
@@ -560,14 +514,15 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
                     + "  ]\n"
                     + "}")
             .getAsJsonObject();
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
-    jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties.LANGUAGE);
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    jsonSerialization.getClassifierResolver().registerLanguage(MyNodeWithProperties2023.LANGUAGE);
     jsonSerialization
         .getInstantiator()
         .registerCustomDeserializer(
-            MyNodeWithProperties.CONCEPT.getID(),
+            MyNodeWithProperties2023.CONCEPT.getID(),
             (concept, serializedNode, deserializedNodesByID, propertiesValue) ->
-                new MyNodeWithProperties(serializedNode.getID()));
+                new MyNodeWithProperties2023(serializedNode.getID()));
     List<Node> deserialized = jsonSerialization.deserializeToNodes(serialized);
     assertEquals(Arrays.asList(node), deserialized);
   }

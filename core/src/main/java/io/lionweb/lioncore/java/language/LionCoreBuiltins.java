@@ -1,11 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-
-import javax.annotation.Nonnull;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class LionCoreBuiltins extends Language {
   private static final Map<LionWebVersion, LionCoreBuiltins> INSTANCES = new HashMap<>();
@@ -26,7 +24,8 @@ public class LionCoreBuiltins extends Language {
     Concept node = new Concept(lionWebVersion, this, "Node").setID("LionCore-builtins-Node");
     node.setAbstract(true);
 
-    Interface iNamed = new Interface(lionWebVersion, this, "INamed").setID("LionCore-builtins-INamed");
+    Interface iNamed =
+        new Interface(lionWebVersion, this, "INamed").setID("LionCore-builtins-INamed");
     iNamed.addFeature(
         Property.createRequired(lionWebVersion, "name", string)
             .setID("LionCore-builtins-INamed-name")

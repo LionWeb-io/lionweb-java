@@ -54,7 +54,8 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
-  public Concept(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+  public Concept(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
     super(lionWebVersion, language, name);
     setAbstract(false);
     setPartition(false);

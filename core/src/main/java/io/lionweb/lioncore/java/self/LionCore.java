@@ -3,7 +3,6 @@ package io.lionweb.lioncore.java.self;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -154,7 +153,8 @@ public class LionCore {
       Concept containment = instance.addElement(new Concept(lionWebVersion, "Containment"));
       Concept dataType = instance.addElement(new Concept(lionWebVersion, "DataType"));
       Concept enumeration = instance.addElement(new Concept(lionWebVersion, "Enumeration"));
-      Concept enumerationLiteral = instance.addElement(new Concept(lionWebVersion, "EnumerationLiteral"));
+      Concept enumerationLiteral =
+          instance.addElement(new Concept(lionWebVersion, "EnumerationLiteral"));
       Concept feature = instance.addElement(new Concept(lionWebVersion, "Feature"));
       Concept classifier = instance.addElement(new Concept(lionWebVersion, "Classifier"));
       Concept link = instance.addElement(new Concept(lionWebVersion, "Link"));
@@ -170,10 +170,16 @@ public class LionCore {
       concept.setExtendedConcept(classifier);
       concept.addFeature(
           Property.createRequired(
-              lionWebVersion, "abstract", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Concept-abstract"));
+              lionWebVersion,
+              "abstract",
+              LionCoreBuiltins.getBoolean(lionWebVersion),
+              "-id-Concept-abstract"));
       concept.addFeature(
           Property.createRequired(
-              lionWebVersion, "partition", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Concept-partition"));
+              lionWebVersion,
+              "partition",
+              LionCoreBuiltins.getBoolean(lionWebVersion),
+              "-id-Concept-partition"));
       concept.addFeature(
           Reference.createOptional(lionWebVersion, "extends", concept, "-id-Concept-extends"));
       concept.addFeature(
@@ -199,7 +205,10 @@ public class LionCore {
       feature.addImplementedInterface(iKeyed);
       feature.addFeature(
           Property.createRequired(
-              lionWebVersion, "optional", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Feature-optional"));
+              lionWebVersion,
+              "optional",
+              LionCoreBuiltins.getBoolean(lionWebVersion),
+              "-id-Feature-optional"));
 
       classifier.setAbstract(true);
       classifier.setExtendedConcept(languageEntity);
@@ -211,7 +220,10 @@ public class LionCore {
       link.setExtendedConcept(feature);
       link.addFeature(
           Property.createRequired(
-              lionWebVersion, "multiple", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Link-multiple"));
+              lionWebVersion,
+              "multiple",
+              LionCoreBuiltins.getBoolean(lionWebVersion),
+              "-id-Link-multiple"));
       link.addFeature(
           Reference.createRequired(lionWebVersion, "type", classifier, "-id-Link-type"));
 
@@ -219,7 +231,10 @@ public class LionCore {
       language.addImplementedInterface(iKeyed);
       language.addFeature(
           Property.createRequired(
-              lionWebVersion, "version", LionCoreBuiltins.getString(lionWebVersion), "-id-Language-version"));
+              lionWebVersion,
+              "version",
+              LionCoreBuiltins.getString(lionWebVersion),
+              "-id-Language-version"));
       language.addFeature(
           Reference.createMultiple(lionWebVersion, "dependsOn", language)
               .setID("-id-Language-dependsOn"));

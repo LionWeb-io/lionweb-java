@@ -48,7 +48,8 @@ public class Interface extends Classifier<Interface> {
     super(language, name);
   }
 
-  public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+  public Interface(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
     super(lionWebVersion, language, name);
   }
 

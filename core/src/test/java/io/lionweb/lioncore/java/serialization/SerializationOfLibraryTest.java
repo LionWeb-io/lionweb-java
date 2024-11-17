@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNotNull;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
@@ -23,7 +24,8 @@ public class SerializationOfLibraryTest extends SerializationTest {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Concept library = conceptByID(deserializedNodes, "library-Library");
@@ -52,7 +54,8 @@ public class SerializationOfLibraryTest extends SerializationTest {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     JsonElement reserialized =
         jsonSerialization.serializeTreeToJsonElement(deserializedNodes.get(0));
@@ -73,7 +76,8 @@ public class SerializationOfLibraryTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -97,7 +101,8 @@ public class SerializationOfLibraryTest extends SerializationTest {
   public void deserializeLanguageWithDuplicateIDs() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language-with-duplicate.json");
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization.deserializeToNodes(inputStream);
   }
 }

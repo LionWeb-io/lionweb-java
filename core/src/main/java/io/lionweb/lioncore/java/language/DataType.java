@@ -33,10 +33,10 @@ public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
     super(LionWebVersion.currentVersion, null, null, id);
   }
 
-  public DataType(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+  public DataType(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
     super(lionWebVersion, language, name);
   }
-
 
   public DataType(@Nullable Language language, @Nullable String name) {
     super(language, name);
