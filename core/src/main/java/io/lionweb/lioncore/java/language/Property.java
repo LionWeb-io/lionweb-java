@@ -133,6 +133,6 @@ public class Property extends Feature<Property> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getProperty();
+    return LionCore.getProperty(getLionWebVersion());
   }
 }

@@ -26,11 +26,9 @@ import javax.annotation.Nullable;
  *     structure aspect</i> in documentation</a>
  */
 public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
-  private LionWebVersion lionWebVersion;
-
   public Language(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    this.lionWebVersion = lionWebVersion;
   }
 
   public Language() {
@@ -180,7 +178,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getLanguage();
+    return LionCore.getLanguage(getLionWebVersion());
   }
 
   @Override

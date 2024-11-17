@@ -54,8 +54,20 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
+  public Concept(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+    setAbstract(false);
+    setPartition(false);
+  }
+
   public Concept(@Nullable Language language, @Nullable String name) {
     super(language, name);
+    setAbstract(false);
+    setPartition(false);
+  }
+
+  public Concept(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, null, name);
     setAbstract(false);
     setPartition(false);
   }
@@ -129,6 +141,6 @@ public class Concept extends Classifier<Concept> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getConcept();
+    return LionCore.getConcept(getLionWebVersion());
   }
 }

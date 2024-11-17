@@ -126,6 +126,6 @@ public class Annotation extends Classifier<Annotation> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getAnnotation();
+    return LionCore.getAnnotation(getLionWebVersion());
   }
 }

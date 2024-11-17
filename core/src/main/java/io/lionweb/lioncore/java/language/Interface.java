@@ -48,6 +48,14 @@ public class Interface extends Classifier<Interface> {
     super(language, name);
   }
 
+  public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+  }
+
+  public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, null, name);
+  }
+
   public Interface(@Nullable String name) {
     super(null, name);
   }
@@ -78,7 +86,7 @@ public class Interface extends Classifier<Interface> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getInterface();
+    return LionCore.getInterface(getLionWebVersion());
   }
 
   @Nonnull

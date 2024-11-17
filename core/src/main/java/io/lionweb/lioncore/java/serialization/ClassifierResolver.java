@@ -21,7 +21,7 @@ public class ClassifierResolver {
   private final Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
 
   @Nonnull
-  public Classifier<?> resolveClassifier(@Nonnull LionWebVersion lionWebVersion, @Nonnull MetaPointer conceptMetaPointer) {
+  public Classifier<?> resolveClassifier(@Nonnull MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {
       return registeredConcepts.get(conceptMetaPointer);
     } else if (registeredAnnotations.containsKey(conceptMetaPointer)) {

@@ -31,6 +31,10 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     super(id);
   }
 
+  public PrimitiveType(@Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+  }
+
   public PrimitiveType(@Nullable Language language, @Nullable String name) {
     super(language, name);
   }

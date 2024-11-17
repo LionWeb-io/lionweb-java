@@ -289,4 +289,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
   }
+
+  @Nonnull
+  public LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
+  }
 }

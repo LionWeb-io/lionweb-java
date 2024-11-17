@@ -163,6 +163,6 @@ public class Reference extends Link<Reference> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getReference();
+    return LionCore.getReference(getLionWebVersion());
   }
 }

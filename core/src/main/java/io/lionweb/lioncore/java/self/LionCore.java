@@ -75,6 +75,66 @@ public class LionCore {
     return getInstance().requireConceptByName("Reference");
   }
 
+  public static Concept getAnnotation(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Annotation");
+  }
+
+  public static Concept getConcept(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Concept");
+  }
+
+  public static Concept getInterface(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Interface");
+  }
+
+  public static Concept getContainment(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Containment");
+  }
+
+  public static Concept getDataType(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("DataType");
+  }
+
+  public static Concept getEnumeration(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Enumeration");
+  }
+
+  public static Concept getEnumerationLiteral(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("EnumerationLiteral");
+  }
+
+  public static Concept getFeature(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Feature");
+  }
+
+  public static Concept getClassifier(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Classifier");
+  }
+
+  public static Concept getLink(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Link");
+  }
+
+  public static Concept getLanguage(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Language");
+  }
+
+  public static Concept getLanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("LanguageEntity");
+  }
+
+  public static Concept getPrimitiveType(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("PrimitiveType");
+  }
+
+  public static Concept getProperty(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Property");
+  }
+
+  public static Concept getReference(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Reference");
+  }
+
   public static Language getInstance() {
     return getInstance(LionWebVersion.currentVersion);
   }
@@ -84,36 +144,36 @@ public class LionCore {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");
       instance.setID("-id-LionCore-M3");
       instance.setKey("LionCore-M3");
-      instance.setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
+      instance.setVersion(lionWebVersion.getValue());
 
       // We first instantiate all Concepts and Interfaces
       // we add features only after as the features will have references to these elements
-      Concept annotation = instance.addElement(new Concept("Annotation"));
-      Concept concept = instance.addElement(new Concept("Concept"));
-      Concept iface = instance.addElement(new Concept("Interface"));
-      Concept containment = instance.addElement(new Concept("Containment"));
-      Concept dataType = instance.addElement(new Concept("DataType"));
-      Concept enumeration = instance.addElement(new Concept("Enumeration"));
-      Concept enumerationLiteral = instance.addElement(new Concept("EnumerationLiteral"));
-      Concept feature = instance.addElement(new Concept("Feature"));
-      Concept classifier = instance.addElement(new Concept("Classifier"));
-      Concept link = instance.addElement(new Concept("Link"));
-      Concept language = instance.addElement(new Concept("Language"));
-      Concept languageEntity = instance.addElement(new Concept("LanguageEntity"));
-      Interface iKeyed = instance.addElement(new Interface("IKeyed"));
-      Concept primitiveType = instance.addElement(new Concept("PrimitiveType"));
-      Concept property = instance.addElement(new Concept("Property"));
-      Concept reference = instance.addElement(new Concept("Reference"));
+      Concept annotation = instance.addElement(new Concept(lionWebVersion, "Annotation"));
+      Concept concept = instance.addElement(new Concept(lionWebVersion, "Concept"));
+      Concept iface = instance.addElement(new Concept(lionWebVersion, "Interface"));
+      Concept containment = instance.addElement(new Concept(lionWebVersion, "Containment"));
+      Concept dataType = instance.addElement(new Concept(lionWebVersion, "DataType"));
+      Concept enumeration = instance.addElement(new Concept(lionWebVersion, "Enumeration"));
+      Concept enumerationLiteral = instance.addElement(new Concept(lionWebVersion, "EnumerationLiteral"));
+      Concept feature = instance.addElement(new Concept(lionWebVersion, "Feature"));
+      Concept classifier = instance.addElement(new Concept(lionWebVersion, "Classifier"));
+      Concept link = instance.addElement(new Concept(lionWebVersion, "Link"));
+      Concept language = instance.addElement(new Concept(lionWebVersion, "Language"));
+      Concept languageEntity = instance.addElement(new Concept(lionWebVersion, "LanguageEntity"));
+      Interface iKeyed = instance.addElement(new Interface(lionWebVersion, "IKeyed"));
+      Concept primitiveType = instance.addElement(new Concept(lionWebVersion, "PrimitiveType"));
+      Concept property = instance.addElement(new Concept(lionWebVersion, "Property"));
+      Concept reference = instance.addElement(new Concept(lionWebVersion, "Reference"));
 
       // Now we start adding the features to all the Concepts and Interfaces
 
       concept.setExtendedConcept(classifier);
       concept.addFeature(
           Property.createRequired(
-              lionWebVersion, "abstract", LionCoreBuiltins.getBoolean(), "-id-Concept-abstract"));
+              lionWebVersion, "abstract", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Concept-abstract"));
       concept.addFeature(
           Property.createRequired(
-              lionWebVersion, "partition", LionCoreBuiltins.getBoolean(), "-id-Concept-partition"));
+              lionWebVersion, "partition", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Concept-partition"));
       concept.addFeature(
           Reference.createOptional(lionWebVersion, "extends", concept, "-id-Concept-extends"));
       concept.addFeature(
@@ -139,7 +199,7 @@ public class LionCore {
       feature.addImplementedInterface(iKeyed);
       feature.addFeature(
           Property.createRequired(
-              lionWebVersion, "optional", LionCoreBuiltins.getBoolean(), "-id-Feature-optional"));
+              lionWebVersion, "optional", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Feature-optional"));
 
       classifier.setAbstract(true);
       classifier.setExtendedConcept(languageEntity);
@@ -151,7 +211,7 @@ public class LionCore {
       link.setExtendedConcept(feature);
       link.addFeature(
           Property.createRequired(
-              lionWebVersion, "multiple", LionCoreBuiltins.getBoolean(), "-id-Link-multiple"));
+              lionWebVersion, "multiple", LionCoreBuiltins.getBoolean(lionWebVersion), "-id-Link-multiple"));
       link.addFeature(
           Reference.createRequired(lionWebVersion, "type", classifier, "-id-Link-type"));
 
@@ -159,7 +219,7 @@ public class LionCore {
       language.addImplementedInterface(iKeyed);
       language.addFeature(
           Property.createRequired(
-              lionWebVersion, "version", LionCoreBuiltins.getString(), "-id-Language-version"));
+              lionWebVersion, "version", LionCoreBuiltins.getString(lionWebVersion), "-id-Language-version"));
       language.addFeature(
           Reference.createMultiple(lionWebVersion, "dependsOn", language)
               .setID("-id-Language-dependsOn"));
@@ -180,9 +240,9 @@ public class LionCore {
 
       reference.setExtendedConcept(link);
 
-      iKeyed.addExtendedInterface(LionCoreBuiltins.getINamed());
+      iKeyed.addExtendedInterface(LionCoreBuiltins.getINamed(lionWebVersion));
       iKeyed.addFeature(
-          Property.createRequired(lionWebVersion, "key", LionCoreBuiltins.getString())
+          Property.createRequired(lionWebVersion, "key", LionCoreBuiltins.getString(lionWebVersion))
               .setID("-id-IKeyed-key"));
 
       annotation.setExtendedConcept(classifier);

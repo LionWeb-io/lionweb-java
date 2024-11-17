@@ -1,27 +1,34 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 
+import javax.annotation.Nonnull;
+import java.util.HashMap;
+import java.util.Map;
+
 public class LionCoreBuiltins extends Language {
-  private static final LionCoreBuiltins INSTANCE = new LionCoreBuiltins();
+  private static final Map<LionWebVersion, LionCoreBuiltins> INSTANCES = new HashMap<>();
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
-  private LionCoreBuiltins() {
-    super("LionCore_builtins");
+  private LionCoreBuiltins(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion, "LionCore_builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
-    setVersion(JsonSerialization.DEFAULT_SERIALIZATION_FORMAT);
-    PrimitiveType string = new PrimitiveType(this, "String");
-    new PrimitiveType(this, "Boolean");
-    new PrimitiveType(this, "Integer");
-    new PrimitiveType(this, "JSON");
+    setVersion(lionWebVersion.getValue());
+    PrimitiveType string = new PrimitiveType(lionWebVersion, this, "String");
+    new PrimitiveType(lionWebVersion, this, "Boolean");
+    new PrimitiveType(lionWebVersion, this, "Integer");
+    if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
+      new PrimitiveType(lionWebVersion, this, "JSON");
+    }
 
-    Concept node = new Concept(this, "Node").setID("LionCore-builtins-Node");
+    Concept node = new Concept(lionWebVersion, this, "Node").setID("LionCore-builtins-Node");
     node.setAbstract(true);
 
-    Interface iNamed = new Interface(this, "INamed").setID("LionCore-builtins-INamed");
+    Interface iNamed = new Interface(lionWebVersion, this, "INamed").setID("LionCore-builtins-INamed");
     iNamed.addFeature(
-        Property.createRequired("name", string)
+        Property.createRequired(lionWebVersion, "name", string)
             .setID("LionCore-builtins-INamed-name")
             .setKey("LionCore-builtins-INamed-name"));
 
@@ -38,30 +45,64 @@ public class LionCoreBuiltins extends Language {
   }
 
   public static LionCoreBuiltins getInstance() {
-    return INSTANCE;
+    return getInstance(LionWebVersion.currentVersion);
   }
 
   public static PrimitiveType getString() {
-    return INSTANCE.getPrimitiveTypeByName("String");
+    return getInstance().getPrimitiveTypeByName("String");
   }
 
   public static PrimitiveType getInteger() {
-    return INSTANCE.getPrimitiveTypeByName("Integer");
+    return getInstance().getPrimitiveTypeByName("Integer");
   }
 
   public static PrimitiveType getBoolean() {
-    return INSTANCE.getPrimitiveTypeByName("Boolean");
+    return getInstance().getPrimitiveTypeByName("Boolean");
   }
 
   public static PrimitiveType getJSON() {
-    return INSTANCE.getPrimitiveTypeByName("JSON");
+    return getInstance().getPrimitiveTypeByName("JSON");
   }
 
   public static Interface getINamed() {
-    return INSTANCE.getInterfaceByName("INamed");
+    return getInstance().getInterfaceByName("INamed");
   }
 
   public static Concept getNode() {
-    return INSTANCE.getConceptByName("Node");
+    return getInstance().getConceptByName("Node");
+  }
+
+  public static LionCoreBuiltins getInstance(@Nonnull LionWebVersion lionWebVersion) {
+    if (!INSTANCES.containsKey(lionWebVersion)) {
+      INSTANCES.put(lionWebVersion, new LionCoreBuiltins(lionWebVersion));
+    }
+    return INSTANCES.get(lionWebVersion);
+  }
+
+  public static PrimitiveType getString(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).getPrimitiveTypeByName("String");
+  }
+
+  public static PrimitiveType getInteger(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).getPrimitiveTypeByName("Integer");
+  }
+
+  public static PrimitiveType getBoolean(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).getPrimitiveTypeByName("Boolean");
+  }
+
+  public static PrimitiveType getJSON(@Nonnull LionWebVersion lionWebVersion) {
+    if (!lionWebVersion.equals(LionWebVersion.v2023_1)) {
+      throw new IllegalArgumentException("JSON was present only in v2023.1");
+    }
+    return getInstance(lionWebVersion).getPrimitiveTypeByName("JSON");
+  }
+
+  public static Interface getINamed(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).getInterfaceByName("INamed");
+  }
+
+  public static Concept getNode(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).getConceptByName("Node");
   }
 }

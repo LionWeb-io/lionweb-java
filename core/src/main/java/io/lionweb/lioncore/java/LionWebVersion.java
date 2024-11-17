@@ -16,7 +16,8 @@ public enum LionWebVersion {
         return lionWebVersion;
       }
     }
-    throw new IllegalArgumentException("Invalid serializationFormatVersion: " + serializationFormatVersion);
+    throw new IllegalArgumentException(
+        "Invalid serializationFormatVersion: " + serializationFormatVersion);
   }
 
   public String getValue() {

@@ -1,13 +1,20 @@
 package io.lionweb.lioncore.java.serialization;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.self.LionCore;
+
+import javax.annotation.Nonnull;
 
 public class SerializationProvider {
 
   /** This has specific support for LionCore or LionCoreBuiltins. */
   public static JsonSerialization getStandardJsonSerialization() {
-    JsonSerialization serialization = new JsonSerialization();
+    return getStandardJsonSerialization(LionWebVersion.currentVersion);
+  }
+
+  public static JsonSerialization getStandardJsonSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    JsonSerialization serialization = new JsonSerialization(lionWebVersion);
     standardInitialization(serialization);
     return serialization;
   }
@@ -42,11 +49,11 @@ public class SerializationProvider {
   }
 
   protected static void standardInitialization(AbstractSerialization serialization) {
-    serialization.classifierResolver.registerLanguage(LionCore.getInstance());
-    serialization.instantiator.registerLionCoreCustomDeserializers();
+    serialization.classifierResolver.registerLanguage(LionCore.getInstance(serialization.getLionWebVersion()));
+    serialization.instantiator.registerLionCoreCustomDeserializers(serialization.getLionWebVersion());
     serialization.primitiveValuesSerialization
-        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
-    serialization.instanceResolver.addAll(LionCore.getInstance().thisAndAllDescendants());
-    serialization.instanceResolver.addAll(LionCoreBuiltins.getInstance().thisAndAllDescendants());
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers(serialization.getLionWebVersion());
+    serialization.instanceResolver.addAll(LionCore.getInstance(serialization.getLionWebVersion()).thisAndAllDescendants());
+    serialization.instanceResolver.addAll(LionCoreBuiltins.getInstance(serialization.getLionWebVersion()).thisAndAllDescendants());
   }
 }

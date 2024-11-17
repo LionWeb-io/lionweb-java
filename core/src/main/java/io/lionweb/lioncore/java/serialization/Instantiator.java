@@ -84,45 +84,45 @@ public class Instantiator {
     return this;
   }
 
-  public void registerLionCoreCustomDeserializers() {
+  public void registerLionCoreCustomDeserializers(@Nonnull LionWebVersion lionWebVersion) {
     customDeserializers.put(
-        LionCore.getLanguage().getID(),
+        LionCore.getLanguage(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Language(lionWebVersion).setID(serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getConcept().getID(),
+        LionCore.getConcept(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Concept(lionWebVersion).setID(serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getInterface().getID(),
+        LionCore.getInterface(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Interface(lionWebVersion).setID(serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getProperty().getID(),
+        LionCore.getProperty(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Property(lionWebVersion, null, null, serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getReference().getID(),
+        LionCore.getReference(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Reference(lionWebVersion, null, serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getContainment().getID(),
+        LionCore.getContainment(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Containment(lionWebVersion, null, serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getPrimitiveType().getID(),
+        LionCore.getPrimitiveType(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new PrimitiveType(lionWebVersion, serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getEnumeration().getID(),
+        LionCore.getEnumeration(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Enumeration(lionWebVersion).setID(serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getEnumerationLiteral().getID(),
+        LionCore.getEnumerationLiteral(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new EnumerationLiteral(lionWebVersion).setID(serializedNode.getID()));
     customDeserializers.put(
-        LionCore.getAnnotation().getID(),
+        LionCore.getAnnotation(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Annotation(lionWebVersion).setID(serializedNode.getID()));
   }

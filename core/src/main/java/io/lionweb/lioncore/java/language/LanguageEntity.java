@@ -20,11 +20,10 @@ import javax.annotation.Nullable;
 public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
     implements NamespacedEntity, IKeyed<T> {
 
-  private LionWebVersion lionWebVersion;
 
   public LanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    this.lionWebVersion = lionWebVersion;
   }
 
   public LanguageEntity() {

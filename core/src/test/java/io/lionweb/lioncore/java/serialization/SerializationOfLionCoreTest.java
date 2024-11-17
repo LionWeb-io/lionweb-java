@@ -6,6 +6,7 @@ import static org.junit.Assert.assertNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
@@ -145,7 +146,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization.getInstantiator().enableDynamicNodes();
     jsonSerialization
         .getPrimitiveValuesSerialization()
-        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.currentVersion);
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     DynamicNode lioncore = (DynamicNode) deserializedNodes.get(0);
@@ -164,7 +165,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization.getClassifierResolver().registerLanguage(LionCore.getInstance());
     jsonSerialization
         .getPrimitiveValuesSerialization()
-        .registerLionBuiltinsPrimitiveSerializersAndDeserializers();
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.currentVersion);
     jsonSerialization.deserializeToNodes(jsonElement);
   }
 }

@@ -23,10 +23,10 @@ import javax.annotation.Nullable;
  * and the actual physical formats is done in other classes.
  */
 
-PROBABLY IT IS BEST TO HAVE DIFFERENT SERIALIZATION INSTANCES FOR EACH
-LIONWEB VERSION
-
-WE CAN THEN HAVE A SORT OF FACADE THAT WILL LOOK AT THE FORMAT AND USE ONE INSTANCE OR ANOTHER
+// PROBABLY IT IS BEST TO HAVE DIFFERENT SERIALIZATION INSTANCES FOR EACH
+// LIONWEB VERSION
+//
+// WE CAN THEN HAVE A SORT OF FACADE THAT WILL LOOK AT THE FORMAT AND USE ONE INSTANCE OR ANOTHER
 
 public abstract class AbstractSerialization {
   public static final String DEFAULT_SERIALIZATION_FORMAT =
@@ -56,7 +56,14 @@ public abstract class AbstractSerialization {
   protected UnavailableNodePolicy unavailableReferenceTargetPolicy =
       UnavailableNodePolicy.THROW_ERROR;
 
+  private LionWebVersion lionWebVersion;
+
   protected AbstractSerialization() {
+    this(LionWebVersion.currentVersion);
+  }
+
+  protected AbstractSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    this.lionWebVersion = lionWebVersion;
     // prevent public access
     classifierResolver = new ClassifierResolver();
     instantiator = new Instantiator();
@@ -337,10 +344,11 @@ public abstract class AbstractSerialization {
     if (serializationBlock.getSerializationFormatVersion() == null) {
       throw new IllegalArgumentException("The serializationFormatVersion should not be null");
     }
-    if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)
-    && !serializationBlock.getSerializationFormatVersion().equals(LionWebVersion.v2023_1.getValue())) {
+    if (!serializationBlock.getSerializationFormatVersion().equals(lionWebVersion.getValue())) {
       throw new IllegalArgumentException(
-          "Only serializationFormatVersion '" + DEFAULT_SERIALIZATION_FORMAT + "' and '"+ LionWebVersion.v2023_1.getValue()  + "' are supported");
+          "Only serializationFormatVersion supported by this instance of Serialization is '"
+              + lionWebVersion.getValue()
+              + "' but we found '" + serializationBlock.getSerializationFormatVersion() + "'");
     }
   }
 
@@ -426,11 +434,13 @@ public abstract class AbstractSerialization {
 
   public List<ClassifierInstance<?>> deserializeSerializationBlock(
       SerializedChunk serializationBlock) {
-    return deserializeClassifierInstances(LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()), serializationBlock.getClassifierInstances());
+    return deserializeClassifierInstances(
+        LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()),
+        serializationBlock.getClassifierInstances());
   }
 
   private List<ClassifierInstance<?>> deserializeClassifierInstances(
-          @Nonnull LionWebVersion lionWebVersion,
+      @Nonnull LionWebVersion lionWebVersion,
       List<SerializedClassifierInstance> serializedClassifierInstances) {
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
@@ -446,7 +456,8 @@ public abstract class AbstractSerialization {
     sortedSerializedClassifierInstances.stream()
         .forEach(
             n -> {
-              ClassifierInstance<?> instantiated = instantiateFromSerialized(lionWebVersion, n, deserializedByID);
+              ClassifierInstance<?> instantiated =
+                  instantiateFromSerialized(lionWebVersion, n, deserializedByID);
               if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
                 throw new IllegalStateException("Duplicate ID found: " + n.getID());
               }
@@ -516,14 +527,15 @@ public abstract class AbstractSerialization {
   }
 
   private ClassifierInstance<?> instantiateFromSerialized(
-          @Nonnull LionWebVersion lionWebVersion,
+      @Nonnull LionWebVersion lionWebVersion,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> deserializedByID) {
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
     }
-    Classifier<?> classifier = getClassifierResolver().resolveClassifier(lionWebVersion, serializedClassifier);
+    Classifier<?> classifier =
+        getClassifierResolver().resolveClassifier(serializedClassifier);
 
     // We prepare all the properties values and pass them to instantiator, as it could use them to
     // build the node
@@ -575,5 +587,9 @@ public abstract class AbstractSerialization {
             });
 
     return classifierInstance;
+  }
+
+  public LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
   }
 }
