@@ -24,8 +24,10 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
-  public EMFMetamodelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+  public EMFMetamodelExporter(
+      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(conceptsToEClassesMapping);
+    this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
   /** This export all the languages received to a single Resource. */

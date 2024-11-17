@@ -30,11 +30,11 @@ public abstract class AbstractEMFImporter<E> {
   protected final ConceptsToEClassesMapping conceptsToEClassesMapping;
 
   public AbstractEMFImporter() {
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+    this(LionWebVersion.currentVersion);
   }
 
   public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion) {
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping(lionWebVersion);
   }
 
   public AbstractEMFImporter(

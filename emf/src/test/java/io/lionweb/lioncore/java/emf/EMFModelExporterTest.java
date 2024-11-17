@@ -91,7 +91,8 @@ public class EMFModelExporterTest {
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
             .loadLanguage(this.getClass().getResourceAsStream("/properties-language.json"));
 
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization.registerLanguage(propertiesLang);
     jsonSerialization.getInstantiator().enableDynamicNodes();
 

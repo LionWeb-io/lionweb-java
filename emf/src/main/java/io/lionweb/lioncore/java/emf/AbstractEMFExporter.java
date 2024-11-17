@@ -16,7 +16,7 @@ public abstract class AbstractEMFExporter {
   protected AbstractEMFExporter(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping(lionWebVersion);
   }
 
   public AbstractEMFExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
