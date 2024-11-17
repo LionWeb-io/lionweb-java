@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.*;
 
 import io.lionweb.java.emf.builtins.BuiltinsPackage;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import java.io.*;
@@ -25,7 +26,7 @@ public class EMFMetamodelExporterTest {
   public void exportLibraryLanguage() {
     Language libraryLang =
         (Language)
-            SerializationProvider.getStandardJsonSerialization()
+            SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
                 .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
                 .get(0);
 
