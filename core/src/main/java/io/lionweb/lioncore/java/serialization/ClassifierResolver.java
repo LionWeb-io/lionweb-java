@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Concept;
@@ -20,7 +21,7 @@ public class ClassifierResolver {
   private final Map<MetaPointer, Annotation> registeredAnnotations = new HashMap<>();
 
   @Nonnull
-  public Classifier<?> resolveClassifier(@Nonnull MetaPointer conceptMetaPointer) {
+  public Classifier<?> resolveClassifier(@Nonnull LionWebVersion lionWebVersion, @Nonnull MetaPointer conceptMetaPointer) {
     if (registeredConcepts.containsKey(conceptMetaPointer)) {
       return registeredConcepts.get(conceptMetaPointer);
     } else if (registeredAnnotations.containsKey(conceptMetaPointer)) {

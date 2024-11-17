@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.common.collect.Sets;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
@@ -22,7 +23,8 @@ import javax.annotation.Nullable;
  * and the actual physical formats is done in other classes.
  */
 public abstract class AbstractSerialization {
-  public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
+  public static final String DEFAULT_SERIALIZATION_FORMAT =
+      LionWebVersion.currentVersion.getValue();
 
   protected ClassifierResolver classifierResolver;
   protected Instantiator instantiator;
@@ -329,9 +331,10 @@ public abstract class AbstractSerialization {
     if (serializationBlock.getSerializationFormatVersion() == null) {
       throw new IllegalArgumentException("The serializationFormatVersion should not be null");
     }
-    if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)) {
+    if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)
+    && !serializationBlock.getSerializationFormatVersion().equals(LionWebVersion.v2023_1.getValue())) {
       throw new IllegalArgumentException(
-          "Only serializationFormatVersion = '" + DEFAULT_SERIALIZATION_FORMAT + "' is supported");
+          "Only serializationFormatVersion '" + DEFAULT_SERIALIZATION_FORMAT + "' and '"+ LionWebVersion.v2023_1.getValue()  + "' are supported");
     }
   }
 
@@ -417,10 +420,11 @@ public abstract class AbstractSerialization {
 
   public List<ClassifierInstance<?>> deserializeSerializationBlock(
       SerializedChunk serializationBlock) {
-    return deserializeClassifierInstances(serializationBlock.getClassifierInstances());
+    return deserializeClassifierInstances(LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()), serializationBlock.getClassifierInstances());
   }
 
   private List<ClassifierInstance<?>> deserializeClassifierInstances(
+          @Nonnull LionWebVersion lionWebVersion,
       List<SerializedClassifierInstance> serializedClassifierInstances) {
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
@@ -436,7 +440,7 @@ public abstract class AbstractSerialization {
     sortedSerializedClassifierInstances.stream()
         .forEach(
             n -> {
-              ClassifierInstance<?> instantiated = instantiateFromSerialized(n, deserializedByID);
+              ClassifierInstance<?> instantiated = instantiateFromSerialized(lionWebVersion, n, deserializedByID);
               if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
                 throw new IllegalStateException("Duplicate ID found: " + n.getID());
               }
@@ -506,13 +510,14 @@ public abstract class AbstractSerialization {
   }
 
   private ClassifierInstance<?> instantiateFromSerialized(
+          @Nonnull LionWebVersion lionWebVersion,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> deserializedByID) {
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
     }
-    Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifier);
+    Classifier<?> classifier = getClassifierResolver().resolveClassifier(lionWebVersion, serializedClassifier);
 
     // We prepare all the properties values and pass them to instantiator, as it could use them to
     // build the node
