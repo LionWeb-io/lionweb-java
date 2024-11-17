@@ -2,9 +2,8 @@ package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
-
-import javax.annotation.Nonnull;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 public abstract class AbstractEMFExporter {
   protected final ConceptsToEClassesMapping conceptsToEClassesMapping;

@@ -8,11 +8,10 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
-
-import javax.annotation.Nonnull;
 
 public class EMFModelExporter extends AbstractEMFExporter {
 

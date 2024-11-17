@@ -7,10 +7,9 @@ import io.lionweb.lioncore.java.language.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
-
-import javax.annotation.Nonnull;
 
 /** EMF importer which produces LionWeb's Metamodels. */
 public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
@@ -25,7 +24,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
-  public EMFMetamodelImporter(@Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
+  public EMFMetamodelImporter(
+      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(lionWebVersion, conceptsToEClassesMapping);
     dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }

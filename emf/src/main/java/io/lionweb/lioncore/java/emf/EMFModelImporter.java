@@ -7,10 +7,9 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.*;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
-
-import javax.annotation.Nonnull;
 
 /** Importer which produces LionWeb's Nodes. */
 public class EMFModelImporter extends AbstractEMFImporter<Node> {
@@ -25,7 +24,6 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
     super(lionWebVersion);
     nodeInstantiator = new NodeInstantiator();
   }
-
 
   public EMFModelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(conceptsToEClassesMapping);

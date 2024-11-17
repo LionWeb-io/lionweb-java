@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -18,8 +19,6 @@ import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
-
-import javax.annotation.Nonnull;
 
 /**
  * Importer that given an EMF Resource imports something out of it.
@@ -38,7 +37,8 @@ public abstract class AbstractEMFImporter<E> {
     this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
   }
 
-  public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
+  public AbstractEMFImporter(
+      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
     this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }
 

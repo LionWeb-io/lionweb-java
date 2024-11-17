@@ -8,13 +8,12 @@ import io.lionweb.lioncore.java.language.PrimitiveType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
 import org.eclipse.emf.ecore.EcorePackage;
 import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
-
-import javax.annotation.Nonnull;
 
 public class DataTypeMapping {
 

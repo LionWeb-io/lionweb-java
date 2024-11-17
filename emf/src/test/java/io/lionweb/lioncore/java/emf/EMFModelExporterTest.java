@@ -19,7 +19,8 @@ public class EMFModelExporterTest {
 
   @Test
   public void exportLibraryInstance() {
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
     jsonSerialization.getInstantiator().enableDynamicNodes();
     List<Node> nodes =
@@ -69,7 +70,8 @@ public class EMFModelExporterTest {
   @Test
   public void exportSingleContainment() {
     InputStream languageIs = this.getClass().getResourceAsStream("/properties.lmm.json");
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     Language propertiesLanguage = jsonSerialization.loadLanguage(languageIs);
     jsonSerialization.registerLanguage(propertiesLanguage);
     jsonSerialization.getInstantiator().enableDynamicNodes();
