@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -25,9 +26,25 @@ import javax.annotation.Nullable;
  *     structure aspect</i> in documentation</a>
  */
 public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
-  public Language() {}
+  private LionWebVersion lionWebVersion;
+
+  public Language(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
+  }
+
+  public Language() {
+    this(LionWebVersion.currentVersion);
+  }
+
+  public Language(@Nonnull LionWebVersion lionWebVersion, @Nonnull String name) {
+    this(lionWebVersion);
+    Objects.requireNonNull(name, "name should not be null");
+    this.setName(name);
+  }
 
   public Language(@Nonnull String name) {
+    this(LionWebVersion.currentVersion);
     Objects.requireNonNull(name, "name should not be null");
     this.setName(name);
   }

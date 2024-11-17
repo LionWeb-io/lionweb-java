@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,6 +21,10 @@ import javax.annotation.Nullable;
 public class PrimitiveType extends DataType<PrimitiveType> {
   public PrimitiveType() {
     super();
+  }
+
+  public PrimitiveType(@Nonnull LionWebVersion lionWebVersion, @Nonnull String id) {
+    super(lionWebVersion, id);
   }
 
   public PrimitiveType(@Nonnull String id) {

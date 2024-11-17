@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
@@ -28,6 +29,12 @@ public class Concept extends Classifier<Concept> {
 
   public Concept() {
     super();
+    setAbstract(false);
+    setPartition(false);
+  }
+
+  public Concept(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
     setAbstract(false);
     setPartition(false);
   }

@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -62,8 +63,30 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
+  public static Containment createMultiple(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier type) {
+    Containment containment = new Containment(lionWebVersion, name);
+    containment.setOptional(true);
+    containment.setMultiple(true);
+    containment.setType(type);
+    return containment;
+  }
+
   public static Containment createMultiple(@Nullable String name, @Nullable Classifier type) {
     Containment containment = new Containment(name);
+    containment.setOptional(true);
+    containment.setMultiple(true);
+    containment.setType(type);
+    return containment;
+  }
+
+  public static Containment createMultiple(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier type,
+      @Nonnull String id) {
+    Objects.requireNonNull(id, "id should not be null");
+    Containment containment = new Containment(lionWebVersion, name, id);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
@@ -98,8 +121,16 @@ public class Containment extends Link<Containment> {
     super(name, container);
   }
 
+  public Containment(@Nonnull LionWebVersion lionWebVersion, String name) {
+    super(lionWebVersion, name, (Classifier) null);
+  }
+
   public Containment(String name) {
     super(name, (Classifier) null);
+  }
+
+  public Containment(@Nonnull LionWebVersion lionWebVersion, String name, @Nonnull String id) {
+    super(lionWebVersion, name, id);
   }
 
   public Containment(String name, @Nonnull String id) {

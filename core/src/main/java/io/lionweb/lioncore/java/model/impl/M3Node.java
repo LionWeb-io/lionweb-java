@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
@@ -21,6 +22,7 @@ import javax.annotation.Nullable;
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
     implements Node {
+  private @Nonnull LionWebVersion lionWebVersion;
   private String id;
   private Node parent;
 
@@ -31,6 +33,14 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   private final Map<String, Object> propertyValues = new HashMap<>();
   private final Map<String, List<Node>> containmentValues = new HashMap<>();
   private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+
+  protected M3Node() {
+    this.lionWebVersion = LionWebVersion.currentVersion;
+  }
+
+  protected M3Node(@Nonnull LionWebVersion lionWebVersion) {
+    this.lionWebVersion = lionWebVersion;
+  }
 
   public T setID(String id) {
     this.id = id;

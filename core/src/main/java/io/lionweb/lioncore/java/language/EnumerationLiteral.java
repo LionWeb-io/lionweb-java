@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -8,6 +9,10 @@ import javax.annotation.Nullable;
 
 public class EnumerationLiteral extends M3Node<EnumerationLiteral>
     implements NamespacedEntity, IKeyed<EnumerationLiteral> {
+
+  public EnumerationLiteral(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
 
   public EnumerationLiteral() {}
 

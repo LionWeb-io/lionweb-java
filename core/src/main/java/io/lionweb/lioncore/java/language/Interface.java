@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
@@ -24,6 +25,10 @@ import javax.annotation.Nullable;
 public class Interface extends Classifier<Interface> {
   public Interface() {
     super();
+  }
+
+  public Interface(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
   }
 
   public Interface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
