@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
 import io.lionweb.java.emf.builtins.BuiltinsPackage;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.*;
@@ -9,6 +10,8 @@ import java.util.Map;
 import java.util.Objects;
 import org.eclipse.emf.ecore.*;
 import org.jetbrains.annotations.Nullable;
+
+import javax.annotation.Nonnull;
 
 public class ConceptsToEClassesMapping {
 
@@ -19,13 +22,20 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
+  private LionWebVersion lionWebVersion;
+
   /** Creates a mapping with pre-populated builtins. */
   public ConceptsToEClassesMapping() {
-    this(true);
+    this(LionWebVersion.currentVersion, true);
+  }
+
+  public ConceptsToEClassesMapping(@Nonnull LionWebVersion lionWebVersion) {
+    this(lionWebVersion, true);
   }
 
   /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
-  public ConceptsToEClassesMapping(boolean prePopulateBuiltins) {
+  public ConceptsToEClassesMapping(@Nonnull LionWebVersion lionWebVersion,  boolean prePopulateBuiltins) {
+    this.lionWebVersion = lionWebVersion;
     if (prePopulateBuiltins) {
       prePopulateBuiltins();
     }
@@ -33,7 +43,7 @@ public class ConceptsToEClassesMapping {
 
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
-    EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(this);
+    EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(lionWebVersion, this);
     Language language = EMFMetamodelImporter.importEPackage(ePackage);
     ePackagesToLanguages.put(ePackage, language);
     languagesToEPackages.put(language, ePackage);

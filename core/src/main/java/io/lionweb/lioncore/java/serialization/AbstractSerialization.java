@@ -29,8 +29,6 @@ import javax.annotation.Nullable;
 // WE CAN THEN HAVE A SORT OF FACADE THAT WILL LOOK AT THE FORMAT AND USE ONE INSTANCE OR ANOTHER
 
 public abstract class AbstractSerialization {
-  public static final String DEFAULT_SERIALIZATION_FORMAT =
-      LionWebVersion.currentVersion.getValue();
 
   protected ClassifierResolver classifierResolver;
   protected Instantiator instantiator;

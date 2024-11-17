@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.support.JSONResourceFactory;
 import java.io.File;
@@ -18,6 +19,8 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
 
+import javax.annotation.Nonnull;
+
 /**
  * Importer that given an EMF Resource imports something out of it.
  *
@@ -29,6 +32,14 @@ public abstract class AbstractEMFImporter<E> {
 
   public AbstractEMFImporter() {
     this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+  }
+
+  public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion) {
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+  }
+
+  public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
+    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }
 
   public AbstractEMFImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {

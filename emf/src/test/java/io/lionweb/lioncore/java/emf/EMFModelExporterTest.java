@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
@@ -18,7 +19,7 @@ public class EMFModelExporterTest {
 
   @Test
   public void exportLibraryInstance() {
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization.registerLanguage(LibraryMetamodel.LIBRARY_LANG);
     jsonSerialization.getInstantiator().enableDynamicNodes();
     List<Node> nodes =
@@ -27,7 +28,7 @@ public class EMFModelExporterTest {
     List<Node> roots =
         nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
 
-    EMFModelExporter emfExporter = new EMFModelExporter();
+    EMFModelExporter emfExporter = new EMFModelExporter(LionWebVersion.v2023_1);
     Resource resource = emfExporter.exportResource(roots);
 
     assertEquals(3, resource.getContents().size());
@@ -68,7 +69,7 @@ public class EMFModelExporterTest {
   @Test
   public void exportSingleContainment() {
     InputStream languageIs = this.getClass().getResourceAsStream("/properties.lmm.json");
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     Language propertiesLanguage = jsonSerialization.loadLanguage(languageIs);
     jsonSerialization.registerLanguage(propertiesLanguage);
     jsonSerialization.getInstantiator().enableDynamicNodes();
@@ -78,14 +79,14 @@ public class EMFModelExporterTest {
     List<Node> roots =
         nodes.stream().filter(it -> it.getParent() == null).collect(Collectors.toList());
 
-    EMFModelExporter emfExporter = new EMFModelExporter();
+    EMFModelExporter emfExporter = new EMFModelExporter(LionWebVersion.v2023_1);
     Resource resource = emfExporter.exportResource(roots);
   }
 
   @Test
   public void exportPropertiesInstance() {
     Language propertiesLang =
-        SerializationProvider.getStandardJsonSerialization()
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
             .loadLanguage(this.getClass().getResourceAsStream("/properties-language.json"));
 
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
@@ -98,7 +99,7 @@ public class EMFModelExporterTest {
     List<Node> roots =
         nodes.stream().filter(n -> n.getParent() == null).collect(Collectors.toList());
 
-    EMFModelExporter emfExporter = new EMFModelExporter();
+    EMFModelExporter emfExporter = new EMFModelExporter(LionWebVersion.v2023_1);
     Resource resource = emfExporter.exportResource(roots);
 
     assertEquals(1, resource.getContents().size());

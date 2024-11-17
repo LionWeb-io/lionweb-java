@@ -58,7 +58,7 @@ public class JsonSerialization extends AbstractSerialization {
    * an exception is thrown.
    */
   public Language loadLanguage(InputStream inputStream) {
-    JsonSerialization jsonSerialization = getStandardJsonSerialization();
+    JsonSerialization jsonSerialization = getStandardJsonSerialization(getLionWebVersion());
     List<Node> lNodes = jsonSerialization.deserializeToNodes(inputStream);
     List<Language> languages =
         lNodes.stream()

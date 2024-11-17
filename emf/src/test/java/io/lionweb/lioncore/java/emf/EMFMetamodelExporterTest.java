@@ -30,7 +30,7 @@ public class EMFMetamodelExporterTest {
                 .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
                 .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(LionWebVersion.v2023_1);
     EPackage libraryPkg = ecoreExporter.exportLanguage(libraryLang);
 
     assertEquals("library", libraryPkg.getName());
@@ -156,12 +156,12 @@ public class EMFMetamodelExporterTest {
 
     Language propertiesLang =
         (Language)
-            SerializationProvider.getStandardJsonSerialization()
+            SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
                 .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-language.json"))
                 .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(LionWebVersion.v2023_1);
     EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
 
     assertEquals("io_lionweb_Properties", propertiesPkg.getName());
@@ -261,12 +261,12 @@ public class EMFMetamodelExporterTest {
   public void storePropertiesLangWithINamed() throws IOException {
     Language propertiesLang =
         (Language)
-            SerializationProvider.getStandardJsonSerialization()
+            SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
                 .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-language.json"))
                 .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(LionWebVersion.v2023_1);
     EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
 
     Resource.Factory.Registry.INSTANCE
