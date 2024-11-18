@@ -22,7 +22,6 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
   public EMFMetamodelExporter(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 

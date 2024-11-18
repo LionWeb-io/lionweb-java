@@ -21,7 +21,7 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
-  private LionWebVersion lionWebVersion;
+  private @Nonnull LionWebVersion lionWebVersion;
 
   /** Creates a mapping with pre-populated builtins. */
   public ConceptsToEClassesMapping() {
