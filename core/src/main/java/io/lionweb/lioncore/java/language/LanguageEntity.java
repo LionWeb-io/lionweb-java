@@ -2,7 +2,6 @@ package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -22,7 +21,6 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
 
   public LanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
   }
 
   public LanguageEntity() {

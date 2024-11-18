@@ -7,6 +7,8 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public class LionCoreBuiltins extends Language {
+  // We may have one instance of this class per LionWeb version, and we initialize
+  // them lazily
   private static final Map<LionWebVersion, LionCoreBuiltins> INSTANCES = new HashMap<>();
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */

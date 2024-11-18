@@ -12,133 +12,135 @@ public class LionCore {
     // prevent instantiation of instances outside of this class
   }
 
+  // We may have one instance of this class per LionWeb version, and we initialize
+  // them lazily
   private static Map<LionWebVersion, Language> INSTANCES = new HashMap<>();
 
-  public static Concept getAnnotation() {
+  public static @Nonnull Concept getAnnotation() {
     return getInstance().requireConceptByName("Annotation");
   }
 
-  public static Concept getConcept() {
+  public static @Nonnull Concept getConcept() {
     return getInstance().requireConceptByName("Concept");
   }
 
-  public static Concept getInterface() {
+  public static @Nonnull Concept getInterface() {
     return getInstance().requireConceptByName("Interface");
   }
 
-  public static Concept getContainment() {
+  public static @Nonnull Concept getContainment() {
     return getInstance().requireConceptByName("Containment");
   }
 
-  public static Concept getDataType() {
+  public static @Nonnull Concept getDataType() {
     return getInstance().requireConceptByName("DataType");
   }
 
-  public static Concept getEnumeration() {
+  public static @Nonnull Concept getEnumeration() {
     return getInstance().requireConceptByName("Enumeration");
   }
 
-  public static Concept getEnumerationLiteral() {
+  public static @Nonnull Concept getEnumerationLiteral() {
     return getInstance().requireConceptByName("EnumerationLiteral");
   }
 
-  public static Concept getFeature() {
+  public static @Nonnull Concept getFeature() {
     return getInstance().requireConceptByName("Feature");
   }
 
-  public static Concept getClassifier() {
+  public static @Nonnull Concept getClassifier() {
     return getInstance().requireConceptByName("Classifier");
   }
 
-  public static Concept getLink() {
+  public static @Nonnull Concept getLink() {
     return getInstance().requireConceptByName("Link");
   }
 
-  public static Concept getLanguage() {
+  public static @Nonnull Concept getLanguage() {
     return getInstance().requireConceptByName("Language");
   }
 
-  public static Concept getLanguageEntity() {
+  public static @Nonnull Concept getLanguageEntity() {
     return getInstance().requireConceptByName("LanguageEntity");
   }
 
-  public static Concept getPrimitiveType() {
+  public static @Nonnull Concept getPrimitiveType() {
     return getInstance().requireConceptByName("PrimitiveType");
   }
 
-  public static Concept getProperty() {
+  public static @Nonnull Concept getProperty() {
     return getInstance().requireConceptByName("Property");
   }
 
-  public static Concept getReference() {
+  public static @Nonnull Concept getReference() {
     return getInstance().requireConceptByName("Reference");
   }
 
-  public static Concept getAnnotation(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getAnnotation(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Annotation");
   }
 
-  public static Concept getConcept(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getConcept(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Concept");
   }
 
-  public static Concept getInterface(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getInterface(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Interface");
   }
 
-  public static Concept getContainment(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getContainment(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Containment");
   }
 
-  public static Concept getDataType(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getDataType(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("DataType");
   }
 
-  public static Concept getEnumeration(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getEnumeration(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Enumeration");
   }
 
-  public static Concept getEnumerationLiteral(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getEnumerationLiteral(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("EnumerationLiteral");
   }
 
-  public static Concept getFeature(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getFeature(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Feature");
   }
 
-  public static Concept getClassifier(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getClassifier(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Classifier");
   }
 
-  public static Concept getLink(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getLink(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Link");
   }
 
-  public static Concept getLanguage(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getLanguage(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Language");
   }
 
-  public static Concept getLanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getLanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("LanguageEntity");
   }
 
-  public static Concept getPrimitiveType(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getPrimitiveType(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("PrimitiveType");
   }
 
-  public static Concept getProperty(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getProperty(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Property");
   }
 
-  public static Concept getReference(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Concept getReference(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Reference");
   }
 
-  public static Language getInstance() {
+  public static @Nonnull Language getInstance() {
     return getInstance(LionWebVersion.currentVersion);
   }
 
-  public static Language getInstance(@Nonnull LionWebVersion lionWebVersion) {
+  public static @Nonnull Language getInstance(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     if (!INSTANCES.containsKey(lionWebVersion)) {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");
@@ -278,7 +280,7 @@ public class LionCore {
     return INSTANCES.get(lionWebVersion);
   }
 
-  private static void checkIDs(M3Node node) {
+  private static void checkIDs(@Nonnull M3Node node) {
     if (node.getID() == null) {
       if (node instanceof NamespacedEntity) {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;

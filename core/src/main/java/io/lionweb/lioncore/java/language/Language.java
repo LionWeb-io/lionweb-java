@@ -28,7 +28,6 @@ import javax.annotation.Nullable;
 public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
   public Language(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
   }
 
   public Language() {

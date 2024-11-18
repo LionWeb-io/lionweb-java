@@ -15,10 +15,13 @@ import javax.annotation.Nullable;
 /**
  * Base class to help implements Node in the language package.
  *
- * <p>Other libraries could implement Node differently, for example based on reflection. However
+ * <p>Other libraries could implement Node differently, for example based on reflection. However,
  * this is outside the scope of this library. This library should provide a solid, basic dependency
  * to be used by other implementation and it should be as reusable, basic, and unopinionated as
  * possible.
+ *
+ * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
+ * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
     implements Node {
