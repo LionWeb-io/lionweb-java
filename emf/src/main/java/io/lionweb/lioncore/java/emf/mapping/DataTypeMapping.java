@@ -23,9 +23,10 @@ public class DataTypeMapping {
   private final Map<EDataType, PrimitiveType> eDataTypesToPrimitiveTypes = new HashMap<>();
   private final Map<PrimitiveType, EDataType> primitiveTypesToEDataTypes = new HashMap<>();
 
-  private LionWebVersion lionWebVersion;
+  private @Nonnull LionWebVersion lionWebVersion;
 
   public DataTypeMapping(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
   }
 

@@ -23,7 +23,7 @@ public abstract class AbstractEMFExporter {
     this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }
 
-  public LionWebVersion getLionWebVersion() {
+  public @Nonnull LionWebVersion getLionWebVersion() {
     return lionWebVersion;
   }
 }

@@ -35,6 +35,7 @@ public class ConceptsToEClassesMapping {
   /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
   public ConceptsToEClassesMapping(
       @Nonnull LionWebVersion lionWebVersion, boolean prePopulateBuiltins) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
     if (prePopulateBuiltins) {
       prePopulateBuiltins(lionWebVersion);
@@ -206,6 +207,7 @@ public class ConceptsToEClassesMapping {
   }
 
   public void prePopulateBuiltins(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     ePackagesToLanguages.put(
         BuiltinsPackage.eINSTANCE, LionCoreBuiltins.getInstance(lionWebVersion));
     languagesToEPackages.put(

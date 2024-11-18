@@ -5,6 +5,7 @@ import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
 import java.util.List;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
@@ -21,12 +22,14 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
   public EMFMetamodelExporter(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
   public EMFMetamodelExporter(
       @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(conceptsToEClassesMapping);
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
