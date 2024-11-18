@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.testset;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
@@ -24,7 +25,8 @@ public abstract class ALanguageTestset extends ATestset {
   }
 
   protected JsonSerialization getSerialization() {
-    JsonSerialization result = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization result =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     result.registerLanguage(this.language);
     result.enableDynamicNodes();
     return result;
