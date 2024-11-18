@@ -43,7 +43,7 @@ public class ConceptsToEClassesMapping {
 
   private void processEPackage(EPackage ePackage) {
     Objects.requireNonNull(ePackage, "ePackage should not be null");
-    EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(lionWebVersion, this);
+    EMFMetamodelImporter EMFMetamodelImporter = new EMFMetamodelImporter(this);
     Language language = EMFMetamodelImporter.importEPackage(ePackage);
     ePackagesToLanguages.put(ePackage, language);
     languagesToEPackages.put(language, ePackage);
@@ -213,5 +213,9 @@ public class ConceptsToEClassesMapping {
     registerMapping(LionCoreBuiltins.getNode(lionWebVersion), EcorePackage.eINSTANCE.getEObject());
     registerMapping(
         LionCoreBuiltins.getINamed(lionWebVersion), BuiltinsPackage.eINSTANCE.getINamed());
+  }
+
+  public @Nonnull LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
   }
 }

@@ -24,14 +24,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
-  public EMFMetamodelImporter(
-      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    super(lionWebVersion, conceptsToEClassesMapping);
-    dataTypeMapping = new DataTypeMapping(lionWebVersion);
-  }
-
   public EMFMetamodelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    this(LionWebVersion.currentVersion, conceptsToEClassesMapping);
+    super(conceptsToEClassesMapping);
+    dataTypeMapping = new DataTypeMapping(conceptsToEClassesMapping.getLionWebVersion());
   }
 
   @Override

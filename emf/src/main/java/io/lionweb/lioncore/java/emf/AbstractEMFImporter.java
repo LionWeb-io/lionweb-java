@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 import org.eclipse.emf.common.util.URI;
@@ -34,14 +35,14 @@ public abstract class AbstractEMFImporter<E> {
   }
 
   public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.conceptsToEClassesMapping = new ConceptsToEClassesMapping(lionWebVersion);
   }
 
-  public AbstractEMFImporter(
-      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
-  }
-
+  /**
+   * Not that in this case the LionWeb Version used will be "embedded" in the
+   * ConceptsToEClassesMapping instance.
+   */
   public AbstractEMFImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
     this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }
