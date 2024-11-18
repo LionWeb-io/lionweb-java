@@ -18,9 +18,6 @@ import javax.annotation.Nonnull;
  */
 public class Instantiator {
 
-  // TODO: not sure this is needed
-  private @Nonnull LionWebVersion lionWebVersion;
-
   public interface ClassifierSpecificInstantiator<T extends ClassifierInstance<?>> {
     T instantiate(
         Classifier<?> classifier,
@@ -38,13 +35,7 @@ public class Instantiator {
                 "Unable to instantiate instance with classifier " + classifier);
           };
 
-  public Instantiator() {
-    this.lionWebVersion = LionWebVersion.currentVersion;
-  }
-
-  public Instantiator(@Nonnull LionWebVersion lionWebVersion) {
-    this.lionWebVersion = lionWebVersion;
-  }
+  public Instantiator() {}
 
   public Instantiator enableDynamicNodes() {
     defaultNodeDeserializer =

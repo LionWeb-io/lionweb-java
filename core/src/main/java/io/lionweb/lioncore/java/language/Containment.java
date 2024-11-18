@@ -65,6 +65,7 @@ public class Containment extends Link<Containment> {
 
   public static Containment createMultiple(
       @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier type) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Containment containment = new Containment(lionWebVersion, name);
     containment.setOptional(true);
     containment.setMultiple(true);
@@ -85,6 +86,7 @@ public class Containment extends Link<Containment> {
       @Nullable String name,
       @Nullable Classifier type,
       @Nonnull String id) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Objects.requireNonNull(id, "id should not be null");
     Containment containment = new Containment(lionWebVersion, name, id);
     containment.setOptional(true);

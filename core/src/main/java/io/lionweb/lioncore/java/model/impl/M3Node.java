@@ -23,8 +23,8 @@ import javax.annotation.Nullable;
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
     implements Node {
   private @Nonnull LionWebVersion lionWebVersion;
-  private String id;
-  private Node parent;
+  private @Nullable String id;
+  private @Nullable Node parent;
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
@@ -39,6 +39,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   protected M3Node(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
   }
 

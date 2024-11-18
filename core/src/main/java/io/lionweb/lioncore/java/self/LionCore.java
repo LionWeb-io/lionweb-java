@@ -139,6 +139,7 @@ public class LionCore {
   }
 
   public static Language getInstance(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     if (!INSTANCES.containsKey(lionWebVersion)) {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");
       instance.setID("-id-LionCore-M3");

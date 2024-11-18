@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.language;
 import io.lionweb.lioncore.java.LionWebVersion;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public class LionCoreBuiltins extends Language {
@@ -59,10 +60,6 @@ public class LionCoreBuiltins extends Language {
     return getInstance().getPrimitiveTypeByName("Boolean");
   }
 
-  public static PrimitiveType getJSON() {
-    return getInstance().getPrimitiveTypeByName("JSON");
-  }
-
   public static Interface getINamed() {
     return getInstance().getInterfaceByName("INamed");
   }
@@ -72,6 +69,7 @@ public class LionCoreBuiltins extends Language {
   }
 
   public static LionCoreBuiltins getInstance(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     if (!INSTANCES.containsKey(lionWebVersion)) {
       INSTANCES.put(lionWebVersion, new LionCoreBuiltins(lionWebVersion));
     }

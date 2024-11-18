@@ -22,12 +22,6 @@ import javax.annotation.Nullable;
  * actual Nodes and the intermediate format (SerializedChunk). The step between the SerializedChunk
  * and the actual physical formats is done in other classes.
  */
-
-// PROBABLY IT IS BEST TO HAVE DIFFERENT SERIALIZATION INSTANCES FOR EACH
-// LIONWEB VERSION
-//
-// WE CAN THEN HAVE A SORT OF FACADE THAT WILL LOOK AT THE FORMAT AND USE ONE INSTANCE OR ANOTHER
-
 public abstract class AbstractSerialization {
 
   protected ClassifierResolver classifierResolver;
@@ -54,17 +48,18 @@ public abstract class AbstractSerialization {
   protected UnavailableNodePolicy unavailableReferenceTargetPolicy =
       UnavailableNodePolicy.THROW_ERROR;
 
-  private LionWebVersion lionWebVersion;
+  private @Nonnull LionWebVersion lionWebVersion;
 
   protected AbstractSerialization() {
     this(LionWebVersion.currentVersion);
   }
 
   protected AbstractSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
     // prevent public access
     classifierResolver = new ClassifierResolver();
-    instantiator = new Instantiator(lionWebVersion);
+    instantiator = new Instantiator();
     primitiveValuesSerialization = new PrimitiveValuesSerialization();
     instanceResolver = new LocalClassifierInstanceResolver();
   }
@@ -442,6 +437,7 @@ public abstract class AbstractSerialization {
   private List<ClassifierInstance<?>> deserializeClassifierInstances(
       @Nonnull LionWebVersion lionWebVersion,
       List<SerializedClassifierInstance> serializedClassifierInstances) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
     DeserializationStatus deserializationStatus = sortLeavesFirst(serializedClassifierInstances);
@@ -530,6 +526,7 @@ public abstract class AbstractSerialization {
       @Nonnull LionWebVersion lionWebVersion,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> deserializedByID) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);

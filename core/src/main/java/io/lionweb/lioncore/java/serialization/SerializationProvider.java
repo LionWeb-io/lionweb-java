@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.serialization;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.self.LionCore;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public class SerializationProvider {
@@ -14,6 +15,7 @@ public class SerializationProvider {
 
   public static JsonSerialization getStandardJsonSerialization(
       @Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     JsonSerialization serialization = new JsonSerialization(lionWebVersion);
     standardInitialization(serialization);
     return serialization;
@@ -26,6 +28,7 @@ public class SerializationProvider {
 
   public static JsonSerialization getBasicJsonSerialization(
       @Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     return new JsonSerialization(lionWebVersion);
   }
 

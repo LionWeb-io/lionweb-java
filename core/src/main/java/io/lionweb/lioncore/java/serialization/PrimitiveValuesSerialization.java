@@ -71,6 +71,7 @@ public class PrimitiveValuesSerialization {
 
   public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
       @Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     primitiveDeserializers.put(
         LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
         new PrimitiveDeserializer<Boolean>() {
