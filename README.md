@@ -10,7 +10,7 @@ We require Java 11 for building the project, while the artifacts published are c
 
 ```
 dependencies {
-   implementation("io.lionweb.lionweb-java:lionweb-java-2023.1-core:$lionwebVersion")
+   implementation("io.lionweb.lionweb-java:lionweb-java-2024.1-core:$lionwebVersion")
 }
 ```
 

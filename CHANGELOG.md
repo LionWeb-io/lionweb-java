@@ -55,3 +55,7 @@ Import and export from and to EMF is a work in progress.
 
 * Introduce support for serialization based on ProtoBuffer and FlatBuffers
 * Introduce SerializationProvider
+
+## lionweb-java-2024.1-* - Version 0.3.0
+
+Introducing support for LionWeb 2024.1
