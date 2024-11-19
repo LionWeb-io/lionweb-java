@@ -24,6 +24,11 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractSerialization {
 
+  /** You should use LionWebVersion.currentVersion.getVersionString() instead. */
+  @Deprecated
+  public static final String DEFAULT_SERIALIZATION_FORMAT =
+      LionWebVersion.currentVersion.getVersionString();
+
   protected ClassifierResolver classifierResolver;
   protected Instantiator instantiator;
   protected PrimitiveValuesSerialization primitiveValuesSerialization;
@@ -48,7 +53,7 @@ public abstract class AbstractSerialization {
   protected UnavailableNodePolicy unavailableReferenceTargetPolicy =
       UnavailableNodePolicy.THROW_ERROR;
 
-  private @Nonnull LionWebVersion lionWebVersion;
+  private final @Nonnull LionWebVersion lionWebVersion;
 
   protected AbstractSerialization() {
     this(LionWebVersion.currentVersion);
@@ -153,7 +158,7 @@ public abstract class AbstractSerialization {
   public SerializedChunk serializeNodesToSerializationBlock(
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(lionWebVersion.getValue());
+    serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(classifierInstance));
@@ -337,10 +342,12 @@ public abstract class AbstractSerialization {
     if (serializationBlock.getSerializationFormatVersion() == null) {
       throw new IllegalArgumentException("The serializationFormatVersion should not be null");
     }
-    if (!serializationBlock.getSerializationFormatVersion().equals(lionWebVersion.getValue())) {
+    if (!serializationBlock
+        .getSerializationFormatVersion()
+        .equals(lionWebVersion.getVersionString())) {
       throw new IllegalArgumentException(
           "Only serializationFormatVersion supported by this instance of Serialization is '"
-              + lionWebVersion.getValue()
+              + lionWebVersion.getVersionString()
               + "' but we found '"
               + serializationBlock.getSerializationFormatVersion()
               + "'");

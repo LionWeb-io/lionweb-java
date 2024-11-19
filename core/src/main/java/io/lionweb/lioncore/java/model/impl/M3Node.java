@@ -25,7 +25,7 @@ import javax.annotation.Nullable;
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
     implements Node {
-  private @Nonnull LionWebVersion lionWebVersion;
+  private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;
   private @Nullable Node parent;
 
