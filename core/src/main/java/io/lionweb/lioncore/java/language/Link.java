@@ -30,13 +30,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
   }
 
   public Link(@Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
-    // TODO verify that the container is also a NamespaceProvider
     super(lionWebVersion, name, id);
     setMultiple(false);
   }
 
   public Link(@Nullable String name, @Nonnull String id) {
-    // TODO verify that the container is also a NamespaceProvider
     super(name, id);
     setMultiple(false);
   }
@@ -45,13 +43,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
       @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
     super(lionWebVersion, name, container);
     setMultiple(false);
   }
 
   public Link(@Nullable String name, @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
     super(name, container);
     setMultiple(false);
   }

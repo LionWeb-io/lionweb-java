@@ -119,7 +119,6 @@ public class Containment extends Link<Containment> {
   }
 
   public Containment(String name, @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
     super(name, container);
   }
 

@@ -92,27 +92,23 @@ public class Property extends Feature<Property> {
   public Property(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
-      @Nullable Classifier container,
+      @Nullable Classifier<?> container,
       @Nonnull String id) {
-    // TODO verify that the container is also a NamespaceProvider
     super(lionWebVersion, name, container, id);
   }
 
-  public Property(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
-    // TODO verify that the container is also a NamespaceProvider
+  public Property(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
     super(name, container, id);
   }
 
   public Property(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
-      @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
+      @Nullable Classifier<?> container) {
     super(lionWebVersion, name, container);
   }
 
-  public Property(@Nullable String name, @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
+  public Property(@Nullable String name, @Nullable Classifier<?> container) {
     super(name, container);
   }
 

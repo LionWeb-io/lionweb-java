@@ -144,7 +144,6 @@ public class Reference extends Link<Reference> {
   }
 
   public Reference(@Nullable String name, @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
     super(name, container);
   }
 
