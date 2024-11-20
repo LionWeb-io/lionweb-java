@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.impl.EnumerationValue;

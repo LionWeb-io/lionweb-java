@@ -3,11 +3,13 @@ package io.lionweb.lioncore.java.model;
 import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nonnull;
 
-public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureValues {
+public interface ClassifierInstance<T extends Classifier<T, V>, V extends LionWebVersionToken> extends HasFeatureValues {
   /** Return all the annotations associated to this ClassifierInstance. */
   @Nonnull
   List<AnnotationInstance> getAnnotations();

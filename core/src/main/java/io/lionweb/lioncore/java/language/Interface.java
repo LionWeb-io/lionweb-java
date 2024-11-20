@@ -1,8 +1,10 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +24,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SInterfaceConcept MPS equivalent <i>SInterfaceConcept</i>
  *     in SModel
  */
-public class Interface extends Classifier<Interface> {
+public class Interface<V extends LionWebVersionToken> extends Classifier<Interface<V>, V> {
   public Interface() {
     super();
   }
@@ -31,12 +33,12 @@ public class Interface extends Classifier<Interface> {
     super(lionWebVersion);
   }
 
-  public Interface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public Interface(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
   public Interface(
-      @Nullable Language language,
+      @Nullable Language<V> language,
       @Nullable String name,
       @Nonnull String id,
       @Nullable String key) {
@@ -44,12 +46,12 @@ public class Interface extends Classifier<Interface> {
     setKey(key);
   }
 
-  public Interface(@Nullable Language language, @Nullable String name) {
+  public Interface(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);
   }
 
   public Interface(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
     super(lionWebVersion, language, name);
   }
 
@@ -65,11 +67,11 @@ public class Interface extends Classifier<Interface> {
     super(null, name, id);
   }
 
-  public @Nonnull List<Interface> getExtendedInterfaces() {
+  public @Nonnull List<Interface<V>> getExtendedInterfaces() {
     return getReferenceMultipleValue("extends");
   }
 
-  public void addExtendedInterface(@Nonnull Interface extendedInterface) {
+  public void addExtendedInterface(@Nonnull Interface<V> extendedInterface) {
     Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
     this.addReferenceMultipleValue(
         "extends", new ReferenceValue(extendedInterface, extendedInterface.getName()));
@@ -77,33 +79,33 @@ public class Interface extends Classifier<Interface> {
 
   @Nonnull
   @Override
-  public List<Feature<?>> inheritedFeatures() {
-    List<Feature<?>> result = new LinkedList<>();
-    for (Classifier<?> superInterface : allAncestors()) {
+  public List<Feature<?, V>> inheritedFeatures() {
+    List<Feature<?, V>> result = new LinkedList<>();
+    for (Classifier<?, V> superInterface : allAncestors()) {
       combineFeatures(result, superInterface.allFeatures());
     }
     return result;
   }
 
   @Override
-  public Concept getClassifier() {
+  public Concept<V> getClassifier() {
     return LionCore.getInterface(getLionWebVersion());
   }
 
   @Nonnull
   @Override
-  public List<Classifier<?>> directAncestors() {
-    return (List<Classifier<?>>) (Object) this.getExtendedInterfaces();
+  public List<Classifier<?, V>> directAncestors() {
+    return (List<Classifier<?, V>>) (Object) this.getExtendedInterfaces();
   }
 
-  public Set<Interface> allExtendedInterfaces() {
-    Set<Interface> toAvoid = new HashSet<>();
+  public Set<Interface<V>> allExtendedInterfaces() {
+    Set<Interface<V>> toAvoid = new HashSet<>();
     toAvoid.add(this);
     return allExtendedInterfacesHelper(toAvoid);
   }
 
-  private Set<Interface> allExtendedInterfacesHelper(Set<Interface> toAvoid) {
-    Set<Interface> interfaces = new HashSet<>();
+  private Set<Interface<V>> allExtendedInterfacesHelper(Set<Interface<V>> toAvoid) {
+    Set<Interface<V>> interfaces = new HashSet<>();
     toAvoid.add(this);
     this.getExtendedInterfaces()
         .forEach(

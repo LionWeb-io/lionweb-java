@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;

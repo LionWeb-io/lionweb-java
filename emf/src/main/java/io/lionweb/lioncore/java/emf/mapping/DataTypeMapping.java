@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.DataType;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;

@@ -1,7 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +24,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SReferenceLink MPS equivalent <i>SReferenceLink</i> in
  *     SModel
  */
-public class Reference extends Link<Reference> {
+public class Reference<V extends LionWebVersionToken> extends Link<Reference<V>, V> {
 
   public static Reference createOptional(@Nullable String name, @Nullable Classifier type) {
     Reference reference = new Reference(name);

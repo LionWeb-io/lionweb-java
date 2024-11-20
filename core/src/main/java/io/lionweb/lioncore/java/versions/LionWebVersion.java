@@ -1,4 +1,4 @@
-package io.lionweb.lioncore.java;
+package io.lionweb.lioncore.java.versions;
 
 import java.util.Objects;
 import javax.annotation.Nonnull;

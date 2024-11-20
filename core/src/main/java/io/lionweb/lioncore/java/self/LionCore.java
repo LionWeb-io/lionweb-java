@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.self;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;

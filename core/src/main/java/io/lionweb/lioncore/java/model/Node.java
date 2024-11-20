@@ -1,6 +1,8 @@
 package io.lionweb.lioncore.java.model;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -16,7 +18,7 @@ import javax.annotation.Nullable;
  * @see org.modelix.model.api.INode Modelix equivalent <i>INode</i>
  *     <p>TODO consider if the Model should have a version too
  */
-public interface Node extends ClassifierInstance<Concept> {
+public interface Node<V extends LionWebVersionToken> extends ClassifierInstance<Concept<V>> {
 
   /**
    * This return the Node ID.

@@ -1,8 +1,10 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -22,7 +24,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractConcept MPS equivalent <i>SAbstractConcept</i>
  *     in SModel
  */
-public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
+public abstract class Classifier<T extends M3Node, V extends LionWebVersionToken> extends LanguageEntity<T, V>
     implements NamespaceProvider {
   public Classifier() {
     super();
@@ -32,20 +34,20 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     super(lionWebVersion);
   }
 
-  public Classifier(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public Classifier(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
   public Classifier(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
     super(lionWebVersion, language, name);
   }
 
-  public Classifier(@Nullable Language language, @Nullable String name) {
+  public Classifier(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);
   }
 
-  public @Nullable Feature getFeatureByName(@Nonnull String name) {
+  public @Nullable Feature<?, V> getFeatureByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     return allFeatures().stream()
         .filter(feature -> feature.getName().equals(name))
@@ -53,19 +55,19 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public abstract @Nonnull List<Classifier<?>> directAncestors();
+  public abstract @Nonnull List<Classifier<?, V>> directAncestors();
 
   /**
    * Finds all ancestors. Works even for invalid inheritance hierarchies (i.e. containing loops).
    *
    * @return All direct or indirect/transitive ancestors.
    */
-  public @Nonnull Set<Classifier<?>> allAncestors() {
-    Set<Classifier<?>> result = new LinkedHashSet<>();
-    Set<Classifier<?>> ancestors = new HashSet<>(directAncestors());
+  public @Nonnull Set<Classifier<?, V>> allAncestors() {
+    Set<Classifier<?, V>> result = new LinkedHashSet<>();
+    Set<Classifier<?, V>> ancestors = new HashSet<>(directAncestors());
 
     while (!ancestors.isEmpty()) {
-      for (Classifier<?> a : new HashSet<>(ancestors)) {
+      for (Classifier<?, V> a : new HashSet<>(ancestors)) {
         ancestors.remove(a);
         if (result.add(a)) {
           ancestors.addAll(a.directAncestors());
@@ -76,53 +78,53 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return result;
   }
 
-  public @Nonnull List<Feature<?>> allFeatures() {
+  public @Nonnull List<Feature<?, V>> allFeatures() {
     // TODO Should this return features which are overriden?
     // TODO Should features be returned in a particular order?
-    List<Feature<?>> result = new LinkedList<>();
+    List<Feature<?, V>> result = new LinkedList<>();
     result.addAll(this.getFeatures());
     combineFeatures(result, this.inheritedFeatures());
 
     return result;
   }
 
-  public abstract @Nonnull List<Feature<?>> inheritedFeatures();
+  public abstract @Nonnull List<Feature<?, V>> inheritedFeatures();
 
-  public @Nonnull List<Property> allProperties() {
+  public @Nonnull List<Property<V>> allProperties() {
     return allFeatures().stream()
         .filter(f -> f instanceof Property)
         .map(f -> (Property) f)
         .collect(Collectors.toList());
   }
 
-  public @Nonnull List<Containment> allContainments() {
+  public @Nonnull List<Containment<V>> allContainments() {
     return allFeatures().stream()
         .filter(f -> f instanceof Containment)
         .map(f -> (Containment) f)
         .collect(Collectors.toList());
   }
 
-  public @Nonnull List<Reference> allReferences() {
+  public @Nonnull List<Reference<V>> allReferences() {
     return allFeatures().stream()
         .filter(f -> f instanceof Reference)
         .map(f -> (Reference) f)
         .collect(Collectors.toList());
   }
 
-  public @Nonnull List<Link<?>> allLinks() {
+  public @Nonnull List<Link<?, V>> allLinks() {
     return allFeatures().stream()
         .filter(f -> f instanceof Link)
-        .map(f -> (Link<?>) f)
+        .map(f -> (Link<?, V>) f)
         .collect(Collectors.toList());
   }
 
   // TODO should this expose an immutable list to force users to use methods on this class
   //      to modify the collection?
-  public @Nonnull List<Feature<?>> getFeatures() {
+  public @Nonnull List<Feature<?, V>> getFeatures() {
     return this.getContainmentMultipleValue("features");
   }
 
-  public T addFeature(@Nonnull Feature feature) {
+  public T addFeature(@Nonnull Feature<?, V> feature) {
     Objects.requireNonNull(feature, "feature should not be null");
     this.addContainmentMultipleValue("features", feature);
     feature.setParent(this);
@@ -134,17 +136,17 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return this.qualifiedName();
   }
 
-  public @Nullable Property getPropertyByID(@Nonnull String propertyId) {
+  public @Nullable Property<V> getPropertyByID(@Nonnull String propertyId) {
     Objects.requireNonNull(propertyId, "propertyId should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
+        .map(f -> (Property<V>) f)
         .filter(p -> Objects.equals(p.getID(), propertyId))
         .findFirst()
         .orElse(null);
   }
 
-  public @Nullable Property getPropertyByName(@Nonnull String propertyName) {
+  public @Nullable Property<V> getPropertyByName(@Nonnull String propertyName) {
     Objects.requireNonNull(propertyName, "propertyName should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Property)
@@ -154,7 +156,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nullable Containment getContainmentByID(@Nonnull String containmentID) {
+  public @Nullable Containment<V> getContainmentByID(@Nonnull String containmentID) {
     Objects.requireNonNull(containmentID, "containmentID should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Containment)
@@ -164,7 +166,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
+  public @Nullable Containment<V> getContainmentByName(@Nonnull String containmentName) {
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Containment)
@@ -174,7 +176,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nullable Reference getReferenceByID(@Nonnull String referenceID) {
+  public @Nullable Reference<V> getReferenceByID(@Nonnull String referenceID) {
     Objects.requireNonNull(referenceID, "referenceID should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Reference)
@@ -184,7 +186,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
+  public @Nullable Reference<V> getReferenceByName(@Nonnull String referenceName) {
     Objects.requireNonNull(referenceName, "referenceName should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Reference)
@@ -194,8 +196,8 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nonnull Containment requireContainmentByName(@Nonnull String containmentName) {
-    Containment containment = getContainmentByName(containmentName);
+  public @Nonnull Containment<V> requireContainmentByName(@Nonnull String containmentName) {
+    Containment<V> containment = getContainmentByName(containmentName);
     if (containment == null) {
       throw new IllegalArgumentException(
           "Containment " + containmentName + " not found in Classifier " + getName());
@@ -203,7 +205,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return containment;
   }
 
-  public @Nonnull Reference requireReferenceByName(@Nonnull String referenceName) {
+  public @Nonnull Reference<V> requireReferenceByName(@Nonnull String referenceName) {
     Reference reference = getReferenceByName(referenceName);
     if (reference == null) {
       throw new IllegalArgumentException(
@@ -212,7 +214,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return reference;
   }
 
-  public @Nullable Link getLinkByName(@Nonnull String linkName) {
+  public @Nullable Link<?, V> getLinkByName(@Nonnull String linkName) {
     Objects.requireNonNull(linkName, "linkName should not be null");
     return allFeatures().stream()
         .filter(f -> f instanceof Link)
@@ -222,7 +224,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
+  public @Nullable Property<V> getPropertyByMetaPointer(MetaPointer metaPointer) {
 
     return this.allProperties().stream()
         .filter(p -> MetaPointer.from(p).equals(metaPointer))
@@ -230,26 +232,26 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
-  public @Nullable Containment getContainmentByMetaPointer(MetaPointer metaPointer) {
+  public @Nullable Containment<V> getContainmentByMetaPointer(MetaPointer metaPointer) {
     return this.allContainments().stream()
         .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }
 
-  public @Nullable Reference getReferenceByMetaPointer(MetaPointer metaPointer) {
+  public @Nullable Reference<V> getReferenceByMetaPointer(MetaPointer metaPointer) {
     return this.allReferences().stream()
         .filter(p -> MetaPointer.from(p).equals(metaPointer))
         .findFirst()
         .orElse(null);
   }
 
-  protected void combineFeatures(List<Feature<?>> featuresA, List<Feature<?>> featuresB) {
+  protected void combineFeatures(List<Feature<?, V>> featuresA, List<Feature<?, V>> featuresB) {
     Set<MetaPointer> existingMetapointers = new HashSet<>();
-    for (Feature<?> f : featuresA) {
+    for (Feature<?, V> f : featuresA) {
       existingMetapointers.add(MetaPointer.from(f));
     }
-    for (Feature<?> f : featuresB) {
+    for (Feature<?, V> f : featuresB) {
       MetaPointer metaPointer = MetaPointer.from(f);
       if (!existingMetapointers.contains(metaPointer)) {
         existingMetapointers.add(metaPointer);

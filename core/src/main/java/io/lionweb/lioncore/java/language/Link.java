@@ -1,8 +1,10 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,7 +20,7 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractLink MPS equivalent <i>SAbstractLink</i> in
  *     SModel
  */
-public abstract class Link<T extends M3Node> extends Feature<T> {
+public abstract class Link<T extends M3Node<?, V>, V extends LionWebVersionToken> extends Feature<T, V> {
   public Link() {
     super();
     setMultiple(false);
@@ -42,12 +44,12 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
   public Link(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
-      @Nullable Classifier container) {
+      @Nullable Classifier<?, V> container) {
     super(lionWebVersion, name, container);
     setMultiple(false);
   }
 
-  public Link(@Nullable String name, @Nullable Classifier container) {
+  public Link(@Nullable String name, @Nullable Classifier<?, V> container) {
     super(name, container);
     setMultiple(false);
   }
@@ -61,11 +63,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     return (T) this;
   }
 
-  public @Nullable Classifier getType() {
+  public @Nullable Classifier<?, V> getType() {
     return getReferenceSingleValue("type");
   }
 
-  public T setType(@Nullable Classifier type) {
+  public T setType(@Nullable Classifier<?, V> type) {
     if (type == null) {
       this.setReferenceSingleValue("type", null);
     } else {

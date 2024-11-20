@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.Arrays;
 import java.util.List;

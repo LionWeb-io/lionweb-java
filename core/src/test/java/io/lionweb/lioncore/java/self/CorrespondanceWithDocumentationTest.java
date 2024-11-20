@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.self;
 import static io.lionweb.lioncore.java.serialization.SerializationProvider.getStandardJsonSerialization;
 import static org.junit.Assert.assertTrue;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.model.Node;

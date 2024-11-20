@@ -1,8 +1,10 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -25,7 +27,7 @@ import javax.annotation.Nullable;
  *     href="http://127.0.0.1:63320/node?ref=r%3A00000000-0000-4000-0000-011c89590288%28jetbrains.mps.lang.core.structure%29%2F3364660638048049748">MPS
  *     equivalent <i>NodeAttribute</i> in local MPS</a>
  */
-public class Annotation extends Classifier<Annotation> {
+public class Annotation<V extends LionWebVersionToken> extends Classifier<Annotation<V>, V> {
 
   public Annotation(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
@@ -35,16 +37,16 @@ public class Annotation extends Classifier<Annotation> {
     super();
   }
 
-  public Annotation(@Nullable Language language, @Nullable String name) {
+  public Annotation(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);
   }
 
-  public Annotation(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public Annotation(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
   public Annotation(
-      @Nullable Language language,
+      @Nullable Language<V> language,
       @Nullable String name,
       @Nonnull String id,
       @Nullable String key) {
@@ -52,7 +54,7 @@ public class Annotation extends Classifier<Annotation> {
     setKey(key);
   }
 
-  public @Nullable Classifier<?> getAnnotates() {
+  public @Nullable Classifier<?, V> getAnnotates() {
     return this.getReferenceSingleValue("annotates");
   }
 
@@ -60,8 +62,8 @@ public class Annotation extends Classifier<Annotation> {
    * An Annotation extending another annotation should not redefine annotates. So the value is
    * effectively inherited from the super annotation.
    */
-  public @Nullable Classifier<?> getEffectivelyAnnotated() {
-    Classifier<?> annotates = getAnnotates();
+  public @Nullable Classifier<?, V> getEffectivelyAnnotated() {
+    Classifier<?, V> annotates = getAnnotates();
     if (annotates == null && getExtendedAnnotation() != null) {
       return getExtendedAnnotation().getAnnotates();
     } else {
@@ -69,21 +71,21 @@ public class Annotation extends Classifier<Annotation> {
     }
   }
 
-  public @Nullable Annotation getExtendedAnnotation() {
+  public @Nullable Annotation<V> getExtendedAnnotation() {
     return this.getReferenceSingleValue("extends");
   }
 
-  public @Nonnull List<Interface> getImplemented() {
+  public @Nonnull List<Interface<V>> getImplemented() {
     return this.getReferenceMultipleValue("implements");
   }
 
-  public void addImplementedInterface(@Nonnull Interface iface) {
+  public void addImplementedInterface(@Nonnull Interface<V> iface) {
     Objects.requireNonNull(iface, "iface should not be null");
     this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Annotation does not extend itself, even indirectly?
-  public void setExtendedAnnotation(@Nullable Annotation extended) {
+  public void setExtendedAnnotation(@Nullable Annotation<V> extended) {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
@@ -91,7 +93,7 @@ public class Annotation extends Classifier<Annotation> {
     }
   }
 
-  public void setAnnotates(@Nullable Classifier<?> target) {
+  public void setAnnotates(@Nullable Classifier<?, V> target) {
     if (target == null) {
       this.setReferenceSingleValue("annotates", null);
     } else {
@@ -101,8 +103,8 @@ public class Annotation extends Classifier<Annotation> {
 
   @Nonnull
   @Override
-  public List<Classifier<?>> directAncestors() {
-    List<Classifier<?>> directAncestors = new ArrayList<>();
+  public List<Classifier<?, V>> directAncestors() {
+    List<Classifier<?, V>> directAncestors = new ArrayList<>();
     // TODO add base ancestor common to all Concepts
     if (this.getExtendedAnnotation() != null) {
       directAncestors.add(this.getExtendedAnnotation());
@@ -113,19 +115,19 @@ public class Annotation extends Classifier<Annotation> {
 
   @Nonnull
   @Override
-  public List<Feature<?>> inheritedFeatures() {
-    List<Feature<?>> result = new LinkedList<>();
+  public List<Feature<?, V>> inheritedFeatures() {
+    List<Feature<?, V>> result = new LinkedList<>();
     if (this.getExtendedAnnotation() != null) {
       combineFeatures(result, this.getExtendedAnnotation().allFeatures());
     }
-    for (Interface superInterface : this.getImplemented()) {
+    for (Interface<V> superInterface : this.getImplemented()) {
       combineFeatures(result, superInterface.allFeatures());
     }
     return result;
   }
 
   @Override
-  public Concept getClassifier() {
+  public Concept<V> getClassifier() {
     return LionCore.getAnnotation(getLionWebVersion());
   }
 }

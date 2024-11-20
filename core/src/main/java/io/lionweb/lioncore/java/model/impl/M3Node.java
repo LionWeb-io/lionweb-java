@@ -1,12 +1,15 @@
 package io.lionweb.lioncore.java.model.impl;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.versions.LionWebVersionDependent;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -23,16 +26,15 @@ import javax.annotation.Nullable;
  * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
  * differently depending on the version of LionWeb they are representing.
  */
-public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
-    implements Node {
+public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionToken> extends AbstractClassifierInstance<Concept<V>>
+    implements Node, LionWebVersionDependent<V> {
   private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;
   private @Nullable Node parent;
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
-  // language
-  // elements are inheriting from this class.
+  // language elements are inheriting from this class.
   private final Map<String, Object> propertyValues = new HashMap<>();
   private final Map<String, List<Node>> containmentValues = new HashMap<>();
   private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();

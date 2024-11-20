@@ -4,7 +4,7 @@ import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUti
 import static org.junit.Assert.*;
 
 import com.google.gson.*;
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.api.UnresolvedClassifierInstanceException;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.*;

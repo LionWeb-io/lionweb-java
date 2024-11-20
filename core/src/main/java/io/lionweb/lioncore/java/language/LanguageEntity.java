@@ -1,7 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -16,7 +18,7 @@ import javax.annotation.Nullable;
  *     equivalent <i>IStructureElement</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
-public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
+public abstract class LanguageEntity<T extends M3Node, V extends LionWebVersionToken> extends M3Node<T, V>
     implements NamespacedEntity, IKeyed<T> {
 
   public LanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
@@ -29,19 +31,19 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
 
   public LanguageEntity(
       @Nonnull LionWebVersion lionWebVersion,
-      @Nullable Language language,
+      @Nullable Language<V> language,
       @Nullable String name,
       @Nonnull String id) {
     this(lionWebVersion, language, name);
     this.setID(id);
   }
 
-  public LanguageEntity(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public LanguageEntity(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
     this(language, name);
     this.setID(id);
   }
 
-  public LanguageEntity(@Nullable Language language, @Nullable String name) {
+  public LanguageEntity(@Nullable Language<V> language, @Nullable String name) {
     this();
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
@@ -53,7 +55,7 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
   }
 
   public LanguageEntity(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
     this(lionWebVersion);
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
@@ -69,11 +71,11 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
    *
    * @return
    */
-  public @Nullable Language getLanguage() {
+  public @Nullable Language<V> getLanguage() {
     if (getParent() == null) {
       return null;
     } else if (getParent() instanceof Language) {
-      return (Language) getParent();
+      return (Language<V>) getParent();
     } else {
       throw new IllegalStateException("The parent of this LanguageEntity is not a Language");
     }

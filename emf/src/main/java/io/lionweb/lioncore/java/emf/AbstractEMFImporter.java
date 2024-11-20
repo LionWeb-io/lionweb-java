@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.support.JSONResourceFactory;
 import java.io.File;

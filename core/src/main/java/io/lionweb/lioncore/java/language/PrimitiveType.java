@@ -1,7 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,7 +20,7 @@ import javax.annotation.Nullable;
  *     <i>SPrimitiveDataType</i> in SModel
  *     <p>All PrimitiveTypes in LionCore are builtin.
  */
-public class PrimitiveType extends DataType<PrimitiveType> {
+public class PrimitiveType<V extends LionWebVersionToken> extends DataType<PrimitiveType<V>, V> {
   public PrimitiveType() {
     super();
   }

@@ -1,8 +1,10 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,7 +24,7 @@ import javax.annotation.Nullable;
  *     equivalent <i>ConceptDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SConcept MPS equivalent <i>SConcept</i> in SModel
  */
-public class Concept extends Classifier<Concept> {
+public class Concept<V extends LionWebVersionToken> extends Classifier<Concept<V>, V> {
   // DOUBT: would extended be null only for BaseConcept? Would this be null for all Concept that do
   // not explicitly extend
   //        another concept?
@@ -40,7 +42,7 @@ public class Concept extends Classifier<Concept> {
   }
 
   public Concept(
-      @Nullable Language language,
+      @Nullable Language<V> language,
       @Nullable String name,
       @Nonnull String id,
       @Nullable String key) {
@@ -48,20 +50,20 @@ public class Concept extends Classifier<Concept> {
     setKey(key);
   }
 
-  public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+  public Concept(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
     setAbstract(false);
     setPartition(false);
   }
 
   public Concept(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
     super(lionWebVersion, language, name);
     setAbstract(false);
     setPartition(false);
   }
 
-  public Concept(@Nullable Language language, @Nullable String name) {
+  public Concept(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);
     setAbstract(false);
     setPartition(false);
@@ -81,8 +83,8 @@ public class Concept extends Classifier<Concept> {
 
   @Nonnull
   @Override
-  public List<Classifier<?>> directAncestors() {
-    List<Classifier<?>> directAncestors = new ArrayList<>();
+  public List<Classifier<?, V>> directAncestors() {
+    List<Classifier<?, V>> directAncestors = new ArrayList<>();
     // TODO add base ancestor common to all Concepts
     if (this.getExtendedConcept() != null) {
       directAncestors.add(this.getExtendedConcept());
@@ -108,21 +110,21 @@ public class Concept extends Classifier<Concept> {
   }
 
   // TODO should this return BaseConcept when extended is equal null?
-  public @Nullable Concept getExtendedConcept() {
+  public @Nullable Concept<V> getExtendedConcept() {
     return this.getReferenceSingleValue("extends");
   }
 
-  public @Nonnull List<Interface> getImplemented() {
+  public @Nonnull List<Interface<V>> getImplemented() {
     return this.getReferenceMultipleValue("implements");
   }
 
-  public void addImplementedInterface(@Nonnull Interface iface) {
+  public void addImplementedInterface(@Nonnull Interface<V> iface) {
     Objects.requireNonNull(iface, "Interface should not be null");
     this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?
-  public void setExtendedConcept(@Nullable Concept extended) {
+  public void setExtendedConcept(@Nullable Concept<V> extended) {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
@@ -132,16 +134,16 @@ public class Concept extends Classifier<Concept> {
 
   @Nonnull
   @Override
-  public List<Feature<?>> inheritedFeatures() {
-    List<Feature<?>> result = new LinkedList<>();
-    for (Classifier<?> ancestor : this.allAncestors()) {
+  public List<Feature<?, V>> inheritedFeatures() {
+    List<Feature<?, V>> result = new LinkedList<>();
+    for (Classifier<?, V> ancestor : this.allAncestors()) {
       combineFeatures(result, ancestor.getFeatures());
     }
     return result;
   }
 
   @Override
-  public Concept getClassifier() {
+  public Concept<V> getClassifier() {
     return LionCore.getConcept(getLionWebVersion());
   }
 }

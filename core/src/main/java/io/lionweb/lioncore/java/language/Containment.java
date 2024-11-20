@@ -1,7 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -24,19 +26,19 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SContainmentLink MPS equivalent <i>SContainmentLink</i>
  *     in SModel
  */
-public class Containment extends Link<Containment> {
+public class Containment<V extends LionWebVersionToken> extends Link<Containment<V>, V> {
 
-  public static Containment createOptional(@Nullable String name, @Nullable Classifier type) {
-    Containment containment = new Containment(name);
+  public static <V extends LionWebVersionToken> Containment<V> createOptional(@Nullable String name, @Nullable Classifier<?, V> type) {
+    Containment<V> containment = new Containment<V>(name);
     containment.setOptional(true);
     containment.setMultiple(false);
     containment.setType(type);
     return containment;
   }
 
-  public static Containment createOptional(
-      @Nullable String name, @Nullable Classifier type, @Nullable String id, @Nullable String key) {
-    Containment containment = new Containment(name);
+  public static <V extends LionWebVersionToken> Containment<V> createOptional(
+      @Nullable String name, @Nullable Classifier<?, V> type, @Nullable String id, @Nullable String key) {
+    Containment<V> containment = new Containment<V>(name);
     containment.setOptional(true);
     containment.setMultiple(false);
     containment.setType(type);
@@ -45,9 +47,9 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
-  public static Containment createOptional(
-      @Nullable String name, @Nullable Classifier type, @Nullable String id) {
-    Containment containment = new Containment(name);
+  public static <V extends LionWebVersionToken> Containment<V> createOptional(
+      @Nullable String name, @Nullable Classifier<?, V> type, @Nullable String id) {
+    Containment<V> containment = new Containment<V>(name);
     containment.setOptional(true);
     containment.setMultiple(false);
     containment.setType(type);
@@ -55,59 +57,59 @@ public class Containment extends Link<Containment> {
     return containment;
   }
 
-  public static Containment createRequired(@Nullable String name, @Nullable Classifier type) {
-    Containment containment = new Containment(name);
+  public static <V extends LionWebVersionToken> Containment<V> createRequired(@Nullable String name, @Nullable Classifier<?, V> type) {
+    Containment<V> containment = new Containment<V>(name);
     containment.setOptional(false);
     containment.setMultiple(false);
     containment.setType(type);
     return containment;
   }
 
-  public static Containment createMultiple(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier type) {
+  public static <V extends LionWebVersionToken> Containment<V> createMultiple(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier<?, V> type) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    Containment containment = new Containment(lionWebVersion, name);
+    Containment<V> containment = new Containment<V>(lionWebVersion, name);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
     return containment;
   }
 
-  public static Containment createMultiple(@Nullable String name, @Nullable Classifier type) {
-    Containment containment = new Containment(name);
+  public static <V extends LionWebVersionToken> Containment<V> createMultiple(@Nullable String name, @Nullable Classifier<?, V> type) {
+    Containment<V> containment = new Containment<V>(name);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
     return containment;
   }
 
-  public static Containment createMultiple(
+  public static <V extends LionWebVersionToken> Containment<V> createMultiple(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
-      @Nullable Classifier type,
+      @Nullable Classifier<?, V> type,
       @Nonnull String id) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Objects.requireNonNull(id, "id should not be null");
-    Containment containment = new Containment(lionWebVersion, name, id);
+    Containment<V> containment = new Containment<>(lionWebVersion, name, id);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
     return containment;
   }
 
-  public static Containment createMultiple(
-      @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
+  public static <V extends LionWebVersionToken> Containment<V> createMultiple(
+      @Nullable String name, @Nullable Classifier<?, V> type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
-    Containment containment = new Containment(name, id);
+    Containment<V> containment = new Containment<>(name, id);
     containment.setOptional(true);
     containment.setMultiple(true);
     containment.setType(type);
     return containment;
   }
 
-  public static Containment createMultipleAndRequired(
-      @Nullable String name, @Nullable Classifier type) {
-    Containment containment = new Containment(name);
+  public static <V extends LionWebVersionToken> Containment<V> createMultipleAndRequired(
+      @Nullable String name, @Nullable Classifier<?, V> type) {
+    Containment<V> containment = new Containment<>(name);
     containment.setOptional(false);
     containment.setMultiple(true);
     containment.setType(type);
@@ -118,16 +120,16 @@ public class Containment extends Link<Containment> {
     super();
   }
 
-  public Containment(String name, @Nullable Classifier container) {
+  public Containment(String name, @Nullable Classifier<?, V> container) {
     super(name, container);
   }
 
   public Containment(@Nonnull LionWebVersion lionWebVersion, String name) {
-    super(lionWebVersion, name, (Classifier) null);
+    super(lionWebVersion, name, (Classifier<?, V>) null);
   }
 
   public Containment(String name) {
-    super(name, (Classifier) null);
+    super(name, (Classifier<?, V>) null);
   }
 
   public Containment(@Nonnull LionWebVersion lionWebVersion, String name, @Nonnull String id) {
@@ -139,7 +141,7 @@ public class Containment extends Link<Containment> {
   }
 
   @Override
-  public Concept getClassifier() {
+  public Concept<V> getClassifier() {
     return LionCore.getContainment(getLionWebVersion());
   }
 }

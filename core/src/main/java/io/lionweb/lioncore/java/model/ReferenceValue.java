@@ -1,22 +1,25 @@
 package io.lionweb.lioncore.java.model;
 
+import io.lionweb.lioncore.java.versions.LionWebVersionDependent;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-public class ReferenceValue {
-  private Node referred;
+public class ReferenceValue<V extends LionWebVersionToken> implements LionWebVersionDependent<V> {
+  private Node<V> referred;
   private String resolveInfo;
 
   public ReferenceValue() {
     this(null, null);
   }
 
-  public ReferenceValue(@Nullable Node referred, @Nullable String resolveInfo) {
+  public ReferenceValue(@Nullable Node<V> referred, @Nullable String resolveInfo) {
     setReferred(referred);
     setResolveInfo(resolveInfo);
   }
 
-  public @Nullable Node getReferred() {
+  public @Nullable Node<V> getReferred() {
     return referred;
   }
 
@@ -27,7 +30,7 @@ public class ReferenceValue {
     return referred.getID();
   }
 
-  public void setReferred(@Nullable Node referred) {
+  public void setReferred(@Nullable Node<V> referred) {
     this.referred = referred;
   }
 
@@ -43,7 +46,7 @@ public class ReferenceValue {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof ReferenceValue)) return false;
-    ReferenceValue that = (ReferenceValue) o;
+    ReferenceValue<V> that = (ReferenceValue<V>) o;
     return Objects.equals(referred, that.referred) && Objects.equals(resolveInfo, that.resolveInfo);
   }
 

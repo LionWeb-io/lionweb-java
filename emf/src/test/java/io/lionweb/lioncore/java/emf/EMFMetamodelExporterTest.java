@@ -3,7 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.*;
 
 import io.lionweb.java.emf.builtins.BuiltinsPackage;
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import java.io.*;

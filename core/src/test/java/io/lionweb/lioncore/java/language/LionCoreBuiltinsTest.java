@@ -2,7 +2,7 @@ package io.lionweb.lioncore.java.language;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
 import org.junit.Test;

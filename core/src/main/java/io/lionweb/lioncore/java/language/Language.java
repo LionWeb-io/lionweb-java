@@ -1,11 +1,13 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -25,7 +27,7 @@ import javax.annotation.Nullable;
  * @see <a href="https://www.jetbrains.com/help/mps/structure.html">MPS equivalent <i>Language's
  *     structure aspect</i> in documentation</a>
  */
-public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
+public class Language<V extends LionWebVersionToken> extends M3Node<Language<V>, V> implements NamespaceProvider, IKeyed<Language<V>> {
   public Language(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
   }
@@ -63,18 +65,18 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     this.setID(id);
   }
 
-  public Language setName(String name) {
+  public Language<V> setName(String name) {
     setPropertyValue("name", name);
     return this;
   }
 
-  public Language setVersion(@Nullable String version) {
+  public Language<V> setVersion(@Nullable String version) {
     setPropertyValue("version", version);
     return this;
   }
 
   @Override
-  public Language setKey(String key) {
+  public Language<V> setKey(String key) {
     setPropertyValue("key", key);
     return this;
   }
@@ -84,29 +86,29 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return getName();
   }
 
-  public @Nonnull List<Language> dependsOn() {
+  public @Nonnull List<Language<V>> dependsOn() {
     return this.getReferenceMultipleValue("dependsOn");
   }
 
-  public @Nonnull List<LanguageEntity> getElements() {
+  public @Nonnull List<LanguageEntity<?, V>> getElements() {
     return this.getContainmentMultipleValue("entities");
   }
 
-  public Language addDependency(@Nonnull Language dependency) {
+  public Language<V> addDependency(@Nonnull Language<V> dependency) {
     Objects.requireNonNull(dependency, "dependency should not be null");
     this.addReferenceMultipleValue(
         "dependsOn", new ReferenceValue(dependency, dependency.getName()));
     return dependency;
   }
 
-  public <T extends LanguageEntity> T addElement(@Nonnull T element) {
+  public <T extends LanguageEntity<?, V>> T addElement(@Nonnull T element) {
     Objects.requireNonNull(element, "element should not be null");
     this.addContainmentMultipleValue("entities", element);
     element.setParent(this);
     return element;
   }
 
-  public @Nullable Concept getConceptByName(String name) {
+  public @Nullable Concept<V> getConceptByName(String name) {
     return getElements().stream()
         .filter(element -> element instanceof Concept)
         .map(element -> (Concept) element)
@@ -115,17 +117,17 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
-  public @Nullable Enumeration getEnumerationByName(String name) {
+  public @Nullable Enumeration<V> getEnumerationByName(String name) {
     return getElements().stream()
         .filter(element -> element instanceof Enumeration)
-        .map(element -> (Enumeration) element)
+        .map(element -> (Enumeration<V>) element)
         .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);
   }
 
-  public Concept requireConceptByName(String name) {
-    Concept concept = getConceptByName(name);
+  public Concept<V> requireConceptByName(String name) {
+    Concept<V> concept = getConceptByName(name);
     if (concept == null) {
       throw new IllegalArgumentException("Concept named " + name + " was not found");
     } else {
@@ -133,10 +135,10 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-  public @Nullable Interface getInterfaceByName(String name) {
+  public @Nullable Interface<V> getInterfaceByName(String name) {
     return getElements().stream()
         .filter(element -> element instanceof Interface)
-        .map(element -> (Interface) element)
+        .map(element -> (Interface<V>) element)
         .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);
@@ -156,27 +158,27 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return this.getPropertyValue("version", String.class);
   }
 
-  public @Nullable LanguageEntity getElementByName(String name) {
+  public @Nullable LanguageEntity<?, V> getElementByName(String name) {
     return getElements().stream()
         .filter(element -> element.getName().equals(name))
         .findFirst()
         .orElse(null);
   }
 
-  public @Nullable PrimitiveType getPrimitiveTypeByName(String name) {
+  public @Nullable PrimitiveType<V> getPrimitiveTypeByName(String name) {
     LanguageEntity element = this.getElementByName(name);
     if (element == null) {
       return null;
     }
     if (element instanceof PrimitiveType) {
-      return (PrimitiveType) element;
+      return (PrimitiveType<V>) element;
     } else {
       throw new RuntimeException("Element " + name + " is not a PrimitiveType");
     }
   }
 
   @Override
-  public Concept getClassifier() {
+  public Concept<V> getClassifier() {
     return LionCore.getLanguage(getLionWebVersion());
   }
 
@@ -185,10 +187,10 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return super.toString() + "{" + "name=" + getName() + "}";
   }
 
-  public List<PrimitiveType> getPrimitiveTypes() {
+  public List<PrimitiveType<V>> getPrimitiveTypes() {
     return this.getElements().stream()
         .filter(e -> e instanceof PrimitiveType)
-        .map(e -> (PrimitiveType) e)
+        .map(e -> (PrimitiveType<V>) e)
         .collect(Collectors.toList());
   }
 

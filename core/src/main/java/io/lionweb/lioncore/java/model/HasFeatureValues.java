@@ -3,26 +3,29 @@ package io.lionweb.lioncore.java.model;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.versions.LionWebVersionDependent;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface HasFeatureValues {
+public interface HasFeatureValues<V extends LionWebVersionToken> extends LionWebVersionDependent<V> {
   /**
    * Get the property value associated with the specified property.
    *
    * <p>Should this return a String?
    */
-  Object getPropertyValue(Property property);
+  Object getPropertyValue(Property<V> property);
 
   /** If the value is not compatible with the type of the property, the exception */
-  void setPropertyValue(Property property, Object value);
+  void setPropertyValue(Property<V> property, Object value);
 
   /**
    * This return all the Nodes directly contained into this Node under the specific Containment
    * relation specified.
    */
-  List<? extends Node> getChildren(Containment containment);
+  List<? extends Node<V>> getChildren(Containment<V> containment);
 
   /**
    * Add a child to the specified list of children associated with the given Containment relation.
@@ -32,24 +35,24 @@ public interface HasFeatureValues {
    * <p>If the child has not a Concept compatible with the target of the Containement, the exception
    * IllegalArgumentException will be thrown.
    */
-  void addChild(Containment containment, Node child);
+  void addChild(Containment<V> containment, Node child);
 
   /**
    * Remove the given child from the list of children associated with the Node, making it a dangling
    * Node. If the specified Node is not currently a child of this Node the exception
    * IllegalArgumentException will be thrown.
    */
-  void removeChild(Node node);
+  void removeChild(Node<V> node);
 
   /**
    * Remove the child at the given index, considering the children under the given containment.
    *
    * <p>If there is no match the exception IllegalArgumentException will be thrown.
    */
-  void removeChild(@Nonnull Containment containment, int index);
+  void removeChild(@Nonnull Containment<V> containment, int index);
 
   @Nonnull
-  List<ReferenceValue> getReferenceValues(@Nonnull Reference reference);
+  List<ReferenceValue> getReferenceValues(@Nonnull Reference<V> reference);
 
   /**
    * Add the Node to the list of Nodes referred to from this Node under the given Reference.

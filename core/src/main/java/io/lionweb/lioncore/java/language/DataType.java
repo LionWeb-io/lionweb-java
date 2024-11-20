@@ -1,7 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -16,7 +18,7 @@ import javax.annotation.Nullable;
  *     equivalent <i>DataTypeDeclaration</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SDataType MPS equivalent <i>SDataType</i> in SModel
  */
-public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
+public abstract class DataType<T extends M3Node, V extends LionWebVersionToken> extends LanguageEntity<T, V> {
   public DataType() {
     super();
   }
@@ -34,11 +36,11 @@ public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
   }
 
   public DataType(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
     super(lionWebVersion, language, name);
   }
 
-  public DataType(@Nullable Language language, @Nullable String name) {
+  public DataType(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);
   }
 }
