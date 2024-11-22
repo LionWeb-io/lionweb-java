@@ -3,6 +3,8 @@ package io.lionweb.lioncore.java.self;
 import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -20,8 +22,8 @@ public class LionCore {
     return getInstance().requireConceptByName("Annotation");
   }
 
-  public static @Nonnull Concept getAnnotation(@Nonnull LionWebVersion lionWebVersion) {
-    return getInstance(lionWebVersion).requireConceptByName("Annotation");
+  public static @Nonnull Concept getAnnotation(@Nonnull LionWebVersionToken lionWebVersionToken) {
+    return getInstance(lionWebVersionToken).requireConceptByName("Annotation");
   }
 
   public static @Nonnull Concept getConcept() {
@@ -140,13 +142,13 @@ public class LionCore {
     return getInstance(LionWebVersion.currentVersion);
   }
 
-  public static @Nonnull Language getInstance(@Nonnull LionWebVersion lionWebVersion) {
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    if (!INSTANCES.containsKey(lionWebVersion)) {
-      final Language instance = new Language(lionWebVersion, "LionCore_M3");
+  public static @Nonnull Language getInstance(@Nonnull LionWebVersionToken lionWebVersionToken) {
+    Objects.requireNonNull(lionWebVersionToken, "lionWebVersion should not be null");
+    if (!INSTANCES.containsKey(lionWebVersionToken)) {
+      final Language instance = new Language(lionWebVersionToken, "LionCore_M3");
       instance.setID("-id-LionCore-M3");
       instance.setKey("LionCore-M3");
-      instance.setVersion(lionWebVersion.getVersionString());
+      instance.setVersion(lionWebVersionToken.getVersionString());
 
       // We first instantiate all Concepts and Interfaces
       // we add features only after as the features will have references to these elements

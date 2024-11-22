@@ -38,6 +38,6 @@ public class Enumeration<V extends LionWebVersionToken> extends DataType<Enumera
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getEnumeration(getLionWebVersion());
+    return LionCore.getEnumeration(getLionWebVersionToken());
   }
 }

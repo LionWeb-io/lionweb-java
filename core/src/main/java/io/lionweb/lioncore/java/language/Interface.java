@@ -89,7 +89,7 @@ public class Interface<V extends LionWebVersionToken> extends Classifier<Interfa
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getInterface(getLionWebVersion());
+    return LionCore.getInterface(getLionWebVersionToken());
   }
 
   @Nonnull

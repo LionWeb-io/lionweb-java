@@ -21,20 +21,20 @@ import javax.annotation.Nullable;
 public abstract class LanguageEntity<T extends M3Node, V extends LionWebVersionToken> extends M3Node<T, V>
     implements NamespacedEntity, IKeyed<T> {
 
-  public LanguageEntity(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
+  public LanguageEntity(@Nonnull LionWebVersionToken lionWebVersionToken) {
+    super(lionWebVersionToken);
   }
 
   public LanguageEntity() {
-    this(LionWebVersion.currentVersion);
+    this(LionWebVersionToken.getCurrentVersion());
   }
 
   public LanguageEntity(
-      @Nonnull LionWebVersion lionWebVersion,
+      @Nonnull LionWebVersionToken lionWebVersionToken,
       @Nullable Language<V> language,
       @Nullable String name,
       @Nonnull String id) {
-    this(lionWebVersion, language, name);
+    this(lionWebVersionToken, language, name);
     this.setID(id);
   }
 
@@ -55,8 +55,8 @@ public abstract class LanguageEntity<T extends M3Node, V extends LionWebVersionT
   }
 
   public LanguageEntity(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
-    this(lionWebVersion);
+      @Nonnull LionWebVersionToken lionWebVersionToken, @Nullable Language<V> language, @Nullable String name) {
+    this(lionWebVersionToken);
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {

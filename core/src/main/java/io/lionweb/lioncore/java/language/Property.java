@@ -141,6 +141,6 @@ public class Property<V extends LionWebVersionToken> extends Feature<Property<V>
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getProperty(getLionWebVersion());
+    return LionCore.getProperty(getLionWebVersionToken());
   }
 }

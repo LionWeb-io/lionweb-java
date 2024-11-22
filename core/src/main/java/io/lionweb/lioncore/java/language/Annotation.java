@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.versions.LionWebVersionToken;
@@ -29,8 +28,8 @@ import javax.annotation.Nullable;
  */
 public class Annotation<V extends LionWebVersionToken> extends Classifier<Annotation<V>, V> {
 
-  public Annotation(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
+  public Annotation(@Nonnull LionWebVersionToken lionWebToken) {
+    super(lionWebToken);
   }
 
   public Annotation() {
@@ -128,6 +127,6 @@ public class Annotation<V extends LionWebVersionToken> extends Classifier<Annota
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getAnnotation(getLionWebVersion());
+    return LionCore.getAnnotation(getLionWebVersionToken());
   }
 }

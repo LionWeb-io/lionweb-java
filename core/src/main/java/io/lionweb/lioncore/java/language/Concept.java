@@ -144,6 +144,6 @@ public class Concept<V extends LionWebVersionToken> extends Classifier<Concept<V
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getConcept(getLionWebVersion());
+    return LionCore.getConcept(getLionWebVersionToken());
   }
 }

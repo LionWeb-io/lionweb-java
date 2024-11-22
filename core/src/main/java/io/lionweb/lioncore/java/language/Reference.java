@@ -168,6 +168,6 @@ public class Reference<V extends LionWebVersionToken> extends Link<Reference<V>,
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getReference(getLionWebVersion());
+    return LionCore.getReference(getLionWebVersionToken());
   }
 }

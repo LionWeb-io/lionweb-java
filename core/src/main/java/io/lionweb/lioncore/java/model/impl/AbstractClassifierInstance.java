@@ -5,13 +5,15 @@ import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.*;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class AbstractClassifierInstance<T extends Classifier<T>>
-    implements ClassifierInstance<T> {
+public abstract class AbstractClassifierInstance<T extends Classifier<T, V>, V extends LionWebVersionToken>
+    implements ClassifierInstance<T, V> {
   protected final List<AnnotationInstance> annotations = new ArrayList<>();
 
   // Public methods for annotations

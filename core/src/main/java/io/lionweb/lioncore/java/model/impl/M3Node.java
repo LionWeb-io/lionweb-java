@@ -27,8 +27,8 @@ import javax.annotation.Nullable;
  * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionToken> extends AbstractClassifierInstance<Concept<V>>
-    implements Node, LionWebVersionDependent<V> {
-  private final @Nonnull LionWebVersion lionWebVersion;
+    implements Node<V>, LionWebVersionDependent<V> {
+  private final @Nonnull LionWebVersionToken lionWebVersionToken;
   private @Nullable String id;
   private @Nullable Node parent;
 
@@ -40,12 +40,12 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
   private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
 
   protected M3Node() {
-    this.lionWebVersion = LionWebVersion.currentVersion;
+    this.lionWebVersionToken = LionWebVersionToken.getCurrentVersion();
   }
 
-  protected M3Node(@Nonnull LionWebVersion lionWebVersion) {
+  protected M3Node(@Nonnull LionWebVersionToken lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    this.lionWebVersion = lionWebVersion;
+    this.lionWebVersionToken = lionWebVersion;
   }
 
   public T setID(String id) {
@@ -161,7 +161,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
 
   @Override
   public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull Reference<V> reference, @Nonnull List<? extends ReferenceValue<V>> values) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
@@ -256,7 +256,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
    * has been built, therefore we cannot look for the definition of the features to verify they
    * exist. We instead just trust a link with that name to exist.
    */
-  protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue value) {
+  protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue<V> value) {
     if (value == null) {
       referenceValues.remove(linkName);
     } else {
@@ -297,7 +297,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
   }
 
   @Nonnull
-  public LionWebVersion getLionWebVersion() {
-    return lionWebVersion;
+  public LionWebVersionToken getLionWebVersionToken() {
+    return lionWebVersionToken;
   }
 }

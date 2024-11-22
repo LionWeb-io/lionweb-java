@@ -30,8 +30,8 @@ public abstract class Classifier<T extends M3Node, V extends LionWebVersionToken
     super();
   }
 
-  public Classifier(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
+  public Classifier(@Nonnull LionWebVersionToken lionWebVersionToken) {
+    super(lionWebVersionToken);
   }
 
   public Classifier(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
@@ -39,8 +39,8 @@ public abstract class Classifier<T extends M3Node, V extends LionWebVersionToken
   }
 
   public Classifier(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
-    super(lionWebVersion, language, name);
+      @Nonnull LionWebVersionToken lionWebVersionToken, @Nullable Language<V> language, @Nullable String name) {
+    super(lionWebVersionToken, language, name);
   }
 
   public Classifier(@Nullable Language<V> language, @Nullable String name) {

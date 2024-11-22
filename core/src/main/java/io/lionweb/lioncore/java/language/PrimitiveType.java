@@ -49,6 +49,6 @@ public class PrimitiveType<V extends LionWebVersionToken> extends DataType<Primi
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getPrimitiveType(getLionWebVersion());
+    return LionCore.getPrimitiveType(getLionWebVersionToken());
   }
 }

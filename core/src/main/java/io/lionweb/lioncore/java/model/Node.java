@@ -18,7 +18,7 @@ import javax.annotation.Nullable;
  * @see org.modelix.model.api.INode Modelix equivalent <i>INode</i>
  *     <p>TODO consider if the Model should have a version too
  */
-public interface Node<V extends LionWebVersionToken> extends ClassifierInstance<Concept<V>> {
+public interface Node<V extends LionWebVersionToken> extends ClassifierInstance<Concept<V>, V> {
 
   /**
    * This return the Node ID.

@@ -179,7 +179,7 @@ public class Language<V extends LionWebVersionToken> extends M3Node<Language<V>,
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getLanguage(getLionWebVersion());
+    return LionCore.getLanguage(getLionWebVersionToken());
   }
 
   @Override

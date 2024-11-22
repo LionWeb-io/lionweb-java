@@ -52,7 +52,7 @@ public interface HasFeatureValues<V extends LionWebVersionToken> extends LionWeb
   void removeChild(@Nonnull Containment<V> containment, int index);
 
   @Nonnull
-  List<ReferenceValue> getReferenceValues(@Nonnull Reference<V> reference);
+  List<ReferenceValue<V>> getReferenceValues(@Nonnull Reference<V> reference);
 
   /**
    * Add the Node to the list of Nodes referred to from this Node under the given Reference.
@@ -65,13 +65,13 @@ public interface HasFeatureValues<V extends LionWebVersionToken> extends LionWeb
    * <p>If the referredNode has not a Concept compatible with the target of the Reference, the
    * exception IllegalArgumentException will be thrown.
    */
-  void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
+  void addReferenceValue(@Nonnull Reference<V> reference, @Nullable ReferenceValue<V> referredNode);
 
   /**
    * Remove the first reference value that is equal to the given referenceValue. Node. If there is
    * no match the exception IllegalArgumentException will be thrown.
    */
-  void removeReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referenceValue);
+  void removeReferenceValue(@Nonnull Reference<V> reference, @Nullable ReferenceValue<V> referenceValue);
 
   /**
    * Remove the reference value at the given index, considering the reference values under the given
@@ -79,8 +79,8 @@ public interface HasFeatureValues<V extends LionWebVersionToken> extends LionWeb
    *
    * <p>If there is no match the exception IllegalArgumentException will be thrown.
    */
-  void removeReferenceValue(@Nonnull Reference reference, int index);
+  void removeReferenceValue(@Nonnull Reference<V> reference, int index);
 
   void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values);
+      @Nonnull Reference<V> reference, @Nonnull List<? extends ReferenceValue<V>> values);
 }
