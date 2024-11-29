@@ -32,12 +32,10 @@ public class MyNodeWithStructuredDataType extends DynamicNode {
           .addField(new Field("city", LionCoreBuiltins.getString()).setID("city-id"));
 
   static {
-    CONCEPT.addFeature(Property.createRequired("point", POINT)
-            .setKey("my-point")
-            .setID("my-point-id"));
-    CONCEPT.addFeature(Property.createOptional("address", ADDRESS)
-            .setKey("my-address")
-            .setID("my-address-id"));
+    CONCEPT.addFeature(
+        Property.createRequired("point", POINT).setKey("my-point").setID("my-point-id"));
+    CONCEPT.addFeature(
+        Property.createOptional("address", ADDRESS).setKey("my-address").setID("my-address-id"));
     LANGUAGE.addElement(CONCEPT);
     LANGUAGE.addElement(POINT);
     LANGUAGE.addElement(ADDRESS);
@@ -58,7 +56,7 @@ public class MyNodeWithStructuredDataType extends DynamicNode {
 
   public StructuredDataTypeInstance getAddress() {
     return (StructuredDataTypeInstance)
-            ClassifierInstanceUtils.getPropertyValueByName(this, "address");
+        ClassifierInstanceUtils.getPropertyValueByName(this, "address");
   }
 
   public void setAddress(StructuredDataTypeInstance address) {

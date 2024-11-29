@@ -83,9 +83,11 @@ public class DynamicStructuredDataTypeInstance implements StructuredDataTypeInst
 
   @Override
   public String toString() {
-    return "DynamicStructuredDataTypeInstance{" +
-            "structuredDataType=" + structuredDataType +
-            ", fieldValues=" + fieldValues +
-            '}';
+    return "DynamicStructuredDataTypeInstance{"
+        + "structuredDataType="
+        + structuredDataType
+        + ", fieldValues="
+        + fieldValues
+        + '}';
   }
 }
