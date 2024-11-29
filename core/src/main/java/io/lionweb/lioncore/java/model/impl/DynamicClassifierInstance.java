@@ -53,6 +53,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException(
           "Property " + property + " is not belonging to classifier " + getClassifier());
     }
+    if (property.getID() == null) {
+      throw new IllegalStateException("Cannot assign a property with no ID specified");
+    }
     if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
       // DynamicNode can be simplified

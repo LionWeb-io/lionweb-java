@@ -58,6 +58,9 @@ public class DynamicStructuredDataTypeInstance implements StructuredDataTypeInst
   @Override
   public @Nullable Object getFieldValue(@Nonnull Field field) {
     Objects.requireNonNull(field, "field should not be null");
+    if (field.getID() == null) {
+      throw new IllegalStateException("Field with no ID specified should not be used");
+    }
     if (!getStructuredDataType().getFields().contains(field)) {
       throw new IllegalArgumentException(
           "Invalid field for StructuredDataType " + getStructuredDataType());
@@ -68,10 +71,21 @@ public class DynamicStructuredDataTypeInstance implements StructuredDataTypeInst
   @Override
   public void setFieldValue(@Nonnull Field field, @Nullable Object value) {
     Objects.requireNonNull(field, "field should not be null");
+    if (field.getID() == null) {
+      throw new IllegalStateException("Field with no ID specified should not be used");
+    }
     if (!getStructuredDataType().getFields().contains(field)) {
       throw new IllegalArgumentException(
           "Invalid field for StructuredDataType " + getStructuredDataType());
     }
     fieldValues.put(field, value);
+  }
+
+  @Override
+  public String toString() {
+    return "DynamicStructuredDataTypeInstance{" +
+            "structuredDataType=" + structuredDataType +
+            ", fieldValues=" + fieldValues +
+            '}';
   }
 }

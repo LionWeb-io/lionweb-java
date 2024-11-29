@@ -20,21 +20,27 @@ public class MyNodeWithStructuredDataType extends DynamicNode {
           .setKey("point-key")
           .setName("point")
           .setParent(LANGUAGE)
-          .addField(new Field("x", LionCoreBuiltins.getInteger()))
-          .addField(new Field("y", LionCoreBuiltins.getInteger()));
+          .addField(new Field("x", LionCoreBuiltins.getInteger()).setID("x-id"))
+          .addField(new Field("y", LionCoreBuiltins.getInteger()).setID("y-id"));
   public static final StructuredDataType ADDRESS =
       new StructuredDataType()
-          .setID("point-id")
-          .setKey("point-key")
-          .setName("point")
+          .setID("address-id")
+          .setKey("address-key")
+          .setName("address")
           .setParent(LANGUAGE)
-          .addField(new Field("street", LionCoreBuiltins.getString()))
-          .addField(new Field("city", LionCoreBuiltins.getString()));;
+          .addField(new Field("street", LionCoreBuiltins.getString()).setID("street-id"))
+          .addField(new Field("city", LionCoreBuiltins.getString()).setID("city-id"));
 
   static {
-    CONCEPT.addFeature(Property.createRequired("point", POINT));
+    CONCEPT.addFeature(Property.createRequired("point", POINT)
+            .setKey("my-point")
+            .setID("my-point-id"));
+    CONCEPT.addFeature(Property.createOptional("address", ADDRESS)
+            .setKey("my-address")
+            .setID("my-address-id"));
     LANGUAGE.addElement(CONCEPT);
     LANGUAGE.addElement(POINT);
+    LANGUAGE.addElement(ADDRESS);
   }
 
   public MyNodeWithStructuredDataType(String id) {
@@ -48,5 +54,14 @@ public class MyNodeWithStructuredDataType extends DynamicNode {
 
   public void setPoint(StructuredDataTypeInstance point) {
     ClassifierInstanceUtils.setPropertyValueByName(this, "point", point);
+  }
+
+  public StructuredDataTypeInstance getAddress() {
+    return (StructuredDataTypeInstance)
+            ClassifierInstanceUtils.getPropertyValueByName(this, "address");
+  }
+
+  public void setAddress(StructuredDataTypeInstance address) {
+    ClassifierInstanceUtils.setPropertyValueByName(this, "address", address);
   }
 }

@@ -1,11 +1,11 @@
 package io.lionweb.lioncore.java.serialization;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.model.StructuredDataTypeInstance;
+import io.lionweb.lioncore.java.model.impl.DynamicStructuredDataTypeInstance;
 import io.lionweb.lioncore.java.model.impl.EnumerationValue;
 import io.lionweb.lioncore.java.model.impl.EnumerationValueImpl;
 import java.lang.reflect.InvocationTargetException;
@@ -24,12 +24,16 @@ public class PrimitiveValuesSerialization {
   // PrimitiveValuesSerialization because that is unique. In two versions of the language we may
   // have two PrimitiveTypes with the same key, that are different.
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
+  private final Map<String, StructuredDataType> strucuturesDataTypesByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
 
   public void registerLanguage(Language language) {
     language.getElements().stream()
         .filter(e -> e instanceof Enumeration)
         .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
+    language.getElements().stream()
+            .filter(e -> e instanceof StructuredDataType)
+            .forEach(e -> strucuturesDataTypesByID.put(e.getID(), (StructuredDataType) e));
   }
 
   public void enableDynamicNodes() {
@@ -149,6 +153,21 @@ public class PrimitiveValuesSerialization {
       } else {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
+    } else if (strucuturesDataTypesByID.containsKey(dataTypeID) && dynamicNodesEnabled) {
+      if (serializedValue == null) {
+        return null;
+      }
+      StructuredDataType sdt = strucuturesDataTypesByID.get(dataTypeID);
+      DynamicStructuredDataTypeInstance sdtInstance = new DynamicStructuredDataTypeInstance(sdt);
+      JsonObject jo = JsonParser.parseString(serializedValue).getAsJsonObject();
+      for (Field field : sdt.getFields()) {
+        if (jo.has(field.getName())) {
+          DataType fieldDataType = field.getType();
+          Object fieldValue = this.deserialize(fieldDataType, jo.get(field.getName()).getAsString(), false);
+          sdtInstance.setFieldValue(field, fieldValue);
+        }
+      }
+      return sdtInstance;
     } else {
       throw new IllegalArgumentException(
           "Unable to deserialize primitive values of type " + dataType);
@@ -175,20 +194,42 @@ public class PrimitiveValuesSerialization {
         Enumeration enumeration = enumerationsByID.get(primitiveTypeID);
         if (enumeration == null) {
           throw new RuntimeException(
-              "Cannot find enumeration with id "
-                  + primitiveTypeID
-                  + " while serializing primitive value "
-                  + value);
+                  "Cannot find enumeration with id "
+                          + primitiveTypeID
+                          + " while serializing primitive value "
+                          + value);
         }
         return PrimitiveValuesSerialization.<Enum>serializerFor(
-                (Class<Enum>) value.getClass(), enumeration)
-            .serialize((Enum) value);
+                        (Class<Enum>) value.getClass(), enumeration)
+                .serialize((Enum) value);
       } else {
         throw new IllegalStateException(
-            "The primitive value with primitiveTypeID "
-                + primitiveTypeID
-                + " was expected to be an EnumerationValue or an instance of Enum. Instead it is: "
-                + value);
+                "The primitive value with primitiveTypeID "
+                        + primitiveTypeID
+                        + " was expected to be an EnumerationValue or an instance of Enum. Instead it is: "
+                        + value);
+      }
+    } else if (isStructuredDataType(primitiveTypeID)) {
+      if (value == null) {
+        return null;
+      }
+      if (value instanceof StructuredDataTypeInstance) {
+        StructuredDataTypeInstance structuredDataTypeInstance = (StructuredDataTypeInstance)value;
+        JsonObject jo = new JsonObject();
+        for (Field field : structuredDataTypeInstance.getStructuredDataType().getFields()) {
+          Object fieldValue = structuredDataTypeInstance.getFieldValue(field);
+          String serializedFieldValue = this.serialize(field.getType().getID(), fieldValue);
+          jo.addProperty(field.getName(), serializedFieldValue);
+        }
+
+        Gson gson = new GsonBuilder().serializeNulls().create();
+        return gson.toJson(jo);
+      } else {
+          throw new IllegalStateException(
+                  "The primitive value with primitiveTypeID "
+                          + primitiveTypeID
+                          + " was expected to be a StructuredDataTypeInstance. Instead it is: "
+                          + value);
       }
     } else {
       throw new IllegalArgumentException(
@@ -208,6 +249,10 @@ public class PrimitiveValuesSerialization {
 
   private boolean isEnum(String primitiveTypeID) {
     return enumerationsByID.containsKey(primitiveTypeID);
+  }
+
+  private boolean isStructuredDataType(String primitiveTypeID) {
+    return strucuturesDataTypesByID.containsKey(primitiveTypeID);
   }
 
   public static <E extends Enum<E>> PrimitiveSerializer<E> serializerFor(
