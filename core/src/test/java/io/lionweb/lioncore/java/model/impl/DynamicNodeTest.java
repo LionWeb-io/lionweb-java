@@ -206,7 +206,7 @@ public class DynamicNodeTest {
   public void settingFalseNonNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
-    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()));
+    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()).setID("foo-id"));
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(false, ClassifierInstanceUtils.getPropertyValueByName(n1, ("foo")));
@@ -218,7 +218,7 @@ public class DynamicNodeTest {
   public void settingTrueNonNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
-    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()));
+    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()).setID("foo-id"));
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(false, ClassifierInstanceUtils.getPropertyValueByName(n1, ("foo")));
@@ -230,7 +230,7 @@ public class DynamicNodeTest {
   public void settingNullNonNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
-    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()));
+    a.addFeature(Property.createRequired("foo", LionCoreBuiltins.getBoolean()).setID("foo-id"));
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(false, ClassifierInstanceUtils.getPropertyValueByName(n1, ("foo")));
@@ -243,7 +243,7 @@ public class DynamicNodeTest {
   public void settingFalseNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
-    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()));
+    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()).setID("foo-id"));
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(null, ClassifierInstanceUtils.getPropertyValueByName(n1, ("foo")));
@@ -255,7 +255,7 @@ public class DynamicNodeTest {
   public void settingNullNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
-    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()));
+    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()).setID("foo-id"));
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(null, ClassifierInstanceUtils.getPropertyValueByName(n1, ("foo")));
@@ -274,7 +274,7 @@ public class DynamicNodeTest {
   public void settingTrueNullableBooleanProperty() {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
-    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()));
+    a.addFeature(Property.createOptional("foo", LionCoreBuiltins.getBoolean()).setID("foo-id"));
     DynamicNode n1 = new DynamicNode("n1", a);
 
     assertEquals(null, ClassifierInstanceUtils.getPropertyValueByName(n1, ("foo")));
