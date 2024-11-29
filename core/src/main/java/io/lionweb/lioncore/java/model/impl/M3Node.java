@@ -75,7 +75,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public Object getPropertyValue(Property property) {
+  public Object getPropertyValue(@Nonnull Property property) {
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept: " + property);
     }
@@ -100,7 +100,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void setPropertyValue(Property property, Object value) {
+  public void setPropertyValue(Property property, @Nullable Object value) {
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
@@ -112,7 +112,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public List<Node> getChildren(Containment containment) {
+  public List<Node> getChildren(@Nonnull Containment containment) {
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }

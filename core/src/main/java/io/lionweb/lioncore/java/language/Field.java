@@ -3,74 +3,76 @@ package io.lionweb.lioncore.java.language;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
-
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/**
- * Field of a StructuredDataType.
- */
+/** Field of a StructuredDataType. */
 public class Field extends M3Node<Field> implements NamespacedEntity, IKeyed<Field> {
 
-    public Field() {}
+  public Field() {}
 
-    public Field(@Nullable String name) {
-        setName(name);
-    }
+  public Field(@Nullable String name) {
+    setName(name);
+  }
 
-    public Field(@Nonnull StructuredDataType structuredDataType, @Nullable String name) {
-        structuredDataType.addField(this);
-        setParent(structuredDataType);
-        setName(name);
-    }
+  public Field(@Nullable String name, @Nullable DataType<?> type) {
+    setName(name);
+    setType(type);
+  }
 
-    @Override
-    public @Nullable String getName() {
-        return getPropertyValue("name", String.class);
-    }
+  public Field(@Nonnull StructuredDataType structuredDataType, @Nullable String name) {
+    structuredDataType.addField(this);
+    setParent(structuredDataType);
+    setName(name);
+  }
 
-    public void setName(@Nullable String name) {
-        this.setPropertyValue("name", name);
-    }
+  @Override
+  public @Nullable String getName() {
+    return getPropertyValue("name", String.class);
+  }
 
-    /** The container is always the parent. It is just casted for convenience. */
-    @Override
-    public @Nullable NamespaceProvider getContainer() {
-        if (this.getParent() == null) {
-            return null;
-        }
-        if (this.getParent() instanceof NamespaceProvider) {
-            return (NamespaceProvider) this.getParent();
-        } else {
-            throw new IllegalStateException("The parent is not a NamespaceProvider");
-        }
-    }
+  public void setName(@Nullable String name) {
+    this.setPropertyValue("name", name);
+  }
 
-    @Override
-    public Concept getClassifier() {
-        return LionCore.getField();
+  /** The container is always the parent. It is just casted for convenience. */
+  @Override
+  public @Nullable NamespaceProvider getContainer() {
+    if (this.getParent() == null) {
+      return null;
     }
+    if (this.getParent() instanceof NamespaceProvider) {
+      return (NamespaceProvider) this.getParent();
+    } else {
+      throw new IllegalStateException("The parent is not a NamespaceProvider");
+    }
+  }
 
-    public @Nullable DataType<?> getType() {
-        return this.getReferenceSingleValue("type");
-    }
+  @Override
+  public Concept getClassifier() {
+    return LionCore.getField();
+  }
 
-    public void setType(@Nullable DataType<?> type) {
-        if (type == null) {
-            this.setReferenceSingleValue("type", null);
-        } else {
-            this.setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
-        }
-    }
+  public @Nullable DataType<?> getType() {
+    return this.getReferenceSingleValue("type");
+  }
 
-    @Override
-    public String getKey() {
-        return this.getPropertyValue("key", String.class);
+  public void setType(@Nullable DataType<?> type) {
+    if (type == null) {
+      this.setReferenceSingleValue("type", null);
+    } else {
+      this.setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
     }
+  }
 
-    @Override
-    public Field setKey(String key) {
-        setPropertyValue("key", key);
-        return this;
-    }
+  @Override
+  public String getKey() {
+    return this.getPropertyValue("key", String.class);
+  }
+
+  @Override
+  public Field setKey(String key) {
+    setPropertyValue("key", key);
+    return this;
+  }
 }

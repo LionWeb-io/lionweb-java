@@ -7,10 +7,12 @@ import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.StructuredDataTypeInstanceUtils;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties2023;
 import io.lionweb.lioncore.java.serialization.MyNodeWithReferences;
 import io.lionweb.lioncore.java.serialization.MyNodeWithSelfContainment;
+import io.lionweb.lioncore.java.serialization.MyNodeWithStructuredDataType;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -472,5 +474,17 @@ public class DynamicNodeTest {
     assertEquals("another", n3.getContainmentFeature().getName());
     assertEquals("another-id", n3.getContainmentFeature().getID());
     assertEquals("another-key", n3.getContainmentFeature().getKey());
+  }
+
+  @Test
+  public void nodeWithStructuredDataType() {
+    DynamicStructuredDataTypeInstance point1 =
+        new DynamicStructuredDataTypeInstance(MyNodeWithStructuredDataType.POINT);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(point1, "x", 10);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(point1, "y", 14);
+
+    MyNodeWithStructuredDataType n1 = new MyNodeWithStructuredDataType("n1");
+    n1.setPoint(point1);
+    assertEquals(point1, n1.getPoint());
   }
 }

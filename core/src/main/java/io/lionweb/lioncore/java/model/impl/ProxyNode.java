@@ -27,17 +27,17 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   }
 
   @Override
-  public Object getPropertyValue(Property property) {
+  public Object getPropertyValue(@Nonnull Property property) {
     throw cannotDoBecauseProxy();
   }
 
   @Override
-  public void setPropertyValue(Property property, Object value) {
+  public void setPropertyValue(Property property, @Nullable Object value) {
     throw cannotDoBecauseProxy();
   }
 
   @Override
-  public List<? extends Node> getChildren(Containment containment) {
+  public List<? extends Node> getChildren(@Nonnull Containment containment) {
     throw cannotDoBecauseProxy();
   }
 

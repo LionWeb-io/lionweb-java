@@ -47,7 +47,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void setPropertyValue(@Nonnull Property property, Object value) {
+  public void setPropertyValue(@Nonnull Property property, @Nullable Object value) {
     Objects.requireNonNull(property, "Property should not be null");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException(
