@@ -132,6 +132,14 @@ public class LionCore {
     return getInstance().requireConceptByName("Reference");
   }
 
+  public static Concept getStructuredDataType() {
+    return getInstance().requireConceptByName("StructuredDataType");
+  }
+
+  public static Concept getField() {
+    return getInstance().requireConceptByName("Field");
+  }
+
   public static @Nonnull Concept getReference(@Nonnull LionWebVersion lionWebVersion) {
     return getInstance(lionWebVersion).requireConceptByName("Reference");
   }
@@ -167,6 +175,8 @@ public class LionCore {
       Concept primitiveType = instance.addElement(new Concept(lionWebVersion, "PrimitiveType"));
       Concept property = instance.addElement(new Concept(lionWebVersion, "Property"));
       Concept reference = instance.addElement(new Concept(lionWebVersion, "Reference"));
+      Concept structuredDataType = INSTANCE.addElement(new Concept("StructuredDataType"));
+      Concept field = INSTANCE.addElement(new Concept("Field"));
 
       // Now we start adding the features to all the Concepts and Interfaces
 
@@ -273,6 +283,14 @@ public class LionCore {
       annotation.addFeature(
           Reference.createMultiple(
               lionWebVersion, "implements", iface, "-id-Annotation-implements"));
+
+      structuredDataType.setExtendedConcept(dataType);
+      structuredDataType.addFeature(
+                      Containment.createMultiple("fields", feature, "-id-StructuredDataType-fields"));
+
+      field.addImplementedInterface(LionCoreBuiltins.getINamed());
+      field.addImplementedInterface(iKeyed);
+      field.addFeature(Reference.createRequired("type", dataType));
 
       checkIDs(instance);
       INSTANCES.put(lionWebVersion, instance);
