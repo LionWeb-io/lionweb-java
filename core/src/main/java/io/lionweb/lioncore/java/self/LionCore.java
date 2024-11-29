@@ -132,11 +132,11 @@ public class LionCore {
     return getInstance().requireConceptByName("Reference");
   }
 
-  public static Concept getStructuredDataType() {
+  public static @Nonnull Concept getStructuredDataType() {
     return getInstance().requireConceptByName("StructuredDataType");
   }
 
-  public static Concept getField() {
+  public static @Nonnull Concept getField() {
     return getInstance().requireConceptByName("Field");
   }
 

@@ -11,6 +11,10 @@ import javax.annotation.Nullable;
 
 public class ClassifierInstanceUtils {
 
+  private ClassifierInstanceUtils() {
+    // Prevent instantiation
+  }
+
   // Public methods about properties
 
   @Nullable

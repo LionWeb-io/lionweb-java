@@ -5,12 +5,15 @@ import io.lionweb.lioncore.java.language.StructuredDataType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** This a represent in instance of Structured Data Type. */
 public interface StructuredDataTypeInstance {
 
   /** The StructuredDataType of which this StructuredDataTypeInstance is an instance. */
+  @Nonnull
   StructuredDataType getStructuredDataType();
 
   /** Get the field value associated with the specified field. */
+  @Nullable
   Object getFieldValue(@Nonnull Field field);
 
   /**

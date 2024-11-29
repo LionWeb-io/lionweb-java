@@ -33,7 +33,7 @@ public class StructuredDataType extends DataType<StructuredDataType> implements 
     setID(id);
   }
 
-  public StructuredDataType addField(@Nonnull Field field) {
+  public @Nonnull StructuredDataType addField(@Nonnull Field field) {
     Objects.requireNonNull(field, "field should not be null");
     this.addContainmentMultipleValue("fields", field);
     field.setParent(this);
@@ -45,12 +45,12 @@ public class StructuredDataType extends DataType<StructuredDataType> implements 
   }
 
   @Override
-  public String namespaceQualifier() {
+  public @Nonnull String namespaceQualifier() {
     return this.qualifiedName();
   }
 
   @Override
-  public Concept getClassifier() {
+  public @Nonnull Concept getClassifier() {
     return LionCore.getStructuredDataType();
   }
 

@@ -9,6 +9,10 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * This class can be used to deserialized instances of Structured Data Types without having to
+ * define a single class for each of the Structured Data Types.
+ */
 public class DynamicStructuredDataTypeInstance implements StructuredDataTypeInstance {
   private StructuredDataType structuredDataType;
   private Map<Field, Object> fieldValues = new HashMap<>();
@@ -25,7 +29,7 @@ public class DynamicStructuredDataTypeInstance implements StructuredDataTypeInst
     }
     StructuredDataTypeInstance other = (StructuredDataTypeInstance) obj;
     StructuredDataType structuredDataType = getStructuredDataType();
-    if (structuredDataType == null || !(structuredDataType.equals(other.getStructuredDataType()))) {
+    if (!(structuredDataType.equals(other.getStructuredDataType()))) {
       return false;
     }
 
@@ -39,11 +43,8 @@ public class DynamicStructuredDataTypeInstance implements StructuredDataTypeInst
 
   @Override
   public int hashCode() {
-    int hashCode = 1;
     StructuredDataType structuredDataType = getStructuredDataType();
-    if (structuredDataType != null) {
-      hashCode = 7 * structuredDataType.getID().hashCode();
-    }
+    int hashCode = Objects.hashCode(structuredDataType.getID());
     for (Field field : structuredDataType.getFields()) {
       hashCode = hashCode + 3 * Objects.hashCode(getFieldValue(field));
     }

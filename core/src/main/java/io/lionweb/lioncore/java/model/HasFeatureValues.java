@@ -13,6 +13,7 @@ public interface HasFeatureValues {
    *
    * <p>Should this return a String?
    */
+  @Nullable
   Object getPropertyValue(@Nonnull Property property);
 
   /**
@@ -25,6 +26,7 @@ public interface HasFeatureValues {
    * This return all the Nodes directly contained into this Node under the specific Containment
    * relation specified.
    */
+  @Nonnull
   List<? extends Node> getChildren(@Nonnull Containment containment);
 
   /**
@@ -35,7 +37,7 @@ public interface HasFeatureValues {
    * <p>If the child has not a Concept compatible with the target of the Containement, the exception
    * IllegalArgumentException will be thrown.
    */
-  void addChild(@Nonnull Containment containment, Node child);
+  void addChild(@Nonnull Containment containment, @Nullable Node child);
 
   /**
    * Remove the given child from the list of children associated with the Node, making it a dangling

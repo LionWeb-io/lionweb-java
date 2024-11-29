@@ -196,11 +196,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return new LanguageValidator().isValid(this);
   }
 
-  public ValidationResult validate() {
+  public @Nonnull ValidationResult validate() {
     return new LanguageValidator().validate(this);
   }
 
-  public List<StructuredDataType> getStructuredDataTypes() {
+  public @Nonnull List<StructuredDataType> getStructuredDataTypes() {
     return getElements().stream()
         .filter(e -> e instanceof StructuredDataType)
         .map(e -> (StructuredDataType) e)

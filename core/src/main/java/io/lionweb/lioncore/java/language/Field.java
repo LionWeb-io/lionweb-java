@@ -55,7 +55,7 @@ public class Field extends M3Node<Field> implements NamespacedEntity, IKeyed<Fie
   }
 
   @Override
-  public Concept getClassifier() {
+  public @Nonnull Concept getClassifier() {
     return LionCore.getField();
   }
 
@@ -72,12 +72,12 @@ public class Field extends M3Node<Field> implements NamespacedEntity, IKeyed<Fie
   }
 
   @Override
-  public String getKey() {
+  public @Nullable String getKey() {
     return this.getPropertyValue("key", String.class);
   }
 
   @Override
-  public Field setKey(String key) {
+  public @Nonnull Field setKey(@Nullable String key) {
     setPropertyValue("key", key);
     return this;
   }

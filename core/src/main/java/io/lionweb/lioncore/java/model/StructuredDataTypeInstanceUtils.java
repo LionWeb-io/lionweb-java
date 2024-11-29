@@ -5,9 +5,15 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Similarly to ClassifierInstanceUtils, this class offer utility methods for working with
+ * StructuredDataTypeInstances.
+ */
 public class StructuredDataTypeInstanceUtils {
 
-  // Public methods about fields
+  private StructuredDataTypeInstanceUtils() {
+    // Prevent instantiation
+  }
 
   @Nullable
   public static Object getFieldValueByName(
