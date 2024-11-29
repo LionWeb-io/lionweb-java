@@ -117,5 +117,13 @@ public class Instantiator {
         LionCore.getAnnotation(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
             new Annotation(lionWebVersion).setID(serializedNode.getID()));
+    customDeserializers.put(
+            LionCore.getStructuredDataType().getID(),
+            (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
+                    new StructuredDataType(null, null, serializedNode.getID()));
+    customDeserializers.put(
+            LionCore.getField().getID(),
+            (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
+                    new Field(null, null, serializedNode.getID()));
   }
 }

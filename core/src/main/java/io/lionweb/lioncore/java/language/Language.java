@@ -7,6 +7,7 @@ import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.utils.LanguageValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -198,5 +199,10 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
 
   public ValidationResult validate() {
     return new LanguageValidator().validate(this);
+  }
+
+  public List<StructuredDataType> getStructuredDataTypes() {
+    return getElements().stream().filter(e -> e instanceof StructuredDataType)
+            .map(e -> (StructuredDataType)e).collect(Collectors.toList());
   }
 }

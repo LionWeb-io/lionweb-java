@@ -20,6 +20,12 @@ public class Field extends M3Node<Field> implements NamespacedEntity, IKeyed<Fie
     setType(type);
   }
 
+  public Field(@Nullable String name, @Nullable DataType<?> type, @Nullable String id) {
+    setName(name);
+    setType(type);
+    setID(id);
+  }
+
   public Field(@Nonnull StructuredDataType structuredDataType, @Nullable String name) {
     structuredDataType.addField(this);
     setParent(structuredDataType);

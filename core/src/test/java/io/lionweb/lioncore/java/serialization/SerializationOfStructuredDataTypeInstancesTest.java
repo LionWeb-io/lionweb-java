@@ -16,8 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 /**
- * Specific tests of JsonSerialization for the serialization and deserialization of primitive
- * values.
+ * Specific tests of JsonSerialization for the serialization and deserialization of Structured Data Type Instances.
  */
 public class SerializationOfStructuredDataTypeInstancesTest extends SerializationTest {
 
