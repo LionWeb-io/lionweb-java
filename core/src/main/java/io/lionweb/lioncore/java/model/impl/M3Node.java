@@ -75,7 +75,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public Object getPropertyValue(@Nonnull Property property) {
+  public @Nullable Object getPropertyValue(@Nonnull Property property) {
     Objects.requireNonNull(property, "property should not be null");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept: " + property);
@@ -87,8 +87,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
    * This internal method uses a property name and not a property or the property id because of a
    * circular dependency problem present for nodes representing M3 elements.
    */
-  protected <V> V getPropertyValue(
-      @Nonnull String propertyName, @Nonnull Class<V> clazz, V defaultValue) {
+  protected <V> @Nullable V getPropertyValue(
+      @Nonnull String propertyName, @Nonnull Class<V> clazz, @Nullable V defaultValue) {
     Object value = propertyValues.get(propertyName);
     if (value == null) {
       return defaultValue;

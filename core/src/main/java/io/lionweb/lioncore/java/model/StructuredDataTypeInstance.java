@@ -5,7 +5,7 @@ import io.lionweb.lioncore.java.language.StructuredDataType;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-/** This a represent in instance of Structured Data Type. */
+/** This represents an instance of Structured Data Type. */
 public interface StructuredDataTypeInstance {
 
   /** The StructuredDataType of which this StructuredDataTypeInstance is an instance. */
@@ -17,8 +17,7 @@ public interface StructuredDataTypeInstance {
   Object getFieldValue(@Nonnull Field field);
 
   /**
-   * If the value is not compatible with the type of the property, the exception
-   * IllegalArgumentValue should be thrown
+   * @throws IllegalArgumentException If the value is not compatible with the type of the property
    */
-  void setFieldValue(@Nonnull Field field, @Nullable Object value);
+  void setFieldValue(@Nonnull Field field, @Nullable Object value) throws IllegalArgumentException;
 }

@@ -487,4 +487,27 @@ public class DynamicNodeTest {
     n1.setPoint(point1);
     assertEquals(point1, n1.getPoint());
   }
+
+  @Test
+  public void nodeWithAmount() {
+    DynamicStructuredDataTypeInstance value =
+        new DynamicStructuredDataTypeInstance(MyNodeWithAmount.DECIMAL);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(value, "int", 2);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(value, "frac", 3);
+
+    DynamicStructuredDataTypeInstance amount =
+        new DynamicStructuredDataTypeInstance(MyNodeWithAmount.AMOUNT);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(amount, "value", value);
+    EnumerationLiteral euro = MyNodeWithAmount.CURRENCY.getLiterals().get(0);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(
+        amount, "currency", new EnumerationValueImpl(euro));
+    assertEquals(
+        new EnumerationValueImpl(euro),
+        StructuredDataTypeInstanceUtils.getFieldValueByName(amount, "currency"));
+    StructuredDataTypeInstanceUtils.setFieldValueByName(amount, "digital", true);
+
+    MyNodeWithAmount n1 = new MyNodeWithAmount("n1");
+    n1.setAmount(amount);
+    assertEquals(amount, n1.getAmount());
+  }
 }

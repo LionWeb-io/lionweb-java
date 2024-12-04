@@ -8,19 +8,15 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface HasFeatureValues {
-  /**
-   * Get the property value associated with the specified property.
-   *
-   * <p>Should this return a String?
-   */
+  /** Get the property value associated with the specified property. */
   @Nullable
   Object getPropertyValue(@Nonnull Property property);
 
   /**
-   * If the value is not compatible with the type of the property, the exception
-   * IllegalArgumentValue should be thrown
+   * @throws IllegalArgumentException If the value is not compatible with the type of the property
    */
-  void setPropertyValue(@Nonnull Property property, @Nullable Object value);
+  void setPropertyValue(@Nonnull Property property, @Nullable Object value)
+      throws IllegalArgumentException;
 
   /**
    * This return all the Nodes directly contained into this Node under the specific Containment

@@ -163,9 +163,13 @@ public class PrimitiveValuesSerialization {
       for (Field field : sdt.getFields()) {
         if (jo.has(field.getName())) {
           DataType fieldDataType = field.getType();
-          Object fieldValue =
-              this.deserialize(fieldDataType, jo.get(field.getName()).getAsString(), false);
-          sdtInstance.setFieldValue(field, fieldValue);
+          JsonElement jFieldValue = jo.get(field.getName());
+          if (jFieldValue instanceof JsonNull) {
+            sdtInstance.setFieldValue(field, null);
+          } else {
+            Object fieldValue = this.deserialize(fieldDataType, jFieldValue.getAsString(), false);
+            sdtInstance.setFieldValue(field, fieldValue);
+          }
         }
       }
       return sdtInstance;
@@ -190,6 +194,9 @@ public class PrimitiveValuesSerialization {
       // primitiveSerializers, if a different behavior is needed
       if (value instanceof EnumerationValue) {
         EnumerationLiteral enumerationLiteral = ((EnumerationValue) value).getEnumerationLiteral();
+        if (enumerationLiteral.getKey() == null) {
+          throw new IllegalStateException("Cannot serialize enumaration literal with null key");
+        }
         return enumerationLiteral.getKey();
       } else if (value instanceof Enum<?>) {
         Enumeration enumeration = enumerationsByID.get(primitiveTypeID);

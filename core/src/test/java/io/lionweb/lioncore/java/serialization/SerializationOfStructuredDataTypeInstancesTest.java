@@ -5,9 +5,12 @@ import static org.junit.Assert.assertEquals;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.language.StructuredDataType;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.StructuredDataTypeInstance;
 import io.lionweb.lioncore.java.model.StructuredDataTypeInstanceUtils;
 import io.lionweb.lioncore.java.model.impl.DynamicStructuredDataTypeInstance;
+import io.lionweb.lioncore.java.model.impl.EnumerationValueImpl;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
@@ -157,5 +160,55 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
                 new MyNodeWithStructuredDataType(serializedNode.getID()));
     List<Node> deserialized = jsonSerialization.deserializeToNodes(serialized);
     assertEquals(Arrays.asList(n1), deserialized);
+  }
+
+  @Test
+  public void serializeAndDeserializationMultiLevelStructuredDataTypeInstances() {
+    DynamicStructuredDataTypeInstance value =
+        new DynamicStructuredDataTypeInstance(MyNodeWithAmount.DECIMAL);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(value, "int", 2);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(value, "frac", 3);
+
+    DynamicStructuredDataTypeInstance amount =
+        new DynamicStructuredDataTypeInstance(MyNodeWithAmount.AMOUNT);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(amount, "value", value);
+    StructuredDataTypeInstanceUtils.setFieldValueByName(
+        amount,
+        "currency",
+        new EnumerationValueImpl(MyNodeWithAmount.CURRENCY.getLiterals().get(0)));
+    StructuredDataTypeInstanceUtils.setFieldValueByName(amount, "digital", true);
+
+    MyNodeWithAmount n1 = new MyNodeWithAmount("n1");
+    n1.setAmount(amount);
+    assertEquals(amount, n1.getAmount());
+
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    jsonSerialization.registerLanguage(MyNodeWithAmount.LANGUAGE);
+    jsonSerialization.enableDynamicNodes();
+    String currencySerialized =
+        jsonSerialization
+            .getPrimitiveValuesSerialization()
+            .serialize(
+                MyNodeWithAmount.CURRENCY.getID(),
+                new EnumerationValueImpl(MyNodeWithAmount.CURRENCY.getLiterals().get(0)));
+    assertEquals("euro", currencySerialized);
+    String amountSerialized =
+        jsonSerialization
+            .getPrimitiveValuesSerialization()
+            .serialize(MyNodeWithAmount.AMOUNT.getID(), amount);
+    assertEquals(
+        "{\"value\":\"{\\\"int\\\":\\\"2\\\",\\\"frac\\\":\\\"3\\\"}\",\"currency\":\"euro\",\"digital\":\"true\"}",
+        amountSerialized);
+    JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(n1).getAsJsonObject();
+    Node n1Deserialized = jsonSerialization.deserializeToNodes(serialized).get(0);
+    assertEquals(
+        StructuredDataTypeInstanceUtils.getFieldValueByName(n1.getAmount(), "currency"),
+        StructuredDataTypeInstanceUtils.getFieldValueByName(
+            (StructuredDataTypeInstance)
+                ClassifierInstanceUtils.getPropertyValueByName(n1Deserialized, "amount"),
+            "currency"));
+    assertEquals(
+        n1.getAmount(), ClassifierInstanceUtils.getPropertyValueByName(n1Deserialized, "amount"));
+    assertEquals(n1, n1Deserialized);
   }
 }
