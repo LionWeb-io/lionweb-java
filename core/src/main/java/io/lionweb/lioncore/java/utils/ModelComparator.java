@@ -175,7 +175,7 @@ public class ModelComparator {
       String context) {
     for (Property property : concept.allProperties()) {
       Object valueA = nodeA.getPropertyValue(property);
-      Object valueB = nodeA.getPropertyValue(property);
+      Object valueB = nodeB.getPropertyValue(property);
       if (!Objects.equals(valueA, valueB)) {
         comparisonResult.markDifferentPropertyValue(
             context, nodeA.getID(), property.qualifiedName(), valueA, valueB);
