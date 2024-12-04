@@ -12,10 +12,6 @@ import javax.annotation.Nullable;
 public class EnumerationLiteral<V extends LionWebVersionToken> extends M3Node<EnumerationLiteral<V>, V>
     implements NamespacedEntity, IKeyed<EnumerationLiteral<V>> {
 
-  public EnumerationLiteral(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
-  }
-
   public EnumerationLiteral() {}
 
   public EnumerationLiteral(@Nullable String name) {
@@ -60,7 +56,7 @@ public class EnumerationLiteral<V extends LionWebVersionToken> extends M3Node<En
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getEnumerationLiteral(getLionWebVersionToken());
+    return LionCore.getEnumerationLiteral(getLionWebVersion());
   }
 
   @Override

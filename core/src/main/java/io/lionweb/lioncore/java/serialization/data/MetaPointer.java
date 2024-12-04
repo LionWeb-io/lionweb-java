@@ -23,11 +23,11 @@ public class MetaPointer {
 
   public MetaPointer() {}
 
-  public static MetaPointer from(Feature<?> feature) {
+  public static MetaPointer from(Feature<?, ?> feature) {
     return from(feature, feature.getDeclaringLanguage());
   }
 
-  public static MetaPointer from(LanguageEntity<?> languageEntity) {
+  public static MetaPointer from(LanguageEntity<?, ?> languageEntity) {
     MetaPointer metaPointer = new MetaPointer();
     metaPointer.setKey(languageEntity.getKey());
     if (languageEntity.getLanguage() != null) {

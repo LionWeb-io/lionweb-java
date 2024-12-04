@@ -142,6 +142,6 @@ public class Containment<V extends LionWebVersionToken> extends Link<Containment
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getContainment(getLionWebVersionToken());
+    return LionCore.getContainment(getLionWebVersion());
   }
 }

@@ -37,10 +37,10 @@ public interface ClassifierInstance<T extends Classifier<T, V>, V extends LionWe
   T getClassifier();
 
   /** The immediate parent of the Node. This should be null only for root nodes. */
-  ClassifierInstance<T> getParent();
+  ClassifierInstance<T, V> getParent();
 
   /** Collects `self` and all its descendants into `result`. */
-  static <T extends ClassifierInstance<?>> void collectSelfAndDescendants(
+  static <T extends ClassifierInstance<?, ?>> void collectSelfAndDescendants(
       T self, boolean includeAnnotations, Collection<T> result) {
     result.add(self);
     if (includeAnnotations) {

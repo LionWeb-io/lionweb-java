@@ -149,17 +149,17 @@ public abstract class AbstractSerialization {
   // Serialization to chunk
   //
 
-  public SerializedChunk serializeTreeToSerializationBlock(ClassifierInstance<?> root) {
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+  public SerializedChunk serializeTreeToSerializationBlock(ClassifierInstance<?, ?> root) {
+    Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
     return serializeNodesToSerializationBlock(classifierInstances);
   }
 
   public SerializedChunk serializeNodesToSerializationBlock(
-      Collection<ClassifierInstance<?>> classifierInstances) {
+      Collection<ClassifierInstance<?, ?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
-    for (ClassifierInstance<?> classifierInstance : classifierInstances) {
+    for (ClassifierInstance<?, ?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(classifierInstance));
       classifierInstance.getAnnotations().stream()
@@ -210,12 +210,12 @@ public abstract class AbstractSerialization {
   }
 
   public SerializedChunk serializeNodesToSerializationBlock(
-      ClassifierInstance<?>... classifierInstances) {
+      ClassifierInstance<?, ?>... classifierInstances) {
     return serializeNodesToSerializationBlock(Arrays.asList(classifierInstances));
   }
 
   private SerializedClassifierInstance serializeNode(
-      @Nonnull ClassifierInstance<?> classifierInstance) {
+      @Nonnull ClassifierInstance<?, ?> classifierInstance) {
     Objects.requireNonNull(classifierInstance, "Node should not be null");
     SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
     serializedClassifierInstance.setID(classifierInstance.getID());
@@ -247,7 +247,7 @@ public abstract class AbstractSerialization {
   }
 
   private static void serializeAnnotations(
-      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull ClassifierInstance<?, ?> classifierInstance,
       SerializedClassifierInstance serializedClassifierInstance) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
     serializedClassifierInstance.setAnnotations(
@@ -257,7 +257,7 @@ public abstract class AbstractSerialization {
   }
 
   private static void serializeReferences(
-      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull ClassifierInstance<?, ?> classifierInstance,
       SerializedClassifierInstance serializedClassifierInstance) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
     classifierInstance
@@ -284,7 +284,7 @@ public abstract class AbstractSerialization {
   }
 
   private static void serializeContainments(
-      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull ClassifierInstance<?, ?> classifierInstance,
       SerializedClassifierInstance serializedClassifierInstance) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
     classifierInstance
@@ -305,7 +305,7 @@ public abstract class AbstractSerialization {
   }
 
   private void serializeProperties(
-      ClassifierInstance<?> classifierInstance,
+      ClassifierInstance<?, ?> classifierInstance,
       SerializedClassifierInstance serializedClassifierInstance) {
     classifierInstance
         .getClassifier()
@@ -434,14 +434,14 @@ public abstract class AbstractSerialization {
     return deserializationStatus;
   }
 
-  public List<ClassifierInstance<?>> deserializeSerializationBlock(
+  public List<ClassifierInstance<?, ?>> deserializeSerializationBlock(
       SerializedChunk serializationBlock) {
     return deserializeClassifierInstances(
         LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()),
         serializationBlock.getClassifierInstances());
   }
 
-  private List<ClassifierInstance<?>> deserializeClassifierInstances(
+  private List<ClassifierInstance<?, ?>> deserializeClassifierInstances(
       @Nonnull LionWebVersion lionWebVersion,
       List<SerializedClassifierInstance> serializedClassifierInstances) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
@@ -453,13 +453,13 @@ public abstract class AbstractSerialization {
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
-    Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>();
-    IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
+    Map<String, ClassifierInstance<?, ?>> deserializedByID = new HashMap<>();
+    IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?, ?>> serializedToInstanceMap =
         new IdentityHashMap<>();
     sortedSerializedClassifierInstances.stream()
         .forEach(
             n -> {
-              ClassifierInstance<?> instantiated =
+              ClassifierInstance<?, ?> instantiated =
                   instantiateFromSerialized(lionWebVersion, n, deserializedByID);
               if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
                 throw new IllegalStateException("Duplicate ID found: " + n.getID());
@@ -485,8 +485,8 @@ public abstract class AbstractSerialization {
         .forEach(
             node -> {
               nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
-              ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
-              ClassifierInstance<?> parent =
+              ClassifierInstance<?, ?> classifierInstance = serializedToInstanceMap.get(node);
+              ClassifierInstance<?, ?> parent =
                   classifierInstanceResolver.resolve(node.getParentNodeID());
               if (parent instanceof ProxyNode
                   && unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
@@ -521,7 +521,7 @@ public abstract class AbstractSerialization {
             });
 
     // We want the nodes returned to be sorted as the original serializedNodes
-    List<ClassifierInstance<?>> nodesWithOriginalSorting =
+    List<ClassifierInstance<?, ?>> nodesWithOriginalSorting =
         serializedClassifierInstances.stream()
             .map(sn -> serializedToInstanceMap.get(sn))
             .collect(Collectors.toList());
@@ -529,10 +529,10 @@ public abstract class AbstractSerialization {
     return nodesWithOriginalSorting;
   }
 
-  private ClassifierInstance<?> instantiateFromSerialized(
+  private ClassifierInstance<?, ?> instantiateFromSerialized(
       @Nonnull LionWebVersion lionWebVersion,
       SerializedClassifierInstance serializedClassifierInstance,
-      Map<String, ClassifierInstance<?>> deserializedByID) {
+      Map<String, ClassifierInstance<?, ?>> deserializedByID) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
@@ -567,7 +567,7 @@ public abstract class AbstractSerialization {
                       property.isRequired());
               propertiesValues.put(property, deserializedValue);
             });
-    ClassifierInstance<?> classifierInstance =
+    ClassifierInstance<?, ?> classifierInstance =
         getInstantiator()
             .instantiate(
                 classifier, serializedClassifierInstance, deserializedByID, propertiesValues);

@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.versions.LionWebVersionToken;
 
@@ -10,9 +9,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class Enumeration<V extends LionWebVersionToken> extends DataType<Enumeration<V>, V> implements NamespaceProvider {
-  public Enumeration(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
-  }
 
   public Enumeration() {
     super();
@@ -38,6 +34,6 @@ public class Enumeration<V extends LionWebVersionToken> extends DataType<Enumera
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getEnumeration(getLionWebVersionToken());
+    return LionCore.getEnumeration(getLionWebVersion());
   }
 }

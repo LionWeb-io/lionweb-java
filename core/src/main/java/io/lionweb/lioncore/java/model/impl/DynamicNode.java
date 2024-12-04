@@ -3,6 +3,8 @@ package io.lionweb.lioncore.java.model.impl;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -12,12 +14,12 @@ import javax.annotation.Nullable;
  * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose
  * only homogeneous-APIs (e.g., getProperty('book')) and not heterogeneous-APIs (e.g., getBook()).
  */
-public class DynamicNode extends DynamicClassifierInstance<Concept>
-    implements Node, HasSettableParent {
-  private Node parent = null;
-  private Concept concept = null;
+public class DynamicNode<V extends LionWebVersionToken> extends DynamicClassifierInstance<Concept<V>, V>
+    implements Node<V>, HasSettableParent {
+  private Node<V> parent = null;
+  private Concept<V> concept = null;
 
-  public DynamicNode(@Nonnull String id, @Nonnull Concept concept) {
+  public DynamicNode(@Nonnull String id, @Nonnull Concept<V> concept) {
     this.id = id;
     this.concept = concept;
   }
@@ -37,17 +39,17 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public Concept getClassifier() {
+  public Concept<V> getClassifier() {
     return this.concept;
   }
 
   @Override
   @Nullable
-  public Containment getContainmentFeature() {
+  public Containment<V> getContainmentFeature() {
     if (parent == null) {
       return null;
     }
-    for (Containment containment : parent.getClassifier().allContainments()) {
+    for (Containment<V> containment : parent.getClassifier().allContainments()) {
       if (parent.getChildren(containment).stream().anyMatch(it -> it == this)) {
         return containment;
       }

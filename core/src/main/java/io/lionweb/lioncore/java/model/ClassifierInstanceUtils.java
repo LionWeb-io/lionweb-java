@@ -4,6 +4,8 @@ import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -15,7 +17,7 @@ public class ClassifierInstanceUtils {
 
   @Nullable
   public static Object getPropertyValueByName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String propertyName) {
+      @Nonnull ClassifierInstance<?, ?> _this, @Nonnull String propertyName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(propertyName, "propertyName should not be null");
     Property property = _this.getClassifier().getPropertyByName(propertyName);
@@ -30,10 +32,10 @@ public class ClassifierInstanceUtils {
   }
 
   public static void setPropertyValueByName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String propertyName, @Nullable Object value) {
+      @Nonnull ClassifierInstance<?, ?> _this, @Nonnull String propertyName, @Nullable Object value) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(propertyName, "propertyName should not be null");
-    Classifier<?> classifier = _this.getClassifier();
+    Classifier<?, ?> classifier = _this.getClassifier();
     if (classifier == null) {
       throw new IllegalStateException(
           "Classifier should not be null for "
@@ -55,7 +57,7 @@ public class ClassifierInstanceUtils {
 
   @Nullable
   public static Object getPropertyValueByID(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String propertyID) {
+      @Nonnull ClassifierInstance<?, ?> _this, @Nonnull String propertyID) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(propertyID, "propertyID should not be null");
     Property property = _this.getClassifier().getPropertyByID(propertyID);
@@ -66,9 +68,9 @@ public class ClassifierInstanceUtils {
 
   /** This return all the Nodes directly contained into this Node. */
   @Nonnull
-  public static List<Node> getChildren(@Nonnull ClassifierInstance<?> _this) {
+  public static <V extends LionWebVersionToken> List<Node<V>> getChildren(@Nonnull ClassifierInstance<?, V> _this) {
     Objects.requireNonNull(_this, "_this should not be null");
-    List<Node> allChildren = new LinkedList<>();
+    List<Node<V>> allChildren = new LinkedList<>();
     _this.getClassifier().allContainments().stream()
         .map(c -> _this.getChildren(c))
         .forEach(children -> allChildren.addAll(children));
@@ -76,16 +78,16 @@ public class ClassifierInstanceUtils {
   }
 
   @Nonnull
-  public static List<? extends Node> getChildrenByContainmentName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName) {
+  public static <V extends LionWebVersionToken> List<? extends Node<V>> getChildrenByContainmentName(
+      @Nonnull ClassifierInstance<?, V> _this, @Nonnull String containmentName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     return _this.getChildren(_this.getClassifier().requireContainmentByName(containmentName));
   }
 
   @Nullable
-  public static Node getOnlyChildByContainmentName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName) {
+  public static <V extends LionWebVersionToken> Node<V> getOnlyChildByContainmentName(
+      @Nonnull ClassifierInstance<?, V> _this, @Nonnull String containmentName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     List<? extends Node> children = getChildrenByContainmentName(_this, containmentName);
@@ -99,7 +101,7 @@ public class ClassifierInstanceUtils {
   }
 
   public static void setOnlyChildByContainmentName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName, @Nullable Node child) {
+      @Nonnull ClassifierInstance<?, ?> _this, @Nonnull String containmentName, @Nullable Node child) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     Containment containment = _this.getClassifier().requireContainmentByName(containmentName);
@@ -120,19 +122,19 @@ public class ClassifierInstanceUtils {
   // Public methods about references
 
   @Nonnull
-  public static List<ReferenceValue> getReferenceValues(@Nonnull ClassifierInstance<?> _this) {
+  public static <V extends LionWebVersionToken> List<ReferenceValue<V>> getReferenceValues(@Nonnull ClassifierInstance<?, V> _this) {
     Objects.requireNonNull(_this, "_this should not be null");
-    List<ReferenceValue> allReferredValues = new LinkedList<>();
+    List<ReferenceValue<V>> allReferredValues = new LinkedList<>();
     _this.getClassifier().allReferences().stream()
         .map(r -> _this.getReferenceValues(r))
         .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
     return allReferredValues;
   }
 
-  public static void setOnlyReferenceValue(
-      @Nonnull ClassifierInstance<?> _this,
-      @Nonnull Reference reference,
-      @Nullable ReferenceValue value) {
+  public static <V extends LionWebVersionToken> void setOnlyReferenceValue(
+      @Nonnull ClassifierInstance<?, V> _this,
+      @Nonnull Reference<V> reference,
+      @Nullable ReferenceValue<V> value) {
     Objects.requireNonNull(_this, "_this should not be null");
     if (value == null) {
       _this.setReferenceValues(reference, Collections.emptyList());
@@ -142,7 +144,7 @@ public class ClassifierInstanceUtils {
   }
 
   public static void setOnlyReferenceValueByName(
-      @Nonnull ClassifierInstance<?> _this,
+      @Nonnull ClassifierInstance<?, ?> _this,
       @Nonnull String referenceName,
       @Nullable ReferenceValue value) {
     Objects.requireNonNull(_this, "_this should not be null");
@@ -151,10 +153,10 @@ public class ClassifierInstanceUtils {
     setOnlyReferenceValue(_this, reference, value);
   }
 
-  public static void setReferenceValuesByName(
-      @Nonnull ClassifierInstance<?> _this,
+  public static <V extends LionWebVersionToken> void setReferenceValuesByName(
+      @Nonnull ClassifierInstance<?, V> _this,
       @Nonnull String referenceName,
-      @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull List<? extends ReferenceValue<V>> values) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
     Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
@@ -172,8 +174,8 @@ public class ClassifierInstanceUtils {
    * field.
    */
   @Nonnull
-  public static List<Node> getReferredNodes(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull Reference reference) {
+  public static <V extends LionWebVersionToken> List<Node<V>> getReferredNodes(
+      @Nonnull ClassifierInstance<?, V> _this, @Nonnull Reference<V> reference) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(reference, "reference should not be null");
     return _this.getReferenceValues(reference).stream()
@@ -192,7 +194,7 @@ public class ClassifierInstanceUtils {
    * Reference. It may contain duplicates.
    */
   @Nonnull
-  public static List<Node> getReferredNodes(@Nonnull ClassifierInstance<?> _this) {
+  public static List<Node> getReferredNodes(@Nonnull ClassifierInstance<?, ?> _this) {
     Objects.requireNonNull(_this, "_this should not be null");
     return getReferenceValues(_this).stream()
         .map(rv -> rv.getReferred())
@@ -201,11 +203,11 @@ public class ClassifierInstanceUtils {
   }
 
   @Nonnull
-  public static List<ReferenceValue> getReferenceValueByName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName) {
+  public static <V extends LionWebVersionToken> List<ReferenceValue<V>> getReferenceValueByName(
+      @Nonnull ClassifierInstance<?, V> _this, @Nonnull String referenceName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
-    Classifier<?> classifier = _this.getClassifier();
+    Classifier<?, V> classifier = _this.getClassifier();
     if (classifier == null) {
       throw new IllegalStateException(
           "Concept should not be null for "
@@ -226,11 +228,11 @@ public class ClassifierInstanceUtils {
   }
 
   @Nullable
-  public static ReferenceValue getOnlyReferenceValueByReferenceName(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName) {
+  public static <V extends LionWebVersionToken> ReferenceValue getOnlyReferenceValueByReferenceName(
+      @Nonnull ClassifierInstance<?, V> _this, @Nonnull String referenceName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
-    List<ReferenceValue> referenceValues = getReferenceValueByName(_this, referenceName);
+    List<ReferenceValue<V>> referenceValues = getReferenceValueByName(_this, referenceName);
     if (referenceValues.size() > 1) {
       throw new IllegalStateException();
     } else if (referenceValues.isEmpty()) {
@@ -241,7 +243,7 @@ public class ClassifierInstanceUtils {
   }
 
   public static void addChild(
-      @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName, @Nonnull Node child) {
+      @Nonnull ClassifierInstance<?, ?> _this, @Nonnull String containmentName, @Nonnull Node child) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     Objects.requireNonNull(child, "child should not be null");

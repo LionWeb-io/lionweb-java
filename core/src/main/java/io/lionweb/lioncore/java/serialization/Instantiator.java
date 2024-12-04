@@ -18,18 +18,18 @@ import javax.annotation.Nonnull;
  */
 public class Instantiator {
 
-  public interface ClassifierSpecificInstantiator<T extends ClassifierInstance<?>> {
+  public interface ClassifierSpecificInstantiator<T extends ClassifierInstance<?, ?>> {
     T instantiate(
-        Classifier<?> classifier,
+        Classifier<?, ?> classifier,
         SerializedClassifierInstance serializedClassifierInstance,
-        Map<String, ClassifierInstance<?>> deserializedNodesByID,
+        Map<String, ClassifierInstance<?, ?>> deserializedNodesByID,
         Map<Property, Object> propertiesValues);
   }
 
   private final Map<String, ClassifierSpecificInstantiator<?>> customDeserializers =
       new HashMap<>();
   private ClassifierSpecificInstantiator<?> defaultNodeDeserializer =
-      (ClassifierSpecificInstantiator<Node>)
+      (ClassifierSpecificInstantiator<Node<?>>)
           (classifier, serializedNode, deserializedNodesByID, propertiesValues) -> {
             throw new IllegalArgumentException(
                 "Unable to instantiate instance with classifier " + classifier);
@@ -51,10 +51,10 @@ public class Instantiator {
     return this;
   }
 
-  public ClassifierInstance<?> instantiate(
-      Classifier<?> classifier,
+  public ClassifierInstance<?, ?> instantiate(
+      Classifier<?, ?> classifier,
       SerializedClassifierInstance serializedClassifierInstance,
-      Map<String, ClassifierInstance<?>> deserializedInstancesByID,
+      Map<String, ClassifierInstance<?, ?>> deserializedInstancesByID,
       Map<Property, Object> propertiesValues) {
     if (customDeserializers.containsKey(classifier.getID())) {
       return customDeserializers

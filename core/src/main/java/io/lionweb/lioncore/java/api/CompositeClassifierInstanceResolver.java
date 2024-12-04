@@ -26,9 +26,9 @@ public class CompositeClassifierInstanceResolver implements ClassifierInstanceRe
 
   @Nullable
   @Override
-  public ClassifierInstance<?> resolve(String instanceID) {
+  public ClassifierInstance<?, ?> resolve(String instanceID) {
     for (ClassifierInstanceResolver classifierInstanceResolver : classifierInstanceResolvers) {
-      ClassifierInstance<?> instance = classifierInstanceResolver.resolve(instanceID);
+      ClassifierInstance<?, ?> instance = classifierInstanceResolver.resolve(instanceID);
       if (instance != null) {
         return instance;
       }

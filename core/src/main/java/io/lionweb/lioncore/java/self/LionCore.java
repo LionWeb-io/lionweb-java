@@ -22,6 +22,10 @@ public class LionCore {
     return getInstance().requireConceptByName("Annotation");
   }
 
+  public static @Nonnull Concept getAnnotation(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Annotation");
+  }
+  
   public static @Nonnull Concept getAnnotation(@Nonnull LionWebVersionToken lionWebVersionToken) {
     return getInstance(lionWebVersionToken).requireConceptByName("Annotation");
   }
@@ -142,33 +146,33 @@ public class LionCore {
     return getInstance(LionWebVersion.currentVersion);
   }
 
-  public static @Nonnull Language getInstance(@Nonnull LionWebVersionToken lionWebVersionToken) {
-    Objects.requireNonNull(lionWebVersionToken, "lionWebVersion should not be null");
-    if (!INSTANCES.containsKey(lionWebVersionToken)) {
-      final Language instance = new Language(lionWebVersionToken, "LionCore_M3");
+  public static @Nonnull Language getInstance(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    if (!INSTANCES.containsKey(lionWebVersion)) {
+      final Language instance = new Language(lionWebVersion, "LionCore_M3");
       instance.setID("-id-LionCore-M3");
       instance.setKey("LionCore-M3");
-      instance.setVersion(lionWebVersionToken.getVersionString());
+      instance.setVersion(lionWebVersion.getVersionString());
 
       // We first instantiate all Concepts and Interfaces
       // we add features only after as the features will have references to these elements
-      Concept annotation = instance.addElement(new Concept(lionWebVersion, "Annotation"));
-      Concept concept = instance.addElement(new Concept(lionWebVersion, "Concept"));
-      Concept iface = instance.addElement(new Concept(lionWebVersion, "Interface"));
-      Concept containment = instance.addElement(new Concept(lionWebVersion, "Containment"));
-      Concept dataType = instance.addElement(new Concept(lionWebVersion, "DataType"));
-      Concept enumeration = instance.addElement(new Concept(lionWebVersion, "Enumeration"));
+      Concept annotation = instance.addElement(new Concept("Annotation"));
+      Concept concept = instance.addElement(new Concept("Concept"));
+      Concept iface = instance.addElement(new Concept("Interface"));
+      Concept containment = instance.addElement(new Concept("Containment"));
+      Concept dataType = instance.addElement(new Concept("DataType"));
+      Concept enumeration = instance.addElement(new Concept("Enumeration"));
       Concept enumerationLiteral =
-          instance.addElement(new Concept(lionWebVersion, "EnumerationLiteral"));
-      Concept feature = instance.addElement(new Concept(lionWebVersion, "Feature"));
-      Concept classifier = instance.addElement(new Concept(lionWebVersion, "Classifier"));
-      Concept link = instance.addElement(new Concept(lionWebVersion, "Link"));
-      Concept language = instance.addElement(new Concept(lionWebVersion, "Language"));
-      Concept languageEntity = instance.addElement(new Concept(lionWebVersion, "LanguageEntity"));
+          instance.addElement(new Concept("EnumerationLiteral"));
+      Concept feature = instance.addElement(new Concept("Feature"));
+      Concept classifier = instance.addElement(new Concept("Classifier"));
+      Concept link = instance.addElement(new Concept("Link"));
+      Concept language = instance.addElement(new Concept("Language"));
+      Concept languageEntity = instance.addElement(new Concept("LanguageEntity"));
       Interface iKeyed = instance.addElement(new Interface(lionWebVersion, "IKeyed"));
-      Concept primitiveType = instance.addElement(new Concept(lionWebVersion, "PrimitiveType"));
-      Concept property = instance.addElement(new Concept(lionWebVersion, "Property"));
-      Concept reference = instance.addElement(new Concept(lionWebVersion, "Reference"));
+      Concept primitiveType = instance.addElement(new Concept("PrimitiveType"));
+      Concept property = instance.addElement(new Concept("Property"));
+      Concept reference = instance.addElement(new Concept("Reference"));
 
       // Now we start adding the features to all the Concepts and Interfaces
 

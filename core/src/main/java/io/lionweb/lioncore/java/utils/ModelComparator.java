@@ -145,37 +145,37 @@ public class ModelComparator {
     }
   }
 
-  public ComparisonResult compare(Node nodeA, Node nodeB) {
+  public ComparisonResult compare(Node<?> nodeA, Node<?> nodeB) {
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
     return comparisonResult;
   }
 
-  public ComparisonResult compare(AnnotationInstance nodeA, AnnotationInstance nodeB) {
+  public ComparisonResult compare(AnnotationInstance<?> nodeA, AnnotationInstance<?> nodeB) {
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
     return comparisonResult;
   }
 
-  public ComparisonResult compare(ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB) {
+  public ComparisonResult compare(ClassifierInstance<?, ?> nodeA, ClassifierInstance<?, ?> nodeB) {
     if (nodeA instanceof Node && nodeB instanceof Node) {
-      return compare((Node) nodeA, (Node) nodeB);
+      return compare((Node<?>) nodeA, (Node<?>) nodeB);
     } else if (nodeA instanceof AnnotationInstance && nodeB instanceof AnnotationInstance) {
-      return compare((AnnotationInstance) nodeA, (AnnotationInstance) nodeB);
+      return compare((AnnotationInstance<?>) nodeA, (AnnotationInstance<?>) nodeB);
     } else {
       return new ComparisonResult().markIncompatible();
     }
   }
 
   private void compareProperties(
-      Classifier<?> concept,
-      ClassifierInstance<?> nodeA,
-      ClassifierInstance<?> nodeB,
+      Classifier<?, ?> concept,
+      ClassifierInstance<?, ?> nodeA,
+      ClassifierInstance<?, ?> nodeB,
       ComparisonResult comparisonResult,
       String context) {
     for (Property property : concept.allProperties()) {
       Object valueA = nodeA.getPropertyValue(property);
-      Object valueB = nodeA.getPropertyValue(property);
+      Object valueB = nodeB.getPropertyValue(property);
       if (!Objects.equals(valueA, valueB)) {
         comparisonResult.markDifferentPropertyValue(
             context, nodeA.getID(), property.qualifiedName(), valueA, valueB);
@@ -184,9 +184,9 @@ public class ModelComparator {
   }
 
   private void compareReferences(
-      Classifier<?> concept,
-      ClassifierInstance<?> nodeA,
-      ClassifierInstance<?> nodeB,
+      Classifier<?, ?> concept,
+      ClassifierInstance<?, ?> nodeA,
+      ClassifierInstance<?, ?> nodeB,
       ComparisonResult comparisonResult,
       String context) {
     for (Reference reference : concept.allReferences()) {
@@ -223,9 +223,9 @@ public class ModelComparator {
   }
 
   private void compareContainments(
-      Classifier<?> concept,
-      ClassifierInstance<?> nodeA,
-      ClassifierInstance<?> nodeB,
+      Classifier<?, ?> concept,
+      ClassifierInstance<?, ?> nodeA,
+      ClassifierInstance<?, ?> nodeB,
       ComparisonResult comparisonResult,
       String context) {
     for (Containment containment : concept.allContainments()) {
@@ -247,9 +247,9 @@ public class ModelComparator {
   }
 
   private void compareAnnotations(
-      Classifier<?> concept,
-      ClassifierInstance<?> nodeA,
-      ClassifierInstance<?> nodeB,
+      Classifier<?, ?> concept,
+      ClassifierInstance<?, ?> nodeA,
+      ClassifierInstance<?, ?> nodeB,
       ComparisonResult comparisonResult,
       String context) {
     if (nodeA.getAnnotations().size() != nodeB.getAnnotations().size()) {

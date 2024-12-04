@@ -31,14 +31,14 @@ class NodePopulator {
   }
 
   void populateClassifierInstance(
-      ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
+      ClassifierInstance<?, ?> node, SerializedClassifierInstance serializedClassifierInstance) {
     populateContainments(node, serializedClassifierInstance);
     populateNodeReferences(node, serializedClassifierInstance);
   }
 
   private void populateContainments(
-      ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
-    Classifier<?> concept = node.getClassifier();
+      ClassifierInstance<?, ?> node, SerializedClassifierInstance serializedClassifierInstance) {
+    Classifier<?, ?> concept = node.getClassifier();
     serializedClassifierInstance
         .getContainments()
         .forEach(
@@ -54,7 +54,7 @@ class NodePopulator {
               Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
-              List<ClassifierInstance<?>> deserializedValue =
+              List<ClassifierInstance<?, ?>> deserializedValue =
                   serializedContainmentValue.getValue().stream()
                       .map(
                           childNodeID -> {
@@ -73,8 +73,8 @@ class NodePopulator {
   }
 
   private void populateNodeReferences(
-      ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
-    Classifier<?> concept = node.getClassifier();
+      ClassifierInstance<?, ?> node, SerializedClassifierInstance serializedClassifierInstance) {
+    Classifier<?, ?> concept = node.getClassifier();
     // TODO resolve references to Nodes in different models
     serializedClassifierInstance
         .getReferences()

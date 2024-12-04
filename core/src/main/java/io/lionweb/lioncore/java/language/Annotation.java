@@ -28,10 +28,6 @@ import javax.annotation.Nullable;
  */
 public class Annotation<V extends LionWebVersionToken> extends Classifier<Annotation<V>, V> {
 
-  public Annotation(@Nonnull LionWebVersionToken lionWebToken) {
-    super(lionWebToken);
-  }
-
   public Annotation() {
     super();
   }
@@ -127,6 +123,6 @@ public class Annotation<V extends LionWebVersionToken> extends Classifier<Annota
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getAnnotation(getLionWebVersionToken());
+    return LionCore.getAnnotation(getLionWebVersion());
   }
 }

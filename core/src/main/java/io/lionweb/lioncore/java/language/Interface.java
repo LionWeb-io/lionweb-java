@@ -29,10 +29,6 @@ public class Interface<V extends LionWebVersionToken> extends Classifier<Interfa
     super();
   }
 
-  public Interface(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
-  }
-
   public Interface(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
@@ -48,15 +44,6 @@ public class Interface<V extends LionWebVersionToken> extends Classifier<Interfa
 
   public Interface(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);
-  }
-
-  public Interface(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
-    super(lionWebVersion, language, name);
-  }
-
-  public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
-    super(lionWebVersion, null, name);
   }
 
   public Interface(@Nullable String name) {
@@ -89,7 +76,7 @@ public class Interface<V extends LionWebVersionToken> extends Classifier<Interfa
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getInterface(getLionWebVersionToken());
+    return LionCore.getInterface(getLionWebVersion());
   }
 
   @Nonnull

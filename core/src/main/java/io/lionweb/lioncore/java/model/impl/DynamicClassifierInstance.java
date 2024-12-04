@@ -5,12 +5,14 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class DynamicClassifierInstance<T extends Classifier<T>>
-    extends AbstractClassifierInstance<T> implements ClassifierInstance<T> {
+public abstract class DynamicClassifierInstance<T extends Classifier<T, V>, V extends LionWebVersionToken>
+    extends AbstractClassifierInstance<T, V> implements ClassifierInstance<T, V> {
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;
 
@@ -190,7 +192,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull Reference<V> reference, @Nonnull List<? extends ReferenceValue<V>> values) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }

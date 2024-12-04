@@ -28,7 +28,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         .collect(Collectors.toList());
   }
 
-  public List<ClassifierInstance<?>> deserializeToClassifierInstances(FBChunk chunk) {
+  public List<ClassifierInstance<?, ?>> deserializeToClassifierInstances(FBChunk chunk) {
     SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
     return deserializeSerializationBlock(serializationBlock);
@@ -126,11 +126,11 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return serializedChunk;
   }
 
-  public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
+  public byte[] serializeTreesToByteArray(ClassifierInstance<?, ?>... roots) {
     Set<String> nodesIDs = new HashSet<>();
-    List<ClassifierInstance<?>> allNodes = new ArrayList<>();
-    for (ClassifierInstance<?> root : roots) {
-      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?, ?>> allNodes = new ArrayList<>();
+    for (ClassifierInstance<?, ?> root : roots) {
+      Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
       ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
       classifierInstances.forEach(
           n -> {
@@ -150,7 +150,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
   }
 
-  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
+  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?, ?>> classifierInstances) {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -158,15 +158,15 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return serialize(serializationBlock);
   }
 
-  public byte[] serializeNodesToByteArray(ClassifierInstance<?>... classifierInstances) {
+  public byte[] serializeNodesToByteArray(ClassifierInstance<?, ?>... classifierInstances) {
     return serializeNodesToByteArray(Arrays.asList(classifierInstances));
   }
 
-  public byte[] serializeTree(ClassifierInstance<?> classifierInstance) {
+  public byte[] serializeTree(ClassifierInstance<?, ?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     SerializedChunk serializedChunk =

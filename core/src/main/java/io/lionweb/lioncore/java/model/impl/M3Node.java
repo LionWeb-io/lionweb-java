@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.model.impl;
 
-import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
@@ -26,27 +25,17 @@ import javax.annotation.Nullable;
  * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
  * differently depending on the version of LionWeb they are representing.
  */
-public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionToken> extends AbstractClassifierInstance<Concept<V>>
+public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionToken> extends AbstractClassifierInstance<Concept<V>, V>
     implements Node<V>, LionWebVersionDependent<V> {
-  private final @Nonnull LionWebVersionToken lionWebVersionToken;
   private @Nullable String id;
-  private @Nullable Node parent;
+  private @Nullable Node<V> parent;
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
   // language elements are inheriting from this class.
   private final Map<String, Object> propertyValues = new HashMap<>();
-  private final Map<String, List<Node>> containmentValues = new HashMap<>();
-  private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
-
-  protected M3Node() {
-    this.lionWebVersionToken = LionWebVersionToken.getCurrentVersion();
-  }
-
-  protected M3Node(@Nonnull LionWebVersionToken lionWebVersion) {
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    this.lionWebVersionToken = lionWebVersion;
-  }
+  private final Map<String, List<Node<V>>> containmentValues = new HashMap<>();
+  private final Map<String, List<ReferenceValue<V>>> referenceValues = new HashMap<>();
 
   public T setID(String id) {
     this.id = id;
@@ -114,7 +103,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
   }
 
   @Override
-  public List<Node> getChildren(Containment containment) {
+  public List<Node<V>> getChildren(Containment<V> containment) {
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
@@ -122,7 +111,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
+  public void addChild(Containment<V> containment, Node child) {
     if (containment.isMultiple()) {
       addContainmentMultipleValue(containment.getName(), child);
     } else {
@@ -137,7 +126,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
 
   @Nonnull
   @Override
-  public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
+  public List<ReferenceValue<V>> getReferenceValues(@Nonnull Reference<V> reference) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
@@ -147,7 +136,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
 
   @Override
   public void addReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference<V> reference, @Nullable ReferenceValue<V> referenceValue) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
@@ -166,7 +155,7 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
+    referenceValues.put(reference.getName(), (List<ReferenceValue<V>>) values);
   }
 
   @Nullable
@@ -180,13 +169,13 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
     return this.getClass().getSimpleName() + "[" + this.getID() + "]";
   }
 
-  protected <V extends Node> V getContainmentSingleValue(String linkName) {
+  protected <N extends Node<V>> N getContainmentSingleValue(String linkName) {
     if (containmentValues.containsKey(linkName)) {
-      List<Node> values = containmentValues.get(linkName);
+      List<Node<V>> values = containmentValues.get(linkName);
       if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
-        return (V) (values.get(0));
+        return (N) (values.get(0));
       } else {
         throw new IllegalStateException();
       }
@@ -195,13 +184,13 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
     }
   }
 
-  protected <V extends Node> V getReferenceSingleValue(String linkName) {
+  protected <N extends Node> N getReferenceSingleValue(String linkName) {
     if (referenceValues.containsKey(linkName)) {
-      List<ReferenceValue> values = referenceValues.get(linkName);
+      List<ReferenceValue<V>> values = referenceValues.get(linkName);
       if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
-        return (V) (values.get(0).getReferred());
+        return (N) (values.get(0).getReferred());
       } else {
         throw new IllegalStateException();
       }
@@ -237,16 +226,16 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
    * has been built, therefore we cannot look for the definition of the features to verify they
    * exist. We instead just trust a link with that name to exist.
    */
-  private void setContainmentSingleValue(String linkName, Node value) {
-    List<Node> prevValue = containmentValues.get(linkName);
+  private void setContainmentSingleValue(String linkName, Node<V> value) {
+    List<Node<V>> prevValue = containmentValues.get(linkName);
     if (prevValue != null) {
-      List<Node> copy = new LinkedList<>(prevValue);
+      List<Node<V>> copy = new LinkedList<>(prevValue);
       copy.forEach(c -> this.removeChild(c));
     }
     if (value == null) {
       containmentValues.remove(linkName);
     } else {
-      ((M3Node) value).setParent(this);
+      ((M3Node<?, V>) value).setParent(this);
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
   }
@@ -296,8 +285,4 @@ public abstract class M3Node<T extends M3Node<T, V>, V extends LionWebVersionTok
     }
   }
 
-  @Nonnull
-  public LionWebVersionToken getLionWebVersionToken() {
-    return lionWebVersionToken;
-  }
 }

@@ -15,7 +15,7 @@ public class LionCoreBuiltins<V extends LionWebVersionToken> extends Language<V>
 
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion, "LionCore_builtins");
+    super("LionCore_builtins");
     setID("LionCore-builtins");
     setKey("LionCore-builtins");
     setVersion(lionWebVersion.getVersionString());
@@ -26,11 +26,11 @@ public class LionCoreBuiltins<V extends LionWebVersionToken> extends Language<V>
       new PrimitiveType(lionWebVersion, this, "JSON");
     }
 
-    Concept<V> node = new Concept<V>(lionWebVersion, this, "Node").setID("LionCore-builtins-Node");
+    Concept<V> node = new Concept<V>( this, "Node").setID("LionCore-builtins-Node");
     node.setAbstract(true);
 
     Interface<V> iNamed =
-        new Interface<V>(lionWebVersion, this, "INamed").setID("LionCore-builtins-INamed");
+        new Interface<V>( this, "INamed").setID("LionCore-builtins-INamed");
     iNamed.addFeature(
         Property.<V>createRequired(lionWebVersion, "name", string)
             .setID("LionCore-builtins-INamed-name")

@@ -23,22 +23,10 @@ public abstract class DataType<T extends M3Node, V extends LionWebVersionToken> 
     super();
   }
 
-  public DataType(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
-  }
-
-  public DataType(@Nonnull LionWebVersion lionWebVersion, @Nonnull String id) {
-    super(lionWebVersion, null, null, id);
-  }
-
   public DataType(@Nonnull String id) {
-    super(LionWebVersion.currentVersion, null, null, id);
+    this(null, id);
   }
 
-  public DataType(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language<V> language, @Nullable String name) {
-    super(lionWebVersion, language, name);
-  }
 
   public DataType(@Nullable Language<V> language, @Nullable String name) {
     super(language, name);

@@ -2,6 +2,8 @@ package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.*;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -12,7 +14,7 @@ import javax.annotation.Nullable;
  * know which Node should be used in a particular point, but at this time we cannot/do not want to
  * retrieve the data necessary to properly instantiate it.
  */
-public class ProxyNode extends AbstractClassifierInstance<Concept> implements Node {
+public class ProxyNode<V extends LionWebVersionToken> extends AbstractClassifierInstance<Concept<V>, V> implements Node<V> {
 
   private @Nonnull String id;
 
@@ -89,7 +91,7 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   }
 
   /** Exception thrown when invoking most methods of a ProxyNode. */
-  public class CannotDoBecauseProxyException extends IllegalStateException {
+  public static class CannotDoBecauseProxyException extends IllegalStateException {
     private @Nonnull String nodeID;
 
     private CannotDoBecauseProxyException(@Nonnull String nodeID) {
@@ -128,19 +130,8 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   }
 
   @Override
-  public void removeReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+  public void setReferenceValues(@Nonnull Reference<V> reference, @Nonnull List<? extends ReferenceValue<V>> list) {
     throw cannotDoBecauseProxy();
   }
 
-  @Override
-  public void removeReferenceValue(@Nonnull Reference reference, int index) {
-    throw cannotDoBecauseProxy();
-  }
-
-  @Override
-  public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
-    throw cannotDoBecauseProxy();
-  }
 }

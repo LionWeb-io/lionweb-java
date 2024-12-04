@@ -66,19 +66,6 @@ public class Property<V extends LionWebVersionToken> extends Feature<Property<V>
   }
 
   public static <V extends LionWebVersionToken> Property<V> createRequired(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable DataType<?, V> type,
-      @Nonnull String id) {
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    Objects.requireNonNull(id, "id should not be null");
-    Property<V> property = new Property<V>(lionWebVersion, name, null, id);
-    property.setOptional(false);
-    property.setType(type);
-    return property;
-  }
-
-  public static <V extends LionWebVersionToken> Property<V> createRequired(
       @Nullable String name, @Nullable DataType<?, V> type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Property<V> property = new Property<V>(name, null, id);
@@ -91,23 +78,9 @@ public class Property<V extends LionWebVersionToken> extends Feature<Property<V>
     super();
   }
 
-  public Property(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?, V> container,
-      @Nonnull String id) {
-    super(lionWebVersion, name, container, id);
-  }
 
   public Property(@Nullable String name, @Nullable Classifier<?, V> container, @Nonnull String id) {
     super(name, container, id);
-  }
-
-  public Property(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?, V> container) {
-    super(lionWebVersion, name, container);
   }
 
   public Property(@Nullable String name, @Nullable Classifier<?, V> container) {
@@ -141,6 +114,6 @@ public class Property<V extends LionWebVersionToken> extends Feature<Property<V>
 
   @Override
   public Concept<V> getClassifier() {
-    return LionCore.getProperty(getLionWebVersionToken());
+    return LionCore.getProperty(getLionWebVersion());
   }
 }

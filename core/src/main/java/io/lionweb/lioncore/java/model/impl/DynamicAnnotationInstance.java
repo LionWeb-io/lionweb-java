@@ -3,13 +3,15 @@ package io.lionweb.lioncore.java.model.impl;
 import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.versions.LionWebVersionToken;
+
 import java.util.Objects;
 
-public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotation>
-    implements AnnotationInstance {
+public class DynamicAnnotationInstance<V extends LionWebVersionToken> extends DynamicClassifierInstance<Annotation<V>, V>
+    implements AnnotationInstance<V> {
 
   private Annotation annotation;
-  private ClassifierInstance<?> annotated;
+  private ClassifierInstance<?, ?> annotated;
 
   public DynamicAnnotationInstance(String id) {
     this.id = id;
@@ -21,7 +23,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
   }
 
   public DynamicAnnotationInstance(
-      String id, Annotation annotation, ClassifierInstance<?> annotated) {
+      String id, Annotation annotation, ClassifierInstance<?, ?> annotated) {
     this(id, annotation);
     setAnnotated(annotated);
   }
@@ -53,7 +55,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     this.annotation = annotation;
   }
 
-  public void setAnnotated(ClassifierInstance<?> annotated) {
+  public void setAnnotated(ClassifierInstance<?, ?> annotated) {
     if (annotated == this.annotated) {
       // necessary to avoid infinite loops
       return;
@@ -63,7 +65,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     }
     this.annotated = annotated;
     if (this.annotated != null && this.annotated instanceof AbstractClassifierInstance) {
-      ((AbstractClassifierInstance<?>) this.annotated).addAnnotation(this);
+      ((AbstractClassifierInstance<?, ?>) this.annotated).addAnnotation(this);
     }
   }
 

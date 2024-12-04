@@ -1,6 +1,5 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.versions.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.versions.LionWebVersionToken;
 
@@ -20,22 +19,11 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SConceptFeature MPS equivalent <i>SConceptFeature</i> in
  *     SModel
  */
-public abstract class Feature<T extends M3Node<?, V>, V extends LionWebVersionToken> extends M3Node<T, V>
+public abstract class Feature<T extends M3Node<?, V>, V extends LionWebVersionToken> extends M3Node<Feature<?, V>, V>
     implements NamespacedEntity, IKeyed<T> {
 
   public Feature() {
     super();
-    setOptional(false);
-  }
-
-  public Feature(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
-    setOptional(false);
-  }
-
-  public Feature(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
-    this(lionWebVersion, name, null, id);
     setOptional(false);
   }
 
@@ -44,35 +32,10 @@ public abstract class Feature<T extends M3Node<?, V>, V extends LionWebVersionTo
     setOptional(false);
   }
 
-  public Feature(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?, V> container,
-      @Nonnull String id) {
-    super(lionWebVersion);
-    setOptional(false);
-    Objects.requireNonNull(id, "id should not be null");
-    this.setID(id);
-    // TODO enforce uniqueness of the name within the FeauturesContainer
-    setName(name);
-    setParent(container);
-  }
-
   public Feature(@Nullable String name, @Nullable Classifier<?, V> container, @Nonnull String id) {
     setOptional(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);
-    // TODO enforce uniqueness of the name within the FeauturesContainer
-    setName(name);
-    setParent(container);
-  }
-
-  public Feature(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?, V> container) {
-    super(lionWebVersion);
-    setOptional(false);
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
     setParent(container);

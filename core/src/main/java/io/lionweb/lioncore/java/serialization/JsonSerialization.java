@@ -93,11 +93,11 @@ public class JsonSerialization extends AbstractSerialization {
   // Serialization
   //
 
-  public JsonElement serializeTreeToJsonElement(ClassifierInstance<?> classifierInstance) {
+  public JsonElement serializeTreeToJsonElement(ClassifierInstance<?, ?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     return serializeNodesToJsonElement(
@@ -106,11 +106,11 @@ public class JsonSerialization extends AbstractSerialization {
             .collect(Collectors.toList()));
   }
 
-  public JsonElement serializeTreesToJsonElement(ClassifierInstance<?>... roots) {
+  public JsonElement serializeTreesToJsonElement(ClassifierInstance<?, ?>... roots) {
     Set<String> nodesIDs = new HashSet<>();
-    List<ClassifierInstance<?>> allNodes = new ArrayList<>();
-    for (ClassifierInstance<?> root : roots) {
-      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?, ?>> allNodes = new ArrayList<>();
+    for (ClassifierInstance<?, ?> root : roots) {
+      Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
       ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
       classifierInstances.forEach(
           n -> {
@@ -130,7 +130,7 @@ public class JsonSerialization extends AbstractSerialization {
         allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
   }
 
-  public JsonElement serializeNodesToJsonElement(List<ClassifierInstance<?>> classifierInstances) {
+  public JsonElement serializeNodesToJsonElement(List<ClassifierInstance<?, ?>> classifierInstances) {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -138,23 +138,23 @@ public class JsonSerialization extends AbstractSerialization {
     return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
   }
 
-  public JsonElement serializeNodesToJsonElement(ClassifierInstance<?>... classifierInstances) {
+  public JsonElement serializeNodesToJsonElement(ClassifierInstance<?, ?>... classifierInstances) {
     return serializeNodesToJsonElement(Arrays.asList(classifierInstances));
   }
 
-  public String serializeTreeToJsonString(ClassifierInstance<?> classifierInstance) {
+  public String serializeTreeToJsonString(ClassifierInstance<?, ?> classifierInstance) {
     return jsonElementToString(serializeTreeToJsonElement(classifierInstance));
   }
 
-  public String serializeTreesToJsonString(ClassifierInstance<?>... classifierInstances) {
+  public String serializeTreesToJsonString(ClassifierInstance<?, ?>... classifierInstances) {
     return jsonElementToString(serializeTreesToJsonElement(classifierInstances));
   }
 
-  public String serializeNodesToJsonString(List<ClassifierInstance<?>> classifierInstances) {
+  public String serializeNodesToJsonString(List<ClassifierInstance<?, ?>> classifierInstances) {
     return jsonElementToString(serializeNodesToJsonElement(classifierInstances));
   }
 
-  public String serializeNodesToJsonString(ClassifierInstance<?>... classifierInstances) {
+  public String serializeNodesToJsonString(ClassifierInstance<?, ?>... classifierInstances) {
     return jsonElementToString(serializeNodesToJsonElement(classifierInstances));
   }
 
@@ -181,7 +181,7 @@ public class JsonSerialization extends AbstractSerialization {
         .collect(Collectors.toList());
   }
 
-  public List<ClassifierInstance<?>> deserializeToClassifierInstances(JsonElement jsonElement) {
+  public List<ClassifierInstance<?, ?>> deserializeToClassifierInstances(JsonElement jsonElement) {
     SerializedChunk serializationBlock =
         new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);

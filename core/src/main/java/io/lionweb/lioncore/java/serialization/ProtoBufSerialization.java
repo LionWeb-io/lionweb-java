@@ -33,7 +33,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .collect(Collectors.toList());
   }
 
-  public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
+  public List<ClassifierInstance<?, ?>> deserializeToClassifierInstances(PBChunk chunk) {
     SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
     return deserializeSerializationBlock(serializationBlock);
@@ -120,11 +120,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serializedChunk;
   }
 
-  public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
+  public byte[] serializeTreesToByteArray(ClassifierInstance<?, ?>... roots) {
     Set<String> nodesIDs = new HashSet<>();
-    List<ClassifierInstance<?>> allNodes = new ArrayList<>();
-    for (ClassifierInstance<?> root : roots) {
-      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?, ?>> allNodes = new ArrayList<>();
+    for (ClassifierInstance<?, ?> root : roots) {
+      Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
       ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
       classifierInstances.forEach(
           n -> {
@@ -144,7 +144,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
         allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
   }
 
-  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
+  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?, ?>> classifierInstances) {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -152,7 +152,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serializeToByteArray(serializationBlock);
   }
 
-  public byte[] serializeNodesToByteArray(ClassifierInstance<?>... classifierInstances) {
+  public byte[] serializeNodesToByteArray(ClassifierInstance<?, ?>... classifierInstances) {
     return serializeNodesToByteArray(Arrays.asList(classifierInstances));
   }
 
@@ -247,11 +247,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
     }
   }
 
-  public PBChunk serializeTree(ClassifierInstance<?> classifierInstance) {
+  public PBChunk serializeTree(ClassifierInstance<?, ?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    Set<ClassifierInstance<?, ?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     SerializedChunk serializedChunk =

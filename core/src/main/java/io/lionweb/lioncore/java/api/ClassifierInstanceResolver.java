@@ -13,15 +13,15 @@ public interface ClassifierInstanceResolver {
    * Classifier InstanceResolver.
    */
   @Nullable
-  ClassifierInstance<?> resolve(String instanceID);
+  ClassifierInstance<?, ?> resolve(String instanceID);
 
   default boolean canResolve(String instanceID) {
     return resolve(instanceID) != null;
   }
 
   @Nonnull
-  default ClassifierInstance<?> strictlyResolve(String instanceID) {
-    ClassifierInstance<?> partial = resolve(instanceID);
+  default ClassifierInstance<?, ?> strictlyResolve(String instanceID) {
+    ClassifierInstance<?, ?> partial = resolve(instanceID);
     if (partial == null) {
       throw new UnresolvedClassifierInstanceException(instanceID);
     } else {
@@ -30,8 +30,8 @@ public interface ClassifierInstanceResolver {
   }
 
   @Nonnull
-  default ClassifierInstance<?> resolveOrProxy(String instanceID) {
-    ClassifierInstance<?> partial = resolve(instanceID);
+  default ClassifierInstance<?, ?> resolveOrProxy(String instanceID) {
+    ClassifierInstance<?, ?> partial = resolve(instanceID);
     return partial == null ? new ProxyNode(instanceID) : partial;
   }
 }

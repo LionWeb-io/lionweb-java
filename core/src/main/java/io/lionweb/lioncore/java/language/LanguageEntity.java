@@ -18,24 +18,12 @@ import javax.annotation.Nullable;
  *     equivalent <i>IStructureElement</i> in local MPS</a>
  * @see org.jetbrains.mps.openapi.language.SElement MPS equivalent <i>SElement</i> in SModel
  */
-public abstract class LanguageEntity<T extends M3Node, V extends LionWebVersionToken> extends M3Node<T, V>
+public abstract class LanguageEntity<T extends M3Node<T, V>, V extends LionWebVersionToken> extends M3Node<T, V>
     implements NamespacedEntity, IKeyed<T> {
 
-  public LanguageEntity(@Nonnull LionWebVersionToken lionWebVersionToken) {
-    super(lionWebVersionToken);
-  }
 
   public LanguageEntity() {
-    this(LionWebVersionToken.getCurrentVersion());
-  }
 
-  public LanguageEntity(
-      @Nonnull LionWebVersionToken lionWebVersionToken,
-      @Nullable Language<V> language,
-      @Nullable String name,
-      @Nonnull String id) {
-    this(lionWebVersionToken, language, name);
-    this.setID(id);
   }
 
   public LanguageEntity(@Nullable Language<V> language, @Nullable String name, @Nonnull String id) {
@@ -45,18 +33,6 @@ public abstract class LanguageEntity<T extends M3Node, V extends LionWebVersionT
 
   public LanguageEntity(@Nullable Language<V> language, @Nullable String name) {
     this();
-    // TODO enforce uniqueness of the name within the Language
-    this.setName(name);
-    if (language != null) {
-      language.addElement(this);
-    } else {
-      this.setParent(null);
-    }
-  }
-
-  public LanguageEntity(
-      @Nonnull LionWebVersionToken lionWebVersionToken, @Nullable Language<V> language, @Nullable String name) {
-    this(lionWebVersionToken);
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {

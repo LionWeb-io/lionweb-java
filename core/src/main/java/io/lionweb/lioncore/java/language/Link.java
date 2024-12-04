@@ -20,32 +20,14 @@ import javax.annotation.Nullable;
  * @see org.jetbrains.mps.openapi.language.SAbstractLink MPS equivalent <i>SAbstractLink</i> in
  *     SModel
  */
-public abstract class Link<T extends M3Node<?, V>, V extends LionWebVersionToken> extends Feature<T, V> {
+public abstract class Link<T extends M3Node<T, V>, V extends LionWebVersionToken> extends Feature<T, V> {
   public Link() {
     super();
     setMultiple(false);
   }
 
-  public Link(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
-    setMultiple(false);
-  }
-
-  public Link(@Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
-    super(lionWebVersion, name, id);
-    setMultiple(false);
-  }
-
   public Link(@Nullable String name, @Nonnull String id) {
     super(name, id);
-    setMultiple(false);
-  }
-
-  public Link(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?, V> container) {
-    super(lionWebVersion, name, container);
     setMultiple(false);
   }
 

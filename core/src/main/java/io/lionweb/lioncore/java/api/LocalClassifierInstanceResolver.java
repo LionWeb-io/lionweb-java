@@ -15,29 +15,29 @@ import javax.annotation.Nullable;
  * ID.
  */
 public class LocalClassifierInstanceResolver implements ClassifierInstanceResolver {
-  private final Map<String, ClassifierInstance<?>> instances = new HashMap<>();
+  private final Map<String, ClassifierInstance<?, ?>> instances = new HashMap<>();
 
   public LocalClassifierInstanceResolver() {}
 
-  public LocalClassifierInstanceResolver(ClassifierInstance<?>... instances) {
+  public LocalClassifierInstanceResolver(ClassifierInstance<?, ?>... instances) {
     this(Arrays.asList(instances));
   }
 
-  public LocalClassifierInstanceResolver(List<ClassifierInstance<?>> instances) {
+  public LocalClassifierInstanceResolver(List<ClassifierInstance<?, ?>> instances) {
     instances.forEach(n -> add(n));
   }
 
-  public void add(@Nonnull ClassifierInstance<?> instance) {
+  public void add(@Nonnull ClassifierInstance<?, ?> instance) {
     instances.put(instance.getID(), instance);
   }
 
   @Nullable
   @Override
-  public ClassifierInstance<?> resolve(String instanceID) {
+  public ClassifierInstance<?, ?> resolve(String instanceID) {
     return instances.get(instanceID);
   }
 
-  public void addAll(@Nonnull List<? extends ClassifierInstance<?>> instances) {
+  public void addAll(@Nonnull List<? extends ClassifierInstance<?, ?>> instances) {
     instances.forEach(n -> add(n));
   }
 
@@ -46,7 +46,7 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
     return "LocalClassifierInstanceResolver(" + instances.keySet() + ")";
   }
 
-  public void addTree(@Nonnull Node root) {
+  public void addTree(@Nonnull Node<?> root) {
     add(root);
     ClassifierInstanceUtils.getChildren(root).forEach(c -> addTree(c));
   }
