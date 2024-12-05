@@ -316,7 +316,10 @@ public class FlatbuffersSerializationTest extends SerializationTest {
   public void serializationIncludeBuiltinsWhenUsedInProperties() {
     Language l = new Language("l", "l", "l", "1");
     Concept c = new Concept(l, "c", "c", "c");
-    c.addFeature(Property.createRequired("foo", LionCoreBuiltins.getString()).setID("foo-id"));
+    c.addFeature(
+        Property.createRequired("foo", LionCoreBuiltins.getString())
+            .setID("foo-id")
+            .setKey("foo-key"));
 
     DynamicNode n1 = new DynamicNode("n1", c);
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
