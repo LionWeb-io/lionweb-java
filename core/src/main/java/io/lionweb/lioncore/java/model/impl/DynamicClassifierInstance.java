@@ -81,8 +81,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void addChild(@Nonnull Containment containment, Node child) {
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     Objects.requireNonNull(containment);
+    Objects.requireNonNull(child);
     if (containment.isMultiple()) {
       addContainment(containment, child);
     } else {

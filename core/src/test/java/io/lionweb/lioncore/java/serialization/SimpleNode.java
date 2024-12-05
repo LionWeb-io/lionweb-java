@@ -84,7 +84,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     throw new UnsupportedOperationException();
   }
 

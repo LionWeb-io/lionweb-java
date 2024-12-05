@@ -124,7 +124,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
+    Objects.requireNonNull(containment);
+    Objects.requireNonNull(child);
     if (containment.isMultiple()) {
       addContainmentMultipleValue(containment.getName(), child);
     } else {
@@ -133,7 +135,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void removeChild(Node node) {
+  public void removeChild(@Nonnull Node child) {
+    Objects.requireNonNull(child);
     throw new UnsupportedOperationException();
   }
 
