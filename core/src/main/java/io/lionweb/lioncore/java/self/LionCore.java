@@ -286,7 +286,8 @@ public class LionCore {
 
       structuredDataType.setExtendedConcept(dataType);
       structuredDataType.addFeature(
-          Containment.createMultiple("fields", feature, "-id-StructuredDataType-fields"));
+          Containment.createMultiple("fields", feature, "-id-StructuredDataType-fields")
+              .setOptional(false));
 
       field.addImplementedInterface(LionCoreBuiltins.getINamed());
       field.addImplementedInterface(iKeyed);
