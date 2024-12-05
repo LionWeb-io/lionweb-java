@@ -73,6 +73,29 @@ public class PrimitiveValuesSerialization {
     return this;
   }
 
+  private StructuredDataTypeInstance deserializeSDT(String dataTypeID, JsonObject jo) {
+    StructuredDataType sdt = strucuturesDataTypesByID.get(dataTypeID);
+    DynamicStructuredDataTypeInstance sdtInstance = new DynamicStructuredDataTypeInstance(sdt);
+    for (Field field : sdt.getFields()) {
+      if (jo.has(field.getName())) {
+        DataType fieldDataType = field.getType();
+        JsonElement jFieldValue = jo.get(field.getName());
+        if (jFieldValue instanceof JsonNull) {
+          sdtInstance.setFieldValue(field, null);
+        } else {
+          if (isStructuredDataType(fieldDataType.getID())) {
+            sdtInstance.setFieldValue(
+                field, deserializeSDT(fieldDataType.getID(), jFieldValue.getAsJsonObject()));
+          } else {
+            Object fieldValue = this.deserialize(fieldDataType, jFieldValue.getAsString(), false);
+            sdtInstance.setFieldValue(field, fieldValue);
+          }
+        }
+      }
+    }
+    return sdtInstance;
+  }
+
   public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
       @Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
@@ -157,26 +180,26 @@ public class PrimitiveValuesSerialization {
       if (serializedValue == null) {
         return null;
       }
-      StructuredDataType sdt = strucuturesDataTypesByID.get(dataTypeID);
-      DynamicStructuredDataTypeInstance sdtInstance = new DynamicStructuredDataTypeInstance(sdt);
       JsonObject jo = JsonParser.parseString(serializedValue).getAsJsonObject();
-      for (Field field : sdt.getFields()) {
-        if (jo.has(field.getName())) {
-          DataType fieldDataType = field.getType();
-          JsonElement jFieldValue = jo.get(field.getName());
-          if (jFieldValue instanceof JsonNull) {
-            sdtInstance.setFieldValue(field, null);
-          } else {
-            Object fieldValue = this.deserialize(fieldDataType, jFieldValue.getAsString(), false);
-            sdtInstance.setFieldValue(field, fieldValue);
-          }
-        }
-      }
-      return sdtInstance;
+      return deserializeSDT(dataTypeID, jo);
     } else {
       throw new IllegalArgumentException(
           "Unable to deserialize primitive values of type " + dataType);
     }
+  }
+
+  private JsonObject serializeSDT(@Nullable StructuredDataTypeInstance structuredDataTypeInstance) {
+    JsonObject jo = new JsonObject();
+    for (Field field : structuredDataTypeInstance.getStructuredDataType().getFields()) {
+      Object fieldValue = structuredDataTypeInstance.getFieldValue(field);
+      if (isStructuredDataType(field.getType().getID())) {
+        // We need to handle those differently to avoid having nested strings
+      } else {
+        String serializedFieldValue = this.serialize(field.getType().getID(), fieldValue);
+        jo.addProperty(field.getName(), serializedFieldValue);
+      }
+    }
+    return jo;
   }
 
   public String serialize(@Nonnull String primitiveTypeID, @Nullable Object value) {
@@ -226,8 +249,14 @@ public class PrimitiveValuesSerialization {
         JsonObject jo = new JsonObject();
         for (Field field : structuredDataTypeInstance.getStructuredDataType().getFields()) {
           Object fieldValue = structuredDataTypeInstance.getFieldValue(field);
-          String serializedFieldValue = this.serialize(field.getType().getID(), fieldValue);
-          jo.addProperty(field.getName(), serializedFieldValue);
+          if (isStructuredDataType(field.getType().getID())) {
+            // We need to handle those differently to avoid having nested strings
+            StructuredDataTypeInstance fieldValueAsSDT = (StructuredDataTypeInstance) fieldValue;
+            jo.add(field.getName(), serializeSDT(fieldValueAsSDT));
+          } else {
+            String serializedFieldValue = this.serialize(field.getType().getID(), fieldValue);
+            jo.addProperty(field.getName(), serializedFieldValue);
+          }
         }
 
         Gson gson = new GsonBuilder().serializeNulls().create();

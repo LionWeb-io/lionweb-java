@@ -197,7 +197,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
             .getPrimitiveValuesSerialization()
             .serialize(MyNodeWithAmount.AMOUNT.getID(), amount);
     assertEquals(
-        "{\"value\":\"{\\\"int\\\":\\\"2\\\",\\\"frac\\\":\\\"3\\\"}\",\"currency\":\"euro\",\"digital\":\"true\"}",
+        "{\"value\":{\"int\":\"2\",\"frac\":\"3\"},\"currency\":\"euro\",\"digital\":\"true\"}",
         amountSerialized);
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(n1).getAsJsonObject();
     Node n1Deserialized = jsonSerialization.deserializeToNodes(serialized).get(0);
