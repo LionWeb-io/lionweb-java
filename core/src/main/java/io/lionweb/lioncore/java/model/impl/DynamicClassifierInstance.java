@@ -49,12 +49,10 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   @Override
   public void setPropertyValue(@Nonnull Property property, @Nullable Object value) {
     Objects.requireNonNull(property, "Property should not be null");
+    Objects.requireNonNull(property.getID(), "Cannot assign a property with no ID specified");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException(
           "Property " + property + " is not belonging to classifier " + getClassifier());
-    }
-    if (property.getID() == null) {
-      throw new IllegalStateException("Cannot assign a property with no ID specified");
     }
     if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
