@@ -188,7 +188,7 @@ public class PrimitiveValuesSerialization {
     }
   }
 
-  private JsonObject serializeSDT(@Nullable StructuredDataTypeInstance structuredDataTypeInstance) {
+  private JsonObject serializeSDT(@Nonnull StructuredDataTypeInstance structuredDataTypeInstance) {
     JsonObject jo = new JsonObject();
     for (Field field : structuredDataTypeInstance.getStructuredDataType().getFields()) {
       Object fieldValue = structuredDataTypeInstance.getFieldValue(field);
@@ -248,8 +248,13 @@ public class PrimitiveValuesSerialization {
         StructuredDataTypeInstance structuredDataTypeInstance = (StructuredDataTypeInstance) value;
         JsonObject jo = new JsonObject();
         for (Field field : structuredDataTypeInstance.getStructuredDataType().getFields()) {
+          Objects.requireNonNull(field.getName(), "Field name should be set");
+          Objects.requireNonNull(field.getType(), "Field type should be set");
+          Objects.requireNonNull(field.getType().getID(), "Field type ID should be set");
           Object fieldValue = structuredDataTypeInstance.getFieldValue(field);
-          if (isStructuredDataType(field.getType().getID())) {
+          if (fieldValue == null) {
+            jo.add(field.getName(), JsonNull.INSTANCE);
+          } else if (isStructuredDataType(field.getType().getID())) {
             // We need to handle those differently to avoid having nested strings
             StructuredDataTypeInstance fieldValueAsSDT = (StructuredDataTypeInstance) fieldValue;
             jo.add(field.getName(), serializeSDT(fieldValueAsSDT));
