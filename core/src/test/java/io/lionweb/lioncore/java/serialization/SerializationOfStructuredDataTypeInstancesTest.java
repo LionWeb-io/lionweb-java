@@ -63,7 +63,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
                     + "                        \"version\": \"1\",\n"
                     + "                        \"key\": \"my-point\"\n"
                     + "                    },\n"
-                    + "                    \"value\": \"{\\\"x\\\":\\\"10\\\",\\\"y\\\":\\\"20\\\"}\"\n"
+                    + "                    \"value\": \"{\\\"x-key\\\":\\\"10\\\",\\\"y-key\\\":\\\"20\\\"}\"\n"
                     + "                },\n"
                     + "                {\n"
                     + "                    \"property\": {\n"
@@ -71,7 +71,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
                     + "                        \"version\": \"1\",\n"
                     + "                        \"key\": \"my-address\"\n"
                     + "                    },\n"
-                    + "                    \"value\": \"{\\\"street\\\":\\\"Via Morghen 29\\\",\\\"city\\\":\\\"Torino\\\"}\"\n"
+                    + "                    \"value\": \"{\\\"street-key\\\":\\\"Via Morghen 29\\\",\\\"city-key\\\":\\\"Torino\\\"}\"\n"
                     + "                }\n"
                     + "            ],\n"
                     + "            \"containments\": [],\n"
@@ -130,7 +130,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
                     + "                        \"version\": \"1\",\n"
                     + "                        \"key\": \"my-point\"\n"
                     + "                    },\n"
-                    + "                    \"value\": \"{\\\"x\\\":\\\"10\\\",\\\"y\\\":\\\"20\\\"}\"\n"
+                    + "                    \"value\": \"{\\\"x-key\\\":\\\"10\\\",\\\"y-key\\\":\\\"20\\\"}\"\n"
                     + "                },\n"
                     + "                {\n"
                     + "                    \"property\": {\n"
@@ -138,7 +138,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
                     + "                        \"version\": \"1\",\n"
                     + "                        \"key\": \"my-address\"\n"
                     + "                    },\n"
-                    + "                    \"value\": \"{\\\"street\\\":\\\"Via Morghen 29\\\",\\\"city\\\":\\\"Torino\\\"}\"\n"
+                    + "                    \"value\": \"{\\\"street-key\\\":\\\"Via Morghen 29\\\",\\\"city-key\\\":\\\"Torino\\\"}\"\n"
                     + "                }\n"
                     + "            ],\n"
                     + "            \"containments\": [],\n"
@@ -197,7 +197,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
             .getPrimitiveValuesSerialization()
             .serialize(MyNodeWithAmount.AMOUNT.getID(), amount);
     assertEquals(
-        "{\"value\":{\"int\":\"2\",\"frac\":\"3\"},\"currency\":\"euro\",\"digital\":\"true\"}",
+        "{\"value-key\":{\"int-key\":\"2\",\"frac-key\":\"3\"},\"currency-key\":\"euro\",\"digital-key\":\"true\"}",
         amountSerialized);
     JsonObject serialized = jsonSerialization.serializeNodesToJsonElement(n1).getAsJsonObject();
     Node n1Deserialized = jsonSerialization.deserializeToNodes(serialized).get(0);

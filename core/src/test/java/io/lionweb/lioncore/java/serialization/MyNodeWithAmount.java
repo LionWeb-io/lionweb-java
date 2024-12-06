@@ -24,8 +24,10 @@ public class MyNodeWithAmount extends DynamicNode {
           .setKey("decimal-key")
           .setName("decimal")
           .setParent(LANGUAGE)
-          .addField(new Field("int", LionCoreBuiltins.getInteger()).setID("int-id"))
-          .addField(new Field("frac", LionCoreBuiltins.getInteger()).setID("frac-id"));
+          .addField(
+              new Field("int", LionCoreBuiltins.getInteger()).setID("int-id").setKey("int-key"))
+          .addField(
+              new Field("frac", LionCoreBuiltins.getInteger()).setID("frac-id").setKey("frac-key"));
   public static final Enumeration CURRENCY =
       new Enumeration(LANGUAGE, "Currency")
           .setID("currency-id")
@@ -38,9 +40,12 @@ public class MyNodeWithAmount extends DynamicNode {
           .setKey("amount-key")
           .setName("amount")
           .setParent(LANGUAGE)
-          .addField(new Field("value", DECIMAL).setID("value-id"))
-          .addField(new Field("currency", CURRENCY).setID("currency-id"))
-          .addField(new Field("digital", LionCoreBuiltins.getBoolean()).setID("digital-id"));
+          .addField(new Field("value", DECIMAL).setID("value-id").setKey("value-key"))
+          .addField(new Field("currency", CURRENCY).setID("currency-id").setKey("currency-key"))
+          .addField(
+              new Field("digital", LionCoreBuiltins.getBoolean())
+                  .setID("digital-id")
+                  .setKey("digital-key"));
 
   static {
     CONCEPT.addFeature(
