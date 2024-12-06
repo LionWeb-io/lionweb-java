@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.ArrayList;
@@ -25,6 +26,10 @@ import javax.annotation.Nullable;
  *     equivalent <i>NodeAttribute</i> in local MPS</a>
  */
 public class Annotation extends Classifier<Annotation> {
+
+  public Annotation(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
 
   public Annotation() {
     super();
@@ -121,6 +126,6 @@ public class Annotation extends Classifier<Annotation> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getAnnotation();
+    return LionCore.getAnnotation(getLionWebVersion());
   }
 }

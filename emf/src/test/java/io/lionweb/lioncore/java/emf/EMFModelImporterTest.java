@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class EMFModelImporterTest {
     List<EPackage> ePackages = loadKotlinEPackages();
 
     InputStream is = this.getClass().getResourceAsStream("/KotlinPrinterAST.json");
-    EMFModelImporter importer = new EMFModelImporter();
+    EMFModelImporter importer = new EMFModelImporter(LionWebVersion.v2023_1);
 
     importer.getNodeInstantiator().enableDynamicNodes();
 

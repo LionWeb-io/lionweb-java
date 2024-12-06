@@ -8,6 +8,7 @@ import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.MyNodeWithProperties;
+import io.lionweb.lioncore.java.serialization.MyNodeWithProperties2023;
 import io.lionweb.lioncore.java.serialization.MyNodeWithReferences;
 import io.lionweb.lioncore.java.serialization.MyNodeWithSelfContainment;
 import java.util.Arrays;
@@ -32,12 +33,12 @@ public class DynamicNodeTest {
 
   @Test
   public void equalityPositiveCaseWithProperties() {
-    MyNodeWithProperties n1 = new MyNodeWithProperties("id1");
+    MyNodeWithProperties2023 n1 = new MyNodeWithProperties2023("id1");
     n1.setP1(true);
     n1.setP2(123);
     n1.setP3("foo");
     n1.setP4(new JsonArray());
-    MyNodeWithProperties n2 = new MyNodeWithProperties("id1");
+    MyNodeWithProperties2023 n2 = new MyNodeWithProperties2023("id1");
     n2.setP1(true);
     n2.setP2(123);
     n2.setP3("foo");
@@ -46,13 +47,13 @@ public class DynamicNodeTest {
   }
 
   @Test
-  public void equalityNegativrCaseWithProperties() {
-    MyNodeWithProperties n1 = new MyNodeWithProperties("id1");
+  public void equalityNegativeCaseWithProperties() {
+    MyNodeWithProperties2023 n1 = new MyNodeWithProperties2023("id1");
     n1.setP1(true);
     n1.setP2(123);
     n1.setP3("foo");
     n1.setP4(new JsonArray());
-    MyNodeWithProperties n2 = new MyNodeWithProperties("id1");
+    MyNodeWithProperties2023 n2 = new MyNodeWithProperties2023("id1");
     n2.setP1(true);
     n2.setP2(123);
     n2.setP3("bar");

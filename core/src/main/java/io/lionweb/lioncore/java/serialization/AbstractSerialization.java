@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.common.collect.Sets;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
@@ -22,7 +23,11 @@ import javax.annotation.Nullable;
  * and the actual physical formats is done in other classes.
  */
 public abstract class AbstractSerialization {
-  public static final String DEFAULT_SERIALIZATION_FORMAT = "2023.1";
+
+  /** You should use LionWebVersion.currentVersion.getVersionString() instead. */
+  @Deprecated
+  public static final String DEFAULT_SERIALIZATION_FORMAT =
+      LionWebVersion.currentVersion.getVersionString();
 
   protected ClassifierResolver classifierResolver;
   protected Instantiator instantiator;
@@ -48,7 +53,15 @@ public abstract class AbstractSerialization {
   protected UnavailableNodePolicy unavailableReferenceTargetPolicy =
       UnavailableNodePolicy.THROW_ERROR;
 
+  private final @Nonnull LionWebVersion lionWebVersion;
+
   protected AbstractSerialization() {
+    this(LionWebVersion.currentVersion);
+  }
+
+  protected AbstractSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
     // prevent public access
     classifierResolver = new ClassifierResolver();
     instantiator = new Instantiator();
@@ -145,7 +158,7 @@ public abstract class AbstractSerialization {
   public SerializedChunk serializeNodesToSerializationBlock(
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(DEFAULT_SERIALIZATION_FORMAT);
+    serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(classifierInstance));
@@ -329,9 +342,15 @@ public abstract class AbstractSerialization {
     if (serializationBlock.getSerializationFormatVersion() == null) {
       throw new IllegalArgumentException("The serializationFormatVersion should not be null");
     }
-    if (!serializationBlock.getSerializationFormatVersion().equals(DEFAULT_SERIALIZATION_FORMAT)) {
+    if (!serializationBlock
+        .getSerializationFormatVersion()
+        .equals(lionWebVersion.getVersionString())) {
       throw new IllegalArgumentException(
-          "Only serializationFormatVersion = '" + DEFAULT_SERIALIZATION_FORMAT + "' is supported");
+          "Only serializationFormatVersion supported by this instance of Serialization is '"
+              + lionWebVersion.getVersionString()
+              + "' but we found '"
+              + serializationBlock.getSerializationFormatVersion()
+              + "'");
     }
   }
 
@@ -417,11 +436,15 @@ public abstract class AbstractSerialization {
 
   public List<ClassifierInstance<?>> deserializeSerializationBlock(
       SerializedChunk serializationBlock) {
-    return deserializeClassifierInstances(serializationBlock.getClassifierInstances());
+    return deserializeClassifierInstances(
+        LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()),
+        serializationBlock.getClassifierInstances());
   }
 
   private List<ClassifierInstance<?>> deserializeClassifierInstances(
+      @Nonnull LionWebVersion lionWebVersion,
       List<SerializedClassifierInstance> serializedClassifierInstances) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     // We want to deserialize the nodes starting from the leaves. This is useful because in certain
     // cases we may want to use the children as constructor parameters of the parent
     DeserializationStatus deserializationStatus = sortLeavesFirst(serializedClassifierInstances);
@@ -436,7 +459,8 @@ public abstract class AbstractSerialization {
     sortedSerializedClassifierInstances.stream()
         .forEach(
             n -> {
-              ClassifierInstance<?> instantiated = instantiateFromSerialized(n, deserializedByID);
+              ClassifierInstance<?> instantiated =
+                  instantiateFromSerialized(lionWebVersion, n, deserializedByID);
               if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
                 throw new IllegalStateException("Duplicate ID found: " + n.getID());
               }
@@ -506,8 +530,10 @@ public abstract class AbstractSerialization {
   }
 
   private ClassifierInstance<?> instantiateFromSerialized(
+      @Nonnull LionWebVersion lionWebVersion,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> deserializedByID) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
       throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
@@ -533,6 +559,7 @@ public abstract class AbstractSerialization {
                       + classifier.allProperties().stream()
                           .map(p -> MetaPointer.from(p))
                           .collect(Collectors.toList()));
+              Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
                   primitiveValuesSerialization.deserialize(
                       property.getType(),
@@ -564,5 +591,9 @@ public abstract class AbstractSerialization {
             });
 
     return classifierInstance;
+  }
+
+  public LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
   }
 }

@@ -4,6 +4,7 @@ import static io.lionweb.lioncore.java.serialization.SerializedJsonComparisonUti
 import static org.junit.Assert.*;
 
 import com.google.gson.*;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.UnresolvedClassifierInstanceException;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.*;
@@ -42,7 +43,8 @@ public class JsonSerializationTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -74,7 +76,8 @@ public class JsonSerializationTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -105,7 +108,8 @@ public class JsonSerializationTest extends SerializationTest {
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
     // those values
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
@@ -132,7 +136,8 @@ public class JsonSerializationTest extends SerializationTest {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/TestLang-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
 
     Enumeration testEnumeration1 =
@@ -164,7 +169,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeLanguageWithDependencies() {
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     Language starlasu =
         (Language)
             jsonSerialization
@@ -354,7 +360,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test(expected = DeserializationException.class)
   public void deserializeTreeWithoutRoot() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     List<Node> nodes =
         js.deserializeToNodes(
             this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
@@ -384,7 +391,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -462,7 +469,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -515,7 +522,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -589,7 +596,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonElement je =
         JsonParser.parseString(
             "{\n"
-                + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                + "    \"serializationFormatVersion\": \"2024.1\",\n"
                 + "    \"languages\": [{\n"
                 + "        \"version\": \"1\",\n"
                 + "        \"key\": \"mm_key\"\n"
@@ -677,7 +684,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
-        new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
+        new MetaPointer("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
   }
 
@@ -785,7 +792,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test(expected = DeserializationException.class)
   public void deserializePartialTreeFailsByDefault() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
     Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -798,7 +806,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializePartialTreeSucceedsWithNullReferencesUnavailableNodePolicy() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
     Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -813,7 +822,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializePartialTreeSucceedsWithProxyNodesUnavailableNodePolicy() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/propertiesLanguage.json");
     Language propertiesLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -837,7 +847,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test(expected = DeserializationException.class)
   public void deserializeTreeWithExternalReferencesWithThrowErrorsUnavailableNodePolicy() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -853,7 +864,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeTreeWithExternalReferencesWithProxyNodesUnavailableNodePolicy() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -905,7 +917,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeTreeWithExternalReferencesSetToNullPolicyUnavailableNodePolicy() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -951,7 +964,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeTreesWithChildrenNotProvided() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);
@@ -998,7 +1012,8 @@ public class JsonSerializationTest extends SerializationTest {
 
   @Test
   public void deserializeMultipleReferencesToProxiedNode() {
-    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     InputStream languageIs =
         this.getClass().getResourceAsStream("/serialization/todosLanguage.json");
     Language todosLanguage = (Language) js.deserializeToNodes(languageIs).get(0);

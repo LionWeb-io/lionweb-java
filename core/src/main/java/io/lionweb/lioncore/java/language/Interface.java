@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
@@ -26,6 +27,10 @@ public class Interface extends Classifier<Interface> {
     super();
   }
 
+  public Interface(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Interface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
@@ -41,6 +46,15 @@ public class Interface extends Classifier<Interface> {
 
   public Interface(@Nullable Language language, @Nullable String name) {
     super(language, name);
+  }
+
+  public Interface(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+  }
+
+  public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, null, name);
   }
 
   public Interface(@Nullable String name) {
@@ -73,7 +87,7 @@ public class Interface extends Classifier<Interface> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getInterface();
+    return LionCore.getInterface(getLionWebVersion());
   }
 
   @Nonnull

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Annotation;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Language;
@@ -41,7 +42,8 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     assertEquals(
         "LionCore_M3",
         lioncore.getPropertyValue(
-            MetaPointer.from(LionCoreBuiltins.getINamed().getPropertyByName("name"))));
+            MetaPointer.from(
+                LionCoreBuiltins.getINamed(LionWebVersion.v2023_1).getPropertyByName("name"))));
     assertEquals(16, lioncore.getChildren().size());
     assertNull(lioncore.getParentNodeID());
   }
@@ -66,11 +68,13 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     assertEquals(
         Arrays.asList(new SerializedReferenceValue.Entry("library-Writer", "Writer")),
         guidedBookWriter.getReferenceValues(
-            MetaPointer.from(LionCore.getConcept().getReferenceByName("extends"))));
+            MetaPointer.from(
+                LionCore.getConcept(LionWebVersion.v2023_1).getReferenceByName("extends"))));
     assertEquals(
         Arrays.asList("library-GuideBookWriter-countries"),
         guidedBookWriter.getContainmentValues(
-            MetaPointer.from(LionCore.getConcept().getContainmentByName("features"))));
+            MetaPointer.from(
+                LionCore.getConcept(LionWebVersion.v2023_1).getContainmentByName("features"))));
   }
 
   @Test

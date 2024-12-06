@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.testset;
 
 import static org.junit.Assert.*;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
@@ -33,7 +34,9 @@ public abstract class ATestset {
 
   protected static Language loadLanguage(Path path) {
     Node firstNode =
-        parse(path, SerializationProvider.getStandardJsonSerialization()).iterator().next();
+        parse(path, SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1))
+            .iterator()
+            .next();
     assertTrue(firstNode.getClass().toString(), firstNode instanceof Language);
     Language result = (Language) firstNode;
     LanguageValidator.ensureIsValid(result);

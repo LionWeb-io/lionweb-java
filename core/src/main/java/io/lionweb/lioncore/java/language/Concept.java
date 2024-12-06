@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
@@ -32,6 +33,12 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
+  public Concept(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+    setAbstract(false);
+    setPartition(false);
+  }
+
   public Concept(
       @Nullable Language language,
       @Nullable String name,
@@ -47,8 +54,21 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
+  public Concept(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+    setAbstract(false);
+    setPartition(false);
+  }
+
   public Concept(@Nullable Language language, @Nullable String name) {
     super(language, name);
+    setAbstract(false);
+    setPartition(false);
+  }
+
+  public Concept(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, null, name);
     setAbstract(false);
     setPartition(false);
   }
@@ -122,6 +142,6 @@ public class Concept extends Classifier<Concept> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getConcept();
+    return LionCore.getConcept(getLionWebVersion());
   }
 }

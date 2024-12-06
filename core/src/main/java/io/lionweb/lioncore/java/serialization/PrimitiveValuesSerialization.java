@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.serialization;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.impl.EnumerationValue;
@@ -68,9 +69,11 @@ public class PrimitiveValuesSerialization {
     return this;
   }
 
-  public void registerLionBuiltinsPrimitiveSerializersAndDeserializers() {
+  public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
+      @Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     primitiveDeserializers.put(
-        LionCoreBuiltins.getBoolean().getID(),
+        LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
         new PrimitiveDeserializer<Boolean>() {
 
           @Override
@@ -86,18 +89,20 @@ public class PrimitiveValuesSerialization {
             return Boolean.parseBoolean(serializedValue);
           }
         });
-    primitiveDeserializers.put(LionCoreBuiltins.getString().getID(), s -> s);
+    primitiveDeserializers.put(LionCoreBuiltins.getString(lionWebVersion).getID(), s -> s);
+    if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
+      primitiveDeserializers.put(
+          LionCoreBuiltins.getJSON(lionWebVersion).getID(),
+          (PrimitiveDeserializer<JsonElement>)
+              serializedValue -> {
+                if (serializedValue == null) {
+                  return null;
+                }
+                return JsonParser.parseString(serializedValue);
+              });
+    }
     primitiveDeserializers.put(
-        LionCoreBuiltins.getJSON().getID(),
-        (PrimitiveDeserializer<JsonElement>)
-            serializedValue -> {
-              if (serializedValue == null) {
-                return null;
-              }
-              return JsonParser.parseString(serializedValue);
-            });
-    primitiveDeserializers.put(
-        LionCoreBuiltins.getInteger().getID(),
+        LionCoreBuiltins.getInteger(lionWebVersion).getID(),
         (PrimitiveDeserializer<Integer>)
             serializedValue -> {
               if (serializedValue == null) {
@@ -107,19 +112,24 @@ public class PrimitiveValuesSerialization {
             });
 
     primitiveSerializers.put(
-        LionCoreBuiltins.getBoolean().getID(),
+        LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
         (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
+    if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
+      primitiveSerializers.put(
+          LionCoreBuiltins.getJSON(lionWebVersion).getID(),
+          (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
+    }
     primitiveSerializers.put(
-        LionCoreBuiltins.getJSON().getID(),
-        (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
+        LionCoreBuiltins.getString(lionWebVersion).getID(),
+        (PrimitiveSerializer<String>) value -> value);
     primitiveSerializers.put(
-        LionCoreBuiltins.getString().getID(), (PrimitiveSerializer<String>) value -> value);
-    primitiveSerializers.put(
-        LionCoreBuiltins.getInteger().getID(),
+        LionCoreBuiltins.getInteger(lionWebVersion).getID(),
         (PrimitiveSerializer<Integer>) value -> value.toString());
   }
 
-  public Object deserialize(DataType dataType, String serializedValue, boolean isRequired) {
+  public Object deserialize(
+      @Nonnull DataType dataType, String serializedValue, boolean isRequired) {
+    Objects.requireNonNull(dataType, "dataType should not be null");
     String dataTypeID = dataType.getID();
     if (primitiveDeserializers.containsKey(dataTypeID)) {
       return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue, isRequired);

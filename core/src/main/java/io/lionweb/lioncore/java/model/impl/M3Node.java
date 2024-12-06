@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
@@ -14,15 +15,19 @@ import javax.annotation.Nullable;
 /**
  * Base class to help implements Node in the language package.
  *
- * <p>Other libraries could implement Node differently, for example based on reflection. However
+ * <p>Other libraries could implement Node differently, for example based on reflection. However,
  * this is outside the scope of this library. This library should provide a solid, basic dependency
  * to be used by other implementation and it should be as reusable, basic, and unopinionated as
  * possible.
+ *
+ * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
+ * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
     implements Node {
-  private String id;
-  private Node parent;
+  private final @Nonnull LionWebVersion lionWebVersion;
+  private @Nullable String id;
+  private @Nullable Node parent;
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
@@ -31,6 +36,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   private final Map<String, Object> propertyValues = new HashMap<>();
   private final Map<String, List<Node>> containmentValues = new HashMap<>();
   private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+
+  protected M3Node() {
+    this.lionWebVersion = LionWebVersion.currentVersion;
+  }
+
+  protected M3Node(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
+  }
 
   public T setID(String id) {
     this.id = id;
@@ -278,5 +292,10 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
+  }
+
+  @Nonnull
+  public LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
   }
 }

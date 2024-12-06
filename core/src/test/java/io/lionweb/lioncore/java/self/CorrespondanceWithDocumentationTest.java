@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.self;
 import static io.lionweb.lioncore.java.serialization.SerializationProvider.getStandardJsonSerialization;
 import static org.junit.Assert.assertTrue;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.model.Node;
@@ -20,7 +21,7 @@ public class CorrespondanceWithDocumentationTest {
 
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo() throws IOException {
-    JsonSerialization jsonSer = getStandardJsonSerialization();
+    JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2023_1);
 
     URL url =
         new URL(
@@ -31,7 +32,8 @@ public class CorrespondanceWithDocumentationTest {
 
     Language deserializedLioncore = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
-        new ModelComparator().compare(deserializedLioncore, LionCore.getInstance());
+        new ModelComparator()
+            .compare(deserializedLioncore, LionCore.getInstance(LionWebVersion.v2023_1));
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
@@ -40,8 +42,8 @@ public class CorrespondanceWithDocumentationTest {
   }
 
   @Test
-  public void builtInIsTheSameAsInTheOrganizationRepo() throws IOException {
-    JsonSerialization jsonSer = getStandardJsonSerialization();
+  public void builtInIsTheSameAsInTheOrganizationRepo2023_1() throws IOException {
+    JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2023_1);
 
     URL url =
         new URL(
@@ -52,7 +54,8 @@ public class CorrespondanceWithDocumentationTest {
 
     Language deserializedBuiltins = (Language) nodes.get(0);
     ModelComparator.ComparisonResult comparison =
-        new ModelComparator().compare(deserializedBuiltins, LionCoreBuiltins.getInstance());
+        new ModelComparator()
+            .compare(deserializedBuiltins, LionCoreBuiltins.getInstance(LionWebVersion.v2023_1));
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);

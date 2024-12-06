@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;
@@ -21,9 +22,27 @@ import javax.annotation.Nullable;
  */
 public class Property extends Feature<Property> {
 
+  public static Property createOptional(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType type) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Property property = new Property(lionWebVersion, name, null);
+    property.setOptional(true);
+    property.setType(type);
+    return property;
+  }
+
   public static Property createOptional(@Nullable String name, @Nullable DataType type) {
     Property property = new Property(name, null);
     property.setOptional(true);
+    property.setType(type);
+    return property;
+  }
+
+  public static Property createRequired(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType type) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Property property = new Property(lionWebVersion, name, null);
+    property.setOptional(false);
     property.setType(type);
     return property;
   }
@@ -45,6 +64,19 @@ public class Property extends Feature<Property> {
   }
 
   public static Property createRequired(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable DataType type,
+      @Nonnull String id) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Objects.requireNonNull(id, "id should not be null");
+    Property property = new Property(lionWebVersion, name, null, id);
+    property.setOptional(false);
+    property.setType(type);
+    return property;
+  }
+
+  public static Property createRequired(
       @Nullable String name, @Nullable DataType type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Property property = new Property(name, null, id);
@@ -57,13 +89,26 @@ public class Property extends Feature<Property> {
     super();
   }
 
-  public Property(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
-    // TODO verify that the container is also a NamespaceProvider
+  public Property(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier<?> container,
+      @Nonnull String id) {
+    super(lionWebVersion, name, container, id);
+  }
+
+  public Property(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
     super(name, container, id);
   }
 
-  public Property(@Nullable String name, @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
+  public Property(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier<?> container) {
+    super(lionWebVersion, name, container);
+  }
+
+  public Property(@Nullable String name, @Nullable Classifier<?> container) {
     super(name, container);
   }
 
@@ -94,6 +139,6 @@ public class Property extends Feature<Property> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getProperty();
+    return LionCore.getProperty(getLionWebVersion());
   }
 }

@@ -1,24 +1,32 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
 /** EMF importer which produces LionWeb's Metamodels. */
 public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
-  private final DataTypeMapping dataTypeMapping = new DataTypeMapping();
+  private @Nonnull DataTypeMapping dataTypeMapping;
 
   public EMFMetamodelImporter() {
+    this(LionWebVersion.currentVersion);
+  }
+
+  public EMFMetamodelImporter(@Nonnull LionWebVersion lionWebVersion) {
     super();
+    dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
   public EMFMetamodelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(conceptsToEClassesMapping);
+    dataTypeMapping = new DataTypeMapping(conceptsToEClassesMapping.getLionWebVersion());
   }
 
   @Override

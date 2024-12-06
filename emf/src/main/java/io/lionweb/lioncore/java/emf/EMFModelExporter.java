@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
@@ -7,6 +8,7 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
@@ -15,6 +17,10 @@ public class EMFModelExporter extends AbstractEMFExporter {
 
   public EMFModelExporter() {
     super();
+  }
+
+  public EMFModelExporter(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
   }
 
   public EMFModelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
