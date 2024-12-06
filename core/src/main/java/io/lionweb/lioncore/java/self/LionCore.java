@@ -311,7 +311,6 @@ public class LionCore {
                     lionWebVersion, "fields", field, "-id-StructuredDataType-fields")
                 .setOptional(false));
 
-        field.addImplementedInterface(LionCoreBuiltins.getINamed());
         field.addImplementedInterface(iKeyed);
         field.addFeature(
             Reference.createRequired(lionWebVersion, "type", dataType, "-id-Field-type"));
