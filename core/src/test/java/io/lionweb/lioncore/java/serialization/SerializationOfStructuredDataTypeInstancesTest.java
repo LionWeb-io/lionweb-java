@@ -41,7 +41,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
     JsonObject expected =
         JsonParser.parseString(
                 "{\n"
-                    + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "    \"serializationFormatVersion\": \"2024.1\",\n"
                     + "    \"languages\": [\n"
                     + "        {\n"
                     + "            \"key\": \"mylanguageWithSDT\",\n"
@@ -108,7 +108,7 @@ public class SerializationOfStructuredDataTypeInstancesTest extends Serializatio
     JsonObject serialized =
         JsonParser.parseString(
                 "{\n"
-                    + "    \"serializationFormatVersion\": \"2023.1\",\n"
+                    + "    \"serializationFormatVersion\": \"2024.1\",\n"
                     + "    \"languages\": [\n"
                     + "        {\n"
                     + "            \"key\": \"mylanguageWithSDT\",\n"

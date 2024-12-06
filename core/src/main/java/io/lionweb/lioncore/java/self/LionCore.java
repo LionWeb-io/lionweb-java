@@ -132,16 +132,24 @@ public class LionCore {
     return getInstance().requireConceptByName("Reference");
   }
 
+  public static @Nonnull Concept getReference(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Reference");
+  }
+
   public static @Nonnull Concept getStructuredDataType() {
     return getInstance().requireConceptByName("StructuredDataType");
+  }
+
+  public static @Nonnull Concept getStructuredDataType(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("StructuredDataType");
   }
 
   public static @Nonnull Concept getField() {
     return getInstance().requireConceptByName("Field");
   }
 
-  public static @Nonnull Concept getReference(@Nonnull LionWebVersion lionWebVersion) {
-    return getInstance(lionWebVersion).requireConceptByName("Reference");
+  public static @Nonnull Concept getField(@Nonnull LionWebVersion lionWebVersion) {
+    return getInstance(lionWebVersion).requireConceptByName("Field");
   }
 
   public static @Nonnull Language getInstance() {
@@ -175,8 +183,9 @@ public class LionCore {
       Concept primitiveType = instance.addElement(new Concept(lionWebVersion, "PrimitiveType"));
       Concept property = instance.addElement(new Concept(lionWebVersion, "Property"));
       Concept reference = instance.addElement(new Concept(lionWebVersion, "Reference"));
-      Concept structuredDataType = INSTANCE.addElement(new Concept("StructuredDataType"));
-      Concept field = INSTANCE.addElement(new Concept("Field"));
+      Concept structuredDataType =
+          instance.addElement(new Concept(lionWebVersion, "StructuredDataType"));
+      Concept field = instance.addElement(new Concept(lionWebVersion, "Field"));
 
       // Now we start adding the features to all the Concepts and Interfaces
 
