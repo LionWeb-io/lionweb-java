@@ -51,7 +51,7 @@ public class StructuredDataType extends DataType<StructuredDataType> implements 
 
   @Override
   public @Nonnull Concept getClassifier() {
-    return LionCore.getStructuredDataType();
+    return LionCore.getStructuredDataType(getLionWebVersion());
   }
 
   public @Nullable Field getFieldByName(@Nonnull String fieldName) {

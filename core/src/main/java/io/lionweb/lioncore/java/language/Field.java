@@ -56,7 +56,7 @@ public class Field extends M3Node<Field> implements NamespacedEntity, IKeyed<Fie
 
   @Override
   public @Nonnull Concept getClassifier() {
-    return LionCore.getField();
+    return LionCore.getField(getLionWebVersion());
   }
 
   public @Nullable DataType<?> getType() {
