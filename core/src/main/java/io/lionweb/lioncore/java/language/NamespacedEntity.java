@@ -1,5 +1,8 @@
 package io.lionweb.lioncore.java.language;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Something with a name and contained in a Namespace.
  *
@@ -7,14 +10,16 @@ package io.lionweb.lioncore.java.language;
  * the qualifiedName com.foo.Accounting.Invoice.
  */
 public interface NamespacedEntity extends INamed {
+  @Nullable
   String getName();
 
-  default String qualifiedName() {
+  default @Nonnull String qualifiedName() {
     if (this.getContainer() == null) {
       throw new IllegalStateException("No container for " + this);
     }
     return this.getContainer().namespaceQualifier() + "." + this.getName();
   }
 
+  @Nullable
   NamespaceProvider getContainer();
 }

@@ -24,9 +24,10 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
     return getContainmentMultipleValue("literals");
   }
 
-  public void addLiteral(@Nonnull EnumerationLiteral literal) {
+  public Enumeration addLiteral(@Nonnull EnumerationLiteral literal) {
     Objects.requireNonNull(literal, "literal should not be null");
     this.addContainmentMultipleValue("literals", literal);
+    return this;
   }
 
   @Override

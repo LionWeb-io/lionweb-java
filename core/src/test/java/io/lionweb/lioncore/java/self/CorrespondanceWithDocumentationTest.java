@@ -16,17 +16,20 @@ import org.junit.Test;
 
 public class CorrespondanceWithDocumentationTest {
 
-  private static final String SPECIFICATION_COMMIT_CONSIDERED =
-      "69ddbf4685acf1ef6d83c400570fb6c37efa4cfc";
+  private static final String SPECIFICATION_2023_1_COMMIT_CONSIDERED =
+      "86118d62d20edd3bd8973ef2af64690f97a41d8d";
+
+  private static final String SPECIFICATION_2024_1_COMMIT_CONSIDERED =
+      "61e3f929afb57c94143c20906f94a682777fe0c8";
 
   @Test
-  public void lioncoreIsTheSameAsInTheOrganizationRepo() throws IOException {
+  public void lioncoreIsTheSameAsInTheOrganizationRepo2023_1() throws IOException {
     JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2023_1);
 
     URL url =
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
-                + SPECIFICATION_COMMIT_CONSIDERED
+                + SPECIFICATION_2023_1_COMMIT_CONSIDERED
                 + "/metametamodel/lioncore.json");
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
@@ -41,6 +44,30 @@ public class CorrespondanceWithDocumentationTest {
     assertTrue(comparison.toString(), comparison.areEquivalent());
   }
 
+  // This is failing pending the resolution of
+  // https://github.com/LionWeb-io/specification/issues/324
+  @Test
+  public void lioncoreIsTheSameAsInTheOrganizationRepo2024_1() throws IOException {
+    JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2024_1);
+
+    URL url =
+        new URL(
+            "https://raw.githubusercontent.com/LionWeb-io/specification/"
+                + SPECIFICATION_2024_1_COMMIT_CONSIDERED
+                + "/metametamodel/lioncore.json");
+    List<Node> nodes = jsonSer.deserializeToNodes(url);
+
+    Language deserializedLioncore = (Language) nodes.get(0);
+    ModelComparator.ComparisonResult comparison =
+        new ModelComparator()
+            .compare(deserializedLioncore, LionCore.getInstance(LionWebVersion.v2024_1));
+    System.out.println("Differences " + comparison.getDifferences().size());
+    for (String difference : comparison.getDifferences()) {
+      System.out.println(" - " + difference);
+    }
+    assertTrue(comparison.toString(), comparison.areEquivalent());
+  }
+
   @Test
   public void builtInIsTheSameAsInTheOrganizationRepo2023_1() throws IOException {
     JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2023_1);
@@ -48,7 +75,7 @@ public class CorrespondanceWithDocumentationTest {
     URL url =
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
-                + SPECIFICATION_COMMIT_CONSIDERED
+                + SPECIFICATION_2023_1_COMMIT_CONSIDERED
                 + "/metametamodel/builtins.json");
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
@@ -56,6 +83,28 @@ public class CorrespondanceWithDocumentationTest {
     ModelComparator.ComparisonResult comparison =
         new ModelComparator()
             .compare(deserializedBuiltins, LionCoreBuiltins.getInstance(LionWebVersion.v2023_1));
+    System.out.println("Differences " + comparison.getDifferences().size());
+    for (String difference : comparison.getDifferences()) {
+      System.out.println(" - " + difference);
+    }
+    assertTrue(comparison.toString(), comparison.areEquivalent());
+  }
+
+  @Test
+  public void builtInIsTheSameAsInTheOrganizationRepo2024_1() throws IOException {
+    JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2024_1);
+
+    URL url =
+        new URL(
+            "https://raw.githubusercontent.com/LionWeb-io/specification/"
+                + SPECIFICATION_2024_1_COMMIT_CONSIDERED
+                + "/metametamodel/builtins.json");
+    List<Node> nodes = jsonSer.deserializeToNodes(url);
+
+    Language deserializedBuiltins = (Language) nodes.get(0);
+    ModelComparator.ComparisonResult comparison =
+        new ModelComparator()
+            .compare(deserializedBuiltins, LionCoreBuiltins.getInstance(LionWebVersion.v2024_1));
     System.out.println("Differences " + comparison.getDifferences().size());
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);

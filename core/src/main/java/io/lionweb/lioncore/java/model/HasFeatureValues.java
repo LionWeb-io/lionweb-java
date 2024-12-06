@@ -8,21 +8,22 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public interface HasFeatureValues {
-  /**
-   * Get the property value associated with the specified property.
-   *
-   * <p>Should this return a String?
-   */
-  Object getPropertyValue(Property property);
+  /** Get the property value associated with the specified property. */
+  @Nullable
+  Object getPropertyValue(@Nonnull Property property);
 
-  /** If the value is not compatible with the type of the property, the exception */
-  void setPropertyValue(Property property, Object value);
+  /**
+   * @throws IllegalArgumentException If the value is not compatible with the type of the property
+   */
+  void setPropertyValue(@Nonnull Property property, @Nullable Object value)
+      throws IllegalArgumentException;
 
   /**
    * This return all the Nodes directly contained into this Node under the specific Containment
    * relation specified.
    */
-  List<? extends Node> getChildren(Containment containment);
+  @Nonnull
+  List<? extends Node> getChildren(@Nonnull Containment containment);
 
   /**
    * Add a child to the specified list of children associated with the given Containment relation.
@@ -32,14 +33,14 @@ public interface HasFeatureValues {
    * <p>If the child has not a Concept compatible with the target of the Containement, the exception
    * IllegalArgumentException will be thrown.
    */
-  void addChild(Containment containment, Node child);
+  void addChild(@Nonnull Containment containment, @Nonnull Node child);
 
   /**
    * Remove the given child from the list of children associated with the Node, making it a dangling
    * Node. If the specified Node is not currently a child of this Node the exception
    * IllegalArgumentException will be thrown.
    */
-  void removeChild(Node node);
+  void removeChild(@Nonnull Node node);
 
   /**
    * Remove the child at the given index, considering the children under the given containment.

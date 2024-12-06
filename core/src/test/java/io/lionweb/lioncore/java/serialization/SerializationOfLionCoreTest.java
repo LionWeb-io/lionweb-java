@@ -26,7 +26,75 @@ import org.junit.Test;
 public class SerializationOfLionCoreTest extends SerializationTest {
 
   @Test
-  public void serializeLionCoreToSerializedChunk() {
+  public void serializeLionCoreToSerializedChunkV2023() {
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    SerializedChunk serializedChunk =
+        jsonSerialization.serializeTreeToSerializationBlock(
+            LionCore.getInstance(LionWebVersion.v2023_1));
+
+    assertEquals("2023.1", serializedChunk.getSerializationFormatVersion());
+
+    assertEquals(2, serializedChunk.getLanguages().size());
+    Assert.assertEquals(
+        new UsedLanguage("LionCore-M3", "2023.1"),
+        serializedChunk.getLanguages().iterator().next());
+
+    SerializedClassifierInstance LionCore_M3 =
+        serializedChunk.getClassifierInstances().stream()
+            .filter(n -> "-id-LionCore-M3".equals(n.getID()))
+            .findFirst()
+            .get();
+    assertEquals("-id-LionCore-M3", LionCore_M3.getID());
+    assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), LionCore_M3.getClassifier());
+    assertEquals(
+        Arrays.asList(
+            new SerializedPropertyValue(
+                new MetaPointer("LionCore-M3", "2023.1", "Language-version"), "2023.1"),
+            new SerializedPropertyValue(
+                new MetaPointer("LionCore-M3", "2023.1", "IKeyed-key"), "LionCore-M3"),
+            new SerializedPropertyValue(
+                new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
+                "LionCore_M3")),
+        LionCore_M3.getProperties());
+    assertEquals(
+        Arrays.asList(
+            new SerializedContainmentValue(
+                new MetaPointer("LionCore-M3", "2023.1", "Language-entities"),
+                Arrays.asList(
+                    "-id-Annotation",
+                    "-id-Concept",
+                    "-id-Interface",
+                    "-id-Containment",
+                    "-id-DataType",
+                    "-id-Enumeration",
+                    "-id-EnumerationLiteral",
+                    "-id-Feature",
+                    "-id-Classifier",
+                    "-id-Link",
+                    "-id-Language",
+                    "-id-LanguageEntity",
+                    "-id-IKeyed",
+                    "-id-PrimitiveType",
+                    "-id-Property",
+                    "-id-Reference"))),
+        LionCore_M3.getContainments());
+    assertEquals(
+        Arrays.asList(
+            new SerializedReferenceValue(
+                new MetaPointer("LionCore-M3", "2023.1", "Language-dependsOn"),
+                Collections.emptyList())),
+        LionCore_M3.getReferences());
+
+    SerializedClassifierInstance LionCore_M3_Interface_extends =
+        serializedChunk.getClassifierInstances().stream()
+            .filter(n -> "-id-Interface-extends".equals(n.getID()))
+            .findFirst()
+            .get();
+  }
+
+  @Test
+  public void serializeLionCoreToSerializedChunkV2024() {
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     SerializedChunk serializedChunk =
         jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
@@ -68,6 +136,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "-id-Enumeration",
                     "-id-EnumerationLiteral",
                     "-id-Feature",
+                    "-id-Field",
                     "-id-Classifier",
                     "-id-Link",
                     "-id-Language",
@@ -75,7 +144,8 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "-id-IKeyed",
                     "-id-PrimitiveType",
                     "-id-Property",
-                    "-id-Reference"))),
+                    "-id-Reference",
+                    "-id-StructuredDataType"))),
         LionCore_M3.getContainments());
     assertEquals(
         Arrays.asList(
