@@ -1,14 +1,18 @@
 package io.lionweb.lioncore.java.serialization;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.language.Containment;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -21,13 +25,39 @@ class NodePopulator {
   private final ClassifierInstanceResolver classifierInstanceResolver;
   private final DeserializationStatus deserializationStatus;
 
+  // If there are references to builtins which are broken, we will try to resolve them to this
+  // version
+  private LionWebVersion autoResolveVersion;
+  private Map<String, Node> autoResolveMap = new HashMap<>();
+
   NodePopulator(
       AbstractSerialization serialization,
       ClassifierInstanceResolver classifierInstanceResolver,
       DeserializationStatus deserializationStatus) {
+    this(
+        serialization,
+        classifierInstanceResolver,
+        deserializationStatus,
+        LionWebVersion.currentVersion);
+  }
+
+  NodePopulator(
+      AbstractSerialization serialization,
+      ClassifierInstanceResolver classifierInstanceResolver,
+      DeserializationStatus deserializationStatus,
+      LionWebVersion autoResolveVersion) {
     this.serialization = serialization;
     this.classifierInstanceResolver = classifierInstanceResolver;
     this.deserializationStatus = deserializationStatus;
+    this.autoResolveVersion = autoResolveVersion;
+
+    LionCoreBuiltins lionCoreBuiltins = LionCoreBuiltins.getInstance(autoResolveVersion);
+    lionCoreBuiltins
+        .getElements()
+        .forEach(
+            element -> {
+              autoResolveMap.put(element.getName(), element);
+            });
   }
 
   void populateClassifierInstance(
@@ -98,19 +128,28 @@ class NodePopulator {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
                         if (entry.getReference() != null && referred == null) {
-                          switch (serialization.getUnavailableReferenceTargetPolicy()) {
-                            case NULL_REFERENCES:
-                              referred = null;
-                              break;
-                            case PROXY_NODES:
-                              referred = deserializationStatus.resolve(entry.getReference());
-                              break;
-                            case THROW_ERROR:
-                              throw new DeserializationException(
-                                  "Unable to resolve reference to "
-                                      + entry.getReference()
-                                      + " for feature "
-                                      + serializedReferenceValue.getMetaPointer());
+
+                          // For LionCore Builtins, we want to automatically update references,
+                          // using Resolve Info
+                          Node autoresolvedElement = autoResolveMap.get(entry.getResolveInfo());
+                          if (autoresolvedElement != null) {
+                            referred = autoresolvedElement;
+                          } else {
+
+                            switch (serialization.getUnavailableReferenceTargetPolicy()) {
+                              case NULL_REFERENCES:
+                                referred = null;
+                                break;
+                              case PROXY_NODES:
+                                referred = deserializationStatus.resolve(entry.getReference());
+                                break;
+                              case THROW_ERROR:
+                                throw new DeserializationException(
+                                    "Unable to resolve reference to "
+                                        + entry.getReference()
+                                        + " for feature "
+                                        + serializedReferenceValue.getMetaPointer());
+                            }
                           }
                         }
                         ReferenceValue referenceValue =

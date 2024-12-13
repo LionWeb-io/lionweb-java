@@ -1,5 +1,8 @@
 package io.lionweb.lioncore.java.language;
 
+import static io.lionweb.lioncore.java.LionWebVersion.v2023_1;
+import static io.lionweb.lioncore.java.LionWebVersion.v2024_1;
+
 import io.lionweb.lioncore.java.self.LionCore;
 import org.junit.Assert;
 import org.junit.Test;
@@ -7,62 +10,141 @@ import org.junit.Test;
 public class BuiltinIDsAndKeysTest {
 
   @Test
-  public void M3ElementsHasExpectedIDs() {
-    Assert.assertEquals("-id-Concept", LionCore.getConcept().getID());
+  public void M3ElementsHasExpectedIDsIn2023_1() {
+    Assert.assertEquals("-id-Concept", LionCore.getConcept(v2023_1).getID());
     Assert.assertEquals(
-        "-id-Concept-abstract", LionCore.getConcept().getPropertyByName("abstract").getID());
+        "-id-Concept-abstract", LionCore.getConcept(v2023_1).getPropertyByName("abstract").getID());
     Assert.assertEquals(
-        "-id-Concept-extends", LionCore.getConcept().getReferenceByName("extends").getID());
+        "-id-Concept-extends", LionCore.getConcept(v2023_1).getReferenceByName("extends").getID());
     Assert.assertEquals(
-        "-id-Concept-implements", LionCore.getConcept().getReferenceByName("implements").getID());
+        "-id-Concept-implements",
+        LionCore.getConcept(v2023_1).getReferenceByName("implements").getID());
 
-    Assert.assertEquals("-id-Interface", LionCore.getInterface().getID());
+    Assert.assertEquals("-id-Interface", LionCore.getInterface(v2023_1).getID());
     Assert.assertEquals(
-        "-id-Interface-extends", LionCore.getInterface().getReferenceByName("extends").getID());
+        "-id-Interface-extends",
+        LionCore.getInterface(v2023_1).getReferenceByName("extends").getID());
 
-    Assert.assertEquals("-id-Containment", LionCore.getContainment().getID());
+    Assert.assertEquals("-id-Containment", LionCore.getContainment(v2023_1).getID());
 
-    Assert.assertEquals("-id-DataType", LionCore.getDataType().getID());
+    Assert.assertEquals("-id-DataType", LionCore.getDataType(v2023_1).getID());
 
-    Assert.assertEquals("-id-Enumeration", LionCore.getEnumeration().getID());
+    Assert.assertEquals("-id-Enumeration", LionCore.getEnumeration(v2023_1).getID());
     Assert.assertEquals(
         "-id-Enumeration-literals",
-        LionCore.getEnumeration().getContainmentByName("literals").getID());
+        LionCore.getEnumeration(v2023_1).getContainmentByName("literals").getID());
 
-    Assert.assertEquals("-id-EnumerationLiteral", LionCore.getEnumerationLiteral().getID());
+    Assert.assertEquals("-id-EnumerationLiteral", LionCore.getEnumerationLiteral(v2023_1).getID());
 
-    Assert.assertEquals("-id-Feature", LionCore.getFeature().getID());
+    Assert.assertEquals("-id-Feature", LionCore.getFeature(v2023_1).getID());
     Assert.assertEquals(
-        "-id-Feature-optional", LionCore.getFeature().getPropertyByName("optional").getID());
+        "-id-Feature-optional", LionCore.getFeature(v2023_1).getPropertyByName("optional").getID());
 
-    Assert.assertEquals("-id-Classifier", LionCore.getClassifier().getID());
+    Assert.assertEquals("-id-Classifier", LionCore.getClassifier(v2023_1).getID());
     Assert.assertEquals(
         "-id-Classifier-features",
-        LionCore.getClassifier().getContainmentByName("features").getID());
+        LionCore.getClassifier(v2023_1).getContainmentByName("features").getID());
 
-    Assert.assertEquals("-id-Link", LionCore.getLink().getID());
+    Assert.assertEquals("-id-Link", LionCore.getLink(v2023_1).getID());
     Assert.assertEquals(
-        "-id-Link-multiple", LionCore.getLink().getPropertyByName("multiple").getID());
-    Assert.assertEquals("-id-Link-type", LionCore.getLink().getReferenceByName("type").getID());
-
-    Assert.assertEquals("-id-Language", LionCore.getLanguage().getID());
+        "-id-Link-multiple", LionCore.getLink(v2023_1).getPropertyByName("multiple").getID());
     Assert.assertEquals(
-        "LionCore-builtins-INamed-name", LionCore.getLanguage().getPropertyByName("name").getID());
-    Assert.assertEquals("-id-IKeyed-key", LionCore.getLanguage().getPropertyByName("key").getID());
+        "-id-Link-type", LionCore.getLink(v2023_1).getReferenceByName("type").getID());
+
+    Assert.assertEquals("-id-Language", LionCore.getLanguage(v2023_1).getID());
     Assert.assertEquals(
-        "-id-Language-dependsOn", LionCore.getLanguage().getReferenceByName("dependsOn").getID());
+        "LionCore-builtins-INamed-name",
+        LionCore.getLanguage(v2023_1).getPropertyByName("name").getID());
     Assert.assertEquals(
-        "-id-Language-entities", LionCore.getLanguage().getContainmentByName("entities").getID());
-
-    Assert.assertEquals("-id-LanguageEntity", LionCore.getLanguageEntity().getID());
-
-    Assert.assertEquals("-id-PrimitiveType", LionCore.getPrimitiveType().getID());
-
-    Assert.assertEquals("-id-Property", LionCore.getProperty().getID());
+        "-id-IKeyed-key", LionCore.getLanguage(v2023_1).getPropertyByName("key").getID());
     Assert.assertEquals(
-        "-id-Property-type", LionCore.getProperty().getReferenceByName("type").getID());
+        "-id-Language-dependsOn",
+        LionCore.getLanguage(v2023_1).getReferenceByName("dependsOn").getID());
+    Assert.assertEquals(
+        "-id-Language-entities",
+        LionCore.getLanguage(v2023_1).getContainmentByName("entities").getID());
 
-    Assert.assertEquals("-id-Reference", LionCore.getReference().getID());
+    Assert.assertEquals("-id-LanguageEntity", LionCore.getLanguageEntity(v2023_1).getID());
+
+    Assert.assertEquals("-id-PrimitiveType", LionCore.getPrimitiveType(v2023_1).getID());
+
+    Assert.assertEquals("-id-Property", LionCore.getProperty(v2023_1).getID());
+    Assert.assertEquals(
+        "-id-Property-type", LionCore.getProperty(v2023_1).getReferenceByName("type").getID());
+
+    Assert.assertEquals("-id-Reference", LionCore.getReference(v2023_1).getID());
+  }
+
+  @Test
+  public void M3ElementsHasExpectedIDsIn2024_1() {
+    Assert.assertEquals("-id-Concept-2024_1", LionCore.getConcept(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Concept-abstract-2024_1",
+        LionCore.getConcept(v2024_1).getPropertyByName("abstract").getID());
+    Assert.assertEquals(
+        "-id-Concept-extends-2024_1",
+        LionCore.getConcept(v2024_1).getReferenceByName("extends").getID());
+    Assert.assertEquals(
+        "-id-Concept-implements-2024_1",
+        LionCore.getConcept(v2024_1).getReferenceByName("implements").getID());
+
+    Assert.assertEquals("-id-Interface-2024_1", LionCore.getInterface(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Interface-extends-2024_1",
+        LionCore.getInterface(v2024_1).getReferenceByName("extends").getID());
+
+    Assert.assertEquals("-id-Containment-2024_1", LionCore.getContainment(v2024_1).getID());
+
+    Assert.assertEquals("-id-DataType-2024_1", LionCore.getDataType(v2024_1).getID());
+
+    Assert.assertEquals("-id-Enumeration-2024_1", LionCore.getEnumeration(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Enumeration-literals-2024_1",
+        LionCore.getEnumeration(v2024_1).getContainmentByName("literals").getID());
+
+    Assert.assertEquals(
+        "-id-EnumerationLiteral-2024_1", LionCore.getEnumerationLiteral(v2024_1).getID());
+
+    Assert.assertEquals("-id-Feature-2024_1", LionCore.getFeature(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Feature-optional-2024_1",
+        LionCore.getFeature(v2024_1).getPropertyByName("optional").getID());
+
+    Assert.assertEquals("-id-Classifier-2024_1", LionCore.getClassifier(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Classifier-features-2024_1",
+        LionCore.getClassifier(v2024_1).getContainmentByName("features").getID());
+
+    Assert.assertEquals("-id-Link-2024_1", LionCore.getLink(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Link-multiple-2024_1",
+        LionCore.getLink(v2024_1).getPropertyByName("multiple").getID());
+    Assert.assertEquals(
+        "-id-Link-type-2024_1", LionCore.getLink(v2024_1).getReferenceByName("type").getID());
+
+    Assert.assertEquals("-id-Language-2024_1", LionCore.getLanguage(v2024_1).getID());
+    Assert.assertEquals(
+        "LionCore-builtins-INamed-name-2024_1",
+        LionCore.getLanguage(v2024_1).getPropertyByName("name").getID());
+    Assert.assertEquals(
+        "-id-IKeyed-key-2024_1", LionCore.getLanguage(v2024_1).getPropertyByName("key").getID());
+    Assert.assertEquals(
+        "-id-Language-dependsOn-2024_1",
+        LionCore.getLanguage(v2024_1).getReferenceByName("dependsOn").getID());
+    Assert.assertEquals(
+        "-id-Language-entities-2024_1",
+        LionCore.getLanguage(v2024_1).getContainmentByName("entities").getID());
+
+    Assert.assertEquals("-id-LanguageEntity-2024_1", LionCore.getLanguageEntity(v2024_1).getID());
+
+    Assert.assertEquals("-id-PrimitiveType-2024_1", LionCore.getPrimitiveType(v2024_1).getID());
+
+    Assert.assertEquals("-id-Property-2024_1", LionCore.getProperty(v2024_1).getID());
+    Assert.assertEquals(
+        "-id-Property-type-2024_1",
+        LionCore.getProperty(v2024_1).getReferenceByName("type").getID());
+
+    Assert.assertEquals("-id-Reference-2024_1", LionCore.getReference(v2024_1).getID());
   }
 
   @Test
