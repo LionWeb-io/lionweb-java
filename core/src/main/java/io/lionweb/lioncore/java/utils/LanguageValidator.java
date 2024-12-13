@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.java.utils;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -12,6 +12,63 @@ public class LanguageValidator extends Validator<Language> {
     ValidationResult vr = new LanguageValidator().validate(language);
     if (!vr.isSuccessful()) {
       throw new RuntimeException("Invalid language: " + vr.getIssues());
+    }
+  }
+
+  private void validateEnumeration(ValidationResult result, Enumeration enumeration) {
+    enumeration
+        .getLiterals()
+        .forEach(
+            (EnumerationLiteral lit) ->
+                result.checkForError(lit.getName() == null, "Simple name not set", lit));
+    validateNamesAreUnique(enumeration.getLiterals(), result);
+  }
+
+  private void validateClassifier(ValidationResult result, Classifier<?> classifier) {
+    classifier
+        .getFeatures()
+        .forEach(
+            (Feature feature) ->
+                result
+                    .checkForError(feature.getName() == null, "Simple name not set", feature)
+                    .checkForError(feature.getContainer() == null, "Container not set", feature)
+                    .checkForError(
+                        feature.getContainer() != null && feature.getContainer() != classifier,
+                        "Features container not set correctly",
+                        feature));
+    validateNamesAreUnique(classifier.getFeatures(), result);
+  }
+
+  private void validateConcept(ValidationResult result, Concept concept) {
+    checkAncestors(concept, result);
+    result.checkForError(
+        concept.getImplemented().size() != concept.getImplemented().stream().distinct().count(),
+        "The same interface has been implemented multiple times",
+        concept);
+  }
+
+  private void validateStructuralDataType(
+      ValidationResult result, StructuredDataType structuredDataType) {
+    Set<StructuredDataType> visited = new HashSet<>();
+    Stack<StructuredDataType> toVisit = new Stack<>();
+    toVisit.add(structuredDataType);
+
+    while (!toVisit.isEmpty()) {
+      StructuredDataType sdt = toVisit.pop();
+      visited.add(sdt);
+      sdt.getFields()
+          .forEach(
+              field -> {
+                if (field.getType() instanceof StructuredDataType) {
+                  StructuredDataType newSDT = (StructuredDataType) field.getType();
+                  if (visited.contains(newSDT)) {
+                    result.addError(
+                        "Circular references are forbidden in StructuralDataFields", newSDT);
+                  } else {
+                    toVisit.add((StructuredDataType) field.getType());
+                  }
+                }
+              });
     }
   }
 
@@ -41,50 +98,23 @@ public class LanguageValidator extends Validator<Language> {
                       el);
 
               if (el instanceof io.lionweb.lioncore.java.language.Enumeration) {
-                io.lionweb.lioncore.java.language.Enumeration enumeration =
-                    (io.lionweb.lioncore.java.language.Enumeration) el;
-                enumeration
-                    .getLiterals()
-                    .forEach(
-                        (EnumerationLiteral lit) ->
-                            result.checkForError(
-                                lit.getName() == null, "Simple name not set", lit));
-                validateNamesAreUnique(enumeration.getLiterals(), result);
+                validateEnumeration(result, (Enumeration) el);
               }
               if (el instanceof Classifier) {
-                Classifier<M3Node> classifier = (Classifier) el;
-                classifier
-                    .getFeatures()
-                    .forEach(
-                        (Feature feature) ->
-                            result
-                                .checkForError(
-                                    feature.getName() == null, "Simple name not set", feature)
-                                .checkForError(
-                                    feature.getContainer() == null, "Container not set", feature)
-                                .checkForError(
-                                    feature.getContainer() != null
-                                        && feature.getContainer() != classifier,
-                                    "Features container not set correctly",
-                                    feature));
-                validateNamesAreUnique(classifier.getFeatures(), result);
+                validateClassifier(result, (Classifier) el);
               }
               if (el instanceof Concept) {
-                Concept concept = (Concept) el;
-                checkAncestors(concept, result);
-                result.checkForError(
-                    concept.getImplemented().size()
-                        != concept.getImplemented().stream().distinct().count(),
-                    "The same interface has been implemented multiple times",
-                    concept);
+                validateConcept(result, (Concept) el);
               }
               if (el instanceof Interface) {
                 checkInterfacesCycles((Interface) el, result);
-                // checkAncestors((Interface) el, result);
               }
               if (el instanceof Annotation) {
                 checkAnnotates((Annotation) el, result);
                 checkAnnotationFeatures((Annotation) el, result);
+              }
+              if (el instanceof StructuredDataType) {
+                validateStructuralDataType(result, (StructuredDataType) el);
               }
             });
 

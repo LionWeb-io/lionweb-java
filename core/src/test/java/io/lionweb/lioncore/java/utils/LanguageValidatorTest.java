@@ -287,6 +287,49 @@ public class LanguageValidatorTest {
   }
 
   @Test
+  public void anSDTShouldNotHaveDirectlyCircularReferences() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
+    sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    Set<Issue> issuesA = l.validate().getIssues();
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+
+    sdt.addField(new Field("MyCircularField", sdt, "fc_id", "fc_key"));
+    Set<Issue> issuesB = l.validate().getIssues();
+    assertEquals(1, issuesB.size());
+    Issue issueB0 = issuesB.iterator().next();
+    assertEquals(
+        new Issue(
+            IssueSeverity.Error, "Circular references are forbidden in StructuralDataFields", sdt),
+        issueB0);
+  }
+
+  @Test
+  public void anSDTShouldNotHaveIndirectlyCircularReferences() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
+    sdtB.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    Set<Issue> issuesA = l.validate().getIssues();
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+
+    sdtB.addField(new Field("MyCircularField", sdtA, "fc_id", "fc_key"));
+    Set<Issue> issuesB = l.validate().getIssues();
+    assertEquals(2, issuesB.size());
+    assert (issuesB.contains(
+        new Issue(
+            IssueSeverity.Error,
+            "Circular references are forbidden in StructuralDataFields",
+            sdtA)));
+    assert (issuesB.contains(
+        new Issue(
+            IssueSeverity.Error,
+            "Circular references are forbidden in StructuralDataFields",
+            sdtB)));
+  }
+
+  @Test
   public void anSDTWithNoFieldsIsInvalid() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
