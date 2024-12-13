@@ -7,6 +7,7 @@ import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.Test;
 
@@ -283,5 +284,23 @@ public class LanguageValidatorTest {
     b.setAnnotates(c);
     b.setExtendedAnnotation(a);
     assertEquals(Collections.emptySet(), l.validate().getIssues());
+  }
+
+  @Test
+  public void anSDTWithNoFieldsIsInvalid() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
+    Set<Issue> issuesA = l.validate().getIssues();
+    assertEquals(1, issuesA.size());
+    Issue issueA0 = issuesA.iterator().next();
+    assertEquals(
+        new Issue(
+            IssueSeverity.Error,
+            "Containment fields is required but no children are specified",
+            sdt),
+        issueA0);
+    sdt.addField(new Field("MyField", LionCoreBuiltins.getString(), "f_id", "f_key"));
+    Set<Issue> issuesB = l.validate().getIssues();
+    assertEquals(Collections.emptySet(), issuesB);
   }
 }
