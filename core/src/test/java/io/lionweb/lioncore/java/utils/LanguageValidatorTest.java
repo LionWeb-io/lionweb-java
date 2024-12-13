@@ -287,11 +287,28 @@ public class LanguageValidatorTest {
   }
 
   @Test
+  public void anSDTWithNoFieldsIsInvalid() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
+    Set<Issue> issuesA = l.validate().getIssues();
+    assertEquals(1, issuesA.size());
+    Issue issueA0 = issuesA.iterator().next();
+    assertEquals(
+        new Issue(
+            IssueSeverity.Error,
+            "Containment fields is required but no children are specified",
+            sdt),
+        issueA0);
+    sdt.addField(new Field("MyField", LionCoreBuiltins.getString(), "f_id", "f_key"));
+    Set<Issue> issuesB = l.validate().getIssues();
+    assertEquals(Collections.emptySet(), issuesB);
+  }
+
+  @Test
   public void anSDTShouldNotHaveDirectlyCircularReferences() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
     sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
-    Set<Issue> issuesA = l.validate().getIssues();
     assertEquals(Collections.emptySet(), l.validate().getIssues());
 
     sdt.addField(new Field("MyCircularField", sdt, "fc_id", "fc_key"));
@@ -311,7 +328,6 @@ public class LanguageValidatorTest {
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
     sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
     sdtB.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
-    Set<Issue> issuesA = l.validate().getIssues();
     assertEquals(Collections.emptySet(), l.validate().getIssues());
 
     sdtB.addField(new Field("MyCircularField", sdtA, "fc_id", "fc_key"));
@@ -330,20 +346,28 @@ public class LanguageValidatorTest {
   }
 
   @Test
-  public void anSDTWithNoFieldsIsInvalid() {
+  public void checkDirectCircularityOfSDTs() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
-    Set<Issue> issuesA = l.validate().getIssues();
-    assertEquals(1, issuesA.size());
-    Issue issueA0 = issuesA.iterator().next();
-    assertEquals(
-        new Issue(
-            IssueSeverity.Error,
-            "Containment fields is required but no children are specified",
-            sdt),
-        issueA0);
-    sdt.addField(new Field("MyField", LionCoreBuiltins.getString(), "f_id", "f_key"));
-    Set<Issue> issuesB = l.validate().getIssues();
-    assertEquals(Collections.emptySet(), issuesB);
+    sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    assertFalse(LanguageValidator.isCircular(sdt));
+
+    sdt.addField(new Field("MyCircularField", sdt, "fc_id", "fc_key"));
+    assertTrue(LanguageValidator.isCircular(sdt));
+  }
+
+  @Test
+  public void checkIndirectCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
+    sdtB.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+
+    sdtB.addField(new Field("MyCircularField", sdtA, "fc_id", "fc_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtB));
   }
 }

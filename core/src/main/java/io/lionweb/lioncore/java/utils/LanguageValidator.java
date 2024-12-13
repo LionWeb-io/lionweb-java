@@ -47,8 +47,9 @@ public class LanguageValidator extends Validator<Language> {
         concept);
   }
 
-  private void validateStructuralDataType(
-      ValidationResult result, StructuredDataType structuredDataType) {
+  /** It checks if there is any circularity (direct or indirect) in the given StructuredDataType. */
+  public static boolean isCircular(StructuredDataType structuredDataType) {
+    Set<StructuredDataType> circularSDTs = new HashSet<>();
     Set<StructuredDataType> visited = new HashSet<>();
     Stack<StructuredDataType> toVisit = new Stack<>();
     toVisit.add(structuredDataType);
@@ -62,13 +63,21 @@ public class LanguageValidator extends Validator<Language> {
                 if (field.getType() instanceof StructuredDataType) {
                   StructuredDataType newSDT = (StructuredDataType) field.getType();
                   if (visited.contains(newSDT)) {
-                    result.addError(
-                        "Circular references are forbidden in StructuralDataFields", newSDT);
+                    circularSDTs.add(newSDT);
                   } else {
                     toVisit.add((StructuredDataType) field.getType());
                   }
                 }
               });
+    }
+    return !circularSDTs.isEmpty();
+  }
+
+  private void validateStructuralDataType(
+      ValidationResult result, StructuredDataType structuredDataType) {
+    if (isCircular(structuredDataType)) {
+      result.addError(
+          "Circular references are forbidden in StructuralDataFields", structuredDataType);
     }
   }
 
