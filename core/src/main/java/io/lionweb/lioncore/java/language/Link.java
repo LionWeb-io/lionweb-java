@@ -56,6 +56,10 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     return getPropertyValue("multiple", Boolean.class, false);
   }
 
+  public boolean isSingle() {
+    return !isMultiple();
+  }
+
   public T setMultiple(boolean multiple) {
     this.setPropertyValue("multiple", multiple);
     return (T) this;

@@ -33,6 +33,13 @@ public class StructuredDataType extends DataType<StructuredDataType> implements 
     setID(id);
   }
 
+  public StructuredDataType(
+      @Nullable Language language, @Nullable String name, String id, String key) {
+    super(language, name);
+    setID(id);
+    setKey(key);
+  }
+
   public @Nonnull StructuredDataType addField(@Nonnull Field field) {
     Objects.requireNonNull(field, "field should not be null");
     this.addContainmentMultipleValue("fields", field);
