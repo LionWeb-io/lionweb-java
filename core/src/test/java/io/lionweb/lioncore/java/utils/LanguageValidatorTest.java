@@ -370,4 +370,21 @@ public class LanguageValidatorTest {
     assertTrue(LanguageValidator.isCircular(sdtA));
     assertTrue(LanguageValidator.isCircular(sdtB));
   }
+
+  @Test
+  public void threeWayCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
+    sdtA.addField(new Field("f1", sdtB, "f1_id", "f1_key"));
+    sdtB.addField(new Field("f2", sdtC, "f2_id", "f2_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+    assertFalse(LanguageValidator.isCircular(sdtC));
+    sdtC.addField(new Field("f3", sdtA, "f3_id", "f3_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtB));
+    assertTrue(LanguageValidator.isCircular(sdtC));
+  }
 }
