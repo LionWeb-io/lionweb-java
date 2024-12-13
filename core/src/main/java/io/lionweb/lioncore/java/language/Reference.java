@@ -56,7 +56,17 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createRequired(@Nullable String name, @Nullable Classifier type) {
+  public static Reference createRequired(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier<?> type) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Reference reference = new Reference(lionWebVersion, name);
+    reference.setOptional(false);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
+
+  public static Reference createRequired(@Nullable String name, @Nullable Classifier<?> type) {
     Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(false);
@@ -67,7 +77,7 @@ public class Reference extends Link<Reference> {
   public static Reference createRequired(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
-      @Nullable Classifier type,
+      @Nullable Classifier<?> type,
       @Nonnull String id) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Objects.requireNonNull(id, "id should not be null");
@@ -79,7 +89,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createRequired(
-      @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
+      @Nullable String name, @Nullable Classifier<?> type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(false);
@@ -89,7 +99,7 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createMultiple(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier type) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier<?> type) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Reference reference = new Reference(lionWebVersion, name);
     reference.setOptional(true);
@@ -98,7 +108,7 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createMultiple(@Nullable String name, @Nullable Classifier type) {
+  public static Reference createMultiple(@Nullable String name, @Nullable Classifier<?> type) {
     Reference reference = new Reference(name);
     reference.setOptional(true);
     reference.setMultiple(true);

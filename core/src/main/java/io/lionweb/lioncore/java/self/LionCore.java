@@ -136,6 +136,28 @@ public class LionCore {
     return getInstance(lionWebVersion).requireConceptByName("Reference");
   }
 
+  public static @Nonnull Concept getStructuredDataType() {
+    return getInstance().requireConceptByName("StructuredDataType");
+  }
+
+  public static @Nonnull Concept getStructuredDataType(@Nonnull LionWebVersion lionWebVersion) {
+    if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
+      throw new IllegalArgumentException("StructuredDataTypes have been introduced in v2024.1");
+    }
+    return getInstance(lionWebVersion).requireConceptByName("StructuredDataType");
+  }
+
+  public static @Nonnull Concept getField() {
+    return getInstance().requireConceptByName("Field");
+  }
+
+  public static @Nonnull Concept getField(@Nonnull LionWebVersion lionWebVersion) {
+    if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
+      throw new IllegalArgumentException("StructuredDataTypes have been introduced in v2024.1");
+    }
+    return getInstance(lionWebVersion).requireConceptByName("Field");
+  }
+
   public static @Nonnull Language getInstance() {
     return getInstance(LionWebVersion.currentVersion);
   }
@@ -159,6 +181,10 @@ public class LionCore {
       Concept enumerationLiteral =
           instance.addElement(new Concept(lionWebVersion, "EnumerationLiteral"));
       Concept feature = instance.addElement(new Concept(lionWebVersion, "Feature"));
+      Concept field = null;
+      if (lionWebVersion != LionWebVersion.v2023_1) {
+        field = instance.addElement(new Concept(lionWebVersion, "Field"));
+      }
       Concept classifier = instance.addElement(new Concept(lionWebVersion, "Classifier"));
       Concept link = instance.addElement(new Concept(lionWebVersion, "Link"));
       Concept language = instance.addElement(new Concept(lionWebVersion, "Language"));
@@ -167,6 +193,10 @@ public class LionCore {
       Concept primitiveType = instance.addElement(new Concept(lionWebVersion, "PrimitiveType"));
       Concept property = instance.addElement(new Concept(lionWebVersion, "Property"));
       Concept reference = instance.addElement(new Concept(lionWebVersion, "Reference"));
+      Concept structuredDataType = null;
+      if (lionWebVersion != LionWebVersion.v2023_1) {
+        structuredDataType = instance.addElement(new Concept(lionWebVersion, "StructuredDataType"));
+      }
 
       // Now we start adding the features to all the Concepts and Interfaces
 
@@ -273,6 +303,18 @@ public class LionCore {
       annotation.addFeature(
           Reference.createMultiple(
               lionWebVersion, "implements", iface, "-id-Annotation-implements"));
+
+      if (lionWebVersion != LionWebVersion.v2023_1) {
+        structuredDataType.setExtendedConcept(dataType);
+        structuredDataType.addFeature(
+            Containment.createMultiple(
+                    lionWebVersion, "fields", field, "-id-StructuredDataType-fields")
+                .setOptional(false));
+
+        field.addImplementedInterface(iKeyed);
+        field.addFeature(
+            Reference.createRequired(lionWebVersion, "type", dataType, "-id-Field-type"));
+      }
 
       checkIDs(instance);
       INSTANCES.put(lionWebVersion, instance);

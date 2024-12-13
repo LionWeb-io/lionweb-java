@@ -75,7 +75,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public Object getPropertyValue(Property property) {
+  public @Nullable Object getPropertyValue(@Nonnull Property property) {
+    Objects.requireNonNull(property, "property should not be null");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept: " + property);
     }
@@ -86,7 +87,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
    * This internal method uses a property name and not a property or the property id because of a
    * circular dependency problem present for nodes representing M3 elements.
    */
-  protected <V> V getPropertyValue(String propertyName, Class<V> clazz, V defaultValue) {
+  protected <V> @Nullable V getPropertyValue(
+      @Nonnull String propertyName, @Nonnull Class<V> clazz, @Nullable V defaultValue) {
     Object value = propertyValues.get(propertyName);
     if (value == null) {
       return defaultValue;
@@ -100,7 +102,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void setPropertyValue(Property property, Object value) {
+  public void setPropertyValue(@Nonnull Property property, @Nullable Object value) {
+    Objects.requireNonNull(property, "property should not be null");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
@@ -112,7 +115,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public List<Node> getChildren(Containment containment) {
+  public @Nonnull List<Node> getChildren(@Nonnull Containment containment) {
+    Objects.requireNonNull(containment, "containment should not be null");
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
@@ -120,7 +124,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
+    Objects.requireNonNull(containment);
+    Objects.requireNonNull(child);
     if (containment.isMultiple()) {
       addContainmentMultipleValue(containment.getName(), child);
     } else {
@@ -129,7 +135,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void removeChild(Node node) {
+  public void removeChild(@Nonnull Node child) {
+    Objects.requireNonNull(child);
     throw new UnsupportedOperationException();
   }
 
