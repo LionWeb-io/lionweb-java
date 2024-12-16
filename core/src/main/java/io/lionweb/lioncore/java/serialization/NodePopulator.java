@@ -127,7 +127,10 @@ class NodePopulator {
                       entry -> {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
-                        if (entry.getReference() != null && referred == null) {
+                        // Referred could be null either because entry.getReference() was null or
+                        // because it pointed
+                        // to a node we cannot find
+                        if (referred == null) {
 
                           // For LionCore Builtins, we want to automatically update references,
                           // using Resolve Info
@@ -135,20 +138,24 @@ class NodePopulator {
                           if (autoresolvedElement != null) {
                             referred = autoresolvedElement;
                           } else {
-
-                            switch (serialization.getUnavailableReferenceTargetPolicy()) {
-                              case NULL_REFERENCES:
-                                referred = null;
-                                break;
-                              case PROXY_NODES:
-                                referred = deserializationStatus.resolve(entry.getReference());
-                                break;
-                              case THROW_ERROR:
-                                throw new DeserializationException(
-                                    "Unable to resolve reference to "
-                                        + entry.getReference()
-                                        + " for feature "
-                                        + serializedReferenceValue.getMetaPointer());
+                            if (entry.getReference() != null) {
+                              // Here we are only interested in references there were set, but to
+                              // Nodes we cannot
+                              // find
+                              switch (serialization.getUnavailableReferenceTargetPolicy()) {
+                                case NULL_REFERENCES:
+                                  referred = null;
+                                  break;
+                                case PROXY_NODES:
+                                  referred = deserializationStatus.resolve(entry.getReference());
+                                  break;
+                                case THROW_ERROR:
+                                  throw new DeserializationException(
+                                      "Unable to resolve reference to "
+                                          + entry.getReference()
+                                          + " for feature "
+                                          + serializedReferenceValue.getMetaPointer());
+                              }
                             }
                           }
                         }
