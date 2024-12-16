@@ -372,7 +372,7 @@ public class LanguageValidatorTest {
   }
 
   @Test
-  public void threeWayCircularityOfSDTs() {
+  public void thirdLevelCircularityOfSDTs() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
@@ -386,5 +386,30 @@ public class LanguageValidatorTest {
     assertTrue(LanguageValidator.isCircular(sdtA));
     assertTrue(LanguageValidator.isCircular(sdtB));
     assertTrue(LanguageValidator.isCircular(sdtC));
+  }
+
+  @Test
+  public void fifthLevelCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
+    StructuredDataType sdtD = new StructuredDataType(l, "SDTD", "sdtd_id", "sdtd_key");
+    StructuredDataType sdtE = new StructuredDataType(l, "SDTE", "sdte_id", "sdte_key");
+    sdtA.addField(new Field("f1", sdtB, "f1_id", "f1_key"));
+    sdtB.addField(new Field("f2", sdtC, "f2_id", "f2_key"));
+    sdtC.addField(new Field("f3", sdtD, "f3_id", "f3_key"));
+    sdtD.addField(new Field("f4", sdtE, "f4_id", "f4_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+    assertFalse(LanguageValidator.isCircular(sdtC));
+    assertFalse(LanguageValidator.isCircular(sdtD));
+    assertFalse(LanguageValidator.isCircular(sdtE));
+    sdtE.addField(new Field("f5", sdtA, "f5_id", "f5_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtB));
+    assertTrue(LanguageValidator.isCircular(sdtC));
+    assertTrue(LanguageValidator.isCircular(sdtD));
+    assertTrue(LanguageValidator.isCircular(sdtE));
   }
 }
