@@ -14,7 +14,14 @@ public class LionCoreBuiltins extends Language {
   /** This is private to prevent instantiation and enforce the Singleton pattern. */
   private LionCoreBuiltins(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion, "LionCore_builtins");
-    setID("LionCore-builtins");
+    final String versionIDSuffix;
+    if (lionWebVersion != LionWebVersion.v2023_1) {
+      versionIDSuffix = "-" + lionWebVersion.getVersionString().replaceAll("\\.", "_");
+    } else {
+      versionIDSuffix = "";
+    }
+
+    setID("LionCore-builtins" + versionIDSuffix);
     setKey("LionCore-builtins");
     setVersion(lionWebVersion.getVersionString());
     PrimitiveType string = new PrimitiveType(lionWebVersion, this, "String");
@@ -24,21 +31,23 @@ public class LionCoreBuiltins extends Language {
       new PrimitiveType(lionWebVersion, this, "JSON");
     }
 
-    Concept node = new Concept(lionWebVersion, this, "Node").setID("LionCore-builtins-Node");
+    Concept node =
+        new Concept(lionWebVersion, this, "Node").setID("LionCore-builtins-Node" + versionIDSuffix);
     node.setAbstract(true);
 
     Interface iNamed =
-        new Interface(lionWebVersion, this, "INamed").setID("LionCore-builtins-INamed");
+        new Interface(lionWebVersion, this, "INamed")
+            .setID("LionCore-builtins-INamed" + versionIDSuffix);
     iNamed.addFeature(
         Property.createRequired(lionWebVersion, "name", string)
-            .setID("LionCore-builtins-INamed-name")
+            .setID("LionCore-builtins-INamed-name" + versionIDSuffix)
             .setKey("LionCore-builtins-INamed-name"));
 
     this.getElements()
         .forEach(
             e -> {
               if (e.getID() == null) {
-                e.setID("LionCore-builtins-" + e.getName());
+                e.setID("LionCore-builtins-" + e.getName() + versionIDSuffix);
               }
               if (e.getKey() == null) {
                 e.setKey("LionCore-builtins-" + e.getName());
