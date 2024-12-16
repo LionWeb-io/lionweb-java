@@ -303,4 +303,113 @@ public class LanguageValidatorTest {
     Set<Issue> issuesB = l.validate().getIssues();
     assertEquals(Collections.emptySet(), issuesB);
   }
+
+  @Test
+  public void anSDTShouldNotHaveDirectlyCircularReferences() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
+    sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+
+    sdt.addField(new Field("MyCircularField", sdt, "fc_id", "fc_key"));
+    Set<Issue> issuesB = l.validate().getIssues();
+    assertEquals(1, issuesB.size());
+    Issue issueB0 = issuesB.iterator().next();
+    assertEquals(
+        new Issue(
+            IssueSeverity.Error, "Circular references are forbidden in StructuralDataFields", sdt),
+        issueB0);
+  }
+
+  @Test
+  public void anSDTShouldNotHaveIndirectlyCircularReferences() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
+    sdtB.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+
+    sdtB.addField(new Field("MyCircularField", sdtA, "fc_id", "fc_key"));
+    Set<Issue> issuesB = l.validate().getIssues();
+    assertEquals(2, issuesB.size());
+    assert (issuesB.contains(
+        new Issue(
+            IssueSeverity.Error,
+            "Circular references are forbidden in StructuralDataFields",
+            sdtA)));
+    assert (issuesB.contains(
+        new Issue(
+            IssueSeverity.Error,
+            "Circular references are forbidden in StructuralDataFields",
+            sdtB)));
+  }
+
+  @Test
+  public void checkDirectCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
+    sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    assertFalse(LanguageValidator.isCircular(sdt));
+
+    sdt.addField(new Field("MyCircularField", sdt, "fc_id", "fc_key"));
+    assertTrue(LanguageValidator.isCircular(sdt));
+  }
+
+  @Test
+  public void checkIndirectCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
+    sdtB.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+
+    sdtB.addField(new Field("MyCircularField", sdtA, "fc_id", "fc_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtB));
+  }
+
+  @Test
+  public void thirdLevelCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
+    sdtA.addField(new Field("f1", sdtB, "f1_id", "f1_key"));
+    sdtB.addField(new Field("f2", sdtC, "f2_id", "f2_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+    assertFalse(LanguageValidator.isCircular(sdtC));
+    sdtC.addField(new Field("f3", sdtA, "f3_id", "f3_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtB));
+    assertTrue(LanguageValidator.isCircular(sdtC));
+  }
+
+  @Test
+  public void fifthLevelCircularityOfSDTs() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
+    StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
+    StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
+    StructuredDataType sdtD = new StructuredDataType(l, "SDTD", "sdtd_id", "sdtd_key");
+    StructuredDataType sdtE = new StructuredDataType(l, "SDTE", "sdte_id", "sdte_key");
+    sdtA.addField(new Field("f1", sdtB, "f1_id", "f1_key"));
+    sdtB.addField(new Field("f2", sdtC, "f2_id", "f2_key"));
+    sdtC.addField(new Field("f3", sdtD, "f3_id", "f3_key"));
+    sdtD.addField(new Field("f4", sdtE, "f4_id", "f4_key"));
+    assertFalse(LanguageValidator.isCircular(sdtA));
+    assertFalse(LanguageValidator.isCircular(sdtB));
+    assertFalse(LanguageValidator.isCircular(sdtC));
+    assertFalse(LanguageValidator.isCircular(sdtD));
+    assertFalse(LanguageValidator.isCircular(sdtE));
+    sdtE.addField(new Field("f5", sdtA, "f5_id", "f5_key"));
+    assertTrue(LanguageValidator.isCircular(sdtA));
+    assertTrue(LanguageValidator.isCircular(sdtB));
+    assertTrue(LanguageValidator.isCircular(sdtC));
+    assertTrue(LanguageValidator.isCircular(sdtD));
+    assertTrue(LanguageValidator.isCircular(sdtE));
+  }
 }
