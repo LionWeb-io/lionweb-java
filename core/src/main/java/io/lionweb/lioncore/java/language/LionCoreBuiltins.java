@@ -15,11 +15,10 @@ public class LionCoreBuiltins extends Language {
   private LionCoreBuiltins(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion, "LionCore_builtins");
     final String versionIDSuffix;
-    if (lionWebVersion != LionWebVersion.v2023_1) {
-      versionIDSuffix = "-" + lionWebVersion.getVersionString().replaceAll("\\.", "_");
-    } else {
-      versionIDSuffix = "";
-    }
+    versionIDSuffix =
+        lionWebVersion != LionWebVersion.v2023_1
+            ? "-" + lionWebVersion.getVersionString().replaceAll("\\.", "_")
+            : "";
 
     setID("LionCore-builtins" + versionIDSuffix);
     setKey("LionCore-builtins");
