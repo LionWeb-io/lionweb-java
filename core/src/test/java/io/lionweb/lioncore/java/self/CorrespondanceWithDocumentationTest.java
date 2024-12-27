@@ -20,7 +20,10 @@ public class CorrespondanceWithDocumentationTest {
       "86118d62d20edd3bd8973ef2af64690f97a41d8d";
 
   private static final String SPECIFICATION_2024_1_COMMIT_CONSIDERED =
-      "61e3f929afb57c94143c20906f94a682777fe0c8";
+      "980dd6a8ba5fc4b97d3b53233c09e2bda090c347";
+
+  private static final String SPECIFICATION_2023_1_PATH = "/metametamodel/lioncore.json";
+  private static final String SPECIFICATION_2024_1_PATH = "/2024.1/metametamodel/lioncore.json";
 
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo2023_1() throws IOException {
@@ -30,7 +33,7 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_2023_1_COMMIT_CONSIDERED
-                + "/metametamodel/lioncore.json");
+                + SPECIFICATION_2023_1_PATH);
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
     Language deserializedLioncore = (Language) nodes.get(0);
@@ -54,7 +57,7 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_2024_1_COMMIT_CONSIDERED
-                + "/metametamodel/lioncore.json");
+                + SPECIFICATION_2024_1_PATH);
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
     Language deserializedLioncore = (Language) nodes.get(0);
