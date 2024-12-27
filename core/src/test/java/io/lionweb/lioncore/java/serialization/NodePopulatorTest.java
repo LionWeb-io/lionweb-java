@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
@@ -50,7 +51,7 @@ public class NodePopulatorTest {
                     + "          \"targets\": [\n"
                     + "            {\n"
                     + "              \"resolveInfo\": \"Boolean\",\n"
-                    + "              \"reference\": \"LionCore-builtins-Boolean\"\n"
+                    + "              \"reference\": \"LionCore-builtins-Boolean-2024_1\"\n"
                     + "            }\n"
                     + "          ]\n"
                     + "        }\n"
@@ -105,7 +106,9 @@ public class NodePopulatorTest {
                     + "          \"targets\": [\n"
                     + "            {\n"
                     + "              \"resolveInfo\": \"Boolean\",\n"
-                    + "              \"reference\": \"LionCore-builtins-Boolean-for-some-version-different-than-the-one-we-are-using\"\n"
+                    + "              \"reference\": \""
+                    + LionCoreBuiltins.getInstance(LionWebVersion.v2023_1)
+                    + "\"\n"
                     + "            }\n"
                     + "          ]\n"
                     + "        }\n"
@@ -116,12 +119,13 @@ public class NodePopulatorTest {
                     + "}");
     SerializedClassifierInstance serializedNode = chunk.getClassifierInstances().get(0);
 
-    DynamicNode node = new DynamicNode("my-node", LionCore.getProperty());
-    nodePopulator.populateClassifierInstance(node, serializedNode);
-
-    assertEquals(
-        LionCoreBuiltins.getBoolean(),
-        ClassifierInstanceUtils.getOnlyReferenceValueByReferenceName(node, "type").getReferred());
+    try {
+      DynamicNode node = new DynamicNode("my-node", LionCore.getProperty());
+      nodePopulator.populateClassifierInstance(node, serializedNode);
+      fail("Exception was expected");
+    } catch (DeserializationException t) {
+      t.printStackTrace();
+    }
   }
 
   @Test
