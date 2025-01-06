@@ -56,7 +56,9 @@ class NodePopulator {
         .getElements()
         .forEach(
             element -> {
-              autoResolveMap.put(element.getName(), element);
+              // See
+              // https://lionweb.io/specification/2024.1/metametamodel/metametamodel.html#predefined-builtins-keys
+              autoResolveMap.put("LionWeb.LionCore_builtins." + element.getName(), element);
             });
   }
 
