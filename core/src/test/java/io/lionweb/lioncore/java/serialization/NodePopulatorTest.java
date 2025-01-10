@@ -50,7 +50,7 @@ public class NodePopulatorTest {
                     + "          },\n"
                     + "          \"targets\": [\n"
                     + "            {\n"
-                    + "              \"resolveInfo\": \"Boolean\",\n"
+                    + "              \"resolveInfo\": \"LionWeb.LionCore_builtins.Boolean\",\n"
                     + "              \"reference\": \"LionCore-builtins-Boolean-2024-1\"\n"
                     + "            }\n"
                     + "          ]\n"
@@ -105,7 +105,7 @@ public class NodePopulatorTest {
                     + "          },\n"
                     + "          \"targets\": [\n"
                     + "            {\n"
-                    + "              \"resolveInfo\": \"Boolean\",\n"
+                    + "              \"resolveInfo\": \"LionWeb.LionCore_builtins.Boolean\",\n"
                     + "              \"reference\": \""
                     + LionCoreBuiltins.getInstance(LionWebVersion.v2023_1)
                     + "\"\n"
