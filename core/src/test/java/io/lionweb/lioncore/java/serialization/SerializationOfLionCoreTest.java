@@ -108,10 +108,10 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     SerializedClassifierInstance LionCore_M3 =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> "-id-LionCore-M3-2024_1".equals(n.getID()))
+            .filter(n -> "-id-LionCore-M3-2024-1".equals(n.getID()))
             .findFirst()
             .get();
-    assertEquals("-id-LionCore-M3-2024_1", LionCore_M3.getID());
+    assertEquals("-id-LionCore-M3-2024-1", LionCore_M3.getID());
     assertEquals(new MetaPointer("LionCore-M3", "2024.1", "Language"), LionCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
@@ -128,24 +128,24 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             new SerializedContainmentValue(
                 new MetaPointer("LionCore-M3", "2024.1", "Language-entities"),
                 Arrays.asList(
-                    "-id-Annotation-2024_1",
-                    "-id-Concept-2024_1",
-                    "-id-Interface-2024_1",
-                    "-id-Containment-2024_1",
-                    "-id-DataType-2024_1",
-                    "-id-Enumeration-2024_1",
-                    "-id-EnumerationLiteral-2024_1",
-                    "-id-Feature-2024_1",
-                    "-id-Field-2024_1",
-                    "-id-Classifier-2024_1",
-                    "-id-Link-2024_1",
-                    "-id-Language-2024_1",
-                    "-id-LanguageEntity-2024_1",
-                    "-id-IKeyed-2024_1",
-                    "-id-PrimitiveType-2024_1",
-                    "-id-Property-2024_1",
-                    "-id-Reference-2024_1",
-                    "-id-StructuredDataType-2024_1"))),
+                    "-id-Annotation-2024-1",
+                    "-id-Concept-2024-1",
+                    "-id-Interface-2024-1",
+                    "-id-Containment-2024-1",
+                    "-id-DataType-2024-1",
+                    "-id-Enumeration-2024-1",
+                    "-id-EnumerationLiteral-2024-1",
+                    "-id-Feature-2024-1",
+                    "-id-Field-2024-1",
+                    "-id-Classifier-2024-1",
+                    "-id-Link-2024-1",
+                    "-id-Language-2024-1",
+                    "-id-LanguageEntity-2024-1",
+                    "-id-IKeyed-2024-1",
+                    "-id-PrimitiveType-2024-1",
+                    "-id-Property-2024-1",
+                    "-id-Reference-2024-1",
+                    "-id-StructuredDataType-2024-1"))),
         LionCore_M3.getContainments());
     assertEquals(
         Arrays.asList(
@@ -156,7 +156,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     SerializedClassifierInstance LionCore_M3_Interface_extends =
         serializedChunk.getClassifierInstances().stream()
-            .filter(n -> "-id-Interface-extends-2024_1".equals(n.getID()))
+            .filter(n -> "-id-Interface-extends-2024-1".equals(n.getID()))
             .findFirst()
             .get();
   }

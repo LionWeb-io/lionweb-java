@@ -51,7 +51,7 @@ public class NodePopulatorTest {
                     + "          \"targets\": [\n"
                     + "            {\n"
                     + "              \"resolveInfo\": \"Boolean\",\n"
-                    + "              \"reference\": \"LionCore-builtins-Boolean-2024_1\"\n"
+                    + "              \"reference\": \"LionCore-builtins-Boolean-2024-1\"\n"
                     + "            }\n"
                     + "          ]\n"
                     + "        }\n"
@@ -136,7 +136,10 @@ public class NodePopulatorTest {
         new DeserializationStatus(Collections.emptyList(), serialization.getInstanceResolver());
     NodePopulator nodePopulator =
         new NodePopulator(
-            serialization, serialization.getInstanceResolver(), deserializationStatus);
+            serialization,
+            serialization.getInstanceResolver(),
+            deserializationStatus,
+            LionWebVersion.v2024_1);
 
     SerializedChunk chunk =
         new LowLevelJsonSerialization()
@@ -163,7 +166,7 @@ public class NodePopulatorTest {
                     + "          },\n"
                     + "          \"targets\": [\n"
                     + "            {\n"
-                    + "              \"resolveInfo\": \"Boolean\",\n"
+                    + "              \"resolveInfo\": \"LionWeb.LionCore_builtins.Boolean\",\n"
                     + "              \"reference\": null\n"
                     + "            }\n"
                     + "          ]\n"

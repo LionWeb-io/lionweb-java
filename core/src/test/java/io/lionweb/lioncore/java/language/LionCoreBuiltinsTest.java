@@ -32,13 +32,13 @@ public class LionCoreBuiltinsTest {
   @Test
   public void primitiveTypesHaveAgreedIDsv2024() {
     assertEquals(
-        "LionCore-builtins-String-2024_1",
+        "LionCore-builtins-String-2024-1",
         LionCoreBuiltins.getString(LionWebVersion.v2024_1).getID());
     assertEquals(
-        "LionCore-builtins-Boolean-2024_1",
+        "LionCore-builtins-Boolean-2024-1",
         LionCoreBuiltins.getBoolean(LionWebVersion.v2024_1).getID());
     assertEquals(
-        "LionCore-builtins-Integer-2024_1",
+        "LionCore-builtins-Integer-2024-1",
         LionCoreBuiltins.getInteger(LionWebVersion.v2024_1).getID());
     assertThrows(
         IllegalArgumentException.class, () -> LionCoreBuiltins.getJSON(LionWebVersion.v2024_1));

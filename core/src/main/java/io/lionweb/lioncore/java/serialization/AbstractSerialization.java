@@ -8,6 +8,7 @@ import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.impl.AbstractClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
@@ -54,6 +55,8 @@ public abstract class AbstractSerialization {
       UnavailableNodePolicy.THROW_ERROR;
 
   private final @Nonnull LionWebVersion lionWebVersion;
+
+  protected boolean builtinsReferenceDangling = false;
 
   protected AbstractSerialization() {
     this(LionWebVersion.currentVersion);
@@ -145,6 +148,10 @@ public abstract class AbstractSerialization {
     getPrimitiveValuesSerialization().registerLanguage(language);
   }
 
+  public void makeBuiltinsReferenceDangling() {
+    this.builtinsReferenceDangling = true;
+  }
+
   //
   // Serialization to chunk
   //
@@ -226,7 +233,8 @@ public abstract class AbstractSerialization {
     }
     serializeProperties(classifierInstance, serializedClassifierInstance);
     serializeContainments(classifierInstance, serializedClassifierInstance);
-    serializeReferences(classifierInstance, serializedClassifierInstance);
+    serializeReferences(
+        classifierInstance, serializedClassifierInstance, builtinsReferenceDangling);
     serializeAnnotations(classifierInstance, serializedClassifierInstance);
     return serializedClassifierInstance;
   }
@@ -241,7 +249,8 @@ public abstract class AbstractSerialization {
         MetaPointer.from(annotationInstance.getAnnotationDefinition()));
     serializeProperties(annotationInstance, serializedClassifierInstance);
     serializeContainments(annotationInstance, serializedClassifierInstance);
-    serializeReferences(annotationInstance, serializedClassifierInstance);
+    serializeReferences(
+        annotationInstance, serializedClassifierInstance, builtinsReferenceDangling);
     serializeAnnotations(annotationInstance, serializedClassifierInstance);
     return serializedClassifierInstance;
   }
@@ -258,7 +267,8 @@ public abstract class AbstractSerialization {
 
   private static void serializeReferences(
       @Nonnull ClassifierInstance<?> classifierInstance,
-      SerializedClassifierInstance serializedClassifierInstance) {
+      SerializedClassifierInstance serializedClassifierInstance,
+      boolean builtinsReferenceDangling) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
     classifierInstance
         .getClassifier()
@@ -275,6 +285,10 @@ public abstract class AbstractSerialization {
                           rv -> {
                             String referredID =
                                 rv.getReferred() == null ? null : rv.getReferred().getID();
+                            if (builtinsReferenceDangling
+                                && ClassifierInstanceUtils.isBuiltinElement(rv.getReferred())) {
+                              referredID = null;
+                            }
                             return new SerializedReferenceValue.Entry(
                                 referredID, rv.getResolveInfo());
                           })
@@ -480,7 +494,7 @@ public abstract class AbstractSerialization {
             deserializationStatus.getProxiesInstanceResolver(),
             this.instanceResolver);
     NodePopulator nodePopulator =
-        new NodePopulator(this, classifierInstanceResolver, deserializationStatus);
+        new NodePopulator(this, classifierInstanceResolver, deserializationStatus, lionWebVersion);
     serializedClassifierInstances.stream()
         .forEach(
             node -> {

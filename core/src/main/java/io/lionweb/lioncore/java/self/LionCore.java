@@ -166,7 +166,7 @@ public class LionCore {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     String versionIDSuffix = "";
     if (lionWebVersion != LionWebVersion.v2023_1) {
-      versionIDSuffix = "-" + lionWebVersion.getVersionString().replaceAll("\\.", "_");
+      versionIDSuffix = "-" + lionWebVersion.getVersionString().replaceAll("\\.", "-");
     }
     if (!INSTANCES.containsKey(lionWebVersion)) {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");

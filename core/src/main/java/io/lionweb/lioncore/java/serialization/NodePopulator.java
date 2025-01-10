@@ -2,13 +2,11 @@ package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
-import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
-import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import java.util.HashMap;
 import java.util.List;
@@ -27,7 +25,6 @@ class NodePopulator {
 
   // If there are references to builtins which are broken, we will try to resolve them to this
   // version
-  private LionWebVersion autoResolveVersion;
   private Map<String, Node> autoResolveMap = new HashMap<>();
 
   NodePopulator(
@@ -49,14 +46,20 @@ class NodePopulator {
     this.serialization = serialization;
     this.classifierInstanceResolver = classifierInstanceResolver;
     this.deserializationStatus = deserializationStatus;
-    this.autoResolveVersion = autoResolveVersion;
 
     LionCoreBuiltins lionCoreBuiltins = LionCoreBuiltins.getInstance(autoResolveVersion);
     lionCoreBuiltins
         .getElements()
         .forEach(
             element -> {
-              autoResolveMap.put(element.getName(), element);
+              autoResolveMap.put("LionWeb.LionCore_builtins." + element.getName(), element);
+            });
+    Language lionCore = LionCore.getInstance(autoResolveVersion);
+    lionCore
+        .getElements()
+        .forEach(
+            element -> {
+              autoResolveMap.put("LionWeb.LionCore_M3." + element.getName(), element);
             });
   }
 

@@ -17,7 +17,7 @@ public class LionCoreBuiltins extends Language {
     final String versionIDSuffix;
     versionIDSuffix =
         lionWebVersion != LionWebVersion.v2023_1
-            ? "-" + lionWebVersion.getVersionString().replaceAll("\\.", "_")
+            ? "-" + lionWebVersion.getVersionString().replaceAll("\\.", "-")
             : "";
 
     setID("LionCore-builtins" + versionIDSuffix);
