@@ -97,6 +97,7 @@ internal class LowLevelRepoClient(
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("depthLimit", limit.toString())
         urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
         val request: Request =
             Request.Builder()
                 .url(urlBuilder.build())

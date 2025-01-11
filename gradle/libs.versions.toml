@@ -1,6 +1,6 @@
 [versions]
 kotlinVersion="1.9.25"
-lwJavaVersion="0.2.19"
+lwJavaVersion="0.3.0-SNAPSHOT"
 kotestVersion="5.8.0"
 testcontainersVersion="1.19.5"
 
@@ -17,8 +17,8 @@ okhttp = { group = "com.squareup.okhttp3", name="okhttp", version="4.12.0"}
 gson = { group = "com.google.code.gson", name="gson", version="2.10.1" }
 kotlinreflect = { group = "org.jetbrains.kotlin", name="kotlin-reflect", version.ref = "kotlinVersion" }
 ktestjunit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlinVersion" }
-lwjavacore = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2023.1-core", version.ref = "lwJavaVersion"}
-lwjavaextensions = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2023.1-extensions", version.ref = "lwJavaVersion"}
+lwjavacore = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-core", version.ref = "lwJavaVersion"}
+lwjavaextensions = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-extensions", version.ref = "lwJavaVersion"}
 kotestrunner = { module="io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVersion"}
 kotestassertions = { module="io.kotest:kotest-assertions-core", version.ref = "kotestVersion"}
 kotestproperty = { module="io.kotest:kotest-property", version.ref = "kotestVersion" }
