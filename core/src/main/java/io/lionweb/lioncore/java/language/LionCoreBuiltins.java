@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.utils.IdUtils;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -17,7 +18,7 @@ public class LionCoreBuiltins extends Language {
     final String versionIDSuffix;
     versionIDSuffix =
         lionWebVersion != LionWebVersion.v2023_1
-            ? "-" + lionWebVersion.getVersionString().replaceAll("\\.", "-")
+            ? "-" + IdUtils.cleanString(lionWebVersion.getVersionString())
             : "";
 
     setID("LionCore-builtins" + versionIDSuffix);

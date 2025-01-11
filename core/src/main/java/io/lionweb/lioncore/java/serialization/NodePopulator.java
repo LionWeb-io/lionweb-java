@@ -1,5 +1,8 @@
 package io.lionweb.lioncore.java.serialization;
 
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCOREBUILTINS_AUTORESOLVE_PREFIX;
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCORE_AUTORESOLVE_PREFIX;
+
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
@@ -54,14 +57,14 @@ class NodePopulator {
             element -> {
               // See
               // https://lionweb.io/specification/2024.1/metametamodel/metametamodel.html#predefined-builtins-keys
-              autoResolveMap.put("LionWeb.LionCore_builtins." + element.getName(), element);
+              autoResolveMap.put(LIONCOREBUILTINS_AUTORESOLVE_PREFIX + element.getName(), element);
             });
     Language lionCore = LionCore.getInstance(autoResolveVersion);
     lionCore
         .getElements()
         .forEach(
             element -> {
-              autoResolveMap.put("LionWeb.LionCore_M3." + element.getName(), element);
+              autoResolveMap.put(LIONCORE_AUTORESOLVE_PREFIX + element.getName(), element);
             });
   }
 

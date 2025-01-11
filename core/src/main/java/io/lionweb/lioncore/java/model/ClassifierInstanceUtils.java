@@ -1,5 +1,8 @@
 package io.lionweb.lioncore.java.model;
 
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCOREBUILTINS_AUTORESOLVE_PREFIX;
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCORE_AUTORESOLVE_PREFIX;
+
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import java.util.*;
@@ -257,11 +260,11 @@ public class ClassifierInstanceUtils {
     if (_this.getLanguage() != null
         && "LionCore_M3".equals(_this.getLanguage().getName())
         && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return new ReferenceValue(_this, "LionWeb.LionCore_M3." + _this.getName());
+      return new ReferenceValue(_this, LIONCORE_AUTORESOLVE_PREFIX + _this.getName());
     } else if (_this.getLanguage() != null
         && _this.getLanguage() instanceof LionCoreBuiltins
         && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return new ReferenceValue(_this, "LionWeb.LionCore_builtins." + _this.getName());
+      return new ReferenceValue(_this, LIONCOREBUILTINS_AUTORESOLVE_PREFIX + _this.getName());
     } else {
       return new ReferenceValue(_this, _this.getName());
     }

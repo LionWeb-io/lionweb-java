@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.self;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.utils.IdUtils;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -166,7 +167,7 @@ public class LionCore {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     String versionIDSuffix = "";
     if (lionWebVersion != LionWebVersion.v2023_1) {
-      versionIDSuffix = "-" + lionWebVersion.getVersionString().replaceAll("\\.", "-");
+      versionIDSuffix = "-" + IdUtils.cleanString(lionWebVersion.getVersionString());
     }
     if (!INSTANCES.containsKey(lionWebVersion)) {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");

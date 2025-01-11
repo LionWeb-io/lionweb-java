@@ -17,10 +17,10 @@ import org.junit.Test;
 public class CorrespondanceWithDocumentationTest {
 
   private static final String SPECIFICATION_2023_1_COMMIT_CONSIDERED =
-      "cf17074aad9552a78100b7ccead395a1eeba5fca";
+      "73b1c88e8e8f365c76bcf13340da310ed74d5f8e";
 
   private static final String SPECIFICATION_2024_1_COMMIT_CONSIDERED =
-      "cf17074aad9552a78100b7ccead395a1eeba5fca";
+      "73b1c88e8e8f365c76bcf13340da310ed74d5f8e";
 
   private static final String SPECIFICATION_LIONCORE_2023_1_PATH =
       "/2023.1/metametamodel/lioncore.json";
