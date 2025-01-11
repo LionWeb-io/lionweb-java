@@ -33,8 +33,14 @@ public class LanguageValidator extends Validator<Language> {
                     .checkForError(feature.getName() == null, "Simple name not set", feature)
                     .checkForError(feature.getContainer() == null, "Container not set", feature)
                     .checkForError(
-                        feature.getContainer() != null && feature.getContainer() != classifier,
-                        "Features container not set correctly",
+                        feature.getContainer() != null
+                            && ((Node) feature.getContainer()).getID() != null
+                            && !((Node) feature.getContainer()).getID().equals(classifier.getID()),
+                        "Features container not set correctly: set to "
+                            + feature.getContainer()
+                            + " when "
+                            + classifier
+                            + " was expected",
                         feature));
     validateNamesAreUnique(classifier.getFeatures(), result);
   }
