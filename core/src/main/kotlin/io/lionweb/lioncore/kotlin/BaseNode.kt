@@ -127,7 +127,14 @@ abstract class BaseNode : DynamicNode() {
                 value: C?,
             ) {
                 val containment = thisRef.classifier!!.requireContainmentByName(containmentName)
-                thisRef.addChild(containment, value)
+                if (value == null) {
+                    val currValue = getValue(thisRef, property)
+                    if (currValue != null) {
+                        thisRef.removeChild(containment, 0)
+                    }
+                } else {
+                    thisRef.addChild(containment, value)
+                }
             }
         }
     }
