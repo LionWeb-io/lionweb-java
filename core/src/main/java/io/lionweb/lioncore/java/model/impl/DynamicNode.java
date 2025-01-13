@@ -96,7 +96,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   private static boolean shallowNodeEquality(@Nullable Node node1, @Nullable Node node2) {
-    if (node1 == null || node2 == null) {
+    if (node1 == null && node2 == null) {
       return true;
     }
     if (node1 != null && node2 != null && node1.getID() != null) {
