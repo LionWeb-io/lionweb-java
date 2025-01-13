@@ -1,16 +1,16 @@
 [versions]
-kotlinVersion="1.9.25"
-lwJavaVersion="0.3.0-SNAPSHOT"
+kotlinVersion="2.0.21"
+lwJavaVersion="0.3.0"
 kotestVersion="5.8.0"
 testcontainersVersion="1.19.5"
 
 [plugins]
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.1" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.1.2" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version = "1.9.20" }
-superPublish = { id = "com.vanniktech.maven.publish", version = "0.29.0" }
-buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.3.5" }
-release = { id = "net.researchgate.release", version = "3.0.2"}
+superPublish = { id = "com.vanniktech.maven.publish", version = "0.30.0" }
+buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.5.1" }
+release = { id = "net.researchgate.release", version = "3.1.0"}
 
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name="okhttp", version="4.12.0"}
