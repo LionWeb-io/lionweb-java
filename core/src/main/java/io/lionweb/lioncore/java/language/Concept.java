@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -118,7 +118,7 @@ public class Concept extends Classifier<Concept> {
 
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "Interface should not be null");
-    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
+    this.addReferenceMultipleValue("implements", ClassifierInstanceUtils.referenceTo(iface));
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?
@@ -126,7 +126,7 @@ public class Concept extends Classifier<Concept> {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
-      this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
+      this.setReferenceSingleValue("extends", ClassifierInstanceUtils.referenceTo(extended));
     }
   }
 

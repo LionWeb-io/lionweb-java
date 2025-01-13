@@ -17,10 +17,19 @@ import org.junit.Test;
 public class CorrespondanceWithDocumentationTest {
 
   private static final String SPECIFICATION_2023_1_COMMIT_CONSIDERED =
-      "86118d62d20edd3bd8973ef2af64690f97a41d8d";
+      "73b1c88e8e8f365c76bcf13340da310ed74d5f8e";
 
   private static final String SPECIFICATION_2024_1_COMMIT_CONSIDERED =
-      "61e3f929afb57c94143c20906f94a682777fe0c8";
+      "73b1c88e8e8f365c76bcf13340da310ed74d5f8e";
+
+  private static final String SPECIFICATION_LIONCORE_2023_1_PATH =
+      "/2023.1/metametamodel/lioncore.json";
+  private static final String SPECIFICATION_LIONCORE_2024_1_PATH =
+      "/2024.1/metametamodel/lioncore.json";
+  private static final String SPECIFICATION_LIONCOREBUILTINS_2023_1_PATH =
+      "/2023.1/metametamodel/builtins.json";
+  private static final String SPECIFICATION_LIONCOREBUILTINS_2024_1_PATH =
+      "/2024.1/metametamodel/builtins.json";
 
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo2023_1() throws IOException {
@@ -30,7 +39,7 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_2023_1_COMMIT_CONSIDERED
-                + "/metametamodel/lioncore.json");
+                + SPECIFICATION_LIONCORE_2023_1_PATH);
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
     Language deserializedLioncore = (Language) nodes.get(0);
@@ -54,7 +63,7 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_2024_1_COMMIT_CONSIDERED
-                + "/metametamodel/lioncore.json");
+                + SPECIFICATION_LIONCORE_2024_1_PATH);
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
     Language deserializedLioncore = (Language) nodes.get(0);
@@ -76,7 +85,7 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_2023_1_COMMIT_CONSIDERED
-                + "/metametamodel/builtins.json");
+                + SPECIFICATION_LIONCOREBUILTINS_2023_1_PATH);
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
     Language deserializedBuiltins = (Language) nodes.get(0);
@@ -98,7 +107,7 @@ public class CorrespondanceWithDocumentationTest {
         new URL(
             "https://raw.githubusercontent.com/LionWeb-io/specification/"
                 + SPECIFICATION_2024_1_COMMIT_CONSIDERED
-                + "/metametamodel/builtins.json");
+                + SPECIFICATION_LIONCOREBUILTINS_2024_1_PATH);
     List<Node> nodes = jsonSer.deserializeToNodes(url);
 
     Language deserializedBuiltins = (Language) nodes.get(0);

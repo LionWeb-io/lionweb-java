@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -73,7 +73,7 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     if (type == null) {
       this.setReferenceSingleValue("type", null);
     } else {
-      this.setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
+      this.setReferenceSingleValue("type", ClassifierInstanceUtils.referenceTo(type));
     }
     return (T) this;
   }

@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -72,7 +72,7 @@ public class Interface extends Classifier<Interface> {
   public void addExtendedInterface(@Nonnull Interface extendedInterface) {
     Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
     this.addReferenceMultipleValue(
-        "extends", new ReferenceValue(extendedInterface, extendedInterface.getName()));
+        "extends", ClassifierInstanceUtils.referenceTo(extendedInterface));
   }
 
   @Nonnull

@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.self;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.impl.M3Node;
+import io.lionweb.lioncore.java.utils.IdUtils;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -164,9 +165,13 @@ public class LionCore {
 
   public static @Nonnull Language getInstance(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    String versionIDSuffix = "";
+    if (lionWebVersion != LionWebVersion.v2023_1) {
+      versionIDSuffix = "-" + IdUtils.cleanString(lionWebVersion.getVersionString());
+    }
     if (!INSTANCES.containsKey(lionWebVersion)) {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");
-      instance.setID("-id-LionCore-M3");
+      instance.setID("-id-LionCore-M3" + versionIDSuffix);
       instance.setKey("LionCore-M3");
       instance.setVersion(lionWebVersion.getVersionString());
 
@@ -206,21 +211,24 @@ public class LionCore {
               lionWebVersion,
               "abstract",
               LionCoreBuiltins.getBoolean(lionWebVersion),
-              "-id-Concept-abstract"));
+              "-id-Concept-abstract" + versionIDSuffix));
       concept.addFeature(
           Property.createRequired(
               lionWebVersion,
               "partition",
               LionCoreBuiltins.getBoolean(lionWebVersion),
-              "-id-Concept-partition"));
+              "-id-Concept-partition" + versionIDSuffix));
       concept.addFeature(
-          Reference.createOptional(lionWebVersion, "extends", concept, "-id-Concept-extends"));
+          Reference.createOptional(
+              lionWebVersion, "extends", concept, "-id-Concept-extends" + versionIDSuffix));
       concept.addFeature(
-          Reference.createMultiple(lionWebVersion, "implements", iface, "-id-Concept-implements"));
+          Reference.createMultiple(
+              lionWebVersion, "implements", iface, "-id-Concept-implements" + versionIDSuffix));
 
       iface.setExtendedConcept(classifier);
       iface.addFeature(
-          Reference.createMultiple(lionWebVersion, "extends", iface, "-id-Interface-extends"));
+          Reference.createMultiple(
+              lionWebVersion, "extends", iface, "-id-Interface-extends" + versionIDSuffix));
 
       containment.setExtendedConcept(link);
 
@@ -230,7 +238,7 @@ public class LionCore {
       enumeration.setExtendedConcept(dataType);
       enumeration.addFeature(
           Containment.createMultiple(lionWebVersion, "literals", enumerationLiteral)
-              .setID("-id-Enumeration-literals"));
+              .setID("-id-Enumeration-literals" + versionIDSuffix));
 
       enumerationLiteral.addImplementedInterface(iKeyed);
 
@@ -241,13 +249,13 @@ public class LionCore {
               lionWebVersion,
               "optional",
               LionCoreBuiltins.getBoolean(lionWebVersion),
-              "-id-Feature-optional"));
+              "-id-Feature-optional" + versionIDSuffix));
 
       classifier.setAbstract(true);
       classifier.setExtendedConcept(languageEntity);
       classifier.addFeature(
           Containment.createMultiple(
-              lionWebVersion, "features", feature, "-id-Classifier-features"));
+              lionWebVersion, "features", feature, "-id-Classifier-features" + versionIDSuffix));
 
       link.setAbstract(true);
       link.setExtendedConcept(feature);
@@ -256,9 +264,10 @@ public class LionCore {
               lionWebVersion,
               "multiple",
               LionCoreBuiltins.getBoolean(lionWebVersion),
-              "-id-Link-multiple"));
+              "-id-Link-multiple" + versionIDSuffix));
       link.addFeature(
-          Reference.createRequired(lionWebVersion, "type", classifier, "-id-Link-type"));
+          Reference.createRequired(
+              lionWebVersion, "type", classifier, "-id-Link-type" + versionIDSuffix));
 
       language.setPartition(true);
       language.addImplementedInterface(iKeyed);
@@ -267,13 +276,16 @@ public class LionCore {
               lionWebVersion,
               "version",
               LionCoreBuiltins.getString(lionWebVersion),
-              "-id-Language-version"));
+              "-id-Language-version" + versionIDSuffix));
       language.addFeature(
           Reference.createMultiple(lionWebVersion, "dependsOn", language)
-              .setID("-id-Language-dependsOn"));
+              .setID("-id-Language-dependsOn" + versionIDSuffix));
       language.addFeature(
           Containment.createMultiple(
-                  lionWebVersion, "entities", languageEntity, "-id-Language-entities")
+                  lionWebVersion,
+                  "entities",
+                  languageEntity,
+                  "-id-Language-entities" + versionIDSuffix)
               .setKey("Language-entities"));
 
       languageEntity.setAbstract(true);
@@ -283,7 +295,8 @@ public class LionCore {
 
       property.setExtendedConcept(feature);
       property.addFeature(
-          Reference.createRequired(lionWebVersion, "type", dataType, "-id-Property-type")
+          Reference.createRequired(
+                  lionWebVersion, "type", dataType, "-id-Property-type" + versionIDSuffix)
               .setKey("Property-type"));
 
       reference.setExtendedConcept(link);
@@ -291,42 +304,49 @@ public class LionCore {
       iKeyed.addExtendedInterface(LionCoreBuiltins.getINamed(lionWebVersion));
       iKeyed.addFeature(
           Property.createRequired(lionWebVersion, "key", LionCoreBuiltins.getString(lionWebVersion))
-              .setID("-id-IKeyed-key"));
+              .setID("-id-IKeyed-key" + versionIDSuffix));
 
       annotation.setExtendedConcept(classifier);
       annotation.addFeature(
           Reference.createOptional(
-              lionWebVersion, "annotates", classifier, "-id-Annotation-annotates"));
+              lionWebVersion,
+              "annotates",
+              classifier,
+              "-id-Annotation-annotates" + versionIDSuffix));
       annotation.addFeature(
           Reference.createOptional(
-              lionWebVersion, "extends", annotation, "-id-Annotation-extends"));
+              lionWebVersion, "extends", annotation, "-id-Annotation-extends" + versionIDSuffix));
       annotation.addFeature(
           Reference.createMultiple(
-              lionWebVersion, "implements", iface, "-id-Annotation-implements"));
+              lionWebVersion, "implements", iface, "-id-Annotation-implements" + versionIDSuffix));
 
       if (lionWebVersion != LionWebVersion.v2023_1) {
         structuredDataType.setExtendedConcept(dataType);
         structuredDataType.addFeature(
             Containment.createMultiple(
-                    lionWebVersion, "fields", field, "-id-StructuredDataType-fields")
+                    lionWebVersion,
+                    "fields",
+                    field,
+                    "-id-StructuredDataType-fields" + versionIDSuffix)
                 .setOptional(false));
 
         field.addImplementedInterface(iKeyed);
         field.addFeature(
-            Reference.createRequired(lionWebVersion, "type", dataType, "-id-Field-type"));
+            Reference.createRequired(
+                lionWebVersion, "type", dataType, "-id-Field-type" + versionIDSuffix));
       }
 
-      checkIDs(instance);
+      checkIDs(instance, versionIDSuffix);
       INSTANCES.put(lionWebVersion, instance);
     }
     return INSTANCES.get(lionWebVersion);
   }
 
-  private static void checkIDs(@Nonnull M3Node node) {
+  private static void checkIDs(@Nonnull M3Node node, String versionIDSuffix) {
     if (node.getID() == null) {
       if (node instanceof NamespacedEntity) {
         NamespacedEntity namespacedEntity = (NamespacedEntity) node;
-        node.setID("-id-" + namespacedEntity.getName().replaceAll("\\.", "_"));
+        node.setID("-id-" + namespacedEntity.getName().replaceAll("\\.", "_") + versionIDSuffix);
         if (node instanceof IKeyed<?> && ((IKeyed<?>) node).getKey() == null) {
           ((IKeyed<?>) node).setKey(namespacedEntity.getName());
         }
@@ -347,7 +367,7 @@ public class LionCore {
     }
 
     // TODO To be changed once getChildren is implemented correctly
-    getChildrenHelper(node).forEach(c -> checkIDs(c));
+    getChildrenHelper(node).forEach(c -> checkIDs(c, versionIDSuffix));
   }
 
   private static List<? extends M3Node> getChildrenHelper(M3Node node) {

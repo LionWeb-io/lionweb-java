@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -23,7 +23,7 @@ import javax.annotation.Nullable;
 public class Property extends Feature<Property> {
 
   public static Property createOptional(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType type) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType<?> type) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Property property = new Property(lionWebVersion, name, null);
     property.setOptional(true);
@@ -31,7 +31,7 @@ public class Property extends Feature<Property> {
     return property;
   }
 
-  public static Property createOptional(@Nullable String name, @Nullable DataType type) {
+  public static Property createOptional(@Nullable String name, @Nullable DataType<?> type) {
     Property property = new Property(name, null);
     property.setOptional(true);
     property.setType(type);
@@ -39,7 +39,7 @@ public class Property extends Feature<Property> {
   }
 
   public static Property createRequired(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType type) {
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType<?> type) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Property property = new Property(lionWebVersion, name, null);
     property.setOptional(false);
@@ -47,7 +47,7 @@ public class Property extends Feature<Property> {
     return property;
   }
 
-  public static Property createRequired(@Nullable String name, @Nullable DataType type) {
+  public static Property createRequired(@Nullable String name, @Nullable DataType<?> type) {
     Property property = new Property(name, null);
     property.setOptional(false);
     property.setType(type);
@@ -120,7 +120,7 @@ public class Property extends Feature<Property> {
     if (type == null) {
       setReferenceSingleValue("type", null);
     } else {
-      setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
+      setReferenceSingleValue("type", ClassifierInstanceUtils.referenceTo(type));
     }
     return this;
   }

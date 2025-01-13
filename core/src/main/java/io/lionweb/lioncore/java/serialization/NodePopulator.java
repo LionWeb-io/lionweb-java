@@ -1,14 +1,19 @@
 package io.lionweb.lioncore.java.serialization;
 
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCOREBUILTINS_AUTORESOLVE_PREFIX;
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCORE_AUTORESOLVE_PREFIX;
+
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
-import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.self.LionCore;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -21,13 +26,46 @@ class NodePopulator {
   private final ClassifierInstanceResolver classifierInstanceResolver;
   private final DeserializationStatus deserializationStatus;
 
+  // If there are references to builtins which are broken, we will try to resolve them to this
+  // version
+  private Map<String, Node> autoResolveMap = new HashMap<>();
+
   NodePopulator(
       AbstractSerialization serialization,
       ClassifierInstanceResolver classifierInstanceResolver,
       DeserializationStatus deserializationStatus) {
+    this(
+        serialization,
+        classifierInstanceResolver,
+        deserializationStatus,
+        LionWebVersion.currentVersion);
+  }
+
+  NodePopulator(
+      AbstractSerialization serialization,
+      ClassifierInstanceResolver classifierInstanceResolver,
+      DeserializationStatus deserializationStatus,
+      LionWebVersion autoResolveVersion) {
     this.serialization = serialization;
     this.classifierInstanceResolver = classifierInstanceResolver;
     this.deserializationStatus = deserializationStatus;
+
+    LionCoreBuiltins lionCoreBuiltins = LionCoreBuiltins.getInstance(autoResolveVersion);
+    lionCoreBuiltins
+        .getElements()
+        .forEach(
+            element -> {
+              // See
+              // https://lionweb.io/specification/2024.1/metametamodel/metametamodel.html#predefined-builtins-keys
+              autoResolveMap.put(LIONCOREBUILTINS_AUTORESOLVE_PREFIX + element.getName(), element);
+            });
+    Language lionCore = LionCore.getInstance(autoResolveVersion);
+    lionCore
+        .getElements()
+        .forEach(
+            element -> {
+              autoResolveMap.put(LIONCORE_AUTORESOLVE_PREFIX + element.getName(), element);
+            });
   }
 
   void populateClassifierInstance(
@@ -97,7 +135,14 @@ class NodePopulator {
                       entry -> {
                         Node referred =
                             (Node) classifierInstanceResolver.resolve(entry.getReference());
-                        if (entry.getReference() != null && referred == null) {
+
+                        if (entry.getReference() == null) {
+                          referred = autoResolveMap.get(entry.getResolveInfo());
+                        }
+                        if (referred == null && entry.getReference() != null) {
+                          // Here we are only interested in references there were set, but to
+                          // Nodes we cannot
+                          // find
                           switch (serialization.getUnavailableReferenceTargetPolicy()) {
                             case NULL_REFERENCES:
                               referred = null;
