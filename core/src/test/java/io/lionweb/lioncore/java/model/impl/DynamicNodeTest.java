@@ -527,4 +527,20 @@ public class DynamicNodeTest {
     n1.setAmount(amount);
     assertEquals(amount, n1.getAmount());
   }
+
+  @Test
+  public void equalityConsideringParent() {
+    DynamicNode a = new DynamicNode("foo-1", MyNodeWithAmount.CONCEPT);
+    DynamicNode b = new DynamicNode("foo-1", MyNodeWithAmount.CONCEPT);
+    assertEquals(true, a.equals(b));
+    assertEquals(true, b.equals(a));
+    DynamicNode c = new DynamicNode("foo-2", MyNodeWithAmount.CONCEPT);
+    a.setParent(c);
+    assertEquals(false, a.equals(b));
+    assertEquals(false, b.equals(a));
+    DynamicNode d = new DynamicNode("foo-2", MyNodeWithAmount.CONCEPT);
+    b.setParent(d);
+    assertEquals(true, a.equals(b));
+    assertEquals(true, b.equals(a));
+  }
 }
