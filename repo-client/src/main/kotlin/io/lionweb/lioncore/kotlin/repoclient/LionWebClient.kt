@@ -168,30 +168,28 @@ class LionWebClient(
             }
         val data = lowLevelRepoClient.retrieve(rootIds, limit)
 
-        val res =
-            processChunkResponse(data) {
-                val js = jsonSerialization
-                js.unavailableParentPolicy =
-                    if (withProxyParent) {
-                        UnavailableNodePolicy.PROXY_NODES
-                    } else {
-                        UnavailableNodePolicy.NULL_REFERENCES
-                    }
-                js.unavailableReferenceTargetPolicy = UnavailableNodePolicy.PROXY_NODES
-                js.unavailableChildrenPolicy =
-                    when (retrievalMode) {
-                        RetrievalMode.ENTIRE_SUBTREE -> UnavailableNodePolicy.THROW_ERROR
-                        RetrievalMode.SINGLE_NODE -> UnavailableNodePolicy.PROXY_NODES
-                    }
-                val nodes = js.deserializeToNodes(it)
-                rootIds.map { rootId ->
-                    nodes.find { node -> node.id == rootId } ?: throw IllegalArgumentException(
-                        "When requesting a subtree with rootId=$rootId we got back an answer without such ID. " +
-                            "IDs we got back: ${nodes.map { node -> node.id }.joinToString(", ")}",
-                    )
+        return processChunkResponse(data) {
+            val js = jsonSerialization
+            js.unavailableParentPolicy =
+                if (withProxyParent) {
+                    UnavailableNodePolicy.PROXY_NODES
+                } else {
+                    UnavailableNodePolicy.NULL_REFERENCES
                 }
+            js.unavailableReferenceTargetPolicy = UnavailableNodePolicy.PROXY_NODES
+            js.unavailableChildrenPolicy =
+                when (retrievalMode) {
+                    RetrievalMode.ENTIRE_SUBTREE -> UnavailableNodePolicy.THROW_ERROR
+                    RetrievalMode.SINGLE_NODE -> UnavailableNodePolicy.PROXY_NODES
+                }
+            val nodes = js.deserializeToNodes(it)
+            rootIds.map { rootId ->
+                nodes.find { node -> node.id == rootId } ?: throw IllegalArgumentException(
+                    "When requesting a subtree with rootId=$rootId we got back an answer without such ID. " +
+                        "IDs we got back: ${nodes.map { node -> node.id }.joinToString(", ")}",
+                )
             }
-        return res
+        }
     }
 
     fun getAncestorsId(nodeID: String): List<String> {
