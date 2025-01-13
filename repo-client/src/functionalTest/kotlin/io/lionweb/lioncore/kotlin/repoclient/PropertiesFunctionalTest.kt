@@ -82,7 +82,7 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
     }
 
     @Test
-    fun gettingNodessAfterStoringNodes() {
+    fun gettingNodesAfterStoringNodes() {
         val client = LionWebClient(port = modelRepository!!.firstMappedPort)
         client.registerLanguage(propertiesLanguage)
 
