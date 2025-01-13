@@ -3,7 +3,7 @@ ARG lionwebRepositoryCommitId=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 RUN mkdir lionweb-repository
 WORKDIR lionweb-repository
 RUN git init
-RUN git fetch --depth 1 https://github.com/LionWeb-io/lionweb-repository.git ${lionwebRepositoryCommitId}
+RUN git fetch --depth 1 https://github.com/ftomassetti/lionweb-repository.git ${lionwebRepositoryCommitId}
 RUN git checkout FETCH_HEAD
 ADD config-gen.py packages/server
 RUN npm install
