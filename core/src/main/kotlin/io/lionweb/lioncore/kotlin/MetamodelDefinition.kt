@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
+import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Containment
@@ -42,6 +43,18 @@ fun Language.addConcept(name: String): Concept {
         )
     this.addElement(concept)
     return concept
+}
+
+fun Language.addAnnotation(name: String): Annotation {
+    val annotation =
+        Annotation(
+            this,
+            name,
+            "${this.id!!.removePrefix("language-").removeSuffix("-id")}-$name-id",
+            "${this.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key",
+        )
+    this.addElement(annotation)
+    return annotation
 }
 
 fun Language.addPrimitiveType(name: String): PrimitiveType {
