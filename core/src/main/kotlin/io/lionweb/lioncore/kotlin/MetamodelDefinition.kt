@@ -29,11 +29,11 @@ fun lwLanguage(
     val language = Language(name, "language-$cleanedName-id", "language-$cleanedName-key", "1")
     // We register first the primitive types, as concepts could use them
     language.addPrimitiveTypes(*classes.filter { !it.isSubclassOf(Node::class) }.toTypedArray())
-    language.addConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())
+    language.createConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())
     return language
 }
 
-fun Language.addConcept(name: String): Concept {
+fun Language.createConcept(name: String): Concept {
     val concept =
         Concept(
             this,
@@ -45,7 +45,7 @@ fun Language.addConcept(name: String): Concept {
     return concept
 }
 
-fun Language.addAnnotation(name: String): Annotation {
+fun Language.createAnnotation(name: String): Annotation {
     val annotation =
         Annotation(
             this,
@@ -57,26 +57,26 @@ fun Language.addAnnotation(name: String): Annotation {
     return annotation
 }
 
-fun Language.addPrimitiveType(name: String): PrimitiveType {
+fun Language.createPrimitiveType(name: String): PrimitiveType {
     val primitiveType =
         PrimitiveType(
             this,
             name,
             "${this.id!!.removePrefix("language-").removeSuffix("-id")}-$name-id",
         ).apply {
-            key = "${this@addPrimitiveType.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key"
+            key = "${this@createPrimitiveType.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key"
         }
 
     this.addElement(primitiveType)
     return primitiveType
 }
 
-fun Language.addConcepts(vararg conceptClasses: KClass<out Node>) {
+fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
     // First we create them all
     val conceptsByClasses = mutableMapOf<KClass<out Node>, Concept>()
     conceptClasses.forEach { conceptClass ->
         val concept =
-            addConcept(
+            createConcept(
                 conceptClass.simpleName
                     ?: throw IllegalArgumentException("Given conceptClass has no name"),
             )
@@ -162,7 +162,7 @@ fun Language.addConcepts(vararg conceptClasses: KClass<out Node>) {
 
 fun Language.addPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>) {
     primitiveTypeClasses.forEach { primitiveTypeClass ->
-        addPrimitiveType(primitiveTypeClass)
+        createPrimitiveType(primitiveTypeClass)
     }
 }
 
@@ -177,14 +177,14 @@ fun <T : Any> Language.addSerializerAndDeserializer(
     MetamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
 }
 
-fun Language.addPrimitiveType(
+fun Language.createPrimitiveType(
     primitiveTypeClass: KClass<*>,
     serializer: PrimitiveSerializer<*>? = null,
     deserializer: PrimitiveDeserializer<*>? = null,
 ) {
     require(!primitiveTypeClass.isSubclassOf(Node::class))
     val primitiveType =
-        addPrimitiveType(
+        createPrimitiveType(
             primitiveTypeClass.simpleName
                 ?: throw IllegalArgumentException("Given primitiveTypeClass has no name"),
         )
