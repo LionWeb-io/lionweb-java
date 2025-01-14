@@ -6,6 +6,7 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.language.Language
+import io.lionweb.lioncore.java.model.AnnotationInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
@@ -307,6 +308,19 @@ class LionWebClient(
         require(retrievedParent.getChildren(containment).size == (containmentIndex + 1)) {
             "Actual retrieved parent: $retrievedParent"
         }
+    }
+
+    /**
+     * This operation is not atomic. We hope that no one is changing the parent at the very
+     * same time.
+     */
+    fun appendAnnotation(
+        annotationInstance: AnnotationInstance,
+        targetId: String,
+    ) {
+        val target = retrieve(targetId, retrievalMode = RetrievalMode.SINGLE_NODE,withProxyParent = true)
+        target.addAnnotation(annotationInstance)
+        storeTree(target)
     }
 
     /**
@@ -627,6 +641,9 @@ class LionWebClient(
         fun verifyNode(node: Node) {
             require(node.id != null) { "Node $node should not have a null ID" }
             if (node !is ProxyNode) {
+                if (node.classifier == null) {
+                    throw IllegalStateException("Node $node has no classifier")
+                }
                 if (node.children.any { it == null }) {
                     throw java.lang.IllegalStateException("Node $node has a null child")
                 }
