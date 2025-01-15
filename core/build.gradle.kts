@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import java.net.URI
 
 plugins {
     `jvm-test-suite`
@@ -48,17 +47,6 @@ dependencies {
 val specsVersion: String by project
 
 mavenPublishing {
-    repositories {
-        maven {
-            val releaseRepo = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
-            url = URI.create(releaseRepo)
-            credentials {
-                username = project.findProperty("ossrhTokenUsername") as? String ?: "Unknown user"
-                password = project.findProperty("ossrhTokenPassword") as? String ?: "Unknown password"
-            }
-        }
-    }
-
     coordinates(
         groupId = "io.lionweb.lionweb-kotlin",
         artifactId = "lionweb-kotlin-$specsVersion-" + project.name,
