@@ -318,7 +318,7 @@ class LionWebClient(
         annotationInstance: AnnotationInstance,
         targetId: String,
     ) {
-        val target = retrieve(targetId, retrievalMode = RetrievalMode.SINGLE_NODE,withProxyParent = true)
+        val target = retrieve(targetId, retrievalMode = RetrievalMode.SINGLE_NODE, withProxyParent = true)
         target.addAnnotation(annotationInstance)
         storeTree(target)
     }
