@@ -8,6 +8,8 @@ import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.language.PrimitiveType
 import io.lionweb.lioncore.java.language.Property
 import io.lionweb.lioncore.java.language.Reference
+import io.lionweb.lioncore.java.model.AnnotationInstance
+import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
@@ -30,6 +32,11 @@ fun lwLanguage(
     // We register first the primitive types, as concepts could use them
     language.createPrimitiveTypes(*classes.filter { !it.isSubclassOf(Node::class) }.toTypedArray())
     language.createConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())
+    language.createAnnotations(
+        *classes.filter {
+            it.isSubclassOf(AnnotationInstance::class)
+        }.map { it as KClass<out AnnotationInstance> }.toTypedArray(),
+    )
     return language
 }
 
@@ -71,6 +78,39 @@ fun Language.createPrimitiveType(name: String): PrimitiveType {
     return primitiveType
 }
 
+fun Language.createAnnotations(vararg annotationClasses: KClass<out AnnotationInstance>) {
+    // First we create them all
+    val annotationsByClasses = mutableMapOf<KClass<out AnnotationInstance>, Annotation>()
+    annotationClasses.forEach { annotationClass ->
+        val annotation =
+            createAnnotation(
+                annotationClass.simpleName
+                    ?: throw IllegalArgumentException("Given annotationClass has no name"),
+            )
+        annotationsByClasses[annotationClass] = annotation
+        MetamodelRegistry.registerMapping(annotationClass, annotation)
+    }
+
+    // Then we populate them all
+    annotationsByClasses.forEach { (annotationClass, annotation) ->
+        annotationClass.superclasses.forEach { superClass ->
+            when {
+                superClass == BaseAnnotation::class -> Unit // Nothing to do
+                superClass.java.isInterface -> Unit
+                else -> {
+                    val extendedAnnotation = annotationsByClasses[superClass]
+                    if (extendedAnnotation == null) {
+                        throw IllegalStateException("Cannot handle superclass $superClass for annotation class $annotationClass")
+                    } else {
+                        annotation.extendedAnnotation = extendedAnnotation
+                    }
+                }
+            }
+        }
+        populateFeaturesInClassifier(annotationClass, annotation)
+    }
+}
+
 fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
     // First we create them all
     val conceptsByClasses = mutableMapOf<KClass<out Node>, Concept>()
@@ -102,58 +142,66 @@ fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
             }
         }
 
-        conceptClass.declaredMemberProperties.filter { it.annotations.none { it is Implementation } }.forEach { property ->
-            when (property.returnType.classifier) {
-                List::class -> {
-                    val elementClassifier = property.returnType.arguments[0].type!!.classifier!! as KClass<*>
-                    if (elementClassifier.isSubclassOf(ReferenceValue::class)) {
-                        if (elementClassifier.isSubclassOf(SpecificReferenceValue::class)) {
-                            val referenceType =
-                                MetamodelRegistry.getClassifier(
-                                    property.returnType.arguments[0].type!!.arguments[0].type!!.classifier!! as KClass<out Node>,
-                                ) as Classifier<*>
-                            concept.createReference(property.name, referenceType, Multiplicity.ZERO_TO_MANY)
-                        } else {
-                            throw RuntimeException(
-                                "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
-                            )
-                        }
+        populateFeaturesInClassifier(conceptClass, concept)
+    }
+}
+
+private fun populateFeaturesInClassifier(
+    classifierClass: KClass<out ClassifierInstance<*>>,
+    classifier: Classifier<*>,
+) {
+    classifierClass.declaredMemberProperties.filter { it.annotations.none { it is Implementation } }.forEach { property ->
+        when (property.returnType.classifier) {
+            List::class -> {
+                val elementClassifier = property.returnType.arguments[0].type!!.classifier!! as KClass<*>
+                if (elementClassifier.isSubclassOf(ReferenceValue::class)) {
+                    if (elementClassifier.isSubclassOf(SpecificReferenceValue::class)) {
+                        val referenceType =
+                            MetamodelRegistry.getClassifier(
+                                property.returnType.arguments[0].type!!.arguments[0].type!!.classifier!! as KClass<out Node>,
+                            ) as Classifier<*>
+                        classifier.createReference(property.name, referenceType, Multiplicity.ZERO_TO_MANY)
                     } else {
-                        val baseClassifier = elementClassifier as KClass<out Node>
-                        val containmentType =
-                            MetamodelRegistry.getConcept(baseClassifier)
-                                ?: throw IllegalStateException("Cannot find concept for $baseClassifier")
-                        concept.createContainment(property.name, containmentType, Multiplicity.ZERO_TO_MANY)
+                        throw RuntimeException(
+                            "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
+                        )
                     }
+                } else {
+                    val baseClassifier = elementClassifier as KClass<out Node>
+                    val containmentType =
+                        MetamodelRegistry.getConcept(baseClassifier)
+                            ?: throw IllegalStateException("Cannot find concept for $baseClassifier")
+                    classifier.createContainment(property.name, containmentType, Multiplicity.ZERO_TO_MANY)
                 }
-                else -> {
-                    val kClass =
-                        property.returnType.classifier
-                            as KClass<out Node>
-                    if (kClass.isSubclassOf(Node::class)) {
-                        val containmentType =
-                            MetamodelRegistry.getConcept(
-                                kClass,
-                            ) ?: throw IllegalStateException("Cannot find concept for $kClass")
-                        concept.createContainment(property.name, containmentType, Multiplicity.SINGLE)
-                    } else if (kClass.isSubclassOf(ReferenceValue::class)) {
-                        if (kClass.isSubclassOf(SpecificReferenceValue::class)) {
-                            val referenceType =
-                                MetamodelRegistry.getClassifier(
-                                    property.returnType.arguments[0].type!!.classifier!! as KClass<out Node>,
-                                ) as Classifier<*>
-                            concept.createReference(property.name, referenceType, Multiplicity.OPTIONAL)
-                        } else {
-                            throw RuntimeException(
-                                "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
-                            )
-                        }
+            }
+
+            else -> {
+                val kClass =
+                    property.returnType.classifier
+                        as KClass<out Node>
+                if (kClass.isSubclassOf(Node::class)) {
+                    val containmentType =
+                        MetamodelRegistry.getConcept(
+                            kClass,
+                        ) ?: throw IllegalStateException("Cannot find concept for $kClass")
+                    classifier.createContainment(property.name, containmentType, Multiplicity.SINGLE)
+                } else if (kClass.isSubclassOf(ReferenceValue::class)) {
+                    if (kClass.isSubclassOf(SpecificReferenceValue::class)) {
+                        val referenceType =
+                            MetamodelRegistry.getClassifier(
+                                property.returnType.arguments[0].type!!.classifier!! as KClass<out Node>,
+                            ) as Classifier<*>
+                        classifier.createReference(property.name, referenceType, Multiplicity.OPTIONAL)
                     } else {
-                        val primitiveType =
-                            MetamodelRegistry.getPrimitiveType(kClass)
-                                ?: throw IllegalStateException("Cannot find primitive type for $kClass")
-                        concept.createProperty(property.name, primitiveType, Multiplicity.SINGLE)
+                        throw RuntimeException(
+                            "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
+                        )
                     }
+                } else {
+                    val primitiveType =
+                        MetamodelRegistry.getPrimitiveType(kClass)
+                            ?: throw IllegalStateException("Cannot find primitive type for $kClass")
+                    classifier.createProperty(property.name, primitiveType, Multiplicity.SINGLE)
                 }
             }
         }

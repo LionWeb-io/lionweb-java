@@ -2,6 +2,7 @@ package io.lionweb.lioncore.kotlin
 
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Reference
+import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils
 import io.lionweb.lioncore.java.model.HasSettableParent
 import io.lionweb.lioncore.java.model.Node
@@ -23,7 +24,7 @@ fun <N> N.withParent(parent: Node?): N where N : Node, N : HasSettableParent {
     return this
 }
 
-fun <N : Node> Node.walkDescendants(kClass: KClass<N>): Sequence<N> {
+fun <N : Node> ClassifierInstance<*>.walkDescendants(kClass: KClass<N>): Sequence<N> {
     if (this is ProxyNode) {
         throw IllegalStateException("Cannot call walkDescendants on a ProxyNode")
     }
@@ -40,50 +41,54 @@ fun <N : Node> Node.walkDescendants(kClass: KClass<N>): Sequence<N> {
     }
 }
 
-fun Node.getOnlyReferenceValueByReferenceName(referenceName: String) =
+fun ClassifierInstance<*>.getOnlyReferenceValueByReferenceName(referenceName: String) =
     ClassifierInstanceUtils.getOnlyReferenceValueByReferenceName(
         this,
         referenceName,
     )
 
-fun Node.setOnlyReferenceValue(
+fun ClassifierInstance<*>.setOnlyReferenceValue(
     reference: Reference,
     value: ReferenceValue?,
 ) {
     ClassifierInstanceUtils.setOnlyReferenceValue(this, reference, value)
 }
 
-fun Node.setOnlyReferenceValueByName(
+fun ClassifierInstance<*>.setOnlyReferenceValueByName(
     referenceName: String,
     value: ReferenceValue?,
 ) {
     ClassifierInstanceUtils.setOnlyReferenceValueByName(this, referenceName, value)
 }
 
-fun Node.setReferenceValuesByName(
+fun ClassifierInstance<*>.setReferenceValuesByName(
     referenceName: String,
     values: List<out ReferenceValue>,
 ) {
     ClassifierInstanceUtils.setReferenceValuesByName(this, referenceName, values)
 }
 
-fun Node.getOnlyChildByContainmentName(containmentName: String) =
+fun ClassifierInstance<*>.getOnlyChildByContainmentName(containmentName: String) =
     ClassifierInstanceUtils.getOnlyChildByContainmentName(this, containmentName)
 
-fun Node.getPropertyValueByName(propertyName: String) = ClassifierInstanceUtils.getPropertyValueByName(this, propertyName)
+fun ClassifierInstance<*>.getPropertyValueByName(propertyName: String) = ClassifierInstanceUtils.getPropertyValueByName(this, propertyName)
 
-fun Node.setPropertyValueByName(
+fun ClassifierInstance<*>.setPropertyValueByName(
     propertyName: String,
     value: Any?,
 ) = ClassifierInstanceUtils.setPropertyValueByName(this, propertyName, value)
 
-fun Node.getChildrenByContainmentName(propertyName: String): List<Node> =
+fun ClassifierInstance<*>.getChildrenByContainmentName(propertyName: String): List<Node> =
     ClassifierInstanceUtils.getChildrenByContainmentName(
         this,
         propertyName,
     )
 
-fun Node.getReferenceValueByName(propertyName: String) = ClassifierInstanceUtils.getReferenceValueByName(this, propertyName)
+fun ClassifierInstance<*>.getReferenceValueByName(propertyName: String) =
+    ClassifierInstanceUtils.getReferenceValueByName(
+        this,
+        propertyName,
+    )
 
-val Node.children
+val ClassifierInstance<*>.children
     get() = ClassifierInstanceUtils.getChildren(this)
