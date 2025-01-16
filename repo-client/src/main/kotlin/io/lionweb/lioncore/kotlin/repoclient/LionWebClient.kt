@@ -164,7 +164,7 @@ class LionWebClient(
         }
         val limit =
             when (retrievalMode) {
-                RetrievalMode.SINGLE_NODE -> 1
+                RetrievalMode.SINGLE_NODE -> 0
                 RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH
             }
         val data = lowLevelRepoClient.retrieve(rootIds, limit)
@@ -319,6 +319,7 @@ class LionWebClient(
         targetId: String,
     ) {
         val target = retrieve(targetId, retrievalMode = RetrievalMode.SINGLE_NODE, withProxyParent = true)
+        require(target.children.all { it is ProxyNode })
         target.addAnnotation(annotationInstance)
         storeTree(target)
     }
