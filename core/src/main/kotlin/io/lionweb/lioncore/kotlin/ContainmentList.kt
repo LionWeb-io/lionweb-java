@@ -4,6 +4,11 @@ import io.lionweb.lioncore.java.language.Containment
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance
 
+/**
+ * This is a list that represent the children part of a specific containment for a certain containing node.
+ * When adding or removing elements to this list the necessary changes are performed to the containing node,
+ * setting the parent, for example.
+ */
 internal class ContainmentList<E : Node>(
     private val classifierInstance: DynamicClassifierInstance<*>,
     private val containment: Containment,

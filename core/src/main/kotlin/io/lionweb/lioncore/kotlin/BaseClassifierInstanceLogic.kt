@@ -9,6 +9,8 @@ import kotlin.reflect.KProperty
 //
 // This file contains logic that belongs into both BaseNode and BaseAnnotation. Given they cannot share a common
 // ancestor we put this logic here.
+// Conceptually this logic should be considered to be internal, even if, to satisfy the compiler, we cannot mark
+// it as such
 //
 
 inline fun <P : ClassifierInstance<*>, reified T : Node> singleReference(
