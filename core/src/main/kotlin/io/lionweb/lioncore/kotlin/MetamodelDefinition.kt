@@ -4,6 +4,7 @@ import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Containment
+import io.lionweb.lioncore.java.language.DataType
 import io.lionweb.lioncore.java.language.IKeyed
 import io.lionweb.lioncore.java.language.Interface
 import io.lionweb.lioncore.java.language.Language
@@ -299,7 +300,7 @@ fun Classifier<*>.createReference(
 
 fun Classifier<*>.createProperty(
     name: String,
-    type: PrimitiveType,
+    type: DataType<*>,
     multiplicity: Multiplicity = Multiplicity.SINGLE,
 ): Property {
     require(!multiplicity.multiple)
