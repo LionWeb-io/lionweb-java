@@ -70,7 +70,7 @@ internal class LowLevelRepoClient(
         val url = "http://$hostname:$port/bulk/listPartitions"
         val request: Request =
             Request.Builder()
-                .url(url.addClientIdQueryParam())
+                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
                 .considerAuthenticationToken()
                 .addHeader("Accept-Encoding", "gzip")
                 .post(EMPTY_REQUEST)
@@ -97,6 +97,7 @@ internal class LowLevelRepoClient(
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("depthLimit", limit.toString())
         urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
         val request: Request =
             Request.Builder()
                 .url(urlBuilder.build())

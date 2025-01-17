@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
+import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Containment
@@ -7,6 +8,8 @@ import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.language.PrimitiveType
 import io.lionweb.lioncore.java.language.Property
 import io.lionweb.lioncore.java.language.Reference
+import io.lionweb.lioncore.java.model.AnnotationInstance
+import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
@@ -27,12 +30,17 @@ fun lwLanguage(
     val cleanedName = name.lowercase().replace('.', '_')
     val language = Language(name, "language-$cleanedName-id", "language-$cleanedName-key", "1")
     // We register first the primitive types, as concepts could use them
-    language.addPrimitiveTypes(*classes.filter { !it.isSubclassOf(Node::class) }.toTypedArray())
-    language.addConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())
+    language.createPrimitiveTypes(*classes.filter { !it.isSubclassOf(Node::class) }.toTypedArray())
+    language.createConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())
+    language.createAnnotations(
+        *classes.filter {
+            it.isSubclassOf(AnnotationInstance::class)
+        }.map { it as KClass<out AnnotationInstance> }.toTypedArray(),
+    )
     return language
 }
 
-fun Language.addConcept(name: String): Concept {
+fun Language.createConcept(name: String): Concept {
     val concept =
         Concept(
             this,
@@ -44,26 +52,71 @@ fun Language.addConcept(name: String): Concept {
     return concept
 }
 
-fun Language.addPrimitiveType(name: String): PrimitiveType {
+fun Language.createAnnotation(name: String): Annotation {
+    val annotation =
+        Annotation(
+            this,
+            name,
+            "${this.id!!.removePrefix("language-").removeSuffix("-id")}-$name-id",
+            "${this.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key",
+        )
+    this.addElement(annotation)
+    return annotation
+}
+
+fun Language.createPrimitiveType(name: String): PrimitiveType {
     val primitiveType =
         PrimitiveType(
             this,
             name,
             "${this.id!!.removePrefix("language-").removeSuffix("-id")}-$name-id",
         ).apply {
-            key = "${this@addPrimitiveType.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key"
+            key = "${this@createPrimitiveType.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key"
         }
 
     this.addElement(primitiveType)
     return primitiveType
 }
 
-fun Language.addConcepts(vararg conceptClasses: KClass<out Node>) {
+fun Language.createAnnotations(vararg annotationClasses: KClass<out AnnotationInstance>) {
+    // First we create them all
+    val annotationsByClasses = mutableMapOf<KClass<out AnnotationInstance>, Annotation>()
+    annotationClasses.forEach { annotationClass ->
+        val annotation =
+            createAnnotation(
+                annotationClass.simpleName
+                    ?: throw IllegalArgumentException("Given annotationClass has no name"),
+            )
+        annotationsByClasses[annotationClass] = annotation
+        MetamodelRegistry.registerMapping(annotationClass, annotation)
+    }
+
+    // Then we populate them all
+    annotationsByClasses.forEach { (annotationClass, annotation) ->
+        annotationClass.superclasses.forEach { superClass ->
+            when {
+                superClass == BaseAnnotation::class -> Unit // Nothing to do
+                superClass.java.isInterface -> Unit
+                else -> {
+                    val extendedAnnotation = annotationsByClasses[superClass]
+                    if (extendedAnnotation == null) {
+                        throw IllegalStateException("Cannot handle superclass $superClass for annotation class $annotationClass")
+                    } else {
+                        annotation.extendedAnnotation = extendedAnnotation
+                    }
+                }
+            }
+        }
+        populateFeaturesInClassifier(annotationClass, annotation)
+    }
+}
+
+fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
     // First we create them all
     val conceptsByClasses = mutableMapOf<KClass<out Node>, Concept>()
     conceptClasses.forEach { conceptClass ->
         val concept =
-            addConcept(
+            createConcept(
                 conceptClass.simpleName
                     ?: throw IllegalArgumentException("Given conceptClass has no name"),
             )
@@ -89,67 +142,75 @@ fun Language.addConcepts(vararg conceptClasses: KClass<out Node>) {
             }
         }
 
-        conceptClass.declaredMemberProperties.filter { it.annotations.none { it is Implementation } }.forEach { property ->
-            when (property.returnType.classifier) {
-                List::class -> {
-                    val elementClassifier = property.returnType.arguments[0].type!!.classifier!! as KClass<*>
-                    if (elementClassifier.isSubclassOf(ReferenceValue::class)) {
-                        if (elementClassifier.isSubclassOf(SpecificReferenceValue::class)) {
-                            val referenceType =
-                                MetamodelRegistry.getClassifier(
-                                    property.returnType.arguments[0].type!!.arguments[0].type!!.classifier!! as KClass<out Node>,
-                                ) as Classifier<*>
-                            concept.addReference(property.name, referenceType, Multiplicity.ZERO_TO_MANY)
-                        } else {
-                            throw RuntimeException(
-                                "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
-                            )
-                        }
+        populateFeaturesInClassifier(conceptClass, concept)
+    }
+}
+
+private fun populateFeaturesInClassifier(
+    classifierClass: KClass<out ClassifierInstance<*>>,
+    classifier: Classifier<*>,
+) {
+    classifierClass.declaredMemberProperties.filter { it.annotations.none { it is Implementation } }.forEach { property ->
+        when (property.returnType.classifier) {
+            List::class -> {
+                val elementClassifier = property.returnType.arguments[0].type!!.classifier!! as KClass<*>
+                if (elementClassifier.isSubclassOf(ReferenceValue::class)) {
+                    if (elementClassifier.isSubclassOf(SpecificReferenceValue::class)) {
+                        val referenceType =
+                            MetamodelRegistry.getClassifier(
+                                property.returnType.arguments[0].type!!.arguments[0].type!!.classifier!! as KClass<out Node>,
+                            ) as Classifier<*>
+                        classifier.createReference(property.name, referenceType, Multiplicity.ZERO_TO_MANY)
                     } else {
-                        val baseClassifier = elementClassifier as KClass<out Node>
-                        val containmentType =
-                            MetamodelRegistry.getConcept(baseClassifier)
-                                ?: throw IllegalStateException("Cannot find concept for $baseClassifier")
-                        concept.addContainment(property.name, containmentType, Multiplicity.ZERO_TO_MANY)
+                        throw RuntimeException(
+                            "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
+                        )
                     }
+                } else {
+                    val baseClassifier = elementClassifier as KClass<out Node>
+                    val containmentType =
+                        MetamodelRegistry.getConcept(baseClassifier)
+                            ?: throw IllegalStateException("Cannot find concept for $baseClassifier")
+                    classifier.createContainment(property.name, containmentType, Multiplicity.ZERO_TO_MANY)
                 }
-                else -> {
-                    val kClass =
-                        property.returnType.classifier
-                            as KClass<out Node>
-                    if (kClass.isSubclassOf(Node::class)) {
-                        val containmentType =
-                            MetamodelRegistry.getConcept(
-                                kClass,
-                            ) ?: throw IllegalStateException("Cannot find concept for $kClass")
-                        concept.addContainment(property.name, containmentType, Multiplicity.SINGLE)
-                    } else if (kClass.isSubclassOf(ReferenceValue::class)) {
-                        if (kClass.isSubclassOf(SpecificReferenceValue::class)) {
-                            val referenceType =
-                                MetamodelRegistry.getClassifier(
-                                    property.returnType.arguments[0].type!!.classifier!! as KClass<out Node>,
-                                ) as Classifier<*>
-                            concept.addReference(property.name, referenceType, Multiplicity.OPTIONAL)
-                        } else {
-                            throw RuntimeException(
-                                "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
-                            )
-                        }
+            }
+
+            else -> {
+                val kClass =
+                    property.returnType.classifier
+                        as KClass<out Node>
+                if (kClass.isSubclassOf(Node::class)) {
+                    val containmentType =
+                        MetamodelRegistry.getConcept(
+                            kClass,
+                        ) ?: throw IllegalStateException("Cannot find concept for $kClass")
+                    classifier.createContainment(property.name, containmentType, Multiplicity.SINGLE)
+                } else if (kClass.isSubclassOf(ReferenceValue::class)) {
+                    if (kClass.isSubclassOf(SpecificReferenceValue::class)) {
+                        val referenceType =
+                            MetamodelRegistry.getClassifier(
+                                property.returnType.arguments[0].type!!.classifier!! as KClass<out Node>,
+                            ) as Classifier<*>
+                        classifier.createReference(property.name, referenceType, Multiplicity.OPTIONAL)
                     } else {
-                        val primitiveType =
-                            MetamodelRegistry.getPrimitiveType(kClass)
-                                ?: throw IllegalStateException("Cannot find primitive type for $kClass")
-                        concept.addProperty(property.name, primitiveType, Multiplicity.SINGLE)
+                        throw RuntimeException(
+                            "We cannot figure out the Classifier hold by the Reference when a ReferenceValue is used",
+                        )
                     }
+                } else {
+                    val primitiveType =
+                        MetamodelRegistry.getPrimitiveType(kClass)
+                            ?: throw IllegalStateException("Cannot find primitive type for $kClass")
+                    classifier.createProperty(property.name, primitiveType, Multiplicity.SINGLE)
                 }
             }
         }
     }
 }
 
-fun Language.addPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>) {
-    primitiveTypeClasses.forEach { primitiveTypeClass ->
-        addPrimitiveType(primitiveTypeClass)
+fun Language.createPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>): List<PrimitiveType> {
+    return primitiveTypeClasses.map { primitiveTypeClass ->
+        createPrimitiveType(primitiveTypeClass)
     }
 }
 
@@ -164,18 +225,19 @@ fun <T : Any> Language.addSerializerAndDeserializer(
     MetamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
 }
 
-fun Language.addPrimitiveType(
+fun Language.createPrimitiveType(
     primitiveTypeClass: KClass<*>,
     serializer: PrimitiveSerializer<*>? = null,
     deserializer: PrimitiveDeserializer<*>? = null,
-) {
+): PrimitiveType {
     require(!primitiveTypeClass.isSubclassOf(Node::class))
     val primitiveType =
-        addPrimitiveType(
+        createPrimitiveType(
             primitiveTypeClass.simpleName
                 ?: throw IllegalArgumentException("Given primitiveTypeClass has no name"),
         )
     MetamodelRegistry.registerMapping(primitiveTypeClass, primitiveType, serializer, deserializer)
+    return primitiveType
 }
 
 enum class Multiplicity(val optional: Boolean, val multiple: Boolean) {
@@ -185,7 +247,7 @@ enum class Multiplicity(val optional: Boolean, val multiple: Boolean) {
     ONE_TO_MANY(false, true),
 }
 
-fun Classifier<*>.addContainment(
+fun Classifier<*>.createContainment(
     name: String,
     containedClassifier: Classifier<*>,
     multiplicity: Multiplicity = Multiplicity.SINGLE,
@@ -193,8 +255,8 @@ fun Classifier<*>.addContainment(
     val containment =
         Containment().apply {
             this.name = name
-            this.id = "${this@addContainment.id!!.removeSuffix("-id")}-$name-id"
-            this.key = "${this@addContainment.key!!.removeSuffix("-key")}-$name-key"
+            this.id = "${this@createContainment.id!!.removeSuffix("-id")}-$name-id"
+            this.key = "${this@createContainment.key!!.removeSuffix("-key")}-$name-key"
             this.type = containedClassifier
             this.setOptional(multiplicity.optional)
             this.setMultiple(multiplicity.multiple)
@@ -203,7 +265,7 @@ fun Classifier<*>.addContainment(
     return containment
 }
 
-fun Classifier<*>.addReference(
+fun Classifier<*>.createReference(
     name: String,
     containedClassifier: Classifier<*>,
     multiplicity: Multiplicity = Multiplicity.SINGLE,
@@ -211,8 +273,8 @@ fun Classifier<*>.addReference(
     val reference =
         Reference().apply {
             this.name = name
-            this.id = "${this@addReference.id!!.removeSuffix("-id")}-$name-id"
-            this.key = "${this@addReference.key!!.removeSuffix("-key")}-$name-key"
+            this.id = "${this@createReference.id!!.removeSuffix("-id")}-$name-id"
+            this.key = "${this@createReference.key!!.removeSuffix("-key")}-$name-key"
             this.type = containedClassifier
             this.setOptional(multiplicity.optional)
             this.setMultiple(multiplicity.multiple)
@@ -221,7 +283,7 @@ fun Classifier<*>.addReference(
     return reference
 }
 
-fun Classifier<*>.addProperty(
+fun Classifier<*>.createProperty(
     name: String,
     type: PrimitiveType,
     multiplicity: Multiplicity = Multiplicity.SINGLE,
@@ -230,8 +292,8 @@ fun Classifier<*>.addProperty(
     val property =
         Property().apply {
             this.name = name
-            this.id = "${this@addProperty.id!!.removeSuffix("-id")}-$name-id"
-            this.key = "${this@addProperty.key!!.removeSuffix("-key")}-$name-key"
+            this.id = "${this@createProperty.id!!.removeSuffix("-id")}-$name-id"
+            this.key = "${this@createProperty.key!!.removeSuffix("-key")}-$name-key"
             this.type = type
             this.setOptional(multiplicity.optional)
         }

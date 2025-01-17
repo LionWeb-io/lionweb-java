@@ -6,10 +6,12 @@ code = f"""{{
     "expectedToken": null
   }},
   "startup": {{
-    "createDatabase": true,
+    "createDatabase": "always",
     "createRepositories": [{{
         "name": "default",
-        "history": false
+        "history": false,
+        "create": "if-not-exists",
+        "lionWebVersion": "2024.1"
       }}
     ]
   }},

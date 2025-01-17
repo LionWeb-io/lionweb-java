@@ -7,6 +7,8 @@ import kotlin.reflect.KClass
 
 interface Deproxifier {
     fun <T> deproxify(node: ProxyNode): T
+
+    fun <T> deproxifyList(nodes: List<ProxyNode>): List<T>
 }
 
 class SpecificReferenceValue<T : Node>(val targetClass: KClass<T>) : ReferenceValue() {
