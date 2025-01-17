@@ -4,6 +4,7 @@ import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Containment
+import io.lionweb.lioncore.java.language.IKeyed
 import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.language.PrimitiveType
 import io.lionweb.lioncore.java.language.Property
@@ -45,8 +46,8 @@ fun Language.createConcept(name: String): Concept {
         Concept(
             this,
             name,
-            "${this.id!!.removePrefix("language-").removeSuffix("-id")}-$name-id",
-            "${this.key!!.removePrefix("language-").removeSuffix("-key")}-$name-key",
+            this.idForContainedElement(name),
+            this.keyForContainedElement(name),
         )
     this.addElement(concept)
     return concept
@@ -255,8 +256,8 @@ fun Classifier<*>.createContainment(
     val containment =
         Containment().apply {
             this.name = name
-            this.id = "${this@createContainment.id!!.removeSuffix("-id")}-$name-id"
-            this.key = "${this@createContainment.key!!.removeSuffix("-key")}-$name-key"
+            this.id = this@createContainment.idForContainedElement(name)
+            this.key = this@createContainment.keyForContainedElement(name)
             this.type = containedClassifier
             this.setOptional(multiplicity.optional)
             this.setMultiple(multiplicity.multiple)
@@ -273,8 +274,8 @@ fun Classifier<*>.createReference(
     val reference =
         Reference().apply {
             this.name = name
-            this.id = "${this@createReference.id!!.removeSuffix("-id")}-$name-id"
-            this.key = "${this@createReference.key!!.removeSuffix("-key")}-$name-key"
+            this.id = this@createReference.idForContainedElement(name)
+            this.key = this@createReference.keyForContainedElement(name)
             this.type = containedClassifier
             this.setOptional(multiplicity.optional)
             this.setMultiple(multiplicity.multiple)
@@ -292,11 +293,33 @@ fun Classifier<*>.createProperty(
     val property =
         Property().apply {
             this.name = name
-            this.id = "${this@createProperty.id!!.removeSuffix("-id")}-$name-id"
-            this.key = "${this@createProperty.key!!.removeSuffix("-key")}-$name-key"
+            this.id = this@createProperty.idForContainedElement(name)
+            this.key = this@createProperty.keyForContainedElement(name)
             this.type = type
             this.setOptional(multiplicity.optional)
         }
     this.addFeature(property)
     return property
+}
+
+private fun Node.idPrefixForContainedElements(): String {
+    return this.id!!.removePrefix("language-").removeSuffix("-id")
+}
+
+private fun IKeyed<*>.keyPrefixForContainedElements(): String {
+    return this.key!!.removePrefix("language-").removeSuffix("-key")
+}
+
+fun Node.idForContainedElement(containedElementName: String): String {
+    return "${this.idPrefixForContainedElements()}-${containedElementName.lwIDCleanedVersion()}-id"
+}
+
+fun IKeyed<*>.keyForContainedElement(containedElementName: String): String {
+    return "${this.keyPrefixForContainedElements()}-${containedElementName.lwIDCleanedVersion()}-key"
+}
+
+fun String.lwIDCleanedVersion(): String {
+    return this.replace(".", "_")
+        .replace(" ", "_")
+        .replace("/", "_")
 }
