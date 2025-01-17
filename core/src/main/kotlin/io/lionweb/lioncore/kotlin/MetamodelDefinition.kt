@@ -5,6 +5,7 @@ import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Containment
 import io.lionweb.lioncore.java.language.IKeyed
+import io.lionweb.lioncore.java.language.Interface
 import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.language.PrimitiveType
 import io.lionweb.lioncore.java.language.Property
@@ -51,6 +52,18 @@ fun Language.createConcept(name: String): Concept {
         )
     this.addElement(concept)
     return concept
+}
+
+fun Language.addInterface(name: String): Interface {
+    val intf =
+        Interface(
+            this,
+            name,
+            this.idForContainedElement(name),
+            this.keyForContainedElement(name)
+        )
+    this.addElement(intf)
+    return intf
 }
 
 fun Language.createAnnotation(name: String): Annotation {
