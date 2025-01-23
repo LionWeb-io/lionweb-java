@@ -55,13 +55,13 @@ fun Language.createConcept(name: String): Concept {
     return concept
 }
 
-fun Language.addInterface(name: String): Interface {
+fun Language.createInterface(name: String): Interface {
     val intf =
         Interface(
             this,
             name,
             this.idForContainedElement(name),
-            this.keyForContainedElement(name)
+            this.keyForContainedElement(name),
         )
     this.addElement(intf)
     return intf

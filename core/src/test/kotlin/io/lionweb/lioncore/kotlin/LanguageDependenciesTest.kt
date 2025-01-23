@@ -78,11 +78,10 @@ class ExtendedConcept(
     language: Language? = null,
     name: String? = null,
     id: String,
-    key: String? = null
+    key: String? = null,
 ) : Concept(language, name, id, key)
 
 class CompM3 : BaseNode() {
     val comp: ExtendedConcept? by singleContainment("comp")
     val ref: SpecificReferenceValue<Concept>? by singleReference("ref")
 }
-
