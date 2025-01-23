@@ -3,13 +3,26 @@ package io.lionweb.lioncore.kotlin
 import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
+import io.lionweb.lioncore.java.language.Containment
+import io.lionweb.lioncore.java.language.DataType
+import io.lionweb.lioncore.java.language.Enumeration
+import io.lionweb.lioncore.java.language.EnumerationLiteral
+import io.lionweb.lioncore.java.language.Feature
+import io.lionweb.lioncore.java.language.Field
+import io.lionweb.lioncore.java.language.Interface
+import io.lionweb.lioncore.java.language.Language
+import io.lionweb.lioncore.java.language.LanguageEntity
+import io.lionweb.lioncore.java.language.Link
 import io.lionweb.lioncore.java.language.LionCoreBuiltins
 import io.lionweb.lioncore.java.language.PrimitiveType
 import io.lionweb.lioncore.java.language.Property
+import io.lionweb.lioncore.java.language.Reference
+import io.lionweb.lioncore.java.language.StructuredDataType
 import io.lionweb.lioncore.java.model.AnnotationInstance
 import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance
+import io.lionweb.lioncore.java.self.LionCore
 import io.lionweb.lioncore.java.serialization.AbstractSerialization
 import io.lionweb.lioncore.java.serialization.Instantiator
 import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization
@@ -33,6 +46,25 @@ object MetamodelRegistry {
         registerMapping(String::class, LionCoreBuiltins.getString())
         registerMapping(Int::class, LionCoreBuiltins.getInteger())
         registerMapping(Boolean::class, LionCoreBuiltins.getBoolean())
+
+        // Allow user languages to refer to M3 elements
+        registerMapping(Annotation::class, LionCore.getAnnotation())
+        registerMapping(Classifier::class, LionCore.getClassifier())
+        registerMapping(Concept::class, LionCore.getConcept())
+        registerMapping(Containment::class, LionCore.getContainment())
+        registerMapping(DataType::class, LionCore.getDataType())
+        registerMapping(Enumeration::class, LionCore.getEnumeration())
+        registerMapping(EnumerationLiteral::class, LionCore.getEnumerationLiteral())
+        registerMapping(Feature::class, LionCore.getFeature())
+        registerMapping(Field::class, LionCore.getField())
+        registerMapping(Interface::class, LionCore.getInterface())
+        registerMapping(Language::class, LionCore.getLanguage())
+        registerMapping(LanguageEntity::class, LionCore.getLanguageEntity())
+        registerMapping(Link::class, LionCore.getLink())
+        registerMapping(PrimitiveType::class, LionCore.getPrimitiveType())
+        registerMapping(Property::class, LionCore.getProperty())
+        registerMapping(Reference::class, LionCore.getReference())
+        registerMapping(StructuredDataType::class, LionCore.getStructuredDataType())
     }
 
     fun registerMapping(
