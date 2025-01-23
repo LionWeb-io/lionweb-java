@@ -146,13 +146,17 @@ fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
             when {
                 superClass == BaseNode::class -> Unit // Nothing to do
                 superClass.java.isInterface -> Unit
-                else -> {
-                    val extendedConcept = conceptsByClasses[superClass]
+                superClass.isSubclassOf(Node::class) -> {
+                    val extendedConcept =
+                        conceptsByClasses[superClass] ?: MetamodelRegistry.getConcept(superClass as KClass<out Node>)
                     if (extendedConcept == null) {
                         throw IllegalStateException("Cannot handle superclass $superClass for concept class $conceptClass")
                     } else {
                         concept.extendedConcept = extendedConcept
                     }
+                }
+                else -> {
+                    throw IllegalStateException("Superclass is not a node: $superClass for concept class $conceptClass")
                 }
             }
         }
