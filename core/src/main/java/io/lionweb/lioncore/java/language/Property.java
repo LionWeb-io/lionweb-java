@@ -101,6 +101,10 @@ public class Property extends Feature<Property> {
     super(name, container, id);
   }
 
+  public Property(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Property(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,

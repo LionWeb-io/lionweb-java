@@ -153,6 +153,10 @@ public class Reference extends Link<Reference> {
     super();
   }
 
+  public Reference(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Reference(@Nullable String name, @Nullable Classifier container) {
     super(name, container);
   }

@@ -118,6 +118,10 @@ public class Containment extends Link<Containment> {
     super();
   }
 
+  public Containment(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Containment(String name, @Nullable Classifier container) {
     super(name, container);
   }
