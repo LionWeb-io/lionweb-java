@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin.repoclient.testing
 
+import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.utils.ModelComparator
 import org.testcontainers.containers.GenericContainer
@@ -15,7 +16,10 @@ import kotlin.test.BeforeTest
 private const val DB_CONTAINER_PORT = 5432
 
 @Testcontainers
-abstract class AbstractRepoClientFunctionalTest(val modelRepoDebug: Boolean = true) {
+abstract class AbstractRepoClientFunctionalTest(
+    val modelRepoDebug: Boolean = true,
+    val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+) {
     @JvmField
     var db: PostgreSQLContainer<*>? = null
 
@@ -61,6 +65,7 @@ abstract class AbstractRepoClientFunctionalTest(val modelRepoDebug: Boolean = tr
                 .withEnv("PGUSER", "postgres")
                 .withEnv("PGPASSWORD", "lionweb")
                 .withEnv("PGDB", "lionweb_test")
+                .withEnv("LIONWEB_VERSION", lionWebVersion.versionString)
                 .withExposedPorts(3005).apply {
                     this.logConsumers =
                         listOf(

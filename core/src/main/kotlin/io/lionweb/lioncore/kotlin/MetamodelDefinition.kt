@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
+import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
@@ -29,9 +30,13 @@ import kotlin.reflect.full.superclasses
 fun lwLanguage(
     name: String,
     vararg classes: KClass<*>,
+    lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ): Language {
     val cleanedName = name.lowercase().replace('.', '_')
-    val language = Language(name, "language-$cleanedName-id", "language-$cleanedName-key", "1")
+    val language = Language(lionWebVersion, name)
+    language.id = "language-$cleanedName-id"
+    language.key = "language-$cleanedName-key"
+    language.version = "1"
     // We register first the primitive types, as concepts could use them
     language.createPrimitiveTypes(*classes.filter { !it.isSubclassOf(Node::class) }.toTypedArray())
     language.createConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())

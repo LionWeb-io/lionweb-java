@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
+import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
@@ -36,42 +37,46 @@ import kotlin.reflect.full.primaryConstructor
  * and between PrimitiveTypes and Kotlin classes.
  */
 object MetamodelRegistry {
-    private val classToClassifier = mutableMapOf<KClass<*>, Classifier<*>>()
-    private val classToPrimitiveType = mutableMapOf<KClass<*>, PrimitiveType>()
+    private val classToClassifier = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, Classifier<*>>>()
+    private val classToPrimitiveType = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, PrimitiveType>>()
     private val serializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveSerializer<*>>()
     private val deserializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveDeserializer<*>>()
 
     init {
-        registerMapping(Node::class, LionCoreBuiltins.getNode())
-        registerMapping(String::class, LionCoreBuiltins.getString())
-        registerMapping(Int::class, LionCoreBuiltins.getInteger())
-        registerMapping(Boolean::class, LionCoreBuiltins.getBoolean())
+        LionWebVersion.entries.forEach { lionWebVersion ->
+            registerMapping(Node::class, LionCoreBuiltins.getNode(lionWebVersion))
+            registerMapping(String::class, LionCoreBuiltins.getString(lionWebVersion))
+            registerMapping(Int::class, LionCoreBuiltins.getInteger(lionWebVersion))
+            registerMapping(Boolean::class, LionCoreBuiltins.getBoolean(lionWebVersion))
 
-        // Allow user languages to refer to M3 elements
-        registerMapping(Annotation::class, LionCore.getAnnotation())
-        registerMapping(Classifier::class, LionCore.getClassifier())
-        registerMapping(Concept::class, LionCore.getConcept())
-        registerMapping(Containment::class, LionCore.getContainment())
-        registerMapping(DataType::class, LionCore.getDataType())
-        registerMapping(Enumeration::class, LionCore.getEnumeration())
-        registerMapping(EnumerationLiteral::class, LionCore.getEnumerationLiteral())
-        registerMapping(Feature::class, LionCore.getFeature())
-        registerMapping(Field::class, LionCore.getField())
-        registerMapping(Interface::class, LionCore.getInterface())
-        registerMapping(Language::class, LionCore.getLanguage())
-        registerMapping(LanguageEntity::class, LionCore.getLanguageEntity())
-        registerMapping(Link::class, LionCore.getLink())
-        registerMapping(PrimitiveType::class, LionCore.getPrimitiveType())
-        registerMapping(Property::class, LionCore.getProperty())
-        registerMapping(Reference::class, LionCore.getReference())
-        registerMapping(StructuredDataType::class, LionCore.getStructuredDataType())
+            // Allow user languages to refer to M3 elements
+            registerMapping(Annotation::class, LionCore.getAnnotation(lionWebVersion))
+            registerMapping(Classifier::class, LionCore.getClassifier(lionWebVersion))
+            registerMapping(Concept::class, LionCore.getConcept(lionWebVersion))
+            registerMapping(Containment::class, LionCore.getContainment(lionWebVersion))
+            registerMapping(DataType::class, LionCore.getDataType(lionWebVersion))
+            registerMapping(Enumeration::class, LionCore.getEnumeration(lionWebVersion))
+            registerMapping(EnumerationLiteral::class, LionCore.getEnumerationLiteral(lionWebVersion))
+            registerMapping(Feature::class, LionCore.getFeature(lionWebVersion))
+            registerMapping(Interface::class, LionCore.getInterface(lionWebVersion))
+            registerMapping(Language::class, LionCore.getLanguage(lionWebVersion))
+            registerMapping(LanguageEntity::class, LionCore.getLanguageEntity(lionWebVersion))
+            registerMapping(Link::class, LionCore.getLink(lionWebVersion))
+            registerMapping(PrimitiveType::class, LionCore.getPrimitiveType(lionWebVersion))
+            registerMapping(Property::class, LionCore.getProperty(lionWebVersion))
+            registerMapping(Reference::class, LionCore.getReference(lionWebVersion))
+            if (lionWebVersion != LionWebVersion.v2023_1) {
+                registerMapping(StructuredDataType::class, LionCore.getStructuredDataType(lionWebVersion))
+                registerMapping(Field::class, LionCore.getField(lionWebVersion))
+            }
+        }
     }
 
     fun registerMapping(
         kClass: KClass<out ClassifierInstance<*>>,
         classifier: Classifier<*>,
     ) {
-        classToClassifier[kClass] = classifier
+        classToClassifier.computeIfAbsent(classifier.lionWebVersion) { mutableMapOf() }[kClass] = classifier
     }
 
     fun registerMapping(
@@ -81,7 +86,7 @@ object MetamodelRegistry {
         deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>? = null,
     ) {
         require(!kClass.isSubclassOf(Node::class))
-        classToPrimitiveType[kClass] = primitiveType
+        classToPrimitiveType.computeIfAbsent(primitiveType.lionWebVersion) { mutableMapOf() }[kClass] = primitiveType
         if (serializer != null) {
             serializers[primitiveType] = serializer
         }
@@ -103,12 +108,27 @@ object MetamodelRegistry {
 
     fun getAnnotation(kClass: KClass<out AnnotationInstance>): Annotation? = getClassifier(kClass)?.let { it as Annotation }
 
-    fun getClassifier(kClass: KClass<out ClassifierInstance<*>>): Classifier<*>? = classToClassifier[kClass]
+    fun getClassifier(
+        kClass: KClass<out ClassifierInstance<*>>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): Classifier<*>? =
+        classToClassifier[lionWebVersion]?.get(
+            kClass,
+        )
 
-    fun getPrimitiveType(kClass: KClass<*>): PrimitiveType? = classToPrimitiveType[kClass]
+    fun getPrimitiveType(
+        kClass: KClass<*>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): PrimitiveType? =
+        classToPrimitiveType[lionWebVersion]?.get(
+            kClass,
+        )
 
-    fun prepareInstantiator(instantiator: Instantiator) {
-        classToClassifier.forEach { (kClass, classifier) ->
+    fun prepareInstantiator(
+        instantiator: Instantiator,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ) {
+        classToClassifier[lionWebVersion]?.forEach { (kClass, classifier) ->
             instantiator.registerCustomDeserializer(classifier.id!!) {
                     _: Classifier<*>,
                     serializedClassifierInstance: SerializedClassifierInstance,

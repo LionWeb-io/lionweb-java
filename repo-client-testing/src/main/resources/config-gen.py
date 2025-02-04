@@ -11,7 +11,7 @@ code = f"""{{
         "name": "default",
         "history": false,
         "create": "if-not-exists",
-        "lionWebVersion": "2024.1"
+        "lionWebVersion": "{os.environ['LIONWEB_VERSION']}"
       }}
     ]
   }},
