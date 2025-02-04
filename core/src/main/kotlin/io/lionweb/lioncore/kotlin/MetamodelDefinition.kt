@@ -155,7 +155,7 @@ fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
                 superClass.java.isInterface -> Unit
                 superClass.isSubclassOf(Node::class) -> {
                     val extendedConcept =
-                        conceptsByClasses[superClass] ?: MetamodelRegistry.getConcept(superClass as KClass<out Node>)
+                        conceptsByClasses[superClass] ?: MetamodelRegistry.getConcept(superClass as KClass<out Node>, lionWebVersion)
                     if (extendedConcept == null) {
                         throw IllegalStateException("Cannot handle superclass $superClass for concept class $conceptClass")
                     } else {
