@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
+import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Annotation
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance
@@ -9,9 +10,9 @@ import kotlin.properties.ReadWriteProperty
  * When defining a class to represent Annotation Instances and benefit from static typing,
  * one should extend this class. It works similarly to BaseNode.
  */
-abstract class BaseAnnotation : DynamicAnnotationInstance(null) {
+abstract class BaseAnnotation(val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion) : DynamicAnnotationInstance(null) {
     override fun getClassifier(): Annotation? {
-        return super.getAnnotationDefinition() ?: MetamodelRegistry.getAnnotation(this.javaClass.kotlin)
+        return super.getAnnotationDefinition() ?: MetamodelRegistry.getAnnotation(this.javaClass.kotlin, lionWebVersion)
     }
 
     inline fun <P : BaseAnnotation, reified T : Node> singleReference(
