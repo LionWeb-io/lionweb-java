@@ -6,6 +6,8 @@ import io.lionweb.lioncore.java.language.Classifier
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.language.Containment
 import io.lionweb.lioncore.java.language.DataType
+import io.lionweb.lioncore.java.language.Enumeration
+import io.lionweb.lioncore.java.language.EnumerationLiteral
 import io.lionweb.lioncore.java.language.IKeyed
 import io.lionweb.lioncore.java.language.Interface
 import io.lionweb.lioncore.java.language.Language
@@ -277,7 +279,7 @@ fun Classifier<*>.createContainment(
     multiplicity: Multiplicity = Multiplicity.SINGLE,
 ): Containment {
     val containment =
-        Containment().apply {
+        Containment(lionWebVersion).apply {
             this.name = name
             this.id = this@createContainment.idForContainedElement(name)
             this.key = this@createContainment.keyForContainedElement(name)
@@ -295,7 +297,7 @@ fun Classifier<*>.createReference(
     multiplicity: Multiplicity = Multiplicity.SINGLE,
 ): Reference {
     val reference =
-        Reference().apply {
+        Reference(lionWebVersion).apply {
             this.name = name
             this.id = this@createReference.idForContainedElement(name)
             this.key = this@createReference.keyForContainedElement(name)
@@ -314,7 +316,7 @@ fun Classifier<*>.createProperty(
 ): Property {
     require(!multiplicity.multiple)
     val property =
-        Property().apply {
+        Property(lionWebVersion).apply {
             this.name = name
             this.id = this@createProperty.idForContainedElement(name)
             this.key = this@createProperty.keyForContainedElement(name)
@@ -345,4 +347,13 @@ fun String.lwIDCleanedVersion(): String {
     return this.replace(".", "_")
         .replace(" ", "_")
         .replace("/", "_")
+}
+
+fun Enumeration.addLiteral(literalName: String) : EnumerationLiteral {
+    val enumerationLiteral = EnumerationLiteral(this, literalName).apply {
+        this.id = "${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id"
+        this.key = "${this@addLiteral.id!!.removeSuffix("-key")}-${literalName.lwIDCleanedVersion()}-key"
+    }
+    this.addLiteral(enumerationLiteral)
+    return enumerationLiteral
 }
