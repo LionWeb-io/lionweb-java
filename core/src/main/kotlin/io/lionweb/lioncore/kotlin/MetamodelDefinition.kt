@@ -185,7 +185,7 @@ private fun populateFeaturesInClassifier(
                         val referenceType =
                             MetamodelRegistry.getClassifier(
                                 property.returnType.arguments[0].type!!.arguments[0].type!!.classifier!! as KClass<out Node>,
-                                classifier.lionWebVersion
+                                classifier.lionWebVersion,
                             ) as Classifier<*>
                         classifier.createReference(property.name, referenceType, Multiplicity.ZERO_TO_MANY)
                     } else {
@@ -209,7 +209,7 @@ private fun populateFeaturesInClassifier(
                 if (kClass.isSubclassOf(Node::class)) {
                     val containmentType =
                         MetamodelRegistry.getConcept(
-                            kClass, classifier.lionWebVersion
+                            kClass, classifier.lionWebVersion,
                         ) ?: throw IllegalStateException("Cannot find concept for $kClass")
                     classifier.createContainment(property.name, containmentType, Multiplicity.SINGLE)
                 } else if (kClass.isSubclassOf(ReferenceValue::class)) {
@@ -217,7 +217,7 @@ private fun populateFeaturesInClassifier(
                         val referenceType =
                             MetamodelRegistry.getClassifier(
                                 property.returnType.arguments[0].type!!.classifier!! as KClass<out Node>,
-                                classifier.lionWebVersion
+                                classifier.lionWebVersion,
                             ) as Classifier<*>
                         classifier.createReference(property.name, referenceType, Multiplicity.OPTIONAL)
                     } else {
@@ -246,7 +246,7 @@ fun <T : Any> Language.addSerializerAndDeserializer(
     primitiveTypeClass: KClass<T>,
     serializer: PrimitiveSerializer<T?>,
     deserializer: PrimitiveDeserializer<T?>,
-    lionWebVersion: LionWebVersion = LionWebVersion.currentVersion
+    lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
     val primitiveType =
         MetamodelRegistry.getPrimitiveType(primitiveTypeClass, lionWebVersion)
@@ -352,11 +352,12 @@ fun String.lwIDCleanedVersion(): String {
         .replace("/", "_")
 }
 
-fun Enumeration.addLiteral(literalName: String) : EnumerationLiteral {
-    val enumerationLiteral = EnumerationLiteral(this, literalName).apply {
-        this.id = "${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id"
-        this.key = "${this@addLiteral.id!!.removeSuffix("-key")}-${literalName.lwIDCleanedVersion()}-key"
-    }
+fun Enumeration.addLiteral(literalName: String): EnumerationLiteral {
+    val enumerationLiteral =
+        EnumerationLiteral(this, literalName).apply {
+            this.id = "${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id"
+            this.key = "${this@addLiteral.id!!.removeSuffix("-key")}-${literalName.lwIDCleanedVersion()}-key"
+        }
     this.addLiteral(enumerationLiteral)
     return enumerationLiteral
 }

@@ -104,12 +104,21 @@ object MetamodelRegistry {
         deserializers[primitiveType] = deserializer
     }
 
-    fun getConcept(kClass: KClass<out Node>, lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,): Concept?
-    = getClassifier(kClass, lionWebVersion)?.let { it as Concept }
+    fun getConcept(
+        kClass: KClass<out Node>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): Concept? =
+        getClassifier(
+            kClass,
+            lionWebVersion,
+        )?.let {
+            it as Concept
+        }
 
-    fun getAnnotation(kClass: KClass<out AnnotationInstance>,
-                      lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,): Annotation? =
-        getClassifier(kClass, lionWebVersion)?.let { it as Annotation }
+    fun getAnnotation(
+        kClass: KClass<out AnnotationInstance>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): Annotation? = getClassifier(kClass, lionWebVersion)?.let { it as Annotation }
 
     fun getClassifier(
         kClass: KClass<out ClassifierInstance<*>>,
