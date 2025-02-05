@@ -40,7 +40,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     Object storedValue = propertyValues.get(property.getKey());
     if (storedValue == null
-        && property.getType() == LionCoreBuiltins.getBoolean(this.getClassifier().getLionWebVersion())
+        && property.getType()
+            == LionCoreBuiltins.getBoolean(this.getClassifier().getLionWebVersion())
         && property.isRequired()) {
       return false;
     }
