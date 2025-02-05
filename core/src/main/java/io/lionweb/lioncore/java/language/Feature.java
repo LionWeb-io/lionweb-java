@@ -57,6 +57,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   public Feature(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
+    super((container != null && container.getLionWebVersion() != null) ? container.getLionWebVersion() : LionWebVersion.currentVersion);
     setOptional(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);
@@ -77,6 +78,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   public Feature(@Nullable String name, @Nullable Classifier container) {
+    super((container != null && container.getLionWebVersion() != null) ? container.getLionWebVersion() : LionWebVersion.currentVersion);
     setOptional(false);
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
