@@ -21,6 +21,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
   }
 
   public EnumerationLiteral(@Nonnull Enumeration enumeration, @Nullable String name) {
+    this(enumeration.getLionWebVersion());
     enumeration.addLiteral(this);
     setParent(enumeration);
     setName(name);

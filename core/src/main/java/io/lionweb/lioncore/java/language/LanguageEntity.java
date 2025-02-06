@@ -33,6 +33,10 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
       @Nullable String name,
       @Nonnull String id) {
     this(lionWebVersion, language, name);
+    if (language != null && lionWebVersion != language.getLionWebVersion()) {
+      throw new IllegalArgumentException(
+          "The specified lionWebVersion is not the same as the LionWebVersion of the language");
+    }
     this.setID(id);
   }
 
@@ -42,7 +46,7 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
   }
 
   public LanguageEntity(@Nullable Language language, @Nullable String name) {
-    this();
+    this(language == null ? LionWebVersion.currentVersion : language.getLionWebVersion());
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {
