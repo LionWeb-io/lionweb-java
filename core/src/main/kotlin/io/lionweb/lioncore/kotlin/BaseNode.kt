@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
+import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Concept
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.impl.DynamicNode
@@ -13,9 +14,9 @@ annotation class Implementation
  * This is intended to be used as the base classes of classes representing LionWeb nodes,
  * when defined in Kotlin.
  */
-abstract class BaseNode : DynamicNode() {
+abstract class BaseNode(val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion) : DynamicNode() {
     override fun getClassifier(): Concept? {
-        return super.getClassifier() ?: MetamodelRegistry.getConcept(this.javaClass.kotlin)
+        return super.getClassifier() ?: MetamodelRegistry.getConcept(this.javaClass.kotlin, lionWebVersion)
     }
 
     open fun calculateID(): String? = null

@@ -5,6 +5,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonNull
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import io.lionweb.lioncore.java.LionWebVersion
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
@@ -30,6 +31,7 @@ internal class LowLevelRepoClient(
     val connectTimeOutInSeconds: Long = 60,
     val callTimeoutInSeconds: Long = 60,
     val debug: Boolean = false,
+    val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
     fun createRepository(history: Boolean = false) {
         val url = "http://$hostname:$port/createRepository?history=$history"

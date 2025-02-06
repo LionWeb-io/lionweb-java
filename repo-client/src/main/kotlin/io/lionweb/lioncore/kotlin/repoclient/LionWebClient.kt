@@ -5,6 +5,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
+import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.model.AnnotationInstance
 import io.lionweb.lioncore.java.model.Node
@@ -45,6 +46,7 @@ class LionWebClient(
     val authorizationToken: String? = null,
     val clientID: String = "GenericKotlinBasedLionWebClient",
     val repository: String = "default",
+    val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
     // Fields
     private val languages = mutableListOf<Language>()
@@ -60,13 +62,14 @@ class LionWebClient(
             connectTimeOutInSeconds = connectTimeOutInSeconds,
             callTimeoutInSeconds = callTimeoutInSeconds,
             debug = debug,
+            lionWebVersion = lionWebVersion,
         )
 
     /**
      * Exposed for testing purposes
      */
     val defaultJsonSerialization =
-        SerializationProvider.getStandardJsonSerialization().apply {
+        SerializationProvider.getStandardJsonSerialization(lionWebVersion).apply {
             enableDynamicNodes()
         }
 
