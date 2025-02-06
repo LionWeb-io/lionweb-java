@@ -209,7 +209,8 @@ private fun populateFeaturesInClassifier(
                 if (kClass.isSubclassOf(Node::class)) {
                     val containmentType =
                         MetamodelRegistry.getConcept(
-                            kClass, classifier.lionWebVersion,
+                            kClass,
+                            classifier.lionWebVersion,
                         ) ?: throw IllegalStateException("Cannot find concept for $kClass")
                     classifier.createContainment(property.name, containmentType, Multiplicity.SINGLE)
                 } else if (kClass.isSubclassOf(ReferenceValue::class)) {
