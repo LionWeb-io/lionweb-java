@@ -8,6 +8,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+
+import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -43,8 +45,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   public Language importEPackage(EPackage ePackage) {
     Language metamodel = new Language(ePackage.getName());
     metamodel.setVersion("1");
-    metamodel.setID(ePackage.getName());
-    metamodel.setKey(ePackage.getName());
+    setIDAndKey(metamodel, ePackage.getName());
 
     // Initially we just create empty concepts, later we populate the features as they could refer
     // to EClasses which we meet later on in the EPackage
@@ -53,14 +54,12 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
           Interface iface = new Interface(metamodel, eClass.getName());
-          iface.setID(ePackage.getName() + "-" + iface.getName());
-          iface.setKey(ePackage.getName() + "-" + iface.getName());
+          setIDAndKey(iface, ePackage.getName() + "-" + iface.getName());
           metamodel.addElement(iface);
           conceptsToEClassesMapping.registerMapping(iface, eClass);
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
-          concept.setID(ePackage.getName() + "-" + concept.getName());
-          concept.setKey(ePackage.getName() + "-" + concept.getName());
+          setIDAndKey(concept, ePackage.getName() + "-" + concept.getName());
           concept.setAbstract(false);
           metamodel.addElement(concept);
           conceptsToEClassesMapping.registerMapping(concept, eClass);
@@ -68,15 +67,13 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
         Enumeration enumeration = new Enumeration(metamodel, eEnum.getName());
-        enumeration.setID(ePackage.getName() + "-" + eEnum.getName());
-        enumeration.setKey(ePackage.getName() + "-" + eEnum.getName());
+        setIDAndKey(enumeration, ePackage.getName() + "-" + eEnum.getName());
         metamodel.addElement(enumeration);
         dataTypeMapping.registerMapping(eEnum, enumeration);
       } else if (eClassifier instanceof EDataType) {
         EDataType eDataType = (EDataType) eClassifier;
         PrimitiveType primitiveType = new PrimitiveType(metamodel, eDataType.getName());
-        primitiveType.setID(ePackage.getName() + "-" + eDataType.getName());
-        primitiveType.setKey(ePackage.getName() + "-" + eDataType.getName());
+        setIDAndKey(primitiveType, ePackage.getName() + "-" + eDataType.getName());
         metamodel.addElement(primitiveType);
         dataTypeMapping.registerMapping(eDataType, primitiveType);
       } else {
@@ -128,8 +125,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         Enumeration enumeration = dataTypeMapping.getEnumerationForEEnum(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
-          enumerationLiteral.setID(enumeration.getID() + "-" + enumLiteral.getName());
-          enumerationLiteral.setKey(enumeration.getID() + "-" + enumLiteral.getName());
+          setIDAndKey(enumerationLiteral, enumeration.getID() + "-" + enumLiteral.getName());
           enumeration.addLiteral(enumerationLiteral);
         }
       } else if (eClassifier instanceof EDataType) {
@@ -155,11 +151,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
-        // EAttributes with upper bound > 1 are not supported in LionWeb
         if (!eAttribute.isMany()) {
           Property property = new Property(eFeature.getName(), classifier);
-          property.setID(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-          property.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(property, ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           classifier.addFeature(property);
           property.setOptional(!eAttribute.isRequired());
           DataType<DataType> propertyType =
@@ -172,14 +166,13 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           String featureName =
                   eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
           Concept holderConcept = new Concept( featureName + "Container");
-          holderConcept.setID(ePackage.getName() + "-" + holderConcept.getName());
-          holderConcept.setKey(ePackage.getName() + "-" + holderConcept.getName());
+          setIDAndKey(holderConcept, ePackage.getName() + "-" + holderConcept.getName());
           holderConcept.setAbstract(false);
           classifier.getLanguage().addElement(holderConcept);
 
           Property property = new Property("content", holderConcept);
-          property.setID(ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
-          property.setKey(ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
+          setIDAndKey(property,
+                  ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
           holderConcept.addFeature(property);
           property.setOptional(false);
           DataType<DataType> propertyType =
@@ -188,8 +181,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           property.setType(propertyType);
 
           Containment containment = new Containment(eFeature.getName(), classifier);
-          containment.setID(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-          containment.setKey(ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(containment,
+                  ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           classifier.addFeature(containment);
           containment.setOptional(!eAttribute.isRequired());
           containment.setMultiple(eAttribute.isMany());
@@ -199,20 +192,16 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         EReference eReference = (EReference) eFeature;
         if (eReference.isContainment()) {
           Containment containment = new Containment(eFeature.getName(), classifier);
-          containment.setID(
-              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-          containment.setKey(
-              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(containment,
+                  ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           containment.setOptional(!eReference.isRequired());
           containment.setMultiple(eReference.isMany());
           classifier.addFeature(containment);
           containment.setType(convertEClassifierToClassifier(eReference.getEType()));
         } else {
           Reference reference = new Reference(eFeature.getName(), classifier);
-          reference.setID(
-              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
-          reference.setKey(
-              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(reference,
+                  ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           reference.setOptional(!eReference.isRequired());
           reference.setMultiple(eReference.isMany());
           classifier.addFeature(reference);
@@ -222,5 +211,25 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         throw new UnsupportedOperationException();
       }
     }
+  }
+
+  private void setIDAndKey(LanguageEntity modelElement, String idAndKey) {
+    modelElement.setID(idAndKey);
+    modelElement.setKey(idAndKey);
+  }
+
+  private void setIDAndKey(EnumerationLiteral modelElement, String idAndKey) {
+    modelElement.setID(idAndKey);
+    modelElement.setKey(idAndKey);
+  }
+
+  private void setIDAndKey(Language modelElement, String idAndKey) {
+    modelElement.setID(idAndKey);
+    modelElement.setKey(idAndKey);
+  }
+
+  private void setIDAndKey(Feature modelElement, String idAndKey) {
+    modelElement.setID(idAndKey);
+    modelElement.setKey(idAndKey);
   }
 }
