@@ -55,7 +55,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   @Override
-  public Object getPropertyValue(Property property) {
+  public Object getPropertyValue(@Nonnull Property property) {
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
@@ -67,12 +67,12 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   @Override
-  public void setPropertyValue(Property property, Object value) {
+  public void setPropertyValue(Property property, @Nullable Object value) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public List<? extends Node> getChildren(Containment containment) {
+  public List<? extends Node> getChildren(@Nonnull Containment containment) {
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
@@ -84,7 +84,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     throw new UnsupportedOperationException();
   }
 

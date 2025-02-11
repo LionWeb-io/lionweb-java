@@ -5,6 +5,7 @@ import static io.lionweb.lioncore.java.serialization.SerializationProvider.getSt
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
@@ -15,6 +16,7 @@ import java.io.*;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 /**
  * This class is responsible for deserializing models.
@@ -56,7 +58,7 @@ public class JsonSerialization extends AbstractSerialization {
    * an exception is thrown.
    */
   public Language loadLanguage(InputStream inputStream) {
-    JsonSerialization jsonSerialization = getStandardJsonSerialization();
+    JsonSerialization jsonSerialization = getStandardJsonSerialization(getLionWebVersion());
     List<Node> lNodes = jsonSerialization.deserializeToNodes(inputStream);
     List<Language> languages =
         lNodes.stream()
@@ -76,6 +78,15 @@ public class JsonSerialization extends AbstractSerialization {
   JsonSerialization() {
     // prevent public access
     super();
+  }
+
+  /**
+   * We want to protect this from access, as the default constructor would not add the lioncore and
+   * lioncore builtins support which most users may expect.
+   */
+  JsonSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    // prevent public access
+    super(lionWebVersion);
   }
 
   //

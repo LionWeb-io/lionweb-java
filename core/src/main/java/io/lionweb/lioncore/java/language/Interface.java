@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -26,6 +27,10 @@ public class Interface extends Classifier<Interface> {
     super();
   }
 
+  public Interface(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Interface(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
@@ -43,6 +48,15 @@ public class Interface extends Classifier<Interface> {
     super(language, name);
   }
 
+  public Interface(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+  }
+
+  public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, null, name);
+  }
+
   public Interface(@Nullable String name) {
     super(null, name);
   }
@@ -58,7 +72,7 @@ public class Interface extends Classifier<Interface> {
   public void addExtendedInterface(@Nonnull Interface extendedInterface) {
     Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
     this.addReferenceMultipleValue(
-        "extends", new ReferenceValue(extendedInterface, extendedInterface.getName()));
+        "extends", ClassifierInstanceUtils.referenceTo(extendedInterface));
   }
 
   @Nonnull
@@ -73,7 +87,7 @@ public class Interface extends Classifier<Interface> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getInterface();
+    return LionCore.getInterface(getLionWebVersion());
   }
 
   @Nonnull

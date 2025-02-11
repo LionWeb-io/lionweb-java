@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.serialization;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
@@ -23,7 +24,8 @@ public class LibraryLanguage {
     InputStream inputStream =
         LibraryLanguage.class.getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
     LIBRARY_MM =
         deserializedNodes.stream()

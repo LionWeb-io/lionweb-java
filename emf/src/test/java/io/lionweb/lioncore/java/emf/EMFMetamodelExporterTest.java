@@ -3,6 +3,7 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.*;
 
 import io.lionweb.java.emf.builtins.BuiltinsPackage;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import java.io.*;
@@ -25,11 +26,11 @@ public class EMFMetamodelExporterTest {
   public void exportLibraryLanguage() {
     Language libraryLang =
         (Language)
-            SerializationProvider.getStandardJsonSerialization()
+            SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
                 .deserializeToNodes(this.getClass().getResourceAsStream("/library-language.json"))
                 .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(LionWebVersion.v2023_1);
     EPackage libraryPkg = ecoreExporter.exportLanguage(libraryLang);
 
     assertEquals("library", libraryPkg.getName());
@@ -155,12 +156,12 @@ public class EMFMetamodelExporterTest {
 
     Language propertiesLang =
         (Language)
-            SerializationProvider.getStandardJsonSerialization()
+            SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
                 .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-language.json"))
                 .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(LionWebVersion.v2023_1);
     EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
 
     assertEquals("io_lionweb_Properties", propertiesPkg.getName());
@@ -260,12 +261,12 @@ public class EMFMetamodelExporterTest {
   public void storePropertiesLangWithINamed() throws IOException {
     Language propertiesLang =
         (Language)
-            SerializationProvider.getStandardJsonSerialization()
+            SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
                 .deserializeToNodes(
                     this.getClass().getResourceAsStream("/properties-language.json"))
                 .get(0);
 
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter();
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(LionWebVersion.v2023_1);
     EPackage propertiesPkg = ecoreExporter.exportLanguage(propertiesLang);
 
     Resource.Factory.Registry.INSTANCE

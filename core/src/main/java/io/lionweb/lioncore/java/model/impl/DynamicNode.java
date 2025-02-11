@@ -5,6 +5,7 @@ import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -70,12 +71,38 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
     }
     DynamicNode that = (DynamicNode) o;
     return Objects.equals(id, that.id)
-        && Objects.equals(parent, that.parent)
-        && Objects.equals(concept, that.concept)
+        && shallowNodeEquality(parent, that.parent)
+        && shallowNodeEquality(concept, that.concept)
         && Objects.equals(propertyValues, that.propertyValues)
-        && Objects.equals(containmentValues, that.containmentValues)
+        && shallowContainmentsEquality(containmentValues, that.containmentValues)
         && Objects.equals(referenceValues, that.referenceValues)
         && Objects.equals(annotations, that.annotations);
+  }
+
+  private static boolean shallowContainmentsEquality(
+      Map<String, List<Node>> containments1, Map<String, List<Node>> containments2) {
+    if (!containments1.keySet().equals(containments2.keySet())) {
+      return false;
+    }
+    return containments1.keySet().stream()
+        .allMatch(
+            containmentName -> {
+              List<Node> nodes1 = containments1.get(containmentName);
+              List<Node> nodes2 = containments2.get(containmentName);
+              return nodes1.size() == nodes2.size()
+                  && IntStream.range(0, nodes1.size())
+                      .allMatch(i -> shallowNodeEquality(nodes1.get(i), nodes2.get(i)));
+            });
+  }
+
+  private static boolean shallowNodeEquality(@Nullable Node node1, @Nullable Node node2) {
+    if (node1 == null && node2 == null) {
+      return true;
+    }
+    if (node1 != null && node2 != null && node1.getID() != null) {
+      return Objects.equals(node1.getID(), node2.getID());
+    }
+    return Objects.equals(node1, node2);
   }
 
   @Override

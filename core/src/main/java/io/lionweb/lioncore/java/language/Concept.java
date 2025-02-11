@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
-import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -32,6 +33,12 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
+  public Concept(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+    setAbstract(false);
+    setPartition(false);
+  }
+
   public Concept(
       @Nullable Language language,
       @Nullable String name,
@@ -47,8 +54,21 @@ public class Concept extends Classifier<Concept> {
     setPartition(false);
   }
 
+  public Concept(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
+    setAbstract(false);
+    setPartition(false);
+  }
+
   public Concept(@Nullable Language language, @Nullable String name) {
     super(language, name);
+    setAbstract(false);
+    setPartition(false);
+  }
+
+  public Concept(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, null, name);
     setAbstract(false);
     setPartition(false);
   }
@@ -98,7 +118,7 @@ public class Concept extends Classifier<Concept> {
 
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "Interface should not be null");
-    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
+    this.addReferenceMultipleValue("implements", ClassifierInstanceUtils.referenceTo(iface));
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?
@@ -106,7 +126,7 @@ public class Concept extends Classifier<Concept> {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
-      this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
+      this.setReferenceSingleValue("extends", ClassifierInstanceUtils.referenceTo(extended));
     }
   }
 
@@ -122,6 +142,6 @@ public class Concept extends Classifier<Concept> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getConcept();
+    return LionCore.getConcept(getLionWebVersion());
   }
 }

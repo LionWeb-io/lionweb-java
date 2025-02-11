@@ -1,11 +1,13 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.support.NodeInstantiator;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.*;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -15,6 +17,11 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
 
   public EMFModelImporter() {
     super();
+    nodeInstantiator = new NodeInstantiator();
+  }
+
+  public EMFModelImporter(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
     nodeInstantiator = new NodeInstantiator();
   }
 

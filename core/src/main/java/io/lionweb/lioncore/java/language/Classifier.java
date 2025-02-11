@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import java.util.*;
@@ -27,8 +28,17 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     super();
   }
 
+  public Classifier(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Classifier(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
+  }
+
+  public Classifier(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
   }
 
   public Classifier(@Nullable Language language, @Nullable String name) {

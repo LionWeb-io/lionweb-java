@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.DataType;
 import io.lionweb.lioncore.java.language.Enumeration;
 import io.lionweb.lioncore.java.language.LionCoreBuiltins;
@@ -7,6 +8,7 @@ import io.lionweb.lioncore.java.language.PrimitiveType;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.EClassifier;
 import org.eclipse.emf.ecore.EDataType;
 import org.eclipse.emf.ecore.EEnum;
@@ -20,6 +22,13 @@ public class DataTypeMapping {
 
   private final Map<EDataType, PrimitiveType> eDataTypesToPrimitiveTypes = new HashMap<>();
   private final Map<PrimitiveType, EDataType> primitiveTypesToEDataTypes = new HashMap<>();
+
+  private @Nonnull LionWebVersion lionWebVersion;
+
+  public DataTypeMapping(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
+  }
 
   public void registerMapping(EEnum eEnum, Enumeration enumeration) {
     eEnumsToEnumerations.put(eEnum, enumeration);
@@ -40,11 +49,11 @@ public class DataTypeMapping {
   }
 
   public EDataType toEDataType(DataType dataType) {
-    if (dataType.equals(LionCoreBuiltins.getBoolean())) {
+    if (dataType.equals(LionCoreBuiltins.getBoolean(lionWebVersion))) {
       return EcorePackage.eINSTANCE.getEBoolean();
-    } else if (dataType.equals(LionCoreBuiltins.getInteger())) {
+    } else if (dataType.equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
       return EcorePackage.eINSTANCE.getEInt();
-    } else if (dataType.equals(LionCoreBuiltins.getString())) {
+    } else if (dataType.equals(LionCoreBuiltins.getString(lionWebVersion))) {
       return EcorePackage.eINSTANCE.getEString();
     } else if (dataType instanceof Enumeration) {
       Enumeration enumeration = (Enumeration) dataType;

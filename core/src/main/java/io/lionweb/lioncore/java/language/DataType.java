@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -20,8 +21,21 @@ public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
     super();
   }
 
+  public DataType(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
+  public DataType(@Nonnull LionWebVersion lionWebVersion, @Nonnull String id) {
+    super(lionWebVersion, null, null, id);
+  }
+
   public DataType(@Nonnull String id) {
-    super(null, null, id);
+    super(LionWebVersion.currentVersion, null, null, id);
+  }
+
+  public DataType(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
   }
 
   public DataType(@Nullable Language language, @Nullable String name) {

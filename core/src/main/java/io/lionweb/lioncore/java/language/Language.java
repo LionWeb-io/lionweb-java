@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
@@ -25,9 +26,22 @@ import javax.annotation.Nullable;
  *     structure aspect</i> in documentation</a>
  */
 public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
-  public Language() {}
+  public Language(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
+  public Language() {
+    this(LionWebVersion.currentVersion);
+  }
+
+  public Language(@Nonnull LionWebVersion lionWebVersion, @Nonnull String name) {
+    this(lionWebVersion);
+    Objects.requireNonNull(name, "name should not be null");
+    this.setName(name);
+  }
 
   public Language(@Nonnull String name) {
+    this(LionWebVersion.currentVersion);
     Objects.requireNonNull(name, "name should not be null");
     this.setName(name);
   }
@@ -163,7 +177,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getLanguage();
+    return LionCore.getLanguage(getLionWebVersion());
   }
 
   @Override
@@ -182,7 +196,14 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return new LanguageValidator().isValid(this);
   }
 
-  public ValidationResult validate() {
+  public @Nonnull ValidationResult validate() {
     return new LanguageValidator().validate(this);
+  }
+
+  public @Nonnull List<StructuredDataType> getStructuredDataTypes() {
+    return getElements().stream()
+        .filter(e -> e instanceof StructuredDataType)
+        .map(e -> (StructuredDataType) e)
+        .collect(Collectors.toList());
   }
 }

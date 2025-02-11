@@ -1,9 +1,12 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
 import java.util.List;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
@@ -11,14 +14,22 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 /** Export LionWeb's metamodels into EMF's metamodels. */
 public class EMFMetamodelExporter extends AbstractEMFExporter {
 
-  private final DataTypeMapping dataTypeMapping = new DataTypeMapping();
+  private DataTypeMapping dataTypeMapping;
 
   public EMFMetamodelExporter() {
-    super();
+    this(LionWebVersion.currentVersion);
   }
 
-  public EMFMetamodelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
+  public EMFMetamodelExporter(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+    this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
+  }
+
+  public EMFMetamodelExporter(
+      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(conceptsToEClassesMapping);
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
   /** This export all the languages received to a single Resource. */

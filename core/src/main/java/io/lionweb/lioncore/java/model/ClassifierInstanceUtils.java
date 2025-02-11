@@ -1,15 +1,20 @@
 package io.lionweb.lioncore.java.model;
 
-import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.Property;
-import io.lionweb.lioncore.java.language.Reference;
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCOREBUILTINS_AUTORESOLVE_PREFIX;
+import static io.lionweb.lioncore.java.utils.Autoresolve.LIONCORE_AUTORESOLVE_PREFIX;
+
+import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.language.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ClassifierInstanceUtils {
+
+  private ClassifierInstanceUtils() {
+    // Prevent instantiation
+  }
 
   // Public methods about properties
 
@@ -247,5 +252,41 @@ public class ClassifierInstanceUtils {
     Objects.requireNonNull(child, "child should not be null");
     Containment containment = _this.getClassifier().getContainmentByName(containmentName);
     _this.addChild(containment, child);
+  }
+
+  public static ReferenceValue referenceTo(@Nonnull LanguageEntity<?> _this) {
+    // Unfortunately we cannot refer to LionCore and LionCoreBuiltins as this method get called
+    // during their initialization
+    if (_this.getLanguage() != null
+        && "LionCore_M3".equals(_this.getLanguage().getName())
+        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
+      return new ReferenceValue(_this, LIONCORE_AUTORESOLVE_PREFIX + _this.getName());
+    } else if (_this.getLanguage() != null
+        && _this.getLanguage() instanceof LionCoreBuiltins
+        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
+      return new ReferenceValue(_this, LIONCOREBUILTINS_AUTORESOLVE_PREFIX + _this.getName());
+    } else {
+      return new ReferenceValue(_this, _this.getName());
+    }
+  }
+
+  public static boolean isBuiltinElement(@Nonnull Node _this) {
+    if (_this instanceof LanguageEntity<?>) {
+      return isBuiltinElement((LanguageEntity<?>) _this);
+    } else {
+      return false;
+    }
+  }
+
+  public static boolean isBuiltinElement(@Nonnull LanguageEntity<?> _this) {
+    if ("LionCore_M3".equals(_this.getLanguage().getName())
+        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
+      return true;
+    } else if (_this.getLanguage() instanceof LionCoreBuiltins
+        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

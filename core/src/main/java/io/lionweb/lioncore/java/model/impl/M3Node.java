@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.language.Property;
@@ -14,15 +15,19 @@ import javax.annotation.Nullable;
 /**
  * Base class to help implements Node in the language package.
  *
- * <p>Other libraries could implement Node differently, for example based on reflection. However
+ * <p>Other libraries could implement Node differently, for example based on reflection. However,
  * this is outside the scope of this library. This library should provide a solid, basic dependency
  * to be used by other implementation and it should be as reusable, basic, and unopinionated as
  * possible.
+ *
+ * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
+ * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
     implements Node {
-  private String id;
-  private Node parent;
+  private final @Nonnull LionWebVersion lionWebVersion;
+  private @Nullable String id;
+  private @Nullable Node parent;
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
@@ -31,6 +36,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   private final Map<String, Object> propertyValues = new HashMap<>();
   private final Map<String, List<Node>> containmentValues = new HashMap<>();
   private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+
+  protected M3Node() {
+    this.lionWebVersion = LionWebVersion.currentVersion;
+  }
+
+  protected M3Node(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
+  }
 
   public T setID(String id) {
     this.id = id;
@@ -61,7 +75,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public Object getPropertyValue(Property property) {
+  public @Nullable Object getPropertyValue(@Nonnull Property property) {
+    Objects.requireNonNull(property, "property should not be null");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept: " + property);
     }
@@ -72,7 +87,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
    * This internal method uses a property name and not a property or the property id because of a
    * circular dependency problem present for nodes representing M3 elements.
    */
-  protected <V> V getPropertyValue(String propertyName, Class<V> clazz, V defaultValue) {
+  protected <V> @Nullable V getPropertyValue(
+      @Nonnull String propertyName, @Nonnull Class<V> clazz, @Nullable V defaultValue) {
     Object value = propertyValues.get(propertyName);
     if (value == null) {
       return defaultValue;
@@ -86,7 +102,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void setPropertyValue(Property property, Object value) {
+  public void setPropertyValue(@Nonnull Property property, @Nullable Object value) {
+    Objects.requireNonNull(property, "property should not be null");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this concept");
     }
@@ -98,7 +115,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public List<Node> getChildren(Containment containment) {
+  public @Nonnull List<Node> getChildren(@Nonnull Containment containment) {
+    Objects.requireNonNull(containment, "containment should not be null");
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
@@ -106,7 +124,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void addChild(Containment containment, Node child) {
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
+    Objects.requireNonNull(containment);
+    Objects.requireNonNull(child);
     if (containment.isMultiple()) {
       addContainmentMultipleValue(containment.getName(), child);
     } else {
@@ -115,7 +135,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void removeChild(Node node) {
+  public void removeChild(@Nonnull Node child) {
+    Objects.requireNonNull(child);
     throw new UnsupportedOperationException();
   }
 
@@ -278,5 +299,10 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
+  }
+
+  @Nonnull
+  public LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
   }
 }

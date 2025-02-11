@@ -228,7 +228,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
-        new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
+        new MetaPointer("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
   }
 
@@ -316,7 +316,10 @@ public class FlatbuffersSerializationTest extends SerializationTest {
   public void serializationIncludeBuiltinsWhenUsedInProperties() {
     Language l = new Language("l", "l", "l", "1");
     Concept c = new Concept(l, "c", "c", "c");
-    c.addFeature(Property.createRequired("foo", LionCoreBuiltins.getString()));
+    c.addFeature(
+        Property.createRequired("foo", LionCoreBuiltins.getString())
+            .setID("foo-id")
+            .setKey("foo-key"));
 
     DynamicNode n1 = new DynamicNode("n1", c);
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");

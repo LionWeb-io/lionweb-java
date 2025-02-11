@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -21,6 +22,18 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     implements NamespacedEntity, IKeyed<T> {
 
   public Feature() {
+    super();
+    setOptional(false);
+  }
+
+  public Feature(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+    setOptional(false);
+  }
+
+  public Feature(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
+    this(lionWebVersion, name, null, id);
     setOptional(false);
   }
 
@@ -29,19 +42,50 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setOptional(false);
   }
 
-  public Feature(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
+  public Feature(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier container,
+      @Nonnull String id) {
+    super(lionWebVersion);
     setOptional(false);
     Objects.requireNonNull(id, "id should not be null");
     this.setID(id);
-    // TODO verify that the container is also a NamespaceProvider
+    // TODO enforce uniqueness of the name within the FeauturesContainer
+    setName(name);
+    setParent(container);
+  }
+
+  public Feature(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
+    super(
+        (container != null && container.getLionWebVersion() != null)
+            ? container.getLionWebVersion()
+            : LionWebVersion.currentVersion);
+    setOptional(false);
+    Objects.requireNonNull(id, "id should not be null");
+    this.setID(id);
+    // TODO enforce uniqueness of the name within the FeauturesContainer
+    setName(name);
+    setParent(container);
+  }
+
+  public Feature(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier container) {
+    super(lionWebVersion);
+    setOptional(false);
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
     setParent(container);
   }
 
   public Feature(@Nullable String name, @Nullable Classifier container) {
+    super(
+        (container != null && container.getLionWebVersion() != null)
+            ? container.getLionWebVersion()
+            : LionWebVersion.currentVersion);
     setOptional(false);
-    // TODO verify that the container is also a NamespaceProvider
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
     setParent(container);

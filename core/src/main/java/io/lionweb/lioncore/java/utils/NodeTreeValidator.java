@@ -25,6 +25,26 @@ public class NodeTreeValidator extends Validator<Node> {
           "A root node should be an instance of a Partition concept",
           node);
     }
+    node.getClassifier()
+        .allContainments()
+        .forEach(
+            containment -> {
+              int actualNChildren = node.getChildren(containment).size();
+              validationResult.checkForError(
+                  containment.isRequired() && actualNChildren == 0,
+                  "Containment "
+                      + containment.getName()
+                      + " is required but no children are specified",
+                  node);
+              validationResult.checkForError(
+                  containment.isSingle() && actualNChildren > 1,
+                  "Containment "
+                      + containment.getName()
+                      + " is single but it has "
+                      + actualNChildren
+                      + " children",
+                  node);
+            });
     ClassifierInstanceUtils.getChildren(node)
         .forEach(child -> validateNodeAndDescendants(child, validationResult));
   }

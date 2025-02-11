@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,8 +23,17 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     super();
   }
 
+  public PrimitiveType(@Nonnull LionWebVersion lionWebVersion, @Nonnull String id) {
+    super(lionWebVersion, id);
+  }
+
   public PrimitiveType(@Nonnull String id) {
     super(id);
+  }
+
+  public PrimitiveType(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
+    super(lionWebVersion, language, name);
   }
 
   public PrimitiveType(@Nullable Language language, @Nullable String name) {
@@ -37,6 +47,6 @@ public class PrimitiveType extends DataType<PrimitiveType> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getPrimitiveType();
+    return LionCore.getPrimitiveType(getLionWebVersion());
   }
 }

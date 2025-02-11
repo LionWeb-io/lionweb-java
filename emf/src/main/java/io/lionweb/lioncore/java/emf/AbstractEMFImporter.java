@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.emf;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
 import io.lionweb.lioncore.java.emf.support.JSONResourceFactory;
 import java.io.File;
@@ -8,7 +9,9 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EPackage;
 import org.eclipse.emf.ecore.EcorePackage;
@@ -28,9 +31,18 @@ public abstract class AbstractEMFImporter<E> {
   protected final ConceptsToEClassesMapping conceptsToEClassesMapping;
 
   public AbstractEMFImporter() {
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping();
+    this(LionWebVersion.currentVersion);
   }
 
+  public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping(lionWebVersion);
+  }
+
+  /**
+   * Not that in this case the LionWeb Version used will be "embedded" in the
+   * ConceptsToEClassesMapping instance.
+   */
   public AbstractEMFImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
     this.conceptsToEClassesMapping = conceptsToEClassesMapping;
   }

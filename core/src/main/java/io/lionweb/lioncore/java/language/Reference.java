@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.self.LionCore;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -32,6 +33,20 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createOptional(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier type,
+      @Nonnull String id) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Objects.requireNonNull(id, "id should not be null");
+    Reference reference = new Reference(lionWebVersion, name, id);
+    reference.setOptional(true);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
+
+  public static Reference createOptional(
       @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
@@ -41,7 +56,17 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createRequired(@Nullable String name, @Nullable Classifier type) {
+  public static Reference createRequired(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier<?> type) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Reference reference = new Reference(lionWebVersion, name);
+    reference.setOptional(false);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
+
+  public static Reference createRequired(@Nullable String name, @Nullable Classifier<?> type) {
     Reference reference = new Reference(name);
     reference.setOptional(false);
     reference.setMultiple(false);
@@ -50,7 +75,21 @@ public class Reference extends Link<Reference> {
   }
 
   public static Reference createRequired(
-      @Nullable String name, @Nullable Classifier type, @Nonnull String id) {
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier<?> type,
+      @Nonnull String id) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Objects.requireNonNull(id, "id should not be null");
+    Reference reference = new Reference(lionWebVersion, name, id);
+    reference.setOptional(false);
+    reference.setMultiple(false);
+    reference.setType(type);
+    return reference;
+  }
+
+  public static Reference createRequired(
+      @Nullable String name, @Nullable Classifier<?> type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Reference reference = new Reference(name, id);
     reference.setOptional(false);
@@ -59,8 +98,32 @@ public class Reference extends Link<Reference> {
     return reference;
   }
 
-  public static Reference createMultiple(@Nullable String name, @Nullable Classifier type) {
+  public static Reference createMultiple(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable Classifier<?> type) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Reference reference = new Reference(lionWebVersion, name);
+    reference.setOptional(true);
+    reference.setMultiple(true);
+    reference.setType(type);
+    return reference;
+  }
+
+  public static Reference createMultiple(@Nullable String name, @Nullable Classifier<?> type) {
     Reference reference = new Reference(name);
+    reference.setOptional(true);
+    reference.setMultiple(true);
+    reference.setType(type);
+    return reference;
+  }
+
+  public static Reference createMultiple(
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable String name,
+      @Nullable Classifier type,
+      @Nonnull String id) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Objects.requireNonNull(id, "id should not be null");
+    Reference reference = new Reference(lionWebVersion, name, id);
     reference.setOptional(true);
     reference.setMultiple(true);
     reference.setType(type);
@@ -90,13 +153,25 @@ public class Reference extends Link<Reference> {
     super();
   }
 
+  public Reference(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public Reference(@Nullable String name, @Nullable Classifier container) {
-    // TODO verify that the container is also a NamespaceProvider
     super(name, container);
+  }
+
+  public Reference(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, name, (Classifier) null);
   }
 
   public Reference(@Nullable String name) {
     super(name, (Classifier) null);
+  }
+
+  public Reference(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
+    super(lionWebVersion, name, id);
   }
 
   public Reference(@Nullable String name, @Nonnull String id) {
@@ -105,6 +180,6 @@ public class Reference extends Link<Reference> {
 
   @Override
   public Concept getClassifier() {
-    return LionCore.getReference();
+    return LionCore.getReference(getLionWebVersion());
   }
 }

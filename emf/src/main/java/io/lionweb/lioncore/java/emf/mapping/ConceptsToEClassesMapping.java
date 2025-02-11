@@ -1,12 +1,14 @@
 package io.lionweb.lioncore.java.emf.mapping;
 
 import io.lionweb.java.emf.builtins.BuiltinsPackage;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.EMFMetamodelExporter;
 import io.lionweb.lioncore.java.emf.EMFMetamodelImporter;
 import io.lionweb.lioncore.java.language.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
 import org.jetbrains.annotations.Nullable;
 
@@ -19,15 +21,24 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
+  private @Nonnull LionWebVersion lionWebVersion;
+
   /** Creates a mapping with pre-populated builtins. */
   public ConceptsToEClassesMapping() {
-    this(true);
+    this(LionWebVersion.currentVersion, true);
+  }
+
+  public ConceptsToEClassesMapping(@Nonnull LionWebVersion lionWebVersion) {
+    this(lionWebVersion, true);
   }
 
   /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
-  public ConceptsToEClassesMapping(boolean prePopulateBuiltins) {
+  public ConceptsToEClassesMapping(
+      @Nonnull LionWebVersion lionWebVersion, boolean prePopulateBuiltins) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
     if (prePopulateBuiltins) {
-      prePopulateBuiltins();
+      prePopulateBuiltins(lionWebVersion);
     }
   }
 
@@ -52,7 +63,7 @@ public class ConceptsToEClassesMapping {
 
   private void processMetamodel(Language language) {
     Objects.requireNonNull(language, "Language should not be null");
-    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(this);
+    EMFMetamodelExporter ecoreExporter = new EMFMetamodelExporter(lionWebVersion, this);
     EPackage ePackage = ecoreExporter.exportLanguage(language);
     ePackagesToLanguages.put(ePackage, language);
     languagesToEPackages.put(language, ePackage);
@@ -195,10 +206,18 @@ public class ConceptsToEClassesMapping {
     return null;
   }
 
-  public void prePopulateBuiltins() {
-    ePackagesToLanguages.put(BuiltinsPackage.eINSTANCE, LionCoreBuiltins.getInstance());
-    languagesToEPackages.put(LionCoreBuiltins.getInstance(), BuiltinsPackage.eINSTANCE);
-    registerMapping(LionCoreBuiltins.getNode(), EcorePackage.eINSTANCE.getEObject());
-    registerMapping(LionCoreBuiltins.getINamed(), BuiltinsPackage.eINSTANCE.getINamed());
+  public void prePopulateBuiltins(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    ePackagesToLanguages.put(
+        BuiltinsPackage.eINSTANCE, LionCoreBuiltins.getInstance(lionWebVersion));
+    languagesToEPackages.put(
+        LionCoreBuiltins.getInstance(lionWebVersion), BuiltinsPackage.eINSTANCE);
+    registerMapping(LionCoreBuiltins.getNode(lionWebVersion), EcorePackage.eINSTANCE.getEObject());
+    registerMapping(
+        LionCoreBuiltins.getINamed(lionWebVersion), BuiltinsPackage.eINSTANCE.getINamed());
+  }
+
+  public @Nonnull LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
   }
 }
