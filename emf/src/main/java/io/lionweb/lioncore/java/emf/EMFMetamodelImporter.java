@@ -8,8 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
-
-import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 
@@ -153,36 +151,40 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         EAttribute eAttribute = (EAttribute) eFeature;
         if (!eAttribute.isMany()) {
           Property property = new Property(eFeature.getName(), classifier);
-          setIDAndKey(property, ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(
+              property, ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           classifier.addFeature(property);
           property.setOptional(!eAttribute.isRequired());
           DataType<DataType> propertyType =
-                  dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
+              dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
           Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
           property.setType(propertyType);
         }
-        // The work-around for multiple EAttributes: introduce an intermediate containment with the upper bound > 1
+        // The work-around for multiple EAttributes: introduce an intermediate containment with the
+        // upper bound > 1
         else {
           String featureName =
-                  eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
-          Concept holderConcept = new Concept( featureName + "Container");
+              eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
+          Concept holderConcept = new Concept(featureName + "Container");
           setIDAndKey(holderConcept, ePackage.getName() + "-" + holderConcept.getName());
           holderConcept.setAbstract(false);
           classifier.getLanguage().addElement(holderConcept);
 
           Property property = new Property("content", holderConcept);
-          setIDAndKey(property,
-                  ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
+          setIDAndKey(
+              property,
+              ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
           holderConcept.addFeature(property);
           property.setOptional(false);
           DataType<DataType> propertyType =
-                  dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
+              dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
           Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
           property.setType(propertyType);
 
           Containment containment = new Containment(eFeature.getName(), classifier);
-          setIDAndKey(containment,
-                  ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(
+              containment,
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           classifier.addFeature(containment);
           containment.setOptional(!eAttribute.isRequired());
           containment.setMultiple(eAttribute.isMany());
@@ -192,16 +194,18 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         EReference eReference = (EReference) eFeature;
         if (eReference.isContainment()) {
           Containment containment = new Containment(eFeature.getName(), classifier);
-          setIDAndKey(containment,
-                  ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(
+              containment,
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           containment.setOptional(!eReference.isRequired());
           containment.setMultiple(eReference.isMany());
           classifier.addFeature(containment);
           containment.setType(convertEClassifierToClassifier(eReference.getEType()));
         } else {
           Reference reference = new Reference(eFeature.getName(), classifier);
-          setIDAndKey(reference,
-                  ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
+          setIDAndKey(
+              reference,
+              ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           reference.setOptional(!eReference.isRequired());
           reference.setMultiple(eReference.isMany());
           classifier.addFeature(reference);
