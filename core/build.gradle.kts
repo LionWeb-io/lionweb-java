@@ -41,7 +41,7 @@ dependencies {
     implementation(libs.lwjavacore)
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
-    implementation(libs.ktestjunit)
+    testImplementation(libs.ktestjunit)
 }
 
 val specsVersion: String by project
