@@ -9,5 +9,6 @@ public class UnresolvedClassifierInstanceException extends RuntimeException {
 
   public UnresolvedClassifierInstanceException(String instanceID) {
     super("Unable to resolve classifier instance with ID=" + instanceID);
+    this.instanceID = instanceID;
   }
 }
