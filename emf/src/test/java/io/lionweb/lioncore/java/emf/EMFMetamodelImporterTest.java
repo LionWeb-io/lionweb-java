@@ -25,7 +25,7 @@ public class EMFMetamodelImporterTest {
     Language language = languages.get(0);
     assertEquals("library", language.getName());
 
-    assertEquals(5, language.getElements().size());
+    assertEquals(6, language.getElements().size());
 
     Concept book = (Concept) language.getElementByName("Book");
     assertNull(book.getExtendedConcept());
@@ -57,19 +57,22 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, bookAuthor.isRequired());
     assertEquals(false, bookAuthor.isMultiple());
 
+    Concept namedElement = (Concept) language.getElementByName("NamedElement");
+    assertTrue(namedElement.isAbstract());
+
     Concept library = (Concept) language.getElementByName("Library");
-    assertNull(library.getExtendedConcept());
+    assertNotNull(library.getExtendedConcept());
     assertEquals(0, library.getImplemented().size());
     assertFalse(library.isAbstract());
     assertEquals("library.Library", library.qualifiedName());
-    assertEquals(2, library.getFeatures().size());
+    assertEquals(1, library.getFeatures().size());
     assertEquals(2, library.allFeatures().size());
 
     Property libraryName = (Property) library.getFeatureByName("name");
     assertEquals(LionCoreBuiltins.getString(), libraryName.getType());
-    assertSame(library, libraryName.getContainer());
-    assertEquals("library.Library.name", libraryName.qualifiedName());
-    assertEquals("library-Library-name", libraryName.getKey());
+    assertSame(library.getExtendedConcept(), libraryName.getContainer());
+    assertEquals("library.NamedElement.name", libraryName.qualifiedName());
+    assertEquals("library-NamedElement-name", libraryName.getKey());
     assertEquals(false, libraryName.isOptional());
     assertEquals(true, libraryName.isRequired());
 
@@ -82,17 +85,18 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, libraryBooks.isMultiple());
 
     Concept writer = (Concept) language.getElementByName("Writer");
-    assertNull(writer.getExtendedConcept());
+    assertNotNull(writer.getExtendedConcept());
+    assertSame(namedElement, writer.getExtendedConcept());
     assertEquals(0, writer.getImplemented().size());
     assertFalse(writer.isAbstract());
     assertEquals("library.Writer", writer.qualifiedName());
-    assertEquals(1, writer.getFeatures().size());
+    assertEquals(0, writer.getFeatures().size());
     assertEquals(1, writer.allFeatures().size());
 
     Property writerName = (Property) writer.getFeatureByName("name");
     assertEquals(LionCoreBuiltins.getString(), writerName.getType());
-    assertSame(writer, writerName.getContainer());
-    assertEquals("library.Writer.name", writerName.qualifiedName());
+    assertSame(writer.getExtendedConcept(), writerName.getContainer());
+    assertEquals("library.NamedElement.name", writerName.qualifiedName());
     assertEquals(false, writerName.isOptional());
     assertEquals(true, writerName.isRequired());
 
@@ -113,8 +117,8 @@ public class EMFMetamodelImporterTest {
 
     Property guideBookWriterName = (Property) guideBookWriter.getFeatureByName("name");
     assertEquals(LionCoreBuiltins.getString(), guideBookWriterName.getType());
-    assertSame(writer, guideBookWriterName.getContainer());
-    assertEquals("library.Writer.name", guideBookWriterName.qualifiedName());
+    assertSame(writer.getExtendedConcept(), guideBookWriterName.getContainer());
+    assertEquals("library.NamedElement.name", guideBookWriterName.qualifiedName());
     assertEquals(false, guideBookWriterName.isOptional());
     assertEquals(true, guideBookWriterName.isRequired());
 
@@ -137,8 +141,8 @@ public class EMFMetamodelImporterTest {
 
     Property specialistBookWriterName = (Property) specialistBookWriter.getFeatureByName("name");
     assertEquals(LionCoreBuiltins.getString(), specialistBookWriterName.getType());
-    assertSame(writer, specialistBookWriterName.getContainer());
-    assertEquals("library.Writer.name", specialistBookWriterName.qualifiedName());
+    assertSame(writer.getExtendedConcept(), specialistBookWriterName.getContainer());
+    assertEquals("library.NamedElement.name", specialistBookWriterName.qualifiedName());
     assertEquals(false, specialistBookWriterName.isOptional());
     assertEquals(true, specialistBookWriterName.isRequired());
   }
