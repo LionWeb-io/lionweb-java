@@ -73,7 +73,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
   }
 
   @Override
-  public ClassifierInstance getParent() {
+  public ClassifierInstance<?> getParent() {
     return annotated;
   }
 

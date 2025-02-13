@@ -126,7 +126,6 @@ public class LanguageValidator extends Validator<Language> {
               }
               if (el instanceof Annotation) {
                 checkAnnotates((Annotation) el, result);
-                checkAnnotationFeatures((Annotation) el, result);
               }
               if (el instanceof StructuredDataType) {
                 validateStructuralDataType(result, (StructuredDataType) el);
@@ -215,13 +214,6 @@ public class LanguageValidator extends Validator<Language> {
             && annotation.getAnnotates() != null
             && annotation.getAnnotates() != annotation.getExtendedAnnotation().getAnnotates(),
         "When a sub annotation specify a value for annotates it must be the same value the super annotation specifies",
-        annotation);
-  }
-
-  private void checkAnnotationFeatures(Annotation annotation, ValidationResult validationResult) {
-    validationResult.checkForError(
-        !annotation.allContainments().isEmpty(),
-        "An annotation should not have containment links",
         annotation);
   }
 
