@@ -8,6 +8,7 @@ import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Language
 import io.lionweb.lioncore.java.model.AnnotationInstance
+import io.lionweb.lioncore.java.model.ClassifierInstance
 import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
@@ -208,8 +209,8 @@ class LionWebClient(
         return result
     }
 
-    fun <T : Node> retrieveAncestor(
-        node: Node,
+    fun <T : ClassifierInstance<*>> retrieveAncestor(
+        node: ClassifierInstance<*>,
         ancestorClass: KClass<*>,
         retrievalMode: RetrievalMode = RetrievalMode.ENTIRE_SUBTREE,
     ): T? {
