@@ -7,5 +7,5 @@ import javax.annotation.Nullable;
  * node into a containment.
  */
 public interface HasSettableParent {
-  void setParent(@Nullable Node parent);
+  void setParent(@Nullable ClassifierInstance<?> parent);
 }

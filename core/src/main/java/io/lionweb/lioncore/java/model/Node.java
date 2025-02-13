@@ -51,7 +51,7 @@ public interface Node extends ClassifierInstance<Concept> {
   }
 
   @Override
-  Node getParent();
+  ClassifierInstance<?> getParent();
 
   /** The concept of which this Node is an instance. The Concept should not be abstract. */
   Concept getClassifier();

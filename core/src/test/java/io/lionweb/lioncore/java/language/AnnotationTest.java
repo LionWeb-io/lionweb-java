@@ -129,8 +129,8 @@ public class AnnotationTest extends BaseTest {
     assertNodeTreeIsValid(annotation);
     assertLanguageIsValid(language);
 
-    annotation.addFeature(Containment.createOptional("cont", myConcept, "cont"));
+    annotation.addFeature(Containment.createOptional("cont", myConcept, "cont", "cont-key"));
     assertNodeTreeIsValid(annotation);
-    assertLanguageIsNotValid(language);
+    assertLanguageIsValid(language);
   }
 }

@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import java.util.*;
@@ -15,7 +16,7 @@ import javax.annotation.Nullable;
  */
 public class DynamicNode extends DynamicClassifierInstance<Concept>
     implements Node, HasSettableParent {
-  private Node parent = null;
+  private ClassifierInstance<?> parent = null;
   private Concept concept = null;
 
   public DynamicNode(@Nonnull String id, @Nonnull Concept concept) {
@@ -33,7 +34,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public Node getParent() {
+  public ClassifierInstance<?> getParent() {
     return this.parent;
   }
 
@@ -57,7 +58,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public void setParent(Node parent) {
+  public void setParent(ClassifierInstance<?> parent) {
     this.parent = parent;
   }
 
@@ -71,8 +72,8 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
     }
     DynamicNode that = (DynamicNode) o;
     return Objects.equals(id, that.id)
-        && shallowNodeEquality(parent, that.parent)
-        && shallowNodeEquality(concept, that.concept)
+        && shallowClassifierInstanceEquality(parent, that.parent)
+        && shallowClassifierInstanceEquality(concept, that.concept)
         && Objects.equals(propertyValues, that.propertyValues)
         && shallowContainmentsEquality(containmentValues, that.containmentValues)
         && Objects.equals(referenceValues, that.referenceValues)
@@ -91,18 +92,23 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
               List<Node> nodes2 = containments2.get(containmentName);
               return nodes1.size() == nodes2.size()
                   && IntStream.range(0, nodes1.size())
-                      .allMatch(i -> shallowNodeEquality(nodes1.get(i), nodes2.get(i)));
+                      .allMatch(
+                          i -> shallowClassifierInstanceEquality(nodes1.get(i), nodes2.get(i)));
             });
   }
 
-  private static boolean shallowNodeEquality(@Nullable Node node1, @Nullable Node node2) {
-    if (node1 == null && node2 == null) {
+  private static boolean shallowClassifierInstanceEquality(
+      @Nullable ClassifierInstance<?> classifierInstance1,
+      @Nullable ClassifierInstance<?> classifierInstance2) {
+    if (classifierInstance1 == null && classifierInstance2 == null) {
       return true;
     }
-    if (node1 != null && node2 != null && node1.getID() != null) {
-      return Objects.equals(node1.getID(), node2.getID());
+    if (classifierInstance1 != null
+        && classifierInstance2 != null
+        && classifierInstance1.getID() != null) {
+      return Objects.equals(classifierInstance1.getID(), classifierInstance2.getID());
     }
-    return Objects.equals(node1, node2);
+    return Objects.equals(classifierInstance1, classifierInstance2);
   }
 
   @Override
