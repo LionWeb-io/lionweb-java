@@ -59,3 +59,10 @@ Import and export from and to EMF is a work in progress.
 ## lionweb-java-2024.1-* - Version 0.3.0
 
 Introducing support for LionWeb 2024.1
+
+### Version 0.3.2
+
+* Allow annotations to have children
+* Remove Partition and Experimental
+* EMF conversion: handle abstract flag
+* EMF conversion: handle attributes with high multiplicity
