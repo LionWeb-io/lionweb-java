@@ -2,7 +2,6 @@ package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
-import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
 import io.lionweb.lioncore.java.language.*;
 import java.util.List;
 import java.util.Objects;
@@ -14,22 +13,18 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 /** Export LionWeb's metamodels into EMF's metamodels. */
 public class EMFMetamodelExporter extends AbstractEMFExporter {
 
-  private DataTypeMapping dataTypeMapping;
-
   public EMFMetamodelExporter() {
     this(LionWebVersion.currentVersion);
   }
 
   public EMFMetamodelExporter(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
-    this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
   public EMFMetamodelExporter(
       @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
     super(conceptsToEClassesMapping);
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    this.dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
   /** This export all the languages received to a single Resource. */
@@ -91,7 +86,15 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 eEnum.setName(enumeration.getName());
 
                 ePackage.getEClassifiers().add(eEnum);
-                dataTypeMapping.registerMapping(eEnum, enumeration);
+                conceptsToEClassesMapping.registerMapping(enumeration, eEnum);
+              } else if (e instanceof PrimitiveType) {
+                PrimitiveType primitiveType = (PrimitiveType) e;
+
+                EDataType eDataType = EcoreFactory.eINSTANCE.createEDataType();
+                eDataType.setName(primitiveType.getName());
+
+                ePackage.getEClassifiers().add(eDataType);
+                conceptsToEClassesMapping.registerMapping(primitiveType, eDataType);
               } else {
                 throw new UnsupportedOperationException(
                     "Cannot handle " + e.getClass() + " yet. Instance: " + e.getName());
@@ -124,7 +127,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         eAttribute.setLowerBound(1);
       }
       eAttribute.setUpperBound(1);
-      eAttribute.setEType(dataTypeMapping.toEDataType(property.getType()));
+      eAttribute.setEType(conceptsToEClassesMapping.getCorrespondingEDataType(property.getType()));
       return eAttribute;
     } else if (feature instanceof Containment) {
       Containment containment = (Containment) feature;
@@ -193,7 +196,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
   }
 
   private void populateEEnumFromEnumerration(Enumeration enumeration) {
-    EEnum eEnum = dataTypeMapping.getEEnumForEnumeration(enumeration);
+    EEnum eEnum = conceptsToEClassesMapping.getCorrespondingEEnum(enumeration);
 
     enumeration
         .getLiterals()
