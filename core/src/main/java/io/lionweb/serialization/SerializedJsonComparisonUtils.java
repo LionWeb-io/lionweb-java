@@ -26,8 +26,36 @@ public class SerializedJsonComparisonUtils {
         "serializationFormatVersion",
         expected.get("serializationFormatVersion"),
         actual.get("serializationFormatVersion"));
+    JsonArray expectedLanguages = expected.get("languages").getAsJsonArray();
+    JsonArray actualLanguages = actual.get("languages").getAsJsonArray();
+    assertEquivalentLionWebJsonLanguages(expectedLanguages, actualLanguages);
     assertEquivalentLionWebJsonNodes(
         expected.getAsJsonArray("nodes"), actual.getAsJsonArray("nodes"));
+  }
+
+  private static void assertEquivalentLionWebJsonLanguages(JsonArray expected, JsonArray actual) {
+    if (expected.size() != actual.size()) {
+      fail(
+          "Expected "
+              + expected.size()
+              + " languages, but found "
+              + actual.size()
+              + ". Actual languages: "
+              + actual);
+    }
+    Map<String, String> expectedVersions = new HashMap<>();
+    Map<String, String> actualVersions = new HashMap<>();
+    expected.forEach(
+        el -> {
+          JsonObject jo = el.getAsJsonObject();
+          expectedVersions.put(jo.get("key").getAsString(), jo.get("version").getAsString());
+        });
+    actual.forEach(
+        el -> {
+          JsonObject jo = el.getAsJsonObject();
+          actualVersions.put(jo.get("key").getAsString(), jo.get("version").getAsString());
+        });
+    assertEquals("Used languages do not match", expectedVersions, actualVersions);
   }
 
   private static void assertEquivalentLionWebJsonNodes(JsonArray expected, JsonArray actual) {
