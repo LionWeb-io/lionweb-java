@@ -26,7 +26,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2024.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -83,7 +83,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2024.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -147,7 +147,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2024.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -205,7 +205,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2024.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -268,7 +268,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2024.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -326,7 +326,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2024.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -393,7 +393,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2023.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2023.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
@@ -463,7 +463,7 @@ public class SerializationOfPrimitiveValuesTest extends SerializationTest {
         JsonParser.parseString(
                 "{\n"
                     + "  \"serializationFormatVersion\": \"2023.1\",\n"
-                    + "  \"languages\": [],\n"
+                    + "  \"languages\": [{\"key\":\"mylanguage\",\"version\":\"1\"},{\"key\":\"LionCore-builtins\",\"version\":\"2024.1\"}],\n"
                     + "  \"nodes\": [\n"
                     + "    {\n"
                     + "      \"id\": \"n1\",\n"
