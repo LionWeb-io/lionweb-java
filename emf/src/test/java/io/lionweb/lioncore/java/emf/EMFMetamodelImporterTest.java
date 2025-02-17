@@ -24,12 +24,15 @@ import org.junit.Test;
 
 public class EMFMetamodelImporterTest {
 
+  private EMFResourceLoader emfResourceLoader = new EMFResourceLoader();
+
   @Test
   public void importLibraryExample() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Language> languages = importer.importInputStream(is);
+    Resource resource = emfResourceLoader.importInputStream(is);
+    List<Language> languages = importer.importResource(resource);
     assertEquals(1, languages.size());
 
     Language language = languages.get(0);
@@ -244,7 +247,8 @@ public class EMFMetamodelImporterTest {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Language> languages = importer.importInputStream(is, ResourceType.JSON);
+    Resource resource = emfResourceLoader.importInputStream(is, ResourceType.JSON);
+    List<Language> languages = importer.importResource(resource);
     assertEquals(2, languages.size());
 
     Concept point = languages.get(0).getConceptByName("Point");
@@ -275,7 +279,8 @@ public class EMFMetamodelImporterTest {
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
     importer.importEPackage(EcorePackage.eINSTANCE);
 
-    List<Language> languages = importer.importInputStream(is);
+    Resource resource = emfResourceLoader.importInputStream(is);
+    List<Language> languages = importer.importResource(resource);
     assertEquals(1, languages.size());
 
     Language occiLanguage = languages.get(0);
