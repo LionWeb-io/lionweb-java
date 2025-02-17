@@ -87,6 +87,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
             if (supertype.isInterface()) {
               Interface superInterface =
                   conceptsToEClassesMapping.getCorrespondingInterface(supertype);
+              addLanguageDependency(metamodel, superInterface);
               iface.addExtendedInterface(superInterface);
             } else {
               throw new UnsupportedOperationException();
@@ -102,12 +103,14 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
             if (supertype.isInterface()) {
               Interface superInterface =
                   conceptsToEClassesMapping.getCorrespondingInterface(supertype);
+              addLanguageDependency(metamodel, superInterface);
               concept.addImplementedInterface(superInterface);
             } else {
               Concept superConcept = conceptsToEClassesMapping.getCorrespondingConcept(supertype);
               if (concept.getExtendedConcept() != null) {
                 throw new IllegalStateException("Cannot set more than one extended concept");
               }
+              addLanguageDependency(metamodel, superConcept);
               concept.setExtendedConcept(superConcept);
             }
           }
@@ -131,6 +134,15 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     return metamodel;
   }
 
+  private void addLanguageDependency(Language metamodel, LanguageEntity langEntity) {
+    // We should use lionweb version to instantiate proper builtins version here
+    if(langEntity.getLanguage().getKey() != LionCoreBuiltins.getInstance().getKey() &&
+            langEntity.getLanguage() != metamodel &&
+            !metamodel.dependsOn().contains(langEntity.getLanguage())) {
+      metamodel.addDependency(langEntity.getLanguage());
+    }
+  }
+
   private Classifier convertEClassifierToClassifier(EClassifier eClassifier) {
     if (conceptsToEClassesMapping.knows(eClassifier)) {
       return conceptsToEClassesMapping.getCorrespondingClassifier(eClassifier);
@@ -148,6 +160,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         DataType<DataType> propertyType =
                 conceptsToEClassesMapping.getCorrespondingDataType(eAttribute.getEAttributeType());
         Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
+        addLanguageDependency(classifier.getLanguage(), propertyType);
 
         if (!eAttribute.isMany()) {
           Property property = new Property(eFeature.getName(), classifier);

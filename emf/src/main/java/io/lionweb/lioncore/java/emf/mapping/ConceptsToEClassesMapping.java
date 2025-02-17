@@ -158,7 +158,7 @@ public class ConceptsToEClassesMapping {
     }
     if (!eEnumsToEnumerations.containsKey(eEnum)) {
       throw new IllegalStateException(
-              "Cannot find corresponding Interface for EClass " + eEnum.getName());
+              "Cannot find corresponding Enumeration for EEnum " + eEnum.getName());
     }
     return eEnumsToEnumerations.get(eEnum);
   }

@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- as found https://wiki.eclipse.org/Example_library_EMF_model -->
-  <ecore:EPackage xmi:version="2.0"
-    xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="library"
-    nsURI="http://www.eclipse.org/emf/jcrm/samples/emf/sample/Library" nsPrefix="library">
+<ecore:EPackage xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:ecore="http://www.eclipse.org/emf/2002/Ecore" name="library" nsURI="http://www.eclipse.org/emf/jcrm/samples/emf/sample/Library"
+    nsPrefix="library">
   <eClassifiers xsi:type="ecore:EClass" name="Book">
     <eAnnotations source="http:///org/eclipse/emf/ecore/util/ExtendedMetaData">
       <details key="name" value="Book"/>
