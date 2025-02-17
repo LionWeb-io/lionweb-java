@@ -1,9 +1,7 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.HasSettableParent;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -76,8 +74,31 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
         && shallowClassifierInstanceEquality(concept, that.concept)
         && Objects.equals(propertyValues, that.propertyValues)
         && shallowContainmentsEquality(containmentValues, that.containmentValues)
-        && Objects.equals(referenceValues, that.referenceValues)
-        && Objects.equals(annotations, that.annotations);
+        && shallowReferenceEquality(referenceValues, that.referenceValues)
+        && shallowAnnotationsEquality(annotations, that.annotations);
+  }
+
+  private static boolean shallowReferenceEquality(
+      Map<String, List<ReferenceValue>> reference1, Map<String, List<ReferenceValue>> reference2) {
+    if (!reference1.keySet().equals(reference2.keySet())) {
+      return false;
+    }
+    return reference1.keySet().stream()
+        .allMatch(
+            referenceName -> {
+              List<ReferenceValue> references1 = reference1.get(referenceName);
+              List<ReferenceValue> references2 = reference2.get(referenceName);
+              return references1.size() == references2.size()
+                  && IntStream.range(0, references1.size())
+                      .allMatch(
+                          i ->
+                              Objects.equals(
+                                      references1.get(i).getResolveInfo(),
+                                      references2.get(i).getResolveInfo())
+                                  && Objects.equals(
+                                      references1.get(i).getReferredID(),
+                                      references2.get(i).getReferredID()));
+            });
   }
 
   private static boolean shallowContainmentsEquality(
@@ -109,6 +130,14 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
       return Objects.equals(classifierInstance1.getID(), classifierInstance2.getID());
     }
     return Objects.equals(classifierInstance1, classifierInstance2);
+  }
+
+  private static boolean shallowAnnotationsEquality(
+      List<AnnotationInstance> annotations1, List<AnnotationInstance> annotations2) {
+    return annotations1.size() == annotations2.size()
+        && IntStream.range(0, annotations1.size())
+            .allMatch(
+                i -> shallowClassifierInstanceEquality(annotations1.get(i), annotations2.get(i)));
   }
 
   @Override
