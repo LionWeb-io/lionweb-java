@@ -1,7 +1,11 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.*;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.HasSettableParent;
+import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.ReferenceValue;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
