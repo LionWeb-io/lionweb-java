@@ -147,16 +147,16 @@ public class LanguageEntitiesToEElementsMapping {
     if (!eEnumsToEnumerations.containsKey(eEnum)) {
       if (ePackagesToLanguages.containsKey(eEnum.getEPackage())) {
         throw new IllegalStateException(
-                "Cannot find corresponding Enumeration for EEnum "
-                        + eEnum.getName()
-                        + " in EPackage "
-                        + eEnum.getEPackage().getName());
+            "Cannot find corresponding Enumeration for EEnum "
+                + eEnum.getName()
+                + " in EPackage "
+                + eEnum.getEPackage().getName());
       }
       processEPackage(eEnum.getEPackage());
     }
     if (!eEnumsToEnumerations.containsKey(eEnum)) {
       throw new IllegalStateException(
-              "Cannot find corresponding Enumeration for EEnum " + eEnum.getName());
+          "Cannot find corresponding Enumeration for EEnum " + eEnum.getName());
     }
     return eEnumsToEnumerations.get(eEnum);
   }
@@ -165,16 +165,16 @@ public class LanguageEntitiesToEElementsMapping {
     if (!enumerationsToEEnums.containsKey(enumeration)) {
       if (languagesToEPackages.containsKey(enumeration.getLanguage())) {
         throw new IllegalStateException(
-                "Cannot find corresponding EEnum for Enumeration "
-                        + enumeration.getName()
-                        + " in Language "
-                        + enumeration.getLanguage().getName());
+            "Cannot find corresponding EEnum for Enumeration "
+                + enumeration.getName()
+                + " in Language "
+                + enumeration.getLanguage().getName());
       }
       processMetamodel(enumeration.getLanguage());
     }
     if (!enumerationsToEEnums.containsKey(enumeration)) {
       throw new IllegalStateException(
-              "Cannot find corresponding EEnum for Enumeration " + enumeration.getName());
+          "Cannot find corresponding EEnum for Enumeration " + enumeration.getName());
     }
     return enumerationsToEEnums.get(enumeration);
   }
@@ -183,19 +183,19 @@ public class LanguageEntitiesToEElementsMapping {
     if (dataType instanceof Enumeration) {
       return getCorrespondingEEnum((Enumeration) dataType);
     }
-    if(!primitiveTypesToEDataTypes.containsKey(dataType)) {
+    if (!primitiveTypesToEDataTypes.containsKey(dataType)) {
       if (languagesToEPackages.containsKey(dataType.getLanguage())) {
         throw new IllegalStateException(
-                "Cannot find corresponding EDataType for DataType "
-                        + dataType.getName()
-                        + " in Language "
-                        + dataType.getLanguage().getName());
+            "Cannot find corresponding EDataType for DataType "
+                + dataType.getName()
+                + " in Language "
+                + dataType.getLanguage().getName());
       }
       processMetamodel(dataType.getLanguage());
     }
-    if(!primitiveTypesToEDataTypes.containsKey(dataType)) {
+    if (!primitiveTypesToEDataTypes.containsKey(dataType)) {
       throw new IllegalStateException(
-              "Cannot find corresponding EDataType for DataType " + dataType.getName());
+          "Cannot find corresponding EDataType for DataType " + dataType.getName());
     }
     return primitiveTypesToEDataTypes.get(dataType);
   }
@@ -204,19 +204,19 @@ public class LanguageEntitiesToEElementsMapping {
     if (eDataType instanceof EEnum) {
       return getCorrespondingEnumeration((EEnum) eDataType);
     }
-    if(!eDataTypesToPrimitiveTypes.containsKey(eDataType)) {
+    if (!eDataTypesToPrimitiveTypes.containsKey(eDataType)) {
       if (ePackagesToLanguages.containsKey(eDataType.getEPackage())) {
         throw new IllegalStateException(
-                "Cannot find corresponding PrimitiveType for EDataType "
-                        + eDataType.getName()
-                        + " in EPackage "
-                        + eDataType.getEPackage().getName());
+            "Cannot find corresponding PrimitiveType for EDataType "
+                + eDataType.getName()
+                + " in EPackage "
+                + eDataType.getEPackage().getName());
       }
       processEPackage(eDataType.getEPackage());
     }
-    if(!eDataTypesToPrimitiveTypes.containsKey(eDataType)) {
+    if (!eDataTypesToPrimitiveTypes.containsKey(eDataType)) {
       throw new IllegalStateException(
-              "Cannot find corresponding PrimitiveType for EDataType " + eDataType.getName());
+          "Cannot find corresponding PrimitiveType for EDataType " + eDataType.getName());
     }
     return eDataTypesToPrimitiveTypes.get(eDataType);
   }
@@ -306,18 +306,21 @@ public class LanguageEntitiesToEElementsMapping {
         BuiltinsPackage.eINSTANCE, LionCoreBuiltins.getInstance(lionWebVersion));
     languagesToEPackages.put(
         LionCoreBuiltins.getInstance(lionWebVersion), BuiltinsPackage.eINSTANCE);
-    registerMapping(
-            LionCoreBuiltins.getNode(lionWebVersion), EcorePackage.eINSTANCE.getEObject());
+    registerMapping(LionCoreBuiltins.getNode(lionWebVersion), EcorePackage.eINSTANCE.getEObject());
     registerMapping(
         LionCoreBuiltins.getINamed(lionWebVersion), BuiltinsPackage.eINSTANCE.getINamed());
-    registerMapping(LionCoreBuiltins.getBoolean(lionWebVersion), EcorePackage.eINSTANCE.getEBoolean());
+    registerMapping(
+        LionCoreBuiltins.getBoolean(lionWebVersion), EcorePackage.eINSTANCE.getEBoolean());
     registerMapping(LionCoreBuiltins.getInteger(lionWebVersion), EcorePackage.eINSTANCE.getEInt());
-    registerMapping(LionCoreBuiltins.getString(lionWebVersion), EcorePackage.eINSTANCE.getEString());
+    registerMapping(
+        LionCoreBuiltins.getString(lionWebVersion), EcorePackage.eINSTANCE.getEString());
 
     // Also add type literals from XMLTypePackageImpl
-    eDataTypesToPrimitiveTypes.put(XMLTypePackageImpl.Literals.STRING, LionCoreBuiltins.getString());
+    eDataTypesToPrimitiveTypes.put(
+        XMLTypePackageImpl.Literals.STRING, LionCoreBuiltins.getString());
     eDataTypesToPrimitiveTypes.put(XMLTypePackageImpl.Literals.INT, LionCoreBuiltins.getInteger());
-    eDataTypesToPrimitiveTypes.put(XMLTypePackageImpl.Literals.BOOLEAN, LionCoreBuiltins.getBoolean());
+    eDataTypesToPrimitiveTypes.put(
+        XMLTypePackageImpl.Literals.BOOLEAN, LionCoreBuiltins.getBoolean());
   }
 
   public @Nonnull LionWebVersion getLionWebVersion() {

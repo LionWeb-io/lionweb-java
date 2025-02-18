@@ -42,7 +42,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
 
   /** This export the root received to a single EObject tree. */
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
-    EClass eClass = (EClass) entitiesToEElementsMapping.getCorrespondingEClass(root.getClassifier());
+    EClass eClass =
+        (EClass) entitiesToEElementsMapping.getCorrespondingEClass(root.getClassifier());
     if (eClass == null) {
       throw new IllegalStateException(
           "Cannot find EClass corresponding to "

@@ -47,7 +47,8 @@ public class EMFModelImporterTest {
 
     importer.getNodeInstantiator().enableDynamicNodes();
 
-    Resource resource = emfResourceLoader.importInputStream(
+    Resource resource =
+        emfResourceLoader.importInputStream(
             is,
             ResourceType.JSON,
             (Consumer<EPackage.Registry>)

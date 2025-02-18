@@ -21,8 +21,9 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     super(lionWebVersion);
   }
 
-  public EMFMetamodelExporter(@Nonnull LionWebVersion lionWebVersion,
-                              LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+  public EMFMetamodelExporter(
+      @Nonnull LionWebVersion lionWebVersion,
+      LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
     super(entitiesToEElementsMapping);
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
   }

@@ -2,20 +2,14 @@ package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.*;
 
-import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Enumeration;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
-
-import io.lionweb.lioncore.java.language.Enumeration;
 import org.eclipse.emf.common.util.URI;
-import org.eclipse.emf.ecore.EPackage;
-import org.eclipse.emf.ecore.EcoreFactory;
 import org.eclipse.emf.ecore.EcorePackage;
-import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -156,11 +150,10 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, specialistBookWriterName.isRequired());
   }
 
-
   @Test
   public void importExtendedLibraryExample() throws IOException {
     Map<String, Object> extensionsToFactoryMap =
-            Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
 
     ResourceSet resourceSet = new ResourceSetImpl();
@@ -240,7 +233,6 @@ public class EMFMetamodelImporterTest {
     assertEquals(false, countriesAttribute.isOptional());
     assertEquals(true, countriesAttribute.isRequired());
   }
-
 
   @Test
   public void importKotlinLangExample() throws IOException {

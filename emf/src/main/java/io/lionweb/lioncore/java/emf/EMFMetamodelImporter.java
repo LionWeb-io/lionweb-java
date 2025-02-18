@@ -136,9 +136,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
 
   private void addLanguageDependency(Language metamodel, LanguageEntity langEntity) {
     // We should use lionweb version to instantiate proper builtins version here
-    if(langEntity.getLanguage().getKey() != LionCoreBuiltins.getInstance().getKey() &&
-            langEntity.getLanguage() != metamodel &&
-            !metamodel.dependsOn().contains(langEntity.getLanguage())) {
+    if (langEntity.getLanguage().getKey() != LionCoreBuiltins.getInstance().getKey()
+        && langEntity.getLanguage() != metamodel
+        && !metamodel.dependsOn().contains(langEntity.getLanguage())) {
       metamodel.addDependency(langEntity.getLanguage());
     }
   }
@@ -158,7 +158,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
         DataType<DataType> propertyType =
-                entitiesToEElementsMapping.getCorrespondingDataType(eAttribute.getEAttributeType());
+            entitiesToEElementsMapping.getCorrespondingDataType(eAttribute.getEAttributeType());
         Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
         addLanguageDependency(classifier.getLanguage(), propertyType);
 
