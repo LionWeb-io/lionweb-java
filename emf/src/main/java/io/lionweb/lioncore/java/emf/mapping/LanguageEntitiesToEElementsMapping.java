@@ -10,12 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
-import org.eclipse.emf.ecore.xml.type.XMLTypePackage;
 import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
 import org.jetbrains.annotations.Nullable;
-import sun.jvm.hotspot.HelloWorld;
 
-public class ConceptsToEClassesMapping {
+public class LanguageEntitiesToEElementsMapping {
 
   private final Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
   private final Map<Language, EPackage> languagesToEPackages = new HashMap<>();
@@ -32,16 +30,16 @@ public class ConceptsToEClassesMapping {
   private @Nonnull LionWebVersion lionWebVersion;
 
   /** Creates a mapping with pre-populated builtins. */
-  public ConceptsToEClassesMapping() {
+  public LanguageEntitiesToEElementsMapping() {
     this(LionWebVersion.currentVersion, true);
   }
 
-  public ConceptsToEClassesMapping(@Nonnull LionWebVersion lionWebVersion) {
+  public LanguageEntitiesToEElementsMapping(@Nonnull LionWebVersion lionWebVersion) {
     this(lionWebVersion, true);
   }
 
   /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
-  public ConceptsToEClassesMapping(
+  public LanguageEntitiesToEElementsMapping(
       @Nonnull LionWebVersion lionWebVersion, boolean prePopulateBuiltins) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;

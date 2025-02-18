@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.emf.mapping.LanguageEntitiesToEElementsMapping;
 import io.lionweb.lioncore.java.language.Reference;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
@@ -23,8 +23,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
     super(lionWebVersion);
   }
 
-  public EMFModelExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    super(conceptsToEClassesMapping);
+  public EMFModelExporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+    super(entitiesToEElementsMapping);
   }
 
   public Resource exportResource(List<Node> roots) {
@@ -42,7 +42,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
 
   /** This export the root received to a single EObject tree. */
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
-    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(root.getClassifier());
+    EClass eClass = (EClass) entitiesToEElementsMapping.getCorrespondingEClass(root.getClassifier());
     if (eClass == null) {
       throw new IllegalStateException(
           "Cannot find EClass corresponding to "

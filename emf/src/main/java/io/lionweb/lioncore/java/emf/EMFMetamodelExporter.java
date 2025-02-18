@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.emf.mapping.LanguageEntitiesToEElementsMapping;
 import io.lionweb.lioncore.java.language.*;
 import java.util.List;
 import java.util.Objects;
@@ -21,9 +21,9 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     super(lionWebVersion);
   }
 
-  public EMFMetamodelExporter(
-      @Nonnull LionWebVersion lionWebVersion, ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    super(conceptsToEClassesMapping);
+  public EMFMetamodelExporter(@Nonnull LionWebVersion lionWebVersion,
+                              LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+    super(entitiesToEElementsMapping);
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
   }
 
@@ -69,7 +69,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 eClass.setAbstract(concept.isAbstract());
 
                 ePackage.getEClassifiers().add(eClass);
-                conceptsToEClassesMapping.registerMapping(concept, eClass);
+                entitiesToEElementsMapping.registerMapping(concept, eClass);
               } else if (e instanceof Interface) {
                 Interface iface = (Interface) e;
 
@@ -78,7 +78,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 eClass.setInterface(true);
 
                 ePackage.getEClassifiers().add(eClass);
-                conceptsToEClassesMapping.registerMapping(iface, eClass);
+                entitiesToEElementsMapping.registerMapping(iface, eClass);
               } else if (e instanceof Enumeration) {
                 Enumeration enumeration = (Enumeration) e;
 
@@ -86,7 +86,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 eEnum.setName(enumeration.getName());
 
                 ePackage.getEClassifiers().add(eEnum);
-                conceptsToEClassesMapping.registerMapping(enumeration, eEnum);
+                entitiesToEElementsMapping.registerMapping(enumeration, eEnum);
               } else if (e instanceof PrimitiveType) {
                 PrimitiveType primitiveType = (PrimitiveType) e;
 
@@ -94,7 +94,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 eDataType.setName(primitiveType.getName());
 
                 ePackage.getEClassifiers().add(eDataType);
-                conceptsToEClassesMapping.registerMapping(primitiveType, eDataType);
+                entitiesToEElementsMapping.registerMapping(primitiveType, eDataType);
               } else {
                 throw new UnsupportedOperationException(
                     "Cannot handle " + e.getClass() + " yet. Instance: " + e.getName());
@@ -127,7 +127,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         eAttribute.setLowerBound(1);
       }
       eAttribute.setUpperBound(1);
-      eAttribute.setEType(conceptsToEClassesMapping.getCorrespondingEDataType(property.getType()));
+      eAttribute.setEType(entitiesToEElementsMapping.getCorrespondingEDataType(property.getType()));
       return eAttribute;
     } else if (feature instanceof Containment) {
       Containment containment = (Containment) feature;
@@ -136,7 +136,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
       eReference.setName(containment.getName());
       eReference.setContainment(true);
       considerLinkMultiplicity(containment, eReference);
-      eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(containment.getType()));
+      eReference.setEType(entitiesToEElementsMapping.getCorrespondingEClass(containment.getType()));
 
       return eReference;
     } else if (feature instanceof Reference) {
@@ -146,7 +146,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
       eReference.setName(reference.getName());
       eReference.setContainment(false);
       considerLinkMultiplicity(reference, eReference);
-      eReference.setEType(conceptsToEClassesMapping.getCorrespondingEClass(reference.getType()));
+      eReference.setEType(entitiesToEElementsMapping.getCorrespondingEClass(reference.getType()));
 
       return eReference;
     } else {
@@ -156,11 +156,11 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
   }
 
   private void populateEClassFromConcept(Concept concept) {
-    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept);
+    EClass eClass = (EClass) entitiesToEElementsMapping.getCorrespondingEClass(concept);
 
     if (concept.getExtendedConcept() != null) {
       EClass superEClass =
-          (EClass) conceptsToEClassesMapping.getCorrespondingEClass(concept.getExtendedConcept());
+          (EClass) entitiesToEElementsMapping.getCorrespondingEClass(concept.getExtendedConcept());
       eClass.getESuperTypes().add(superEClass);
     } else {
       // The fact that EObject is extended should always be specified
@@ -171,7 +171,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         .forEach(
             implemented -> {
               EClass implementedEClass =
-                  (EClass) conceptsToEClassesMapping.getCorrespondingEClass(implemented);
+                  (EClass) entitiesToEElementsMapping.getCorrespondingEClass(implemented);
               eClass.getESuperTypes().add(implementedEClass);
             });
 
@@ -181,7 +181,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
   }
 
   private void populateEClassFromInterface(Interface iface) {
-    EClass eClass = (EClass) conceptsToEClassesMapping.getCorrespondingEClass(iface);
+    EClass eClass = (EClass) entitiesToEElementsMapping.getCorrespondingEClass(iface);
 
     iface
         .getExtendedInterfaces()
@@ -196,7 +196,7 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
   }
 
   private void populateEEnumFromEnumerration(Enumeration enumeration) {
-    EEnum eEnum = conceptsToEClassesMapping.getCorrespondingEEnum(enumeration);
+    EEnum eEnum = entitiesToEElementsMapping.getCorrespondingEEnum(enumeration);
 
     enumeration
         .getLiterals()

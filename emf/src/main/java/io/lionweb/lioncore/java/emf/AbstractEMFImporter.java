@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.emf.mapping.LanguageEntitiesToEElementsMapping;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
@@ -14,7 +14,7 @@ import org.eclipse.emf.ecore.resource.Resource;
  */
 public abstract class AbstractEMFImporter<E> {
 
-  protected final ConceptsToEClassesMapping conceptsToEClassesMapping;
+  protected final LanguageEntitiesToEElementsMapping entitiesToEElementsMapping;
 
   public AbstractEMFImporter() {
     this(LionWebVersion.currentVersion);
@@ -22,15 +22,15 @@ public abstract class AbstractEMFImporter<E> {
 
   public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping(lionWebVersion);
+    this.entitiesToEElementsMapping = new LanguageEntitiesToEElementsMapping(lionWebVersion);
   }
 
   /**
    * Not that in this case the LionWeb Version used will be "embedded" in the
    * ConceptsToEClassesMapping instance.
    */
-  public AbstractEMFImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+  public AbstractEMFImporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+    this.entitiesToEElementsMapping = entitiesToEElementsMapping;
   }
 
   public abstract List<E> importResource(Resource resource);
