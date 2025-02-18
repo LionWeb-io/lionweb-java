@@ -10,9 +10,10 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
 import org.jetbrains.annotations.Nullable;
 
-public class ConceptsToEClassesMapping {
+public class LanguageEntitiesToEElementsMapping {
 
   private final Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
   private final Map<Language, EPackage> languagesToEPackages = new HashMap<>();
@@ -21,19 +22,24 @@ public class ConceptsToEClassesMapping {
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
 
+  private final Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
+  private final Map<Enumeration, EEnum> enumerationsToEEnums = new HashMap<>();
+  private final Map<EDataType, PrimitiveType> eDataTypesToPrimitiveTypes = new HashMap<>();
+  private final Map<PrimitiveType, EDataType> primitiveTypesToEDataTypes = new HashMap<>();
+
   private @Nonnull LionWebVersion lionWebVersion;
 
   /** Creates a mapping with pre-populated builtins. */
-  public ConceptsToEClassesMapping() {
+  public LanguageEntitiesToEElementsMapping() {
     this(LionWebVersion.currentVersion, true);
   }
 
-  public ConceptsToEClassesMapping(@Nonnull LionWebVersion lionWebVersion) {
+  public LanguageEntitiesToEElementsMapping(@Nonnull LionWebVersion lionWebVersion) {
     this(lionWebVersion, true);
   }
 
   /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
-  public ConceptsToEClassesMapping(
+  public LanguageEntitiesToEElementsMapping(
       @Nonnull LionWebVersion lionWebVersion, boolean prePopulateBuiltins) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
@@ -137,6 +143,84 @@ public class ConceptsToEClassesMapping {
     }
   }
 
+  public Enumeration getCorrespondingEnumeration(EEnum eEnum) {
+    if (!eEnumsToEnumerations.containsKey(eEnum)) {
+      if (ePackagesToLanguages.containsKey(eEnum.getEPackage())) {
+        throw new IllegalStateException(
+            "Cannot find corresponding Enumeration for EEnum "
+                + eEnum.getName()
+                + " in EPackage "
+                + eEnum.getEPackage().getName());
+      }
+      processEPackage(eEnum.getEPackage());
+    }
+    if (!eEnumsToEnumerations.containsKey(eEnum)) {
+      throw new IllegalStateException(
+          "Cannot find corresponding Enumeration for EEnum " + eEnum.getName());
+    }
+    return eEnumsToEnumerations.get(eEnum);
+  }
+
+  public EEnum getCorrespondingEEnum(Enumeration enumeration) {
+    if (!enumerationsToEEnums.containsKey(enumeration)) {
+      if (languagesToEPackages.containsKey(enumeration.getLanguage())) {
+        throw new IllegalStateException(
+            "Cannot find corresponding EEnum for Enumeration "
+                + enumeration.getName()
+                + " in Language "
+                + enumeration.getLanguage().getName());
+      }
+      processMetamodel(enumeration.getLanguage());
+    }
+    if (!enumerationsToEEnums.containsKey(enumeration)) {
+      throw new IllegalStateException(
+          "Cannot find corresponding EEnum for Enumeration " + enumeration.getName());
+    }
+    return enumerationsToEEnums.get(enumeration);
+  }
+
+  public EDataType getCorrespondingEDataType(DataType dataType) {
+    if (dataType instanceof Enumeration) {
+      return getCorrespondingEEnum((Enumeration) dataType);
+    }
+    if (!primitiveTypesToEDataTypes.containsKey(dataType)) {
+      if (languagesToEPackages.containsKey(dataType.getLanguage())) {
+        throw new IllegalStateException(
+            "Cannot find corresponding EDataType for DataType "
+                + dataType.getName()
+                + " in Language "
+                + dataType.getLanguage().getName());
+      }
+      processMetamodel(dataType.getLanguage());
+    }
+    if (!primitiveTypesToEDataTypes.containsKey(dataType)) {
+      throw new IllegalStateException(
+          "Cannot find corresponding EDataType for DataType " + dataType.getName());
+    }
+    return primitiveTypesToEDataTypes.get(dataType);
+  }
+
+  public DataType getCorrespondingDataType(EDataType eDataType) {
+    if (eDataType instanceof EEnum) {
+      return getCorrespondingEnumeration((EEnum) eDataType);
+    }
+    if (!eDataTypesToPrimitiveTypes.containsKey(eDataType)) {
+      if (ePackagesToLanguages.containsKey(eDataType.getEPackage())) {
+        throw new IllegalStateException(
+            "Cannot find corresponding PrimitiveType for EDataType "
+                + eDataType.getName()
+                + " in EPackage "
+                + eDataType.getEPackage().getName());
+      }
+      processEPackage(eDataType.getEPackage());
+    }
+    if (!eDataTypesToPrimitiveTypes.containsKey(eDataType)) {
+      throw new IllegalStateException(
+          "Cannot find corresponding PrimitiveType for EDataType " + eDataType.getName());
+    }
+    return eDataTypesToPrimitiveTypes.get(eDataType);
+  }
+
   public void registerMapping(Concept concept, EClass eClass) {
     eClassesToConcepts.put(eClass, concept);
     conceptsToEClasses.put(concept, eClass);
@@ -145,6 +229,16 @@ public class ConceptsToEClassesMapping {
   public void registerMapping(Interface iface, EClass eClass) {
     eClassesToInterfaces.put(eClass, iface);
     interfacesToEClasses.put(iface, eClass);
+  }
+
+  public void registerMapping(Enumeration enumeration, EEnum eEnum) {
+    eEnumsToEnumerations.put(eEnum, enumeration);
+    enumerationsToEEnums.put(enumeration, eEnum);
+  }
+
+  public void registerMapping(PrimitiveType primitiveType, EDataType eDataType) {
+    eDataTypesToPrimitiveTypes.put(eDataType, primitiveType);
+    primitiveTypesToEDataTypes.put(primitiveType, eDataType);
   }
 
   public void registerMapping(Language language, EPackage ePackage) {
@@ -215,6 +309,18 @@ public class ConceptsToEClassesMapping {
     registerMapping(LionCoreBuiltins.getNode(lionWebVersion), EcorePackage.eINSTANCE.getEObject());
     registerMapping(
         LionCoreBuiltins.getINamed(lionWebVersion), BuiltinsPackage.eINSTANCE.getINamed());
+    registerMapping(
+        LionCoreBuiltins.getBoolean(lionWebVersion), EcorePackage.eINSTANCE.getEBoolean());
+    registerMapping(LionCoreBuiltins.getInteger(lionWebVersion), EcorePackage.eINSTANCE.getEInt());
+    registerMapping(
+        LionCoreBuiltins.getString(lionWebVersion), EcorePackage.eINSTANCE.getEString());
+
+    // Also add type literals from XMLTypePackageImpl
+    eDataTypesToPrimitiveTypes.put(
+        XMLTypePackageImpl.Literals.STRING, LionCoreBuiltins.getString());
+    eDataTypesToPrimitiveTypes.put(XMLTypePackageImpl.Literals.INT, LionCoreBuiltins.getInteger());
+    eDataTypesToPrimitiveTypes.put(
+        XMLTypePackageImpl.Literals.BOOLEAN, LionCoreBuiltins.getBoolean());
   }
 
   public @Nonnull LionWebVersion getLionWebVersion() {

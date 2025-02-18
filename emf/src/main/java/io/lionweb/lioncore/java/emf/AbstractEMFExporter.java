@@ -1,12 +1,12 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.emf.mapping.LanguageEntitiesToEElementsMapping;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
 public abstract class AbstractEMFExporter {
-  protected final ConceptsToEClassesMapping conceptsToEClassesMapping;
+  protected final LanguageEntitiesToEElementsMapping entitiesToEElementsMapping;
   private LionWebVersion lionWebVersion;
 
   protected AbstractEMFExporter() {
@@ -16,11 +16,11 @@ public abstract class AbstractEMFExporter {
   protected AbstractEMFExporter(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
-    this.conceptsToEClassesMapping = new ConceptsToEClassesMapping(lionWebVersion);
+    this.entitiesToEElementsMapping = new LanguageEntitiesToEElementsMapping(lionWebVersion);
   }
 
-  public AbstractEMFExporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    this.conceptsToEClassesMapping = conceptsToEClassesMapping;
+  public AbstractEMFExporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+    this.entitiesToEElementsMapping = entitiesToEElementsMapping;
   }
 
   public @Nonnull LionWebVersion getLionWebVersion() {

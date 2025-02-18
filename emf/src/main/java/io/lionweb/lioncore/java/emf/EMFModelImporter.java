@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
+import io.lionweb.lioncore.java.emf.mapping.LanguageEntitiesToEElementsMapping;
 import io.lionweb.lioncore.java.emf.support.NodeInstantiator;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
@@ -25,8 +25,8 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
     nodeInstantiator = new NodeInstantiator();
   }
 
-  public EMFModelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    super(conceptsToEClassesMapping);
+  public EMFModelImporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+    super(entitiesToEElementsMapping);
     nodeInstantiator = new NodeInstantiator();
   }
 
@@ -44,7 +44,7 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
   }
 
   private Node eObjectToNode(EObject eObject) {
-    Concept concept = conceptsToEClassesMapping.getCorrespondingConcept(eObject.eClass());
+    Concept concept = entitiesToEElementsMapping.getCorrespondingConcept(eObject.eClass());
     Node node =
         nodeInstantiator.instantiate(
             concept, eObject, Collections.emptyMap(), Collections.emptyMap());

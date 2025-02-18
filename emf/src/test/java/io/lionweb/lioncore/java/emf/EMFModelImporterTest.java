@@ -23,6 +23,8 @@ import org.junit.Test;
 
 public class EMFModelImporterTest {
 
+  private EMFResourceLoader emfResourceLoader = new EMFResourceLoader();
+
   private List<EPackage> loadKotlinEPackages() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
     ResourceSet rs = new ResourceSetImpl();
@@ -45,14 +47,15 @@ public class EMFModelImporterTest {
 
     importer.getNodeInstantiator().enableDynamicNodes();
 
-    List<Node> nodes =
-        importer.importInputStream(
+    Resource resource =
+        emfResourceLoader.importInputStream(
             is,
             ResourceType.JSON,
             (Consumer<EPackage.Registry>)
                 registry -> {
                   ePackages.forEach(ep -> registry.put(ep.getNsURI(), ep));
                 });
+    List<Node> nodes = importer.importResource(resource);
     assertEquals(1, nodes.size());
 
     Node result = nodes.get(0);
