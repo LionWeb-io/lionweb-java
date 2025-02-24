@@ -1,8 +1,7 @@
 package io.lionweb.lioncore.java.emf;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.emf.mapping.ConceptsToEClassesMapping;
-import io.lionweb.lioncore.java.emf.mapping.DataTypeMapping;
+import io.lionweb.lioncore.java.emf.mapping.LanguageEntitiesToEElementsMapping;
 import io.lionweb.lioncore.java.language.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +12,6 @@ import org.eclipse.emf.ecore.resource.Resource;
 
 /** EMF importer which produces LionWeb's Metamodels. */
 public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
-  private @Nonnull DataTypeMapping dataTypeMapping;
 
   public EMFMetamodelImporter() {
     this(LionWebVersion.currentVersion);
@@ -21,12 +19,10 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
 
   public EMFMetamodelImporter(@Nonnull LionWebVersion lionWebVersion) {
     super();
-    dataTypeMapping = new DataTypeMapping(lionWebVersion);
   }
 
-  public EMFMetamodelImporter(ConceptsToEClassesMapping conceptsToEClassesMapping) {
-    super(conceptsToEClassesMapping);
-    dataTypeMapping = new DataTypeMapping(conceptsToEClassesMapping.getLionWebVersion());
+  public EMFMetamodelImporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
+    super(entitiesToEElementsMapping);
   }
 
   @Override
@@ -54,26 +50,26 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           Interface iface = new Interface(metamodel, eClass.getName());
           setIDAndKey(iface, ePackage.getName() + "-" + iface.getName());
           metamodel.addElement(iface);
-          conceptsToEClassesMapping.registerMapping(iface, eClass);
+          entitiesToEElementsMapping.registerMapping(iface, eClass);
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
           setIDAndKey(concept, ePackage.getName() + "-" + concept.getName());
           concept.setAbstract(((EClass) eClassifier).isAbstract());
           metamodel.addElement(concept);
-          conceptsToEClassesMapping.registerMapping(concept, eClass);
+          entitiesToEElementsMapping.registerMapping(concept, eClass);
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
         Enumeration enumeration = new Enumeration(metamodel, eEnum.getName());
         setIDAndKey(enumeration, ePackage.getName() + "-" + eEnum.getName());
         metamodel.addElement(enumeration);
-        dataTypeMapping.registerMapping(eEnum, enumeration);
+        entitiesToEElementsMapping.registerMapping(enumeration, eEnum);
       } else if (eClassifier instanceof EDataType) {
         EDataType eDataType = (EDataType) eClassifier;
         PrimitiveType primitiveType = new PrimitiveType(metamodel, eDataType.getName());
         setIDAndKey(primitiveType, ePackage.getName() + "-" + eDataType.getName());
         metamodel.addElement(primitiveType);
-        dataTypeMapping.registerMapping(eDataType, primitiveType);
+        entitiesToEElementsMapping.registerMapping(primitiveType, eDataType);
       } else {
         throw new UnsupportedOperationException(eClassifier.toString());
       }
@@ -85,12 +81,13 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          Interface iface = conceptsToEClassesMapping.getCorrespondingInterface(eClass);
+          Interface iface = entitiesToEElementsMapping.getCorrespondingInterface(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
               Interface superInterface =
-                  conceptsToEClassesMapping.getCorrespondingInterface(supertype);
+                  entitiesToEElementsMapping.getCorrespondingInterface(supertype);
+              addLanguageDependency(metamodel, superInterface);
               iface.addExtendedInterface(superInterface);
             } else {
               throw new UnsupportedOperationException();
@@ -100,18 +97,20 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           processStructuralFeatures(ePackage, eClass, iface);
 
         } else {
-          Concept concept = conceptsToEClassesMapping.getCorrespondingConcept(eClass);
+          Concept concept = entitiesToEElementsMapping.getCorrespondingConcept(eClass);
 
           for (EClass supertype : eClass.getESuperTypes()) {
             if (supertype.isInterface()) {
               Interface superInterface =
-                  conceptsToEClassesMapping.getCorrespondingInterface(supertype);
+                  entitiesToEElementsMapping.getCorrespondingInterface(supertype);
+              addLanguageDependency(metamodel, superInterface);
               concept.addImplementedInterface(superInterface);
             } else {
-              Concept superConcept = conceptsToEClassesMapping.getCorrespondingConcept(supertype);
+              Concept superConcept = entitiesToEElementsMapping.getCorrespondingConcept(supertype);
               if (concept.getExtendedConcept() != null) {
                 throw new IllegalStateException("Cannot set more than one extended concept");
               }
+              addLanguageDependency(metamodel, superConcept);
               concept.setExtendedConcept(superConcept);
             }
           }
@@ -120,7 +119,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
-        Enumeration enumeration = dataTypeMapping.getEnumerationForEEnum(eEnum);
+        Enumeration enumeration = entitiesToEElementsMapping.getCorrespondingEnumeration(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
           setIDAndKey(enumerationLiteral, enumeration.getID() + "-" + enumLiteral.getName());
@@ -135,9 +134,18 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     return metamodel;
   }
 
+  private void addLanguageDependency(Language metamodel, LanguageEntity langEntity) {
+    // We should use lionweb version to instantiate proper builtins version here
+    if (langEntity.getLanguage().getKey() != LionCoreBuiltins.getInstance().getKey()
+        && langEntity.getLanguage() != metamodel
+        && !metamodel.dependsOn().contains(langEntity.getLanguage())) {
+      metamodel.addDependency(langEntity.getLanguage());
+    }
+  }
+
   private Classifier convertEClassifierToClassifier(EClassifier eClassifier) {
-    if (conceptsToEClassesMapping.knows(eClassifier)) {
-      return conceptsToEClassesMapping.getCorrespondingClassifier(eClassifier);
+    if (entitiesToEElementsMapping.knows(eClassifier)) {
+      return entitiesToEElementsMapping.getCorrespondingClassifier(eClassifier);
     } else {
       throw new IllegalArgumentException(
           "Reference to an EClassifier we did not met: " + eClassifier);
@@ -149,15 +157,17 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
     for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
+        DataType<DataType> propertyType =
+            entitiesToEElementsMapping.getCorrespondingDataType(eAttribute.getEAttributeType());
+        Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
+        addLanguageDependency(classifier.getLanguage(), propertyType);
+
         if (!eAttribute.isMany()) {
           Property property = new Property(eFeature.getName(), classifier);
           setIDAndKey(
               property, ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           classifier.addFeature(property);
           property.setOptional(!eAttribute.isRequired());
-          DataType<DataType> propertyType =
-              dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
-          Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
           property.setType(propertyType);
         }
         // The work-around for multiple EAttributes: introduce an intermediate containment with the
@@ -176,9 +186,6 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
               ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
           holderConcept.addFeature(property);
           property.setOptional(false);
-          DataType<DataType> propertyType =
-              dataTypeMapping.convertEClassifierToDataType(eFeature.getEType());
-          Objects.requireNonNull(propertyType, "Cannot convert type " + eFeature.getEType());
           property.setType(propertyType);
 
           Containment containment = new Containment(eFeature.getName(), classifier);

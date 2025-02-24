@@ -3,23 +3,30 @@ package io.lionweb.lioncore.java.emf;
 import static org.junit.Assert.*;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Enumeration;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.EcorePackage;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
 import org.junit.Test;
 
 public class EMFMetamodelImporterTest {
+
+  private EMFResourceLoader emfResourceLoader = new EMFResourceLoader();
 
   @Test
   public void importLibraryExample() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/library.ecore");
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Language> languages = importer.importInputStream(is);
+    Resource resource = emfResourceLoader.importInputStream(is);
+    List<Language> languages = importer.importResource(resource);
     assertEquals(1, languages.size());
 
     Language language = languages.get(0);
@@ -148,11 +155,96 @@ public class EMFMetamodelImporterTest {
   }
 
   @Test
+  public void importExtendedLibraryExample() throws IOException {
+    Map<String, Object> extensionsToFactoryMap =
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
+
+    ResourceSet resourceSet = new ResourceSetImpl();
+
+    URI fileURI1 = URI.createFileURI("library.ecore");
+    Resource resource1 = resourceSet.createResource(fileURI1);
+    InputStream is1 = this.getClass().getResourceAsStream("/library.ecore");
+    resource1.load(is1, new HashMap<>());
+
+    URI fileURI2 = URI.createFileURI("extended-library.ecore");
+    Resource resource2 = resourceSet.createResource(fileURI2);
+    InputStream is2 = this.getClass().getResourceAsStream("/extended-library.ecore");
+    resource2.load(is2, new HashMap<>());
+
+    EMFMetamodelImporter importer = new EMFMetamodelImporter();
+    List<Language> languages = importer.importResource(resource2);
+    assertEquals(1, languages.size());
+
+    Language language = languages.get(0);
+    assertEquals("extendedlibrary", language.getName());
+    assertEquals(1, language.dependsOn().size());
+
+    // Two EClasses + one intermediate concept for an EAttribute with high multiplicity
+    assertEquals(3, language.getElements().size());
+
+    Concept localLibrary = (Concept) language.getElementByName("LocalLibrary");
+    assertNotNull(localLibrary.getExtendedConcept());
+    assertEquals(0, localLibrary.getImplemented().size());
+    assertFalse(localLibrary.isAbstract());
+    assertEquals("extendedlibrary.LocalLibrary", localLibrary.qualifiedName());
+    assertEquals(1, localLibrary.getFeatures().size());
+    assertEquals(3, localLibrary.allFeatures().size());
+
+    Property libraryCountry = (Property) localLibrary.getFeatureByName("country");
+    assertEquals(LionCoreBuiltins.getString(), libraryCountry.getType());
+    assertSame(localLibrary, libraryCountry.getContainer());
+    assertEquals("extendedlibrary.LocalLibrary.country", libraryCountry.qualifiedName());
+    assertEquals(false, libraryCountry.isOptional());
+    assertEquals(true, libraryCountry.isRequired());
+
+    Concept copyRight = (Concept) language.getElementByName("CopyRight");
+    assertNull(copyRight.getExtendedConcept());
+    assertFalse(copyRight.isAbstract());
+    assertEquals("extendedlibrary.CopyRight", copyRight.qualifiedName());
+    assertEquals(2, copyRight.getFeatures().size());
+    assertEquals(2, copyRight.allFeatures().size());
+
+    Reference writer = (Reference) copyRight.getFeatureByName("writer");
+    assertSame(language.dependsOn().get(0).getElementByName("Writer"), writer.getType());
+    assertSame(copyRight, writer.getContainer());
+    assertEquals("extendedlibrary.CopyRight.writer", writer.qualifiedName());
+    assertEquals(false, writer.isOptional());
+    assertEquals(true, writer.isRequired());
+    assertEquals(false, writer.isMultiple());
+
+    // The `countries` feature is an EAttribute with high multiplicity:
+    // here we test that the corresponding intermediate concept is created
+    Containment copyRightCountries = (Containment) copyRight.getFeatureByName("countries");
+    assertSame(language.getElementByName("CountriesContainer"), copyRightCountries.getType());
+    assertSame(copyRight, copyRightCountries.getContainer());
+    assertEquals("extendedlibrary.CopyRight.countries", copyRightCountries.qualifiedName());
+    assertEquals(true, copyRightCountries.isOptional());
+    assertEquals(false, copyRightCountries.isRequired());
+    assertEquals(true, copyRightCountries.isMultiple());
+
+    Concept countriesContainer = (Concept) language.getElementByName("CountriesContainer");
+    assertNull(countriesContainer.getExtendedConcept());
+    assertFalse(countriesContainer.isAbstract());
+    assertEquals("extendedlibrary.CountriesContainer", countriesContainer.qualifiedName());
+    assertEquals(1, countriesContainer.getFeatures().size());
+    assertEquals(1, countriesContainer.allFeatures().size());
+
+    Property countriesAttribute = (Property) countriesContainer.getFeatureByName("content");
+    assertEquals(LionCoreBuiltins.getString(), countriesAttribute.getType());
+    assertSame(countriesContainer, countriesAttribute.getContainer());
+    assertEquals("extendedlibrary.CountriesContainer.content", countriesAttribute.qualifiedName());
+    assertEquals(false, countriesAttribute.isOptional());
+    assertEquals(true, countriesAttribute.isRequired());
+  }
+
+  @Test
   public void importKotlinLangExample() throws IOException {
     InputStream is = this.getClass().getResourceAsStream("/kotlinlang.json");
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
 
-    List<Language> languages = importer.importInputStream(is, ResourceType.JSON);
+    Resource resource = emfResourceLoader.importInputStream(is, ResourceType.JSON);
+    List<Language> languages = importer.importResource(resource);
     assertEquals(2, languages.size());
 
     Concept point = languages.get(0).getConceptByName("Point");
@@ -183,7 +275,8 @@ public class EMFMetamodelImporterTest {
     EMFMetamodelImporter importer = new EMFMetamodelImporter();
     importer.importEPackage(EcorePackage.eINSTANCE);
 
-    List<Language> languages = importer.importInputStream(is);
+    Resource resource = emfResourceLoader.importInputStream(is);
+    List<Language> languages = importer.importResource(resource);
     assertEquals(1, languages.size());
 
     Language occiLanguage = languages.get(0);
