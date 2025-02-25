@@ -54,7 +54,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
           setIDAndKey(concept, ePackage.getName() + "-" + concept.getName());
-          concept.setAbstract(((EClass) eClassifier).isAbstract());
+          concept.setAbstract(eClass.isAbstract());
           metamodel.addElement(concept);
           entitiesToEElementsMapping.registerMapping(concept, eClass);
         }
