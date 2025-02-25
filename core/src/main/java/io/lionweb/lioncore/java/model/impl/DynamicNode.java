@@ -1,11 +1,11 @@
 package io.lionweb.lioncore.java.model.impl;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -95,13 +95,18 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
               return references1.size() == references2.size()
                   && IntStream.range(0, references1.size())
                       .allMatch(
-                          i ->
-                              Objects.equals(
-                                      references1.get(i).getResolveInfo(),
-                                      references2.get(i).getResolveInfo())
-                                  && Objects.equals(
-                                      references1.get(i).getReferredID(),
-                                      references2.get(i).getReferredID()));
+                          i -> {
+                            String referredID1 = references1.get(i).getReferredID();
+                            String referredID2 = references2.get(i).getReferredID();
+                            String resolveInfo1 = references1.get(i).getResolveInfo();
+                            String resolveInfo2 = references2.get(i).getResolveInfo();
+
+                            if (referredID1 == null && referredID2 == null) {
+                              return Objects.equals(resolveInfo1, resolveInfo2);
+                            } else {
+                              return Objects.equals(referredID1, referredID2);
+                            }
+                          });
             });
   }
 
