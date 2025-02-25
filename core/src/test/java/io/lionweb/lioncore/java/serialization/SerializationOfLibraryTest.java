@@ -8,13 +8,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 /** Specific tests of JsonSerialization using the Library example. */
 public class SerializationOfLibraryTest extends SerializationTest {
@@ -104,5 +109,40 @@ public class SerializationOfLibraryTest extends SerializationTest {
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization.deserializeToNodes(inputStream);
+  }
+
+  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+  @Test
+  public void reserializeJsonFile() {
+    InputStream inputStream =
+        this.getClass().getResourceAsStream("/serialization/library-language.json");
+    JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(jsonElement);
+
+    Language libraryLanguage = (Language) deserializedNodes.get(0);
+
+    try {
+      File outputFile = temporaryFolder.newFile("test-library-lang.json");
+      JsonSerialization.saveLanguageToFile(libraryLanguage, outputFile);
+
+      Language loadedLang = jsonSerialization.loadLanguage(outputFile);
+
+      assertEquals(libraryLanguage.getName(), loadedLang.getName());
+      assertEquals(libraryLanguage.getKey(), loadedLang.getKey());
+      assertEquals(libraryLanguage.getVersion(), loadedLang.getVersion());
+      assertEquals(libraryLanguage.getLionWebVersion(), loadedLang.getLionWebVersion());
+
+      Concept book = (Concept) loadedLang.getElementByName("Book");
+      assertEquals(book.getLionWebVersion(), libraryLanguage.getLionWebVersion());
+
+      Property bookTitle = (Property) book.getFeatureByName("title");
+      assertEquals(bookTitle.getLionWebVersion(), libraryLanguage.getLionWebVersion());
+    } catch (IOException ioe) {
+      System.err.println(
+          "Error creating temporary test file in " + this.getClass().getSimpleName());
+    }
   }
 }
