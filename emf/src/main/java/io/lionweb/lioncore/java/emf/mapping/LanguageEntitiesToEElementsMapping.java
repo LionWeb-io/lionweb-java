@@ -317,10 +317,11 @@ public class LanguageEntitiesToEElementsMapping {
 
     // Also add type literals from XMLTypePackageImpl
     eDataTypesToPrimitiveTypes.put(
-        XMLTypePackageImpl.Literals.STRING, LionCoreBuiltins.getString());
-    eDataTypesToPrimitiveTypes.put(XMLTypePackageImpl.Literals.INT, LionCoreBuiltins.getInteger());
+        XMLTypePackageImpl.Literals.STRING, LionCoreBuiltins.getString(lionWebVersion));
     eDataTypesToPrimitiveTypes.put(
-        XMLTypePackageImpl.Literals.BOOLEAN, LionCoreBuiltins.getBoolean());
+        XMLTypePackageImpl.Literals.INT, LionCoreBuiltins.getInteger(lionWebVersion));
+    eDataTypesToPrimitiveTypes.put(
+        XMLTypePackageImpl.Literals.BOOLEAN, LionCoreBuiltins.getBoolean(lionWebVersion));
   }
 
   public @Nonnull LionWebVersion getLionWebVersion() {

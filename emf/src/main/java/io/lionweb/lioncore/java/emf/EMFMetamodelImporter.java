@@ -18,7 +18,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   }
 
   public EMFMetamodelImporter(@Nonnull LionWebVersion lionWebVersion) {
-    super();
+    super(lionWebVersion);
   }
 
   public EMFMetamodelImporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
@@ -37,7 +37,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   }
 
   public Language importEPackage(EPackage ePackage) {
-    Language metamodel = new Language(ePackage.getName());
+    Language metamodel = new Language(getLionWebVersion(), ePackage.getName());
     metamodel.setVersion("1");
     setIDAndKey(metamodel, ePackage.getName());
 
@@ -121,9 +121,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         EEnum eEnum = (EEnum) eClassifier;
         Enumeration enumeration = entitiesToEElementsMapping.getCorrespondingEnumeration(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
-          EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
+          EnumerationLiteral enumerationLiteral =
+              new EnumerationLiteral(enumeration, enumLiteral.getName());
           setIDAndKey(enumerationLiteral, enumeration.getID() + "-" + enumLiteral.getName());
-          enumeration.addLiteral(enumerationLiteral);
         }
       } else if (eClassifier instanceof EDataType) {
         // Nothing to do here

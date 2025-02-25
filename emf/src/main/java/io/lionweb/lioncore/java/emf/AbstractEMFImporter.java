@@ -13,8 +13,8 @@ import org.eclipse.emf.ecore.resource.Resource;
  * @param <E> kind of imported element
  */
 public abstract class AbstractEMFImporter<E> {
-
   protected final LanguageEntitiesToEElementsMapping entitiesToEElementsMapping;
+  private LionWebVersion lionWebVersion;
 
   public AbstractEMFImporter() {
     this(LionWebVersion.currentVersion);
@@ -22,6 +22,7 @@ public abstract class AbstractEMFImporter<E> {
 
   public AbstractEMFImporter(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    this.lionWebVersion = lionWebVersion;
     this.entitiesToEElementsMapping = new LanguageEntitiesToEElementsMapping(lionWebVersion);
   }
 
@@ -31,7 +32,12 @@ public abstract class AbstractEMFImporter<E> {
    */
   public AbstractEMFImporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
     this.entitiesToEElementsMapping = entitiesToEElementsMapping;
+    this.lionWebVersion = entitiesToEElementsMapping.getLionWebVersion();
   }
 
   public abstract List<E> importResource(Resource resource);
+
+  public @Nonnull LionWebVersion getLionWebVersion() {
+    return lionWebVersion;
+  }
 }
