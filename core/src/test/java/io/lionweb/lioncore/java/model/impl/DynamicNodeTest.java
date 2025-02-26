@@ -543,4 +543,50 @@ public class DynamicNodeTest {
     assertEquals(true, a.equals(b));
     assertEquals(true, b.equals(a));
   }
+
+  @Test
+  public void equalityConsideringReferences() {
+    DynamicNode node1 = new DynamicNode("id1", MyNodeWithAmount.CONCEPT);
+    DynamicNode node2 = new DynamicNode("id1", MyNodeWithAmount.CONCEPT);
+    Reference reference = new Reference("ref");
+
+    // Case: both nodes have the same reference values
+    node1.addReferenceValue(reference, new ReferenceValue(null, "resolve1"));
+    node2.addReferenceValue(reference, new ReferenceValue(null, "resolve1"));
+    assertEquals(true, node1.equals(node2));
+
+    // Case: nodes have different reference values
+    node2.addReferenceValue(reference, new ReferenceValue(null, "resolve2"));
+    assertEquals(false, node1.equals(node2));
+
+    // Case: one node has a null referredID, the other has a non-null referredID
+    node1.addReferenceValue(reference, new ReferenceValue(null, "resolve2"));
+    node2.addReferenceValue(reference, new ReferenceValue(new DynamicNode(), null));
+    assertEquals(false, node1.equals(node2));
+
+    // Case: both nodes have null referredID and same resolveInfo
+    node1.addReferenceValue(reference, new ReferenceValue(null, "resolve3"));
+    node2.addReferenceValue(reference, new ReferenceValue(null, "resolve3"));
+    assertEquals(true, node1.equals(node2));
+  }
+
+  @Test
+  public void equalityConsideringAnnotations() {
+    DynamicNode node1 = new DynamicNode("id1", MyNodeWithAmount.CONCEPT);
+    DynamicNode node2 = new DynamicNode("id1", MyNodeWithAmount.CONCEPT);
+    Annotation annotation = new Annotation(new Language("lang"), "annotation");
+
+    // Case: both nodes have the same annotations
+    node1.addAnnotation(new DynamicAnnotationInstance("a1", annotation, node1));
+    node2.addAnnotation(new DynamicAnnotationInstance("a1", annotation, node2));
+    assertEquals(true, node1.equals(node2));
+
+    // Case: nodes have different annotations
+    node2.addAnnotation(new DynamicAnnotationInstance("a2", annotation, node2));
+    assertEquals(false, node1.equals(node2));
+
+    // Case: nodes have the same annotations again
+    node1.addAnnotation(new DynamicAnnotationInstance("a2", annotation, node1));
+    assertEquals(true, node1.equals(node2));
+  }
 }
