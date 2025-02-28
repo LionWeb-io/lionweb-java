@@ -2,8 +2,11 @@ package io.lionweb.lioncore.java.emf;
 
 import static org.junit.Assert.*;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.language.Enumeration;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
@@ -156,6 +159,11 @@ public class EMFMetamodelImporterTest {
 
   @Test
   public void importExtendedLibraryExample() throws IOException {
+    importExtendedLibraryExample(LionWebVersion.v2023_1);
+    importExtendedLibraryExample(LionWebVersion.currentVersion);
+  }
+
+  private void importExtendedLibraryExample(LionWebVersion lionWebVersion) throws IOException {
     Map<String, Object> extensionsToFactoryMap =
         Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
     extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
@@ -172,7 +180,7 @@ public class EMFMetamodelImporterTest {
     InputStream is2 = this.getClass().getResourceAsStream("/extended-library.ecore");
     resource2.load(is2, new HashMap<>());
 
-    EMFMetamodelImporter importer = new EMFMetamodelImporter();
+    EMFMetamodelImporter importer = new EMFMetamodelImporter(lionWebVersion);
     List<Language> languages = importer.importResource(resource2);
     assertEquals(1, languages.size());
 
@@ -180,8 +188,12 @@ public class EMFMetamodelImporterTest {
     assertEquals("extendedlibrary", language.getName());
     assertEquals(1, language.dependsOn().size());
 
-    // Two EClasses + one intermediate concept for an EAttribute with high multiplicity
-    assertEquals(3, language.getElements().size());
+    // two EClasses +
+    // one intermediate concept for an EAttribute with high multiplicity +
+    // one enumeration
+    assertEquals(4, language.getElements().size());
+    assertEquals(lionWebVersion, language.getLionWebVersion());
+    LionWebVersion langLionWebVersion = language.getLionWebVersion();
 
     Concept localLibrary = (Concept) language.getElementByName("LocalLibrary");
     assertNotNull(localLibrary.getExtendedConcept());
@@ -190,13 +202,15 @@ public class EMFMetamodelImporterTest {
     assertEquals("extendedlibrary.LocalLibrary", localLibrary.qualifiedName());
     assertEquals(1, localLibrary.getFeatures().size());
     assertEquals(3, localLibrary.allFeatures().size());
+    assertEquals(langLionWebVersion, localLibrary.getLionWebVersion());
 
     Property libraryCountry = (Property) localLibrary.getFeatureByName("country");
-    assertEquals(LionCoreBuiltins.getString(), libraryCountry.getType());
+    assertEquals(LionCoreBuiltins.getString(lionWebVersion), libraryCountry.getType());
     assertSame(localLibrary, libraryCountry.getContainer());
     assertEquals("extendedlibrary.LocalLibrary.country", libraryCountry.qualifiedName());
     assertEquals(false, libraryCountry.isOptional());
     assertEquals(true, libraryCountry.isRequired());
+    assertEquals(langLionWebVersion, libraryCountry.getLionWebVersion());
 
     Concept copyRight = (Concept) language.getElementByName("CopyRight");
     assertNull(copyRight.getExtendedConcept());
@@ -204,6 +218,7 @@ public class EMFMetamodelImporterTest {
     assertEquals("extendedlibrary.CopyRight", copyRight.qualifiedName());
     assertEquals(2, copyRight.getFeatures().size());
     assertEquals(2, copyRight.allFeatures().size());
+    assertEquals(langLionWebVersion, copyRight.getLionWebVersion());
 
     Reference writer = (Reference) copyRight.getFeatureByName("writer");
     assertSame(language.dependsOn().get(0).getElementByName("Writer"), writer.getType());
@@ -212,6 +227,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(false, writer.isOptional());
     assertEquals(true, writer.isRequired());
     assertEquals(false, writer.isMultiple());
+    assertEquals(langLionWebVersion, writer.getLionWebVersion());
 
     // The `countries` feature is an EAttribute with high multiplicity:
     // here we test that the corresponding intermediate concept is created
@@ -222,6 +238,7 @@ public class EMFMetamodelImporterTest {
     assertEquals(true, copyRightCountries.isOptional());
     assertEquals(false, copyRightCountries.isRequired());
     assertEquals(true, copyRightCountries.isMultiple());
+    assertEquals(langLionWebVersion, copyRightCountries.getLionWebVersion());
 
     Concept countriesContainer = (Concept) language.getElementByName("CountriesContainer");
     assertNull(countriesContainer.getExtendedConcept());
@@ -229,13 +246,64 @@ public class EMFMetamodelImporterTest {
     assertEquals("extendedlibrary.CountriesContainer", countriesContainer.qualifiedName());
     assertEquals(1, countriesContainer.getFeatures().size());
     assertEquals(1, countriesContainer.allFeatures().size());
+    assertEquals(langLionWebVersion, countriesContainer.getLionWebVersion());
 
     Property countriesAttribute = (Property) countriesContainer.getFeatureByName("content");
-    assertEquals(LionCoreBuiltins.getString(), countriesAttribute.getType());
+    assertEquals(LionCoreBuiltins.getString(lionWebVersion), countriesAttribute.getType());
     assertSame(countriesContainer, countriesAttribute.getContainer());
     assertEquals("extendedlibrary.CountriesContainer.content", countriesAttribute.qualifiedName());
     assertEquals(false, countriesAttribute.isOptional());
     assertEquals(true, countriesAttribute.isRequired());
+    assertEquals(langLionWebVersion, countriesAttribute.getLionWebVersion());
+
+    Enumeration bookStatus = (Enumeration) language.getElementByName("BookStatus");
+    assertEquals("extendedlibrary.BookStatus", bookStatus.qualifiedName());
+    assertEquals(2, bookStatus.getLiterals().size());
+    assertEquals(langLionWebVersion, bookStatus.getLionWebVersion());
+    assertTrue(
+        bookStatus.getLiterals().stream()
+            .map(el -> el.getName())
+            .collect(Collectors.toList())
+            .contains("OnLoan"));
+    assertTrue(
+        bookStatus.getLiterals().stream()
+            .map(el -> el.getName())
+            .collect(Collectors.toList())
+            .contains("OnShelf"));
+    assertTrue(
+        bookStatus.getLiterals().stream()
+            .allMatch(el -> el.getLionWebVersion().equals(langLionWebVersion)));
+  }
+
+  @Test
+  public void importExtendedLibraryAndSerialize() throws IOException {
+    Map<String, Object> extensionsToFactoryMap =
+        Resource.Factory.Registry.INSTANCE.getExtensionToFactoryMap();
+    extensionsToFactoryMap.put("ecore", new EcoreResourceFactoryImpl());
+
+    ResourceSet resourceSet = new ResourceSetImpl();
+
+    URI fileURI1 = URI.createFileURI("library.ecore");
+    Resource resource1 = resourceSet.createResource(fileURI1);
+    InputStream is1 = this.getClass().getResourceAsStream("/library.ecore");
+    resource1.load(is1, new HashMap<>());
+
+    URI fileURI2 = URI.createFileURI("extended-library.ecore");
+    Resource resource2 = resourceSet.createResource(fileURI2);
+    InputStream is2 = this.getClass().getResourceAsStream("/extended-library.ecore");
+    resource2.load(is2, new HashMap<>());
+
+    EMFMetamodelImporter importer = new EMFMetamodelImporter(LionWebVersion.v2023_1);
+    List<Language> languages = importer.importResource(resource2);
+    assertEquals(1, languages.size());
+
+    Language language = languages.get(0);
+    assertEquals("extendedlibrary", language.getName());
+    assertEquals(1, language.dependsOn().size());
+
+    File outputFile =
+        new File("C:\\Users\\Ujyana Tikhanova\\Documents\\lionweb\\extendedlibrary-language.json");
+    JsonSerialization.saveLanguageToFile(language, outputFile);
   }
 
   @Test

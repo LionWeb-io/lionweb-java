@@ -175,10 +175,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         else {
           String featureName =
               eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
-          Concept holderConcept = new Concept(featureName + "Container");
+          Concept holderConcept = new Concept(classifier.getLanguage(), featureName + "Container");
           setIDAndKey(holderConcept, ePackage.getName() + "-" + holderConcept.getName());
           holderConcept.setAbstract(false);
-          classifier.getLanguage().addElement(holderConcept);
 
           Property property = new Property("content", holderConcept);
           setIDAndKey(
