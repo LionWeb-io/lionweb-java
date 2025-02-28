@@ -21,6 +21,7 @@ public abstract class AbstractEMFExporter {
 
   public AbstractEMFExporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
     this.entitiesToEElementsMapping = entitiesToEElementsMapping;
+    this.lionWebVersion = entitiesToEElementsMapping.getLionWebVersion();
   }
 
   public @Nonnull LionWebVersion getLionWebVersion() {

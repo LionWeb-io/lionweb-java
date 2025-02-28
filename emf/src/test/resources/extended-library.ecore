@@ -12,4 +12,8 @@
     <eStructuralFeatures xsi:type="ecore:EAttribute" name="countries" upperBound="-1"
         eType="ecore:EDataType http://www.eclipse.org/emf/2003/XMLType#//String"/>
   </eClassifiers>
+  <eClassifiers xsi:type="ecore:EEnum" name="BookStatus">
+    <eLiterals name="OnLoan" value="1"/>
+    <eLiterals name="OnShelf"/>
+  </eClassifiers>
 </ecore:EPackage>

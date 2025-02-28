@@ -18,7 +18,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   }
 
   public EMFMetamodelImporter(@Nonnull LionWebVersion lionWebVersion) {
-    super();
+    super(lionWebVersion);
   }
 
   public EMFMetamodelImporter(LanguageEntitiesToEElementsMapping entitiesToEElementsMapping) {
@@ -37,7 +37,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   }
 
   public Language importEPackage(EPackage ePackage) {
-    Language metamodel = new Language(ePackage.getName());
+    Language metamodel = new Language(getLionWebVersion(), ePackage.getName());
     metamodel.setVersion("1");
     setIDAndKey(metamodel, ePackage.getName());
 
@@ -54,7 +54,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         } else {
           Concept concept = new Concept(metamodel, eClass.getName());
           setIDAndKey(concept, ePackage.getName() + "-" + concept.getName());
-          concept.setAbstract(((EClass) eClassifier).isAbstract());
+          concept.setAbstract(eClass.isAbstract());
           metamodel.addElement(concept);
           entitiesToEElementsMapping.registerMapping(concept, eClass);
         }
@@ -121,9 +121,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         EEnum eEnum = (EEnum) eClassifier;
         Enumeration enumeration = entitiesToEElementsMapping.getCorrespondingEnumeration(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
-          EnumerationLiteral enumerationLiteral = new EnumerationLiteral(enumLiteral.getName());
+          EnumerationLiteral enumerationLiteral =
+              new EnumerationLiteral(enumeration, enumLiteral.getName());
           setIDAndKey(enumerationLiteral, enumeration.getID() + "-" + enumLiteral.getName());
-          enumeration.addLiteral(enumerationLiteral);
         }
       } else if (eClassifier instanceof EDataType) {
         // Nothing to do here
@@ -175,10 +175,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         else {
           String featureName =
               eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
-          Concept holderConcept = new Concept(featureName + "Container");
+          Concept holderConcept = new Concept(classifier.getLanguage(), featureName + "Container");
           setIDAndKey(holderConcept, ePackage.getName() + "-" + holderConcept.getName());
           holderConcept.setAbstract(false);
-          classifier.getLanguage().addElement(holderConcept);
 
           Property property = new Property("content", holderConcept);
           setIDAndKey(

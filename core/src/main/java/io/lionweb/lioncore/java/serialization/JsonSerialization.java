@@ -35,7 +35,9 @@ import javax.annotation.Nonnull;
 public class JsonSerialization extends AbstractSerialization {
 
   public static void saveLanguageToFile(Language language, File file) throws IOException {
-    String content = getStandardJsonSerialization().serializeTreesToJsonString(language);
+    String content =
+        getStandardJsonSerialization(language.getLionWebVersion())
+            .serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
     BufferedWriter writer = new BufferedWriter(new FileWriter(file));
     writer.write(content);
