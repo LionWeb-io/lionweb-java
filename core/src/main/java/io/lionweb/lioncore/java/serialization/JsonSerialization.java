@@ -74,8 +74,8 @@ public class JsonSerialization extends AbstractSerialization {
   }
 
   /**
-   * Load a single Language from a string. If the file contains more than one language an exception is
-   * thrown.
+   * Load a single Language from a string. If the file contains more than one language an exception
+   * is thrown.
    */
   public Language loadLanguage(String json) {
     InputStream inputStream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));

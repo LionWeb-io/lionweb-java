@@ -1072,8 +1072,10 @@ public class JsonSerializationTest extends SerializationTest {
     LanguageValidator.ensureIsValid(l1);
     LanguageValidator.ensureIsValid(l2);
 
-    String serializedL1 = SerializationProvider.getStandardJsonSerialization().serializeTreesToJsonString(l1);
-    String serializedL2 = SerializationProvider.getStandardJsonSerialization().serializeTreesToJsonString(l2);
+    String serializedL1 =
+        SerializationProvider.getStandardJsonSerialization().serializeTreesToJsonString(l1);
+    String serializedL2 =
+        SerializationProvider.getStandardJsonSerialization().serializeTreesToJsonString(l2);
 
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.registerLanguage(l1);
