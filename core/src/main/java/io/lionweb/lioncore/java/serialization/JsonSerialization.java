@@ -14,6 +14,7 @@ import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.lioncore.java.utils.NetworkUtils;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -60,8 +61,7 @@ public class JsonSerialization extends AbstractSerialization {
    * an exception is thrown.
    */
   public Language loadLanguage(InputStream inputStream) {
-    JsonSerialization jsonSerialization = getStandardJsonSerialization(getLionWebVersion());
-    List<Node> lNodes = jsonSerialization.deserializeToNodes(inputStream);
+    List<Node> lNodes = deserializeToNodes(inputStream);
     List<Language> languages =
         lNodes.stream()
             .filter(n -> n instanceof Language)
@@ -71,6 +71,15 @@ public class JsonSerialization extends AbstractSerialization {
       throw new IllegalStateException();
     }
     return languages.get(0);
+  }
+
+  /**
+   * Load a single Language from a string. If the file contains more than one language an exception is
+   * thrown.
+   */
+  public Language loadLanguage(String json) {
+    InputStream inputStream = new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8));
+    return loadLanguage(inputStream);
   }
 
   /**
