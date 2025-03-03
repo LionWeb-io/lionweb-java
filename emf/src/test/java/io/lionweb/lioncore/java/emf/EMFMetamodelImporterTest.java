@@ -9,6 +9,7 @@ import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.URI;
@@ -301,9 +302,9 @@ public class EMFMetamodelImporterTest {
     assertEquals("extendedlibrary", language.getName());
     assertEquals(1, language.dependsOn().size());
 
-    File outputFile =
-        new File("C:\\Users\\Ujyana Tikhanova\\Documents\\lionweb\\extendedlibrary-language.json");
+    File outputFile = Files.createTempFile("extendedlibrary-language", ".json").toFile();
     JsonSerialization.saveLanguageToFile(language, outputFile);
+    outputFile.deleteOnExit();
   }
 
   @Test
