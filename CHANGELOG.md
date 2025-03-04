@@ -66,3 +66,12 @@ Introducing support for LionWeb 2024.1
 * Remove Partition and Experimental
 * EMF conversion: handle abstract flag
 * EMF conversion: handle attributes with high multiplicity
+
+### Version 0.3.3
+
+* EMF conversion: various improvements
+* Improvements to DynamicNode.equals
+
+### Version 0.3.4
+
+* Permit to load languages depending on other languages
