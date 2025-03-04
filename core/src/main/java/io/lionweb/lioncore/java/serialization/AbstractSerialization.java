@@ -6,10 +6,7 @@ import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.HasSettableParent;
+import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.AbstractClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -262,7 +259,7 @@ public abstract class AbstractSerialization {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
     serializedClassifierInstance.setAnnotations(
         classifierInstance.getAnnotations().stream()
-            .map(a -> a.getID())
+            .map(ClassifierInstance::getID)
             .collect(Collectors.toList()));
   }
 
@@ -279,7 +276,7 @@ public abstract class AbstractSerialization {
               SerializedReferenceValue referenceValue = new SerializedReferenceValue();
               referenceValue.setMetaPointer(
                   MetaPointer.from(
-                      reference, ((LanguageEntity) reference.getContainer()).getLanguage()));
+                      reference, ((LanguageEntity<?>) reference.getContainer()).getLanguage()));
               referenceValue.setValue(
                   classifierInstance.getReferenceValues(reference).stream()
                       .map(
@@ -310,10 +307,10 @@ public abstract class AbstractSerialization {
               SerializedContainmentValue containmentValue = new SerializedContainmentValue();
               containmentValue.setMetaPointer(
                   MetaPointer.from(
-                      containment, ((LanguageEntity) containment.getContainer()).getLanguage()));
+                      containment, ((LanguageEntity<?>) containment.getContainer()).getLanguage()));
               containmentValue.setValue(
                   classifierInstance.getChildren(containment).stream()
-                      .map(c -> c.getID())
+                      .map(Node::getID)
                       .collect(Collectors.toList()));
               serializedClassifierInstance.addContainmentValue(containmentValue);
             });
@@ -330,7 +327,7 @@ public abstract class AbstractSerialization {
               SerializedPropertyValue propertyValue = new SerializedPropertyValue();
               propertyValue.setMetaPointer(
                   MetaPointer.from(
-                      property, ((LanguageEntity) property.getContainer()).getLanguage()));
+                      property, ((LanguageEntity<?>) property.getContainer()).getLanguage()));
               propertyValue.setValue(
                   serializePropertyValue(
                       property.getType(), classifierInstance.getPropertyValue(property)));
@@ -338,10 +335,10 @@ public abstract class AbstractSerialization {
             });
   }
 
-  private String serializePropertyValue(@Nonnull DataType dataType, @Nullable Object value) {
-    Objects.requireNonNull(dataType == null, "cannot serialize property when the dataType is null");
+  private String serializePropertyValue(@Nonnull DataType<?> dataType, @Nullable Object value) {
+    Objects.requireNonNull(dataType, "cannot serialize property when the dataType is null");
     Objects.requireNonNull(
-        dataType.getID() == null, "cannot serialize property when the dataType.ID is null");
+        dataType.getID(), "cannot serialize property when the dataType.ID is null");
     if (value == null) {
       return null;
     }
@@ -389,10 +386,12 @@ public abstract class AbstractSerialization {
           // are effectively treated as roots and their parent will be set to null, as we cannot
           // retrieve them or set them (until we decide to provide some sort of NodeResolver)
           Set<String> knownIDs =
-              originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
+              originalList.stream()
+                  .map(SerializedClassifierInstance::getID)
+                  .collect(Collectors.toSet());
           originalList.stream()
               .filter(ci -> !knownIDs.contains(ci.getParentNodeID()))
-              .forEach(effectivelyRoot -> deserializationStatus.place(effectivelyRoot));
+              .forEach(deserializationStatus::place);
           break;
         }
       case PROXY_NODES:
@@ -402,18 +401,20 @@ public abstract class AbstractSerialization {
           // ProxyNode, as we cannot retrieve them or set them (until we decide to provide some
           // sort of NodeResolver)
           Set<String> knownIDs =
-              originalList.stream().map(ci -> ci.getID()).collect(Collectors.toSet());
+              originalList.stream()
+                  .map(SerializedClassifierInstance::getID)
+                  .collect(Collectors.toSet());
           Set<String> parentIDs =
               originalList.stream()
-                  .map(n -> n.getParentNodeID())
-                  .filter(id -> id != null)
+                  .map(SerializedClassifierInstance::getParentNodeID)
+                  .filter(Objects::nonNull)
                   .collect(Collectors.toSet());
           Set<String> unknownParentIDs = Sets.difference(parentIDs, knownIDs);
           originalList.stream()
               .filter(ci -> unknownParentIDs.contains(ci.getParentNodeID()))
-              .forEach(effectivelyRoot -> deserializationStatus.place(effectivelyRoot));
+              .forEach(deserializationStatus::place);
 
-          unknownParentIDs.forEach(id -> deserializationStatus.createProxy(id));
+          unknownParentIDs.forEach(deserializationStatus::createProxy);
           break;
         }
     }
@@ -471,17 +472,16 @@ public abstract class AbstractSerialization {
     Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>();
     IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
         new IdentityHashMap<>();
-    sortedSerializedClassifierInstances.stream()
-        .forEach(
-            n -> {
-              ClassifierInstance<?> instantiated =
-                  instantiateFromSerialized(lionWebVersion, n, deserializedByID);
-              if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
-                throw new IllegalStateException("Duplicate ID found: " + n.getID());
-              }
-              deserializedByID.put(n.getID(), instantiated);
-              serializedToInstanceMap.put(n, instantiated);
-            });
+    sortedSerializedClassifierInstances.forEach(
+        n -> {
+          ClassifierInstance<?> instantiated =
+              instantiateFromSerialized(lionWebVersion, n, deserializedByID);
+          if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
+            throw new IllegalStateException("Duplicate ID found: " + n.getID());
+          }
+          deserializedByID.put(n.getID(), instantiated);
+          serializedToInstanceMap.put(n, instantiated);
+        });
     if (sortedSerializedClassifierInstances.size() != serializedToInstanceMap.size()) {
       throw new IllegalStateException(
           "We got "
@@ -496,49 +496,41 @@ public abstract class AbstractSerialization {
             this.instanceResolver);
     NodePopulator nodePopulator =
         new NodePopulator(this, classifierInstanceResolver, deserializationStatus, lionWebVersion);
-    serializedClassifierInstances.stream()
-        .forEach(
-            node -> {
-              nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
-              ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
-              ClassifierInstance<?> parent =
-                  classifierInstanceResolver.resolve(node.getParentNodeID());
-              if (parent instanceof ProxyNode
-                  && unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
-                // For real parents, the parent is not set directly, but it is set indirectly
-                // when adding the child to the parent. For proxy nodes instead we need to set
-                // the parent explicitly
-                ProxyNode proxyParent = (ProxyNode) parent;
-                if (proxyParent != null) {
-                  if (classifierInstance instanceof HasSettableParent) {
-                    ((HasSettableParent) classifierInstance).setParent(proxyParent);
-                  } else {
-                    throw new UnsupportedOperationException(
-                        "We do not know how to set explicitly the parent of " + classifierInstance);
-                  }
-                }
-              }
-              if (classifierInstance instanceof AnnotationInstance) {
-                if (node == null) {
-                  throw new IllegalStateException(
-                      "Dangling annotation instance found (annotated node is null). ");
-                }
-                AbstractClassifierInstance abstractClassifierInstance =
-                    (AbstractClassifierInstance) deserializedByID.get(node.getParentNodeID());
-                AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
-                if (abstractClassifierInstance != null) {
-                  abstractClassifierInstance.addAnnotation(annotationInstance);
-                } else {
-                  throw new IllegalStateException(
-                      "Cannot resolved annotated node " + annotationInstance.getParent());
-                }
-              }
-            });
+    serializedClassifierInstances.forEach(
+        node -> {
+          nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
+          ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
+          ClassifierInstance<?> parent = classifierInstanceResolver.resolve(node.getParentNodeID());
+          if (parent instanceof ProxyNode
+              && unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
+            // For real parents, the parent is not set directly, but it is set indirectly
+            // when adding the child to the parent. For proxy nodes instead we need to set
+            // the parent explicitly
+            ProxyNode proxyParent = (ProxyNode) parent;
+            if (classifierInstance instanceof HasSettableParent) {
+              ((HasSettableParent) classifierInstance).setParent(proxyParent);
+            } else {
+              throw new UnsupportedOperationException(
+                  "We do not know how to set explicitly the parent of " + classifierInstance);
+            }
+          }
+          if (classifierInstance instanceof AnnotationInstance) {
+            AbstractClassifierInstance<?> abstractClassifierInstance =
+                (AbstractClassifierInstance<?>) deserializedByID.get(node.getParentNodeID());
+            AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
+            if (abstractClassifierInstance != null) {
+              abstractClassifierInstance.addAnnotation(annotationInstance);
+            } else {
+              throw new IllegalStateException(
+                  "Cannot resolved annotated node " + annotationInstance.getParent());
+            }
+          }
+        });
 
     // We want the nodes returned to be sorted as the original serializedNodes
     List<ClassifierInstance<?>> nodesWithOriginalSorting =
         serializedClassifierInstances.stream()
-            .map(sn -> serializedToInstanceMap.get(sn))
+            .map(serializedToInstanceMap::get)
             .collect(Collectors.toList());
     nodesWithOriginalSorting.addAll(deserializationStatus.proxies);
     return nodesWithOriginalSorting;
@@ -572,7 +564,7 @@ public abstract class AbstractSerialization {
                       + classifier
                       + ". Properties: "
                       + classifier.allProperties().stream()
-                          .map(p -> MetaPointer.from(p))
+                          .map(MetaPointer::from)
                           .collect(Collectors.toList()));
               Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
@@ -590,20 +582,15 @@ public abstract class AbstractSerialization {
     // We ensure that the properties values are set correctly. They could already have been set
     // while instantiating the node. If that is the case, we have nothing to do, otherwise we set
     // the values
-    propertiesValues
-        .entrySet()
-        .forEach(
-            pv -> {
-              Object deserializedValue = pv.getValue();
-              Property property = pv.getKey();
-              // Avoiding calling setters, in case the value has been already set at construction
-              // time
+    propertiesValues.forEach(
+        (property, deserializedValue) -> {
+          // Avoiding calling setters, in case the value has been already set at construction
+          // time
 
-              if (!Objects.equals(
-                  deserializedValue, classifierInstance.getPropertyValue(property))) {
-                classifierInstance.setPropertyValue(property, deserializedValue);
-              }
-            });
+          if (!Objects.equals(deserializedValue, classifierInstance.getPropertyValue(property))) {
+            classifierInstance.setPropertyValue(property, deserializedValue);
+          }
+        });
 
     return classifierInstance;
   }
