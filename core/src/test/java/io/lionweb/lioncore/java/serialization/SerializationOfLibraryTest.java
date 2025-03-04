@@ -145,4 +145,26 @@ public class SerializationOfLibraryTest extends SerializationTest {
           "Error creating temporary test file in " + this.getClass().getSimpleName());
     }
   }
+
+  @Test
+  public void deserializeExtendedLibrary() {
+    InputStream inputStream =
+        this.getClass().getResourceAsStream("/serialization/library-language.json");
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(inputStream);
+
+    Language libraryLanguage = (Language) deserializedNodes.get(0);
+
+    InputStream inputStream2 =
+        this.getClass().getResourceAsStream("/serialization/extendedlibrary-language.json");
+    JsonSerialization jsonSerialization2 =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    jsonSerialization2.registerLanguage(libraryLanguage);
+    List<Node> deserializedNodes2 = jsonSerialization2.deserializeToNodes(inputStream2);
+
+    Concept localLibrary = conceptByID(deserializedNodes2, "extendedlibrary-LocalLibrary");
+    Property libraryName = localLibrary.getPropertyByName("name");
+    assertNotNull(libraryName.getKey());
+  }
 }
