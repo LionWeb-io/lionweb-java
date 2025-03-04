@@ -146,6 +146,7 @@ public abstract class AbstractSerialization {
   public void registerLanguage(Language language) {
     getClassifierResolver().registerLanguage(language);
     getPrimitiveValuesSerialization().registerLanguage(language);
+    instanceResolver.addTree(language);
   }
 
   public void makeBuiltinsReferenceDangling() {

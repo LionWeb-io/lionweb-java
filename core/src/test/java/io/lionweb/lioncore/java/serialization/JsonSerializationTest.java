@@ -1055,7 +1055,31 @@ public class JsonSerializationTest extends SerializationTest {
     ProxyNode n3 = (ProxyNode) nodes.get(3);
     ProxyNode n4 = (ProxyNode) nodes.get(4);
     assertEquals(
-        new HashSet(Arrays.asList("synthetic_my-wonderful-partition_projects_1", "external-1")),
-        new HashSet(Arrays.asList(n3.getID(), n4.getID())));
+        new HashSet<>(Arrays.asList("synthetic_my-wonderful-partition_projects_1", "external-1")),
+        new HashSet<>(Arrays.asList(n3.getID(), n4.getID())));
+  }
+
+  @Test
+  public void loadLanguageDependingOnOtherLanguage() {
+    Language l1 = new Language("L1", "l1-id", "l1-key", "v1");
+    Concept c1 = new Concept(l1, "C1", "c1-id", "c1-key");
+
+    Language l2 = new Language("L2", "l2-id", "l2-key", "v1");
+    l2.addDependency(l1);
+    Concept c2 = new Concept(l2, "C2", "c2-id", "c2-key");
+    c2.setExtendedConcept(c1);
+
+    LanguageValidator.ensureIsValid(l1);
+    LanguageValidator.ensureIsValid(l2);
+
+    String serializedL1 =
+        SerializationProvider.getStandardJsonSerialization().serializeTreesToJsonString(l1);
+    String serializedL2 =
+        SerializationProvider.getStandardJsonSerialization().serializeTreesToJsonString(l2);
+
+    JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+    jsonSerialization.registerLanguage(l1);
+    Language l2unserialized = jsonSerialization.loadLanguage(serializedL2);
+    assertInstancesAreEquals(l2, l2unserialized);
   }
 }
