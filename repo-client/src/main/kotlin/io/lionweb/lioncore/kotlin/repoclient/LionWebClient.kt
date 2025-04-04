@@ -575,6 +575,9 @@ class LionWebClient(
         bulkImport: BulkImport,
         compress: Boolean = false,
     ) {
+        if (bulkImport.nodes.isEmpty() && bulkImport.attachPoints.isEmpty()) {
+            return
+        }
         val bytes =
             ExtraFlatBuffersSerialization().apply {
                 this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
