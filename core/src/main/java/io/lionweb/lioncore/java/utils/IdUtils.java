@@ -6,6 +6,6 @@ public class IdUtils {
   }
 
   public static String cleanString(String string) {
-    return string.replaceAll("\\.", "-");
+    return string.replaceAll("[^a-zA-Z0-9_-]", "-");
   }
 }
