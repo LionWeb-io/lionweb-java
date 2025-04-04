@@ -20,6 +20,7 @@ import io.lionweb.lioncore.java.model.Node
 import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
 import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveSerializer
+import io.lionweb.lioncore.java.utils.IdUtils
 import java.lang.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
@@ -348,9 +349,7 @@ fun IKeyed<*>.keyForContainedElement(containedElementName: String): String {
 }
 
 fun String.lwIDCleanedVersion(): String {
-    return this.replace(".", "_")
-        .replace(" ", "_")
-        .replace("/", "_")
+    return IdUtils.cleanString(this)
 }
 
 fun Enumeration.addLiteral(literalName: String): EnumerationLiteral {
