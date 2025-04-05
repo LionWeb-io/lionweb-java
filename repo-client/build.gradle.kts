@@ -16,12 +16,9 @@ repositories {
 val jvmVersion = extra["jvmVersion"] as String
 val specsVersion = extra["specsVersion"] as String
 
-val javadocConfig by configurations.creating {
-    extendsFrom(configurations.testImplementation.get())
-}
-
 dependencies {
-    // Use JUnit test framework.
+    implementation(libs.okhttp)
+    implementation(libs.gson)
     testImplementation(libs.junit)
 }
 
