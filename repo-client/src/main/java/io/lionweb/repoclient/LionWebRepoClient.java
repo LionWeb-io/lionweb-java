@@ -25,7 +25,7 @@ public class LionWebRepoClient {
   private final List<Language> languages = new ArrayList<Language>();
   private final List<SerializationDecorator> serializationDecorators = new ArrayList<>();
 
-  private final LowLevelRepoClient lowLevelRepoClient;
+  private final BaseLionWebRepoClient lowLevelRepoClient;
   private JsonSerialization jsonSerialization;
 
   {
@@ -59,7 +59,7 @@ public class LionWebRepoClient {
     this.repository = repository;
 
     this.lowLevelRepoClient =
-        new LowLevelRepoClient(
+        new BaseLionWebRepoClient(
             hostname,
             port,
             authorizationToken,

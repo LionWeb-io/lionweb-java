@@ -12,7 +12,7 @@ import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
 
-public class LowLevelRepoClient {
+public class BaseLionWebRepoClient {
 
   private final String protocol = "http";
   private final String hostname;
@@ -20,9 +20,6 @@ public class LowLevelRepoClient {
   private final String authorizationToken;
   private String clientID;
   private String repository;
-  private final long connectTimeoutInSeconds;
-  private final long callTimeoutInSeconds;
-  private final boolean debug;
 
   private final OkHttpClient httpClient;
 
@@ -30,27 +27,40 @@ public class LowLevelRepoClient {
   private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
   private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
 
-  public LowLevelRepoClient() {
-    this("localhost", 3005, null, "GenericKotlinBasedLionWebClient", "default", 60, 60, false);
+  public BaseLionWebRepoClient() {
+    this("localhost", 3005, null, "GenericJavaBasedLionWebClient",
+            "default", 60, 60);
   }
 
-  public LowLevelRepoClient(
+  public BaseLionWebRepoClient(
+          String hostname,
+          int port,
+          String repository) {
+    this(hostname, port, null, "GenericJavaBasedLionWebClient", repository, 60, 60);
+  }
+
+  public BaseLionWebRepoClient(
+          String hostname,
+          int port,
+          String authorizationToken,
+          String clientID,
+          String repository) {
+    this(hostname, port, authorizationToken, clientID, repository, 60, 60);
+  }
+
+  public BaseLionWebRepoClient(
       String hostname,
       int port,
       String authorizationToken,
       String clientID,
       String repository,
       long connectTimeoutInSeconds,
-      long callTimeoutInSeconds,
-      boolean debug) {
+      long callTimeoutInSeconds) {
     this.hostname = hostname;
     this.port = port;
     this.authorizationToken = authorizationToken;
     this.clientID = clientID;
     this.repository = repository;
-    this.connectTimeoutInSeconds = connectTimeoutInSeconds;
-    this.callTimeoutInSeconds = callTimeoutInSeconds;
-    this.debug = debug;
 
     this.httpClient =
         new OkHttpClient.Builder()
@@ -62,7 +72,7 @@ public class LowLevelRepoClient {
   }
 
   public void createRepository(boolean history) throws IOException {
-    String url = String.format("http://%s:%d/createRepository?history=%s", hostname, port, history);
+    String url = String.format("%s://%s:%d/createRepository?history=%s", protocol, hostname, port, history);
     Request.Builder rq = new Request.Builder().url(addClientIdQueryParam(url));
     rq = considerAuthenticationToken(rq);
     Request request = rq.post(RequestBody.create(new byte[0], null)).build();
@@ -82,16 +92,12 @@ public class LowLevelRepoClient {
         new Request.Builder()
             .url(
                 addClientIdQueryParam(
-                    "http://" + hostname + ":" + port + "/bulk/deletePartitions"));
+                    protocol + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
     rq = considerAuthenticationToken(rq);
     Request request = rq.post(body).build();
 
     try (Response response = httpClient.newCall(request).execute()) {
       if (response.code() != HttpURLConnection.HTTP_OK) {
-        if (debug) {
-          System.out.println("  Response: " + response.code());
-          System.out.println("  Response: " + response.body().string());
-        }
         throw new RuntimeException(
             "Request failed with code " + response.code() + ": " + response.body().string());
       }
@@ -99,7 +105,7 @@ public class LowLevelRepoClient {
   }
 
   public String getPartitionIDs() throws IOException {
-    String url = "http://" + hostname + ":" + port + "/bulk/listPartitions";
+    String url = protocol + "://" + hostname + ":" + port + "/bulk/listPartitions";
     Request.Builder rq =
         new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
     rq = considerAuthenticationToken(rq);
@@ -125,7 +131,7 @@ public class LowLevelRepoClient {
             + String.join(", ", rootIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
             + "]}";
     HttpUrl.Builder urlBuilder =
-        HttpUrl.parse("http://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
+        HttpUrl.parse(protocol+"://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
     urlBuilder.addQueryParameter("depthLimit", String.valueOf(limit));
     urlBuilder.addQueryParameter("clientId", clientID);
     urlBuilder.addQueryParameter("repository", repository);
