@@ -17,6 +17,8 @@ val jvmVersion = extra["jvmVersion"] as String
 val specsVersion = extra["specsVersion"] as String
 
 dependencies {
+    implementation(project(":core"))
+    implementation(project(":extensions"))
     implementation(libs.okhttp)
     implementation(libs.gson)
     testImplementation(libs.junit)
