@@ -9,6 +9,7 @@ include('emf')
 include('emf-builtins')
 include('extensions')
 include('repo-client')
+include('repo-client-testing')
 
 dependencyResolutionManagement {
     versionCatalogs {
