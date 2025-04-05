@@ -2,6 +2,7 @@ package io.lionweb.repoclient;
 
 import com.google.gson.*;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -13,6 +14,7 @@ import okio.Okio;
 
 public class LowLevelRepoClient {
 
+  private final String protocol = "http";
   private final String hostname;
   private final int port;
   private final String authorizationToken;
@@ -144,7 +146,7 @@ public class LowLevelRepoClient {
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) throws IOException {
     HttpUrl.Builder urlBuilder =
-        HttpUrl.parse("http://" + hostname + ":" + port + "/inspection/nodesByClassifier")
+        HttpUrl.parse(protocol + "://" + hostname + ":" + port + "/inspection/nodesByClassifier")
             .newBuilder();
     urlBuilder.addQueryParameter("clientId", clientID);
     if (limit != null) {
@@ -230,5 +232,40 @@ public class LowLevelRepoClient {
 
   private Request.Builder addGZipCompressionHeader(Request.Builder builder) {
     return builder.addHeader("Content-Encoding", "gzip");
+  }
+
+  public void nodesStoringOperation(final String json, final String operation) {
+    // Compress the request body
+    RequestBody body =
+        CompressionSupport.compress(
+            json); // assuming CompressUtil.compress(String) handles JSON compression
+
+    final String url = protocol + "://" + hostname + ":" + port + "/bulk/" + operation;
+
+    // Build the request
+    Request.Builder rb =
+        new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
+    rb = considerAuthenticationToken(rb);
+    rb = addGZipCompressionHeader(rb);
+    Request request = rb.post(body).build();
+
+    try {
+      try (Response response = httpClient.newCall(request).execute()) {
+        if (response.code() != HttpURLConnection.HTTP_OK) {
+          String responseBody = response.body() != null ? response.body().string() : null;
+          throw new RequestFailureException(url, json, response.code(), responseBody);
+        }
+      }
+    } catch (ConnectException e) {
+      String jsonExcerpt = json.length() > 10000 ? json.substring(0, 1000) + "..." : json;
+      throw new RuntimeException(
+          "Cannot get answer from the client when contacting at URL "
+              + url
+              + ". Body: "
+              + jsonExcerpt,
+          e);
+    } catch (IOException e) {
+      throw new RuntimeException("IO error while contacting URL " + url, e);
+    }
   }
 }
