@@ -2,6 +2,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 import java.net.URI
 
 plugins {
+    `jvm-test-suite`
     id("java-library")
     id("signing")
     id("com.github.johnrengelman.shadow") version "7.1.1"
@@ -89,4 +90,40 @@ java {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+
+tasks.withType<Test>().all {
+    testLogging {
+        showStandardStreams = true
+        showExceptions = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+
+        register<JvmTestSuite>("functionalTest") {
+            dependencies {
+                implementation(project())
+                implementation(project(":core"))
+                implementation(project(":repo-client-testing"))
+                implementation(libs.testcontainers)
+                implementation(libs.testcontainersjunit)
+                implementation(libs.testcontainerspg)
+            }
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
 }
