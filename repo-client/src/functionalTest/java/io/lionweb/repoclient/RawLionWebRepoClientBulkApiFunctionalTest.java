@@ -6,14 +6,21 @@ import com.google.gson.JsonParser;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
 
 import java.io.IOException;
-import java.util.Collections;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.Assert.assertEquals;
 
 @Testcontainers
-public class RawLionWebRepoClientFunctionalTest extends AbstractRepoClientFunctionalTest {
+public class RawLionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFunctionalTest {
+
+  // TODO createPartitions
+  // TODO deletePartitions
+  // TODO listPartitions
+  // TODO ids
+  // TODO store
+  // TODO retrieve
 
   @Test
   public void noPartitionsOnNewModelRepository() throws IOException {
@@ -26,6 +33,19 @@ public class RawLionWebRepoClientFunctionalTest extends AbstractRepoClientFuncti
     assertEquals("2023.1", chunk.get("serializationFormatVersion").getAsString());
     assertEquals(new JsonArray(), chunk.get("languages").getAsJsonArray());
     assertEquals(new JsonArray(), chunk.get("nodes").getAsJsonArray());
+  }
+
+  @Test
+  public void partitionsCRUD() throws IOException {
+    RawLionWebRepoClient client = new RawLionWebRepoClient("localhost", getModelRepoPort());
+    // Create partition
+    // Check list
+    // Create partition
+    // Check list
+    // Delete partition
+    // Check list
+    // Delete partition
+    // Check list
   }
 //
 //  @Test

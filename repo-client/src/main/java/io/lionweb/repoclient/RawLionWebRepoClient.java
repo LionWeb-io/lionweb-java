@@ -109,8 +109,77 @@ public class RawLionWebRepoClient {
   }
 
   //
-  // Calls
+  // Bulk APIs
   //
+
+  public void deletePartition(String nodeID) throws IOException {
+    String bodyJson = "[\"" + nodeID + "\"]";
+    RequestBody body = RequestBody.create(bodyJson, JSON);
+    Request.Builder rq =
+            new Request.Builder()
+                    .url(
+                            addClientIdQueryParam(
+                                    protocol.value + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(body).build();
+
+    try (Response response = httpClient.newCall(request).execute()) {
+      if (response.code() != HttpURLConnection.HTTP_OK) {
+        throw new RuntimeException(
+                "Request failed with code " + response.code() + ": " + response.body().string());
+      }
+    }
+  }
+
+  public String listPartitions() throws IOException {
+    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
+    Request.Builder rq =
+            new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
+    rq = considerAuthenticationToken(rq);
+    Request request =
+            rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
+
+    try (Response response = httpClient.newCall(request).execute()) {
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        return Objects.requireNonNull(response.body()).string();
+      } else {
+        throw new RuntimeException("Got back " + response.code() + ": " + response.body().string());
+      }
+    }
+  }
+
+  public String retrieve(List<String> rootIds, int limit) throws IOException {
+    if (rootIds.isEmpty() || rootIds.stream().anyMatch(String::isEmpty)) {
+      throw new IllegalArgumentException("Root IDs must not be empty or blank");
+    }
+
+    String bodyJson =
+            "{\"ids\":["
+                    + String.join(", ", rootIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
+                    + "]}";
+    HttpUrl.Builder urlBuilder =
+            HttpUrl.parse(protocol + "://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
+    urlBuilder.addQueryParameter("depthLimit", String.valueOf(limit));
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repository);
+
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
+
+    try (Response response = httpClient.newCall(request).execute()) {
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        return Objects.requireNonNull(response.body()).string();
+      } else {
+        throw new RuntimeException(
+                "Error retrieving data: " + response.code() + ", " + response.body().string());
+      }
+    }
+  }
+
+  //
+   // Other APIs
+   //
 
   public void createRepository(boolean history) throws IOException {
     String url =
@@ -128,70 +197,7 @@ public class RawLionWebRepoClient {
     }
   }
 
-  public void deletePartition(String nodeID) throws IOException {
-    String bodyJson = "[\"" + nodeID + "\"]";
-    RequestBody body = RequestBody.create(bodyJson, JSON);
-    Request.Builder rq =
-        new Request.Builder()
-            .url(
-                addClientIdQueryParam(
-                    protocol.value + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
-    rq = considerAuthenticationToken(rq);
-    Request request = rq.post(body).build();
 
-    try (Response response = httpClient.newCall(request).execute()) {
-      if (response.code() != HttpURLConnection.HTTP_OK) {
-        throw new RuntimeException(
-            "Request failed with code " + response.code() + ": " + response.body().string());
-      }
-    }
-  }
-
-  public String listPartitions() throws IOException {
-    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
-    Request.Builder rq =
-        new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
-    rq = considerAuthenticationToken(rq);
-    Request request =
-        rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
-
-    try (Response response = httpClient.newCall(request).execute()) {
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        return Objects.requireNonNull(response.body()).string();
-      } else {
-        throw new RuntimeException("Got back " + response.code() + ": " + response.body().string());
-      }
-    }
-  }
-
-  public String retrieve(List<String> rootIds, int limit) throws IOException {
-    if (rootIds.isEmpty() || rootIds.stream().anyMatch(String::isEmpty)) {
-      throw new IllegalArgumentException("Root IDs must not be empty or blank");
-    }
-
-    String bodyJson =
-        "{\"ids\":["
-            + String.join(", ", rootIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
-            + "]}";
-    HttpUrl.Builder urlBuilder =
-        HttpUrl.parse(protocol + "://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
-    urlBuilder.addQueryParameter("depthLimit", String.valueOf(limit));
-    urlBuilder.addQueryParameter("clientId", clientID);
-    urlBuilder.addQueryParameter("repository", repository);
-
-    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
-    rq = considerAuthenticationToken(rq);
-    Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
-
-    try (Response response = httpClient.newCall(request).execute()) {
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        return Objects.requireNonNull(response.body()).string();
-      } else {
-        throw new RuntimeException(
-            "Error retrieving data: " + response.code() + ", " + response.body().string());
-      }
-    }
-  }
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) throws IOException {
     HttpUrl.Builder urlBuilder =
