@@ -4,7 +4,6 @@ import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.*;
-import java.io.IOException;
 import java.util.*;
 import java.util.function.Supplier;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +24,7 @@ public class LionWebRepoClient {
   private final List<Language> languages = new ArrayList<Language>();
   private final List<SerializationDecorator> serializationDecorators = new ArrayList<>();
 
-  private final BaseLionWebRepoClient lowLevelRepoClient;
+  // private final LionWebRepoClient lowLevelRepoClient;
   private JsonSerialization jsonSerialization;
 
   {
@@ -58,16 +57,16 @@ public class LionWebRepoClient {
     this.clientID = clientID;
     this.repository = repository;
 
-    this.lowLevelRepoClient =
-        new BaseLionWebRepoClient(
-            hostname,
-            port,
-            authorizationToken,
-            clientID,
-            repository,
-            connectTimeoutInSeconds,
-            callTimeoutInSeconds,
-            debug);
+    //    this.lowLevelRepoClient =
+    //        new LionWebRepoClient(
+    //            hostname,
+    //            port,
+    //            authorizationToken,
+    //            clientID,
+    //            repository,
+    //            connectTimeoutInSeconds,
+    //            callTimeoutInSeconds,
+    //            debug);
 
     this.defaultJsonSerialization = SerializationProvider.getStandardJsonSerialization();
     this.defaultJsonSerialization.enableDynamicNodes();
@@ -115,17 +114,17 @@ public class LionWebRepoClient {
 
   // Setup
 
-  public void createRepository() {
-    createRepository(false);
-  }
+  //  public void createRepository() {
+  //    createRepository(false);
+  //  }
 
-  public void createRepository(boolean history) {
-    try {
-      lowLevelRepoClient.createRepository(history);
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to create repository", e);
-    }
-  }
+  //  public void createRepository(boolean history) {
+  //    try {
+  //      lowLevelRepoClient.createRepository(history);
+  //    } catch (IOException e) {
+  //      throw new RuntimeException("Failed to create repository", e);
+  //    }
+  //  }
 
   // Partitions
 
@@ -144,11 +143,11 @@ public class LionWebRepoClient {
   }
 
   public void deletePartition(String nodeID) {
-    try {
-      lowLevelRepoClient.deletePartition(nodeID);
-    } catch (IOException e) {
-      throw new RuntimeException("Failed to delete partition", e);
-    }
+    //    try {
+    //      lowLevelRepoClient.deletePartition(nodeID);
+    //    } catch (IOException e) {
+    //      throw new RuntimeException("Failed to delete partition", e);
+    throw new UnsupportedOperationException();
   }
 
   public List<String> getPartitionIDs() {

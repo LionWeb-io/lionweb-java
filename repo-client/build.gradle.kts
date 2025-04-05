@@ -108,14 +108,15 @@ testing {
         }
 
         register<JvmTestSuite>("functionalTest") {
-            dependencies {
-                implementation(project())
-                implementation(project(":core"))
-                implementation(project(":repo-client-testing"))
-                implementation(libs.testcontainers)
-                implementation(libs.testcontainersjunit)
-                implementation(libs.testcontainerspg)
-            }
+
+//            dependencies {
+//                implementation(project())
+//                implementation(project(":core"))
+//                implementation(project(":repo-client-testing"))
+//                implementation(libs.testcontainers)
+//                implementation(libs.testcontainersjunit)
+//                implementation(libs.testcontainerspg)
+//            }
 
             targets {
                 all {
@@ -126,4 +127,16 @@ testing {
             }
         }
     }
+}
+
+dependencies {
+    "functionalTestImplementation"(project(":repo-client"))
+    "functionalTestImplementation"(project(":core"))
+    "functionalTestImplementation"(project(":repo-client-testing"))
+    "functionalTestImplementation"(libs.testcontainers)
+    "functionalTestImplementation"(libs.testcontainersjunit)
+    "functionalTestImplementation"(libs.testcontainerspg)
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    "functionalTestImplementation"(libs.gson)
 }

@@ -6,49 +6,50 @@ import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class BaseLionWebRepoClient {
+public class RawLionWebRepoClient {
+  private static final MediaType JSON = MediaType.get("application/json");
+  private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
+  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
 
-  private final String protocol = "http";
+  private final Protocol protocol = Protocol.HTTP;
   private final String hostname;
   private final int port;
   private final String authorizationToken;
   private String clientID;
   private String repository;
-
   private final OkHttpClient httpClient;
 
-  private static final MediaType JSON = MediaType.get("application/json");
-  private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
+  //
+  // Constructors
+  //
 
-  public BaseLionWebRepoClient() {
-    this("localhost", 3005, null, "GenericJavaBasedLionWebClient",
-            "default", 60, 60);
+  public RawLionWebRepoClient() {
+    this("localhost", 3005, null, "GenericJavaBasedLionWebClient", "default", 60, 60);
   }
 
-  public BaseLionWebRepoClient(
-          String hostname,
-          int port,
-          String repository) {
+  public RawLionWebRepoClient(String hostname, int port) {
+    this(hostname, port, "default");
+  }
+
+  public RawLionWebRepoClient(String hostname, int port, String repository) {
     this(hostname, port, null, "GenericJavaBasedLionWebClient", repository, 60, 60);
   }
 
-  public BaseLionWebRepoClient(
-          String hostname,
-          int port,
-          String authorizationToken,
-          String clientID,
-          String repository) {
+  public RawLionWebRepoClient(
+      String hostname, int port, String authorizationToken, String clientID, String repository) {
     this(hostname, port, authorizationToken, clientID, repository, 60, 60);
   }
 
-  public BaseLionWebRepoClient(
+  public RawLionWebRepoClient(
       String hostname,
       int port,
       String authorizationToken,
@@ -71,8 +72,50 @@ public class BaseLionWebRepoClient {
             .build();
   }
 
+  //
+  // Configuration
+  //
+
+  public @NotNull Protocol getProtocol() {
+    return protocol;
+  }
+
+  public @NotNull String getHostname() {
+    return hostname;
+  }
+
+  public int getPort() {
+    return port;
+  }
+
+  public @Nullable String getAuthorizationToken() {
+    return authorizationToken;
+  }
+
+  public @NotNull String getClientID() {
+    return clientID;
+  }
+
+  public void setClientID(@NotNull String clientID) {
+    this.clientID = clientID;
+  }
+
+  public @NotNull String getRepository() {
+    return repository;
+  }
+
+  public void setRepository(@NotNull String repository) {
+    this.repository = repository;
+  }
+
+  //
+  // Calls
+  //
+
   public void createRepository(boolean history) throws IOException {
-    String url = String.format("%s://%s:%d/createRepository?history=%s", protocol, hostname, port, history);
+    String url =
+        String.format(
+            "%s://%s:%d/createRepository?history=%s", protocol.value, hostname, port, history);
     Request.Builder rq = new Request.Builder().url(addClientIdQueryParam(url));
     rq = considerAuthenticationToken(rq);
     Request request = rq.post(RequestBody.create(new byte[0], null)).build();
@@ -92,7 +135,7 @@ public class BaseLionWebRepoClient {
         new Request.Builder()
             .url(
                 addClientIdQueryParam(
-                    protocol + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
+                    protocol.value + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
     rq = considerAuthenticationToken(rq);
     Request request = rq.post(body).build();
 
@@ -104,8 +147,8 @@ public class BaseLionWebRepoClient {
     }
   }
 
-  public String getPartitionIDs() throws IOException {
-    String url = protocol + "://" + hostname + ":" + port + "/bulk/listPartitions";
+  public String listPartitions() throws IOException {
+    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
     Request.Builder rq =
         new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
     rq = considerAuthenticationToken(rq);
@@ -131,7 +174,7 @@ public class BaseLionWebRepoClient {
             + String.join(", ", rootIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
             + "]}";
     HttpUrl.Builder urlBuilder =
-        HttpUrl.parse(protocol+"://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
+        HttpUrl.parse(protocol + "://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
     urlBuilder.addQueryParameter("depthLimit", String.valueOf(limit));
     urlBuilder.addQueryParameter("clientId", clientID);
     urlBuilder.addQueryParameter("repository", repository);
@@ -246,7 +289,7 @@ public class BaseLionWebRepoClient {
         CompressionSupport.compress(
             json); // assuming CompressUtil.compress(String) handles JSON compression
 
-    final String url = protocol + "://" + hostname + ":" + port + "/bulk/" + operation;
+    final String url = protocol.value + "://" + hostname + ":" + port + "/bulk/" + operation;
 
     // Build the request
     Request.Builder rb =

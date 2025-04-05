@@ -3,14 +3,12 @@ package io.lionweb.repoclient.testing;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.utils.ModelComparator;
 import java.util.Collections;
-import java.util.function.Consumer;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.AfterEach;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
-import org.testcontainers.containers.output.OutputFrame;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class AbstractRepoClientFunctionalTest {
@@ -29,7 +27,7 @@ public class AbstractRepoClientFunctionalTest {
     this.modelRepoDebug = modelRepoDebug;
   }
 
-  @Before
+  @BeforeEach
   public void setup() {
     Network network = Network.newNetwork();
 
@@ -43,12 +41,7 @@ public class AbstractRepoClientFunctionalTest {
 
     db.setLogConsumers(
         Collections.singletonList(
-            new Consumer<OutputFrame>() {
-              @Override
-              public void accept(OutputFrame frame) {
-                System.out.println("DB: " + frame.getUtf8String().trim());
-              }
-            }));
+            frame -> System.out.println("DB: " + frame.getUtf8String().trim())));
 
     db.start();
 
@@ -74,12 +67,9 @@ public class AbstractRepoClientFunctionalTest {
 
     modelRepository.setLogConsumers(
         Collections.singletonList(
-            new Consumer<OutputFrame>() {
-              @Override
-              public void accept(OutputFrame frame) {
-                if (modelRepoDebug) {
-                  System.out.println("MODEL REPO: " + frame.getUtf8String().trim());
-                }
+            frame -> {
+              if (modelRepoDebug) {
+                System.out.println("MODEL REPO: " + frame.getUtf8String().trim());
               }
             }));
 
@@ -89,7 +79,7 @@ public class AbstractRepoClientFunctionalTest {
     System.setProperty("MODEL_REPO_PORT", Integer.toString(getModelRepoPort()));
   }
 
-  @After
+  @AfterEach
   public void teardown() {
     if (modelRepository != null) {
       modelRepository.stop();
