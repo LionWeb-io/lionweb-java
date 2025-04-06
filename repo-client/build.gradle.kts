@@ -109,15 +109,6 @@ testing {
 
         register<JvmTestSuite>("functionalTest") {
 
-//            dependencies {
-//                implementation(project())
-//                implementation(project(":core"))
-//                implementation(project(":repo-client-testing"))
-//                implementation(libs.testcontainers)
-//                implementation(libs.testcontainersjunit)
-//                implementation(libs.testcontainerspg)
-//            }
-
             targets {
                 all {
                     testTask.configure {
