@@ -166,7 +166,10 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
           node.getParent() == null
               ? containerByAttached.get(node.getID())
               : node.getParent().getID();
-      int parent = builder.createSharedString(parentID);
+      int parent = -1;
+      if (parentID != null) {
+        parent = builder.createSharedString(parentID);
+      }
       FBNode.startFBNode(builder);
       FBNode.addId(builder, id);
       FBNode.addClassifier(builder, classifier);
@@ -174,7 +177,9 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
       FBNode.addContainments(builder, consVector);
       FBNode.addReferences(builder, refsVector);
       FBNode.addAnnotations(builder, annsVector);
-      FBNode.addParent(builder, parent);
+      if (parentID != null) {
+        FBNode.addParent(builder, parent);
+      }
 
       nodesOffsets[i] = FBNode.endFBNode(builder);
       i++;
