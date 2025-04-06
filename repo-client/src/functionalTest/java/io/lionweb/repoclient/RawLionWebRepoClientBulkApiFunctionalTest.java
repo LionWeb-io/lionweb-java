@@ -3,9 +3,16 @@ package io.lionweb.repoclient;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -37,15 +44,45 @@ public class RawLionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClien
 
   @Test
   public void partitionsCRUD() throws IOException {
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    js.registerLanguage(PropertiesLanguage.propertiesLanguage);
+
     RawLionWebRepoClient client = new RawLionWebRepoClient("localhost", getModelRepoPort());
+
     // Create partition
+    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
+    client.createPartitions(js.serializeNodesToJsonString(f1));
+
     // Check list
-    // Create partition
+    List<Node> nodes1 = js.deserializeToNodes(client.listPartitions());
+    assertEquals(1, nodes1.size());
+    assertEquals("f1", nodes1.get(0).getID());
+    assertEquals(PropertiesLanguage.propertiesFile, nodes1.get(0).getClassifier());
+
+    // Create partition2
+    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesFile);
+    DynamicNode f3 = new DynamicNode("f3", PropertiesLanguage.propertiesFile);
+    client.createPartitions(js.serializeNodesToJsonString(f2, f3));
+
     // Check list
+    List<Node> nodes2 = js.deserializeToNodes(client.listPartitions());
+    assertEquals(3, nodes2.size());
+
     // Delete partition
+    client.deletePartitions(Arrays.asList("f1", "f3"));
+
     // Check list
+    List<Node> nodes3 = js.deserializeToNodes(client.listPartitions());
+    assertEquals(1, nodes3.size());
+    assertEquals("f2", nodes3.get(0).getID());
+    assertEquals(PropertiesLanguage.propertiesFile, nodes3.get(0).getClassifier());
+
     // Delete partition
+    client.deletePartitions(Arrays.asList("f2"));
+
     // Check list
+    List<Node> nodes4 = js.deserializeToNodes(client.listPartitions());
+    assertEquals(0, nodes4.size());
   }
 //
 //  @Test

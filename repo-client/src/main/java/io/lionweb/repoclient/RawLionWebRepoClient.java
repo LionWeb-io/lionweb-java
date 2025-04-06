@@ -27,6 +27,7 @@ public class RawLionWebRepoClient {
   private String clientID;
   private String repository;
   private final OkHttpClient httpClient;
+  private Gson gson = new GsonBuilder().serializeNulls().create();
 
   //
   // Constructors
@@ -112,8 +113,17 @@ public class RawLionWebRepoClient {
   // Bulk APIs
   //
 
-  public void deletePartition(String nodeID) throws IOException {
-    String bodyJson = "[\"" + nodeID + "\"]";
+  public void createPartitions(String data) throws IOException {
+    nodesStoringOperation(data, "createPartitions");
+  }
+
+  public void deletePartitions(List<String> ids) throws IOException {
+    JsonArray ja = new JsonArray();
+    for (String id : ids) {
+      ja.add(id);
+    }
+
+    String bodyJson = gson.toJson(ja);
     RequestBody body = RequestBody.create(bodyJson, JSON);
     Request.Builder rq =
             new Request.Builder()
@@ -141,7 +151,8 @@ public class RawLionWebRepoClient {
 
     try (Response response = httpClient.newCall(request).execute()) {
       if (response.code() == HttpURLConnection.HTTP_OK) {
-        return Objects.requireNonNull(response.body()).string();
+        String body = Objects.requireNonNull(response.body()).string();
+
       } else {
         throw new RuntimeException("Got back " + response.code() + ": " + response.body().string());
       }
@@ -178,8 +189,8 @@ public class RawLionWebRepoClient {
   }
 
   //
-   // Other APIs
-   //
+  // Other APIs
+  //
 
   public void createRepository(boolean history) throws IOException {
     String url =
