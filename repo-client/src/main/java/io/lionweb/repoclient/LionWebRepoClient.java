@@ -230,23 +230,34 @@ public class LionWebRepoClient {
     return listPartitions().stream().map(n -> n.getID()).collect(Collectors.toList());
   }
 
-  public List<String> ids() throws IOException {
-    throw new UnsupportedOperationException();
-//    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
-//    Request.Builder rq =
-//            new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
-//    rq = considerAuthenticationToken(rq);
-//    Request request =
-//            rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
-//
-//    try (Response response = httpClient.newCall(request).execute()) {
-//      if (response.code() == HttpURLConnection.HTTP_OK) {
-//        String body = Objects.requireNonNull(response.body()).string();
-//
-//      } else {
-//        throw new RuntimeException("Got back " + response.code() + ": " + response.body().string());
-//      }
-//    }
+  public List<String> ids(int count) throws IOException {
+    if (count < 0) {
+      throw new IllegalArgumentException("Count should be greater or equal to zero");
+    }
+    if (count == 0) {
+      return Collections.emptyList();
+    }
+    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/ids";
+    HttpUrl httpUrl = addRepositoryQueryParam(addClientIdQueryParam(url));
+    httpUrl = httpUrl.newBuilder().addQueryParameter("count", Integer.toString(count)).build();
+    Request.Builder rq =
+            new Request.Builder().url(httpUrl);
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(RequestBody.create(new byte[0])).build();
+
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+        return responseData.get("ids").getAsJsonArray().asList().stream().map(je -> je.getAsString()).collect(Collectors.toList());
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
   }
 
   public String store(List<String> rootIds, int limit) throws IOException {
