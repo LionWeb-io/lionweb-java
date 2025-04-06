@@ -1,5 +1,6 @@
 package io.lionweb.repoclient;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 
 public class PropertiesLanguage {
@@ -7,41 +8,49 @@ public class PropertiesLanguage {
   public static final Concept propertiesFile;
   public static final Concept property;
   public static final Language propertiesLanguage;
+  private static LionWebVersion lionWebVersionUsed = LionWebVersion.v2023_1;
 
   static {
     // Create language
     String name = "Properties";
     String cleanedName = name.toLowerCase().replace(".", "_");
-    propertiesLanguage =
-        new Language(
-            name, "language-" + cleanedName + "-id", "language-" + cleanedName + "-key", "1");
+    propertiesLanguage = new Language(lionWebVersionUsed, name);
+    propertiesLanguage.setID("language-" + cleanedName + "-id");
+    propertiesLanguage.setVersion("1");
+    propertiesLanguage.setKey("language-" + cleanedName + "-key");
 
     // Create concepts
     propertiesPartition = createConcept(propertiesLanguage, "PropertiesPartition");
+    propertiesPartition.setPartition(true);
     propertiesFile = createConcept(propertiesLanguage, "PropertiesFile");
     property = createConcept(propertiesLanguage, "Property");
 
     // Register concept features
     propertiesPartition.setPartition(true);
     addContainment(propertiesPartition, "files", propertiesFile, Multiplicity.ZERO_TO_MANY);
+    Property filePath = new Property(LionWebVersion.v2023_1, "path", propertiesFile);
+    filePath.setID(propertiesFile.getID() + "-path");
+    filePath.setKey(propertiesFile.getKey() + "-path");
+    filePath.setType(LionCoreBuiltins.getString(lionWebVersionUsed));
+    propertiesFile.addFeature(filePath);
+
     addContainment(propertiesFile, "properties", property, Multiplicity.ZERO_TO_MANY);
     property.addImplementedInterface(LionCoreBuiltins.getINamed());
   }
 
   private static Concept createConcept(Language language, String name) {
-    Concept concept =
-        new Concept(
-            language,
-            name,
-            language.getID().replace("language-", "").replace("-id", "") + "-" + name + "-id",
-            language.getKey().replace("language-", "").replace("-key", "") + "-" + name + "-key");
+    Concept concept = new Concept(lionWebVersionUsed, language, name);
+    concept.setID(
+        language.getID().replace("language-", "").replace("-id", "") + "-" + name + "-id");
+    concept.setKey(
+        language.getKey().replace("language-", "").replace("-key", "") + "-" + name + "-key");
     language.addElement(concept);
     return concept;
   }
 
   private static Containment addContainment(
       Classifier<?> owner, String name, Classifier<?> target, Multiplicity multiplicity) {
-    Containment containment = new Containment();
+    Containment containment = new Containment(lionWebVersionUsed);
     containment.setName(name);
     containment.setID(owner.getID().replace("-id", "") + "-" + name + "-id");
     containment.setKey(owner.getKey().replace("-key", "") + "-" + name + "-key");

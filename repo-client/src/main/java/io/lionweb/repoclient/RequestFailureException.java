@@ -5,8 +5,7 @@ public class RequestFailureException extends RuntimeException {
   private final int responseCode;
   private final String responseBody;
 
-  public RequestFailureException(
-      String url, int responseCode, String responseBody) {
+  public RequestFailureException(String url, int responseCode, String responseBody) {
     super("Request to " + url + " failed with code " + responseCode + ": " + responseBody);
     this.url = url;
     this.responseCode = responseCode;

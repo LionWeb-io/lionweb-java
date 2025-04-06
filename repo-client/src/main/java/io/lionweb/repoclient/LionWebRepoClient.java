@@ -1,18 +1,19 @@
 package io.lionweb.repoclient;
 
 import com.google.gson.*;
+import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
+import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
+import io.lionweb.lioncore.java.utils.CommonChecks;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
-import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
 import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSink;
@@ -75,15 +76,14 @@ public class LionWebRepoClient {
 
     public LionWebRepoClient build() {
       return new LionWebRepoClient(
-              lionWebVersion,
-              hostname,
-              port,
-              authorizationToken,
-              clientID,
-              repository,
-              connectTimeoutInSeconds,
-              callTimeoutInSeconds
-      );
+          lionWebVersion,
+          hostname,
+          port,
+          authorizationToken,
+          clientID,
+          repository,
+          connectTimeoutInSeconds,
+          callTimeoutInSeconds);
     }
   }
 
@@ -105,12 +105,13 @@ public class LionWebRepoClient {
   // Constructors
   //
 
-  public LionWebRepoClient(@NotNull LionWebVersion lionWebVersion, String hostname, int port, String repository) {
+  public LionWebRepoClient(
+      @NotNull LionWebVersion lionWebVersion, String hostname, int port, String repository) {
     this(lionWebVersion, hostname, port, null, "GenericJavaBasedLionWebClient", repository, 60, 60);
   }
 
   public LionWebRepoClient(
-          @NotNull LionWebVersion lionWebVersion,
+      @NotNull LionWebVersion lionWebVersion,
       @NotNull String hostname,
       int port,
       @Nullable String authorizationToken,
@@ -188,17 +189,17 @@ public class LionWebRepoClient {
     String bodyJson = gson.toJson(ja);
     RequestBody body = RequestBody.create(bodyJson, JSON);
     Request.Builder rq =
-            new Request.Builder()
-                    .url(
-                            addClientIdQueryParam(
-                                    protocol.value + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
+        new Request.Builder()
+            .url(
+                addClientIdQueryParam(
+                    protocol.value + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
     rq = considerAuthenticationToken(rq);
     Request request = rq.post(body).build();
 
     try (Response response = httpClient.newCall(request).execute()) {
       if (response.code() != HttpURLConnection.HTTP_OK) {
         throw new RuntimeException(
-                "Request failed with code " + response.code() + ": " + response.body().string());
+            "Request failed with code " + response.code() + ": " + response.body().string());
       }
     }
   }
@@ -206,10 +207,10 @@ public class LionWebRepoClient {
   public List<Node> listPartitions() throws IOException {
     String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
     Request.Builder rq =
-            new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
+        new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
     rq = considerAuthenticationToken(rq);
     Request request =
-            rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
+        rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
 
     try (Response response = httpClient.newCall(request).execute()) {
       String body = Objects.requireNonNull(response.body()).string();
@@ -240,8 +241,7 @@ public class LionWebRepoClient {
     String url = protocol.value + "://" + hostname + ":" + port + "/bulk/ids";
     HttpUrl httpUrl = addRepositoryQueryParam(addClientIdQueryParam(url));
     httpUrl = httpUrl.newBuilder().addQueryParameter("count", Integer.toString(count)).build();
-    Request.Builder rq =
-            new Request.Builder().url(httpUrl);
+    Request.Builder rq = new Request.Builder().url(httpUrl);
     rq = considerAuthenticationToken(rq);
     Request request = rq.post(RequestBody.create(new byte[0])).build();
 
@@ -253,28 +253,58 @@ public class LionWebRepoClient {
         if (!success) {
           throw new RequestFailureException(url, response.code(), body);
         }
-        return responseData.get("ids").getAsJsonArray().asList().stream().map(je -> je.getAsString()).collect(Collectors.toList());
+        return responseData.get("ids").getAsJsonArray().asList().stream()
+            .map(je -> je.getAsString())
+            .collect(Collectors.toList());
       } else {
         throw new RequestFailureException(url, response.code(), body);
       }
     }
   }
 
-  public String store(List<String> rootIds, int limit) throws IOException {
-    throw new UnsupportedOperationException();
+  public void store(List<Node> nodes) throws IOException {
+    if (nodes.isEmpty()) {
+      return;
+    }
+    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/store";
+    HttpUrl httpUrl = addRepositoryQueryParam(addClientIdQueryParam(url));
+    Request.Builder rq = new Request.Builder().url(httpUrl);
+    rq = addGZipCompressionHeader(rq);
+    rq = considerAuthenticationToken(rq);
+    String json =
+        jsonSerialization.serializeTreesToJsonString(nodes.toArray(new ClassifierInstance<?>[0]));
+    RequestBody uncompressedBody = RequestBody.create(json, JSON);
+    Request request = rq.post(gzipCompress(uncompressedBody)).build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
   }
 
-  public String retrieve(List<String> rootIds, int limit) throws IOException {
-    if (rootIds.isEmpty() || rootIds.stream().anyMatch(String::isEmpty)) {
-      throw new IllegalArgumentException("Root IDs must not be empty or blank");
+  public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
+    if (nodeIds.isEmpty()) {
+      return Collections.emptyList();
+    }
+    List<String> invalidIDs =
+        nodeIds.stream().filter(id -> !CommonChecks.isValidID(id)).collect(Collectors.toList());
+    if (!invalidIDs.isEmpty()) {
+      throw new IllegalArgumentException("IDs must all be valid. Invalid IDs found: " + invalidIDs);
     }
 
     String bodyJson =
-            "{\"ids\":["
-                    + String.join(", ", rootIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
-                    + "]}";
-    HttpUrl.Builder urlBuilder =
-            HttpUrl.parse(protocol + "://" + hostname + ":" + port + "/bulk/retrieve").newBuilder();
+        "{\"ids\":["
+            + String.join(", ", nodeIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
+            + "]}";
+    String url = protocol + "://" + hostname + ":" + port + "/bulk/retrieve";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
     urlBuilder.addQueryParameter("depthLimit", String.valueOf(limit));
     urlBuilder.addQueryParameter("clientId", clientID);
     urlBuilder.addQueryParameter("repository", repository);
@@ -284,11 +314,22 @@ public class LionWebRepoClient {
     Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
 
     try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
       if (response.code() == HttpURLConnection.HTTP_OK) {
-        return Objects.requireNonNull(response.body()).string();
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+        List<Node> allNodes = jsonSerialization.deserializeToNodes(responseData.get("chunk"));
+        Set<String> idsReturned = allNodes.stream().map(n -> n.getID()).collect(Collectors.toSet());
+        // We want to return only the roots of the trees returned. From those, the other nodes can
+        // be accessed
+        return allNodes.stream()
+            .filter(n -> n.getParent() == null || !idsReturned.contains(n.getParent().getID()))
+            .collect(Collectors.toList());
       } else {
-        throw new RuntimeException(
-                "Error retrieving data: " + response.code() + ", " + response.body().string());
+        throw new RequestFailureException(url, response.code(), body);
       }
     }
   }

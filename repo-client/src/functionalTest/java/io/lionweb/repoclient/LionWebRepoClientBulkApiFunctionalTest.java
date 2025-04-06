@@ -1,49 +1,42 @@
 package io.lionweb.repoclient;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.utils.CommonChecks;
-import io.lionweb.lioncore.java.utils.IdUtils;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
 import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFunctionalTest {
 
   @Test
   public void noPartitionsOnNewModelRepository() throws IOException {
-    LionWebRepoClient client = new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebRepoClient client =
+        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
     List<Node> partitions = client.listPartitions();
     Assert.assertEquals(Collections.emptyList(), partitions);
   }
 
   @Test
   public void partitionsCRUD() throws IOException {
-    LionWebRepoClient client = new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebRepoClient client =
+        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Create partition
-    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
+    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesPartition);
     client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(f1));
 
     // Check list
@@ -54,14 +47,15 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     Assert.assertEquals(Arrays.asList("f1"), client.listPartitionsIDs());
 
     // Create partitions
-    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesFile);
-    DynamicNode f3 = new DynamicNode("f3", PropertiesLanguage.propertiesFile);
+    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesPartition);
+    DynamicNode f3 = new DynamicNode("f3", PropertiesLanguage.propertiesPartition);
     client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(f2, f3));
 
     // Check list
     List<Node> nodes2 = client.listPartitions();
     Assert.assertEquals(3, nodes2.size());
-    Assert.assertEquals(new HashSet<>(Arrays.asList("f1", "f2", "f3")), new HashSet<>(client.listPartitionsIDs()));
+    Assert.assertEquals(
+        new HashSet<>(Arrays.asList("f1", "f2", "f3")), new HashSet<>(client.listPartitionsIDs()));
 
     // Delete partitions
     client.deletePartitions(Arrays.asList("f1", "f3"));
@@ -84,7 +78,8 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
   @Test
   public void ids() throws IOException {
-    LionWebRepoClient client = new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebRepoClient client =
+        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
 
     List<String> ids1 = client.ids(78);
     assertEquals(78, ids1.size());
@@ -98,8 +93,26 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     assertTrue(ids3.stream().allMatch(CommonChecks::isValidID));
   }
 
-  // TODO ids
-  // TODO store
-  // TODO retrieve
+  @Test
+  public void storeAndRetrieve() throws IOException {
+    LionWebRepoClient client =
+        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
+    DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
+    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
+
+    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
+    ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "my-path-1.txt");
+    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesFile);
+    ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "my-path-2.txt");
+    ClassifierInstanceUtils.addChild(p1, "files", f1);
+    ClassifierInstanceUtils.addChild(p1, "files", f2);
+
+    client.store(Arrays.asList(p1));
+
+    List<Node> retrievedNodes1 = client.retrieve(Arrays.asList("p1"), 10);
+    assertEquals(1, retrievedNodes1.size());
+    assertEquals(p1, retrievedNodes1.get(0));
+  }
 }
