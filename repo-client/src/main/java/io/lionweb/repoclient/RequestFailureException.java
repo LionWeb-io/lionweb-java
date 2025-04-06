@@ -2,25 +2,19 @@ package io.lionweb.repoclient;
 
 public class RequestFailureException extends RuntimeException {
   private final String url;
-  private final String uncompressedBody;
   private final int responseCode;
   private final String responseBody;
 
   public RequestFailureException(
-      String url, String uncompressedBody, int responseCode, String responseBody) {
+      String url, int responseCode, String responseBody) {
     super("Request to " + url + " failed with code " + responseCode + ": " + responseBody);
     this.url = url;
-    this.uncompressedBody = uncompressedBody;
     this.responseCode = responseCode;
     this.responseBody = responseBody;
   }
 
   public String getUrl() {
     return url;
-  }
-
-  public String getUncompressedBody() {
-    return uncompressedBody;
   }
 
   public int getResponseCode() {
@@ -36,9 +30,6 @@ public class RequestFailureException extends RuntimeException {
     return "RequestFailureException{"
         + "url='"
         + url
-        + '\''
-        + ", uncompressedBody='"
-        + uncompressedBody
         + '\''
         + ", responseCode="
         + responseCode
