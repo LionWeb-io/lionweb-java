@@ -61,8 +61,8 @@ public class ExtraFlatbuffersSerializationTest {
   }
 
   /**
-   * In this example we serialize a proper root node as it has no parent and no attach point.
-   * We verify that with an effectively null parentID the serialization can still be completed.
+   * In this example we serialize a proper root node as it has no parent and no attach point. We
+   * verify that with an effectively null parentID the serialization can still be completed.
    */
   @Test
   public void bulkImportSerializationOfPartitions() {
@@ -80,7 +80,7 @@ public class ExtraFlatbuffersSerializationTest {
     bulkImport.addNode(n1);
 
     ExtraFlatBuffersSerialization flatBuffersSerialization =
-            ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization();
+        ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization();
     byte[] bytes = flatBuffersSerialization.serializeBulkImport(bulkImport);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);

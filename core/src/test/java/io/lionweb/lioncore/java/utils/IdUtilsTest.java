@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.utils;
 
 import static org.junit.Assert.assertEquals;
+
 import org.junit.Test;
 
 public class IdUtilsTest {
@@ -14,5 +15,4 @@ public class IdUtilsTest {
     assertEquals("123_456", IdUtils.cleanString("123_456"));
     assertEquals("123-456", IdUtils.cleanString("123-456"));
   }
-
 }
