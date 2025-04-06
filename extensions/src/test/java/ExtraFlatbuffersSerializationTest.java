@@ -55,5 +55,41 @@ public class ExtraFlatbuffersSerializationTest {
 
     FBNode fbNode = fbBulkImport.nodes(0);
     assertEquals("n1", fbNode.id());
+    // Here, even if we serialized a node that had no parent, the parent is obtained from the
+    // attach point
+    assertEquals("n2", fbNode.parent());
+  }
+
+  /**
+   * In this example we serialize a proper root node as it has no parent and no attach point.
+   * We verify that with an effectively null parentID the serialization can still be completed.
+   */
+  @Test
+  public void bulkImportSerializationOfPartitions() {
+    Language l = new Language("l", "l-id", "l-key", "1");
+    Concept c = new Concept(l, "c", "c-id", "c-key");
+    Property property = Property.createRequired("foo", LionCoreBuiltins.getString());
+    property.setID("p-id");
+    property.setKey("p-key");
+    c.addFeature(property);
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
+
+    BulkImport bulkImport = new BulkImport();
+    bulkImport.addNode(n1);
+
+    ExtraFlatBuffersSerialization flatBuffersSerialization =
+            ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization();
+    byte[] bytes = flatBuffersSerialization.serializeBulkImport(bulkImport);
+
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
+    FBBulkImport fbBulkImport = FBBulkImport.getRootAsFBBulkImport(bb);
+    assertEquals(0, fbBulkImport.attachPointsLength());
+    assertEquals(1, fbBulkImport.nodesLength());
+
+    FBNode fbNode = fbBulkImport.nodes(0);
+    assertEquals("n1", fbNode.id());
+    assertEquals(null, fbNode.parent());
   }
 }
