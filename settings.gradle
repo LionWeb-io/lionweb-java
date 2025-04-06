@@ -8,6 +8,7 @@ include('core')
 include('emf')
 include('emf-builtins')
 include('extensions')
+include('repo-client')
 
 dependencyResolutionManagement {
     versionCatalogs {
