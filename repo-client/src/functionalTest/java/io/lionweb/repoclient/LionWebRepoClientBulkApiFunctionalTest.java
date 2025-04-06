@@ -14,7 +14,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -26,7 +25,7 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     LionWebRepoClient client =
         new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
     List<Node> partitions = client.listPartitions();
-    Assert.assertEquals(Collections.emptyList(), partitions);
+    assertEquals(Collections.emptyList(), partitions);
   }
 
   @Test
@@ -41,10 +40,10 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
     // Check list
     List<Node> nodes1 = client.listPartitions();
-    Assert.assertEquals(1, nodes1.size());
-    Assert.assertEquals("f1", nodes1.get(0).getID());
-    Assert.assertEquals(PropertiesLanguage.propertiesFile, nodes1.get(0).getClassifier());
-    Assert.assertEquals(Arrays.asList("f1"), client.listPartitionsIDs());
+    assertEquals(1, nodes1.size());
+    assertEquals("f1", nodes1.get(0).getID());
+    assertEquals(PropertiesLanguage.propertiesPartition, nodes1.get(0).getClassifier());
+    assertEquals(Collections.singletonList("f1"), client.listPartitionsIDs());
 
     // Create partitions
     DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesPartition);
@@ -53,8 +52,8 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
     // Check list
     List<Node> nodes2 = client.listPartitions();
-    Assert.assertEquals(3, nodes2.size());
-    Assert.assertEquals(
+    assertEquals(3, nodes2.size());
+    assertEquals(
         new HashSet<>(Arrays.asList("f1", "f2", "f3")), new HashSet<>(client.listPartitionsIDs()));
 
     // Delete partitions
@@ -62,18 +61,18 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
     // Check list
     List<Node> nodes3 = client.listPartitions();
-    Assert.assertEquals(1, nodes3.size());
-    Assert.assertEquals("f2", nodes3.get(0).getID());
-    Assert.assertEquals(PropertiesLanguage.propertiesFile, nodes3.get(0).getClassifier());
-    Assert.assertEquals(Arrays.asList("f2"), client.listPartitionsIDs());
+    assertEquals(1, nodes3.size());
+    assertEquals("f2", nodes3.get(0).getID());
+    assertEquals(PropertiesLanguage.propertiesPartition, nodes3.get(0).getClassifier());
+    assertEquals(Collections.singletonList("f2"), client.listPartitionsIDs());
 
     // Delete partition
-    client.deletePartitions(Arrays.asList("f2"));
+    client.deletePartitions(Collections.singletonList("f2"));
 
     // Check list
     List<Node> nodes4 = client.listPartitions();
-    Assert.assertEquals(0, nodes4.size());
-    Assert.assertEquals(Collections.emptyList(), client.listPartitionsIDs());
+    assertEquals(0, nodes4.size());
+    assertEquals(Collections.emptyList(), client.listPartitionsIDs());
   }
 
   @Test
@@ -109,9 +108,9 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     ClassifierInstanceUtils.addChild(p1, "files", f1);
     ClassifierInstanceUtils.addChild(p1, "files", f2);
 
-    client.store(Arrays.asList(p1));
+    client.store(Collections.singletonList(p1));
 
-    List<Node> retrievedNodes1 = client.retrieve(Arrays.asList("p1"), 10);
+    List<Node> retrievedNodes1 = client.retrieve(Collections.singletonList("p1"), 10);
     assertEquals(1, retrievedNodes1.size());
     assertEquals(p1, retrievedNodes1.get(0));
   }
