@@ -75,3 +75,11 @@ Introducing support for LionWeb 2024.1
 ### Version 0.3.4
 
 * Permit to load languages depending on other languages
+
+### Version 0.3.5
+
+* Minor bug fixing
+
+### Version 0.4.0
+
+* Introduction of the `repo-client` and `repo-client-testing` modules

@@ -1,61 +1,36 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import java.net.URI
 
 plugins {
+    `jvm-test-suite`
     id("java-library")
-    id("com.vanniktech.maven.publish")
     id("signing")
+    id("com.github.johnrengelman.shadow") version "7.1.1"
+    id("com.vanniktech.maven.publish")
+    jacoco
 }
 
 repositories {
     mavenCentral()
 }
 
-val javadocConfig by configurations.creating {
-    extendsFrom(configurations.testImplementation.get())
-}
-
-dependencies {
-    api(project(":core"))
-    api(project(":emf-builtins"))
-
-    api(emf.common)
-    api(emf.ecore)
-    api(emf.ecore.xmi)
-
-    api(emf.emfjson)
-
-    implementation(libs.gson)
-    implementation(libs.annotations)
-
-    // Use JUnit test framework.
-    testImplementation(libs.junit)
-    testImplementation(libs.gson)
-}
+val lionwebRepositoryCommitID: String by project
 
 val jvmVersion = extra["jvmVersion"] as String
 val specsVersion = extra["specsVersion"] as String
 
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-tasks.register<Javadoc>("myJavadoc") {
-    source = sourceSets.main.get().allJava
-    classpath = javadocConfig
-    options {
-        require(this is StandardJavadocDocletOptions)
-        addStringOption("link", "https://docs.oracle.com/javase/8/docs/api/")
-        addStringOption("link", "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/")
-        addStringOption("link", "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
+tasks.withType<Jar>().configureEach {
+    manifest {
+        attributes["lionwebRepositoryCommitID"] = lionwebRepositoryCommitID
     }
 }
 
-val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
-
-tasks.register<Jar>("javadocJar") {
-    dependsOn("myJavadoc")
-    from(tasks.getByName("myJavadoc")/*.destinationDir*/)
-    archiveClassifier.set("javadoc")
+dependencies {
+    implementation(project(":core"))
+    implementation(project(":extensions"))
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    testImplementation(libs.junit)
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -74,7 +49,7 @@ mavenPublishing {
 
     pom {
         name.set("lionweb-java-" + project.name)
-        description.set("EMF compatibility layer for LionWeb")
+        description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"
         url.set("https://github.com/LionWeb-io/lionweb-java")
@@ -110,13 +85,57 @@ mavenPublishing {
                 name.set("Niko Stotz")
                 email.set("github-public@nikostotz.de")
             }
-            developer {
-                id.set("Ulyana-F1re")
-                name.set("Ulyana Tikhonova")
-                url.set("https://github.com/Ulyana-F1re")
-            }
         }
     }
     publishToMavenCentral(SonatypeHost.S01, true)
     signAllPublications()
+}
+
+java {
+    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
+    targetCompatibility = JavaVersion.toVersion(jvmVersion)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+}
+
+
+tasks.withType<Test>().all {
+    testLogging {
+        showStandardStreams = true
+        showExceptions = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+}
+
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+
+        register<JvmTestSuite>("functionalTest") {
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    "functionalTestImplementation"(project(":repo-client"))
+    "functionalTestImplementation"(project(":core"))
+    "functionalTestImplementation"(project(":repo-client-testing"))
+    "functionalTestImplementation"(libs.testcontainers)
+    "functionalTestImplementation"(libs.testcontainersjunit)
+    "functionalTestImplementation"(libs.testcontainerspg)
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    "functionalTestImplementation"(libs.gson)
 }
