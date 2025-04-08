@@ -110,6 +110,11 @@ mavenPublishing {
                 name.set("Niko Stotz")
                 email.set("github-public@nikostotz.de")
             }
+            developer {
+                id.set("Ulyana-F1re")
+                name.set("Ulyana Tikhonova")
+                url.set("https://github.com/Ulyana-F1re")
+            }
         }
     }
     publishToMavenCentral(SonatypeHost.S01, true)
