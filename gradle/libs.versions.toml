@@ -1,6 +1,6 @@
 [versions]
 kotlinVersion="2.0.21"
-lwJavaVersion="0.3.5"
+lwJavaVersion="0.4.0-SNAPSHOT"
 kotestVersion="5.8.0"
 testcontainersVersion="1.19.5"
 
