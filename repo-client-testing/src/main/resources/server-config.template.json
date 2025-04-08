@@ -1,0 +1,33 @@
+{
+  "server": {
+    "serverPort": 3005,
+    "expectedToken": null
+  },
+  "startup": {
+    "createDatabase": true,
+    "createRepositories": [
+      {
+        "name": "default",
+        "history": false
+      }
+    ]
+  },
+  "logging": {
+    "request": "silent",
+    "database": "silent",
+    "express": "silent"
+  },
+  "postgres": {
+    "database": {
+      "host": "${PGHOST}",
+      "user": "${PGUSER}",
+      "db": "${PGDB}",
+      "password": "${PGPASSWORD}",
+      "port": "${PGPORT}"
+    },
+    "certificates": {
+      "rootcert": null,
+      "rootcertcontent": null
+    }
+  }
+}

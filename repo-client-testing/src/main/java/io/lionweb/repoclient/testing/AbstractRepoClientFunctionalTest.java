@@ -53,7 +53,7 @@ public class AbstractRepoClientFunctionalTest {
                 new ImageFromDockerfile()
                     .withFileFromClasspath(
                         "Dockerfile", "repoclienttesting-lionweb-repository-Dockerfile")
-                    .withFileFromClasspath("config-gen.py", "config-gen.py")
+                    .withFileFromClasspath("server-config.template.json", "server-config.template.json")
                     .withBuildArg(
                         "lionwebRepositoryCommitId", BuildConfig.LIONWEB_REPOSITORY_COMMIT_ID))
             .dependsOn(db)
