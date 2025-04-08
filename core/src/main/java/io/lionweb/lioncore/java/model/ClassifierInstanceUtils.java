@@ -7,6 +7,7 @@ import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -288,5 +289,53 @@ public class ClassifierInstanceUtils {
     } else {
       return false;
     }
+  }
+
+  public static boolean shallowClassifierInstanceEquality(
+      @Nullable ClassifierInstance<?> classifierInstance1,
+      @Nullable ClassifierInstance<?> classifierInstance2) {
+    if (classifierInstance1 == null && classifierInstance2 == null) {
+      return true;
+    }
+    if (classifierInstance1 != null
+        && classifierInstance2 != null
+        && classifierInstance1.getID() != null) {
+      return Objects.equals(classifierInstance1.getID(), classifierInstance2.getID());
+    }
+    return Objects.equals(classifierInstance1, classifierInstance2);
+  }
+
+  public static boolean shallowAnnotationsEquality(
+      List<AnnotationInstance> annotations1, List<AnnotationInstance> annotations2) {
+    return annotations1.size() == annotations2.size()
+        && IntStream.range(0, annotations1.size())
+            .allMatch(
+                i -> shallowClassifierInstanceEquality(annotations1.get(i), annotations2.get(i)));
+  }
+
+  public static boolean shallowContainmentEquality(
+      List<? extends Node> childrenA, List<? extends Node> childrenB) {
+    return childrenA.size() == childrenB.size()
+        && IntStream.range(0, childrenA.size())
+            .allMatch(i -> shallowClassifierInstanceEquality(childrenA.get(i), childrenB.get(i)));
+  }
+
+  public static boolean shallowReferenceEquality(
+      List<ReferenceValue> references1, List<ReferenceValue> references2) {
+    return references1.size() == references2.size()
+        && IntStream.range(0, references1.size())
+            .allMatch(
+                i -> {
+                  String referredID1 = references1.get(i).getReferredID();
+                  String referredID2 = references2.get(i).getReferredID();
+                  String resolveInfo1 = references1.get(i).getResolveInfo();
+                  String resolveInfo2 = references2.get(i).getResolveInfo();
+
+                  if (referredID1 == null && referredID2 == null) {
+                    return Objects.equals(resolveInfo1, resolveInfo2);
+                  } else {
+                    return Objects.equals(referredID1, referredID2);
+                  }
+                });
   }
 }

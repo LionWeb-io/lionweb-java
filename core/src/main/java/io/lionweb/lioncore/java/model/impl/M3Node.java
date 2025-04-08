@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import static io.lionweb.lioncore.java.model.ClassifierInstanceUtils.*;
+
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Concept;
 import io.lionweb.lioncore.java.language.Containment;
@@ -278,7 +280,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     if (value == null) {
       return false;
     }
-    if (getContainmentMultipleValue(linkName).contains(value)) {
+    if (getContainmentMultipleValue(linkName).stream().anyMatch(e -> e == value)) {
       return false;
     }
     ((M3Node) value).setParent(this);
@@ -304,5 +306,29 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   @Nonnull
   public LionWebVersion getLionWebVersion() {
     return lionWebVersion;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (!(o instanceof Node)) return false;
+    Node other = (Node) o;
+
+    return Objects.equals(getID(), other.getID())
+        && shallowClassifierInstanceEquality(parent, other.getParent())
+        && shallowClassifierInstanceEquality(getClassifier(), other.getClassifier())
+        && getClassifier().allProperties().stream()
+            .allMatch(p -> Objects.equals(getPropertyValue(p), other.getPropertyValue(p)))
+        && getClassifier().allContainments().stream()
+            .allMatch(c -> shallowContainmentEquality(getChildren(c), other.getChildren(c)))
+        && getClassifier().allReferences().stream()
+            .allMatch(
+                r -> shallowReferenceEquality(getReferenceValues(r), other.getReferenceValues(r)))
+        && shallowAnnotationsEquality(annotations, other.getAnnotations());
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(id);
   }
 }
