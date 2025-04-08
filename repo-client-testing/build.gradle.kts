@@ -1,4 +1,5 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import java.util.jar.Manifest
 
 plugins {
     `jvm-test-suite`
@@ -127,6 +128,25 @@ tasks.withType<Test>().configureEach {
 }
 
 val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
+
+val lwJavaJar = configurations.runtimeClasspath.get()
+    .find { it.name.startsWith("lionweb-java-2024.1-repo-client") } as File
+val manifestValue: String? = zipTree(lwJavaJar).matching {
+    include("META-INF/MANIFEST.MF")
+}.files.firstOrNull()?.let { manifestFile ->
+    manifestFile.inputStream().use {
+        Manifest(it)
+    }.mainAttributes.getValue("lionwebRepositoryCommitID")
+}
+
+tasks.create("do1") {
+    doLast {
+        println("LW JAVA JAR ${lwJavaJar}")
+        println("manifestValue ${manifestValue}")
+    }
+}
+
+
 
 buildConfig {
     sourceSets.getByName("main") {
