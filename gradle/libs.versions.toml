@@ -18,6 +18,8 @@ gson = { group = "com.google.code.gson", name="gson", version="2.10.1" }
 kotlinreflect = { group = "org.jetbrains.kotlin", name="kotlin-reflect", version.ref = "kotlinVersion" }
 ktestjunit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlinVersion" }
 lwjavacore = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-core", version.ref = "lwJavaVersion"}
+lwjavarepo = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-repo-client", version.ref = "lwJavaVersion"}
+lwjavarepotesting = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-repo-client-testing", version.ref = "lwJavaVersion"}
 lwjavaextensions = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-extensions", version.ref = "lwJavaVersion"}
 kotestrunner = { module="io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVersion"}
 kotestassertions = { module="io.kotest:kotest-assertions-core", version.ref = "kotestVersion"}

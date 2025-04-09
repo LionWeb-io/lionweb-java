@@ -1,4 +1,5 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import java.util.jar.Manifest
 
 plugins {
     `jvm-test-suite`
@@ -38,17 +39,6 @@ ktlint {
 
 val jvmVersion = extra["jvmVersion"] as String
 
-dependencies {
-    implementation(libs.okhttp)
-    implementation(project(":core"))
-    implementation(libs.lwjavacore)
-    implementation(libs.lwjavaextensions)
-    implementation(libs.gson)
-    implementation(libs.kotlinreflect)
-    testImplementation(kotlin("test"))
-    implementation(libs.protobuf)
-}
-
 testing {
     suites {
         val test by getting(JvmTestSuite::class) {
@@ -56,20 +46,6 @@ testing {
         }
 
         register<JvmTestSuite>("functionalTest") {
-            dependencies {
-                implementation(project())
-                implementation(project(":core"))
-                implementation(project(":repo-client-testing"))
-                implementation(libs.lwjavacore)
-                implementation(libs.lwjavaextensions)
-                implementation(libs.ktestjunit)
-                implementation(libs.kotestrunner)
-                implementation(libs.kotestassertions)
-                implementation(libs.kotestproperty)
-                implementation(libs.testcontainers)
-                implementation(libs.testcontainersjunit)
-                implementation(libs.testcontainerspg)
-            }
 
             targets {
                 all {
@@ -80,6 +56,32 @@ testing {
             }
         }
     }
+}
+
+dependencies {
+    implementation(libs.okhttp)
+    implementation(project(":core"))
+    implementation(libs.lwjavacore)
+    implementation(libs.lwjavaextensions)
+    implementation(libs.gson)
+    implementation(libs.kotlinreflect)
+    testImplementation(kotlin("test"))
+    implementation(libs.protobuf)
+
+    "functionalTestImplementation"(project(":repo-client"))
+    "functionalTestImplementation"(project(":repo-client-testing"))
+    "functionalTestImplementation"(project(":core"))
+    "functionalTestImplementation"(libs.lwjavacore)
+    "functionalTestImplementation"(libs.lwjavaextensions)
+    "functionalTestImplementation"(libs.ktestjunit)
+    "functionalTestImplementation"(libs.kotestrunner)
+    "functionalTestImplementation"(libs.kotestassertions)
+    "functionalTestImplementation"(libs.kotestproperty)
+    "functionalTestImplementation"(libs.testcontainers)
+    "functionalTestImplementation"(libs.testcontainersjunit)
+    "functionalTestImplementation"(libs.testcontainerspg)
+    "functionalTestImplementation"(libs.lwjavarepo)
+    "functionalTestImplementation"(libs.lwjavarepotesting)
 }
 
 val specsVersion: String by project
@@ -155,6 +157,19 @@ tasks.withType<Test>().configureEach {
 }
 
 val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
+
+val lwJavaJar =
+    configurations.findByName("functionalTestRuntimeClasspath")!!
+        .find { it.name.startsWith("lionweb-java-2024.1-repo-client-0.4.0") } as File
+// Eventually we should use this value and drop it from gradle.properties
+val lwJavaLionwebRepositoryCommitID: String? =
+    zipTree(lwJavaJar).matching {
+        include("META-INF/MANIFEST.MF")
+    }.files.firstOrNull()?.let { manifestFile ->
+        manifestFile.inputStream().use {
+            Manifest(it)
+        }.mainAttributes.getValue("lionwebRepositoryCommitID")
+    }
 
 buildConfig {
     sourceSets.getByName("functionalTest") {
