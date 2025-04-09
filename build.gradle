@@ -22,6 +22,8 @@ subprojects {
 release {
     buildTasks = [":core:publishAllPublicationsToMavenCentralRepository",
                   ":extensions:publishAllPublicationsToMavenCentralRepository",
+                  ":repo-client:publishAllPublicationsToMavenCentralRepository",
+                  ":repo-client-testing:publishAllPublicationsToMavenCentralRepository",
                   ":emf:publishAllPublicationsToMavenCentralRepository",
                   ":emf-builtins:publishAllPublicationsToMavenCentralRepository"]
     versionPropertyFile = './gradle.properties'
