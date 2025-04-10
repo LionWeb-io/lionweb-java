@@ -11,5 +11,6 @@ RUN npm install
 RUN npm run build
 RUN echo "cd packages/server" >> run.sh
 RUN echo "envsubst < server-config.template.json > server-config.json" >> run.sh
-RUN echo "npm run dev" >> run.sh
+RUN echo "npm run dev-setup" >> run.sh
+RUN echo "npm run dev-run" >> run.sh
 CMD ["sh", "run.sh"]

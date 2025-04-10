@@ -26,15 +26,15 @@ public class LionWebRepoClientDBAdminApiFunctionalTest extends AbstractRepoClien
   @Test
   public void repositoriesCRUD() throws IOException {
     LionWebRepoClient client =
-        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+        new LionWebRepoClient(LionWebVersion.v2024_1, "localhost", getModelRepoPort(), "default");
 
     // Initially we should have one repository
-    RepositoryConfiguration defaultRepository = new RepositoryConfiguration("default", LionWebVersion.v2023_1, HistorySupport.Disabled);
+    RepositoryConfiguration defaultRepository = new RepositoryConfiguration("default", LionWebVersion.v2024_1, HistorySupport.Disabled);
     assertEquals(new HashSet<>(Collections.singletonList(defaultRepository)),
             client.listRepositories());
 
     // Create repository
-    RepositoryConfiguration repo1 = new RepositoryConfiguration("repo1", LionWebVersion.v2024_1, HistorySupport.Enabled);
+    RepositoryConfiguration repo1 = new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.Enabled);
     client.createRepository(repo1);
 
     // Check list

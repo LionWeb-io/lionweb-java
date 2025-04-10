@@ -355,7 +355,28 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration) throws IOException {
-    throw new UnsupportedOperationException();
+    String url = protocol + "://" + hostname + ":" + port + "/createRepository";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repositoryConfiguration.getName());
+    urlBuilder.addQueryParameter("lionWebVersion", repositoryConfiguration.getLionWebVersion().getVersionString());
+    urlBuilder.addQueryParameter("history", Boolean.toString(repositoryConfiguration.getHistorySupport().toBoolean()));
+
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(RequestBody.create(new byte[0])).build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
   }
 
   @Override
@@ -370,7 +391,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public Set<RepositoryConfiguration> listRepositories() throws IOException {
-    String url = protocol + "://" + hostname + ":" + port + "/bulk/retrieve";
+    String url = protocol + "://" + hostname + ":" + port + "/listRepositories";
     HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
 
     Request.Builder rq = new Request.Builder().url(urlBuilder.build());
@@ -380,24 +401,22 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
       String body = Objects.requireNonNull(response.body()).string();
       if (response.code() == HttpURLConnection.HTTP_OK) {
         JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
-        throw new UnsupportedOperationException();
-//        boolean success = responseData.get("success").getAsBoolean();
-//        if (!success) {
-//          throw new RequestFailureException(url, response.code(), body);
-//        }
-//        List<Node> allNodes = jsonSerialization.deserializeToNodes(responseData.get("chunk"));
-//        Set<String> idsReturned = allNodes.stream().map(n -> n.getID()).collect(Collectors.toSet());
-//        // We want to return only the roots of the trees returned. From those, the other nodes can
-//        // be accessed
-//        return allNodes.stream()
-//                .filter(n -> n.getParent() == null || !idsReturned.contains(n.getParent().getID()))
-//                .collect(Collectors.toList());
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+        return responseData.get("repositories").getAsJsonArray().asList().stream().map(el -> {
+            JsonObject elJO = el.getAsJsonObject();
+            String name = elJO.get("name").getAsString();
+            LionWebVersion lionWebVersion = LionWebVersion.fromValue(elJO.get("lionweb_version").getAsString());
+            HistorySupport historySupport = HistorySupport.fromBoolean(elJO.get("history").getAsBoolean());
+            return new RepositoryConfiguration(name, lionWebVersion, historySupport);
+        }).collect(Collectors.toSet());
       } else {
         throw new RequestFailureException(url, response.code(), body);
       }
     }
   }
-
 
   // ──────────────────────────────────────────────────────
   // Helpers

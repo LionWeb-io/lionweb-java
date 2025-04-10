@@ -1,8 +1,11 @@
 package io.lionweb.repoclient.testing;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.utils.ModelComparator;
 import java.util.Collections;
+
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.testcontainers.Testcontainers;
@@ -15,15 +18,17 @@ public class AbstractRepoClientFunctionalTest {
   private static final int DB_CONTAINER_PORT = 5432;
 
   protected boolean modelRepoDebug = true;
+  protected LionWebVersion lionWebVersion;
 
   protected PostgreSQLContainer<?> db;
   protected GenericContainer<?> modelRepository;
 
   public AbstractRepoClientFunctionalTest() {
-    this(true);
+    this(LionWebVersion.currentVersion, true);
   }
 
-  public AbstractRepoClientFunctionalTest(boolean modelRepoDebug) {
+  public AbstractRepoClientFunctionalTest(@NotNull LionWebVersion lionWebVersion, boolean modelRepoDebug) {
+    this.lionWebVersion = lionWebVersion;
     this.modelRepoDebug = modelRepoDebug;
   }
 
@@ -64,6 +69,7 @@ public class AbstractRepoClientFunctionalTest {
             .withEnv("PGUSER", "postgres")
             .withEnv("PGPASSWORD", "lionweb")
             .withEnv("PGDB", "lionweb_test")
+            .withEnv("LIONWEB_VERSION", lionWebVersion.getVersionString())
             .withExposedPorts(3005);
 
     modelRepository.setLogConsumers(

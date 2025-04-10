@@ -34,7 +34,7 @@ public class RepositoryConfiguration {
         this.lionWebVersion = lionWebVersion;
     }
 
-    public @NotNull HistorySupport isHistorySupport() {
+    public @NotNull HistorySupport getHistorySupport() {
         return historySupport;
     }
 
