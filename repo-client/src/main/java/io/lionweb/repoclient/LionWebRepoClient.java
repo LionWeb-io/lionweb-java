@@ -8,17 +8,16 @@ import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
 import io.lionweb.lioncore.java.utils.CommonChecks;
+import io.lionweb.repoclient.api.BulkAPIClient;
+import io.lionweb.repoclient.api.DBAdminAPIClient;
+import io.lionweb.repoclient.api.HistorySupport;
+import io.lionweb.repoclient.api.RepositoryConfiguration;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import io.lionweb.repoclient.api.BulkAPIClient;
-import io.lionweb.repoclient.api.DBAdminAPIClient;
-import io.lionweb.repoclient.api.HistorySupport;
-import io.lionweb.repoclient.api.RepositoryConfiguration;
 import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSink;
@@ -183,7 +182,9 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public void createPartitions(List<Node> partitions) throws IOException {
-    createPartitions(jsonSerialization.serializeTreesToJsonString(partitions.toArray(new ClassifierInstance[0])));
+    createPartitions(
+        jsonSerialization.serializeTreesToJsonString(
+            partitions.toArray(new ClassifierInstance[0])));
   }
 
   public void createPartitions(String data) throws IOException {
@@ -354,13 +355,16 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
   //
 
   @Override
-  public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration) throws IOException {
+  public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration)
+      throws IOException {
     String url = protocol + "://" + hostname + ":" + port + "/createRepository";
     HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
     urlBuilder.addQueryParameter("clientId", clientID);
     urlBuilder.addQueryParameter("repository", repositoryConfiguration.getName());
-    urlBuilder.addQueryParameter("lionWebVersion", repositoryConfiguration.getLionWebVersion().getVersionString());
-    urlBuilder.addQueryParameter("history", Boolean.toString(repositoryConfiguration.getHistorySupport().toBoolean()));
+    urlBuilder.addQueryParameter(
+        "lionWebVersion", repositoryConfiguration.getLionWebVersion().getVersionString());
+    urlBuilder.addQueryParameter(
+        "history", Boolean.toString(repositoryConfiguration.getHistorySupport().toBoolean()));
 
     Request.Builder rq = new Request.Builder().url(urlBuilder.build());
     rq = considerAuthenticationToken(rq);
@@ -381,7 +385,26 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public void deleteRepository(@NotNull String repositoryName) throws IOException {
-    throw new UnsupportedOperationException();
+    String url = protocol + "://" + hostname + ":" + port + "/deleteRepository";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repositoryName);
+
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(RequestBody.create(new byte[0])).build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
   }
 
   @Override
@@ -405,13 +428,18 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
         if (!success) {
           throw new RequestFailureException(url, response.code(), body);
         }
-        return responseData.get("repositories").getAsJsonArray().asList().stream().map(el -> {
-            JsonObject elJO = el.getAsJsonObject();
-            String name = elJO.get("name").getAsString();
-            LionWebVersion lionWebVersion = LionWebVersion.fromValue(elJO.get("lionweb_version").getAsString());
-            HistorySupport historySupport = HistorySupport.fromBoolean(elJO.get("history").getAsBoolean());
-            return new RepositoryConfiguration(name, lionWebVersion, historySupport);
-        }).collect(Collectors.toSet());
+        return responseData.get("repositories").getAsJsonArray().asList().stream()
+            .map(
+                el -> {
+                  JsonObject elJO = el.getAsJsonObject();
+                  String name = elJO.get("name").getAsString();
+                  LionWebVersion lionWebVersion =
+                      LionWebVersion.fromValue(elJO.get("lionweb_version").getAsString());
+                  HistorySupport historySupport =
+                      HistorySupport.fromBoolean(elJO.get("history").getAsBoolean());
+                  return new RepositoryConfiguration(name, lionWebVersion, historySupport);
+                })
+            .collect(Collectors.toSet());
       } else {
         throw new RequestFailureException(url, response.code(), body);
       }

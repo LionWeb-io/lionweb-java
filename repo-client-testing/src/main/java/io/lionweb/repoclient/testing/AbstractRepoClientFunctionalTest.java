@@ -4,7 +4,6 @@ import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.utils.ModelComparator;
 import java.util.Collections;
-
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,7 +26,8 @@ public class AbstractRepoClientFunctionalTest {
     this(LionWebVersion.currentVersion, true);
   }
 
-  public AbstractRepoClientFunctionalTest(@NotNull LionWebVersion lionWebVersion, boolean modelRepoDebug) {
+  public AbstractRepoClientFunctionalTest(
+      @NotNull LionWebVersion lionWebVersion, boolean modelRepoDebug) {
     this.lionWebVersion = lionWebVersion;
     this.modelRepoDebug = modelRepoDebug;
   }
