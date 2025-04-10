@@ -14,6 +14,11 @@ import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.lionweb.repoclient.api.BulkAPIClient;
+import io.lionweb.repoclient.api.DBAdminAPIClient;
+import io.lionweb.repoclient.api.HistorySupport;
+import io.lionweb.repoclient.api.RepositoryConfiguration;
 import okhttp3.*;
 import okio.Buffer;
 import okio.BufferedSink;
@@ -22,7 +27,7 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebRepoClient {
+public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   public class Builder {
     private LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
@@ -176,10 +181,16 @@ public class LionWebRepoClient {
   // Bulk APIs
   //
 
+  @Override
+  public void createPartitions(List<Node> partitions) throws IOException {
+    createPartitions(jsonSerialization.serializeTreesToJsonString(partitions.toArray(new ClassifierInstance[0])));
+  }
+
   public void createPartitions(String data) throws IOException {
     nodesStoringOperation(data, "createPartitions");
   }
 
+  @Override
   public void deletePartitions(List<String> ids) throws IOException {
     JsonArray ja = new JsonArray();
     for (String id : ids) {
@@ -204,6 +215,7 @@ public class LionWebRepoClient {
     }
   }
 
+  @Override
   public List<Node> listPartitions() throws IOException {
     String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
     Request.Builder rq =
@@ -231,6 +243,7 @@ public class LionWebRepoClient {
     return listPartitions().stream().map(n -> n.getID()).collect(Collectors.toList());
   }
 
+  @Override
   public List<String> ids(int count) throws IOException {
     if (count < 0) {
       throw new IllegalArgumentException("Count should be greater or equal to zero");
@@ -262,6 +275,7 @@ public class LionWebRepoClient {
     }
   }
 
+  @Override
   public void store(List<Node> nodes) throws IOException {
     if (nodes.isEmpty()) {
       return;
@@ -289,6 +303,7 @@ public class LionWebRepoClient {
     }
   }
 
+  @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
     if (nodeIds.isEmpty()) {
       return Collections.emptyList();
@@ -333,6 +348,56 @@ public class LionWebRepoClient {
       }
     }
   }
+
+  //
+  // DBAdmin APIs
+  //
+
+  @Override
+  public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void deleteRepository(@NotNull String repositoryName) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void createDatabase() throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public Set<RepositoryConfiguration> listRepositories() throws IOException {
+    String url = protocol + "://" + hostname + ":" + port + "/bulk/retrieve";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(RequestBody.create(new byte[0])).build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        throw new UnsupportedOperationException();
+//        boolean success = responseData.get("success").getAsBoolean();
+//        if (!success) {
+//          throw new RequestFailureException(url, response.code(), body);
+//        }
+//        List<Node> allNodes = jsonSerialization.deserializeToNodes(responseData.get("chunk"));
+//        Set<String> idsReturned = allNodes.stream().map(n -> n.getID()).collect(Collectors.toSet());
+//        // We want to return only the roots of the trees returned. From those, the other nodes can
+//        // be accessed
+//        return allNodes.stream()
+//                .filter(n -> n.getParent() == null || !idsReturned.contains(n.getParent().getID()))
+//                .collect(Collectors.toList());
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
+  }
+
 
   // ──────────────────────────────────────────────────────
   // Helpers
