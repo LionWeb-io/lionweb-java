@@ -10,7 +10,13 @@ public interface DBAdminAPIClient {
 
   void deleteRepository(@NotNull String repositoryName) throws IOException;
 
+  /**
+   * Trigger the creation of the database, according to the configuration provided on the server
+   * side. In other words, we cannot dictate the name of the configuration of the database, just
+   * triggers its creation.
+   */
   void createDatabase() throws IOException;
 
+  @NotNull
   Set<RepositoryConfiguration> listRepositories() throws IOException;
 }

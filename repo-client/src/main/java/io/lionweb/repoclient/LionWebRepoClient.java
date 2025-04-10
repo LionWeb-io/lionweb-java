@@ -357,6 +357,8 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
   @Override
   public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration)
       throws IOException {
+    Objects.requireNonNull(repositoryConfiguration, "repositoryConfiguration should not be null");
+
     String url = protocol + "://" + hostname + ":" + port + "/createRepository";
     HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
     urlBuilder.addQueryParameter("clientId", clientID);
@@ -385,6 +387,8 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public void deleteRepository(@NotNull String repositoryName) throws IOException {
+    Objects.requireNonNull(repositoryName, "repositoryName should not be null");
+
     String url = protocol + "://" + hostname + ":" + port + "/deleteRepository";
     HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
     urlBuilder.addQueryParameter("clientId", clientID);
@@ -409,11 +413,28 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public void createDatabase() throws IOException {
-    throw new UnsupportedOperationException();
+    String url = protocol + "://" + hostname + ":" + port + "/createDatabase";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.post(RequestBody.create(new byte[0])).build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), body);
+        }
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
   }
 
   @Override
-  public Set<RepositoryConfiguration> listRepositories() throws IOException {
+  public @NotNull Set<RepositoryConfiguration> listRepositories() throws IOException {
     String url = protocol + "://" + hostname + ":" + port + "/listRepositories";
     HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
 

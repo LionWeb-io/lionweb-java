@@ -13,6 +13,9 @@ public class RepositoryConfiguration {
       @NotNull String name,
       @NotNull LionWebVersion lionWebVersion,
       @NotNull HistorySupport historySupport) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Objects.requireNonNull(historySupport, "historySupport should not be null");
     this.name = name;
     this.lionWebVersion = lionWebVersion;
     this.historySupport = historySupport;
@@ -24,6 +27,7 @@ public class RepositoryConfiguration {
   }
 
   public void setName(@NotNull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     this.name = name;
   }
 
@@ -33,6 +37,7 @@ public class RepositoryConfiguration {
   }
 
   public void setLionWebVersion(@NotNull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
   }
 
@@ -41,6 +46,7 @@ public class RepositoryConfiguration {
   }
 
   public void setHistorySupport(@NotNull HistorySupport historySupport) {
+    Objects.requireNonNull(historySupport, "historySupport should not be null");
     this.historySupport = historySupport;
   }
 
