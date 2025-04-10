@@ -123,6 +123,7 @@ internal class LowLevelRepoClient(
         val url = "http://$hostname:$port/inspection/nodesByClassifier"
         val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
         urlBuilder.addQueryParameter("clientId", clientID)
+        urlBuilder.addQueryParameter("repository", repository)
         if (limit != null) {
             urlBuilder.addQueryParameter("limit", limit.toString())
         }
