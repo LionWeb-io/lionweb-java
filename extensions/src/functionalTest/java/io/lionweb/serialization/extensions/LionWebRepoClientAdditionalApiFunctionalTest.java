@@ -28,19 +28,19 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   }
 
   @Test
-  public void bulkImportUsingJsonAndNoCompression() throws IOException {
+  public void bulkImportUsingJsonAndNoCompression() throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingJsonAndNoCompression", TransferFormat.JSON, Compression.DISABLED);
   }
 
   @Test
-  public void bulkImportUsingJsonAndCompression() throws IOException {
+  public void bulkImportUsingJsonAndCompression() throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingJsonAndCompression", TransferFormat.JSON, Compression.ENABLED);
   }
 
   @Test
-  public void bulkImportUsingProtobufAndNoCompression() throws IOException {
+  public void bulkImportUsingProtobufAndNoCompression() throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingProtobufAndNoCompression",
         TransferFormat.PROTOBUF,
@@ -48,13 +48,13 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   }
 
   @Test
-  public void bulkImportUsingProtobufAndCompression() throws IOException {
+  public void bulkImportUsingProtobufAndCompression() throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingProtobufAndCompression", TransferFormat.PROTOBUF, Compression.ENABLED);
   }
 
   @Test
-  public void bulkImportUsingFlatbuffersAndNoCompression() throws IOException {
+  public void bulkImportUsingFlatbuffersAndNoCompression() throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingFlatbuffersAndNoCompression",
         TransferFormat.FLATBUFFERS,
@@ -62,7 +62,7 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   }
 
   @Test
-  public void bulkImportUsingFlatbuffersAndCompression() throws IOException {
+  public void bulkImportUsingFlatbuffersAndCompression() throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingFlatbuffersAndCompression",
         TransferFormat.FLATBUFFERS,
@@ -111,7 +111,7 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
 
   private void bulkImportTestingRoutine(
       String repositoryName, TransferFormat transferFormat, Compression compression)
-      throws IOException {
+          throws IOException, InterruptedException {
     ExtendedLionWebRepoClient client =
         new ExtendedLionWebRepoClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
@@ -137,6 +137,11 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
     bulkImport1.addNode(library);
     client.bulkImport(bulkImport1, transferFormat, compression);
 
+    // A delay seems necessary only when running on GitHub Actions and not locally.
+    // We may want to check if the server can wait to provide an answer when the operation has been finalized,
+    // but that is not something we can change in this project
+    Thread.sleep(150);
+
     // Verify the library has been recognized as partition, given it had no attach point
     assertEquals(new HashSet(Arrays.asList("lib1")), new HashSet(client.listPartitionsIDs()));
 
@@ -156,6 +161,7 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
     bulkImport2.addNode(b3);
     bulkImport2.addAttachPoint(new BulkImport.AttachPoint("lib1", libraryBooks, "b3"));
     client.bulkImport(bulkImport2, transferFormat, compression);
+    Thread.sleep(150);
 
     // Verify the books has NOT been recognized as partitions, given they had attach points
     assertEquals(new HashSet(Arrays.asList("lib1")), new HashSet(client.listPartitionsIDs()));
