@@ -3,8 +3,10 @@ package io.lionweb.serialization.extensions;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sun.org.apache.xalan.internal.lib.NodeInfo;
 import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.repoclient.LionWebRepoClient;
 import io.lionweb.repoclient.RequestFailureException;
 import okhttp3.MediaType;
@@ -81,7 +83,7 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
             jEl.add("containment", jContainment);
             bodyAttachPoints.add(jEl);
                 });
-        JsonArray bodyNodes = getJsonSerialization().serializeNodesToJsonElement(bulkImport.getNodes()).getAsJsonObject().get("nodes").getAsJsonArray();
+        JsonArray bodyNodes = getJsonSerialization().serializeTreesToJsonElement(bulkImport.getNodes().toArray(new ClassifierInstance<?>[0])).getAsJsonObject().get("nodes").getAsJsonArray();
         body.add("attachPoints", bodyAttachPoints);
         body.add("nodes", bodyNodes);
         String bodyJson = new Gson().toJson(body);
@@ -89,14 +91,17 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
         RequestBody requestBody = RequestBody.create(JSON, bodyJson);
         // Apply compression (or not) to the RequestBody via a helper
         requestBody = CompressionSupport.considerCompression(requestBody, compression);
-        bulkImport(requestBody);
+        bulkImport(requestBody, compression);
     }
 
-    private void bulkImport(RequestBody requestBody) throws IOException {
+    private void bulkImport(RequestBody requestBody, Compression compression) throws IOException {
         String url = protocol.value + "://" + hostname + ":" + port + "/additional/bulkImport";
         Request.Builder rq =
                 new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
         rq = considerAuthenticationToken(rq);
+        if (compression == Compression.ENABLED) {
+            rq = rq.addHeader("Content-Encoding", "gzip");
+        }
         rq.post(requestBody);
         Request request = rq.build();
 
@@ -106,7 +111,12 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
             if (response.code() != HttpURLConnection.HTTP_OK) {
                 throw new RequestFailureException(url, response.code(), responseBody);
             }
-            throw new UnsupportedOperationException();
+
+            JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
+            boolean success = responseData.get("success").getAsBoolean();
+            if (!success) {
+                throw new RequestFailureException(url, response.code(), responseBody);
+            }
         }
     }
 

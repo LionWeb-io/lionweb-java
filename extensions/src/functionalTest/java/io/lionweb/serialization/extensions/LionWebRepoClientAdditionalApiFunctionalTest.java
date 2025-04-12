@@ -16,10 +16,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @Testcontainers
 public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoClientFunctionalTest {
@@ -30,14 +30,43 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
 
   @Test
   public void bulkImportUsingJsonAndNoCompression() throws IOException {
+    bulkImportTestingRoutine("repo_bulkImportUsingJsonAndNoCompression", TransferFormat.JSON, Compression.DISABLED);
+  }
+
+  @Test
+  public void bulkImportUsingJsonAndCompression() throws IOException {
+    bulkImportTestingRoutine("repo_bulkImportUsingJsonAndCompression", TransferFormat.JSON, Compression.ENABLED);
+  }
+
+  @Test
+  public void bulkImportUsingProtobufAndNoCompression() throws IOException {
+    bulkImportTestingRoutine("repo_bulkImportUsingProtobufAndNoCompression", TransferFormat.PROTOBUF, Compression.DISABLED);
+  }
+
+  @Test
+  public void bulkImportUsingProtobufAndCompression() throws IOException {
+    bulkImportTestingRoutine("repo_bulkImportUsingProtobufAndCompression", TransferFormat.PROTOBUF, Compression.ENABLED);
+  }
+
+  @Test
+  public void bulkImportUsingFlatbuffersAndNoCompression() throws IOException {
+    bulkImportTestingRoutine("repo_bulkImportUsingFlatbuffersAndNoCompression", TransferFormat.FLATBUFFERS, Compression.DISABLED);
+  }
+
+  @Test
+  public void bulkImportUsingFlatbuffersAndCompression() throws IOException {
+    bulkImportTestingRoutine("repo_bulkImportUsingFlatbuffersAndCompression", TransferFormat.FLATBUFFERS, Compression.ENABLED);
+  }
+
+  private void bulkImportTestingRoutine(String repositoryName, TransferFormat transferFormat, Compression compression) throws IOException {
     ExtendedLionWebRepoClient client =
-        new ExtendedLionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "repo_bulkImportUsingJsonAndNoCompression");
-    client.createRepository(new RepositoryConfiguration("repo_bulkImportUsingJsonAndNoCompression", LionWebVersion.v2023_1, HistorySupport.Disabled));
+            new ExtendedLionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
+    client.createRepository(new RepositoryConfiguration(repositoryName, LionWebVersion.v2023_1, HistorySupport.Disabled));
     client.getJsonSerialization().registerLanguage(LibraryLanguage.LANGUAGE);
 
     // Let's try an empty bulk import
     BulkImport bulkImport0 = new BulkImport();
-    client.bulkImport(bulkImport0, TransferFormat.JSON, Compression.DISABLED);
+    client.bulkImport(bulkImport0, transferFormat, compression);
 
     // The repository should still be empty
     assertEquals(Collections.emptyList(), client.listPartitionsIDs());
@@ -47,9 +76,13 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
     Library library = new Library("lib1", "The Alexandria's Library");
     Writer w1 = new Writer("w1", "Anonymous de Anonymis");
     Book b1 = new Book("b1", "The history of LionWeb, Volume I", w1);
+    b1.setPages(100);
     library.addBook(b1);
     bulkImport1.addNode(library);
-    client.bulkImport(bulkImport1, TransferFormat.JSON, Compression.DISABLED);
+    client.bulkImport(bulkImport1, transferFormat, compression);
+
+    // Verify the library has been recognized as partition, given it had no attach point
+    assertEquals(new HashSet(Arrays.asList("lib1")), new HashSet(client.listPartitionsIDs()));
 
     // Check content
     List<Node> retrievedNodes1 = client.retrieve(Arrays.asList("lib1"));
@@ -62,10 +95,13 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
     BulkImport bulkImport2 = new BulkImport();
     Containment libraryBooks = LibraryLanguage.LIBRARY.getContainmentByName("books");
     bulkImport2.addNode(b2);
-    bulkImport1.addAttachPoint(new BulkImport.AttachPoint("lib1", libraryBooks, "b2"));
+    bulkImport2.addAttachPoint(new BulkImport.AttachPoint("lib1", libraryBooks, "b2"));
     bulkImport2.addNode(b3);
-    bulkImport1.addAttachPoint(new BulkImport.AttachPoint("lib1", libraryBooks, "b3"));
-    client.bulkImport(bulkImport2, TransferFormat.JSON, Compression.DISABLED);
+    bulkImport2.addAttachPoint(new BulkImport.AttachPoint("lib1", libraryBooks, "b3"));
+    client.bulkImport(bulkImport2, transferFormat, compression);
+
+    // Verify the books has NOT been recognized as partitions, given they had attach points
+    assertEquals(new HashSet(Arrays.asList("lib1")), new HashSet(client.listPartitionsIDs()));
 
     // Check content
     library.addBook(b2);

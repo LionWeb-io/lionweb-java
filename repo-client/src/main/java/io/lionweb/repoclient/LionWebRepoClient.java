@@ -4,6 +4,7 @@ import com.google.gson.*;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
@@ -341,7 +342,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
         // We want to return only the roots of the trees returned. From those, the other nodes can
         // be accessed
         return allNodes.stream()
-            .filter(n -> n.getParent() == null || !idsReturned.contains(n.getParent().getID()))
+            .filter(n -> !(n instanceof ProxyNode) && (n.getParent() == null || !idsReturned.contains(n.getParent().getID())))
             .collect(Collectors.toList());
       } else {
         throw new RequestFailureException(url, response.code(), body);
