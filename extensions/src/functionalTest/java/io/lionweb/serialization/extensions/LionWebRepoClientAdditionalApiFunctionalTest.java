@@ -54,7 +54,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   }
 
   @Test
-  public void bulkImportUsingFlatbuffersAndNoCompression() throws IOException, InterruptedException {
+  public void bulkImportUsingFlatbuffersAndNoCompression()
+      throws IOException, InterruptedException {
     bulkImportTestingRoutine(
         "repo_bulkImportUsingFlatbuffersAndNoCompression",
         TransferFormat.FLATBUFFERS,
@@ -111,7 +112,7 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
 
   private void bulkImportTestingRoutine(
       String repositoryName, TransferFormat transferFormat, Compression compression)
-          throws IOException, InterruptedException {
+      throws IOException, InterruptedException {
     ExtendedLionWebRepoClient client =
         new ExtendedLionWebRepoClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
@@ -138,7 +139,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
     client.bulkImport(bulkImport1, transferFormat, compression);
 
     // A delay seems necessary only when running on GitHub Actions and not locally.
-    // We may want to check if the server can wait to provide an answer when the operation has been finalized,
+    // We may want to check if the server can wait to provide an answer when the operation has been
+    // finalized,
     // but that is not something we can change in this project
     Thread.sleep(150);
 
