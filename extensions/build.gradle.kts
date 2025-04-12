@@ -155,7 +155,7 @@ dependencies {
     "functionalTestImplementation"(libs.testcontainers)
     "functionalTestImplementation"(libs.testcontainersjunit)
     "functionalTestImplementation"(libs.testcontainerspg)
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    "functionalTestImplementation"(libs.junit.api)
+    "functionalTestImplementation"(libs.junit.engine)
     "functionalTestImplementation"(libs.gson)
 }

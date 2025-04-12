@@ -132,14 +132,6 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
     }
   }
 
-  public List<NodeInfo> getNodeTree(List<String> nodeIDs) throws IOException {
-    return getNodeTree(nodeIDs, null);
-  }
-
-  public List<NodeInfo> getNodeTree(@Nonnull String nodeID) throws IOException {
-    return getNodeTree(Collections.singletonList(nodeID));
-  }
-
   private void bulkImportUsingJson(BulkImport bulkImport, Compression compression)
       throws IOException {
     JsonObject body = new JsonObject();
