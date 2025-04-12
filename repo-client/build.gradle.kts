@@ -100,13 +100,14 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
 
-
 tasks.withType<Test>().all {
     testLogging {
         showStandardStreams = true
         showExceptions = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
+    // Set the environment variable so that Testcontainers can reuse containers between test runs
+    environment("TESTCONTAINERS_REUSE_ENABLE", "true")
 }
 
 testing {

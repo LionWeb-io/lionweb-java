@@ -38,6 +38,7 @@ public class AbstractRepoClientFunctionalTest {
   public void setup() {
     db =
         new PostgreSQLContainer<>("postgres:16.1")
+                .withReuse(true)
             .withNetwork(network)
             .withNetworkAliases("mypgdb")
             .withUsername("postgres")
@@ -49,6 +50,7 @@ public class AbstractRepoClientFunctionalTest {
             frame -> System.out.println("DB: " + frame.getUtf8String().trim())));
 
     db.start();
+
 
     int dbPort = db.getFirstMappedPort();
     Testcontainers.exposeHostPorts(dbPort);
@@ -62,6 +64,7 @@ public class AbstractRepoClientFunctionalTest {
                         "server-config.template.json", "server-config.template.json")
                     .withBuildArg(
                         "lionwebRepositoryCommitId", BuildConfig.LIONWEB_REPOSITORY_COMMIT_ID))
+                .withReuse(true)
             .dependsOn(db)
             .withNetwork(network)
             .withEnv("PGHOST", "mypgdb")
