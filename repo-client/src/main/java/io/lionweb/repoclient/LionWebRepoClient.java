@@ -26,14 +26,14 @@ import org.jetbrains.annotations.Nullable;
 public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {
 
   public class Builder {
-    private LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
-    private String hostname = "localhost";
-    private int port = 3005;
-    private String authorizationToken = null;
-    private String clientID = "GenericJavaBasedLionWebClient";
-    private String repository = "default";
-    private long connectTimeoutInSeconds = 60;
-    private long callTimeoutInSeconds = 60;
+    protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
+    protected String hostname = "localhost";
+    protected int port = 3005;
+    protected String authorizationToken = null;
+    protected String clientID = "GenericJavaBasedLionWebClient";
+    protected String repository = "default";
+    protected long connectTimeoutInSeconds = 60;
+    protected long callTimeoutInSeconds = 60;
 
     public Builder withVersion(LionWebVersion version) {
       this.lionWebVersion = version;
@@ -88,19 +88,17 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     }
   }
 
-  private static final MediaType JSON = MediaType.get("application/json");
-  private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
+  protected static final MediaType JSON = MediaType.get("application/json");
 
-  private final Protocol protocol = Protocol.HTTP;
-  private final String hostname;
-  private final int port;
-  private final String authorizationToken;
-  private final String clientID;
-  private final String repository;
-  private final OkHttpClient httpClient;
-  private final Gson gson = new GsonBuilder().serializeNulls().create();
-  private final JsonSerialization jsonSerialization;
+  protected final Protocol protocol = Protocol.HTTP;
+  protected final String hostname;
+  protected final int port;
+  protected final String authorizationToken;
+  protected final String clientID;
+  protected final String repository;
+  protected final OkHttpClient httpClient;
+  protected final Gson gson = new GsonBuilder().serializeNulls().create();
+  protected final JsonSerialization jsonSerialization;
 
   //
   // Constructors
@@ -299,6 +297,10 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
         throw new RequestFailureException(url, response.code(), body);
       }
     }
+  }
+
+  public List<Node> retrieve(List<String> nodeIds) throws IOException {
+    return retrieve(nodeIds, Integer.MAX_VALUE);
   }
 
   @Override
@@ -542,23 +544,23 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   // Helpers
   // ──────────────────────────────────────────────────────
 
-  private HttpUrl addClientIdQueryParam(String rawUrl) {
+  protected HttpUrl addClientIdQueryParam(String rawUrl) {
     HttpUrl.Builder builder = HttpUrl.parse(rawUrl).newBuilder();
     builder.addQueryParameter("clientId", clientID);
     return builder.build();
   }
 
-  private HttpUrl addRepositoryQueryParam(HttpUrl url) {
+  protected HttpUrl addRepositoryQueryParam(HttpUrl url) {
     return url.newBuilder().addQueryParameter("repository", repository).build();
   }
 
-  private Request.Builder considerAuthenticationToken(Request.Builder builder) {
+  protected Request.Builder considerAuthenticationToken(Request.Builder builder) {
     return (authorizationToken == null)
         ? builder
         : builder.addHeader("Authorization", authorizationToken);
   }
 
-  private RequestBody gzipCompress(RequestBody original) throws IOException {
+  protected RequestBody gzipCompress(RequestBody original) throws IOException {
     Buffer buffer = new Buffer();
     original.writeTo(buffer);
 

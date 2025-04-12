@@ -27,7 +27,6 @@ tasks.withType<Jar>().configureEach {
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":extensions"))
     implementation(libs.okhttp)
     implementation(libs.gson)
     testImplementation(libs.junit)

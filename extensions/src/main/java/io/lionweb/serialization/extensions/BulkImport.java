@@ -1,5 +1,6 @@
 package io.lionweb.serialization.extensions;
 
+import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import java.util.LinkedList;
@@ -35,6 +36,10 @@ public class BulkImport {
     return nodes;
   }
 
+  public boolean isEmpty() {
+    return nodes.isEmpty();
+  }
+
   public static class AttachPoint {
     public String container;
     public MetaPointer containment;
@@ -43,6 +48,12 @@ public class BulkImport {
     public AttachPoint(String container, MetaPointer containment, String rootId) {
       this.container = container;
       this.containment = containment;
+      this.rootId = rootId;
+    }
+
+    public AttachPoint(String container, Containment containment, String rootId) {
+      this.container = container;
+      this.containment = MetaPointer.from(containment);
       this.rootId = rootId;
     }
 
