@@ -8,10 +8,7 @@ import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
 import io.lionweb.lioncore.java.utils.CommonChecks;
-import io.lionweb.repoclient.api.BulkAPIClient;
-import io.lionweb.repoclient.api.DBAdminAPIClient;
-import io.lionweb.repoclient.api.HistorySupport;
-import io.lionweb.repoclient.api.RepositoryConfiguration;
+import io.lionweb.repoclient.api.*;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -26,7 +23,7 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
+public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {
 
   public class Builder {
     private LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
@@ -461,6 +458,80 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
                   return new RepositoryConfiguration(name, lionWebVersion, historySupport);
                 })
             .collect(Collectors.toSet());
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
+  }
+
+  //
+  // Inspection APIs
+  //
+
+  @Override
+  public Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
+    String url = protocol + "://" + hostname + ":" + port + "/inspection/nodesByClassifier";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repository);
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.get().build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonArray responseData = JsonParser.parseString(body).getAsJsonArray();
+        Map<ClassifierKey, ClassifierResult> result = new HashMap<>();
+        responseData.forEach(
+            entry -> {
+              JsonObject entryJO = entry.getAsJsonObject();
+
+              String language = entryJO.get("language").getAsString();
+              String classifier = entryJO.get("classifier").getAsString();
+              ClassifierKey classifierKey = new ClassifierKey(language, classifier);
+
+              Set<String> ids = new HashSet<>();
+              entryJO.get("ids").getAsJsonArray().forEach(el -> ids.add(el.getAsString()));
+              int size = entryJO.get("size").getAsInt();
+              ClassifierResult classifierResult = new ClassifierResult(ids, size);
+
+              result.put(classifierKey, classifierResult);
+            });
+        return result;
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
+  }
+
+  @Override
+  public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
+    String url = protocol + "://" + hostname + ":" + port + "/inspection/nodesByLanguage";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repository);
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.get().build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonArray responseData = JsonParser.parseString(body).getAsJsonArray();
+        Map<String, ClassifierResult> result = new HashMap<>();
+        responseData.forEach(
+            entry -> {
+              JsonObject entryJO = entry.getAsJsonObject();
+
+              String language = entryJO.get("language").getAsString();
+
+              Set<String> ids = new HashSet<>();
+              entryJO.get("ids").getAsJsonArray().forEach(el -> ids.add(el.getAsString()));
+              int size = entryJO.get("size").getAsInt();
+              ClassifierResult classifierResult = new ClassifierResult(ids, size);
+
+              result.put(language, classifierResult);
+            });
+        return result;
       } else {
         throw new RequestFailureException(url, response.code(), body);
       }
