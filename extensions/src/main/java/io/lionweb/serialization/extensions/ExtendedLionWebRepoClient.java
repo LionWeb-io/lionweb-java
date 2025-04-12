@@ -7,6 +7,7 @@ import com.google.gson.JsonParser;
 import com.sun.org.apache.xalan.internal.lib.NodeInfo;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.protobuf.PBBulkImport;
 import io.lionweb.repoclient.LionWebRepoClient;
 import io.lionweb.repoclient.RequestFailureException;
 import okhttp3.MediaType;
@@ -58,6 +59,12 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
             case JSON:
                 bulkImportUsingJson(bulkImport, compression);
                 return;
+            case PROTOBUF:
+                bulkImportUsingProtobuf(bulkImport, compression);
+                return;
+            case FLATBUFFERS:
+                bulkImportUsingFlatbuffers(bulkImport, compression);
+                return;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -89,7 +96,37 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
         String bodyJson = new Gson().toJson(body);
 
         RequestBody requestBody = RequestBody.create(JSON, bodyJson);
-        // Apply compression (or not) to the RequestBody via a helper
+        requestBody = CompressionSupport.considerCompression(requestBody, compression);
+        bulkImport(requestBody, compression);
+    }
+
+    private void bulkImportUsingProtobuf(BulkImport bulkImport, Compression compression) throws IOException {
+        ExtraProtoBufSerialization pbSerialization = new ExtraProtoBufSerialization();
+        pbSerialization.setUnavailableChildrenPolicy(jsonSerialization.getUnavailableChildrenPolicy());
+        pbSerialization.setUnavailableParentPolicy(jsonSerialization.getUnavailableParentPolicy());
+        pbSerialization.setUnavailableReferenceTargetPolicy(jsonSerialization.getUnavailableReferenceTargetPolicy());
+        pbSerialization.setClassifierResolver(jsonSerialization.getClassifierResolver());
+        pbSerialization.setInstanceResolver(jsonSerialization.getInstanceResolver());
+        pbSerialization.setInstantiator(jsonSerialization.getInstantiator());
+        pbSerialization.setPrimitiveValuesSerialization(jsonSerialization.getPrimitiveValuesSerialization());
+        PBBulkImport pbBulkImport = pbSerialization.serializeBulkImport(bulkImport);
+        byte[] bytes = pbBulkImport.toByteArray();
+        RequestBody requestBody = RequestBody.create(PROTOBUF, bytes);
+        requestBody = CompressionSupport.considerCompression(requestBody, compression);
+        bulkImport(requestBody, compression);
+    }
+
+    private void bulkImportUsingFlatbuffers(BulkImport bulkImport, Compression compression) throws IOException {
+        ExtraFlatBuffersSerialization fbSerialization = new ExtraFlatBuffersSerialization();
+        fbSerialization.setUnavailableChildrenPolicy(jsonSerialization.getUnavailableChildrenPolicy());
+        fbSerialization.setUnavailableParentPolicy(jsonSerialization.getUnavailableParentPolicy());
+        fbSerialization.setUnavailableReferenceTargetPolicy(jsonSerialization.getUnavailableReferenceTargetPolicy());
+        fbSerialization.setClassifierResolver(jsonSerialization.getClassifierResolver());
+        fbSerialization.setInstanceResolver(jsonSerialization.getInstanceResolver());
+        fbSerialization.setInstantiator(jsonSerialization.getInstantiator());
+        fbSerialization.setPrimitiveValuesSerialization(jsonSerialization.getPrimitiveValuesSerialization());
+        byte[] bytes = fbSerialization.serializeBulkImport(bulkImport);
+        RequestBody requestBody = RequestBody.create(FLATBUFFERS, bytes);
         requestBody = CompressionSupport.considerCompression(requestBody, compression);
         bulkImport(requestBody, compression);
     }
@@ -120,29 +157,4 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
         }
     }
 
-
-//    private fun bulkImportUsingJson(
-//            bulkImport: BulkImport,
-//            compress: Boolean = false,
-//            ) {
-//        val body = JsonObject()
-//        val bodyAttachPoints = JsonArray()
-//        bulkImport.attachPoints.forEach { attachPoint ->
-//                val jContainment = JsonObject()
-//            jContainment.addProperty("language", attachPoint.containment.language)
-//            jContainment.addProperty("version", attachPoint.containment.version)
-//            jContainment.addProperty("key", attachPoint.containment.key)
-//
-//            val jEl = JsonObject()
-//            jEl.addProperty("container", attachPoint.container)
-//            jEl.addProperty("root", attachPoint.rootId)
-//            jEl.add("containment", jContainment)
-//            bodyAttachPoints.add(jEl)
-//        }
-//        val bodyNodes = jsonSerialization.serializeNodesToJsonElement(bulkImport.nodes).asJsonObject.get("nodes").asJsonArray
-//        body.add("attachPoints", bodyAttachPoints)
-//        body.add("nodes", bodyNodes)
-//        val bodyJson = Gson().toJson(body)
-//        return lowLevelRepoClient.bulkImportUsingJson(bodyJson, compress = compress)
-//    }
 }
