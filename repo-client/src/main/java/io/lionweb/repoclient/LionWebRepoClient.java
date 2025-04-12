@@ -342,7 +342,10 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
         // We want to return only the roots of the trees returned. From those, the other nodes can
         // be accessed
         return allNodes.stream()
-            .filter(n -> !(n instanceof ProxyNode) && (n.getParent() == null || !idsReturned.contains(n.getParent().getID())))
+            .filter(
+                n ->
+                    !(n instanceof ProxyNode)
+                        && (n.getParent() == null || !idsReturned.contains(n.getParent().getID())))
             .collect(Collectors.toList());
       } else {
         throw new RequestFailureException(url, response.code(), body);

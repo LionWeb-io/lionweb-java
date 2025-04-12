@@ -1,5 +1,7 @@
 package io.lionweb.serialization.extensions;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.model.Node;
@@ -10,16 +12,13 @@ import io.lionweb.serialization.extensions.library.Book;
 import io.lionweb.serialization.extensions.library.Library;
 import io.lionweb.serialization.extensions.library.LibraryLanguage;
 import io.lionweb.serialization.extensions.library.Writer;
-import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.Test;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
 public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoClientFunctionalTest {
@@ -30,38 +29,55 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
 
   @Test
   public void bulkImportUsingJsonAndNoCompression() throws IOException {
-    bulkImportTestingRoutine("repo_bulkImportUsingJsonAndNoCompression", TransferFormat.JSON, Compression.DISABLED);
+    bulkImportTestingRoutine(
+        "repo_bulkImportUsingJsonAndNoCompression", TransferFormat.JSON, Compression.DISABLED);
   }
 
   @Test
   public void bulkImportUsingJsonAndCompression() throws IOException {
-    bulkImportTestingRoutine("repo_bulkImportUsingJsonAndCompression", TransferFormat.JSON, Compression.ENABLED);
+    bulkImportTestingRoutine(
+        "repo_bulkImportUsingJsonAndCompression", TransferFormat.JSON, Compression.ENABLED);
   }
 
   @Test
   public void bulkImportUsingProtobufAndNoCompression() throws IOException {
-    bulkImportTestingRoutine("repo_bulkImportUsingProtobufAndNoCompression", TransferFormat.PROTOBUF, Compression.DISABLED);
+    bulkImportTestingRoutine(
+        "repo_bulkImportUsingProtobufAndNoCompression",
+        TransferFormat.PROTOBUF,
+        Compression.DISABLED);
   }
 
   @Test
   public void bulkImportUsingProtobufAndCompression() throws IOException {
-    bulkImportTestingRoutine("repo_bulkImportUsingProtobufAndCompression", TransferFormat.PROTOBUF, Compression.ENABLED);
+    bulkImportTestingRoutine(
+        "repo_bulkImportUsingProtobufAndCompression", TransferFormat.PROTOBUF, Compression.ENABLED);
   }
 
   @Test
   public void bulkImportUsingFlatbuffersAndNoCompression() throws IOException {
-    bulkImportTestingRoutine("repo_bulkImportUsingFlatbuffersAndNoCompression", TransferFormat.FLATBUFFERS, Compression.DISABLED);
+    bulkImportTestingRoutine(
+        "repo_bulkImportUsingFlatbuffersAndNoCompression",
+        TransferFormat.FLATBUFFERS,
+        Compression.DISABLED);
   }
 
   @Test
   public void bulkImportUsingFlatbuffersAndCompression() throws IOException {
-    bulkImportTestingRoutine("repo_bulkImportUsingFlatbuffersAndCompression", TransferFormat.FLATBUFFERS, Compression.ENABLED);
+    bulkImportTestingRoutine(
+        "repo_bulkImportUsingFlatbuffersAndCompression",
+        TransferFormat.FLATBUFFERS,
+        Compression.ENABLED);
   }
 
-  private void bulkImportTestingRoutine(String repositoryName, TransferFormat transferFormat, Compression compression) throws IOException {
+  private void bulkImportTestingRoutine(
+      String repositoryName, TransferFormat transferFormat, Compression compression)
+      throws IOException {
     ExtendedLionWebRepoClient client =
-            new ExtendedLionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
-    client.createRepository(new RepositoryConfiguration(repositoryName, LionWebVersion.v2023_1, HistorySupport.Disabled));
+        new ExtendedLionWebRepoClient(
+            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
+    client.createRepository(
+        new RepositoryConfiguration(
+            repositoryName, LionWebVersion.v2023_1, HistorySupport.Disabled));
     client.getJsonSerialization().registerLanguage(LibraryLanguage.LANGUAGE);
 
     // Let's try an empty bulk import
@@ -86,7 +102,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
 
     // Check content
     List<Node> retrievedNodes1 = client.retrieve(Arrays.asList("lib1"));
-    Node retrievedLibrary1 = retrievedNodes1.stream().filter(n -> n.getID().equals("lib1")).findFirst().get();
+    Node retrievedLibrary1 =
+        retrievedNodes1.stream().filter(n -> n.getID().equals("lib1")).findFirst().get();
     assertEquals(library, retrievedLibrary1);
 
     // Then, let's attach more data to an existing partition
@@ -108,7 +125,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
     library.addBook(b3);
 
     List<Node> retrievedNodes2 = client.retrieve(Arrays.asList("lib1"));
-    Node retrievedLibrary2 = retrievedNodes2.stream().filter(n -> n.getID().equals("lib1")).findFirst().get();
+    Node retrievedLibrary2 =
+        retrievedNodes2.stream().filter(n -> n.getID().equals("lib1")).findFirst().get();
     assertEquals(library, retrievedLibrary2);
   }
 }
