@@ -183,6 +183,10 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
             partitions.toArray(new ClassifierInstance[0])));
   }
 
+  public void createPartition(@NotNull Node partition) throws IOException {
+    createPartitions(Collections.singletonList(partition));
+  }
+
   public void createPartitions(String data) throws IOException {
     nodesStoringOperation(data, "createPartitions");
   }
@@ -298,6 +302,10 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
         throw new RequestFailureException(url, response.code(), body);
       }
     }
+  }
+
+  public void store(@NotNull Node node) throws IOException {
+    store(Collections.singletonList(node));
   }
 
   public List<Node> retrieve(List<String> nodeIds) throws IOException {

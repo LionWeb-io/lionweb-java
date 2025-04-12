@@ -69,6 +69,46 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
         Compression.ENABLED);
   }
 
+  @Test
+  public void nodeTree() throws IOException {
+    String repositoryName = "repo_nodeTree";
+    ExtendedLionWebRepoClient client =
+        new ExtendedLionWebRepoClient(
+            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
+    client.createRepository(
+        new RepositoryConfiguration(
+            repositoryName, LionWebVersion.v2023_1, HistorySupport.Disabled));
+
+    assertEquals(Collections.emptyList(), client.getNodeTree("lib1"));
+
+    Library library = new Library("lib1", "The Alexandria's Library");
+    client.createPartition(library);
+    assertEquals(
+        Collections.singletonList(new NodeInfo("lib1", null, 0)), client.getNodeTree("lib1"));
+
+    Writer w1 = new Writer("w1", "Anonymous de Anonymis");
+    Book b1 = new Book("b1", "The history of LionWeb, Volume I", w1);
+    b1.setPages(100);
+    library.addBook(b1);
+    client.store(library);
+    assertEquals(
+        Arrays.asList(new NodeInfo("lib1", null, 0), new NodeInfo("b1", "lib1", 1)),
+        client.getNodeTree("lib1"));
+
+    Book b2 = new Book("b2", "The history of LionWeb, Volume II", w1);
+    Book b3 = new Book("b3", "The history of LionWeb, Volume III", w1);
+    library.addBook(b2);
+    library.addBook(b3);
+    client.store(library);
+    assertEquals(
+        Arrays.asList(
+            new NodeInfo("lib1", null, 0),
+            new NodeInfo("b1", "lib1", 1),
+            new NodeInfo("b2", "lib1", 1),
+            new NodeInfo("b3", "lib1", 1)),
+        client.getNodeTree("lib1"));
+  }
+
   private void bulkImportTestingRoutine(
       String repositoryName, TransferFormat transferFormat, Compression compression)
       throws IOException {

@@ -1,10 +1,6 @@
 package io.lionweb.serialization.extensions;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.sun.org.apache.xalan.internal.lib.NodeInfo;
+import com.google.gson.*;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.protobuf.PBBulkImport;
@@ -12,13 +8,13 @@ import io.lionweb.repoclient.LionWebRepoClient;
 import io.lionweb.repoclient.RequestFailureException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import okhttp3.MediaType;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import okhttp3.*;
 
 public class ExtendedLionWebRepoClient extends LionWebRepoClient implements AdditionalAPIClient {
 
@@ -90,7 +86,58 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
   @Override
   public List<NodeInfo> getNodeTree(List<String> nodeIDs, @Nullable Integer depthLimit)
       throws IOException {
-    throw new UnsupportedOperationException();
+    if (nodeIDs.isEmpty()) {
+      return Collections.emptyList();
+    }
+    String url = protocol.value + "://" + hostname + ":" + port + "/additional/getNodeTree";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repository).build();
+    if (depthLimit != null) {
+      urlBuilder.addQueryParameter("depthLimit", depthLimit.toString());
+    }
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    JsonObject bodyJO = new JsonObject();
+    JsonArray ids = new JsonArray();
+    nodeIDs.forEach(ids::add);
+    bodyJO.add("ids", ids);
+    String bodyJson = new Gson().toJson(bodyJO);
+    RequestBody requestBody = RequestBody.create(bodyJson, JSON);
+    Request request = rq.post(requestBody).build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String responseBody = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
+        boolean success = responseData.get("success").getAsBoolean();
+        if (!success) {
+          throw new RequestFailureException(url, response.code(), responseBody);
+        }
+        JsonArray data = responseData.get("data").getAsJsonArray();
+        return data.asList().stream()
+            .map(
+                entry -> {
+                  JsonObject entryJO = entry.getAsJsonObject();
+                  String id = entryJO.get("id").getAsString();
+                  JsonElement parentValue = entryJO.get("parent");
+                  String parent =
+                      parentValue.isJsonNull() ? null : entryJO.get("parent").getAsString();
+                  int depth = entryJO.get("depth").getAsInt();
+                  return new NodeInfo(id, parent, depth);
+                })
+            .collect(Collectors.toList());
+      } else {
+        throw new RequestFailureException(url, response.code(), responseBody);
+      }
+    }
+  }
+
+  public List<NodeInfo> getNodeTree(List<String> nodeIDs) throws IOException {
+    return getNodeTree(nodeIDs, null);
+  }
+
+  public List<NodeInfo> getNodeTree(@Nonnull String nodeID) throws IOException {
+    return getNodeTree(Collections.singletonList(nodeID));
   }
 
   private void bulkImportUsingJson(BulkImport bulkImport, Compression compression)
