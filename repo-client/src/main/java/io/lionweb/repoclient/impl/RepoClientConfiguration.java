@@ -1,10 +1,18 @@
 package io.lionweb.repoclient.impl;
 
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.repoclient.Protocol;
 import okhttp3.OkHttpClient;
 
 public class RepoClientConfiguration {
   protected final Protocol protocol;
+  private final String hostname;
+  private final int port;
+  private final String clientID;
+  private final String repository;
+  private final String authorizationToken;
+  private final OkHttpClient httpClient;
+  private final JsonSerialization jsonSerialization;
 
   public RepoClientConfiguration(
       Protocol protocol,
@@ -13,7 +21,8 @@ public class RepoClientConfiguration {
       String authorizationToken,
       String clientID,
       String repository,
-      OkHttpClient httpClient) {
+      OkHttpClient httpClient,
+      JsonSerialization jsonSerialization) {
     this.protocol = protocol;
     this.hostname = hostname;
     this.port = port;
@@ -21,14 +30,8 @@ public class RepoClientConfiguration {
     this.repository = repository;
     this.authorizationToken = authorizationToken;
     this.httpClient = httpClient;
+    this.jsonSerialization = jsonSerialization;
   }
-
-  private final String hostname;
-  private final int port;
-  private final String clientID;
-  private final String repository;
-  private final String authorizationToken;
-  private final OkHttpClient httpClient;
 
   public Protocol getProtocol() {
     return protocol;
@@ -56,5 +59,9 @@ public class RepoClientConfiguration {
 
   public OkHttpClient getHttpClient() {
     return httpClient;
+  }
+
+  public JsonSerialization getJsonSerialization() {
+    return jsonSerialization;
   }
 }
