@@ -2,15 +2,11 @@ package io.lionweb.lioncore.kotlin.repoclient
 
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.LionWebVersion
-import okhttp3.HttpUrl
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import okhttp3.internal.EMPTY_REQUEST
-import java.net.ConnectException
 import java.net.HttpURLConnection
 import java.util.concurrent.TimeUnit
 
@@ -29,46 +25,6 @@ internal class LowLevelRepoClient(
     val debug: Boolean = false,
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
-    fun deletePartition(nodeID: String) {
-        val body: RequestBody = "[\"${nodeID}\"]".toRequestBody(JSON)
-        val request: Request =
-            Request.Builder()
-                .url("http://$hostname:$port/bulk/deletePartitions".addClientIdQueryParam())
-                .considerAuthenticationToken()
-                .post(body)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                val body = response.body?.string()
-                if (debug) {
-                    println("  Response: ${response.code}")
-                    println("  Response: $body")
-                }
-                throw RuntimeException("Request failed with code ${response.code}: $body")
-            }
-        }
-    }
-
-    fun getPartitionIDs(): String {
-        val url = "http://$hostname:$port/bulk/listPartitions"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
-                .considerAuthenticationToken()
-                .addHeader("Accept-Encoding", "gzip")
-                .post(EMPTY_REQUEST)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code == HttpURLConnection.HTTP_OK) {
-                val data =
-                    (response.body ?: throw IllegalStateException("Response without body when querying $url")).string()
-                return data
-            } else {
-                throw RuntimeException("Got back ${response.code}: ${response.body?.string()}")
-            }
-        }
-    }
-
     fun retrieve(
         rootIds: List<String>,
         limit: Int,
@@ -130,75 +86,6 @@ internal class LowLevelRepoClient(
         }
     }
 
-    fun nodesStoringOperation(
-        json: String,
-        operation: String,
-    ) {
-        val body: RequestBody = json.compress()
-
-        // TODO control with flag http or https
-        val url = "http://$hostname:$port/bulk/$operation"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam().addRepositoryQueryParam())
-                .considerAuthenticationToken()
-                .addGZipCompressionHeader()
-                .post(body)
-                .build()
-        try {
-            httpClient.newCall(request).execute().use { response ->
-                if (response.code != HttpURLConnection.HTTP_OK) {
-                    val body = response.body?.string()
-                    if (debug) {
-                        println("  Response: ${response.code}")
-                        println("  Response: $body")
-                    }
-                    throw RequestFailureException(url, json, response.code, body)
-                }
-            }
-        } catch (e: ConnectException) {
-            val jsonExcept =
-                if (json.length > 10000) {
-                    json.substring(0, 1000) + "..."
-                } else {
-                    json
-                }
-            throw RuntimeException("Cannot get answer from the client when contacting at URL $url. Body: $jsonExcept", e)
-        }
-    }
-
-    private fun bulkImport(
-        requestBody: RequestBody,
-        compress: Boolean = false,
-    ) {
-        val url = "http://$hostname:$port/additional/bulkImport"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        urlBuilder.addQueryParameter("repository", repository)
-        val builder =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .considerCompression(compress)
-                .post(requestBody)
-
-        val request: Request =
-            builder
-                .build()
-
-        httpClient.newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("${response.code}: $body")
-            }
-
-            val success = JsonParser.parseString(body).asJsonObject.get("success").asBoolean
-            if (!success) {
-                throw RuntimeException("Request failed: $body")
-            }
-        }
-    }
-
     private var httpClient: OkHttpClient =
         OkHttpClient.Builder()
             .callTimeout(
@@ -208,44 +95,11 @@ internal class LowLevelRepoClient(
             .writeTimeout(callTimeoutInSeconds, TimeUnit.SECONDS)
             .connectTimeout(connectTimeOutInSeconds, TimeUnit.SECONDS).build()
 
-    private fun String.addClientIdQueryParam(): HttpUrl {
-        val urlBuilder = this.toHttpUrl().newBuilder()
-        urlBuilder.addQueryParameter("clientId", clientID)
-        return urlBuilder.build()
-    }
-
     private fun Request.Builder.considerAuthenticationToken(): Request.Builder {
         return if (authorizationToken == null) {
             this
         } else {
             this.addHeader("Authorization", authorizationToken)
         }
-    }
-
-    private fun Request.Builder.considerCompression(compress: Boolean): Request.Builder {
-        return if (compress) {
-            this.addGZipCompressionHeader()
-        } else {
-            this
-        }
-    }
-
-    private fun HttpUrl.addRepositoryQueryParam(): HttpUrl {
-        val urlBuilder = this.newBuilder()
-        urlBuilder.addQueryParameter("repository", repository)
-        return urlBuilder.build()
-    }
-}
-
-fun Request.Builder.addGZipCompressionHeader(): Request.Builder {
-    this.addHeader("Content-Encoding", "gzip")
-    return this
-}
-
-fun RequestBody.considerCompression(compress: Boolean): RequestBody {
-    return if (compress) {
-        this.compress()
-    } else {
-        this
     }
 }

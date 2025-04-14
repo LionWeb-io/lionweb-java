@@ -11,9 +11,7 @@ import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.model.impl.ProxyNode
 import io.lionweb.lioncore.java.serialization.JsonSerialization
-import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization
 import io.lionweb.lioncore.java.serialization.SerializationProvider
-import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy
 import io.lionweb.lioncore.kotlin.MetamodelRegistry
 import io.lionweb.lioncore.kotlin.children
 import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
@@ -23,10 +21,7 @@ import io.lionweb.lioncore.kotlin.setReferenceValuesByName
 import io.lionweb.repoclient.ExtendedLionWebRepoClient
 import io.lionweb.repoclient.api.HistorySupport
 import io.lionweb.repoclient.api.RepositoryConfiguration
-import io.lionweb.serialization.extensions.BulkImport
-import io.lionweb.serialization.extensions.Compression
 import io.lionweb.serialization.extensions.NodeInfo
-import io.lionweb.serialization.extensions.TransferFormat
 import java.util.LinkedList
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -52,8 +47,11 @@ class LionWebClient(
 ) {
     // Fields
     private val languages = mutableListOf<Language>()
+
+    @Deprecated("We should use jRepoClient instead")
     private val serializationDecorators = mutableListOf<SerializationDecorator>()
 
+    @Deprecated("We should use jRepoClient instead")
     private val lowLevelRepoClient =
         LowLevelRepoClient(
             hostname = hostname,
@@ -82,6 +80,7 @@ class LionWebClient(
     /**
      * Exposed for testing purposes
      */
+    @Deprecated("We should use jRepoClient instead")
     val defaultJsonSerialization =
         SerializationProvider.getStandardJsonSerialization(lionWebVersion).apply {
             enableDynamicNodes()
@@ -96,29 +95,34 @@ class LionWebClient(
         }
     }
 
+    @Deprecated("We should use jRepoClient instead")
     var jsonSerialization: JsonSerialization = calculateJsonSerialization()
         private set
 
     // Configuration
 
+    @Deprecated("We should use jRepoClient instead")
     private fun calculateJsonSerialization(): JsonSerialization {
         val jsonSerialization = jsonSerializationProvider?.invoke() ?: defaultJsonSerialization
         serializationDecorators.forEach { serializationDecorator -> serializationDecorator.invoke(jsonSerialization) }
         return jsonSerialization
     }
 
+    @Deprecated("We should use jRepoClient instead")
     fun updateJsonSerialization() {
         this.jsonSerialization = calculateJsonSerialization()
     }
 
     fun registerLanguage(language: Language) {
         languages.add(language)
+        jRepoClient.jsonSerialization.registerLanguage(language)
     }
 
     fun registerSerializationDecorator(decorator: SerializationDecorator) {
         serializationDecorators.add(decorator)
     }
 
+    @Deprecated("We should use jRepoClient instead")
     fun cleanSerializationDecorators() {
         serializationDecorators.clear()
     }
@@ -143,7 +147,7 @@ class LionWebClient(
         if (node.children.isNotEmpty()) {
             throw IllegalArgumentException("When creating a partition, please specify a single node")
         }
-        treeStoringOperation(node, "createPartitions")
+        jRepoClient.createPartition(node)
     }
 
     fun deletePartition(node: Node) {
@@ -151,27 +155,24 @@ class LionWebClient(
     }
 
     fun deletePartition(nodeID: String) {
-        lowLevelRepoClient.deletePartition(nodeID)
+        jRepoClient.deletePartitions(listOf(nodeID))
     }
 
     fun getPartitionIDs(): List<String> {
-        val data = lowLevelRepoClient.getPartitionIDs()
-        return processChunkResponse(data) {
-            val chunk = LowLevelJsonSerialization().deserializeSerializationBlock(it)
-            chunk.classifierInstances.mapNotNull { it.id }
-        }
+        return jRepoClient.listPartitionsIDs()
     }
 
     // Nodes
 
     fun retrieve(
         rootId: String,
-        withProxyParent: Boolean = false,
         retrievalMode: RetrievalMode = RetrievalMode.ENTIRE_SUBTREE,
     ): Node {
         require(rootId.isNotBlank())
-        val result = retrieve(listOf(rootId), withProxyParent, retrievalMode)
-        require(result.size == 1)
+        val result = retrieve(listOf(rootId), retrievalMode)
+        require(result.size == 1) {
+            "Got ${result.size} nodes"
+        }
         val value = result.first()
         require(value !is ProxyNode) {
             "retrieve should produce a full node and not a Proxy Node"
@@ -181,7 +182,6 @@ class LionWebClient(
 
     fun retrieve(
         rootIds: List<String>,
-        withProxyParent: Boolean = false,
         retrievalMode: RetrievalMode = RetrievalMode.ENTIRE_SUBTREE,
     ): List<Node> {
         if (rootIds.isEmpty()) {
@@ -192,30 +192,7 @@ class LionWebClient(
                 RetrievalMode.SINGLE_NODE -> 0
                 RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH
             }
-        val data = lowLevelRepoClient.retrieve(rootIds, limit)
-
-        return processChunkResponse(data) {
-            val js = jsonSerialization
-            js.unavailableParentPolicy =
-                if (withProxyParent) {
-                    UnavailableNodePolicy.PROXY_NODES
-                } else {
-                    UnavailableNodePolicy.NULL_REFERENCES
-                }
-            js.unavailableReferenceTargetPolicy = UnavailableNodePolicy.PROXY_NODES
-            js.unavailableChildrenPolicy =
-                when (retrievalMode) {
-                    RetrievalMode.ENTIRE_SUBTREE -> UnavailableNodePolicy.THROW_ERROR
-                    RetrievalMode.SINGLE_NODE -> UnavailableNodePolicy.PROXY_NODES
-                }
-            val nodes = js.deserializeToNodes(it)
-            rootIds.map { rootId ->
-                nodes.find { node -> node.id == rootId } ?: throw IllegalArgumentException(
-                    "When requesting a subtree with rootId=$rootId we got back an answer without such ID. " +
-                        "IDs we got back: ${nodes.map { node -> node.id }.joinToString(", ")}",
-                )
-            }
-        }
+        return jRepoClient.retrieve(rootIds, limit)
     }
 
     fun getAncestorsId(nodeID: String): List<String> {
@@ -240,13 +217,13 @@ class LionWebClient(
         } else {
             var parent = node.parent
             if (node.parent is ProxyNode) {
-                parent = retrieve(node.parent.id!!, withProxyParent = true, retrievalMode = RetrievalMode.SINGLE_NODE)
+                parent = retrieve(node.parent.id!!, retrievalMode = RetrievalMode.SINGLE_NODE)
             }
             return if (ancestorClass.isInstance(parent)) {
                 if (retrievalMode == RetrievalMode.SINGLE_NODE) {
                     parent as T
                 } else {
-                    retrieve(node.parent.id!!, withProxyParent = true, retrievalMode = RetrievalMode.ENTIRE_SUBTREE) as T
+                    retrieve(node.parent.id!!, retrievalMode = RetrievalMode.ENTIRE_SUBTREE) as T
                 }
             } else {
                 retrieveAncestor(parent, ancestorClass, retrievalMode)
@@ -288,11 +265,11 @@ class LionWebClient(
     }
 
     fun storeTree(node: Node) {
-        treeStoringOperation(node, "store")
+        jRepoClient.store(node)
     }
 
     fun storeNodes(nodes: List<Node>) {
-        nodesStoringOperation(nodes, "store")
+        jRepoClient.store(nodes)
     }
 
     /**
@@ -343,7 +320,7 @@ class LionWebClient(
         annotationInstance: AnnotationInstance,
         targetId: String,
     ) {
-        val target = retrieve(targetId, retrievalMode = RetrievalMode.SINGLE_NODE, withProxyParent = true)
+        val target = retrieve(targetId, retrievalMode = RetrievalMode.SINGLE_NODE)
         require(target.children.all { it is ProxyNode })
         target.addAnnotation(annotationInstance)
         storeTree(target)
@@ -361,7 +338,7 @@ class LionWebClient(
         // TODO avoid retrieving the whole parent (just do level 1)
         // 1. Retrieve the parent
 
-        val parent = retrieve(containerId, retrievalMode = RetrievalMode.SINGLE_NODE, withProxyParent = true)
+        val parent = retrieve(containerId, retrievalMode = RetrievalMode.SINGLE_NODE)
 
         // 2. Add the tree to the parent
         val containment =
@@ -393,7 +370,7 @@ class LionWebClient(
         referenceName: String,
     ) {
         // 1. Retrieve the referrer
-        val referrer = retrieve(containerID, withProxyParent = true, retrievalMode = RetrievalMode.SINGLE_NODE)
+        val referrer = retrieve(containerID, retrievalMode = RetrievalMode.SINGLE_NODE)
 
         // 2. Add the reference to the referrer
         val reference =
@@ -422,7 +399,7 @@ class LionWebClient(
             return
         }
         // 1. Retrieve the referrer
-        val referrers = retrieve(data.map { it.containerID }, withProxyParent = true, retrievalMode = RetrievalMode.SINGLE_NODE)
+        val referrers = retrieve(data.map { it.containerID }, retrievalMode = RetrievalMode.SINGLE_NODE)
 
         // 2. Add the reference to the referrer
         data.mapIndexed { index, referenceData ->
@@ -471,7 +448,7 @@ class LionWebClient(
         container: Node,
         referenceName: String,
     ) {
-        val updatedContainer = retrieve(container.id!!, withProxyParent = true, RetrievalMode.SINGLE_NODE)
+        val updatedContainer = retrieve(container.id!!, RetrievalMode.SINGLE_NODE)
         val currentReferenceValues = updatedContainer.getReferenceValueByName(referenceName)
         val updateReferenceValues =
             currentReferenceValues.toMutableList().apply {
@@ -502,7 +479,7 @@ class LionWebClient(
         propertyName: String,
         value: Any?,
     ) {
-        val updatedNode = retrieve(nodeId, withProxyParent = true, RetrievalMode.SINGLE_NODE)
+        val updatedNode = retrieve(nodeId, RetrievalMode.SINGLE_NODE)
         updatedNode.setPropertyValueByName(propertyName, value)
         storeTree(updatedNode)
     }
@@ -550,85 +527,12 @@ class LionWebClient(
         return jRepoClient.getNodeTree(nodeIDs, depthLimit)
     }
 
-    fun bulkImport(
-        bulkImport: BulkImport,
-        transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
-        compress: Boolean = false,
-    ) {
-        jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
-    }
-
     // Private methods
 
     private fun log(message: String) {
         if (debug) {
             println(message)
         }
-    }
-
-    private fun nodesStoringOperation(
-        nodes: List<Node>,
-        operation: String,
-    ) {
-        fun verifyNode(node: Node) {
-            require(node.id != null) { "Node $node should not have a null ID" }
-            if (node !is ProxyNode) {
-                if (node.children.any { it == null }) {
-                    throw java.lang.IllegalStateException("Node $node has a null child")
-                }
-                node.children.forEach {
-                    verifyNode(it)
-                }
-            }
-        }
-
-        nodes.forEach { node -> verifyNode(node) }
-
-        val json = jsonSerialization.serializeNodesToJsonString(nodes)
-
-        lowLevelRepoClient.nodesStoringOperation(json, operation)
-    }
-
-    private fun treeStoringOperation(
-        node: Node,
-        operation: String,
-    ) {
-        if (debug) {
-            try {
-                treeSanityChecks(node, jsonSerialization = jsonSerialization)
-            } catch (e: RuntimeException) {
-                throw RuntimeException("Failed to store tree $node", e)
-            }
-        }
-
-        fun verifyNode(node: Node) {
-            require(node.id != null) { "Node $node should not have a null ID" }
-            if (node !is ProxyNode) {
-                if (node.classifier == null) {
-                    throw IllegalStateException("Node $node has no classifier")
-                }
-                if (node.children.any { it == null }) {
-                    throw java.lang.IllegalStateException("Node $node has a null child")
-                }
-                node.children.forEach {
-                    verifyNode(it)
-                }
-            }
-        }
-
-        verifyNode(node)
-
-        val json = jsonSerialization.serializeTreesToJsonString(node)
-        debugFile("sent.json") { json }
-
-        lowLevelRepoClient.nodesStoringOperation(json, operation)
-    }
-
-    private fun debugFile(
-        relativePath: String,
-        text: () -> String,
-    ) {
-        debugFileHelper(debug, relativePath, text)
     }
 
     private fun <T> processChunkResponse(

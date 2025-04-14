@@ -200,9 +200,7 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
             }
         client.storeTree(pf)
 
-        val prop3retrievedWithoutProxyParent = client.retrieve("prop3", withProxyParent = false)
-        assertEquals(null, prop3retrievedWithoutProxyParent.parent)
-        val prop3retrievedWithProxyParent = client.retrieve("prop3", withProxyParent = true)
+        val prop3retrievedWithProxyParent = client.retrieve("prop3")
         assertEquals("pf1", prop3retrievedWithProxyParent.parent.id)
     }
 
