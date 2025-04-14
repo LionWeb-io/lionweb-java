@@ -37,7 +37,7 @@ release {
     buildTasks =
         listOf(
             ":core:publishAllPublicationsToMavenCentralRepository",
-            ":repo-client:publishAllPublicationsToMavenCentralRepository"
+            ":repo-client:publishAllPublicationsToMavenCentralRepository",
         )
     versionPropertyFile = "./gradle.properties"
     git {

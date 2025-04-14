@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
     implementation(libs.lwjavacore)
+    implementation(libs.lwjavarepo)
     implementation(libs.lwjavaextensions)
     implementation(libs.gson)
     implementation(libs.kotlinreflect)

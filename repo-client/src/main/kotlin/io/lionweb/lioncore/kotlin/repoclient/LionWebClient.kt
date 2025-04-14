@@ -23,6 +23,9 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
+import io.lionweb.repoclient.LionWebRepoClient
+import io.lionweb.repoclient.api.HistorySupport
+import io.lionweb.repoclient.api.RepositoryConfiguration
 import io.lionweb.serialization.extensions.BulkImport
 import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization
 import io.lionweb.serialization.extensions.ExtraProtoBufSerialization
@@ -64,6 +67,18 @@ class LionWebClient(
             callTimeoutInSeconds = callTimeoutInSeconds,
             debug = debug,
             lionWebVersion = lionWebVersion,
+        )
+
+    private val jRepoClient =
+        LionWebRepoClient(
+            lionWebVersion,
+            hostname,
+            port,
+            authorizationToken,
+            clientID,
+            repository,
+            connectTimeOutInSeconds,
+            callTimeoutInSeconds,
         )
 
     /**
@@ -112,8 +127,16 @@ class LionWebClient(
 
     // Setup
 
-    fun createRepository(history: Boolean = false) {
-        lowLevelRepoClient.createRepository(history)
+    fun createRepository(
+        name: String,
+        lionWebVersion: LionWebVersion,
+        history: Boolean = false,
+    ) {
+        jRepoClient.createRepository(RepositoryConfiguration(name, lionWebVersion, HistorySupport.fromBoolean(history)))
+    }
+
+    fun deleteRepository(repositoryName: String) {
+        jRepoClient.deleteRepository(repositoryName)
     }
 
     // Partitions

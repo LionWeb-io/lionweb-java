@@ -1,15 +1,23 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
 import io.lionweb.lioncore.kotlin.dynamicNode
-import io.lionweb.lioncore.kotlin.repoclient.testing.AbstractRepoClientFunctionalTest
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
+import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.junit.jupiter.Testcontainers
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Testcontainers
 class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
+    @BeforeTest
+    fun prepare() {
+        val client = LionWebClient(port = modelRepository!!.firstMappedPort)
+        client.deleteRepository("default")
+        client.createRepository(name = "default", lionWebVersion = lionWebVersion, history = false)
+    }
+
     @Test
     fun noPartitionsOnNewModelRepository() {
         val client = LionWebClient(port = modelRepository!!.firstMappedPort)
@@ -70,7 +78,7 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
     }
 
     @Test
-    fun gettingPartionsAfterStoringPartitions() {
+    fun gettingPartitionsAfterStoringPartitions() {
         val client = LionWebClient(port = modelRepository!!.firstMappedPort)
         client.registerLanguage(propertiesLanguage)
 

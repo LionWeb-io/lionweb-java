@@ -2,15 +2,23 @@ package io.lionweb.lioncore.kotlin.repoclient
 
 import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.kotlin.dynamicNode
-import io.lionweb.lioncore.kotlin.repoclient.testing.AbstractRepoClientFunctionalTest
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
+import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.junit.jupiter.Testcontainers
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Testcontainers
-class PropertiesFunctionalTestLW2023 : AbstractRepoClientFunctionalTest(lionWebVersion = LionWebVersion.v2023_1) {
+class PropertiesFunctionalTestLW2023 : AbstractRepoClientFunctionalTest(LionWebVersion.v2023_1, true) {
+    @BeforeTest
+    fun prepare() {
+        val client = LionWebClient(port = modelRepository!!.firstMappedPort)
+        client.deleteRepository("default")
+        client.createRepository(name = "default", lionWebVersion = lionWebVersion, history = false)
+    }
+
     @Test
     fun noPartitionsOnNewModelRepository() {
         val client = LionWebClient(port = modelRepository!!.firstMappedPort, lionWebVersion = lionWebVersion)
@@ -20,6 +28,7 @@ class PropertiesFunctionalTestLW2023 : AbstractRepoClientFunctionalTest(lionWebV
     @Test
     fun isNodeExisting() {
         val client = LionWebClient(port = modelRepository!!.firstMappedPort, lionWebVersion = lionWebVersion)
+
         assertEquals(false, client.isNodeExisting("pp1"))
         assertEquals(false, client.isNodeExisting("pf1"))
         assertEquals(false, client.isNodeExisting("prop1"))
