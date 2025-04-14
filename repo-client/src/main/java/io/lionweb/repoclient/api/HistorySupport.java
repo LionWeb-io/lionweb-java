@@ -1,10 +1,12 @@
 package io.lionweb.repoclient.api;
 
+import org.jetbrains.annotations.NotNull;
+
 public enum HistorySupport {
   DISABLED,
   ENABLED;
 
-  public static HistorySupport fromBoolean(boolean value) {
+  public static @NotNull HistorySupport fromBoolean(boolean value) {
     return value ? ENABLED : DISABLED;
   }
 

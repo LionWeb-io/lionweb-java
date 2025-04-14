@@ -28,8 +28,16 @@ abstract class LionWebRepoClientImplHelper {
 
   protected HttpUrl.Builder buildURL(
       String api, boolean specifyingClientID, boolean specifyingRepository) {
-    String url = conf.getProtocol() + "://" + conf.getHostname() + ":" + conf.getPort() + api;
-    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    if (!api.startsWith("/") || api.length() < 2) {
+      throw new IllegalArgumentException(
+          "api path expected to start with a slash and be at least two characters long");
+    }
+    HttpUrl.Builder urlBuilder =
+        new HttpUrl.Builder()
+            .scheme(conf.getProtocol().value)
+            .host(conf.getHostname())
+            .port(conf.getPort())
+            .addPathSegments(api.substring(1));
     if (specifyingClientID) {
       urlBuilder.addQueryParameter("clientId", conf.getClientID());
     }

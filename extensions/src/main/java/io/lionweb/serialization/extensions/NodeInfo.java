@@ -3,6 +3,10 @@ package io.lionweb.serialization.extensions;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Node description as returned by the LionWeb Repository through the getNodeTree API. A collection
+ * of instances of this class describe the shape of the tree in a concise (and efficient) way.
+ */
 public final class NodeInfo {
   private final String id;
   private @Nullable final String parent;
