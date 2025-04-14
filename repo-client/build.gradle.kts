@@ -69,7 +69,6 @@ dependencies {
     implementation(libs.protobuf)
 
     "functionalTestImplementation"(project(":repo-client"))
-    "functionalTestImplementation"(project(":repo-client-testing"))
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(libs.lwjavacore)
     "functionalTestImplementation"(libs.lwjavaextensions)
@@ -160,7 +159,7 @@ val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
 
 val lwJavaJar =
     configurations.findByName("functionalTestRuntimeClasspath")!!
-        .find { it.name.startsWith("lionweb-java-2024.1-repo-client-0.4.0") } as File
+        .find { it.name.startsWith("lionweb-java-2024.1-repo-client-0") } as File
 // Eventually we should use this value and drop it from gradle.properties
 val lwJavaLionwebRepositoryCommitID: String? =
     zipTree(lwJavaJar).matching {
