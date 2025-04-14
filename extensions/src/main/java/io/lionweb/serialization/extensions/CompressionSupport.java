@@ -12,11 +12,7 @@ public class CompressionSupport {
 
   public static RequestBody considerCompression(RequestBody original, Compression compression)
       throws IOException {
-    if (compression == Compression.ENABLED) {
-      return forceContentLength(gzip(original));
-    } else {
-      return original;
-    }
+    return compression == Compression.ENABLED ? forceContentLength(gzip(original)) : original;
   }
 
   private static RequestBody forceContentLength(final RequestBody requestBody) throws IOException {

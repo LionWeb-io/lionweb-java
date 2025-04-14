@@ -27,13 +27,13 @@ public class LionWebRepoClientDBAdminApiFunctionalTest extends AbstractRepoClien
 
     // Initially we should have one repository
     RepositoryConfiguration defaultRepository =
-        new RepositoryConfiguration("default", LionWebVersion.v2024_1, HistorySupport.Disabled);
+        new RepositoryConfiguration("default", LionWebVersion.v2024_1, HistorySupport.DISABLED);
     assertEquals(
         new HashSet<>(Collections.singletonList(defaultRepository)), client.listRepositories());
 
     // Create repository
     RepositoryConfiguration repo1 =
-        new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.Enabled);
+        new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.ENABLED);
     client.createRepository(repo1);
 
     // Check list
@@ -41,9 +41,9 @@ public class LionWebRepoClientDBAdminApiFunctionalTest extends AbstractRepoClien
 
     // Create repositories
     RepositoryConfiguration repo2 =
-        new RepositoryConfiguration("repo2", LionWebVersion.v2023_1, HistorySupport.Enabled);
+        new RepositoryConfiguration("repo2", LionWebVersion.v2023_1, HistorySupport.ENABLED);
     RepositoryConfiguration repo3 =
-        new RepositoryConfiguration("repo3", LionWebVersion.v2024_1, HistorySupport.Disabled);
+        new RepositoryConfiguration("repo3", LionWebVersion.v2024_1, HistorySupport.DISABLED);
     client.createRepository(repo2);
     client.createRepository(repo3);
 

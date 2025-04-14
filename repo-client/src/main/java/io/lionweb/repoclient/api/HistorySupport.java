@@ -1,14 +1,14 @@
 package io.lionweb.repoclient.api;
 
 public enum HistorySupport {
-  Disabled,
-  Enabled;
+  DISABLED,
+  ENABLED;
 
   public static HistorySupport fromBoolean(boolean value) {
-    return value ? Enabled : Disabled;
+    return value ? ENABLED : DISABLED;
   }
 
   public boolean toBoolean() {
-    return this == Enabled;
+    return this == ENABLED;
   }
 }

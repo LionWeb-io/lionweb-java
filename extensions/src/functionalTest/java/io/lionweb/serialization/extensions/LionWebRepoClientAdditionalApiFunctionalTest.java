@@ -78,7 +78,7 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
-            repositoryName, LionWebVersion.v2023_1, HistorySupport.Disabled));
+            repositoryName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
 
     assertEquals(Collections.emptyList(), client.getNodeTree("lib1"));
 
@@ -118,7 +118,7 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
-            repositoryName, LionWebVersion.v2023_1, HistorySupport.Disabled));
+            repositoryName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(LibraryLanguage.LANGUAGE);
 
     // Let's try an empty bulk import

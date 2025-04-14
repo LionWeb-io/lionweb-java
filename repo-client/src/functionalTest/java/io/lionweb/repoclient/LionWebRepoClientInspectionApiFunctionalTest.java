@@ -29,7 +29,7 @@ public class LionWebRepoClientInspectionApiFunctionalTest extends AbstractRepoCl
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "repo_nodesByClassifier");
     client.createRepository(
         new RepositoryConfiguration(
-            "repo_nodesByClassifier", LionWebVersion.v2023_1, HistorySupport.Disabled));
+            "repo_nodesByClassifier", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Get data with empty repository
@@ -71,7 +71,7 @@ public class LionWebRepoClientInspectionApiFunctionalTest extends AbstractRepoCl
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "repo_nodesByLanguage");
     client.createRepository(
         new RepositoryConfiguration(
-            "repo_nodesByLanguage", LionWebVersion.v2023_1, HistorySupport.Disabled));
+            "repo_nodesByLanguage", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Get data with empty repository
