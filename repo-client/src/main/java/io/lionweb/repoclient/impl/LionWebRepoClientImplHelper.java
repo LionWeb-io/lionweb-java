@@ -1,42 +1,19 @@
 package io.lionweb.repoclient.impl;
 
-import io.lionweb.repoclient.Protocol;
 import io.lionweb.repoclient.RequestFailureException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.*;
 import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
 public abstract class LionWebRepoClientImplHelper {
+  protected final RepoClientConfiguration conf;
 
-  protected final Protocol protocol;
-  protected final String hostname;
-  protected final int port;
-  protected final String clientID;
-  protected final String repository;
-
-  public LionWebRepoClientImplHelper(
-      Protocol protocol,
-      String hostname,
-      int port,
-      String clientID,
-      String repository,
-      String authorizationToken,
-      OkHttpClient httpClient) {
-    this.protocol = protocol;
-    this.hostname = hostname;
-    this.port = port;
-    this.clientID = clientID;
-    this.repository = repository;
-    this.authorizationToken = authorizationToken;
-    this.httpClient = httpClient;
+  public LionWebRepoClientImplHelper(RepoClientConfiguration repoClientConfiguration) {
+    this.conf = repoClientConfiguration;
   }
-
-  protected final String authorizationToken;
-  protected final OkHttpClient httpClient;
 
   public interface ResponseHandler<R> {
     R handleResponse(Response response, String body);
@@ -48,35 +25,45 @@ public abstract class LionWebRepoClientImplHelper {
 
   protected HttpUrl.Builder buildURL(
       String api, boolean specifyingClientID, boolean specifyingRepository) {
-    String url = protocol + "://" + hostname + ":" + port + api;
+    String url = conf.getProtocol() + "://" + conf.getHostname() + ":" + conf.getPort() + api;
     HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
     if (specifyingClientID) {
-      urlBuilder.addQueryParameter("clientId", clientID);
+      urlBuilder.addQueryParameter("clientId", conf.getClientID());
     }
     if (specifyingRepository) {
-      urlBuilder.addQueryParameter("repository", repository);
+      urlBuilder.addQueryParameter("repository", conf.getRepository());
     }
     return urlBuilder;
   }
 
   protected Request.Builder buildRequest(String api) {
-    return buildRequest(api, true, true, true);
+    return buildRequest(api, true, true, true, Collections.emptyMap());
+  }
+
+  protected Request.Builder buildRequest(String api, Map<String, String> additionalParams) {
+    return buildRequest(api, true, true, true, additionalParams);
   }
 
   protected Request.Builder buildRequest(
       String api,
       boolean specifyingClientID,
       boolean specifyingRepository,
-      boolean considerAuthenticationToken) {
+      boolean considerAuthenticationToken,
+      Map<String, String> additionalParams) {
     HttpUrl.Builder urlBuilder = buildURL(api, specifyingClientID, specifyingRepository);
+    additionalParams
+        .entrySet()
+        .forEach(entry -> urlBuilder.addQueryParameter(entry.getKey(), entry.getValue()));
     Request.Builder rq = new Request.Builder().url(urlBuilder.build());
-    rq = considerAuthenticationToken(rq);
+    if (considerAuthenticationToken) {
+      rq = considerAuthenticationToken(rq);
+    }
     return rq;
   }
 
   protected <R> R performCall(Request request, ResponseHandler<R> responseHandler)
       throws IOException {
-    try (Response response = httpClient.newCall(request).execute()) {
+    try (Response response = conf.getHttpClient().newCall(request).execute()) {
       String body = Objects.requireNonNull(response.body()).string();
       if (response.code() == HttpURLConnection.HTTP_OK) {
         return responseHandler.handleResponse(response, body);
@@ -87,8 +74,8 @@ public abstract class LionWebRepoClientImplHelper {
   }
 
   protected Request.Builder considerAuthenticationToken(Request.Builder builder) {
-    return (authorizationToken == null)
+    return (conf.getAuthorizationToken() == null)
         ? builder
-        : builder.addHeader("Authorization", authorizationToken);
+        : builder.addHeader("Authorization", conf.getAuthorizationToken());
   }
 }

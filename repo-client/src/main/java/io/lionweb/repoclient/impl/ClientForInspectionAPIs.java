@@ -3,27 +3,18 @@ package io.lionweb.repoclient.impl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.repoclient.Protocol;
 import io.lionweb.repoclient.api.ClassifierKey;
 import io.lionweb.repoclient.api.ClassifierResult;
 import io.lionweb.repoclient.api.InspectionAPIClient;
 import java.io.IOException;
 import java.util.*;
-import okhttp3.OkHttpClient;
 import okhttp3.Request;
 
-public class LionWebRepoClientForInspectionAPIs extends LionWebRepoClientImplHelper
+public class ClientForInspectionAPIs extends LionWebRepoClientImplHelper
     implements InspectionAPIClient {
 
-  public LionWebRepoClientForInspectionAPIs(
-      Protocol protocol,
-      String hostname,
-      int port,
-      String clientID,
-      String repository,
-      String authorizationToken,
-      OkHttpClient httpClient) {
-    super(protocol, hostname, port, clientID, repository, authorizationToken, httpClient);
+  public ClientForInspectionAPIs(RepoClientConfiguration repoClientConfiguration) {
+    super(repoClientConfiguration);
   }
 
   @Override
