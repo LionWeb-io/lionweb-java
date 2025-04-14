@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import java.net.URI
 
 plugins {
     `jvm-test-suite`
@@ -43,7 +42,7 @@ tasks.register<Jar>("sourcesJar") {
 mavenPublishing {
     coordinates(
         groupId = "io.lionweb.lionweb-java",
-        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+        artifactId = "lionweb-java-$specsVersion-" + project.name,
         version = project.version as String,
     )
 
@@ -99,7 +98,6 @@ java {
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
-
 
 tasks.withType<Test>().all {
     testLogging {
