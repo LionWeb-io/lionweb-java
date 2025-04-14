@@ -1,9 +1,5 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
-import com.google.gson.JsonNull
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.LionWebVersion
 import okhttp3.HttpUrl
@@ -33,21 +29,6 @@ internal class LowLevelRepoClient(
     val debug: Boolean = false,
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
-    fun createRepository(history: Boolean = false) {
-        val url = "http://$hostname:$port/createRepository?history=$history"
-        val request: Request =
-            Request.Builder()
-                .url(url.addClientIdQueryParam())
-                .considerAuthenticationToken()
-                .post(EMPTY_REQUEST)
-                .build()
-        httpClient.newCall(request).execute().use { response ->
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("DB initialization failed, HTTP ${response.code}: ${response.body?.string()}")
-            }
-        }
-    }
-
     fun deletePartition(nodeID: String) {
         val body: RequestBody = "[\"${nodeID}\"]".toRequestBody(JSON)
         val request: Request =
@@ -147,77 +128,6 @@ internal class LowLevelRepoClient(
             }
             return result
         }
-    }
-
-    fun nodeTree(
-        nodeIDs: List<String>,
-        depthLimit: Int? = null,
-    ): List<NodeInfo> {
-        val url = "http://$hostname:$port/additional/getNodeTree"
-        val urlBuilder = url.toHttpUrlOrNull()!!.newBuilder()
-        if (depthLimit != null) {
-            urlBuilder.addQueryParameter("depthLimit", depthLimit.toString())
-        }
-        urlBuilder.addQueryParameter("clientId", clientID)
-        urlBuilder.addQueryParameter("repository", repository)
-        val body = JsonObject()
-        val ids = JsonArray()
-        nodeIDs.forEach { ids.add(it) }
-        body.add("ids", ids)
-        val bodyJson = Gson().toJson(body)
-        val builder =
-            Request.Builder()
-                .url(urlBuilder.build())
-                .considerAuthenticationToken()
-                .post(bodyJson.toRequestBody(JSON))
-
-        val request: Request =
-            builder
-                .build()
-
-        httpClient.newCall(request).execute().use { response ->
-            val body = response.body?.string()
-            if (response.code != HttpURLConnection.HTTP_OK) {
-                throw RuntimeException("${response.code}: $body")
-            }
-
-            val data = JsonParser.parseString(body).asJsonObject.get("data").asJsonArray
-            return data.map { it.asJsonObject }.map { dataElement ->
-                val parent =
-                    if (dataElement.has("parent") && dataElement.get("parent") !is JsonNull) {
-                        dataElement.get(
-                            "parent",
-                        ).asString
-                    } else {
-                        null
-                    }
-                NodeInfo(dataElement.get("id").asString, parent, dataElement.get("depth").asInt)
-            }
-        }
-    }
-
-    fun bulkImportUsingJson(
-        bodyJson: String,
-        compress: Boolean = false,
-    ) {
-        val requestBody = bodyJson.toRequestBody(JSON).considerCompression(compress)
-        bulkImport(requestBody, compress)
-    }
-
-    fun bulkImportUsingProtobuf(
-        bytes: ByteArray,
-        compress: Boolean = false,
-    ) {
-        val requestBody = bytes.toRequestBody(PROTOBUF).considerCompression(compress)
-        bulkImport(requestBody, compress)
-    }
-
-    fun bulkImportUsingFlatBuffers(
-        bytes: ByteArray,
-        compress: Boolean = false,
-    ) {
-        val requestBody = bytes.toRequestBody(FLATBUFFERS).considerCompression(compress)
-        bulkImport(requestBody, compress)
     }
 
     fun nodesStoringOperation(

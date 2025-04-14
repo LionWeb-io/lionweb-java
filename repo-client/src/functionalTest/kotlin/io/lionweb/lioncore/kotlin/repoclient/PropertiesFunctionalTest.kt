@@ -3,6 +3,7 @@ package io.lionweb.lioncore.kotlin.repoclient
 import io.lionweb.lioncore.kotlin.dynamicNode
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest
+import io.lionweb.serialization.extensions.NodeInfo
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.junit.jupiter.Testcontainers
 import kotlin.test.BeforeTest

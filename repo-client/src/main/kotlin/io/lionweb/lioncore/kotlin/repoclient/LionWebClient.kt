@@ -1,9 +1,6 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
-import com.google.gson.Gson
-import com.google.gson.JsonArray
 import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import io.lionweb.lioncore.java.LionWebVersion
 import io.lionweb.lioncore.java.language.Language
@@ -23,12 +20,13 @@ import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
-import io.lionweb.repoclient.LionWebRepoClient
+import io.lionweb.repoclient.ExtendedLionWebRepoClient
 import io.lionweb.repoclient.api.HistorySupport
 import io.lionweb.repoclient.api.RepositoryConfiguration
 import io.lionweb.serialization.extensions.BulkImport
-import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization
-import io.lionweb.serialization.extensions.ExtraProtoBufSerialization
+import io.lionweb.serialization.extensions.Compression
+import io.lionweb.serialization.extensions.NodeInfo
+import io.lionweb.serialization.extensions.TransferFormat
 import java.util.LinkedList
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -70,7 +68,7 @@ class LionWebClient(
         )
 
     private val jRepoClient =
-        LionWebRepoClient(
+        ExtendedLionWebRepoClient(
             lionWebVersion,
             hostname,
             port,
@@ -549,69 +547,7 @@ class LionWebClient(
         nodeIDs: List<String>,
         depthLimit: Int? = null,
     ): List<NodeInfo> {
-        return lowLevelRepoClient.nodeTree(nodeIDs, depthLimit)
-    }
-
-    private fun bulkImportUsingJson(
-        bulkImport: BulkImport,
-        compress: Boolean = false,
-    ) {
-        val body = JsonObject()
-        val bodyAttachPoints = JsonArray()
-        bulkImport.attachPoints.forEach { attachPoint ->
-            val jContainment = JsonObject()
-            jContainment.addProperty("language", attachPoint.containment.language)
-            jContainment.addProperty("version", attachPoint.containment.version)
-            jContainment.addProperty("key", attachPoint.containment.key)
-
-            val jEl = JsonObject()
-            jEl.addProperty("container", attachPoint.container)
-            jEl.addProperty("root", attachPoint.rootId)
-            jEl.add("containment", jContainment)
-            bodyAttachPoints.add(jEl)
-        }
-        val bodyNodes = jsonSerialization.serializeNodesToJsonElement(bulkImport.nodes).asJsonObject.get("nodes").asJsonArray
-        body.add("attachPoints", bodyAttachPoints)
-        body.add("nodes", bodyNodes)
-        val bodyJson = Gson().toJson(body)
-        return lowLevelRepoClient.bulkImportUsingJson(bodyJson, compress = compress)
-    }
-
-    private fun bulkImportUsingProtobuf(
-        bulkImport: BulkImport,
-        compress: Boolean = false,
-    ) {
-        val bytes =
-            ExtraProtoBufSerialization().apply {
-                this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
-                this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
-                this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
-                this.classifierResolver = jsonSerialization.classifierResolver
-                this.instanceResolver = jsonSerialization.instanceResolver
-                this.instantiator = jsonSerialization.instantiator
-                this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
-            }.serializeBulkImport(bulkImport).toByteArray()
-        lowLevelRepoClient.bulkImportUsingProtobuf(bytes, compress = compress)
-    }
-
-    private fun bulkImportUsingFlatBuffers(
-        bulkImport: BulkImport,
-        compress: Boolean = false,
-    ) {
-        if (bulkImport.nodes.isEmpty() && bulkImport.attachPoints.isEmpty()) {
-            return
-        }
-        val bytes =
-            ExtraFlatBuffersSerialization().apply {
-                this.unavailableChildrenPolicy = jsonSerialization.unavailableChildrenPolicy
-                this.unavailableParentPolicy = jsonSerialization.unavailableParentPolicy
-                this.unavailableReferenceTargetPolicy = jsonSerialization.unavailableReferenceTargetPolicy
-                this.classifierResolver = jsonSerialization.classifierResolver
-                this.instanceResolver = jsonSerialization.instanceResolver
-                this.instantiator = jsonSerialization.instantiator
-                this.primitiveValuesSerialization = jsonSerialization.primitiveValuesSerialization
-            }.serializeBulkImport(bulkImport)
-        lowLevelRepoClient.bulkImportUsingFlatBuffers(bytes, compress = compress)
+        return jRepoClient.getNodeTree(nodeIDs, depthLimit)
     }
 
     fun bulkImport(
@@ -619,11 +555,7 @@ class LionWebClient(
         transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
         compress: Boolean = false,
     ) {
-        when (transferFormat) {
-            TransferFormat.JSON -> bulkImportUsingJson(bulkImport, compress)
-            TransferFormat.PROTOBUF -> bulkImportUsingProtobuf(bulkImport, compress)
-            TransferFormat.FLATBUFFERS -> bulkImportUsingFlatBuffers(bulkImport, compress)
-        }
+        jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
     }
 
     // Private methods
@@ -715,12 +647,4 @@ class LionWebClient(
         val chunkJson = json.get("chunk")
         return chunkProcessor.invoke(chunkJson)
     }
-}
-
-data class NodeInfo(val id: String, val parent: String?, val depth: Int)
-
-enum class TransferFormat {
-    JSON,
-    PROTOBUF,
-    FLATBUFFERS,
 }
