@@ -4,11 +4,13 @@
     "expectedToken": null
   },
   "startup": {
-    "createDatabase": true,
+    "createDatabase": "always",
     "createRepositories": [
       {
+        "create": "if-not-exists",
         "name": "default",
-        "history": false
+        "history": false,
+        "lionWebVersion": "${LIONWEB_VERSION}"
       }
     ]
   },

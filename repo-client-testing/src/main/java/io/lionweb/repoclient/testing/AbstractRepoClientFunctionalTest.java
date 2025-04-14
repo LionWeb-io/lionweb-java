@@ -1,38 +1,44 @@
 package io.lionweb.repoclient.testing;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.utils.ModelComparator;
 import java.util.Collections;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.*;
 import org.testcontainers.Testcontainers;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class AbstractRepoClientFunctionalTest {
   private static final int DB_CONTAINER_PORT = 5432;
 
   protected boolean modelRepoDebug = true;
+  protected LionWebVersion lionWebVersion;
 
   protected PostgreSQLContainer<?> db;
   protected GenericContainer<?> modelRepository;
 
+  protected static final Network network = Network.newNetwork();
+
   public AbstractRepoClientFunctionalTest() {
-    this(true);
+    this(LionWebVersion.currentVersion, true);
   }
 
-  public AbstractRepoClientFunctionalTest(boolean modelRepoDebug) {
+  public AbstractRepoClientFunctionalTest(
+      @NotNull LionWebVersion lionWebVersion, boolean modelRepoDebug) {
+    this.lionWebVersion = lionWebVersion;
     this.modelRepoDebug = modelRepoDebug;
   }
 
-  @BeforeEach
+  @BeforeAll
   public void setup() {
-    Network network = Network.newNetwork();
-
     db =
         new PostgreSQLContainer<>("postgres:16.1")
+            .withReuse(true)
             .withNetwork(network)
             .withNetworkAliases("mypgdb")
             .withUsername("postgres")
@@ -57,6 +63,7 @@ public class AbstractRepoClientFunctionalTest {
                         "server-config.template.json", "server-config.template.json")
                     .withBuildArg(
                         "lionwebRepositoryCommitId", BuildConfig.LIONWEB_REPOSITORY_COMMIT_ID))
+            .withReuse(true)
             .dependsOn(db)
             .withNetwork(network)
             .withEnv("PGHOST", "mypgdb")
@@ -64,6 +71,7 @@ public class AbstractRepoClientFunctionalTest {
             .withEnv("PGUSER", "postgres")
             .withEnv("PGPASSWORD", "lionweb")
             .withEnv("PGDB", "lionweb_test")
+            .withEnv("LIONWEB_VERSION", lionWebVersion.getVersionString())
             .withExposedPorts(3005);
 
     modelRepository.setLogConsumers(
@@ -80,10 +88,13 @@ public class AbstractRepoClientFunctionalTest {
     System.setProperty("MODEL_REPO_PORT", Integer.toString(getModelRepoPort()));
   }
 
-  @AfterEach
-  public void teardown() {
+  @AfterAll
+  public void teardownContainers() {
     if (modelRepository != null) {
       modelRepository.stop();
+    }
+    if (db != null) {
+      db.stop();
     }
   }
 

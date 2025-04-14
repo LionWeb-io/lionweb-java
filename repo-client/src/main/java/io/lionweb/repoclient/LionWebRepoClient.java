@@ -2,37 +2,34 @@ package io.lionweb.repoclient;
 
 import com.google.gson.*;
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
-import io.lionweb.lioncore.java.utils.CommonChecks;
+import io.lionweb.repoclient.api.*;
+import io.lionweb.repoclient.impl.ClientForBulkAPIs;
+import io.lionweb.repoclient.impl.ClientForDBAdminAPIs;
+import io.lionweb.repoclient.impl.ClientForInspectionAPIs;
+import io.lionweb.repoclient.impl.RepoClientConfiguration;
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import okhttp3.*;
-import okio.Buffer;
-import okio.BufferedSink;
-import okio.GzipSink;
-import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebRepoClient {
+public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {
 
   public class Builder {
-    private LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
-    private String hostname = "localhost";
-    private int port = 3005;
-    private String authorizationToken = null;
-    private String clientID = "GenericJavaBasedLionWebClient";
-    private String repository = "default";
-    private long connectTimeoutInSeconds = 60;
-    private long callTimeoutInSeconds = 60;
+    protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
+    protected String hostname = "localhost";
+    protected int port = 3005;
+    protected String authorizationToken = null;
+    protected String clientID = "GenericJavaBasedLionWebClient";
+    protected String repository = "default";
+    protected long connectTimeoutInSeconds = 60;
+    protected long callTimeoutInSeconds = 60;
 
     public Builder withVersion(LionWebVersion version) {
       this.lionWebVersion = version;
@@ -87,19 +84,20 @@ public class LionWebRepoClient {
     }
   }
 
-  private static final MediaType JSON = MediaType.get("application/json");
-  private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
+  protected static final MediaType JSON = MediaType.get("application/json");
 
-  private final Protocol protocol = Protocol.HTTP;
-  private final String hostname;
-  private final int port;
-  private final String authorizationToken;
-  private final String clientID;
-  private final String repository;
-  private final OkHttpClient httpClient;
-  private final Gson gson = new GsonBuilder().serializeNulls().create();
-  private final JsonSerialization jsonSerialization;
+  protected final Protocol protocol = Protocol.HTTP;
+  protected final String hostname;
+  protected final int port;
+  protected final String authorizationToken;
+  protected final String clientID;
+  protected final String repository;
+  protected final OkHttpClient httpClient;
+  protected final JsonSerialization jsonSerialization;
+
+  private final ClientForInspectionAPIs inspectionAPIs;
+  private final ClientForDBAdminAPIs dbAdminAPIs;
+  private final ClientForBulkAPIs bulkAPIs;
 
   //
   // Constructors
@@ -138,35 +136,28 @@ public class LionWebRepoClient {
     this.jsonSerialization.setUnavailableChildrenPolicy(UnavailableNodePolicy.PROXY_NODES);
     this.jsonSerialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
     this.jsonSerialization.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.PROXY_NODES);
+
+    RepoClientConfiguration conf = buildRepositoryConfiguration();
+    this.inspectionAPIs = new ClientForInspectionAPIs(conf);
+    this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
+    this.bulkAPIs = new ClientForBulkAPIs(conf);
+  }
+
+  protected RepoClientConfiguration buildRepositoryConfiguration() {
+    return new RepoClientConfiguration(
+        protocol,
+        hostname,
+        port,
+        authorizationToken,
+        clientID,
+        repository,
+        httpClient,
+        jsonSerialization);
   }
 
   //
   // Configuration
   //
-
-  public @NotNull Protocol getProtocol() {
-    return protocol;
-  }
-
-  public @NotNull String getHostname() {
-    return hostname;
-  }
-
-  public int getPort() {
-    return port;
-  }
-
-  public @Nullable String getAuthorizationToken() {
-    return authorizationToken;
-  }
-
-  public @NotNull String getClientID() {
-    return clientID;
-  }
-
-  public @NotNull String getRepository() {
-    return repository;
-  }
 
   public @NotNull JsonSerialization getJsonSerialization() {
     return jsonSerialization;
@@ -176,248 +167,92 @@ public class LionWebRepoClient {
   // Bulk APIs
   //
 
+  @Override
+  public void createPartitions(List<Node> partitions) throws IOException {
+    bulkAPIs.createPartitions(partitions);
+  }
+
+  public void createPartition(@NotNull Node partition) throws IOException {
+    createPartitions(Collections.singletonList(partition));
+  }
+
   public void createPartitions(String data) throws IOException {
-    nodesStoringOperation(data, "createPartitions");
+    bulkAPIs.createPartitions(data);
   }
 
+  @Override
   public void deletePartitions(List<String> ids) throws IOException {
-    JsonArray ja = new JsonArray();
-    for (String id : ids) {
-      ja.add(id);
-    }
-
-    String bodyJson = gson.toJson(ja);
-    RequestBody body = RequestBody.create(bodyJson, JSON);
-    Request.Builder rq =
-        new Request.Builder()
-            .url(
-                addClientIdQueryParam(
-                    protocol.value + "://" + hostname + ":" + port + "/bulk/deletePartitions"));
-    rq = considerAuthenticationToken(rq);
-    Request request = rq.post(body).build();
-
-    try (Response response = httpClient.newCall(request).execute()) {
-      if (response.code() != HttpURLConnection.HTTP_OK) {
-        throw new RuntimeException(
-            "Request failed with code " + response.code() + ": " + response.body().string());
-      }
-    }
+    bulkAPIs.deletePartitions(ids);
   }
 
+  @Override
   public List<Node> listPartitions() throws IOException {
-    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/listPartitions";
-    Request.Builder rq =
-        new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
-    rq = considerAuthenticationToken(rq);
-    Request request =
-        rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
-
-    try (Response response = httpClient.newCall(request).execute()) {
-      String body = Objects.requireNonNull(response.body()).string();
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
-        boolean success = responseData.get("success").getAsBoolean();
-        if (!success) {
-          throw new RequestFailureException(url, response.code(), body);
-        }
-        return jsonSerialization.deserializeToNodes(responseData.get("chunk"));
-      } else {
-        throw new RequestFailureException(url, response.code(), body);
-      }
-    }
+    return bulkAPIs.listPartitions();
   }
 
   public List<String> listPartitionsIDs() throws IOException {
     return listPartitions().stream().map(n -> n.getID()).collect(Collectors.toList());
   }
 
+  @Override
   public List<String> ids(int count) throws IOException {
-    if (count < 0) {
-      throw new IllegalArgumentException("Count should be greater or equal to zero");
-    }
-    if (count == 0) {
-      return Collections.emptyList();
-    }
-    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/ids";
-    HttpUrl httpUrl = addRepositoryQueryParam(addClientIdQueryParam(url));
-    httpUrl = httpUrl.newBuilder().addQueryParameter("count", Integer.toString(count)).build();
-    Request.Builder rq = new Request.Builder().url(httpUrl);
-    rq = considerAuthenticationToken(rq);
-    Request request = rq.post(RequestBody.create(new byte[0])).build();
-
-    try (Response response = httpClient.newCall(request).execute()) {
-      String body = Objects.requireNonNull(response.body()).string();
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
-        boolean success = responseData.get("success").getAsBoolean();
-        if (!success) {
-          throw new RequestFailureException(url, response.code(), body);
-        }
-        return responseData.get("ids").getAsJsonArray().asList().stream()
-            .map(je -> je.getAsString())
-            .collect(Collectors.toList());
-      } else {
-        throw new RequestFailureException(url, response.code(), body);
-      }
-    }
+    return bulkAPIs.ids(count);
   }
 
+  @Override
   public void store(List<Node> nodes) throws IOException {
-    if (nodes.isEmpty()) {
-      return;
-    }
-    String url = protocol.value + "://" + hostname + ":" + port + "/bulk/store";
-    HttpUrl httpUrl = addRepositoryQueryParam(addClientIdQueryParam(url));
-    Request.Builder rq = new Request.Builder().url(httpUrl);
-    rq = addGZipCompressionHeader(rq);
-    rq = considerAuthenticationToken(rq);
-    String json =
-        jsonSerialization.serializeTreesToJsonString(nodes.toArray(new ClassifierInstance<?>[0]));
-    RequestBody uncompressedBody = RequestBody.create(json, JSON);
-    Request request = rq.post(gzipCompress(uncompressedBody)).build();
-    try (Response response = httpClient.newCall(request).execute()) {
-      String body = Objects.requireNonNull(response.body()).string();
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
-        boolean success = responseData.get("success").getAsBoolean();
-        if (!success) {
-          throw new RequestFailureException(url, response.code(), body);
-        }
-      } else {
-        throw new RequestFailureException(url, response.code(), body);
-      }
-    }
+    bulkAPIs.store(nodes);
   }
 
+  public void store(@NotNull Node node) throws IOException {
+    store(Collections.singletonList(node));
+  }
+
+  public List<Node> retrieve(List<String> nodeIds) throws IOException {
+    return retrieve(nodeIds, Integer.MAX_VALUE);
+  }
+
+  @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
-    if (nodeIds.isEmpty()) {
-      return Collections.emptyList();
-    }
-    List<String> invalidIDs =
-        nodeIds.stream().filter(id -> !CommonChecks.isValidID(id)).collect(Collectors.toList());
-    if (!invalidIDs.isEmpty()) {
-      throw new IllegalArgumentException("IDs must all be valid. Invalid IDs found: " + invalidIDs);
-    }
-
-    String bodyJson =
-        "{\"ids\":["
-            + String.join(", ", nodeIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
-            + "]}";
-    String url = protocol + "://" + hostname + ":" + port + "/bulk/retrieve";
-    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-    urlBuilder.addQueryParameter("depthLimit", String.valueOf(limit));
-    urlBuilder.addQueryParameter("clientId", clientID);
-    urlBuilder.addQueryParameter("repository", repository);
-
-    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
-    rq = considerAuthenticationToken(rq);
-    Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
-
-    try (Response response = httpClient.newCall(request).execute()) {
-      String body = Objects.requireNonNull(response.body()).string();
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        JsonObject responseData = JsonParser.parseString(body).getAsJsonObject();
-        boolean success = responseData.get("success").getAsBoolean();
-        if (!success) {
-          throw new RequestFailureException(url, response.code(), body);
-        }
-        List<Node> allNodes = jsonSerialization.deserializeToNodes(responseData.get("chunk"));
-        Set<String> idsReturned = allNodes.stream().map(n -> n.getID()).collect(Collectors.toSet());
-        // We want to return only the roots of the trees returned. From those, the other nodes can
-        // be accessed
-        return allNodes.stream()
-            .filter(n -> n.getParent() == null || !idsReturned.contains(n.getParent().getID()))
-            .collect(Collectors.toList());
-      } else {
-        throw new RequestFailureException(url, response.code(), body);
-      }
-    }
+    return bulkAPIs.retrieve(nodeIds, limit);
   }
 
-  // ──────────────────────────────────────────────────────
-  // Helpers
-  // ──────────────────────────────────────────────────────
+  //
+  // DBAdmin APIs
+  //
 
-  private HttpUrl addClientIdQueryParam(String rawUrl) {
-    HttpUrl.Builder builder = HttpUrl.parse(rawUrl).newBuilder();
-    builder.addQueryParameter("clientId", clientID);
-    return builder.build();
+  @Override
+  public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration)
+      throws IOException {
+    dbAdminAPIs.createRepository(repositoryConfiguration);
   }
 
-  private HttpUrl addRepositoryQueryParam(HttpUrl url) {
-    return url.newBuilder().addQueryParameter("repository", repository).build();
+  @Override
+  public void deleteRepository(@NotNull String repositoryName) throws IOException {
+    dbAdminAPIs.deleteRepository(repositoryName);
   }
 
-  private Request.Builder considerAuthenticationToken(Request.Builder builder) {
-    return (authorizationToken == null)
-        ? builder
-        : builder.addHeader("Authorization", authorizationToken);
+  @Override
+  public void createDatabase() throws IOException {
+    dbAdminAPIs.createDatabase();
   }
 
-  private RequestBody gzipCompress(RequestBody original) throws IOException {
-    Buffer buffer = new Buffer();
-    original.writeTo(buffer);
-
-    RequestBody gzippedBody =
-        new RequestBody() {
-          @Override
-          public MediaType contentType() {
-            return original.contentType();
-          }
-
-          @Override
-          public long contentLength() {
-            return -1; // unknown
-          }
-
-          @Override
-          public void writeTo(BufferedSink sink) throws IOException {
-            GzipSink gzipSink = new GzipSink(sink);
-            BufferedSink compressedSink = Okio.buffer(gzipSink);
-            buffer.copyTo(compressedSink.buffer(), 0, buffer.size());
-            compressedSink.close();
-          }
-        };
-
-    return gzippedBody;
+  @Override
+  public @NotNull Set<RepositoryConfiguration> listRepositories() throws IOException {
+    return dbAdminAPIs.listRepositories();
   }
 
-  private Request.Builder addGZipCompressionHeader(Request.Builder builder) {
-    return builder.addHeader("Content-Encoding", "gzip");
+  //
+  // Inspection APIs
+  //
+
+  @Override
+  public Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
+    return inspectionAPIs.nodesByClassifier();
   }
 
-  public void nodesStoringOperation(final String json, final String operation) {
-    // Compress the request body
-    RequestBody body =
-        CompressionSupport.compress(
-            json); // assuming CompressUtil.compress(String) handles JSON compression
-
-    final String url = protocol.value + "://" + hostname + ":" + port + "/bulk/" + operation;
-
-    // Build the request
-    Request.Builder rb =
-        new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
-    rb = considerAuthenticationToken(rb);
-    rb = addGZipCompressionHeader(rb);
-    Request request = rb.post(body).build();
-
-    try {
-      try (Response response = httpClient.newCall(request).execute()) {
-        if (response.code() != HttpURLConnection.HTTP_OK) {
-          String responseBody = response.body() != null ? response.body().string() : null;
-          throw new RequestFailureException(url, response.code(), responseBody);
-        }
-      }
-    } catch (ConnectException e) {
-      String jsonExcerpt = json.length() > 10000 ? json.substring(0, 1000) + "..." : json;
-      throw new RuntimeException(
-          "Cannot get answer from the client when contacting at URL "
-              + url
-              + ". Body: "
-              + jsonExcerpt,
-          e);
-    } catch (IOException e) {
-      throw new RuntimeException("IO error while contacting URL " + url, e);
-    }
+  @Override
+  public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
+    return inspectionAPIs.nodesByLanguage();
   }
 }

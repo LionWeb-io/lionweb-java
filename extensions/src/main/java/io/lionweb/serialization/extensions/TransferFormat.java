@@ -1,4 +1,4 @@
-package io.lionweb.repoclient;
+package io.lionweb.serialization.extensions;
 
 public enum TransferFormat {
   JSON,

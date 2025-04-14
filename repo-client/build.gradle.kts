@@ -1,5 +1,4 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import java.net.URI
 
 plugins {
     `jvm-test-suite`
@@ -27,7 +26,6 @@ tasks.withType<Jar>().configureEach {
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":extensions"))
     implementation(libs.okhttp)
     implementation(libs.gson)
     testImplementation(libs.junit)
@@ -43,7 +41,7 @@ tasks.register<Jar>("sourcesJar") {
 mavenPublishing {
     coordinates(
         groupId = "io.lionweb.lionweb-java",
-        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+        artifactId = "lionweb-java-$specsVersion-" + project.name,
         version = project.version as String,
     )
 
@@ -100,13 +98,14 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
 
-
 tasks.withType<Test>().all {
     testLogging {
         showStandardStreams = true
         showExceptions = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
+    // Set the environment variable so that Testcontainers can reuse containers between test runs
+    environment("TESTCONTAINERS_REUSE_ENABLE", "true")
 }
 
 testing {
