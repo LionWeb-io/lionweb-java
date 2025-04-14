@@ -1,4 +1,4 @@
-package io.lionweb.repoclient;
+package io.lionweb.repoclient.api;
 
 import java.util.Objects;
 import java.util.Set;

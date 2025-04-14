@@ -4,14 +4,12 @@ import com.google.gson.*;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
 import io.lionweb.lioncore.java.utils.CommonChecks;
-import io.lionweb.repoclient.api.BulkAPIClient;
-import io.lionweb.repoclient.api.DBAdminAPIClient;
-import io.lionweb.repoclient.api.HistorySupport;
-import io.lionweb.repoclient.api.RepositoryConfiguration;
+import io.lionweb.repoclient.api.*;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -26,17 +24,17 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
+public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {
 
   public class Builder {
-    private LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
-    private String hostname = "localhost";
-    private int port = 3005;
-    private String authorizationToken = null;
-    private String clientID = "GenericJavaBasedLionWebClient";
-    private String repository = "default";
-    private long connectTimeoutInSeconds = 60;
-    private long callTimeoutInSeconds = 60;
+    protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
+    protected String hostname = "localhost";
+    protected int port = 3005;
+    protected String authorizationToken = null;
+    protected String clientID = "GenericJavaBasedLionWebClient";
+    protected String repository = "default";
+    protected long connectTimeoutInSeconds = 60;
+    protected long callTimeoutInSeconds = 60;
 
     public Builder withVersion(LionWebVersion version) {
       this.lionWebVersion = version;
@@ -91,19 +89,17 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
     }
   }
 
-  private static final MediaType JSON = MediaType.get("application/json");
-  private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
+  protected static final MediaType JSON = MediaType.get("application/json");
 
-  private final Protocol protocol = Protocol.HTTP;
-  private final String hostname;
-  private final int port;
-  private final String authorizationToken;
-  private final String clientID;
-  private final String repository;
-  private final OkHttpClient httpClient;
-  private final Gson gson = new GsonBuilder().serializeNulls().create();
-  private final JsonSerialization jsonSerialization;
+  protected final Protocol protocol = Protocol.HTTP;
+  protected final String hostname;
+  protected final int port;
+  protected final String authorizationToken;
+  protected final String clientID;
+  protected final String repository;
+  protected final OkHttpClient httpClient;
+  protected final Gson gson = new GsonBuilder().serializeNulls().create();
+  protected final JsonSerialization jsonSerialization;
 
   //
   // Constructors
@@ -185,6 +181,10 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
     createPartitions(
         jsonSerialization.serializeTreesToJsonString(
             partitions.toArray(new ClassifierInstance[0])));
+  }
+
+  public void createPartition(@NotNull Node partition) throws IOException {
+    createPartitions(Collections.singletonList(partition));
   }
 
   public void createPartitions(String data) throws IOException {
@@ -304,6 +304,14 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
     }
   }
 
+  public void store(@NotNull Node node) throws IOException {
+    store(Collections.singletonList(node));
+  }
+
+  public List<Node> retrieve(List<String> nodeIds) throws IOException {
+    return retrieve(nodeIds, Integer.MAX_VALUE);
+  }
+
   @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
     if (nodeIds.isEmpty()) {
@@ -342,7 +350,10 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
         // We want to return only the roots of the trees returned. From those, the other nodes can
         // be accessed
         return allNodes.stream()
-            .filter(n -> n.getParent() == null || !idsReturned.contains(n.getParent().getID()))
+            .filter(
+                n ->
+                    !(n instanceof ProxyNode)
+                        && (n.getParent() == null || !idsReturned.contains(n.getParent().getID())))
             .collect(Collectors.toList());
       } else {
         throw new RequestFailureException(url, response.code(), body);
@@ -467,27 +478,101 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient {
     }
   }
 
+  //
+  // Inspection APIs
+  //
+
+  @Override
+  public Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
+    String url = protocol + "://" + hostname + ":" + port + "/inspection/nodesByClassifier";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repository);
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.get().build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonArray responseData = JsonParser.parseString(body).getAsJsonArray();
+        Map<ClassifierKey, ClassifierResult> result = new HashMap<>();
+        responseData.forEach(
+            entry -> {
+              JsonObject entryJO = entry.getAsJsonObject();
+
+              String language = entryJO.get("language").getAsString();
+              String classifier = entryJO.get("classifier").getAsString();
+              ClassifierKey classifierKey = new ClassifierKey(language, classifier);
+
+              Set<String> ids = new HashSet<>();
+              entryJO.get("ids").getAsJsonArray().forEach(el -> ids.add(el.getAsString()));
+              int size = entryJO.get("size").getAsInt();
+              ClassifierResult classifierResult = new ClassifierResult(ids, size);
+
+              result.put(classifierKey, classifierResult);
+            });
+        return result;
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
+  }
+
+  @Override
+  public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
+    String url = protocol + "://" + hostname + ":" + port + "/inspection/nodesByLanguage";
+    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
+    urlBuilder.addQueryParameter("clientId", clientID);
+    urlBuilder.addQueryParameter("repository", repository);
+    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
+    rq = considerAuthenticationToken(rq);
+    Request request = rq.get().build();
+    try (Response response = httpClient.newCall(request).execute()) {
+      String body = Objects.requireNonNull(response.body()).string();
+      if (response.code() == HttpURLConnection.HTTP_OK) {
+        JsonArray responseData = JsonParser.parseString(body).getAsJsonArray();
+        Map<String, ClassifierResult> result = new HashMap<>();
+        responseData.forEach(
+            entry -> {
+              JsonObject entryJO = entry.getAsJsonObject();
+
+              String language = entryJO.get("language").getAsString();
+
+              Set<String> ids = new HashSet<>();
+              entryJO.get("ids").getAsJsonArray().forEach(el -> ids.add(el.getAsString()));
+              int size = entryJO.get("size").getAsInt();
+              ClassifierResult classifierResult = new ClassifierResult(ids, size);
+
+              result.put(language, classifierResult);
+            });
+        return result;
+      } else {
+        throw new RequestFailureException(url, response.code(), body);
+      }
+    }
+  }
+
   // ──────────────────────────────────────────────────────
   // Helpers
   // ──────────────────────────────────────────────────────
 
-  private HttpUrl addClientIdQueryParam(String rawUrl) {
+  protected HttpUrl addClientIdQueryParam(String rawUrl) {
     HttpUrl.Builder builder = HttpUrl.parse(rawUrl).newBuilder();
     builder.addQueryParameter("clientId", clientID);
     return builder.build();
   }
 
-  private HttpUrl addRepositoryQueryParam(HttpUrl url) {
+  protected HttpUrl addRepositoryQueryParam(HttpUrl url) {
     return url.newBuilder().addQueryParameter("repository", repository).build();
   }
 
-  private Request.Builder considerAuthenticationToken(Request.Builder builder) {
+  protected Request.Builder considerAuthenticationToken(Request.Builder builder) {
     return (authorizationToken == null)
         ? builder
         : builder.addHeader("Authorization", authorizationToken);
   }
 
-  private RequestBody gzipCompress(RequestBody original) throws IOException {
+  protected RequestBody gzipCompress(RequestBody original) throws IOException {
     Buffer buffer = new Buffer();
     original.writeTo(buffer);
 

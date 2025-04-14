@@ -23,15 +23,16 @@ val javadocConfig by configurations.creating {
 
 dependencies {
     implementation(project(":core"))
-
-    // Use JUnit test framework.
-    testImplementation(libs.junit)
+    implementation(project(":repo-client"))
+    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation(libs.protobuf)
     implementation(libs.flatbuffers)
-}
+    implementation(libs.gson)
+    implementation(libs.okhttp)
 
-val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
+    testImplementation(libs.junit)
+}
 
 tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
@@ -115,4 +116,46 @@ protobuf {
 
 tasks {
     getByName("sourcesJar").dependsOn("generateProto")
+}
+
+tasks.withType<Test>().all {
+    testLogging {
+        showStandardStreams = true
+        showExceptions = true
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+    }
+    // Set the environment variable so that Testcontainers can reuse containers between test runs
+    environment("TESTCONTAINERS_REUSE_ENABLE", "true")
+}
+
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+
+        register<JvmTestSuite>("functionalTest") {
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    "functionalTestImplementation"(project(":repo-client"))
+    "functionalTestImplementation"(project(":core"))
+    "functionalTestImplementation"(project(":extensions"))
+    "functionalTestImplementation"(project(":repo-client-testing"))
+    "functionalTestImplementation"(libs.testcontainers)
+    "functionalTestImplementation"(libs.testcontainersjunit)
+    "functionalTestImplementation"(libs.testcontainerspg)
+    "functionalTestImplementation"(libs.junit.api)
+    "functionalTestImplementation"(libs.junit.engine)
+    "functionalTestImplementation"(libs.gson)
 }

@@ -20,6 +20,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFunctionalTest {
 
+  public LionWebRepoClientBulkApiFunctionalTest() {
+    super(LionWebVersion.v2023_1, false);
+  }
+
   @Test
   public void noPartitionsOnNewModelRepository() throws IOException {
     LionWebRepoClient client =

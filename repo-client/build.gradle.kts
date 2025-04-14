@@ -26,7 +26,6 @@ tasks.withType<Jar>().configureEach {
 
 dependencies {
     implementation(project(":core"))
-    implementation(project(":extensions"))
     implementation(libs.okhttp)
     implementation(libs.gson)
     testImplementation(libs.junit)
@@ -105,6 +104,8 @@ tasks.withType<Test>().all {
         showExceptions = true
         exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
     }
+    // Set the environment variable so that Testcontainers can reuse containers between test runs
+    environment("TESTCONTAINERS_REUSE_ENABLE", "true")
 }
 
 testing {

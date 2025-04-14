@@ -16,6 +16,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @Testcontainers
 public class LionWebRepoClientDBAdminApiFunctionalTest extends AbstractRepoClientFunctionalTest {
 
+  public LionWebRepoClientDBAdminApiFunctionalTest() {
+    super(LionWebVersion.v2024_1, false);
+  }
+
   @Test
   public void repositoriesCRUD() throws IOException {
     LionWebRepoClient client =
