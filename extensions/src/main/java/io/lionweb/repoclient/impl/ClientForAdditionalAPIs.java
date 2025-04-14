@@ -1,64 +1,27 @@
-package io.lionweb.serialization.extensions;
+package io.lionweb.repoclient.impl;
+
+import static io.lionweb.serialization.extensions.CompressionSupport.considerCompression;
 
 import com.google.gson.*;
-import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.protobuf.PBBulkImport;
-import io.lionweb.repoclient.LionWebRepoClient;
 import io.lionweb.repoclient.RequestFailureException;
+import io.lionweb.serialization.extensions.*;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import okhttp3.*;
 
-public class ExtendedLionWebRepoClient extends LionWebRepoClient implements AdditionalAPIClient {
+public class ClientForAdditionalAPIs extends LionWebRepoClientImplHelper
+    implements AdditionalAPIClient {
 
   private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
   private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
 
-  public class Builder extends LionWebRepoClient.Builder {
-    @Override
-    public ExtendedLionWebRepoClient build() {
-      return new ExtendedLionWebRepoClient(
-          lionWebVersion,
-          hostname,
-          port,
-          authorizationToken,
-          clientID,
-          repository,
-          connectTimeoutInSeconds,
-          callTimeoutInSeconds);
-    }
-  }
-
-  public ExtendedLionWebRepoClient(
-      LionWebVersion lionWebVersion, String hostname, int port, String repository) {
-    super(lionWebVersion, hostname, port, repository);
-  }
-
-  public ExtendedLionWebRepoClient(
-      LionWebVersion lionWebVersion,
-      String hostname,
-      int port,
-      String authorizationToken,
-      String clientID,
-      String repository,
-      long connectTimeoutInSeconds,
-      long callTimeoutInSeconds) {
-    super(
-        lionWebVersion,
-        hostname,
-        port,
-        authorizationToken,
-        clientID,
-        repository,
-        connectTimeoutInSeconds,
-        callTimeoutInSeconds);
+  public ClientForAdditionalAPIs(RepoClientConfiguration repoClientConfiguration) {
+    super(repoClientConfiguration);
   }
 
   @Override
@@ -84,52 +47,46 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
   }
 
   @Override
-  public List<NodeInfo> getNodeTree(List<String> nodeIDs, @Nullable Integer depthLimit)
-      throws IOException {
+  public List<NodeInfo> getNodeTree(
+      List<String> nodeIDs, @javax.annotation.Nullable Integer depthLimit) throws IOException {
     if (nodeIDs.isEmpty()) {
       return Collections.emptyList();
     }
-    String url = protocol.value + "://" + hostname + ":" + port + "/additional/getNodeTree";
-    HttpUrl.Builder urlBuilder = HttpUrl.parse(url).newBuilder();
-    urlBuilder.addQueryParameter("clientId", clientID);
-    urlBuilder.addQueryParameter("repository", repository).build();
+    Map<String, String> params = new HashMap<>();
     if (depthLimit != null) {
-      urlBuilder.addQueryParameter("depthLimit", depthLimit.toString());
+      params.put("depthLimit", depthLimit.toString());
     }
-    Request.Builder rq = new Request.Builder().url(urlBuilder.build());
-    rq = considerAuthenticationToken(rq);
+    Request.Builder rq = buildRequest("/additional/getNodeTree", true, true, true, params);
     JsonObject bodyJO = new JsonObject();
     JsonArray ids = new JsonArray();
     nodeIDs.forEach(ids::add);
     bodyJO.add("ids", ids);
-    String bodyJson = new Gson().toJson(bodyJO);
+    String bodyJson = gson.toJson(bodyJO);
     RequestBody requestBody = RequestBody.create(bodyJson, JSON);
     Request request = rq.post(requestBody).build();
-    try (Response response = httpClient.newCall(request).execute()) {
-      String responseBody = Objects.requireNonNull(response.body()).string();
-      if (response.code() == HttpURLConnection.HTTP_OK) {
-        JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
-        boolean success = responseData.get("success").getAsBoolean();
-        if (!success) {
-          throw new RequestFailureException(url, response.code(), responseBody);
-        }
-        JsonArray data = responseData.get("data").getAsJsonArray();
-        return data.asList().stream()
-            .map(
-                entry -> {
-                  JsonObject entryJO = entry.getAsJsonObject();
-                  String id = entryJO.get("id").getAsString();
-                  JsonElement parentValue = entryJO.get("parent");
-                  String parent =
-                      parentValue.isJsonNull() ? null : entryJO.get("parent").getAsString();
-                  int depth = entryJO.get("depth").getAsInt();
-                  return new NodeInfo(id, parent, depth);
-                })
-            .collect(Collectors.toList());
-      } else {
-        throw new RequestFailureException(url, response.code(), responseBody);
-      }
-    }
+    return performCall(
+        request,
+        (response, responseBody) -> {
+          JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
+          boolean success = responseData.get("success").getAsBoolean();
+          if (!success) {
+            throw new RequestFailureException(
+                request.url().toString(), response.code(), responseBody);
+          }
+          JsonArray data = responseData.get("data").getAsJsonArray();
+          return data.asList().stream()
+              .map(
+                  entry -> {
+                    JsonObject entryJO = entry.getAsJsonObject();
+                    String id = entryJO.get("id").getAsString();
+                    JsonElement parentValue = entryJO.get("parent");
+                    String parent =
+                        parentValue.isJsonNull() ? null : entryJO.get("parent").getAsString();
+                    int depth = entryJO.get("depth").getAsInt();
+                    return new NodeInfo(id, parent, depth);
+                  })
+              .collect(Collectors.toList());
+        });
   }
 
   private void bulkImportUsingJson(BulkImport bulkImport, Compression compression)
@@ -151,7 +108,7 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
               bodyAttachPoints.add(jEl);
             });
     JsonArray bodyNodes =
-        getJsonSerialization()
+        conf.getJsonSerialization()
             .serializeTreesToJsonElement(
                 bulkImport.getNodes().toArray(new ClassifierInstance<?>[0]))
             .getAsJsonObject()
@@ -162,12 +119,14 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
     String bodyJson = new Gson().toJson(body);
 
     RequestBody requestBody = RequestBody.create(JSON, bodyJson);
-    requestBody = CompressionSupport.considerCompression(requestBody, compression);
+    requestBody = considerCompression(requestBody, compression);
     bulkImport(requestBody, compression);
   }
 
   private void bulkImportUsingProtobuf(BulkImport bulkImport, Compression compression)
       throws IOException {
+    JsonSerialization jsonSerialization = conf.getJsonSerialization();
+
     ExtraProtoBufSerialization pbSerialization = new ExtraProtoBufSerialization();
     pbSerialization.setUnavailableChildrenPolicy(jsonSerialization.getUnavailableChildrenPolicy());
     pbSerialization.setUnavailableParentPolicy(jsonSerialization.getUnavailableParentPolicy());
@@ -181,12 +140,14 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
     PBBulkImport pbBulkImport = pbSerialization.serializeBulkImport(bulkImport);
     byte[] bytes = pbBulkImport.toByteArray();
     RequestBody requestBody = RequestBody.create(PROTOBUF, bytes);
-    requestBody = CompressionSupport.considerCompression(requestBody, compression);
+    requestBody = considerCompression(requestBody, compression);
     bulkImport(requestBody, compression);
   }
 
   private void bulkImportUsingFlatbuffers(BulkImport bulkImport, Compression compression)
       throws IOException {
+    JsonSerialization jsonSerialization = conf.getJsonSerialization();
+
     ExtraFlatBuffersSerialization fbSerialization = new ExtraFlatBuffersSerialization();
     fbSerialization.setUnavailableChildrenPolicy(jsonSerialization.getUnavailableChildrenPolicy());
     fbSerialization.setUnavailableParentPolicy(jsonSerialization.getUnavailableParentPolicy());
@@ -199,33 +160,28 @@ public class ExtendedLionWebRepoClient extends LionWebRepoClient implements Addi
         jsonSerialization.getPrimitiveValuesSerialization());
     byte[] bytes = fbSerialization.serializeBulkImport(bulkImport);
     RequestBody requestBody = RequestBody.create(FLATBUFFERS, bytes);
-    requestBody = CompressionSupport.considerCompression(requestBody, compression);
+    requestBody = considerCompression(requestBody, compression);
     bulkImport(requestBody, compression);
   }
 
   private void bulkImport(RequestBody requestBody, Compression compression) throws IOException {
-    String url = protocol.value + "://" + hostname + ":" + port + "/additional/bulkImport";
-    Request.Builder rq =
-        new Request.Builder().url(addRepositoryQueryParam(addClientIdQueryParam(url)));
-    rq = considerAuthenticationToken(rq);
+    Request.Builder rq = buildRequest("/additional/bulkImport");
     if (compression == Compression.ENABLED) {
       rq = rq.addHeader("Content-Encoding", "gzip");
     }
     rq.post(requestBody);
     Request request = rq.build();
 
-    // Execute the HTTP call and use try-with-resources to ensure the response is closed.
-    try (Response response = httpClient.newCall(request).execute()) {
-      String responseBody = response.body() != null ? response.body().string() : "";
-      if (response.code() != HttpURLConnection.HTTP_OK) {
-        throw new RequestFailureException(url, response.code(), responseBody);
-      }
-
-      JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
-      boolean success = responseData.get("success").getAsBoolean();
-      if (!success) {
-        throw new RequestFailureException(url, response.code(), responseBody);
-      }
-    }
+    performCall(
+        request,
+        (response, responseBody) -> {
+          JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
+          boolean success = responseData.get("success").getAsBoolean();
+          if (!success) {
+            throw new RequestFailureException(
+                request.url().toString(), response.code(), responseBody);
+          }
+          return null;
+        });
   }
 }

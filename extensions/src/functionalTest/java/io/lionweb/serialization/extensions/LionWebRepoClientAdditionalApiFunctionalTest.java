@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.repoclient.ExtendedLionWebRepoClient;
 import io.lionweb.repoclient.api.HistorySupport;
 import io.lionweb.repoclient.api.RepositoryConfiguration;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;

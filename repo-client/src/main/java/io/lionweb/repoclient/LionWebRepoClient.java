@@ -93,7 +93,6 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   protected final String clientID;
   protected final String repository;
   protected final OkHttpClient httpClient;
-  protected final Gson gson = new GsonBuilder().serializeNulls().create();
   protected final JsonSerialization jsonSerialization;
 
   private final ClientForInspectionAPIs inspectionAPIs;
@@ -138,19 +137,22 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     this.jsonSerialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
     this.jsonSerialization.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.PROXY_NODES);
 
-    RepoClientConfiguration conf =
-        new RepoClientConfiguration(
-            protocol,
-            hostname,
-            port,
-            authorizationToken,
-            clientID,
-            repository,
-            httpClient,
-            jsonSerialization);
+    RepoClientConfiguration conf = buildRepositoryConfiguration();
     this.inspectionAPIs = new ClientForInspectionAPIs(conf);
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
+  }
+
+  protected RepoClientConfiguration buildRepositoryConfiguration() {
+    return new RepoClientConfiguration(
+        protocol,
+        hostname,
+        port,
+        authorizationToken,
+        clientID,
+        repository,
+        httpClient,
+        jsonSerialization);
   }
 
   //
@@ -252,25 +254,5 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   @Override
   public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
     return inspectionAPIs.nodesByLanguage();
-  }
-
-  // ──────────────────────────────────────────────────────
-  // Helpers
-  // ──────────────────────────────────────────────────────
-
-  protected HttpUrl addClientIdQueryParam(String rawUrl) {
-    HttpUrl.Builder builder = HttpUrl.parse(rawUrl).newBuilder();
-    builder.addQueryParameter("clientId", clientID);
-    return builder.build();
-  }
-
-  protected HttpUrl addRepositoryQueryParam(HttpUrl url) {
-    return url.newBuilder().addQueryParameter("repository", repository).build();
-  }
-
-  protected Request.Builder considerAuthenticationToken(Request.Builder builder) {
-    return (authorizationToken == null)
-        ? builder
-        : builder.addHeader("Authorization", authorizationToken);
   }
 }

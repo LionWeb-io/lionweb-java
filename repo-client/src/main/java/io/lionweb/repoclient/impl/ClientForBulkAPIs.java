@@ -7,13 +7,22 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.utils.CommonChecks;
+import io.lionweb.repoclient.CompressionSupport;
 import io.lionweb.repoclient.RequestFailureException;
 import io.lionweb.repoclient.api.BulkAPIClient;
 import java.io.IOException;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.util.*;
 import java.util.stream.Collectors;
+import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
+import okio.Buffer;
+import okio.BufferedSink;
+import okio.GzipSink;
+import okio.Okio;
 
 public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements BulkAPIClient {
 
@@ -162,5 +171,63 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
                               || !idsReturned.contains(n.getParent().getID())))
               .collect(Collectors.toList());
         });
+  }
+
+  private void nodesStoringOperation(final String json, final String operation) {
+    // Build the request
+    Request.Builder rb = buildRequest("/bulk/" + operation);
+    rb = addGZipCompressionHeader(rb);
+    RequestBody body =
+        CompressionSupport.compress(
+            json); // assuming CompressUtil.compress(String) handles JSON compression
+    Request request = rb.post(body).build();
+
+    String url = request.url().toString();
+    try {
+      try (Response response = conf.getHttpClient().newCall(request).execute()) {
+        if (response.code() != HttpURLConnection.HTTP_OK) {
+          String responseBody = response.body() != null ? response.body().string() : null;
+          throw new RequestFailureException(url, response.code(), responseBody);
+        }
+      }
+    } catch (ConnectException e) {
+      String jsonExcerpt = json.length() > 10000 ? json.substring(0, 1000) + "..." : json;
+      throw new RuntimeException(
+          "Cannot get answer from the client when contacting at URL "
+              + url
+              + ". Body: "
+              + jsonExcerpt,
+          e);
+    } catch (IOException e) {
+      throw new RuntimeException("IO error while contacting URL " + url, e);
+    }
+  }
+
+  private RequestBody gzipCompress(RequestBody original) throws IOException {
+    Buffer buffer = new Buffer();
+    original.writeTo(buffer);
+
+    RequestBody gzippedBody =
+        new RequestBody() {
+          @Override
+          public MediaType contentType() {
+            return original.contentType();
+          }
+
+          @Override
+          public long contentLength() {
+            return -1; // unknown
+          }
+
+          @Override
+          public void writeTo(BufferedSink sink) throws IOException {
+            GzipSink gzipSink = new GzipSink(sink);
+            BufferedSink compressedSink = Okio.buffer(gzipSink);
+            buffer.copyTo(compressedSink.buffer(), 0, buffer.size());
+            compressedSink.close();
+          }
+        };
+
+    return gzippedBody;
   }
 }
