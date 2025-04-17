@@ -264,11 +264,15 @@ class LionWebClient(
         }
     }
 
-    fun storeTree(node: Node) {
-        jRepoClient.store(node.thisAndAllDescendants())
+    fun listRepositiories(): Set<RepositoryConfiguration> {
+        return jRepoClient.listRepositories()
     }
 
-    fun storeNodes(nodes: List<Node>) {
+    fun storeTree(node: Node) {
+        jRepoClient.store(node)
+    }
+
+    fun storeTrees(nodes: List<Node>) {
         jRepoClient.store(nodes)
     }
 
@@ -416,7 +420,7 @@ class LionWebClient(
         }
 
         // 3. Store the referrers
-        storeNodes(referrers)
+        storeTrees(referrers)
     }
 
     fun setSingleReference(

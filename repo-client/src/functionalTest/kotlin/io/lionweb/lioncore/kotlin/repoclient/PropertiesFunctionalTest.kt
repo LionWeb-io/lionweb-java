@@ -202,6 +202,7 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
                 setPropertyValueByName("name", "Prop3")
                 pf.addChild(pf.classifier.getContainmentByName("properties")!!, this)
             }
+        val repos = client.listRepositiories()
         client.storeTree(pp1)
 
         val prop3retrievedWithProxyParent = client.retrieve("prop3")
