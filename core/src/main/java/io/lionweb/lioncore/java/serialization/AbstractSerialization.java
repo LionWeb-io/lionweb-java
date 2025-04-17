@@ -164,6 +164,7 @@ public abstract class AbstractSerialization {
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    SerializationStatus serializationStatus = new SerializationStatus();
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(classifierInstance));
@@ -177,30 +178,33 @@ public abstract class AbstractSerialization {
                     serializedChunk, annotationInstance.getClassifier().getLanguage());
               });
       Classifier<?> classifier = classifierInstance.getClassifier();
-      Objects.requireNonNull(
-              classifier,
-          "A node should have a concept in order to be serialized");
-      Language language = classifier.getLanguage();
-      if (language == null) {
-       throw new NullPointerException(
-                "A Concept should be part of a Language in order to be serialized. Concept "
-                        + classifier
-                        + " is not");
+      if (!serializationStatus.hasConsideredClassifier(classifier.getID())) {
+        Objects.requireNonNull(
+                classifier,
+                "A node should have a concept in order to be serialized");
+        Language language = classifier.getLanguage();
+        if (language == null) {
+          throw new NullPointerException(
+                  "A Concept should be part of a Language in order to be serialized. Concept "
+                          + classifier
+                          + " is not");
+        }
+        considerLanguageDuringSerialization(
+                serializedChunk, language);
+        classifier
+                .allFeatures()
+                .forEach(
+                        f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
+        classifier
+                .allProperties()
+                .forEach(
+                        p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
+        classifier
+                .allLinks()
+                .forEach(
+                        l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
+        serializationStatus.markClassifierAsConsidered(classifier.getID());
       }
-      considerLanguageDuringSerialization(
-          serializedChunk, language);
-      classifier
-          .allFeatures()
-          .forEach(
-              f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
-      classifier
-          .allProperties()
-          .forEach(
-              p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
-      classifier
-          .allLinks()
-          .forEach(
-              l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
     }
     return serializedChunk;
   }

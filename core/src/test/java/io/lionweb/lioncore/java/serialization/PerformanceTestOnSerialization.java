@@ -51,6 +51,7 @@ public class PerformanceTestOnSerialization {
 
   private void performanceMeasure(Runnable runnable, long thresholdMin, long thresholdMax) {
     List<Long> elapsedList = new ArrayList<>();
+    // FIXME : 25, 3, 3
     int N_ITERATIONS = 1;
     int N_TOP_REMOVED = 0;
     int N_BOTTOM_REMOVED = 0;
