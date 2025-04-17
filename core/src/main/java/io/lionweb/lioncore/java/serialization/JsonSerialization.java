@@ -145,8 +145,14 @@ public class JsonSerialization extends AbstractSerialization {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
+    long t0 = System.currentTimeMillis();
     SerializedChunk serializationBlock = serializeNodesToSerializationBlock(classifierInstances);
-    return new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
+    long t1 = System.currentTimeMillis();
+    JsonElement je = new LowLevelJsonSerialization().serializeToJsonElement(serializationBlock);
+    long t2 = System.currentTimeMillis();
+    System.out.println("serializeNodesToJsonElement A " + (t1-t0));
+    System.out.println("serializeNodesToJsonElement B " + (t2-t1));
+    return je;
   }
 
   public JsonElement serializeNodesToJsonElement(ClassifierInstance<?>... classifierInstances) {

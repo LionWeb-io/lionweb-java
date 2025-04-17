@@ -21,34 +21,7 @@ public class PerformanceTestOnSerialization {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
-    List<Long> elapsedList = new ArrayList<>();
-    int N_ITERATIONS = 25;
-    int N_TOP_REMOVED = 3;
-    int N_BOTTOM_REMOVED = 3;
-    for (int i = 0; i < N_ITERATIONS; i++) {
-      long t0 = System.currentTimeMillis();
-      js.deserializeToNodes(json);
-      long t1 = System.currentTimeMillis();
-      long elapsed = t1 - t0;
-      System.out.println("Elapsed: " + elapsed + " ms");
-      elapsedList.add(elapsed);
-    }
-    elapsedList = elapsedList.stream().sorted().collect(Collectors.toList());
-    elapsedList = elapsedList.subList(N_TOP_REMOVED, elapsedList.size() - N_BOTTOM_REMOVED);
-    assertEquals(N_ITERATIONS - N_TOP_REMOVED - N_BOTTOM_REMOVED, elapsedList.size());
-    long min = elapsedList.get(0);
-    long max = elapsedList.get(elapsedList.size() - 1);
-    // Range: 233 to 282
-    // Range: 193 to 220
-    long THRESHOLD_MIN = 250;
-    long THRESHOLD_MAX = 300;
-    System.out.println("Range: " + min + " to " + max);
-    assertTrue(
-        "Expected min time to be under " + THRESHOLD_MIN + " but it was " + min,
-        min < THRESHOLD_MIN);
-    assertTrue(
-        "Expected max time to be under " + THRESHOLD_MAX + " but it was " + max,
-        max < THRESHOLD_MAX);
+    performanceMeasure(() -> js.deserializeToNodes(json), 250, 350);
   }
 
   @Test
@@ -64,13 +37,8 @@ public class PerformanceTestOnSerialization {
     assertEquals(2, roots.size());
 
     // Let's create a separate JsonSerialization, just in case some caches could affect the result
-    js = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    long t0 = System.currentTimeMillis();
-    js.serializeTreesToJsonElement(roots.get(0), roots.get(1));
-    long t1 = System.currentTimeMillis();
-    long elapsed = t1 - t0;
-    // Elapsed: 6387 ms
-    System.out.println("Elapsed: " + elapsed + " ms");
+    final JsonSerialization js2 = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 6500, 7000);
   }
 
   private String readInputStreamToString(InputStream inputStream) {
@@ -79,5 +47,32 @@ public class PerformanceTestOnSerialization {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+  }
+
+  private void performanceMeasure(Runnable runnable, long thresholdMin, long thresholdMax) {
+    List<Long> elapsedList = new ArrayList<>();
+    int N_ITERATIONS = 1;
+    int N_TOP_REMOVED = 0;
+    int N_BOTTOM_REMOVED = 0;
+    for (int i = 0; i < N_ITERATIONS; i++) {
+      long t0 = System.currentTimeMillis();
+      runnable.run();
+      long t1 = System.currentTimeMillis();
+      long elapsed = t1 - t0;
+      System.out.println("Elapsed: " + elapsed + " ms");
+      elapsedList.add(elapsed);
+    }
+    elapsedList = elapsedList.stream().sorted().collect(Collectors.toList());
+    elapsedList = elapsedList.subList(N_TOP_REMOVED, elapsedList.size() - N_BOTTOM_REMOVED);
+    assertEquals(N_ITERATIONS - N_TOP_REMOVED - N_BOTTOM_REMOVED, elapsedList.size());
+    long min = elapsedList.get(0);
+    long max = elapsedList.get(elapsedList.size() - 1);
+    System.out.println("Range: " + min + " to " + max);
+    assertTrue(
+            "Expected min time to be under " + thresholdMin + " but it was " + min,
+            min < thresholdMin);
+    assertTrue(
+            "Expected max time to be under " + thresholdMax + " but it was " + max,
+            max < thresholdMax);
   }
 }

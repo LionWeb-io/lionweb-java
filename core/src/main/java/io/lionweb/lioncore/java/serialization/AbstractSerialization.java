@@ -176,28 +176,28 @@ public abstract class AbstractSerialization {
                 considerLanguageDuringSerialization(
                     serializedChunk, annotationInstance.getClassifier().getLanguage());
               });
+      Classifier<?> classifier = classifierInstance.getClassifier();
       Objects.requireNonNull(
-          classifierInstance.getClassifier(),
+              classifier,
           "A node should have a concept in order to be serialized");
-      Objects.requireNonNull(
-          classifierInstance.getClassifier().getLanguage(),
-          "A Concept should be part of a Language in order to be serialized. Concept "
-              + classifierInstance.getClassifier()
-              + " is not");
+      Language language = classifier.getLanguage();
+      if (language == null) {
+       throw new NullPointerException(
+                "A Concept should be part of a Language in order to be serialized. Concept "
+                        + classifier
+                        + " is not");
+      }
       considerLanguageDuringSerialization(
-          serializedChunk, classifierInstance.getClassifier().getLanguage());
-      classifierInstance
-          .getClassifier()
+          serializedChunk, language);
+      classifier
           .allFeatures()
           .forEach(
               f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
-      classifierInstance
-          .getClassifier()
+      classifier
           .allProperties()
           .forEach(
               p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
-      classifierInstance
-          .getClassifier()
+      classifier
           .allLinks()
           .forEach(
               l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
