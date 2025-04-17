@@ -82,13 +82,14 @@ class NodePopulator {
         .forEach(
             serializedContainmentValue -> {
               Containment containment =
-                  concept.getContainmentByMetaPointer(serializedContainmentValue.getMetaPointer());
-              Objects.requireNonNull(
-                  containment,
-                  "Unable to resolve containment "
-                      + serializedContainmentValue.getMetaPointer()
-                      + " in concept "
-                      + concept);
+                      deserializationStatus.getContainment(concept, serializedContainmentValue.getMetaPointer());
+              if (containment == null) {
+                  throw new NullPointerException(
+                          "Unable to resolve containment "
+                                  + serializedContainmentValue.getMetaPointer()
+                                  + " in concept "
+                                  + concept);
+              }
               Objects.requireNonNull(
                   serializedContainmentValue.getValue(),
                   "The containment value should not be null");
@@ -118,8 +119,7 @@ class NodePopulator {
         .getReferences()
         .forEach(
             serializedReferenceValue -> {
-              Reference reference =
-                  concept.getReferenceByMetaPointer(serializedReferenceValue.getMetaPointer());
+              Reference reference = deserializationStatus.getReference(concept, serializedReferenceValue.getMetaPointer());
               if (reference == null) {
                 throw new IllegalStateException(
                     "Unable to solve reference "

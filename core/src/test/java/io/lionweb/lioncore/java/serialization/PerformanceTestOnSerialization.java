@@ -39,6 +39,7 @@ public class PerformanceTestOnSerialization {
     long min = elapsedList.get(0);
     long max = elapsedList.get(elapsedList.size() - 1);
     // Range: 233 to 282
+    // Range: 193 to 220
     System.out.println("Range: " + min + " to " + max);
     assertTrue("Expected min time to be under 260 but it was " + min, min < 260);
     assertTrue("Expected max time to be under 320 but it was " + max, max < 320);

@@ -496,8 +496,8 @@ public abstract class AbstractSerialization {
         new NodePopulator(this, classifierInstanceResolver, deserializationStatus, lionWebVersion);
     serializedClassifierInstances.forEach(
         node -> {
-          nodePopulator.populateClassifierInstance(serializedToInstanceMap.get(node), node);
           ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
+          nodePopulator.populateClassifierInstance(classifierInstance, node);
           ClassifierInstance<?> parent = classifierInstanceResolver.resolve(node.getParentNodeID());
           if (parent instanceof ProxyNode
               && unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {

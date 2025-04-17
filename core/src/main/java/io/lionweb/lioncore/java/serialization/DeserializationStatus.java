@@ -3,10 +3,7 @@ package io.lionweb.lioncore.java.serialization;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
-import io.lionweb.lioncore.java.language.Classifier;
-import io.lionweb.lioncore.java.language.DataType;
-import io.lionweb.lioncore.java.language.Feature;
-import io.lionweb.lioncore.java.language.Property;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
@@ -62,6 +59,28 @@ class DeserializationStatus {
       featuresMap.put(metaPointer, classifier.getPropertyByMetaPointer(metaPointer));
     }
     return (Property) featuresMap.get(metaPointer);
+  }
+
+  public Containment getContainment(Classifier<?> classifier, MetaPointer metaPointer) {
+    if (!featuresCache.containsKey(classifier)) {
+      featuresCache.put(classifier, new HashMap<>());
+    }
+    Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
+    if (!featuresMap.containsKey(metaPointer)) {
+      featuresMap.put(metaPointer, classifier.getContainmentByMetaPointer(metaPointer));
+    }
+    return (Containment) featuresMap.get(metaPointer);
+  }
+
+  public Reference getReference(Classifier<?> classifier, MetaPointer metaPointer) {
+    if (!featuresCache.containsKey(classifier)) {
+      featuresCache.put(classifier, new HashMap<>());
+    }
+    Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
+    if (!featuresMap.containsKey(metaPointer)) {
+      featuresMap.put(metaPointer, classifier.getReferenceByMetaPointer(metaPointer));
+    }
+    return (Reference) featuresMap.get(metaPointer);
   }
 
   public Object deserializePropertyValue(
