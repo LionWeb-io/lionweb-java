@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.PerformanceTest;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.*;
 import java.io.InputStream;
@@ -11,7 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+@Category(PerformanceTest.class)
 public class PerformanceTestOnSerialization {
 
   @Test
