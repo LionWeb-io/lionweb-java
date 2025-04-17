@@ -37,8 +37,10 @@ public class PerformanceTestOnSerialization {
     assertEquals(2, roots.size());
 
     // Let's create a separate JsonSerialization, just in case some caches could affect the result
-    final JsonSerialization js2 = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 6500, 7000);
+    final JsonSerialization js2 =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    performanceMeasure(
+        () -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 6500, 7000);
   }
 
   private String readInputStreamToString(InputStream inputStream) {
@@ -51,10 +53,9 @@ public class PerformanceTestOnSerialization {
 
   private void performanceMeasure(Runnable runnable, long thresholdMin, long thresholdMax) {
     List<Long> elapsedList = new ArrayList<>();
-    // FIXME : 25, 3, 3
-    int N_ITERATIONS = 1;
-    int N_TOP_REMOVED = 0;
-    int N_BOTTOM_REMOVED = 0;
+    int N_ITERATIONS = 25;
+    int N_TOP_REMOVED = 3;
+    int N_BOTTOM_REMOVED = 3;
     for (int i = 0; i < N_ITERATIONS; i++) {
       long t0 = System.currentTimeMillis();
       runnable.run();
@@ -70,10 +71,8 @@ public class PerformanceTestOnSerialization {
     long max = elapsedList.get(elapsedList.size() - 1);
     System.out.println("Range: " + min + " to " + max);
     assertTrue(
-            "Expected min time to be under " + thresholdMin + " but it was " + min,
-            min < thresholdMin);
+        "Expected min time to be under " + thresholdMin + " but it was " + min, min < thresholdMin);
     assertTrue(
-            "Expected max time to be under " + thresholdMax + " but it was " + max,
-            max < thresholdMax);
+        "Expected max time to be under " + thresholdMax + " but it was " + max, max < thresholdMax);
   }
 }

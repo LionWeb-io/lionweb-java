@@ -180,29 +180,32 @@ public abstract class AbstractSerialization {
       Classifier<?> classifier = classifierInstance.getClassifier();
       if (!serializationStatus.hasConsideredClassifier(classifier.getID())) {
         Objects.requireNonNull(
-                classifier,
-                "A node should have a concept in order to be serialized");
+            classifier, "A node should have a concept in order to be serialized");
         Language language = classifier.getLanguage();
         if (language == null) {
           throw new NullPointerException(
-                  "A Concept should be part of a Language in order to be serialized. Concept "
-                          + classifier
-                          + " is not");
+              "A Concept should be part of a Language in order to be serialized. Concept "
+                  + classifier
+                  + " is not");
         }
-        considerLanguageDuringSerialization(
-                serializedChunk, language);
+        considerLanguageDuringSerialization(serializedChunk, language);
         classifier
-                .allFeatures()
-                .forEach(
-                        f -> considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
+            .allFeatures()
+            .forEach(
+                f ->
+                    considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
         classifier
-                .allProperties()
-                .forEach(
-                        p -> considerLanguageDuringSerialization(serializedChunk, p.getType().getLanguage()));
+            .allProperties()
+            .forEach(
+                p ->
+                    considerLanguageDuringSerialization(
+                        serializedChunk, p.getType().getLanguage()));
         classifier
-                .allLinks()
-                .forEach(
-                        l -> considerLanguageDuringSerialization(serializedChunk, l.getType().getLanguage()));
+            .allLinks()
+            .forEach(
+                l ->
+                    considerLanguageDuringSerialization(
+                        serializedChunk, l.getType().getLanguage()));
         serializationStatus.markClassifierAsConsidered(classifier.getID());
       }
     }
@@ -236,7 +239,10 @@ public abstract class AbstractSerialization {
     serializeProperties(classifierInstance, serializedClassifierInstance, serializationStatus);
     serializeContainments(classifierInstance, serializedClassifierInstance, serializationStatus);
     serializeReferences(
-        classifierInstance, serializedClassifierInstance, builtinsReferenceDangling, serializationStatus);
+        classifierInstance,
+        serializedClassifierInstance,
+        builtinsReferenceDangling,
+        serializationStatus);
     serializeAnnotations(classifierInstance, serializedClassifierInstance);
     return serializedClassifierInstance;
   }
@@ -252,7 +258,10 @@ public abstract class AbstractSerialization {
     serializeProperties(annotationInstance, serializedClassifierInstance, serializationStatus);
     serializeContainments(annotationInstance, serializedClassifierInstance, serializationStatus);
     serializeReferences(
-        annotationInstance, serializedClassifierInstance, builtinsReferenceDangling, serializationStatus);
+        annotationInstance,
+        serializedClassifierInstance,
+        builtinsReferenceDangling,
+        serializationStatus);
     serializeAnnotations(annotationInstance, serializedClassifierInstance);
     return serializedClassifierInstance;
   }
@@ -273,7 +282,8 @@ public abstract class AbstractSerialization {
       boolean builtinsReferenceDangling,
       SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    serializationStatus.allReferences(classifierInstance.getClassifier())
+    serializationStatus
+        .allReferences(classifierInstance.getClassifier())
         .forEach(
             reference -> {
               SerializedReferenceValue referenceValue = new SerializedReferenceValue();
@@ -300,10 +310,11 @@ public abstract class AbstractSerialization {
 
   private static void serializeContainments(
       @Nonnull ClassifierInstance<?> classifierInstance,
-      SerializedClassifierInstance serializedClassifierInstance, SerializationStatus serializationStatus) {
+      SerializedClassifierInstance serializedClassifierInstance,
+      SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    serializationStatus.allContainments(classifierInstance
-                    .getClassifier())
+    serializationStatus
+        .allContainments(classifierInstance.getClassifier())
         .forEach(
             containment -> {
               SerializedContainmentValue containmentValue = new SerializedContainmentValue();
@@ -322,7 +333,8 @@ public abstract class AbstractSerialization {
       ClassifierInstance<?> classifierInstance,
       SerializedClassifierInstance serializedClassifierInstance,
       SerializationStatus serializationStatus) {
-    serializationStatus.allProperties(classifierInstance.getClassifier())
+    serializationStatus
+        .allProperties(classifierInstance.getClassifier())
         .forEach(
             property -> {
               SerializedPropertyValue propertyValue = new SerializedPropertyValue();
