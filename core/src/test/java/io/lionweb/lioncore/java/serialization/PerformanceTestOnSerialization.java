@@ -22,9 +22,9 @@ public class PerformanceTestOnSerialization {
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
     List<Long> elapsedList = new ArrayList<>();
-    int N_ITERATIONS = 20;
-    int N_TOP_REMOVED = 2;
-    int N_BOTTOM_REMOVED = 2;
+    int N_ITERATIONS = 25;
+    int N_TOP_REMOVED = 3;
+    int N_BOTTOM_REMOVED = 3;
     for (int i = 0; i < N_ITERATIONS; i++) {
       long t0 = System.currentTimeMillis();
       js.deserializeToNodes(json);
@@ -40,9 +40,15 @@ public class PerformanceTestOnSerialization {
     long max = elapsedList.get(elapsedList.size() - 1);
     // Range: 233 to 282
     // Range: 193 to 220
+    long THRESHOLD_MIN = 250;
+    long THRESHOLD_MAX = 300;
     System.out.println("Range: " + min + " to " + max);
-    assertTrue("Expected min time to be under 260 but it was " + min, min < 260);
-    assertTrue("Expected max time to be under 320 but it was " + max, max < 320);
+    assertTrue(
+        "Expected min time to be under " + THRESHOLD_MIN + " but it was " + min,
+        min < THRESHOLD_MIN);
+    assertTrue(
+        "Expected max time to be under " + THRESHOLD_MAX + " but it was " + max,
+        max < THRESHOLD_MAX);
   }
 
   @Test
