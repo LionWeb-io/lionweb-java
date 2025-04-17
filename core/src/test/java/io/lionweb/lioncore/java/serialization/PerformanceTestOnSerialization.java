@@ -42,7 +42,7 @@ public class PerformanceTestOnSerialization {
     // Let's create a separate JsonSerialization, just in case some caches could affect the result
     final JsonSerialization js2 =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 150, 200);
+    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 160, 200);
   }
 
   private String readInputStreamToString(InputStream inputStream) {

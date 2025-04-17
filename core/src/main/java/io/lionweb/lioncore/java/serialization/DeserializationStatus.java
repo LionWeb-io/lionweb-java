@@ -10,6 +10,7 @@ import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import java.util.*;
+import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -21,14 +22,14 @@ import javax.annotation.Nullable;
  */
 class DeserializationStatus {
   private final List<SerializedClassifierInstance> sortedList;
-  final List<SerializedClassifierInstance> nodesToSort;
+  private final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
   private final LocalClassifierInstanceResolver proxiesInstanceResolver;
   private final Set<String> sortedIDs = new HashSet<>();
-  private PrimitiveValuesSerialization primitiveValuesSerialization;
-  private IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
+  private final PrimitiveValuesSerialization primitiveValuesSerialization;
+  private final IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
       new IdentityHashMap<>();
-  private IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
+  private final IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
       new IdentityHashMap<>();
 
   /**
@@ -51,48 +52,32 @@ class DeserializationStatus {
   }
 
   public Property getProperty(Classifier<?> classifier, MetaPointer metaPointer) {
-    if (!featuresCache.containsKey(classifier)) {
-      featuresCache.put(classifier, new HashMap<>());
-    }
+    featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
     Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-    if (!featuresMap.containsKey(metaPointer)) {
-      featuresMap.put(metaPointer, classifier.getPropertyByMetaPointer(metaPointer));
-    }
+    featuresMap.computeIfAbsent(metaPointer, classifier::getPropertyByMetaPointer);
     return (Property) featuresMap.get(metaPointer);
   }
 
   public Containment getContainment(Classifier<?> classifier, MetaPointer metaPointer) {
-    if (!featuresCache.containsKey(classifier)) {
-      featuresCache.put(classifier, new HashMap<>());
-    }
+    featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
     Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-    if (!featuresMap.containsKey(metaPointer)) {
-      featuresMap.put(metaPointer, classifier.getContainmentByMetaPointer(metaPointer));
-    }
+    featuresMap.computeIfAbsent(metaPointer, classifier::getContainmentByMetaPointer);
     return (Containment) featuresMap.get(metaPointer);
   }
 
   public Reference getReference(Classifier<?> classifier, MetaPointer metaPointer) {
-    if (!featuresCache.containsKey(classifier)) {
-      featuresCache.put(classifier, new HashMap<>());
-    }
+    featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
     Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-    if (!featuresMap.containsKey(metaPointer)) {
-      featuresMap.put(metaPointer, classifier.getReferenceByMetaPointer(metaPointer));
-    }
+    featuresMap.computeIfAbsent(metaPointer, classifier::getReferenceByMetaPointer);
     return (Reference) featuresMap.get(metaPointer);
   }
 
   public Object deserializePropertyValue(
       DataType<?> dataType, String serializedValue, boolean isRequired) {
-    if (!propertyValuesCache.containsKey(dataType)) {
-      propertyValuesCache.put(dataType, new HashMap<>());
-    }
+    propertyValuesCache.computeIfAbsent(dataType, dt -> new HashMap<>());
     Map<String, Object> map = propertyValuesCache.get(dataType);
     String key = serializedValue + "@required@" + isRequired;
-    if (!map.containsKey(key)) {
-      map.put(key, primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
-    }
+    map.computeIfAbsent(key, k -> primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
     return map.get(key);
   }
 
