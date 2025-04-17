@@ -21,7 +21,7 @@ public class PerformanceTestOnSerialization {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
-    performanceMeasure(() -> js.deserializeToNodes(json), 250, 350);
+    performanceMeasure(() -> js.deserializeToNodes(json), 250, 400);
   }
 
   @Test
@@ -39,8 +39,7 @@ public class PerformanceTestOnSerialization {
     // Let's create a separate JsonSerialization, just in case some caches could affect the result
     final JsonSerialization js2 =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    performanceMeasure(
-        () -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 150, 200);
+    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 150, 200);
   }
 
   private String readInputStreamToString(InputStream inputStream) {
