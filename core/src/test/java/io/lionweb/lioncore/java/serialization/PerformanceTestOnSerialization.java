@@ -23,23 +23,25 @@ public class PerformanceTestOnSerialization {
 
     List<Long> elapsedList = new ArrayList<>();
     int N_ITERATIONS = 20;
+    int N_TOP_REMOVED = 2;
+    int N_BOTTOM_REMOVED = 2;
     for (int i = 0; i < N_ITERATIONS; i++) {
       long t0 = System.currentTimeMillis();
       js.deserializeToNodes(json);
       long t1 = System.currentTimeMillis();
       long elapsed = t1 - t0;
-      // Elapsed: 879 ms
       System.out.println("Elapsed: " + elapsed + " ms");
       elapsedList.add(elapsed);
     }
     elapsedList = elapsedList.stream().sorted().collect(Collectors.toList());
-    elapsedList = elapsedList.subList(1, elapsedList.size() - 1);
-    assertEquals(N_ITERATIONS - 2, elapsedList.size());
+    elapsedList = elapsedList.subList(N_TOP_REMOVED, elapsedList.size() - N_BOTTOM_REMOVED);
+    assertEquals(N_ITERATIONS - N_TOP_REMOVED - N_BOTTOM_REMOVED, elapsedList.size());
     long min = elapsedList.get(0);
-    long max = elapsedList.get(N_ITERATIONS - 3);
+    long max = elapsedList.get(elapsedList.size() - 1);
+    // Range: 233 to 282
     System.out.println("Range: " + min + " to " + max);
-    assertTrue("Expected min time to be under 300 but it was " + min, min < 300);
-    assertTrue("Expected max time to be under 400 but it was " + max, max < 400);
+    assertTrue("Expected min time to be under 260 but it was " + min, min < 260);
+    assertTrue("Expected max time to be under 320 but it was " + max, max < 320);
   }
 
   @Test
