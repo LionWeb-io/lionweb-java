@@ -40,7 +40,7 @@ public class PerformanceTestOnSerialization {
     final JsonSerialization js2 =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     performanceMeasure(
-        () -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 6500, 7000);
+        () -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 150, 200);
   }
 
   private String readInputStreamToString(InputStream inputStream) {
@@ -54,8 +54,8 @@ public class PerformanceTestOnSerialization {
   private void performanceMeasure(Runnable runnable, long thresholdMin, long thresholdMax) {
     List<Long> elapsedList = new ArrayList<>();
     int N_ITERATIONS = 25;
-    int N_TOP_REMOVED = 3;
-    int N_BOTTOM_REMOVED = 3;
+    int N_TOP_REMOVED = 4;
+    int N_BOTTOM_REMOVED = 4;
     for (int i = 0; i < N_ITERATIONS; i++) {
       long t0 = System.currentTimeMillis();
       runnable.run();
