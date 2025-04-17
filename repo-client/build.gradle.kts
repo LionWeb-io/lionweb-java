@@ -156,8 +156,6 @@ tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
 
-val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
-
 val lwJavaJar =
     configurations.findByName("functionalTestRuntimeClasspath")!!
         .find { it.name.startsWith("lionweb-java-2024.1-repo-client-0") } as File
@@ -170,14 +168,6 @@ val lwJavaLionwebRepositoryCommitID: String? =
             Manifest(it)
         }.mainAttributes.getValue("lionwebRepositoryCommitID")
     }
-
-buildConfig {
-    sourceSets.getByName("functionalTest") {
-        packageName("io.lionweb.lioncore.kotlin.repoclient")
-        buildConfigField("String", "LIONWEB_REPOSITORY_COMMIT_ID", "\"${lionwebRepositoryCommitID}\"")
-        useKotlinOutput()
-    }
-}
 
 tasks.withType<Test> {
     testLogging {

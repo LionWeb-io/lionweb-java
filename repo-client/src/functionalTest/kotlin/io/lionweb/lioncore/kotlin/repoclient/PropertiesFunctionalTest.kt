@@ -1,5 +1,7 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
+import io.lionweb.lioncore.java.LionWebVersion
+import io.lionweb.lioncore.java.model.ClassifierInstanceUtils
 import io.lionweb.lioncore.kotlin.dynamicNode
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest
@@ -119,10 +121,10 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
             }
         client.storeTree(pf)
 
-        val retrieved = client.retrieve("pf1")
+        val retrieved = client.retrieve("pp1")
         assertEquals(null, retrieved.parent)
-        assertEquals("pf1", retrieved.id)
-        assertEquals(propertiesFile, retrieved.classifier)
+        assertEquals("pp1", retrieved.id)
+        assertEquals(propertiesPartition, retrieved.classifier)
     }
 
     @Test
@@ -173,7 +175,9 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
 
     @Test
     fun getNodesWithProxyParent() {
-        val client = LionWebClient(port = modelRepository!!.firstMappedPort)
+        val repoName = "repo_getNodesWithProxyParent"
+        val client = LionWebClient(port = modelRepository!!.firstMappedPort, repository = repoName)
+        client.createRepository(repoName, LionWebVersion.v2024_1, false)
         client.registerLanguage(propertiesLanguage)
 
         val pp1 = propertiesPartition.dynamicNode("pp1")
@@ -181,7 +185,7 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
 
         val pf =
             propertiesFile.dynamicNode("pf1").apply {
-                parent = pp1
+                ClassifierInstanceUtils.addChild(pp1, "files", this)
             }
         val prop1 =
             property.dynamicNode("prop1").apply {
@@ -198,7 +202,7 @@ class PropertiesFunctionalTest : AbstractRepoClientFunctionalTest() {
                 setPropertyValueByName("name", "Prop3")
                 pf.addChild(pf.classifier.getContainmentByName("properties")!!, this)
             }
-        client.storeTree(pf)
+        client.storeTree(pp1)
 
         val prop3retrievedWithProxyParent = client.retrieve("prop3")
         assertEquals("pf1", prop3retrievedWithProxyParent.parent.id)

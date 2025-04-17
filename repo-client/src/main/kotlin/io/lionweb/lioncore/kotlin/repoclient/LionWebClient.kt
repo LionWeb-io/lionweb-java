@@ -169,7 +169,7 @@ class LionWebClient(
         retrievalMode: RetrievalMode = RetrievalMode.ENTIRE_SUBTREE,
     ): Node {
         require(rootId.isNotBlank())
-        val result = retrieve(listOf(rootId), retrievalMode)
+        val result = retrieve(listOf(rootId), retrievalMode).filter { it.id == rootId }
         require(result.size == 1) {
             "Got ${result.size} nodes"
         }
@@ -265,7 +265,7 @@ class LionWebClient(
     }
 
     fun storeTree(node: Node) {
-        jRepoClient.store(node)
+        jRepoClient.store(node.thisAndAllDescendants())
     }
 
     fun storeNodes(nodes: List<Node>) {

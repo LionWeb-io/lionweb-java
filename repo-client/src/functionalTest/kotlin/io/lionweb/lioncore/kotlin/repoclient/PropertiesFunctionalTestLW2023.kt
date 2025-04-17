@@ -94,7 +94,14 @@ class PropertiesFunctionalTestLW2023 : AbstractRepoClientFunctionalTest(LionWebV
 
     @Test
     fun gettingNodesAfterStoringNodes() {
-        val client = LionWebClient(port = modelRepository!!.firstMappedPort, lionWebVersion = lionWebVersion)
+        val repositoryName = "repo_gettingNodesAfterStoringNodes"
+        val client =
+            LionWebClient(
+                port = modelRepository!!.firstMappedPort,
+                lionWebVersion = lionWebVersion,
+                repository = repositoryName,
+            )
+        client.createRepository(repositoryName, LionWebVersion.v2023_1, false)
         client.registerLanguage(propertiesLanguageLW2023)
 
         val pp1 = propertiesPartitionLW2023.dynamicNode("pp1")
@@ -121,10 +128,10 @@ class PropertiesFunctionalTestLW2023 : AbstractRepoClientFunctionalTest(LionWebV
             }
         client.storeTree(pf)
 
-        val retrieved = client.retrieve("pf1")
+        val retrieved = client.retrieve("pp1")
         assertEquals(null, retrieved.parent)
-        assertEquals("pf1", retrieved.id)
-        assertEquals(propertiesFileLW2023, retrieved.classifier)
+        assertEquals("pp1", retrieved.id)
+        assertEquals(propertiesPartitionLW2023, retrieved.classifier)
     }
 
     @Test
