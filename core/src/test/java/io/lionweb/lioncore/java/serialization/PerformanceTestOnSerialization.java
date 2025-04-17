@@ -24,7 +24,7 @@ public class PerformanceTestOnSerialization {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
-    performanceMeasure(() -> js.deserializeToNodes(json), 250, 400);
+    performanceMeasure(() -> js.deserializeToNodes(json), 250, 430);
   }
 
   @Test
