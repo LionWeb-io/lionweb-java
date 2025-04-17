@@ -28,16 +28,10 @@ public class SerializationStatus {
   }
 
   public Iterable<Containment> allContainments(Classifier<?> classifier) {
-    if (!containments.containsKey(classifier.getID())) {
-      containments.put(classifier.getID(), classifier.allContainments());
-    }
-    return containments.get(classifier.getID());
+    return containments.computeIfAbsent(classifier.getID(), id -> classifier.allContainments());
   }
 
   public Iterable<Reference> allReferences(Classifier<?> classifier) {
-    if (!references.containsKey(classifier.getID())) {
-      references.put(classifier.getID(), classifier.allReferences());
-    }
-    return references.get(classifier.getID());
+    return references.computeIfAbsent(classifier.getID(), id -> classifier.allReferences());
   }
 }
