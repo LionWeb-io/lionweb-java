@@ -160,7 +160,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
           List<Node> allNodes =
               conf.getJsonSerialization().deserializeToNodes(responseData.get("chunk"));
           Set<String> idsReturned =
-              allNodes.stream().map(n -> n.getID()).collect(Collectors.toSet());
+              allNodes.stream().filter(n -> !(n instanceof ProxyNode)).map(n -> n.getID()).collect(Collectors.toSet());
           // We want to return only the roots of the trees returned. From those, the other nodes can
           // be accessed
           return allNodes.stream()
