@@ -212,3 +212,15 @@ sourceSets {
         runtimeClasspath += sourceSets.main.get().runtimeClasspath
     }
 }
+
+tasks.test {
+    useJUnit {
+        // This cast enables access to includeCategories and excludeCategories
+        this as JUnitOptions
+
+        val includeExpensive = project.findProperty("includeExpensiveTests") == "true"
+        if (!includeExpensive) {
+            excludeCategories("io.lionweb.lioncore.java.PerformanceTest")
+        }
+    }
+}

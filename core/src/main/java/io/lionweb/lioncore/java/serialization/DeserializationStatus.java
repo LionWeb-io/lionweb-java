@@ -3,15 +3,13 @@ package io.lionweb.lioncore.java.serialization;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
+import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
+import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Stream;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -22,10 +20,17 @@ import javax.annotation.Nullable;
  * list of unserialized nodes.
  */
 class DeserializationStatus {
-  final List<SerializedClassifierInstance> sortedList;
-  final List<SerializedClassifierInstance> nodesToSort;
+  private final List<SerializedClassifierInstance> sortedList;
+  private final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
-  private LocalClassifierInstanceResolver proxiesInstanceResolver;
+  private final LocalClassifierInstanceResolver proxiesInstanceResolver;
+  private final Set<String> sortedIDs = new HashSet<>();
+  private final PrimitiveValuesSerialization primitiveValuesSerialization;
+  private final IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
+      new IdentityHashMap<>();
+  private final IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
+      new IdentityHashMap<>();
+
   /**
    * Represent the combination of different ways to solve an instances resolver. It considers the
    * instances that are not connected to this deserialization process (outsideInstancesResolver),
@@ -35,7 +40,9 @@ class DeserializationStatus {
 
   DeserializationStatus(
       List<SerializedClassifierInstance> originalList,
-      ClassifierInstanceResolver outsideInstancesResolver) {
+      ClassifierInstanceResolver outsideInstancesResolver,
+      PrimitiveValuesSerialization primitiveValuesSerialization) {
+    this.primitiveValuesSerialization = primitiveValuesSerialization;
     sortedList = new ArrayList<>();
     nodesToSort = new ArrayList<>(originalList);
     this.proxiesInstanceResolver = new LocalClassifierInstanceResolver();
@@ -43,11 +50,43 @@ class DeserializationStatus {
         new CompositeClassifierInstanceResolver(outsideInstancesResolver, proxiesInstanceResolver);
   }
 
+  public Property getProperty(Classifier<?> classifier, MetaPointer metaPointer) {
+    Map<MetaPointer, Feature<?>> featuresMap =
+        featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
+    return (Property)
+        featuresMap.computeIfAbsent(metaPointer, classifier::getPropertyByMetaPointer);
+  }
+
+  public Containment getContainment(Classifier<?> classifier, MetaPointer metaPointer) {
+
+    Map<MetaPointer, Feature<?>> featuresMap =
+        featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
+    return (Containment)
+        featuresMap.computeIfAbsent(metaPointer, classifier::getContainmentByMetaPointer);
+  }
+
+  public Reference getReference(Classifier<?> classifier, MetaPointer metaPointer) {
+    Map<MetaPointer, Feature<?>> featuresMap =
+        featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
+    return (Reference)
+        featuresMap.computeIfAbsent(metaPointer, classifier::getReferenceByMetaPointer);
+  }
+
+  public Object deserializePropertyValue(
+      DataType<?> dataType, String serializedValue, boolean isRequired) {
+    ;
+    Map<String, Object> map = propertyValuesCache.computeIfAbsent(dataType, dt -> new HashMap<>());
+    String key = serializedValue + "@required@" + isRequired;
+    return map.computeIfAbsent(
+        key, k -> primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
+  }
+
   void putNodesWithNullIDsInFront() {
     // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
     // just be parent of other nodes, so we put all of them at the start (so they end up at the
     // end when we reverse the list)
-    nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
+    nodesToSort.stream().filter(n -> n.getID() == null).forEach(sortedList::add);
+    sortedList.forEach(n -> sortedIDs.add(n.getID()));
     nodesToSort.removeAll(sortedList);
   }
 
@@ -55,6 +94,11 @@ class DeserializationStatus {
   void place(SerializedClassifierInstance node) {
     sortedList.add(node);
     nodesToSort.remove(node);
+    sortedIDs.add(node.getID());
+  }
+
+  public List<SerializedClassifierInstance> getSortedList() {
+    return sortedList;
   }
 
   void reverse() {
@@ -73,8 +117,8 @@ class DeserializationStatus {
     return nodesToSort.get(index);
   }
 
-  Stream<SerializedClassifierInstance> streamSorted() {
-    return sortedList.stream();
+  public boolean isSortedID(String nodeID) {
+    return sortedIDs.contains(nodeID);
   }
 
   /**
