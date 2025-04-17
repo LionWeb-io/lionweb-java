@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
@@ -21,7 +22,8 @@ public class PerformanceTestOnSerialization {
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
     List<Long> elapsedList = new ArrayList<>();
-    for (int i=0;i<20;i++) {
+    int N_ITERATIONS = 20;
+    for (int i=0;i<N_ITERATIONS;i++) {
       long t0 = System.currentTimeMillis();
       js.deserializeToNodes(json);
       long t1 = System.currentTimeMillis();
@@ -32,8 +34,12 @@ public class PerformanceTestOnSerialization {
     }
     elapsedList = elapsedList.stream().sorted().collect(Collectors.toList());
     elapsedList = elapsedList.subList(1, elapsedList.size() - 1);
-    assertEquals(18, elapsedList.size());
-    System.out.println("Range: " + elapsedList.get(0) + " to " + elapsedList.get(17));
+    assertEquals(N_ITERATIONS - 2, elapsedList.size());
+    long min = elapsedList.get(0);
+    long max = elapsedList.get(N_ITERATIONS - 3);
+    System.out.println("Range: " + min + " to " + max);
+    assertTrue(min < 300);
+    assertTrue(max < 400);
   }
 
   @Test
