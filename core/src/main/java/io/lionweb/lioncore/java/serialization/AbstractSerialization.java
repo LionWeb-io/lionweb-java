@@ -167,13 +167,13 @@ public abstract class AbstractSerialization {
     SerializationStatus serializationStatus = new SerializationStatus();
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
-      serializedChunk.addClassifierInstance(serializeNode(classifierInstance));
+      serializedChunk.addClassifierInstance(serializeNode(classifierInstance, serializationStatus));
       classifierInstance.getAnnotations().stream()
           .filter(a -> !classifierInstances.contains(a))
           .forEach(
               annotationInstance -> {
                 serializedChunk.addClassifierInstance(
-                    serializeAnnotationInstance(annotationInstance));
+                    serializeAnnotationInstance(annotationInstance, serializationStatus));
                 considerLanguageDuringSerialization(
                     serializedChunk, annotationInstance.getClassifier().getLanguage());
               });
@@ -224,7 +224,7 @@ public abstract class AbstractSerialization {
   }
 
   private SerializedClassifierInstance serializeNode(
-      @Nonnull ClassifierInstance<?> classifierInstance) {
+      @Nonnull ClassifierInstance<?> classifierInstance, SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "Node should not be null");
     SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
     serializedClassifierInstance.setID(classifierInstance.getID());
@@ -233,26 +233,26 @@ public abstract class AbstractSerialization {
     if (classifierInstance.getParent() != null) {
       serializedClassifierInstance.setParentNodeID(classifierInstance.getParent().getID());
     }
-    serializeProperties(classifierInstance, serializedClassifierInstance);
-    serializeContainments(classifierInstance, serializedClassifierInstance);
+    serializeProperties(classifierInstance, serializedClassifierInstance, serializationStatus);
+    serializeContainments(classifierInstance, serializedClassifierInstance, serializationStatus);
     serializeReferences(
-        classifierInstance, serializedClassifierInstance, builtinsReferenceDangling);
+        classifierInstance, serializedClassifierInstance, builtinsReferenceDangling, serializationStatus);
     serializeAnnotations(classifierInstance, serializedClassifierInstance);
     return serializedClassifierInstance;
   }
 
   private SerializedClassifierInstance serializeAnnotationInstance(
-      @Nonnull AnnotationInstance annotationInstance) {
+      @Nonnull AnnotationInstance annotationInstance, SerializationStatus serializationStatus) {
     Objects.requireNonNull(annotationInstance, "AnnotationInstance should not be null");
     SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
     serializedClassifierInstance.setID(annotationInstance.getID());
     serializedClassifierInstance.setParentNodeID(annotationInstance.getParent().getID());
     serializedClassifierInstance.setClassifier(
         MetaPointer.from(annotationInstance.getAnnotationDefinition()));
-    serializeProperties(annotationInstance, serializedClassifierInstance);
-    serializeContainments(annotationInstance, serializedClassifierInstance);
+    serializeProperties(annotationInstance, serializedClassifierInstance, serializationStatus);
+    serializeContainments(annotationInstance, serializedClassifierInstance, serializationStatus);
     serializeReferences(
-        annotationInstance, serializedClassifierInstance, builtinsReferenceDangling);
+        annotationInstance, serializedClassifierInstance, builtinsReferenceDangling, serializationStatus);
     serializeAnnotations(annotationInstance, serializedClassifierInstance);
     return serializedClassifierInstance;
   }
@@ -270,11 +270,10 @@ public abstract class AbstractSerialization {
   private static void serializeReferences(
       @Nonnull ClassifierInstance<?> classifierInstance,
       SerializedClassifierInstance serializedClassifierInstance,
-      boolean builtinsReferenceDangling) {
+      boolean builtinsReferenceDangling,
+      SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    classifierInstance
-        .getClassifier()
-        .allReferences()
+    serializationStatus.allReferences(classifierInstance.getClassifier())
         .forEach(
             reference -> {
               SerializedReferenceValue referenceValue = new SerializedReferenceValue();
@@ -301,11 +300,10 @@ public abstract class AbstractSerialization {
 
   private static void serializeContainments(
       @Nonnull ClassifierInstance<?> classifierInstance,
-      SerializedClassifierInstance serializedClassifierInstance) {
+      SerializedClassifierInstance serializedClassifierInstance, SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    classifierInstance
-        .getClassifier()
-        .allContainments()
+    serializationStatus.allContainments(classifierInstance
+                    .getClassifier())
         .forEach(
             containment -> {
               SerializedContainmentValue containmentValue = new SerializedContainmentValue();
@@ -322,10 +320,9 @@ public abstract class AbstractSerialization {
 
   private void serializeProperties(
       ClassifierInstance<?> classifierInstance,
-      SerializedClassifierInstance serializedClassifierInstance) {
-    classifierInstance
-        .getClassifier()
-        .allProperties()
+      SerializedClassifierInstance serializedClassifierInstance,
+      SerializationStatus serializationStatus) {
+    serializationStatus.allProperties(classifierInstance.getClassifier())
         .forEach(
             property -> {
               SerializedPropertyValue propertyValue = new SerializedPropertyValue();
