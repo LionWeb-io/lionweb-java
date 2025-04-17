@@ -1,4 +1,3 @@
 package io.lionweb.lioncore.java;
 
-public interface PerformanceTest {
-}
+public interface PerformanceTest {}
