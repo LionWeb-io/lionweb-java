@@ -6,6 +6,7 @@ import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import java.io.*;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Test;
@@ -18,12 +19,21 @@ public class PerformanceTestOnSerialization {
     String json = readInputStreamToString(is);
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    long t0 = System.currentTimeMillis();
-    js.deserializeToNodes(json);
-    long t1 = System.currentTimeMillis();
-    long elapsed = t1 - t0;
-    // Elapsed: 879 ms
-    System.out.println("Elapsed: " + elapsed + " ms");
+
+    List<Long> elapsedList = new ArrayList<>();
+    for (int i=0;i<20;i++) {
+      long t0 = System.currentTimeMillis();
+      js.deserializeToNodes(json);
+      long t1 = System.currentTimeMillis();
+      long elapsed = t1 - t0;
+      // Elapsed: 879 ms
+      System.out.println("Elapsed: " + elapsed + " ms");
+      elapsedList.add(elapsed);
+    }
+    elapsedList = elapsedList.stream().sorted().collect(Collectors.toList());
+    elapsedList = elapsedList.subList(1, elapsedList.size() - 1);
+    assertEquals(18, elapsedList.size());
+    System.out.println("Range: " + elapsedList.get(0) + " to " + elapsedList.get(17));
   }
 
   @Test
