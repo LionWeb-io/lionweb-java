@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Set;
 
 public class SerializationStatus {
-  private Set<String> classifiersConsidered = new HashSet<>();
-  private IdentityHashMap<String, List<Property>> properties = new IdentityHashMap<>();
-  private IdentityHashMap<String, List<Containment>> containments = new IdentityHashMap<>();
-  private IdentityHashMap<String, List<Reference>> references = new IdentityHashMap<>();
+  private final Set<String> classifiersConsidered = new HashSet<>();
+  private final IdentityHashMap<String, List<Property>> properties = new IdentityHashMap<>();
+  private final IdentityHashMap<String, List<Containment>> containments = new IdentityHashMap<>();
+  private final IdentityHashMap<String, List<Reference>> references = new IdentityHashMap<>();
 
   public boolean hasConsideredClassifier(String classifierId) {
     return classifiersConsidered.contains(classifierId);

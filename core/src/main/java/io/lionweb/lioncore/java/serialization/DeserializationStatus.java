@@ -10,7 +10,6 @@ import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import java.util.*;
-import java.util.function.Function;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -77,7 +76,8 @@ class DeserializationStatus {
     propertyValuesCache.computeIfAbsent(dataType, dt -> new HashMap<>());
     Map<String, Object> map = propertyValuesCache.get(dataType);
     String key = serializedValue + "@required@" + isRequired;
-    map.computeIfAbsent(key, k -> primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
+    map.computeIfAbsent(
+        key, k -> primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
     return map.get(key);
   }
 
