@@ -30,9 +30,9 @@ class DeserializationStatus {
   private final Set<String> sortedIDs = new HashSet<>();
   private PrimitiveValuesSerialization primitiveValuesSerialization;
   private IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
-          new IdentityHashMap<>();
+      new IdentityHashMap<>();
   private IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
-          new IdentityHashMap<>();
+      new IdentityHashMap<>();
 
   /**
    * Represent the combination of different ways to solve an instances resolver. It considers the
@@ -65,19 +65,17 @@ class DeserializationStatus {
   }
 
   public Object deserializePropertyValue(
-          DataType<?> dataType, String serializedValue, boolean isRequired) {
+      DataType<?> dataType, String serializedValue, boolean isRequired) {
     if (!propertyValuesCache.containsKey(dataType)) {
       propertyValuesCache.put(dataType, new HashMap<>());
     }
     Map<String, Object> map = propertyValuesCache.get(dataType);
     String key = serializedValue + "@required@" + isRequired;
     if (!map.containsKey(key)) {
-      map.put(
-              key, primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
+      map.put(key, primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
     }
     return map.get(key);
   }
-
 
   void putNodesWithNullIDsInFront() {
     // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
@@ -161,5 +159,4 @@ class DeserializationStatus {
   public LocalClassifierInstanceResolver getProxiesInstanceResolver() {
     return proxiesInstanceResolver;
   }
-
 }

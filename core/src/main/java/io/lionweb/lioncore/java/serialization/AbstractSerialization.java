@@ -569,7 +569,7 @@ public abstract class AbstractSerialization {
               }
               Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
-                      deserializationStatus.deserializePropertyValue(
+                  deserializationStatus.deserializePropertyValue(
                       property.getType(),
                       serializedPropertyValue.getValue(),
                       property.isRequired());
@@ -599,5 +599,4 @@ public abstract class AbstractSerialization {
   public LionWebVersion getLionWebVersion() {
     return lionWebVersion;
   }
-
 }

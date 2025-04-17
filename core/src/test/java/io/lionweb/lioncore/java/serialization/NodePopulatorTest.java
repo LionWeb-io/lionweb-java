@@ -20,7 +20,10 @@ public class NodePopulatorTest {
     AbstractSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
     DeserializationStatus deserializationStatus =
-        new DeserializationStatus(Collections.emptyList(), serialization.getInstanceResolver(), serialization.primitiveValuesSerialization);
+        new DeserializationStatus(
+            Collections.emptyList(),
+            serialization.getInstanceResolver(),
+            serialization.primitiveValuesSerialization);
     NodePopulator nodePopulator =
         new NodePopulator(
             serialization, serialization.getInstanceResolver(), deserializationStatus);
@@ -75,7 +78,10 @@ public class NodePopulatorTest {
     AbstractSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
     DeserializationStatus deserializationStatus =
-        new DeserializationStatus(Collections.emptyList(), serialization.getInstanceResolver(), serialization.primitiveValuesSerialization);
+        new DeserializationStatus(
+            Collections.emptyList(),
+            serialization.getInstanceResolver(),
+            serialization.primitiveValuesSerialization);
     NodePopulator nodePopulator =
         new NodePopulator(
             serialization, serialization.getInstanceResolver(), deserializationStatus);
@@ -133,7 +139,10 @@ public class NodePopulatorTest {
     AbstractSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
     DeserializationStatus deserializationStatus =
-        new DeserializationStatus(Collections.emptyList(), serialization.getInstanceResolver(), serialization.primitiveValuesSerialization);
+        new DeserializationStatus(
+            Collections.emptyList(),
+            serialization.getInstanceResolver(),
+            serialization.primitiveValuesSerialization);
     NodePopulator nodePopulator =
         new NodePopulator(
             serialization,

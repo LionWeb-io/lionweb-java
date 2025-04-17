@@ -23,7 +23,7 @@ public class PerformanceTestOnSerialization {
 
     List<Long> elapsedList = new ArrayList<>();
     int N_ITERATIONS = 20;
-    for (int i=0;i<N_ITERATIONS;i++) {
+    for (int i = 0; i < N_ITERATIONS; i++) {
       long t0 = System.currentTimeMillis();
       js.deserializeToNodes(json);
       long t1 = System.currentTimeMillis();
@@ -38,8 +38,8 @@ public class PerformanceTestOnSerialization {
     long min = elapsedList.get(0);
     long max = elapsedList.get(N_ITERATIONS - 3);
     System.out.println("Range: " + min + " to " + max);
-    assertTrue(min < 300);
-    assertTrue(max < 400);
+    assertTrue("Expected min time to be under 300 but it was " + min, min < 300);
+    assertTrue("Expected max time to be under 400 but it was " + max, max < 400);
   }
 
   @Test
