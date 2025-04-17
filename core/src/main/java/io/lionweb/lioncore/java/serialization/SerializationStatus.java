@@ -24,10 +24,7 @@ public class SerializationStatus {
   }
 
   public Iterable<Property> allProperties(Classifier<?> classifier) {
-    if (!properties.containsKey(classifier.getID())) {
-      properties.put(classifier.getID(), classifier.allProperties());
-    }
-    return properties.get(classifier.getID());
+    return properties.computeIfAbsent(classifier.getID(), id -> classifier.allProperties());
   }
 
   public Iterable<Containment> allContainments(Classifier<?> classifier) {

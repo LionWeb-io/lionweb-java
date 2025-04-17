@@ -74,12 +74,11 @@ class DeserializationStatus {
 
   public Object deserializePropertyValue(
       DataType<?> dataType, String serializedValue, boolean isRequired) {
-    propertyValuesCache.computeIfAbsent(dataType, dt -> new HashMap<>());
-    Map<String, Object> map = propertyValuesCache.get(dataType);
+    ;
+    Map<String, Object> map = propertyValuesCache.computeIfAbsent(dataType, dt -> new HashMap<>());
     String key = serializedValue + "@required@" + isRequired;
-    map.computeIfAbsent(
+    return map.computeIfAbsent(
         key, k -> primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
-    return map.get(key);
   }
 
   void putNodesWithNullIDsInFront() {
