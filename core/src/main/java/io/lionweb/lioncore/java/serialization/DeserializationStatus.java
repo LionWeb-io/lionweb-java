@@ -7,9 +7,7 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
-
 import java.util.*;
-import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -46,7 +44,9 @@ class DeserializationStatus {
     // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
     // just be parent of other nodes, so we put all of them at the start (so they end up at the
     // end when we reverse the list)
-    nodesToSort.stream().filter(n -> n.getID() == null).forEach(this::place);
+    nodesToSort.stream().filter(n -> n.getID() == null).forEach(sortedList::add);
+    sortedList.forEach(n -> sortedIDs.add(n.getID()));
+    nodesToSort.removeAll(sortedList);
   }
 
   /** We place the node in the sorted list. */

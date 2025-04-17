@@ -470,10 +470,12 @@ public abstract class AbstractSerialization {
     Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>();
     IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
         new IdentityHashMap<>();
+    DeserializationCache deserializationCache =
+        new DeserializationCache(primitiveValuesSerialization);
     sortedSerializedClassifierInstances.forEach(
         n -> {
           ClassifierInstance<?> instantiated =
-              instantiateFromSerialized(lionWebVersion, n, deserializedByID);
+              instantiateFromSerialized(lionWebVersion, deserializationCache, n, deserializedByID);
           if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
             throw new IllegalStateException("Duplicate ID found: " + n.getID());
           }
@@ -536,6 +538,7 @@ public abstract class AbstractSerialization {
 
   private ClassifierInstance<?> instantiateFromSerialized(
       @Nonnull LionWebVersion lionWebVersion,
+      DeserializationCache deserializationCache,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> deserializedByID) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
@@ -553,20 +556,22 @@ public abstract class AbstractSerialization {
         .forEach(
             serializedPropertyValue -> {
               Property property =
-                  classifier.getPropertyByMetaPointer(serializedPropertyValue.getMetaPointer());
-              Objects.requireNonNull(
-                  property,
-                  "Property with metaPointer "
-                      + serializedPropertyValue.getMetaPointer()
-                      + " not found in classifier "
-                      + classifier
-                      + ". Properties: "
-                      + classifier.allProperties().stream()
-                          .map(MetaPointer::from)
-                          .collect(Collectors.toList()));
+                  deserializationCache.getProperty(
+                      classifier, serializedPropertyValue.getMetaPointer());
+              if (property == null) {
+                throw new NullPointerException(
+                    "Property with metaPointer "
+                        + serializedPropertyValue.getMetaPointer()
+                        + " not found in classifier "
+                        + classifier
+                        + ". Properties: "
+                        + classifier.allProperties().stream()
+                            .map(MetaPointer::from)
+                            .collect(Collectors.toList()));
+              }
               Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
-                  primitiveValuesSerialization.deserialize(
+                  deserializationCache.deserializePropertyValue(
                       property.getType(),
                       serializedPropertyValue.getValue(),
                       property.isRequired());
@@ -595,5 +600,43 @@ public abstract class AbstractSerialization {
 
   public LionWebVersion getLionWebVersion() {
     return lionWebVersion;
+  }
+
+  private class DeserializationCache {
+
+    private PrimitiveValuesSerialization primitiveValuesSerialization;
+    private IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
+        new IdentityHashMap<>();
+    private IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
+        new IdentityHashMap<>();
+
+    public DeserializationCache(PrimitiveValuesSerialization primitiveValuesSerialization) {
+      this.primitiveValuesSerialization = primitiveValuesSerialization;
+    }
+
+    public Property getProperty(Classifier<?> classifier, MetaPointer metaPointer) {
+      if (!featuresCache.containsKey(classifier)) {
+        featuresCache.put(classifier, new HashMap<>());
+      }
+      Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
+      if (!featuresMap.containsKey(metaPointer)) {
+        featuresMap.put(metaPointer, classifier.getPropertyByMetaPointer(metaPointer));
+      }
+      return (Property) featuresMap.get(metaPointer);
+    }
+
+    public Object deserializePropertyValue(
+        DataType<?> dataType, String serializedValue, boolean isRequired) {
+      if (!propertyValuesCache.containsKey(dataType)) {
+        propertyValuesCache.put(dataType, new HashMap<>());
+      }
+      Map<String, Object> map = propertyValuesCache.get(dataType);
+      String key = serializedValue + "@required@" + isRequired;
+      if (!map.containsKey(key)) {
+        map.put(
+            key, primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
+      }
+      return map.get(key);
+    }
   }
 }
