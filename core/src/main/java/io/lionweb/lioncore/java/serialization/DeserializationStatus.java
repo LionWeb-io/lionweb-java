@@ -7,10 +7,8 @@ import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+
+import java.util.*;
 import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -22,10 +20,11 @@ import javax.annotation.Nullable;
  * list of unserialized nodes.
  */
 class DeserializationStatus {
-  final List<SerializedClassifierInstance> sortedList;
+  private final List<SerializedClassifierInstance> sortedList;
   final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
   private LocalClassifierInstanceResolver proxiesInstanceResolver;
+  private Set<String> sortedIDs = new HashSet<>();
   /**
    * Represent the combination of different ways to solve an instances resolver. It considers the
    * instances that are not connected to this deserialization process (outsideInstancesResolver),
@@ -47,14 +46,18 @@ class DeserializationStatus {
     // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
     // just be parent of other nodes, so we put all of them at the start (so they end up at the
     // end when we reverse the list)
-    nodesToSort.stream().filter(n -> n.getID() == null).forEach(n -> sortedList.add(n));
-    nodesToSort.removeAll(sortedList);
+    nodesToSort.stream().filter(n -> n.getID() == null).forEach(this::place);
   }
 
   /** We place the node in the sorted list. */
   void place(SerializedClassifierInstance node) {
     sortedList.add(node);
     nodesToSort.remove(node);
+    sortedIDs.add(node.getID());
+  }
+
+  public List<SerializedClassifierInstance> getSortedList() {
+    return sortedList;
   }
 
   void reverse() {
@@ -73,8 +76,8 @@ class DeserializationStatus {
     return nodesToSort.get(index);
   }
 
-  Stream<SerializedClassifierInstance> streamSorted() {
-    return sortedList.stream();
+  public boolean isSortedID(String nodeID) {
+    return sortedIDs.contains(nodeID);
   }
 
   /**
@@ -119,4 +122,5 @@ class DeserializationStatus {
   public LocalClassifierInstanceResolver getProxiesInstanceResolver() {
     return proxiesInstanceResolver;
   }
+
 }

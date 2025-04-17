@@ -426,9 +426,7 @@ public abstract class AbstractSerialization {
       for (int i = 0; i < deserializationStatus.howManyToSort(); i++) {
         SerializedClassifierInstance node = deserializationStatus.getNodeToSort(i);
         if (node.getParentNodeID() == null
-            || deserializationStatus
-                .streamSorted()
-                .anyMatch(sn -> Objects.equals(sn.getID(), node.getParentNodeID()))) {
+            || deserializationStatus.isSortedID(node.getParentNodeID())) {
           deserializationStatus.place(node);
           i--;
         }
@@ -465,7 +463,7 @@ public abstract class AbstractSerialization {
     // cases we may want to use the children as constructor parameters of the parent
     DeserializationStatus deserializationStatus = sortLeavesFirst(serializedClassifierInstances);
     List<SerializedClassifierInstance> sortedSerializedClassifierInstances =
-        deserializationStatus.sortedList;
+        deserializationStatus.getSortedList();
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
