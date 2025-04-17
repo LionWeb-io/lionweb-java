@@ -51,24 +51,25 @@ class DeserializationStatus {
   }
 
   public Property getProperty(Classifier<?> classifier, MetaPointer metaPointer) {
-    featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
-    Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-    featuresMap.computeIfAbsent(metaPointer, classifier::getPropertyByMetaPointer);
-    return (Property) featuresMap.get(metaPointer);
+    Map<MetaPointer, Feature<?>> featuresMap =
+        featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
+    return (Property)
+        featuresMap.computeIfAbsent(metaPointer, classifier::getPropertyByMetaPointer);
   }
 
   public Containment getContainment(Classifier<?> classifier, MetaPointer metaPointer) {
-    featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
-    Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-    featuresMap.computeIfAbsent(metaPointer, classifier::getContainmentByMetaPointer);
-    return (Containment) featuresMap.get(metaPointer);
+
+    Map<MetaPointer, Feature<?>> featuresMap =
+        featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
+    return (Containment)
+        featuresMap.computeIfAbsent(metaPointer, classifier::getContainmentByMetaPointer);
   }
 
   public Reference getReference(Classifier<?> classifier, MetaPointer metaPointer) {
-    featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
-    Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-    featuresMap.computeIfAbsent(metaPointer, classifier::getReferenceByMetaPointer);
-    return (Reference) featuresMap.get(metaPointer);
+    Map<MetaPointer, Feature<?>> featuresMap =
+        featuresCache.computeIfAbsent(classifier, c -> new HashMap<>());
+    return (Reference)
+        featuresMap.computeIfAbsent(metaPointer, classifier::getReferenceByMetaPointer);
   }
 
   public Object deserializePropertyValue(
