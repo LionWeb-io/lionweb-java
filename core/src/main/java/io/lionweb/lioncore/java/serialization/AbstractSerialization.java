@@ -372,7 +372,7 @@ public abstract class AbstractSerialization {
    */
   private DeserializationStatus sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
     DeserializationStatus deserializationStatus =
-        new DeserializationStatus(originalList, instanceResolver);
+        new DeserializationStatus(originalList, instanceResolver, primitiveValuesSerialization);
 
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list
@@ -470,12 +470,10 @@ public abstract class AbstractSerialization {
     Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>();
     IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
         new IdentityHashMap<>();
-    DeserializationCache deserializationCache =
-        new DeserializationCache(primitiveValuesSerialization);
     sortedSerializedClassifierInstances.forEach(
         n -> {
           ClassifierInstance<?> instantiated =
-              instantiateFromSerialized(lionWebVersion, deserializationCache, n, deserializedByID);
+              instantiateFromSerialized(lionWebVersion, deserializationStatus, n, deserializedByID);
           if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
             throw new IllegalStateException("Duplicate ID found: " + n.getID());
           }
@@ -538,7 +536,7 @@ public abstract class AbstractSerialization {
 
   private ClassifierInstance<?> instantiateFromSerialized(
       @Nonnull LionWebVersion lionWebVersion,
-      DeserializationCache deserializationCache,
+      DeserializationStatus deserializationStatus,
       SerializedClassifierInstance serializedClassifierInstance,
       Map<String, ClassifierInstance<?>> deserializedByID) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
@@ -556,7 +554,7 @@ public abstract class AbstractSerialization {
         .forEach(
             serializedPropertyValue -> {
               Property property =
-                  deserializationCache.getProperty(
+                  deserializationStatus.getProperty(
                       classifier, serializedPropertyValue.getMetaPointer());
               if (property == null) {
                 throw new NullPointerException(
@@ -571,7 +569,7 @@ public abstract class AbstractSerialization {
               }
               Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
-                  deserializationCache.deserializePropertyValue(
+                      deserializationStatus.deserializePropertyValue(
                       property.getType(),
                       serializedPropertyValue.getValue(),
                       property.isRequired());
@@ -602,41 +600,4 @@ public abstract class AbstractSerialization {
     return lionWebVersion;
   }
 
-  private class DeserializationCache {
-
-    private PrimitiveValuesSerialization primitiveValuesSerialization;
-    private IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
-        new IdentityHashMap<>();
-    private IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
-        new IdentityHashMap<>();
-
-    public DeserializationCache(PrimitiveValuesSerialization primitiveValuesSerialization) {
-      this.primitiveValuesSerialization = primitiveValuesSerialization;
-    }
-
-    public Property getProperty(Classifier<?> classifier, MetaPointer metaPointer) {
-      if (!featuresCache.containsKey(classifier)) {
-        featuresCache.put(classifier, new HashMap<>());
-      }
-      Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
-      if (!featuresMap.containsKey(metaPointer)) {
-        featuresMap.put(metaPointer, classifier.getPropertyByMetaPointer(metaPointer));
-      }
-      return (Property) featuresMap.get(metaPointer);
-    }
-
-    public Object deserializePropertyValue(
-        DataType<?> dataType, String serializedValue, boolean isRequired) {
-      if (!propertyValuesCache.containsKey(dataType)) {
-        propertyValuesCache.put(dataType, new HashMap<>());
-      }
-      Map<String, Object> map = propertyValuesCache.get(dataType);
-      String key = serializedValue + "@required@" + isRequired;
-      if (!map.containsKey(key)) {
-        map.put(
-            key, primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
-      }
-      return map.get(key);
-    }
-  }
 }

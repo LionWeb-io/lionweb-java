@@ -3,9 +3,14 @@ package io.lionweb.lioncore.java.serialization;
 import io.lionweb.lioncore.java.api.ClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.CompositeClassifierInstanceResolver;
 import io.lionweb.lioncore.java.api.LocalClassifierInstanceResolver;
+import io.lionweb.lioncore.java.language.Classifier;
+import io.lionweb.lioncore.java.language.DataType;
+import io.lionweb.lioncore.java.language.Feature;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
+import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import java.util.*;
 import javax.annotation.Nonnull;
@@ -21,8 +26,14 @@ class DeserializationStatus {
   private final List<SerializedClassifierInstance> sortedList;
   final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
-  private LocalClassifierInstanceResolver proxiesInstanceResolver;
-  private Set<String> sortedIDs = new HashSet<>();
+  private final LocalClassifierInstanceResolver proxiesInstanceResolver;
+  private final Set<String> sortedIDs = new HashSet<>();
+  private PrimitiveValuesSerialization primitiveValuesSerialization;
+  private IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
+          new IdentityHashMap<>();
+  private IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
+          new IdentityHashMap<>();
+
   /**
    * Represent the combination of different ways to solve an instances resolver. It considers the
    * instances that are not connected to this deserialization process (outsideInstancesResolver),
@@ -32,13 +43,41 @@ class DeserializationStatus {
 
   DeserializationStatus(
       List<SerializedClassifierInstance> originalList,
-      ClassifierInstanceResolver outsideInstancesResolver) {
+      ClassifierInstanceResolver outsideInstancesResolver,
+      PrimitiveValuesSerialization primitiveValuesSerialization) {
+    this.primitiveValuesSerialization = primitiveValuesSerialization;
     sortedList = new ArrayList<>();
     nodesToSort = new ArrayList<>(originalList);
     this.proxiesInstanceResolver = new LocalClassifierInstanceResolver();
     this.globalInstanceResolver =
         new CompositeClassifierInstanceResolver(outsideInstancesResolver, proxiesInstanceResolver);
   }
+
+  public Property getProperty(Classifier<?> classifier, MetaPointer metaPointer) {
+    if (!featuresCache.containsKey(classifier)) {
+      featuresCache.put(classifier, new HashMap<>());
+    }
+    Map<MetaPointer, Feature<?>> featuresMap = featuresCache.get(classifier);
+    if (!featuresMap.containsKey(metaPointer)) {
+      featuresMap.put(metaPointer, classifier.getPropertyByMetaPointer(metaPointer));
+    }
+    return (Property) featuresMap.get(metaPointer);
+  }
+
+  public Object deserializePropertyValue(
+          DataType<?> dataType, String serializedValue, boolean isRequired) {
+    if (!propertyValuesCache.containsKey(dataType)) {
+      propertyValuesCache.put(dataType, new HashMap<>());
+    }
+    Map<String, Object> map = propertyValuesCache.get(dataType);
+    String key = serializedValue + "@required@" + isRequired;
+    if (!map.containsKey(key)) {
+      map.put(
+              key, primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
+    }
+    return map.get(key);
+  }
+
 
   void putNodesWithNullIDsInFront() {
     // Nodes with null IDs are ambiguous but they cannot be the children of any node: they can
