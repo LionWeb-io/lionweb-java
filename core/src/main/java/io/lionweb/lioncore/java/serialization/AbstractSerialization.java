@@ -11,7 +11,6 @@ import io.lionweb.lioncore.java.model.impl.AbstractClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -163,7 +162,6 @@ public abstract class AbstractSerialization {
 
   public SerializedChunk serializeNodesToSerializationBlock(
       Collection<ClassifierInstance<?>> classifierInstances) {
-    System.out.println("serializeNodesToSerializationBlock got " + classifierInstances.size() + " nodes");
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     SerializationStatus serializationStatus = new SerializationStatus();
@@ -178,14 +176,14 @@ public abstract class AbstractSerialization {
                     serializeAnnotationInstance(annotationInstance, serializationStatus));
                 String annotationID = annotationInstance.getClassifier().getID();
                 if (!serializationStatus.hasConsideredClassifier(annotationID)) {
-                  System.out.println("  consider annotation classifier");
-                  serializationStatus.considerLanguageDuringSerialization(language -> considerLanguageDuringSerialization(serializedChunk, language), annotationInstance.getClassifier().getLanguage());
+                  serializationStatus.considerLanguageDuringSerialization(
+                      language -> considerLanguageDuringSerialization(serializedChunk, language),
+                      annotationInstance.getClassifier().getLanguage());
                   serializationStatus.markClassifierAsConsidered(annotationID);
                 }
               });
       Classifier<?> classifier = classifierInstance.getClassifier();
       if (!serializationStatus.hasConsideredClassifier(classifier.getID())) {
-        long nc0 = System.currentTimeMillis();
         Objects.requireNonNull(
             classifier, "A node should have a concept in order to be serialized");
         Language language = classifier.getLanguage();
@@ -195,34 +193,31 @@ public abstract class AbstractSerialization {
                   + classifier
                   + " is not");
         }
-        long nc1 = System.currentTimeMillis();
-        serializationStatus.considerLanguageDuringSerialization(l -> considerLanguageDuringSerialization(serializedChunk, l), language);
-        long nc2 = System.currentTimeMillis();
+        serializationStatus.considerLanguageDuringSerialization(
+            l -> considerLanguageDuringSerialization(serializedChunk, l), language);
         List<Feature<?>> features = classifier.allFeatures();
-        features
-            .forEach(
-                f ->
-                        serializationStatus.considerLanguageDuringSerialization(l -> considerLanguageDuringSerialization(serializedChunk, l), f.getDeclaringLanguage()));
-        long nc3 = System.currentTimeMillis();
-        features.stream().filter(f -> f instanceof Property).map(f -> (Property)f)
+        features.forEach(
+            f ->
+                serializationStatus.considerLanguageDuringSerialization(
+                    l -> considerLanguageDuringSerialization(serializedChunk, l),
+                    f.getDeclaringLanguage()));
+        features.stream()
+            .filter(f -> f instanceof Property)
+            .map(f -> (Property) f)
             .forEach(
                 p ->
-                        serializationStatus.considerLanguageDuringSerialization(
-                                l -> considerLanguageDuringSerialization(serializedChunk, l), p.getType().getLanguage()));
-        long nc4 = System.currentTimeMillis();
-        features.stream().filter(f -> f instanceof Link).map(f -> (Link<?>)f)
+                    serializationStatus.considerLanguageDuringSerialization(
+                        l -> considerLanguageDuringSerialization(serializedChunk, l),
+                        p.getType().getLanguage()));
+        features.stream()
+            .filter(f -> f instanceof Link)
+            .map(f -> (Link<?>) f)
             .forEach(
                 l ->
-                        serializationStatus.considerLanguageDuringSerialization(
-                                l2 -> considerLanguageDuringSerialization(serializedChunk, l2), l.getType().getLanguage()));
+                    serializationStatus.considerLanguageDuringSerialization(
+                        l2 -> considerLanguageDuringSerialization(serializedChunk, l2),
+                        l.getType().getLanguage()));
         serializationStatus.markClassifierAsConsidered(classifier.getID());
-        long nc5 = System.currentTimeMillis();
-        System.out.println("  consider node classifier in " + (nc5-nc0));
-        System.out.println("    A " + (nc1-nc0));
-        System.out.println("    B " + (nc2-nc1));
-        System.out.println("    C " + (nc3-nc2));
-        System.out.println("    D " + (nc4-nc3));
-        System.out.println("    E " + (nc5-nc4));
       }
     }
     return serializedChunk;
@@ -244,7 +239,6 @@ public abstract class AbstractSerialization {
 
   private SerializedClassifierInstance serializeNode(
       @Nonnull ClassifierInstance<?> classifierInstance, SerializationStatus serializationStatus) {
-    long n1 = System.currentTimeMillis();
     Objects.requireNonNull(classifierInstance, "Node should not be null");
     SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
     serializedClassifierInstance.setID(classifierInstance.getID());
@@ -261,8 +255,6 @@ public abstract class AbstractSerialization {
         builtinsReferenceDangling,
         serializationStatus);
     serializeAnnotations(classifierInstance, serializedClassifierInstance);
-    long n2 = System.currentTimeMillis();
-    System.out.println("  node serialized in " + (n2-n1));
     return serializedClassifierInstance;
   }
 

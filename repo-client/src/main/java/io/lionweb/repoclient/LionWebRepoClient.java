@@ -215,7 +215,8 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   public @NotNull Node retrieve(@NotNull String nodeId) throws IOException {
     Objects.requireNonNull(nodeId, "nodeId should not be null");
     List<Node> nodes = retrieve(Collections.singletonList(nodeId), Integer.MAX_VALUE);
-    List<Node> matchingNodes = nodes.stream().filter(n -> nodeId.equals(n.getID())).collect(Collectors.toList());
+    List<Node> matchingNodes =
+        nodes.stream().filter(n -> nodeId.equals(n.getID())).collect(Collectors.toList());
     if (matchingNodes.size() != 1) {
       throw new IllegalArgumentException("Node not found: " + nodeId);
     }

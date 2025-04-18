@@ -1,8 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
-
 import java.util.HashSet;
 import java.util.IdentityHashMap;
 import java.util.List;

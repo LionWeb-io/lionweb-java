@@ -85,8 +85,9 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
   public void storeOnCustomRepository() throws IOException {
     String repoName = "my_repo";
     LionWebRepoClient client =
-            new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
-    client.createRepository(new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
+        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+    client.createRepository(
+        new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Create partition
