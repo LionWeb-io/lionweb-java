@@ -38,6 +38,7 @@ const config = {
           routeBasePath: '/', // Set docs as the root
         },
         blog: false,
+        pages: false,
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
         },
