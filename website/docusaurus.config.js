@@ -12,7 +12,7 @@ const config = {
   // Set the production url of your site here
   url: 'https://lionweb-io.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
-  baseUrl: '/',
+  baseUrl: '/lionweb-java/',
 
   // GitHub pages deployment config.
   organizationName: 'lionweb-io',
@@ -34,7 +34,7 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/lionweb-io/lionweb-java/tree/main/docs/',
+          editUrl: 'https://github.com/lionweb-io/lionweb-java/tree/main/website/',
           routeBasePath: '/', // Set docs as the root
         },
         blog: false,

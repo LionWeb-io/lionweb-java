@@ -2,6 +2,7 @@
   "name": "lionweb-java-docs",
   "version": "0.0.0",
   "private": true,
+  "homepage": "https://lionweb-io.github.io/lionweb-java/",
   "scripts": {
     "docusaurus": "docusaurus",
     "start": "docusaurus start",
