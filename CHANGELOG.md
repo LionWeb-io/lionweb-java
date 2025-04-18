@@ -83,3 +83,20 @@ Introducing support for LionWeb 2024.1
 ### Version 0.4.0
 
 * Introduction of the `repo-client` and `repo-client-testing` modules
+
+### Version 0.4.1
+
+* Add support for more APIs in the repo client
+
+### Version 0.4.2
+
+* Performance improvements for serialization
+
+### Version 0.4.3
+
+* Bug fix for ClientForBulkAPIs.retrieve
+
+### Version 0.4.4
+
+* Bug fix for ClientForBulkAPIs
+* Added retrieve(Node) method in LionWebRepoClient
