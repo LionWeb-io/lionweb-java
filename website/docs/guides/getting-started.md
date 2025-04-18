@@ -42,38 +42,43 @@ Add the following dependency to your `pom.xml`:
 ### Creating a Model
 
 ```java
-// Create a new model
-Model model = new Model();
-model.setId("my-model");
-model.setVersion("1.0.0");
+// Create a new node using DynamicNode for flexibility
+DynamicNode node1 = new DynamicNode("my-model-id", LionCore.getModel());
+node1.setPropertyValue(LionCore.getModel().getPropertyByName("version"), "1.0.0");
 
-// Create a node
-Node node = new Node();
-node.setId("my-node");
-node.setConcept("MyConcept");
+// Create a second node
+DynamicNode node2 = new DynamicNode("my-node-id", MyLanguage.MY_CONCEPT);
+node2.setPropertyValue(MyLanguage.MY_CONCEPT.getPropertyByName("name"), "My Node");
 
 // Add the node to the model
-model.addNode(node);
+node1.addChild(LionCore.getModel().getContainmentByName("elements"), node2);
 ```
 
 ### Serializing to JSON
 
 ```java
-// Create a serializer
-JsonSerialization jsonSerialization = new JsonSerialization();
+// Create a serializer with the appropriate version
+JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+
+// Register any custom languages you're using
+jsonSerialization.getClassifierResolver().registerLanguage(MyLanguage.INSTANCE);
 
 // Serialize the model
-String json = jsonSerialization.serializeToString(model);
+String json = jsonSerialization.serializeToJsonString(model);
 ```
 
 ### Deserializing from JSON
 
 ```java
-// Create a deserializer
-JsonSerialization jsonSerialization = new JsonSerialization();
+// Create a deserializer with the appropriate version
+JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+
+// Register any custom languages you're using
+jsonSerialization.getClassifierResolver().registerLanguage(MyLanguage.INSTANCE);
 
 // Deserialize the model
-Model model = jsonSerialization.deserializeToModel(json);
+List<Node> nodes = jsonSerialization.deserializeToNodes(json);
+Node root = nodes.get(0);
 ```
 
 ## Working with EMF
@@ -81,8 +86,11 @@ Model model = jsonSerialization.deserializeToModel(json);
 ### Converting to EMF
 
 ```java
-// Create a converter
-LionWebToEMFConverter converter = new LionWebToEMFConverter();
+// Create a converter with the appropriate version
+LionWebToEMFConverter converter = new LionWebToEMFConverter(LionWebVersion.v2024_1);
+
+// Register any custom languages you're using
+converter.registerLanguage(MyLanguage.INSTANCE);
 
 // Convert the model
 Resource resource = converter.convert(model);
@@ -91,11 +99,14 @@ Resource resource = converter.convert(model);
 ### Converting from EMF
 
 ```java
-// Create a converter
-EMFToLionWebConverter converter = new EMFToLionWebConverter();
+// Create a converter with the appropriate version
+EMFToLionWebConverter converter = new EMFToLionWebConverter(LionWebVersion.v2024_1);
+
+// Register any custom languages you're using
+converter.registerLanguage(MyLanguage.INSTANCE);
 
 // Convert the resource
-Model model = converter.convert(resource);
+Node root = converter.convert(resource);
 ```
 
 ## Repository Client
@@ -103,39 +114,71 @@ Model model = converter.convert(resource);
 ### Connecting to a Repository
 
 ```java
-// Create a client
-RepositoryClient client = new RepositoryClient("https://repository.lionweb.io");
+// Create a client with the appropriate version
+LionWebRepoClient client = new LionWebRepoClient(
+    LionWebVersion.v2024_1, 
+    "localhost", 
+    8080,  // port number
+    "my-repository"
+);
 
-// Authenticate
-client.authenticate("username", "password");
+// Create a new repository if needed
+client.createRepository(new RepositoryConfiguration(
+    "my-repository",
+    LionWebVersion.v2024_1,
+    HistorySupport.DISABLED
+));
+
+// Register any custom languages you're using
+client.getJsonSerialization().registerLanguage(MyLanguage.INSTANCE);
 ```
 
-### Working with Models
+### Working with Partitions
 
 ```java
-// Get a model
-Model model = client.getModel("model-id");
+// Create a partition
+DynamicNode partition = new DynamicNode("partition-1", MyLanguage.PARTITION);
+client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(partition));
 
-// Update a model
-client.updateModel(model);
+// List all partitions
+List<Node> partitions = client.listPartitions();
+List<String> partitionIds = client.listPartitionsIDs();
 
-// Delete a model
-client.deleteModel("model-id");
+// Delete partitions
+client.deletePartitions(Arrays.asList("partition-1"));
 ```
 
-## Best Practices
+### Storing and Retrieving Nodes
 
-1. **Version Management**
-   - Always specify the version of LionWeb you're using
-   - Keep dependencies up to date
-   - Test with multiple versions when possible
+```java
+// Create nodes
+DynamicNode node1 = new DynamicNode("node-1", MyLanguage.MY_CONCEPT);
+node1.setPropertyValue(MyLanguage.MY_CONCEPT.getPropertyByName("name"), "First Node");
 
-2. **Error Handling**
-   - Use try-catch blocks for operations that might fail
-   - Log errors appropriately
-   - Provide meaningful error messages
+DynamicNode node2 = new DynamicNode("node-2", MyLanguage.MY_CONCEPT);
+node2.setPropertyValue(MyLanguage.MY_CONCEPT.getPropertyByName("name"), "Second Node");
 
-3. **Performance**
-   - Use batch operations when possible
-   - Cache frequently accessed data
-   - Monitor memory usage 
+// Add nodes to partition
+ClassifierInstanceUtils.addChild(partition, "elements", node1);
+ClassifierInstanceUtils.addChild(partition, "elements", node2);
+
+// Store nodes
+client.store(Arrays.asList(partition));
+
+// Retrieve nodes
+List<Node> retrievedNodes = client.retrieve(Arrays.asList("partition-1"), 10);
+```
+
+### Querying Nodes
+
+```java
+// Get nodes by classifier
+Map<ClassifierKey, ClassifierResult> nodesByClassifier = client.nodesByClassifier();
+
+// Get nodes by language
+Map<String, ClassifierResult> nodesByLanguage = client.nodesByLanguage();
+
+// Generate new IDs
+List<String> newIds = client.ids(5); // Generate 5 new IDs
+```
+
