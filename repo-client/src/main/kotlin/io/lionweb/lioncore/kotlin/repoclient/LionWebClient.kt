@@ -41,18 +41,13 @@ class LionWebClient(
     val port: Int = 3005,
     val debug: Boolean = false,
     val jsonSerializationProvider: (() -> JsonSerialization)? = null,
-    val connectTimeOutInSeconds: Long = 60,
-    val callTimeoutInSeconds: Long = 60,
-    val authorizationToken: String? = null,
-    val clientID: String = "GenericKotlinBasedLionWebClient",
+    connectTimeOutInSeconds: Long = 60,
+    callTimeoutInSeconds: Long = 60,
+    authorizationToken: String? = null,
+    clientID: String = "GenericKotlinBasedLionWebClient",
     val repository: String = "default",
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
-    // Fields
-    private val languages = mutableListOf<Language>()
-
-    @Deprecated("We should use jRepoClient instead")
-    private val serializationDecorators = mutableListOf<SerializationDecorator>()
 
     @Deprecated("We should use jRepoClient instead")
     private val lowLevelRepoClient =
@@ -80,54 +75,13 @@ class LionWebClient(
             callTimeoutInSeconds,
         )
 
-    /**
-     * Exposed for testing purposes
-     */
-    @Deprecated("We should use jRepoClient instead")
-    val defaultJsonSerialization =
-        SerializationProvider.getStandardJsonSerialization(lionWebVersion).apply {
-            enableDynamicNodes()
-        }
-
-    init {
-        registerSerializationDecorator { jsonSerialization ->
-            languages.forEach {
-                jsonSerialization.registerLanguage(it)
-            }
-            MetamodelRegistry.prepareJsonSerialization(jsonSerialization)
-        }
-    }
-
-    @Deprecated("We should use jRepoClient instead")
-    var jsonSerialization: JsonSerialization = calculateJsonSerialization()
-        private set
+    val jsonSerialization: JsonSerialization
+        get() = jRepoClient.jsonSerialization
 
     // Configuration
 
-    @Deprecated("We should use jRepoClient instead")
-    private fun calculateJsonSerialization(): JsonSerialization {
-        val jsonSerialization = jsonSerializationProvider?.invoke() ?: defaultJsonSerialization
-        serializationDecorators.forEach { serializationDecorator -> serializationDecorator.invoke(jsonSerialization) }
-        return jsonSerialization
-    }
-
-    @Deprecated("We should use jRepoClient instead")
-    fun updateJsonSerialization() {
-        this.jsonSerialization = calculateJsonSerialization()
-    }
-
     fun registerLanguage(language: Language) {
-        languages.add(language)
         jRepoClient.jsonSerialization.registerLanguage(language)
-    }
-
-    fun registerSerializationDecorator(decorator: SerializationDecorator) {
-        serializationDecorators.add(decorator)
-    }
-
-    @Deprecated("We should use jRepoClient instead")
-    fun cleanSerializationDecorators() {
-        serializationDecorators.clear()
     }
 
     // Setup
