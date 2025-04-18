@@ -53,7 +53,7 @@ const config = {
       title: 'LionWeb Java',
       logo: {
         alt: 'LionWeb Logo',
-        src: 'img/logo.svg',
+        src: 'img/lionweb-logo.png',
       },
       items: [
         {
