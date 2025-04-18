@@ -21,7 +21,10 @@ import io.lionweb.lioncore.kotlin.setReferenceValuesByName
 import io.lionweb.repoclient.ExtendedLionWebRepoClient
 import io.lionweb.repoclient.api.HistorySupport
 import io.lionweb.repoclient.api.RepositoryConfiguration
+import io.lionweb.serialization.extensions.BulkImport
+import io.lionweb.serialization.extensions.Compression
 import io.lionweb.serialization.extensions.NodeInfo
+import io.lionweb.serialization.extensions.TransferFormat
 import java.util.LinkedList
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -529,6 +532,14 @@ class LionWebClient(
         depthLimit: Int? = null,
     ): List<NodeInfo> {
         return jRepoClient.getNodeTree(nodeIDs, depthLimit)
+    }
+
+    fun bulkImport(
+        bulkImport: BulkImport,
+        transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
+        compress: Boolean = false,
+    ) {
+        return jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
     }
 
     // Private methods
