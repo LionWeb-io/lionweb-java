@@ -11,8 +11,6 @@ import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.model.impl.ProxyNode
 import io.lionweb.lioncore.java.serialization.JsonSerialization
-import io.lionweb.lioncore.java.serialization.SerializationProvider
-import io.lionweb.lioncore.kotlin.MetamodelRegistry
 import io.lionweb.lioncore.kotlin.children
 import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
@@ -48,7 +46,6 @@ class LionWebClient(
     val repository: String = "default",
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
-
     @Deprecated("We should use jRepoClient instead")
     private val lowLevelRepoClient =
         LowLevelRepoClient(
@@ -154,7 +151,7 @@ class LionWebClient(
 
     fun retrieve(
         rootIds: List<String>,
-        limit: Int
+        limit: Int,
     ): List<Node> {
         if (rootIds.isEmpty()) {
             return emptyList()
