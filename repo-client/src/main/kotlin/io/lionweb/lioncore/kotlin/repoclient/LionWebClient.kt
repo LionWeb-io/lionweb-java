@@ -152,6 +152,16 @@ class LionWebClient(
         return jRepoClient.retrieve(rootIds, limit)
     }
 
+    fun retrieve(
+        rootIds: List<String>,
+        limit: Int
+    ): List<Node> {
+        if (rootIds.isEmpty()) {
+            return emptyList()
+        }
+        return jRepoClient.retrieve(rootIds, limit)
+    }
+
     fun getAncestorsId(nodeID: String): List<String> {
         val result = mutableListOf<String>()
         var currentNodeID: String? = nodeID
