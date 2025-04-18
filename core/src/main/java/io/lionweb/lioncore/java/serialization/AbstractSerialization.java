@@ -174,8 +174,13 @@ public abstract class AbstractSerialization {
               annotationInstance -> {
                 serializedChunk.addClassifierInstance(
                     serializeAnnotationInstance(annotationInstance, serializationStatus));
-                considerLanguageDuringSerialization(
-                    serializedChunk, annotationInstance.getClassifier().getLanguage());
+                String annotationID = annotationInstance.getClassifier().getID();
+                if (!serializationStatus.hasConsideredClassifier(annotationID)) {
+                  serializationStatus.considerLanguageDuringSerialization(
+                      language -> considerLanguageDuringSerialization(serializedChunk, language),
+                      annotationInstance.getClassifier().getLanguage());
+                  serializationStatus.markClassifierAsConsidered(annotationID);
+                }
               });
       Classifier<?> classifier = classifierInstance.getClassifier();
       if (!serializationStatus.hasConsideredClassifier(classifier.getID())) {
@@ -188,24 +193,30 @@ public abstract class AbstractSerialization {
                   + classifier
                   + " is not");
         }
-        considerLanguageDuringSerialization(serializedChunk, language);
-        classifier
-            .allFeatures()
-            .forEach(
-                f ->
-                    considerLanguageDuringSerialization(serializedChunk, f.getDeclaringLanguage()));
-        classifier
-            .allProperties()
+        serializationStatus.considerLanguageDuringSerialization(
+            l -> considerLanguageDuringSerialization(serializedChunk, l), language);
+        List<Feature<?>> features = classifier.allFeatures();
+        features.forEach(
+            f ->
+                serializationStatus.considerLanguageDuringSerialization(
+                    l -> considerLanguageDuringSerialization(serializedChunk, l),
+                    f.getDeclaringLanguage()));
+        features.stream()
+            .filter(f -> f instanceof Property)
+            .map(f -> (Property) f)
             .forEach(
                 p ->
-                    considerLanguageDuringSerialization(
-                        serializedChunk, p.getType().getLanguage()));
-        classifier
-            .allLinks()
+                    serializationStatus.considerLanguageDuringSerialization(
+                        l -> considerLanguageDuringSerialization(serializedChunk, l),
+                        p.getType().getLanguage()));
+        features.stream()
+            .filter(f -> f instanceof Link)
+            .map(f -> (Link<?>) f)
             .forEach(
                 l ->
-                    considerLanguageDuringSerialization(
-                        serializedChunk, l.getType().getLanguage()));
+                    serializationStatus.considerLanguageDuringSerialization(
+                        l2 -> considerLanguageDuringSerialization(serializedChunk, l2),
+                        l.getType().getLanguage()));
         serializationStatus.markClassifierAsConsidered(classifier.getID());
       }
     }
