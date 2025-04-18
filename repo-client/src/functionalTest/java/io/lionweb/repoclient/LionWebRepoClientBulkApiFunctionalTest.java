@@ -8,6 +8,8 @@ import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.utils.CommonChecks;
+import io.lionweb.repoclient.api.HistorySupport;
+import io.lionweb.repoclient.api.RepositoryConfiguration;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
 import java.io.IOException;
 import java.util.Arrays;
@@ -77,6 +79,38 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     List<Node> nodes4 = client.listPartitions();
     assertEquals(0, nodes4.size());
     assertEquals(Collections.emptyList(), client.listPartitionsIDs());
+  }
+
+  @Test
+  public void storeOnCustomRepository() throws IOException {
+    String repoName = "my_repo";
+    LionWebRepoClient client =
+        new LionWebRepoClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+    client.createRepository(
+        new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
+
+    // Create partition
+    DynamicNode partition = new DynamicNode("partition", PropertiesLanguage.propertiesPartition);
+    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(partition));
+
+    // Check list
+    List<Node> nodes1 = client.listPartitions();
+    assertEquals(1, nodes1.size());
+    assertEquals("partition", nodes1.get(0).getID());
+    assertEquals(PropertiesLanguage.propertiesPartition, nodes1.get(0).getClassifier());
+    assertEquals(Collections.singletonList("partition"), client.listPartitionsIDs());
+
+    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
+    ClassifierInstanceUtils.addChild(partition, "files", f1);
+
+    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesFile);
+    ClassifierInstanceUtils.addChild(partition, "files", f2);
+
+    client.store(partition);
+
+    Node retrievedPartition = client.retrieve(partition.getID());
+    assertEquals(partition, retrievedPartition);
   }
 
   @Test
