@@ -174,8 +174,12 @@ public abstract class AbstractSerialization {
               annotationInstance -> {
                 serializedChunk.addClassifierInstance(
                     serializeAnnotationInstance(annotationInstance, serializationStatus));
-                considerLanguageDuringSerialization(
-                    serializedChunk, annotationInstance.getClassifier().getLanguage());
+                String annotationID = annotationInstance.getClassifier().getID();
+                if (!serializationStatus.hasConsideredClassifier(annotationID)) {
+                  considerLanguageDuringSerialization(
+                          serializedChunk, annotationInstance.getClassifier().getLanguage());
+                }
+                serializationStatus.markClassifierAsConsidered(annotationID);
               });
       Classifier<?> classifier = classifierInstance.getClassifier();
       if (!serializationStatus.hasConsideredClassifier(classifier.getID())) {
