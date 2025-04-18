@@ -9,10 +9,21 @@ This guide will help you get started with LionWeb Java, from installation to cre
 ## Prerequisites
 
 - Java 8 or later (Java 11 required for building)
-- Gradle 8.5 or later
-- Git
 
 ## Installation
+
+Note that even if you want to use the 2023.1 specs you can use a recent version of LionWeb Java. All versions supports also previous versions of the specs.
+
+### Using Gradle
+
+Add the following to your `build.gradle`:
+
+```groovy
+dependencies {
+    implementation("io.lionweb.lionweb-java:lionweb-java-2024.1-core:$lionwebVersion")
+}
+```
+
 
 ### Using Maven
 
@@ -24,16 +35,6 @@ Add the following dependency to your `pom.xml`:
     <artifactId>lionweb-java-2024.1-core</artifactId>
     <version>${lionwebVersion}</version>
 </dependency>
-```
-
-### Using Gradle
-
-Add the following to your `build.gradle`:
-
-```groovy
-dependencies {
-    implementation("io.lionweb.lionweb-java:lionweb-java-2024.1-core:$lionwebVersion")
-}
 ```
 
 ## Basic Usage
