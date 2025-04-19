@@ -1,16 +1,13 @@
 package io.lionweb.repoclient;
 
-import com.google.gson.*;
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
 import io.lionweb.repoclient.api.*;
-import io.lionweb.repoclient.impl.ClientForBulkAPIs;
-import io.lionweb.repoclient.impl.ClientForDBAdminAPIs;
-import io.lionweb.repoclient.impl.ClientForInspectionAPIs;
-import io.lionweb.repoclient.impl.RepoClientConfiguration;
+import io.lionweb.repoclient.impl.*;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +16,7 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {
+public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient {
 
   public class Builder {
     protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
@@ -98,6 +95,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   private final ClientForInspectionAPIs inspectionAPIs;
   private final ClientForDBAdminAPIs dbAdminAPIs;
   private final ClientForBulkAPIs bulkAPIs;
+  private final ClientForHistoryAPIs historyAPIs;
 
   //
   // Constructors
@@ -141,6 +139,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     this.inspectionAPIs = new ClientForInspectionAPIs(conf);
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
+    this.historyAPIs = new ClientForHistoryAPIs(conf);
   }
 
   protected RepoClientConfiguration buildRepositoryConfiguration() {
@@ -168,21 +167,21 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   //
 
   @Override
-  public void createPartitions(List<Node> partitions) throws IOException {
-    bulkAPIs.createPartitions(partitions);
+  public @Nullable Long createPartitions(List<Node> partitions) throws IOException {
+    return bulkAPIs.createPartitions(partitions);
   }
 
-  public void createPartition(@NotNull Node partition) throws IOException {
-    createPartitions(Collections.singletonList(partition));
+  public @Nullable Long createPartition(@NotNull Node partition) throws IOException {
+    return createPartitions(Collections.singletonList(partition));
   }
 
-  public void createPartitions(String data) throws IOException {
-    bulkAPIs.createPartitions(data);
+  public @Nullable Long createPartitions(String data) throws IOException {
+    return bulkAPIs.createPartitions(data);
   }
 
   @Override
-  public void deletePartitions(List<String> ids) throws IOException {
-    bulkAPIs.deletePartitions(ids);
+  public @Nullable Long  deletePartitions(List<String> ids) throws IOException {
+    return bulkAPIs.deletePartitions(ids);
   }
 
   @Override
@@ -200,12 +199,12 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   }
 
   @Override
-  public void store(List<Node> nodes) throws IOException {
-    bulkAPIs.store(nodes);
+  public @Nullable Long store(List<Node> nodes) throws IOException {
+    return bulkAPIs.store(nodes);
   }
 
-  public void store(@NotNull Node node) throws IOException {
-    store(Collections.singletonList(node));
+  public @Nullable Long  store(@NotNull Node node) throws IOException {
+    return store(Collections.singletonList(node));
   }
 
   public List<Node> retrieve(List<String> nodeIds) throws IOException {
@@ -265,5 +264,19 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   @Override
   public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
     return inspectionAPIs.nodesByLanguage();
+  }
+
+  //
+   // History APIs
+  //
+
+  @Override
+  public List<Node> historyListPartitions(long repoVersion) throws IOException {
+    return historyAPIs.historyListPartitions(repoVersion);
+  }
+
+  @Override
+  public List<Node> historyRetrieve(long repoVersion, List<String> nodeIds, int limit) throws IOException {
+    return historyAPIs.historyRetrieve(repoVersion, nodeIds, limit);
   }
 }
