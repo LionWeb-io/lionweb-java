@@ -61,6 +61,7 @@ public class HomogeneousAPIExample {
     taskLanguage.setKey("task");
     taskLanguage.setName("Task Language");
     taskLanguage.setVersion("1.0");
+    taskLanguage.addElement(taskListConcept);
     taskLanguage.addElement(taskConcept);
   }
 

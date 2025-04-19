@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     implementation(project(":core"))
+    implementation(libs.gson)
 }
 
 val jvmVersion = extra["jvmVersion"] as String

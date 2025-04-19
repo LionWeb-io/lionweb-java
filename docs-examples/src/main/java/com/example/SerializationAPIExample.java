@@ -1,14 +1,18 @@
 package com.example;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.lioncore.java.serialization.Instantiator;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.utils.NodeTreeValidator;
 import io.lionweb.lioncore.java.utils.ValidationResult;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class HeterogeneousAPIExample {
+public class SerializationAPIExample {
 
   private static Concept taskListConcept;
   private static Concept taskConcept;
@@ -20,9 +24,13 @@ public class HeterogeneousAPIExample {
     defineLanguage();
   }
 
-  private class TaskList extends DynamicNode {
+  private static class TaskList extends DynamicNode {
+    TaskList(String id) {
+      super(id, taskListConcept);
+    }
+
     TaskList() {
-      super(UUID.randomUUID().toString(), taskListConcept);
+      this(UUID.randomUUID().toString());
     }
 
     void addTask(Task task) {
@@ -34,9 +42,13 @@ public class HeterogeneousAPIExample {
     }
   }
 
-  private class Task extends DynamicNode {
+  private static class Task extends DynamicNode {
     Task(String name) {
-      super(UUID.randomUUID().toString(), taskConcept);
+      this(UUID.randomUUID().toString(), name);
+    }
+
+    Task(String id, String name) {
+      super(id, taskConcept);
       setName(name);
     }
 
@@ -94,7 +106,7 @@ public class HeterogeneousAPIExample {
     taskLanguage.addElement(taskConcept);
   }
 
-  public void useSpecificClasses() {
+  public TaskList createTaskList() {
     // Create the model
     TaskList errands = new TaskList();
 
@@ -109,15 +121,65 @@ public class HeterogeneousAPIExample {
       throw new IllegalStateException("The tree is invalid: " + res);
     }
 
-    // Access the model
-    List<Task> tasks = errands.getTasks();
-    System.out.println("Tasks found: " + tasks.size());
-    for (Task task : tasks) {
-      System.out.println(" - " + task.getName());
-    }
+    return errands;
   }
 
   public static void main(String[] args) {
-    new HeterogeneousAPIExample().useSpecificClasses();
+    SerializationAPIExample example = new SerializationAPIExample();
+    TaskList taskList = example.createTaskList();
+    JsonSerialization serialization = SerializationProvider.getStandardJsonSerialization();
+
+    String serialized = serialization.serializeTreesToJsonString(taskList);
+    System.out.println("== Tasks list ==");
+    System.out.println(serialized);
+    System.out.println();
+
+    try {
+      serialization.deserializeToNodes(serialized);
+      throw new RuntimeException("We expect an exception");
+    } catch (IllegalArgumentException e) {
+      // We expect this
+      System.out.println("Expected error: " + e.getMessage());
+    }
+
+    serialization.enableDynamicNodes();
+    ;
+    Node deserialized1 = serialization.deserializeToNodes(serialized).get(0);
+    System.out.println(
+        "First deserialization - Deserialized as " + deserialized1.getClass().getSimpleName());
+    if (!taskList.equals(deserialized1)) {
+      throw new IllegalStateException();
+    }
+
+    serialization
+        .getInstantiator()
+        .registerCustomDeserializer(
+            taskListConcept.getID(),
+            (Instantiator.ClassifierSpecificInstantiator<TaskList>)
+                (classifier,
+                    serializedClassifierInstance,
+                    deserializedNodesByID,
+                    propertiesValues) -> {
+                  return new TaskList(serializedClassifierInstance.getID());
+                });
+    serialization
+        .getInstantiator()
+        .registerCustomDeserializer(
+            taskConcept.getID(),
+            (Instantiator.ClassifierSpecificInstantiator<Task>)
+                (classifier,
+                    serializedClassifierInstance,
+                    deserializedNodesByID,
+                    propertiesValues) -> {
+                  return new Task(
+                      serializedClassifierInstance.getID(),
+                      (String) propertiesValues.get(nameProperty));
+                });
+    Node deserialized2 = serialization.deserializeToNodes(serialized).get(0);
+    System.out.println(
+        "Second deserialization - Deserialized as " + deserialized2.getClass().getSimpleName());
+    if (!taskList.equals(deserialized2)) {
+      throw new IllegalStateException();
+    }
   }
 }
