@@ -23,7 +23,7 @@ dependencyResolutionManagement {
         }
 
         libs {
-            library("gson", "com.google.code.gson:gson:2.10.1")
+            library("gson", "com.google.code.gson:gson:2.13.0")
             library("annotations", "org.jetbrains:annotations:24.0.0")
             library("junit", "junit:junit:4.13")
         }

@@ -4,7 +4,7 @@ plugins {
     `jvm-test-suite`
     id("java-library")
     id("signing")
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    alias(libs.plugins.shadow)
     id("com.vanniktech.maven.publish")
     jacoco
 }

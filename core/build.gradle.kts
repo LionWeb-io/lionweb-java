@@ -4,10 +4,10 @@ import java.net.URI
 plugins {
     id("java-library")
     id("signing")
-    id("com.github.johnrengelman.shadow") version "7.1.1"
+    alias(libs.plugins.shadow)
     id("com.vanniktech.maven.publish")
     jacoco
-    id("com.google.protobuf") version "0.9.4"
+    alias(libs.plugins.protobuf)
 }
 
 repositories {
