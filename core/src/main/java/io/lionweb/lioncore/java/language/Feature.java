@@ -109,8 +109,9 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     return getPropertyValue("name", String.class);
   }
 
-  public void setName(@Nullable String name) {
+  public T setName(@Nullable String name) {
     this.setPropertyValue("name", name);
+    return (T) this;
   }
 
   /** The container is always the parent. It is just casted for convenience. */

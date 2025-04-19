@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 30
 ---
 
 # Getting Started with LionWeb Java
