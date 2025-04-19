@@ -86,7 +86,7 @@ Introducing support for LionWeb 2024.1
 
 ### Version 0.4.1
 
-* Add support for more APIs in the repo client
+* Add support for more APIs in the repo client: DB Admin APIs and Inspection APIs
 
 ### Version 0.4.2
 
@@ -100,3 +100,4 @@ Introducing support for LionWeb 2024.1
 
 * Bug fix for ClientForBulkAPIs
 * Added retrieve(Node) method in LionWebRepoClient
+* Introducing documentation
