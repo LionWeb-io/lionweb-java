@@ -11,6 +11,7 @@ repositories {
 
 subprojects {
     apply plugin: 'com.diffplug.spotless'
+
     spotless {
         java {
             googleJavaFormat()
@@ -34,8 +35,41 @@ release {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.5"
+    gradleVersion = "8.13"
     // You can either download the binary-only version of Gradle (BIN) or
     // the full version (with sources and documentation) of Gradle (ALL)
     distributionType = Wrapper.DistributionType.ALL
+}
+
+gradle.projectsEvaluated {
+    tasks.register("aggregateJavadoc", Javadoc) {
+        group = "documentation"
+        description = "Aggregate Javadoc from all subprojects"
+        destinationDir = file("$rootDir/website/static/api")
+
+        def includedProjects = subprojects.findAll { it.name != "docs-examples" }
+
+        def allSources = files(includedProjects.collect {
+            it.extensions.findByType(JavaPluginExtension)?.sourceSets?.findByName("main")?.allJava
+        }.findAll { it != null })
+
+        def allClasspaths = files(includedProjects.collect {
+            it.extensions.findByType(JavaPluginExtension)?.sourceSets?.findByName("main")?.compileClasspath
+        }.findAll { it != null })
+
+        source = allSources
+        classpath = allClasspaths
+
+        options.encoding = 'UTF-8'
+        options.charSet = 'UTF-8'
+        options.author = true
+        options.version = true
+        options.links("https://docs.oracle.com/javase/8/docs/api/")
+        options.addStringOption("Xdoclint:none", "-quiet")
+
+        doFirst {
+            println "Javadoc will be generated from:"
+            allSources.each { println "  - " + it }
+        }
+    }
 }

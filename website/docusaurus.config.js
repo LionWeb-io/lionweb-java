@@ -67,6 +67,12 @@ const config = {
           label: 'GitHub',
           position: 'right',
         },
+        {
+          label: 'API',
+          href: '/api/index.html',
+          position: 'left',
+          target: '_blank',
+        },
       ],
     },
     footer: {
@@ -106,6 +112,7 @@ const config = {
       darkTheme: themes.dracula,
       additionalLanguages: ['java', 'groovy'],
     },
+    trailingSlash: true,
   },
 };
 
