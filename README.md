@@ -7,6 +7,10 @@ This projects requires Java 8, to maximize compatibility.
 We require Java 11 for building the project, while the artifacts published are compatible 
 with Java 8.
 
+## Documentation
+
+Take a look at the [Documentation](https://lionweb.io/lionweb-java).
+
 ## Status of the project
 
 The project is actively maintained. Feel free to open issues to ask any question, help, 
