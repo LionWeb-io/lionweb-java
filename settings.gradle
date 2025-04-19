@@ -10,6 +10,7 @@ include('emf-builtins')
 include('extensions')
 include('repo-client')
 include('repo-client-testing')
+include('docs-examples')
 
 dependencyResolutionManagement {
     versionCatalogs {
