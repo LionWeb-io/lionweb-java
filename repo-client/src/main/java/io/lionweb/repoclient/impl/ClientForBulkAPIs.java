@@ -1,6 +1,7 @@
 package io.lionweb.repoclient.impl;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
@@ -23,6 +24,7 @@ import okio.Buffer;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements BulkAPIClient {
 
@@ -31,18 +33,18 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
   }
 
   @Override
-  public void createPartitions(List<Node> partitions) throws IOException {
-    createPartitions(
+  public @Nullable Long createPartitions(List<Node> partitions) throws IOException {
+    return createPartitions(
         conf.getJsonSerialization()
             .serializeTreesToJsonString(partitions.toArray(new ClassifierInstance[0])));
   }
 
-  public void createPartitions(String data) throws IOException {
-    nodesStoringOperation(data, "createPartitions");
+  public @Nullable Long createPartitions(String data) throws IOException {
+    return nodesStoringOperation(data, "createPartitions");
   }
 
   @Override
-  public void deletePartitions(List<String> ids) throws IOException {
+  public @Nullable Long deletePartitions(List<String> ids) throws IOException {
     JsonArray ja = new JsonArray();
     for (String id : ids) {
       ja.add(id);
@@ -54,7 +56,8 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     Request.Builder rq = buildRequest("/bulk/deletePartitions");
     Request request = rq.post(body).build();
 
-    performCall(request, (response, responseBody) -> null);
+    return performCall(request, (response, responseBody) ->
+            getRepoVersionFromResponse(responseBody));
   }
 
   @Override
@@ -104,9 +107,9 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
   }
 
   @Override
-  public void store(List<Node> nodes) throws IOException {
+  public @Nullable Long store(List<Node> nodes) throws IOException {
     if (nodes.isEmpty()) {
-      return;
+      return null;
     }
     Request.Builder rq = buildRequest("/bulk/store");
     rq = addGZipCompressionHeader(rq);
@@ -115,7 +118,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
             .serializeTreesToJsonString(nodes.toArray(new ClassifierInstance<?>[0]));
     RequestBody uncompressedBody = RequestBody.create(json, JSON);
     Request request = rq.post(gzipCompress(uncompressedBody)).build();
-    performCall(
+    return performCall(
         request,
         (response, responseBody) -> {
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
@@ -176,7 +179,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
         });
   }
 
-  private void nodesStoringOperation(final String json, final String operation) {
+  private @Nullable Long nodesStoringOperation(final String json, final String operation) {
     // Build the request
     Request.Builder rb = buildRequest("/bulk/" + operation);
     rb = addGZipCompressionHeader(rb);
@@ -188,9 +191,11 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     String url = request.url().toString();
     try {
       try (Response response = conf.getHttpClient().newCall(request).execute()) {
-        if (response.code() != HttpURLConnection.HTTP_OK) {
           String responseBody = response.body() != null ? response.body().string() : null;
+        if (response.code() != HttpURLConnection.HTTP_OK) {
           throw new RequestFailureException(url, response.code(), responseBody);
+        } else {
+            return getRepoVersionFromResponse(responseBody);
         }
       }
     } catch (ConnectException e) {
@@ -232,5 +237,14 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
         };
 
     return gzippedBody;
+  }
+
+  private @Nullable Long getRepoVersionFromResponse(String responseBody) {
+      JsonArray data = JsonParser.parseString(responseBody).getAsJsonObject().get("messages").getAsJsonArray();
+      Optional<JsonElement> repoVersionMessage = data.asList().stream().filter(e -> e.getAsJsonObject().get("kind").getAsString().equals("RepoVersion")).findFirst();
+      if (!repoVersionMessage.isPresent()) {
+          return null;
+      }
+      return repoVersionMessage.get().getAsJsonObject().get("data").getAsJsonObject().get("version").getAsLong();
   }
 }
