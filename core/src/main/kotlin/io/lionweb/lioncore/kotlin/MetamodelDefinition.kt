@@ -322,7 +322,7 @@ fun Classifier<*>.createProperty(
     require(!multiplicity.multiple)
     val property =
         Property(lionWebVersion).apply {
-            this.name = name
+            this.setName(name)
             this.id = this@createProperty.idForContainedElement(name)
             this.key = this@createProperty.keyForContainedElement(name)
             this.type = type

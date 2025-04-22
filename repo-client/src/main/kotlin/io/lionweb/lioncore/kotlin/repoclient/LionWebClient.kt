@@ -11,8 +11,6 @@ import io.lionweb.lioncore.java.model.ReferenceValue
 import io.lionweb.lioncore.java.model.impl.DynamicNode
 import io.lionweb.lioncore.java.model.impl.ProxyNode
 import io.lionweb.lioncore.java.serialization.JsonSerialization
-import io.lionweb.lioncore.java.serialization.SerializationProvider
-import io.lionweb.lioncore.kotlin.MetamodelRegistry
 import io.lionweb.lioncore.kotlin.children
 import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
@@ -21,7 +19,10 @@ import io.lionweb.lioncore.kotlin.setReferenceValuesByName
 import io.lionweb.repoclient.ExtendedLionWebRepoClient
 import io.lionweb.repoclient.api.HistorySupport
 import io.lionweb.repoclient.api.RepositoryConfiguration
+import io.lionweb.serialization.extensions.BulkImport
+import io.lionweb.serialization.extensions.Compression
 import io.lionweb.serialization.extensions.NodeInfo
+import io.lionweb.serialization.extensions.TransferFormat
 import java.util.LinkedList
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
@@ -38,19 +39,13 @@ class LionWebClient(
     val port: Int = 3005,
     val debug: Boolean = false,
     val jsonSerializationProvider: (() -> JsonSerialization)? = null,
-    val connectTimeOutInSeconds: Long = 60,
-    val callTimeoutInSeconds: Long = 60,
-    val authorizationToken: String? = null,
-    val clientID: String = "GenericKotlinBasedLionWebClient",
+    connectTimeOutInSeconds: Long = 60,
+    callTimeoutInSeconds: Long = 60,
+    authorizationToken: String? = null,
+    clientID: String = "GenericKotlinBasedLionWebClient",
     val repository: String = "default",
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
-    // Fields
-    private val languages = mutableListOf<Language>()
-
-    @Deprecated("We should use jRepoClient instead")
-    private val serializationDecorators = mutableListOf<SerializationDecorator>()
-
     @Deprecated("We should use jRepoClient instead")
     private val lowLevelRepoClient =
         LowLevelRepoClient(
@@ -77,54 +72,13 @@ class LionWebClient(
             callTimeoutInSeconds,
         )
 
-    /**
-     * Exposed for testing purposes
-     */
-    @Deprecated("We should use jRepoClient instead")
-    val defaultJsonSerialization =
-        SerializationProvider.getStandardJsonSerialization(lionWebVersion).apply {
-            enableDynamicNodes()
-        }
-
-    init {
-        registerSerializationDecorator { jsonSerialization ->
-            languages.forEach {
-                jsonSerialization.registerLanguage(it)
-            }
-            MetamodelRegistry.prepareJsonSerialization(jsonSerialization)
-        }
-    }
-
-    @Deprecated("We should use jRepoClient instead")
-    var jsonSerialization: JsonSerialization = calculateJsonSerialization()
-        private set
+    val jsonSerialization: JsonSerialization
+        get() = jRepoClient.jsonSerialization
 
     // Configuration
 
-    @Deprecated("We should use jRepoClient instead")
-    private fun calculateJsonSerialization(): JsonSerialization {
-        val jsonSerialization = jsonSerializationProvider?.invoke() ?: defaultJsonSerialization
-        serializationDecorators.forEach { serializationDecorator -> serializationDecorator.invoke(jsonSerialization) }
-        return jsonSerialization
-    }
-
-    @Deprecated("We should use jRepoClient instead")
-    fun updateJsonSerialization() {
-        this.jsonSerialization = calculateJsonSerialization()
-    }
-
     fun registerLanguage(language: Language) {
-        languages.add(language)
         jRepoClient.jsonSerialization.registerLanguage(language)
-    }
-
-    fun registerSerializationDecorator(decorator: SerializationDecorator) {
-        serializationDecorators.add(decorator)
-    }
-
-    @Deprecated("We should use jRepoClient instead")
-    fun cleanSerializationDecorators() {
-        serializationDecorators.clear()
     }
 
     // Setup
@@ -192,6 +146,16 @@ class LionWebClient(
                 RetrievalMode.SINGLE_NODE -> 0
                 RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH
             }
+        return jRepoClient.retrieve(rootIds, limit)
+    }
+
+    fun retrieve(
+        rootIds: List<String>,
+        limit: Int,
+    ): List<Node> {
+        if (rootIds.isEmpty()) {
+            return emptyList()
+        }
         return jRepoClient.retrieve(rootIds, limit)
     }
 
@@ -529,6 +493,14 @@ class LionWebClient(
         depthLimit: Int? = null,
     ): List<NodeInfo> {
         return jRepoClient.getNodeTree(nodeIDs, depthLimit)
+    }
+
+    fun bulkImport(
+        bulkImport: BulkImport,
+        transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
+        compress: Boolean = false,
+    ) {
+        return jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
     }
 
     // Private methods
