@@ -12,7 +12,7 @@ import java.nio.ByteOrder;
 @SuppressWarnings("unused")
 public final class FBBulkImport extends Table {
   public static void ValidateVersion() {
-    Constants.FLATBUFFERS_24_3_25();
+    Constants.FLATBUFFERS_25_1_24();
   }
 
   public static FBBulkImport getRootAsFBBulkImport(ByteBuffer _bb) {

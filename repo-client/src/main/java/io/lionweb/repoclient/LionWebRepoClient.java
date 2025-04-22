@@ -212,6 +212,17 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     return retrieve(nodeIds, Integer.MAX_VALUE);
   }
 
+  public @NotNull Node retrieve(@NotNull String nodeId) throws IOException {
+    Objects.requireNonNull(nodeId, "nodeId should not be null");
+    List<Node> nodes = retrieve(Collections.singletonList(nodeId), Integer.MAX_VALUE);
+    List<Node> matchingNodes =
+        nodes.stream().filter(n -> nodeId.equals(n.getID())).collect(Collectors.toList());
+    if (matchingNodes.size() != 1) {
+      throw new IllegalArgumentException("Node not found: " + nodeId);
+    }
+    return matchingNodes.get(0);
+  }
+
   @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
     return bulkAPIs.retrieve(nodeIds, limit);

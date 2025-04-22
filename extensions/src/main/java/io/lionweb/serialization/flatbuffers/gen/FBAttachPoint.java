@@ -12,7 +12,7 @@ import java.nio.ByteOrder;
 @SuppressWarnings("unused")
 public final class FBAttachPoint extends Table {
   public static void ValidateVersion() {
-    Constants.FLATBUFFERS_24_3_25();
+    Constants.FLATBUFFERS_25_1_24();
   }
 
   public static FBAttachPoint getRootAsFBAttachPoint(ByteBuffer _bb) {
