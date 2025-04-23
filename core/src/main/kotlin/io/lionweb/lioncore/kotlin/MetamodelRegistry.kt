@@ -140,7 +140,7 @@ object MetamodelRegistry {
         instantiator: Instantiator,
         lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
     ) {
-        classToClassifier[lionWebVersion]?.forEach { (kClass, classifier) ->
+        classToClassifier[lionWebVersion]?.filter { (_, classifier) -> !classifier.language!!.isLionCore}?.forEach { (kClass, classifier) ->
             val constructor = kClass.constructors.find { it.parameters.isEmpty() }
             if (constructor != null) {
                 instantiator.registerCustomDeserializer(classifier.id!!) {
@@ -173,3 +173,6 @@ object MetamodelRegistry {
         preparePrimitiveValuesSerialization(serialization.primitiveValuesSerialization)
     }
 }
+
+val Language.isLionCore : Boolean
+    get() = classifier.language?.id in LionWebVersion.entries.map { LionCore.getLanguage(it).id }.toSet()
