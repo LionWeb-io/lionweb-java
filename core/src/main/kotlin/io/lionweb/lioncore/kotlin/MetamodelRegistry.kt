@@ -141,17 +141,20 @@ object MetamodelRegistry {
         lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
     ) {
         classToClassifier[lionWebVersion]?.forEach { (kClass, classifier) ->
-            instantiator.registerCustomDeserializer(classifier.id!!) {
-                    _: Classifier<*>,
-                    serializedClassifierInstance: SerializedClassifierInstance,
-                    _: MutableMap<String, ClassifierInstance<*>>,
-                    _: MutableMap<Property, Any>,
-                ->
-                val result = kClass.primaryConstructor!!.callBy(emptyMap()) as ClassifierInstance<*>
-                if (result is DynamicClassifierInstance<*>) {
-                    result.id = serializedClassifierInstance.id
+            val constructor = kClass.constructors.find { it.parameters.isEmpty() }
+            if (constructor != null) {
+                instantiator.registerCustomDeserializer(classifier.id!!) {
+                        _: Classifier<*>,
+                        serializedClassifierInstance: SerializedClassifierInstance,
+                        _: MutableMap<String, ClassifierInstance<*>>,
+                        _: MutableMap<Property, Any>,
+                    ->
+                    val result = constructor.callBy(emptyMap()) as ClassifierInstance<*>
+                    if (result is DynamicClassifierInstance<*>) {
+                        result.id = serializedClassifierInstance.id
+                    }
+                    result
                 }
-                result
             }
         }
     }
