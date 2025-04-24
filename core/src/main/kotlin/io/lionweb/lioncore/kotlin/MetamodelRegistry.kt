@@ -40,34 +40,34 @@ object MetamodelRegistry {
     private val classToPrimitiveType = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, PrimitiveType>>()
     private val serializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveSerializer<*>>()
     private val deserializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveDeserializer<*>>()
-    private val toIgnoreForInstantiator = mutableSetOf<Classifier<*>>()
+    private val instantiatorExclusionList = mutableSetOf<Classifier<*>>()
 
     init {
         LionWebVersion.entries.forEach { lionWebVersion ->
-            registerMapping(Node::class, LionCoreBuiltins.getNode(lionWebVersion), true)
+            registerMapping(Node::class, LionCoreBuiltins.getNode(lionWebVersion), false)
             registerMapping(String::class, LionCoreBuiltins.getString(lionWebVersion))
             registerMapping(Int::class, LionCoreBuiltins.getInteger(lionWebVersion))
             registerMapping(Boolean::class, LionCoreBuiltins.getBoolean(lionWebVersion))
 
             // Allow user languages to refer to M3 elements
-            registerMapping(Annotation::class, LionCore.getAnnotation(lionWebVersion), true)
-            registerMapping(Classifier::class, LionCore.getClassifier(lionWebVersion), true)
-            registerMapping(Concept::class, LionCore.getConcept(lionWebVersion), true)
-            registerMapping(Containment::class, LionCore.getContainment(lionWebVersion), true)
-            registerMapping(DataType::class, LionCore.getDataType(lionWebVersion), true)
-            registerMapping(Enumeration::class, LionCore.getEnumeration(lionWebVersion), true)
-            registerMapping(EnumerationLiteral::class, LionCore.getEnumerationLiteral(lionWebVersion), true)
-            registerMapping(Feature::class, LionCore.getFeature(lionWebVersion), true)
-            registerMapping(Interface::class, LionCore.getInterface(lionWebVersion), true)
-            registerMapping(Language::class, LionCore.getLanguage(lionWebVersion), true)
-            registerMapping(LanguageEntity::class, LionCore.getLanguageEntity(lionWebVersion), true)
-            registerMapping(Link::class, LionCore.getLink(lionWebVersion), true)
-            registerMapping(PrimitiveType::class, LionCore.getPrimitiveType(lionWebVersion), true)
-            registerMapping(Property::class, LionCore.getProperty(lionWebVersion), true)
-            registerMapping(Reference::class, LionCore.getReference(lionWebVersion), true)
+            registerMapping(Annotation::class, LionCore.getAnnotation(lionWebVersion), false)
+            registerMapping(Classifier::class, LionCore.getClassifier(lionWebVersion), false)
+            registerMapping(Concept::class, LionCore.getConcept(lionWebVersion), false)
+            registerMapping(Containment::class, LionCore.getContainment(lionWebVersion), false)
+            registerMapping(DataType::class, LionCore.getDataType(lionWebVersion), false)
+            registerMapping(Enumeration::class, LionCore.getEnumeration(lionWebVersion), false)
+            registerMapping(EnumerationLiteral::class, LionCore.getEnumerationLiteral(lionWebVersion), false)
+            registerMapping(Feature::class, LionCore.getFeature(lionWebVersion), false)
+            registerMapping(Interface::class, LionCore.getInterface(lionWebVersion), false)
+            registerMapping(Language::class, LionCore.getLanguage(lionWebVersion), false)
+            registerMapping(LanguageEntity::class, LionCore.getLanguageEntity(lionWebVersion), false)
+            registerMapping(Link::class, LionCore.getLink(lionWebVersion), false)
+            registerMapping(PrimitiveType::class, LionCore.getPrimitiveType(lionWebVersion), false)
+            registerMapping(Property::class, LionCore.getProperty(lionWebVersion), false)
+            registerMapping(Reference::class, LionCore.getReference(lionWebVersion), false)
             if (lionWebVersion != LionWebVersion.v2023_1) {
-                registerMapping(StructuredDataType::class, LionCore.getStructuredDataType(lionWebVersion), true)
-                registerMapping(Field::class, LionCore.getField(lionWebVersion), true)
+                registerMapping(StructuredDataType::class, LionCore.getStructuredDataType(lionWebVersion), false)
+                registerMapping(Field::class, LionCore.getField(lionWebVersion), false)
             }
         }
     }
@@ -76,11 +76,11 @@ object MetamodelRegistry {
     fun registerMapping(
         kClass: KClass<out ClassifierInstance<*>>,
         classifier: Classifier<*>,
-        toIgnoreForInstantiator: Boolean = false
+        consideredByInstantiator: Boolean = true,
     ) {
         classToClassifier.computeIfAbsent(classifier.lionWebVersion) { mutableMapOf() }[kClass] = classifier
-        if (toIgnoreForInstantiator) {
-            this.toIgnoreForInstantiator.add(classifier)
+        if (!consideredByInstantiator) {
+            this.instantiatorExclusionList.add(classifier)
         }
     }
 
@@ -146,7 +146,7 @@ object MetamodelRegistry {
         lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
     ) {
         classToClassifier[lionWebVersion]?.forEach { (kClass, classifier) ->
-            if (classifier !in toIgnoreForInstantiator) {
+            if (classifier !in instantiatorExclusionList) {
                 val constructor = kClass.constructors.find { it.parameters.isEmpty() }
                 if (constructor != null) {
                     instantiator.registerCustomDeserializer(classifier.id!!) {
