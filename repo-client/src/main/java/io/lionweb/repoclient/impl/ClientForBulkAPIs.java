@@ -56,8 +56,8 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     Request.Builder rq = buildRequest("/bulk/deletePartitions");
     Request request = rq.post(body).build();
 
-    return performCall(request, (response, responseBody) ->
-            getRepoVersionFromResponse(responseBody));
+    return performCall(
+        request, (response, responseBody) -> getRepoVersionFromResponse(responseBody));
   }
 
   @Override
@@ -127,7 +127,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
             throw new RequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
-          return null;
+          return getRepoVersionFromResponse(responseBody);
         });
   }
 
@@ -191,11 +191,11 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     String url = request.url().toString();
     try {
       try (Response response = conf.getHttpClient().newCall(request).execute()) {
-          String responseBody = response.body() != null ? response.body().string() : null;
+        String responseBody = response.body() != null ? response.body().string() : null;
         if (response.code() != HttpURLConnection.HTTP_OK) {
           throw new RequestFailureException(url, response.code(), responseBody);
         } else {
-            return getRepoVersionFromResponse(responseBody);
+          return getRepoVersionFromResponse(responseBody);
         }
       }
     } catch (ConnectException e) {
@@ -240,11 +240,21 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
   }
 
   private @Nullable Long getRepoVersionFromResponse(String responseBody) {
-      JsonArray data = JsonParser.parseString(responseBody).getAsJsonObject().get("messages").getAsJsonArray();
-      Optional<JsonElement> repoVersionMessage = data.asList().stream().filter(e -> e.getAsJsonObject().get("kind").getAsString().equals("RepoVersion")).findFirst();
-      if (!repoVersionMessage.isPresent()) {
-          return null;
-      }
-      return repoVersionMessage.get().getAsJsonObject().get("data").getAsJsonObject().get("version").getAsLong();
+    JsonArray data =
+        JsonParser.parseString(responseBody).getAsJsonObject().get("messages").getAsJsonArray();
+    Optional<JsonElement> repoVersionMessage =
+        data.asList().stream()
+            .filter(e -> e.getAsJsonObject().get("kind").getAsString().equals("RepoVersion"))
+            .findFirst();
+    if (!repoVersionMessage.isPresent()) {
+      return null;
+    }
+    return repoVersionMessage
+        .get()
+        .getAsJsonObject()
+        .get("data")
+        .getAsJsonObject()
+        .get("version")
+        .getAsLong();
   }
 }

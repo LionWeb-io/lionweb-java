@@ -1,23 +1,22 @@
 package io.lionweb.repoclient;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
 import io.lionweb.repoclient.api.*;
 import io.lionweb.repoclient.impl.*;
-
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import okhttp3.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
+import okhttp3.*;
 
-public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient, LanguagesAPIClient {
+public class LionWebRepoClient
+    implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient {
 
   public class Builder {
     protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
@@ -97,7 +96,6 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   private final ClientForDBAdminAPIs dbAdminAPIs;
   private final ClientForBulkAPIs bulkAPIs;
   private final ClientForHistoryAPIs historyAPIs;
-  private final ClientForLanguagesAPIs languagesAPIs;
 
   //
   // Constructors
@@ -142,7 +140,6 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
     this.historyAPIs = new ClientForHistoryAPIs(conf);
-    this.languagesAPIs = new ClientForLanguagesAPIs(conf);
   }
 
   protected RepoClientConfiguration buildRepositoryConfiguration() {
@@ -183,7 +180,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   }
 
   @Override
-  public @Null Long  deletePartitions(List<String> ids) throws IOException {
+  public @Null Long deletePartitions(List<String> ids) throws IOException {
     return bulkAPIs.deletePartitions(ids);
   }
 
@@ -206,7 +203,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     return bulkAPIs.store(nodes);
   }
 
-  public @Null Long  store(@NotNull Node node) throws IOException {
+  public @Null Long store(@NotNull Node node) throws IOException {
     return store(Collections.singletonList(node));
   }
 
@@ -279,17 +276,8 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   }
 
   @Override
-  public List<Node> historyRetrieve(long repoVersion, List<String> nodeIds, int limit) throws IOException {
+  public List<Node> historyRetrieve(long repoVersion, List<String> nodeIds, int limit)
+      throws IOException {
     return historyAPIs.historyRetrieve(repoVersion, nodeIds, limit);
-  }
-
-  //
-  // Languages APIs
-  //
-
-
-  @Override
-  public void registerLanguages(@NotNull Collection<@NotNull Language> languages) {
-    languagesAPIs.registerLanguages(languages);
   }
 }

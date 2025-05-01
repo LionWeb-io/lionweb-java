@@ -10,6 +10,7 @@ import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.utils.CommonChecks;
 import io.lionweb.repoclient.api.HistorySupport;
 import io.lionweb.repoclient.api.RepositoryConfiguration;
+import io.lionweb.repoclient.languages.PropertiesLanguage;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
 import java.io.IOException;
 import java.util.Arrays;
