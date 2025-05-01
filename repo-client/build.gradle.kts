@@ -28,6 +28,7 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.okhttp)
     implementation(libs.gson)
+    implementation(libs.validation)
     testImplementation(libs.junit)
 }
 

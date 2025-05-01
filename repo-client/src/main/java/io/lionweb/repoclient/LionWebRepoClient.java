@@ -1,6 +1,7 @@
 package io.lionweb.repoclient;
 
 import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.language.Language;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
@@ -13,10 +14,10 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import okhttp3.*;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Null;
 
-public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient {
+public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient, LanguagesAPIClient {
 
   public class Builder {
     protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
@@ -96,6 +97,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   private final ClientForDBAdminAPIs dbAdminAPIs;
   private final ClientForBulkAPIs bulkAPIs;
   private final ClientForHistoryAPIs historyAPIs;
+  private final ClientForLanguagesAPIs languagesAPIs;
 
   //
   // Constructors
@@ -110,7 +112,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
       @NotNull LionWebVersion lionWebVersion,
       @NotNull String hostname,
       int port,
-      @Nullable String authorizationToken,
+      @Null String authorizationToken,
       @NotNull String clientID,
       @NotNull String repository,
       long connectTimeoutInSeconds,
@@ -140,6 +142,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
     this.historyAPIs = new ClientForHistoryAPIs(conf);
+    this.languagesAPIs = new ClientForLanguagesAPIs(conf);
   }
 
   protected RepoClientConfiguration buildRepositoryConfiguration() {
@@ -167,20 +170,20 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   //
 
   @Override
-  public @Nullable Long createPartitions(List<Node> partitions) throws IOException {
+  public @Null Long createPartitions(List<Node> partitions) throws IOException {
     return bulkAPIs.createPartitions(partitions);
   }
 
-  public @Nullable Long createPartition(@NotNull Node partition) throws IOException {
+  public @Null Long createPartition(@NotNull Node partition) throws IOException {
     return createPartitions(Collections.singletonList(partition));
   }
 
-  public @Nullable Long createPartitions(String data) throws IOException {
+  public @Null Long createPartitions(String data) throws IOException {
     return bulkAPIs.createPartitions(data);
   }
 
   @Override
-  public @Nullable Long  deletePartitions(List<String> ids) throws IOException {
+  public @Null Long  deletePartitions(List<String> ids) throws IOException {
     return bulkAPIs.deletePartitions(ids);
   }
 
@@ -199,11 +202,11 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   }
 
   @Override
-  public @Nullable Long store(List<Node> nodes) throws IOException {
+  public @Null Long store(List<Node> nodes) throws IOException {
     return bulkAPIs.store(nodes);
   }
 
-  public @Nullable Long  store(@NotNull Node node) throws IOException {
+  public @Null Long  store(@NotNull Node node) throws IOException {
     return store(Collections.singletonList(node));
   }
 
@@ -267,7 +270,7 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   }
 
   //
-   // History APIs
+  // History APIs
   //
 
   @Override
@@ -278,5 +281,15 @@ public class LionWebRepoClient implements BulkAPIClient, DBAdminAPIClient, Inspe
   @Override
   public List<Node> historyRetrieve(long repoVersion, List<String> nodeIds, int limit) throws IOException {
     return historyAPIs.historyRetrieve(repoVersion, nodeIds, limit);
+  }
+
+  //
+  // Languages APIs
+  //
+
+
+  @Override
+  public void registerLanguages(@NotNull Collection<@NotNull Language> languages) {
+    languagesAPIs.registerLanguages(languages);
   }
 }
