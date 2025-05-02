@@ -17,4 +17,3 @@ testcontainersjunit = { module="org.testcontainers:junit-jupiter", version.ref =
 testcontainerspg = { module="org.testcontainers:postgresql", version.ref = "testcontainersVersion" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junitVersion" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junitVersion" }
-validation = { module="javax.validation:validation-api", version="2.0.1.Final" }

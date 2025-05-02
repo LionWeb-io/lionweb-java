@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Null;
 import okhttp3.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class LionWebRepoClient
     implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient {
@@ -110,7 +110,7 @@ public class LionWebRepoClient
       @NotNull LionWebVersion lionWebVersion,
       @NotNull String hostname,
       int port,
-      @Null String authorizationToken,
+      @Nullable String authorizationToken,
       @NotNull String clientID,
       @NotNull String repository,
       long connectTimeoutInSeconds,
@@ -167,20 +167,20 @@ public class LionWebRepoClient
   //
 
   @Override
-  public @Null Long createPartitions(List<Node> partitions) throws IOException {
+  public @Nullable Long createPartitions(List<Node> partitions) throws IOException {
     return bulkAPIs.createPartitions(partitions);
   }
 
-  public @Null Long createPartition(@NotNull Node partition) throws IOException {
+  public @Nullable Long createPartition(@NotNull Node partition) throws IOException {
     return createPartitions(Collections.singletonList(partition));
   }
 
-  public @Null Long createPartitions(String data) throws IOException {
+  public @Nullable Long createPartitions(String data) throws IOException {
     return bulkAPIs.createPartitions(data);
   }
 
   @Override
-  public @Null Long deletePartitions(List<String> ids) throws IOException {
+  public @Nullable Long deletePartitions(List<String> ids) throws IOException {
     return bulkAPIs.deletePartitions(ids);
   }
 
@@ -199,11 +199,11 @@ public class LionWebRepoClient
   }
 
   @Override
-  public @Null Long store(List<Node> nodes) throws IOException {
+  public @Nullable Long store(List<Node> nodes) throws IOException {
     return bulkAPIs.store(nodes);
   }
 
-  public @Null Long store(@NotNull Node node) throws IOException {
+  public @Nullable Long store(@NotNull Node node) throws IOException {
     return store(Collections.singletonList(node));
   }
 
