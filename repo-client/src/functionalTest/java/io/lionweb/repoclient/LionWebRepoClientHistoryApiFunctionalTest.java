@@ -68,7 +68,8 @@ public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClien
 
     // Create partition, initially empty
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
-    RepositoryVersionToken v0 = client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
+    RepositoryVersionToken v0 =
+        client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
 
     // Populate partition
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
