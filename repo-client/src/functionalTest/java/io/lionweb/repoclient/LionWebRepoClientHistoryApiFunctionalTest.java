@@ -9,6 +9,7 @@ import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.repoclient.api.HistorySupport;
 import io.lionweb.repoclient.api.RepositoryConfiguration;
+import io.lionweb.repoclient.api.RepositoryVersionToken;
 import io.lionweb.repoclient.languages.PropertiesLanguage;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
 import java.io.IOException;
@@ -35,14 +36,15 @@ public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClien
     // Create partition
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesPartition);
     DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesPartition);
-    long v1 =
+    RepositoryVersionToken v1 =
         client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(f1, f2));
 
     // Delete partitions
-    long v2 = client.deletePartitions(Arrays.asList("f1"));
+    RepositoryVersionToken v2 = client.deletePartitions(Arrays.asList("f1"));
 
     // Check list
-    List<Node> partitionsAt0 = client.historyListPartitions(0);
+    RepositoryVersionToken v0 = new RepositoryVersionToken("0");
+    List<Node> partitionsAt0 = client.historyListPartitions(v0);
     assertEquals(0, partitionsAt0.size());
 
     List<Node> partitionsAt1 = client.historyListPartitions(v1);
@@ -66,27 +68,27 @@ public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClien
 
     // Create partition, initially empty
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
-    long v0 = client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
+    RepositoryVersionToken v0 = client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
 
     // Populate partition
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
     ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "a/b/c");
     ClassifierInstanceUtils.addChild(p1, "files", f1);
-    long v1 = client.store(p1);
+    RepositoryVersionToken v1 = client.store(p1);
 
     // Modify property
     ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "a/b/foo");
-    long v2 = client.store(p1);
+    RepositoryVersionToken v2 = client.store(p1);
 
     // Add child
     DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesFile);
     ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "a/b/c2");
     ClassifierInstanceUtils.addChild(p1, "files", f2);
-    long v3 = client.store(p1);
+    RepositoryVersionToken v3 = client.store(p1);
 
     // Delete child
     p1.removeChild(f1);
-    long v4 = client.store(p1);
+    RepositoryVersionToken v4 = client.store(p1);
 
     // Check data
     Node p1_v0 = client.historyRetrieve(v0, p1.getID());

@@ -167,20 +167,22 @@ public class LionWebRepoClient
   //
 
   @Override
-  public @Nullable Long createPartitions(List<Node> partitions) throws IOException {
+  public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
+      throws IOException {
     return bulkAPIs.createPartitions(partitions);
   }
 
-  public @Nullable Long createPartition(@NotNull Node partition) throws IOException {
+  public @Nullable RepositoryVersionToken createPartition(@NotNull Node partition)
+      throws IOException {
     return createPartitions(Collections.singletonList(partition));
   }
 
-  public @Nullable Long createPartitions(String data) throws IOException {
+  public @Nullable RepositoryVersionToken createPartitions(String data) throws IOException {
     return bulkAPIs.createPartitions(data);
   }
 
   @Override
-  public @Nullable Long deletePartitions(List<String> ids) throws IOException {
+  public @Nullable RepositoryVersionToken deletePartitions(List<String> ids) throws IOException {
     return bulkAPIs.deletePartitions(ids);
   }
 
@@ -199,11 +201,11 @@ public class LionWebRepoClient
   }
 
   @Override
-  public @Nullable Long store(List<Node> nodes) throws IOException {
+  public @Nullable RepositoryVersionToken store(List<Node> nodes) throws IOException {
     return bulkAPIs.store(nodes);
   }
 
-  public @Nullable Long store(@NotNull Node node) throws IOException {
+  public @Nullable RepositoryVersionToken store(@NotNull Node node) throws IOException {
     return store(Collections.singletonList(node));
   }
 
@@ -271,13 +273,13 @@ public class LionWebRepoClient
   //
 
   @Override
-  public List<Node> historyListPartitions(long repoVersion) throws IOException {
+  public List<Node> historyListPartitions(RepositoryVersionToken repoVersion) throws IOException {
     return historyAPIs.historyListPartitions(repoVersion);
   }
 
   @Override
-  public List<Node> historyRetrieve(long repoVersion, List<String> nodeIds, int limit)
-      throws IOException {
+  public List<Node> historyRetrieve(
+      RepositoryVersionToken repoVersion, List<String> nodeIds, int limit) throws IOException {
     return historyAPIs.historyRetrieve(repoVersion, nodeIds, limit);
   }
 }

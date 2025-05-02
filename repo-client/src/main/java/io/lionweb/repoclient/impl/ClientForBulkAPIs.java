@@ -11,6 +11,7 @@ import io.lionweb.lioncore.java.utils.CommonChecks;
 import io.lionweb.repoclient.CompressionSupport;
 import io.lionweb.repoclient.RequestFailureException;
 import io.lionweb.repoclient.api.BulkAPIClient;
+import io.lionweb.repoclient.api.RepositoryVersionToken;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -33,18 +34,19 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
   }
 
   @Override
-  public @Nullable Long createPartitions(List<Node> partitions) throws IOException {
+  public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
+      throws IOException {
     return createPartitions(
         conf.getJsonSerialization()
             .serializeTreesToJsonString(partitions.toArray(new ClassifierInstance[0])));
   }
 
-  public @Nullable Long createPartitions(String data) throws IOException {
+  public @Nullable RepositoryVersionToken createPartitions(String data) throws IOException {
     return nodesStoringOperation(data, "createPartitions");
   }
 
   @Override
-  public @Nullable Long deletePartitions(List<String> ids) throws IOException {
+  public @Nullable RepositoryVersionToken deletePartitions(List<String> ids) throws IOException {
     JsonArray ja = new JsonArray();
     for (String id : ids) {
       ja.add(id);
@@ -107,7 +109,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
   }
 
   @Override
-  public @Nullable Long store(List<Node> nodes) throws IOException {
+  public @Nullable RepositoryVersionToken store(List<Node> nodes) throws IOException {
     if (nodes.isEmpty()) {
       return null;
     }
@@ -179,7 +181,8 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
         });
   }
 
-  private @Nullable Long nodesStoringOperation(final String json, final String operation) {
+  private @Nullable RepositoryVersionToken nodesStoringOperation(
+      final String json, final String operation) {
     // Build the request
     Request.Builder rb = buildRequest("/bulk/" + operation);
     rb = addGZipCompressionHeader(rb);
@@ -239,7 +242,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     return gzippedBody;
   }
 
-  private @Nullable Long getRepoVersionFromResponse(String responseBody) {
+  private @Nullable RepositoryVersionToken getRepoVersionFromResponse(String responseBody) {
     JsonArray data =
         JsonParser.parseString(responseBody).getAsJsonObject().get("messages").getAsJsonArray();
     Optional<JsonElement> repoVersionMessage =
@@ -249,12 +252,14 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     if (!repoVersionMessage.isPresent()) {
       return null;
     }
-    return repoVersionMessage
-        .get()
-        .getAsJsonObject()
-        .get("data")
-        .getAsJsonObject()
-        .get("version")
-        .getAsLong();
+    long version =
+        repoVersionMessage
+            .get()
+            .getAsJsonObject()
+            .get("data")
+            .getAsJsonObject()
+            .get("version")
+            .getAsLong();
+    return new RepositoryVersionToken(Long.toString(version));
   }
 }

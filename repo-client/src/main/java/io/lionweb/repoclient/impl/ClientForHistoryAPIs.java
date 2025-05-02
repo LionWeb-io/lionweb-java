@@ -7,6 +7,7 @@ import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.utils.CommonChecks;
 import io.lionweb.repoclient.RequestFailureException;
 import io.lionweb.repoclient.api.HistoryAPIClient;
+import io.lionweb.repoclient.api.RepositoryVersionToken;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -21,9 +22,10 @@ public class ClientForHistoryAPIs extends LionWebRepoClientImplHelper implements
   }
 
   @Override
-  public @NotNull List<Node> historyListPartitions(long repoVersion) throws IOException {
+  public @NotNull List<Node> historyListPartitions(RepositoryVersionToken repoVersion)
+      throws IOException {
     Map<String, String> params = new HashMap<>();
-    params.put("repoVersion", Long.toString(repoVersion));
+    params.put("repoVersion", repoVersion.getToken());
     Request.Builder rq = buildRequest("/history/listPartitions", true, true, true, params);
     Request request =
         rq.addHeader("Accept-Encoding", "gzip").post(RequestBody.create(new byte[0], null)).build();
@@ -43,7 +45,8 @@ public class ClientForHistoryAPIs extends LionWebRepoClientImplHelper implements
 
   @Override
   public @NotNull List<Node> historyRetrieve(
-      long repoVersion, @NotNull List<String> nodeIds, int limit) throws IOException {
+      RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
+      throws IOException {
     if (nodeIds.isEmpty()) {
       return Collections.emptyList();
     }
@@ -59,7 +62,7 @@ public class ClientForHistoryAPIs extends LionWebRepoClientImplHelper implements
             + "]}";
     Map<String, String> params = new HashMap<>();
     params.put("depthLimit", String.valueOf(limit));
-    params.put("repoVersion", String.valueOf(repoVersion));
+    params.put("repoVersion", String.valueOf(repoVersion.getToken()));
     Request.Builder rq = buildRequest("/history/retrieve", true, true, true, params);
     Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
 
