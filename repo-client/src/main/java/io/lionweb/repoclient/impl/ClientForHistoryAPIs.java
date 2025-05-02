@@ -22,8 +22,7 @@ public class ClientForHistoryAPIs extends LionWebRepoClientImplHelper implements
   }
 
   @Override
-  public @NotNull List<Node> historyListPartitions(RepositoryVersionToken repoVersion)
-      throws IOException {
+  public @NotNull List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException {
     Map<String, String> params = new HashMap<>();
     params.put("repoVersion", repoVersion.getToken());
     Request.Builder rq = buildRequest("/history/listPartitions", true, true, true, params);
@@ -44,7 +43,7 @@ public class ClientForHistoryAPIs extends LionWebRepoClientImplHelper implements
   }
 
   @Override
-  public @NotNull List<Node> historyRetrieve(
+  public @NotNull List<Node> retrieve(
       RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
       throws IOException {
     if (nodeIds.isEmpty()) {

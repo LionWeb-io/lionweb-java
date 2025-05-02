@@ -273,13 +273,13 @@ public class LionWebRepoClient
   //
 
   @Override
-  public List<Node> historyListPartitions(RepositoryVersionToken repoVersion) throws IOException {
-    return historyAPIs.historyListPartitions(repoVersion);
+  public List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException {
+    return historyAPIs.listPartitions(repoVersion);
   }
 
   @Override
-  public List<Node> historyRetrieve(
-      RepositoryVersionToken repoVersion, List<String> nodeIds, int limit) throws IOException {
-    return historyAPIs.historyRetrieve(repoVersion, nodeIds, limit);
+  public List<Node> retrieve(RepositoryVersionToken repoVersion, List<String> nodeIds, int limit)
+      throws IOException {
+    return historyAPIs.retrieve(repoVersion, nodeIds, limit);
   }
 }

@@ -4,7 +4,7 @@ import java.util.Objects;
 
 /** Value distinguishing a version of a particular repository. */
 public class RepositoryVersionToken {
-  private String token;
+  private final String token;
 
   public RepositoryVersionToken(String token) {
     this.token = token;

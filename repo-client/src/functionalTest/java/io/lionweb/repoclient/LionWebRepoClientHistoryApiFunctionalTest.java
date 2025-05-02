@@ -44,15 +44,15 @@ public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClien
 
     // Check list
     RepositoryVersionToken v0 = new RepositoryVersionToken("0");
-    List<Node> partitionsAt0 = client.historyListPartitions(v0);
+    List<Node> partitionsAt0 = client.listPartitions(v0);
     assertEquals(0, partitionsAt0.size());
 
-    List<Node> partitionsAt1 = client.historyListPartitions(v1);
+    List<Node> partitionsAt1 = client.listPartitions(v1);
     assertEquals(2, partitionsAt1.size());
     assertTrue(partitionsAt1.stream().anyMatch(p -> p.getID().equals("f1")));
     assertTrue(partitionsAt1.stream().anyMatch(p -> p.getID().equals("f2")));
 
-    List<Node> partitionsAt2 = client.historyListPartitions(v2);
+    List<Node> partitionsAt2 = client.listPartitions(v2);
     assertEquals(1, partitionsAt2.size());
     assertEquals("f2", partitionsAt2.get(0).getID());
   }
@@ -92,27 +92,27 @@ public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClien
     RepositoryVersionToken v4 = client.store(p1);
 
     // Check data
-    Node p1_v0 = client.historyRetrieve(v0, p1.getID());
+    Node p1_v0 = client.retrieve(v0, p1.getID());
     assertEquals(0, ClassifierInstanceUtils.getChildrenByContainmentName(p1_v0, "files").size());
 
-    Node p1_v1 = client.historyRetrieve(v1, p1.getID());
+    Node p1_v1 = client.retrieve(v1, p1.getID());
     assertEquals(1, ClassifierInstanceUtils.getChildrenByContainmentName(p1_v1, "files").size());
     Node f1_v1 = ClassifierInstanceUtils.getChildrenByContainmentName(p1_v1, "files").get(0);
     assertEquals("a/b/c", ClassifierInstanceUtils.getPropertyValueByName(f1_v1, "path"));
 
-    Node p1_v2 = client.historyRetrieve(v2, p1.getID());
+    Node p1_v2 = client.retrieve(v2, p1.getID());
     assertEquals(1, ClassifierInstanceUtils.getChildrenByContainmentName(p1_v2, "files").size());
     Node f1_v2 = ClassifierInstanceUtils.getChildrenByContainmentName(p1_v2, "files").get(0);
     assertEquals("a/b/foo", ClassifierInstanceUtils.getPropertyValueByName(f1_v2, "path"));
 
-    Node p1_v3 = client.historyRetrieve(v3, p1.getID());
+    Node p1_v3 = client.retrieve(v3, p1.getID());
     assertEquals(2, ClassifierInstanceUtils.getChildrenByContainmentName(p1_v3, "files").size());
     Node f1_v3 = ClassifierInstanceUtils.getChildrenByContainmentName(p1_v3, "files").get(0);
     assertEquals("a/b/foo", ClassifierInstanceUtils.getPropertyValueByName(f1_v3, "path"));
     Node f2_v3 = ClassifierInstanceUtils.getChildrenByContainmentName(p1_v3, "files").get(1);
     assertEquals("a/b/c2", ClassifierInstanceUtils.getPropertyValueByName(f2_v3, "path"));
 
-    Node p1_v4 = client.historyRetrieve(v4, p1.getID());
+    Node p1_v4 = client.retrieve(v4, p1.getID());
     assertEquals(1, ClassifierInstanceUtils.getChildrenByContainmentName(p1_v4, "files").size());
     Node f2_v4 = ClassifierInstanceUtils.getChildrenByContainmentName(p1_v4, "files").get(0);
     assertEquals("a/b/c2", ClassifierInstanceUtils.getPropertyValueByName(f2_v4, "path"));

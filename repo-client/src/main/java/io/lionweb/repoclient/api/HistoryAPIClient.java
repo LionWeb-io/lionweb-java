@@ -8,22 +8,21 @@ import org.jetbrains.annotations.NotNull;
 
 public interface HistoryAPIClient {
   @NotNull
-  List<Node> historyListPartitions(RepositoryVersionToken repoVersion) throws IOException;
+  List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException;
 
   @NotNull
-  List<Node> historyRetrieve(
-      RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
+  List<Node> retrieve(RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
       throws IOException;
 
-  default Node historyRetrieve(
-      RepositoryVersionToken repoVersion, @NotNull String nodeId, int limit) throws IOException {
-    List<Node> res = historyRetrieve(repoVersion, Arrays.asList(nodeId), limit);
+  default Node retrieve(RepositoryVersionToken repoVersion, @NotNull String nodeId, int limit)
+      throws IOException {
+    List<Node> res = retrieve(repoVersion, Arrays.asList(nodeId), limit);
     Node node = res.stream().filter(n -> n.getID().equals(nodeId)).findFirst().get();
     return node;
   }
 
-  default Node historyRetrieve(RepositoryVersionToken repoVersion, @NotNull String nodeId)
+  default Node retrieve(RepositoryVersionToken repoVersion, @NotNull String nodeId)
       throws IOException {
-    return historyRetrieve(repoVersion, nodeId, Integer.MAX_VALUE);
+    return retrieve(repoVersion, nodeId, Integer.MAX_VALUE);
   }
 }
