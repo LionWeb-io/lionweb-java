@@ -1,4 +1,4 @@
-package io.lionweb.repoclient;
+package io.lionweb.repoclient.languages;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;

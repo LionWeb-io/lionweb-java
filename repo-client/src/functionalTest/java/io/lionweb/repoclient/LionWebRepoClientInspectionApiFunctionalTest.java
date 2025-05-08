@@ -9,6 +9,7 @@ import io.lionweb.repoclient.api.ClassifierKey;
 import io.lionweb.repoclient.api.ClassifierResult;
 import io.lionweb.repoclient.api.HistorySupport;
 import io.lionweb.repoclient.api.RepositoryConfiguration;
+import io.lionweb.repoclient.languages.PropertiesLanguage;
 import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
 import java.io.IOException;
 import java.util.*;

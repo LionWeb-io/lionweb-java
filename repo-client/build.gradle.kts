@@ -24,13 +24,6 @@ tasks.withType<Jar>().configureEach {
     }
 }
 
-dependencies {
-    implementation(project(":core"))
-    implementation(libs.okhttp)
-    implementation(libs.gson)
-    testImplementation(libs.junit)
-}
-
 tasks.register<Jar>("sourcesJar") {
     archiveClassifier.set("sources")
     // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
@@ -128,6 +121,11 @@ testing {
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    testImplementation(libs.junit)
+
     "functionalTestImplementation"(project(":repo-client"))
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":repo-client-testing"))
