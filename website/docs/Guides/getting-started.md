@@ -18,7 +18,7 @@ Note that even if you want to use the 2023.1 specs you can use a recent version 
 
 Add the following to your `build.gradle` or `build.gradle.kts`:
 
-```groovy
+```kotlin
 dependencies {
     implementation("io.lionweb.lionweb-java:lionweb-java-2024.1-core:$lionwebVersion")
 }

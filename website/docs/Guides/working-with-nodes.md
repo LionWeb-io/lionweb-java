@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 34
 ---
 
 # Creating and Working with Nodes in LionWeb

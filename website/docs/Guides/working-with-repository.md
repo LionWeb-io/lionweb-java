@@ -1,6 +1,6 @@
 ---
 title: Working with the LionWeb Repository
-sidebar_position: 34
+sidebar_position: 36
 ---
 
 # Working with the LionWeb Repository
@@ -8,6 +8,19 @@ sidebar_position: 34
 Working with the [LionWeb Repository](https://github.com/LionWeb-io/lionweb-repository) we can store and retrieve nodes. It is also a mean to exchange models with other LionWeb-compliant components. You can refer to the website of the LionWeb Repository to learn how to start it. 
 
 This page provides an overview of how to interact with the repository using the provided Java client and outlines the basic concepts involved.
+
+## Using Gradle
+
+Add the following to your `build.gradle` or `build.gradle.kts`:
+
+```kotlin
+dependencies {
+    // Previously added
+    implementation("io.lionweb.lionweb-java:lionweb-java-2024.1-core:$lionwebVersion")
+    // Specific for working with the LionWeb Repository
+    implementation("io.lionweb.lionweb-java:lionweb-java-2024.1-repo-client:$lionwebVersion")
+}
+```
 
 ## Overview
 
@@ -62,3 +75,7 @@ List<Node> retrievedNodes1 = client.retrieve(Collections.singletonList("p1"), 10
 assertEquals(1, retrievedNodes1.size());
 assertEquals(p1, retrievedNodes1.get(0));
 ```
+
+### Creating partitions
+
+Something to keep in mind is that the LionWeb Repository will only let us create partitions without children. So, we may need to create a partition and only then add children to it by invoking **store**.
