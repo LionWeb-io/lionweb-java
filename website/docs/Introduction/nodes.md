@@ -1,8 +1,6 @@
 ---
+title: LionWeb Nodes
 sidebar_position: 30
----
----
-sidebar_position: 1
 ---
 
 # Overview of the LionWeb Model

@@ -1,4 +1,5 @@
 ---
+title: LionWeb Languages
 sidebar_position: 31
 ---
 
