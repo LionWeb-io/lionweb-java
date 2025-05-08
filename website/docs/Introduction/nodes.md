@@ -1,5 +1,5 @@
 ---
-sidebar_position: 31
+sidebar_position: 30
 ---
 ---
 sidebar_position: 1
@@ -78,4 +78,4 @@ Properties, containments, and references are all **features**.
 
 Concepts enforce both the structure and constraints of the model, much like classes do in object-oriented programming.
 
-To learn more about how languages define Concepts and other elements, see [Introduction to Languages](./introduction-to-languages.md).
+To learn more about how languages define Concepts and other elements, see [Introduction to Languages](introduction-to-languages.md).

@@ -1,5 +1,5 @@
 ---
-sidebar_position: 32
+sidebar_position: 31
 ---
 
 ## About LionWeb Languages

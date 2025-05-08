@@ -1,6 +1,6 @@
 ---
 title: Working with the LionWeb Repository
-sidebar_position: 36
+sidebar_position: 44
 ---
 
 # Working with the LionWeb Repository
