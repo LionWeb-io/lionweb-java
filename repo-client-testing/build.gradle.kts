@@ -5,7 +5,7 @@ plugins {
     id("java-library")
     alias(libs.plugins.buildConfig)
     id("signing")
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.vtpublish)
 }
 
 val jvmVersion = extra["jvmVersion"] as String
@@ -105,7 +105,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     signAllPublications()
 }
 
