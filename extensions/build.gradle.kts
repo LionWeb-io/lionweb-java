@@ -5,7 +5,7 @@ plugins {
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.vtpublish)
     jacoco
     alias(libs.plugins.protobuf)
 }
@@ -88,7 +88,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     signAllPublications()
 }
 
