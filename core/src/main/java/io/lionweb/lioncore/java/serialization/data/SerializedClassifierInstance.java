@@ -37,9 +37,12 @@ public class SerializedClassifierInstance {
     setClassifier(concept);
   }
 
+  /**
+   * Remove all containments. This is useful when we want to create a partitions, as they cannot be
+   * created when having children.
+   */
   public void clearContainments() {
     containments.clear();
-    ;
   }
 
   public List<SerializedContainmentValue> getContainments() {

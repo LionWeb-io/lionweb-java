@@ -3,8 +3,8 @@ package io.lionweb.repoclient.impl;
 import static io.lionweb.serialization.extensions.CompressionSupport.considerCompression;
 
 import com.google.gson.*;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.protobuf.PBBulkImport;
 import io.lionweb.repoclient.RequestFailureException;
 import io.lionweb.serialization.extensions.*;
@@ -107,13 +107,12 @@ public class ClientForAdditionalAPIs extends LionWebRepoClientImplHelper
               jEl.add("containment", jContainment);
               bodyAttachPoints.add(jEl);
             });
-    JsonArray bodyNodes =
-        conf.getJsonSerialization()
-            .serializeTreesToJsonElement(
-                bulkImport.getNodes().toArray(new ClassifierInstance<?>[0]))
-            .getAsJsonObject()
-            .get("nodes")
-            .getAsJsonArray();
+    JsonElement serializedChunkAsJson =
+        new LowLevelJsonSerialization()
+            .serializeToJsonElement(
+                LowLevelJsonSerialization.groupNodesIntoSerializationBlock(
+                    bulkImport.getNodes(), conf.getJsonSerialization().getLionWebVersion()));
+    JsonArray bodyNodes = serializedChunkAsJson.getAsJsonObject().get("nodes").getAsJsonArray();
     body.add("attachPoints", bodyAttachPoints);
     body.add("nodes", bodyNodes);
     String bodyJson = new Gson().toJson(body);
