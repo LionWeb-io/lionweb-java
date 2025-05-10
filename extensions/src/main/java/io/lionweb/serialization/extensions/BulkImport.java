@@ -37,7 +37,7 @@ public class BulkImport {
   public BulkImport(List<AttachPoint> attachPoints, List<ClassifierInstance<?>> nodes) {
     this.attachPoints = attachPoints;
     if (nodes.isEmpty()){
-      this.nodes = Collections.emptyList();
+      this.nodes = new LinkedList<>();
     } else {
       JsonSerialization jsonSerialization = getJsonSerialization(nodes.get(0).getClassifier().getLionWebVersion());
       this.nodes = jsonSerialization.serializeNodesToSerializationBlock(nodes).getClassifierInstances();
