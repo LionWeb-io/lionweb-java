@@ -26,7 +26,7 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
               bulkImportBuilder.addAttachPoints(attachPointBuilder.build());
             });
 
-    SerializedChunk serializedChunk = serializeNodesToSerializationBlock(bulkImport.getNodes());
+    SerializedChunk serializedChunk = groupNodesIntoSerializationBlock(bulkImport.getNodes());
 
     serializedChunk
         .getClassifierInstances()

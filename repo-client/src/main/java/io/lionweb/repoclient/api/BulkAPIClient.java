@@ -4,7 +4,6 @@ import io.lionweb.lioncore.java.model.Node;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-
 import org.jetbrains.annotations.Nullable;
 
 public interface BulkAPIClient {
@@ -31,5 +30,4 @@ public interface BulkAPIClient {
   List<Node> retrieve(List<String> nodeIds, int limit) throws IOException;
 
   String rawRetrieve(List<String> nodeIds, int limit) throws IOException;
-
 }

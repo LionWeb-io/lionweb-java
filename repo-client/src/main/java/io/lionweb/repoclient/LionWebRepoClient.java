@@ -229,6 +229,17 @@ public class LionWebRepoClient
     return bulkAPIs.retrieve(nodeIds, limit);
   }
 
+  @Nullable
+  @Override
+  public RepositoryVersionToken rawStore(String nodes) throws IOException {
+    return bulkAPIs.rawStore(nodes);
+  }
+
+  @Override
+  public String rawRetrieve(List<String> nodeIds, int limit) throws IOException {
+    return bulkAPIs.rawRetrieve(nodeIds, limit);
+  }
+
   //
   // DBAdmin APIs
   //

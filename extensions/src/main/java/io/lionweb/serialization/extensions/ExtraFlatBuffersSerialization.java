@@ -1,19 +1,10 @@
 package io.lionweb.serialization.extensions;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.Feature;
-import io.lionweb.lioncore.java.language.Property;
-import io.lionweb.lioncore.java.language.Reference;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.ReferenceValue;
 import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
-import io.lionweb.lioncore.java.serialization.data.MetaPointer;
+import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.serialization.flatbuffers.gen.*;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,36 +41,21 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
 
     int[] nodesOffsets = new int[bulkImport.getNodes().size()];
     i = 0;
-    for (ClassifierInstance<?> node : bulkImport.getNodes()) {
+    for (SerializedClassifierInstance node : bulkImport.getNodes()) {
 
-      List<Feature<?>> features = node.getClassifier().allFeatures();
-      List<Property> properties = new LinkedList<>();
-      List<Containment> containments = new LinkedList<>();
-      List<Reference> references = new LinkedList<>();
-      for (Feature<?> feature : features) {
-        if (feature instanceof Property) {
-          properties.add((Property) feature);
-        } else if (feature instanceof Containment) {
-          containments.add((Containment) feature);
-        } else if (feature instanceof Reference) {
-          references.add((Reference) feature);
-        } else {
-          throw new IllegalStateException();
-        }
-      }
+      List<SerializedPropertyValue> properties = node.getProperties();
+      List<SerializedContainmentValue> containments = node.getContainments();
+      List<SerializedReferenceValue> references = node.getReferences();
       int[] propOffsets;
       {
         propOffsets = new int[properties.size()];
         int fi = 0;
-        for (Property property : properties) {
-          int metaPointer = helper.offsetForMetaPointer(MetaPointer.from(property));
-          Object propertyValue = node.getPropertyValue(property);
+        for (SerializedPropertyValue property : properties) {
+          int metaPointer = helper.offsetForMetaPointer(property.getMetaPointer());
+          String propertyValue = property.getValue();
           int propertyValueOffset = -1;
           if (propertyValue != null) {
-            String propertyValueStr =
-                this.primitiveValuesSerialization.serialize(
-                    property.getType().getID(), propertyValue);
-            propertyValueOffset = builder.createSharedString(propertyValueStr);
+            propertyValueOffset = builder.createSharedString(propertyValue);
           }
           FBProperty.startFBProperty(builder);
           FBProperty.addMetaPointer(builder, metaPointer);
@@ -94,16 +70,16 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
       {
         contOffsets = new int[containments.size()];
         int fi = 0;
-        for (Containment containment : containments) {
-          List<? extends Node> children = node.getChildren(containment);
+        for (SerializedContainmentValue containment : containments) {
+          List<String> children = containment.getValue();
           int[] childOffsets = new int[children.size()];
           int ci = 0;
-          for (Node child : children) {
-            childOffsets[ci] = builder.createSharedString(child.getID());
+          for (String child : children) {
+            childOffsets[ci] = builder.createSharedString(child);
             ci++;
           }
 
-          int metaPointer = helper.offsetForMetaPointer(MetaPointer.from(containment));
+          int metaPointer = helper.offsetForMetaPointer(containment.getMetaPointer());
           int childrenVector = FBContainment.createChildrenVector(builder, childOffsets);
           FBContainment.startFBContainment(builder);
           FBContainment.addMetaPointer(builder, metaPointer);
@@ -116,18 +92,18 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
       {
         refeOffsets = new int[references.size()];
         int fi = 0;
-        for (Reference reference : references) {
-          List<ReferenceValue> referenceValues = node.getReferenceValues(reference);
+        for (SerializedReferenceValue reference : references) {
+          List<SerializedReferenceValue.Entry> referenceValues = reference.getValue();
           int[] refValuesOffsets = new int[referenceValues.size()];
           int ci = 0;
-          for (ReferenceValue referenceValue : referenceValues) {
+          for (SerializedReferenceValue.Entry referenceValue : referenceValues) {
             int resolveInfo = -1;
             if (referenceValue.getResolveInfo() != null) {
               resolveInfo = builder.createSharedString(referenceValue.getResolveInfo());
             }
             int referredID = -1;
-            if (referenceValue.getReferredID() != null) {
-              referredID = builder.createSharedString(referenceValue.getReferredID());
+            if (referenceValue.getReference() != null) {
+              referredID = builder.createSharedString(referenceValue.getReference());
             }
             FBReferenceValue.startFBReferenceValue(builder);
             if (resolveInfo != -1) {
@@ -140,7 +116,7 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
             ci++;
           }
 
-          int metaPointer = helper.offsetForMetaPointer(MetaPointer.from(reference));
+          int metaPointer = helper.offsetForMetaPointer(reference.getMetaPointer());
           int valuesVector = FBReference.createValuesVector(builder, refValuesOffsets);
           FBReference.startFBReference(builder);
           FBReference.addMetaPointer(builder, metaPointer);
@@ -151,21 +127,21 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
       }
       int[] annOffsets = new int[node.getAnnotations().size()];
       int ai = 0;
-      for (AnnotationInstance annotation : node.getAnnotations()) {
-        annOffsets[ai] = builder.createSharedString(annotation.getID());
+      for (String annotation : node.getAnnotations()) {
+        annOffsets[ai] = builder.createSharedString(annotation);
         ai++;
       }
 
-      int classifier = helper.offsetForMetaPointer(MetaPointer.from(node.getClassifier()));
+      int classifier = helper.offsetForMetaPointer(node.getClassifier());
       int id = builder.createSharedString(node.getID());
       int propsVector = FBNode.createPropertiesVector(builder, propOffsets);
       int consVector = FBNode.createContainmentsVector(builder, contOffsets);
       int refsVector = FBNode.createReferencesVector(builder, refeOffsets);
       int annsVector = FBNode.createAnnotationsVector(builder, annOffsets);
       String parentID =
-          node.getParent() == null
+          node.getParentNodeID() == null
               ? containerByAttached.get(node.getID())
-              : node.getParent().getID();
+              : node.getParentNodeID();
       int parent = -1;
       if (parentID != null) {
         parent = builder.createSharedString(parentID);

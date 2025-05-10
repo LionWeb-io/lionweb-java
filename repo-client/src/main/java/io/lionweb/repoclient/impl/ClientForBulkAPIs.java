@@ -113,11 +113,17 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     if (nodes.isEmpty()) {
       return null;
     }
-    Request.Builder rq = buildRequest("/bulk/store");
-    rq = addGZipCompressionHeader(rq);
     String json =
         conf.getJsonSerialization()
             .serializeTreesToJsonString(nodes.toArray(new ClassifierInstance<?>[0]));
+    return rawStore(json);
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken rawStore(String json) throws IOException {
+    Request.Builder rq = buildRequest("/bulk/store");
+    rq = addGZipCompressionHeader(rq);
     RequestBody uncompressedBody = RequestBody.create(json, JSON);
     Request request = rq.post(gzipCompress(uncompressedBody)).build();
     return performCall(
@@ -178,6 +184,37 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
                           && (n.getParent() == null
                               || !idsReturned.contains(n.getParent().getID())))
               .collect(Collectors.toList());
+        });
+  }
+
+  @Override
+  public String rawRetrieve(List<String> nodeIds, int limit) throws IOException {
+    List<String> invalidIDs =
+        nodeIds.stream().filter(id -> !CommonChecks.isValidID(id)).collect(Collectors.toList());
+    if (!invalidIDs.isEmpty()) {
+      throw new IllegalArgumentException("IDs must all be valid. Invalid IDs found: " + invalidIDs);
+    }
+
+    String bodyJson =
+        "{\"ids\":["
+            + String.join(", ", nodeIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
+            + "]}";
+    Map<String, String> params = new HashMap<>();
+    params.put("depthLimit", String.valueOf(limit));
+    Request.Builder rq = buildRequest("/bulk/retrieve", true, true, true, params);
+    Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
+
+    return performCall(
+        request,
+        (response, responseBody) -> {
+          JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
+          boolean success = responseData.get("success").getAsBoolean();
+          if (!success) {
+            throw new RequestFailureException(
+                request.url().toString(), response.code(), responseBody);
+          }
+          JsonElement chunkAsJson = responseData.get("chunk");
+          return gson.toJson(chunkAsJson);
         });
   }
 
