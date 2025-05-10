@@ -64,6 +64,9 @@ public class SerializationStatus {
     }
   }
 
+  /**
+   * Consider the given classifier and all of its properties to track the used languages.
+   */
   public void consider(Classifier<?> classifier, Consumer<Language> languageConsumer) {
     if (!hasConsideredClassifier(classifier.getID())) {
       Objects.requireNonNull(classifier, "A node should have a concept in order to be serialized");
