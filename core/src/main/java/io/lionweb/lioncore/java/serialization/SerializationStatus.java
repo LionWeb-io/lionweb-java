@@ -5,7 +5,6 @@ import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.lioncore.java.serialization.data.UsedLanguage;
-
 import java.util.*;
 import java.util.function.Consumer;
 

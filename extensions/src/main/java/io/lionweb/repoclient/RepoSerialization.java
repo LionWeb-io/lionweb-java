@@ -1,5 +1,7 @@
 package io.lionweb.repoclient;
 
+import static io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization.groupNodesIntoSerializationBlock;
+
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
@@ -18,8 +20,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import kotlin.text.Charsets;
 
-import static io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization.groupNodesIntoSerializationBlock;
-
 public class RepoSerialization {
   private int nNodesThreshold = 100_000;
   private TransferFormat transferFormat = TransferFormat.FLATBUFFERS;
@@ -29,7 +29,7 @@ public class RepoSerialization {
       throws IOException {
     for (String partitionID : bulkAPIClient.listPartitionsIDs()) {
       String partitionData =
-          bulkAPIClient.rawRetrieve(bulkAPIClient.listPartitionsIDs(), Integer.MAX_VALUE);
+          bulkAPIClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
       File partitionFile = new File(directory, partitionID + ".json");
       Files.write(
           partitionFile.toPath(),
@@ -74,11 +74,17 @@ public class RepoSerialization {
       String content = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
 
       LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
-      SerializedChunk serializedChunk = lowLevelJsonSerialization.deserializeSerializationBlock(content);
-      SerializedClassifierInstance root = serializedChunk.getClassifierInstances().stream().filter(n -> n.getParentNodeID() == null).findFirst().get();
+      SerializedChunk serializedChunk =
+          lowLevelJsonSerialization.deserializeSerializationBlock(content);
+      SerializedClassifierInstance root =
+          serializedChunk.getClassifierInstances().stream()
+              .filter(n -> n.getParentNodeID() == null)
+              .findFirst()
+              .get();
       root.clearContainments();
-      SerializedChunk limitedSerializedChunk = groupNodesIntoSerializationBlock(Collections.singletonList(root),
-              bulkAPIClient.getLionWebVersion());
+      SerializedChunk limitedSerializedChunk =
+          groupNodesIntoSerializationBlock(
+              Collections.singletonList(root), bulkAPIClient.getLionWebVersion());
       String limitedJson = lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
 
       bulkAPIClient.createPartitions(limitedJson);
@@ -141,12 +147,19 @@ public class RepoSerialization {
         String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
         LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
-        SerializedChunk serializedChunk = lowLevelJsonSerialization.deserializeSerializationBlock(content);
-        SerializedClassifierInstance root = serializedChunk.getClassifierInstances().stream().filter(n -> n.getParentNodeID() == null).findFirst().get();
+        SerializedChunk serializedChunk =
+            lowLevelJsonSerialization.deserializeSerializationBlock(content);
+        SerializedClassifierInstance root =
+            serializedChunk.getClassifierInstances().stream()
+                .filter(n -> n.getParentNodeID() == null)
+                .findFirst()
+                .get();
         root.clearContainments();
-        SerializedChunk limitedSerializedChunk = groupNodesIntoSerializationBlock(Collections.singletonList(root),
-                bulkAPIClient.getLionWebVersion());
-        String limitedJson = lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
+        SerializedChunk limitedSerializedChunk =
+            groupNodesIntoSerializationBlock(
+                Collections.singletonList(root), bulkAPIClient.getLionWebVersion());
+        String limitedJson =
+            lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
 
         bulkAPIClient.createPartitions(limitedJson);
 

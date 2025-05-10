@@ -8,7 +8,6 @@ import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
-import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.utils.CommonChecks;
 import io.lionweb.repoclient.CompressionSupport;
 import io.lionweb.repoclient.RequestFailureException;
@@ -36,13 +35,13 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     super(repoClientConfiguration);
   }
 
-    @NotNull
-    @Override
-    public LionWebVersion getLionWebVersion() {
-        return conf.getJsonSerialization().getLionWebVersion();
-    }
+  @NotNull
+  @Override
+  public LionWebVersion getLionWebVersion() {
+    return conf.getJsonSerialization().getLionWebVersion();
+  }
 
-    @Override
+  @Override
   public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
       throws IOException {
     return createPartitions(

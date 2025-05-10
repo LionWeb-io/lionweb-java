@@ -27,8 +27,9 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
               bulkImportBuilder.addAttachPoints(attachPointBuilder.build());
             });
 
-    SerializedChunk serializedChunk = LowLevelJsonSerialization.groupNodesIntoSerializationBlock(bulkImport.getNodes(),
-            getLionWebVersion());
+    SerializedChunk serializedChunk =
+        LowLevelJsonSerialization.groupNodesIntoSerializationBlock(
+            bulkImport.getNodes(), getLionWebVersion());
 
     serializedChunk
         .getClassifierInstances()
