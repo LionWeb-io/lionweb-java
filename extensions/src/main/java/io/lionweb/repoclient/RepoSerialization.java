@@ -73,6 +73,16 @@ public class RepoSerialization {
     for (File file : files) {
       String content = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
 
+      LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
+      SerializedChunk serializedChunk = lowLevelJsonSerialization.deserializeSerializationBlock(content);
+      SerializedClassifierInstance root = serializedChunk.getClassifierInstances().stream().filter(n -> n.getParentNodeID() == null).findFirst().get();
+      root.clearContainments();
+      SerializedChunk limitedSerializedChunk = groupNodesIntoSerializationBlock(Collections.singletonList(root),
+              bulkAPIClient.getLionWebVersion());
+      String limitedJson = lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
+
+      bulkAPIClient.createPartitions(limitedJson);
+
       bulkAPIClient.rawStore(content);
     }
   }
@@ -129,8 +139,6 @@ public class RepoSerialization {
         }
 
         String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
-
-        System.out.println("STORE " + entry.getName());
 
         LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
         SerializedChunk serializedChunk = lowLevelJsonSerialization.deserializeSerializationBlock(content);
