@@ -1,10 +1,8 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.*;
-import java.util.HashSet;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Set;
+import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class SerializationStatus {
@@ -13,6 +11,11 @@ public class SerializationStatus {
   private final IdentityHashMap<String, List<Containment>> containments = new IdentityHashMap<>();
   private final IdentityHashMap<String, List<Reference>> references = new IdentityHashMap<>();
   private final Set<String> consideredLanguageIDs = new HashSet<>();
+  private final SerializedChunk serializedChunk;
+
+  public SerializationStatus(SerializedChunk serializedChunk) {
+    this.serializedChunk = serializedChunk;
+  }
 
   public boolean hasConsideredClassifier(String classifierId) {
     return classifiersConsidered.contains(classifierId);
@@ -40,5 +43,35 @@ public class SerializationStatus {
     }
     consumer.accept(language);
     consideredLanguageIDs.add(language.getID());
+  }
+
+  public void consider(Classifier<?> classifier, Consumer<Language> languageConsumer) {
+    if (!hasConsideredClassifier(classifier.getID())) {
+      Objects.requireNonNull(classifier, "A node should have a concept in order to be serialized");
+      Language language = classifier.getLanguage();
+      if (language == null) {
+        throw new NullPointerException(
+            "A Concept should be part of a Language in order to be serialized. Concept "
+                + classifier
+                + " is not");
+      }
+      considerLanguageDuringSerialization(languageConsumer, language);
+      List<Feature<?>> features = classifier.allFeatures();
+      features.forEach(
+          f -> considerLanguageDuringSerialization(languageConsumer, f.getDeclaringLanguage()));
+      features.stream()
+          .filter(f -> f instanceof Property)
+          .map(f -> (Property) f)
+          .forEach(
+              p ->
+                  considerLanguageDuringSerialization(languageConsumer, p.getType().getLanguage()));
+      features.stream()
+          .filter(f -> f instanceof Link)
+          .map(f -> (Link<?>) f)
+          .forEach(
+              l ->
+                  considerLanguageDuringSerialization(languageConsumer, l.getType().getLanguage()));
+      markClassifierAsConsidered(classifier.getID());
+    }
   }
 }

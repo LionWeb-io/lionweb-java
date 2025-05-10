@@ -1,3 +1,5 @@
+package io.lionweb.repoclient;
+
 import static org.junit.Assert.*;
 
 import io.lionweb.lioncore.java.language.*;

@@ -114,9 +114,6 @@ public class ClientForAdditionalAPIs extends LionWebRepoClientImplHelper
             .getAsJsonObject()
             .get("nodes")
             .getAsJsonArray();
-    if (!bulkImport.getRawNodes().isEmpty()) {
-        throw new UnsupportedOperationException();
-    }
     body.add("attachPoints", bodyAttachPoints);
     body.add("nodes", bodyNodes);
     String bodyJson = new Gson().toJson(body);
