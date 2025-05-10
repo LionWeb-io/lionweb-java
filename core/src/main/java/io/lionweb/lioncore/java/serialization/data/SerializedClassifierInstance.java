@@ -37,6 +37,10 @@ public class SerializedClassifierInstance {
     setClassifier(concept);
   }
 
+  public void clearContainments() {
+    containments.clear();;
+  }
+
   public List<SerializedContainmentValue> getContainments() {
     return Collections.unmodifiableList(this.containments);
   }

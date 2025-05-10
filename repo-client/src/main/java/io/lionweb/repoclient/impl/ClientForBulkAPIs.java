@@ -4,9 +4,11 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
+import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.utils.CommonChecks;
 import io.lionweb.repoclient.CompressionSupport;
 import io.lionweb.repoclient.RequestFailureException;
@@ -25,6 +27,7 @@ import okio.Buffer;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements BulkAPIClient {
@@ -33,7 +36,13 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
     super(repoClientConfiguration);
   }
 
-  @Override
+    @NotNull
+    @Override
+    public LionWebVersion getLionWebVersion() {
+        return conf.getJsonSerialization().getLionWebVersion();
+    }
+
+    @Override
   public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
       throws IOException {
     return createPartitions(
@@ -41,6 +50,7 @@ public class ClientForBulkAPIs extends LionWebRepoClientImplHelper implements Bu
             .serializeTreesToJsonString(partitions.toArray(new ClassifierInstance[0])));
   }
 
+  @Override
   public @Nullable RepositoryVersionToken createPartitions(String data) throws IOException {
     return nodesStoringOperation(data, "createPartitions");
   }

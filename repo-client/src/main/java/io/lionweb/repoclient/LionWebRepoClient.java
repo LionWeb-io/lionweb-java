@@ -240,6 +240,12 @@ public class LionWebRepoClient
     return bulkAPIs.rawRetrieve(nodeIds, limit);
   }
 
+  @NotNull
+  @Override
+  public LionWebVersion getLionWebVersion() {
+    return buildRepositoryConfiguration().getJsonSerialization().getLionWebVersion();
+  }
+
   //
   // DBAdmin APIs
   //

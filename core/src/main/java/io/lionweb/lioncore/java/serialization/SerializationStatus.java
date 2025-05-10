@@ -1,7 +1,11 @@
 package io.lionweb.lioncore.java.serialization;
 
 import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
+import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
+import io.lionweb.lioncore.java.serialization.data.UsedLanguage;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -12,6 +16,7 @@ public class SerializationStatus {
   private final IdentityHashMap<String, List<Reference>> references = new IdentityHashMap<>();
   private final Set<String> consideredLanguageIDs = new HashSet<>();
   private final SerializedChunk serializedChunk;
+  private final Set<UsedLanguage> usedLanguages = new HashSet<>();
 
   public SerializationStatus(SerializedChunk serializedChunk) {
     this.serializedChunk = serializedChunk;
@@ -43,6 +48,21 @@ public class SerializationStatus {
     }
     consumer.accept(language);
     consideredLanguageIDs.add(language.getID());
+  }
+
+  public void consider(SerializedClassifierInstance serializedClassifierInstance) {
+    consider(serializedClassifierInstance.getClassifier());
+    serializedClassifierInstance.getProperties().forEach(f -> consider(f.getMetaPointer()));
+    serializedClassifierInstance.getContainments().forEach(f -> consider(f.getMetaPointer()));
+    serializedClassifierInstance.getReferences().forEach(f -> consider(f.getMetaPointer()));
+  }
+
+  public void consider(MetaPointer metaPointer) {
+    UsedLanguage ul = new UsedLanguage(metaPointer.getLanguage(), metaPointer.getVersion());
+    if (!usedLanguages.contains(ul)) {
+      usedLanguages.add(ul);
+      serializedChunk.addLanguage(ul);
+    }
   }
 
   public void consider(Classifier<?> classifier, Consumer<Language> languageConsumer) {
