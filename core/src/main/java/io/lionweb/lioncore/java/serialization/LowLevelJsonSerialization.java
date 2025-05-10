@@ -1,6 +1,8 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.gson.*;
+import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.lioncore.java.language.Classifier;
 import io.lionweb.lioncore.java.serialization.data.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +10,7 @@ import java.io.FileReader;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.annotation.Nullable;
@@ -136,6 +139,20 @@ public class LowLevelJsonSerialization {
         .setPrettyPrinting()
         .create()
         .toJson(serializeToJsonElement(serializedChunk));
+  }
+
+  public static SerializedChunk groupNodesIntoSerializationBlock(
+          Collection<SerializedClassifierInstance> serializedClassifierInstances,
+          LionWebVersion lionWebVersion) {
+    SerializedChunk serializedChunk = new SerializedChunk();
+    serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    SerializationStatus serializationStatus = new SerializationStatus(serializedChunk);
+    for (SerializedClassifierInstance serializedClassifierInstance :
+            serializedClassifierInstances) {
+      serializedChunk.addClassifierInstance(serializedClassifierInstance);
+      serializationStatus.consider(serializedClassifierInstance);
+    }
+    return serializedChunk;
   }
 
   //

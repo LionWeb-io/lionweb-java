@@ -1,5 +1,6 @@
 package io.lionweb.serialization.extensions;
 
+import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.protobuf.PBAttachPoint;
@@ -26,7 +27,8 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
               bulkImportBuilder.addAttachPoints(attachPointBuilder.build());
             });
 
-    SerializedChunk serializedChunk = groupNodesIntoSerializationBlock(bulkImport.getNodes());
+    SerializedChunk serializedChunk = LowLevelJsonSerialization.groupNodesIntoSerializationBlock(bulkImport.getNodes(),
+            getLionWebVersion());
 
     serializedChunk
         .getClassifierInstances()

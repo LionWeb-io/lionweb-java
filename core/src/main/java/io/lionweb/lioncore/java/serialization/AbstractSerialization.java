@@ -161,17 +161,6 @@ public abstract class AbstractSerialization {
     return serializeNodesToSerializationBlock(classifierInstances);
   }
 
-  public SerializedChunk groupNodesIntoSerializationBlock(
-      Collection<SerializedClassifierInstance> serializedClassifierInstances) {
-    SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
-    for (SerializedClassifierInstance serializedClassifierInstance :
-        serializedClassifierInstances) {
-      serializedChunk.addClassifierInstance(serializedClassifierInstance);
-    }
-    return serializedChunk;
-  }
-
   public SerializedChunk serializeNodesToSerializationBlock(
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();

@@ -2,6 +2,7 @@ package io.lionweb.repoclient;
 
 import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
+import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.repoclient.api.BulkAPIClient;
 import io.lionweb.serialization.extensions.AdditionalAPIClient;
 import io.lionweb.serialization.extensions.BulkImport;
@@ -16,6 +17,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import kotlin.text.Charsets;
+
+import static io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization.groupNodesIntoSerializationBlock;
 
 public class RepoSerialization {
   private int nNodesThreshold = 100_000;
@@ -128,6 +131,17 @@ public class RepoSerialization {
         String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
         System.out.println("STORE " + entry.getName());
+
+        LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
+        SerializedChunk serializedChunk = lowLevelJsonSerialization.deserializeSerializationBlock(content);
+        SerializedClassifierInstance root = serializedChunk.getClassifierInstances().stream().filter(n -> n.getParentNodeID() == null).findFirst().get();
+        root.clearContainments();
+        SerializedChunk limitedSerializedChunk = groupNodesIntoSerializationBlock(Collections.singletonList(root),
+                bulkAPIClient.getLionWebVersion());
+        String limitedJson = lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
+
+        bulkAPIClient.createPartitions(limitedJson);
+
         bulkAPIClient.rawStore(content);
 
         zis.closeEntry();
