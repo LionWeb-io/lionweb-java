@@ -192,7 +192,7 @@ public class LionWebRepoClient
   }
 
   public List<String> listPartitionsIDs() throws IOException {
-    return listPartitions().stream().map(n -> n.getID()).collect(Collectors.toList());
+    return listPartitions().stream().map(Node::getID).collect(Collectors.toList());
   }
 
   @Override

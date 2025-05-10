@@ -2,26 +2,33 @@ package io.lionweb.serialization.extensions;
 
 import io.lionweb.lioncore.java.language.Containment;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.serialization.JsonSerialization;
+import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
+import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
+
 import java.util.LinkedList;
 import java.util.List;
 
 public class BulkImport {
 
+  private static JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
+
   private final List<AttachPoint> attachPoints;
-  private final List<ClassifierInstance<?>> nodes;
+  private final List<SerializedClassifierInstance> nodes;
 
   public BulkImport() {
     this(new LinkedList<>(), new LinkedList<>());
   }
 
   public BulkImport(List<AttachPoint> attachPoints, List<ClassifierInstance<?>> nodes) {
+
     this.attachPoints = attachPoints;
-    this.nodes = nodes;
+    this.nodes = jsonSerialization.serializeNodesToSerializationBlock(nodes).getClassifierInstances();
   }
 
   public void addNode(ClassifierInstance<?> classifierInstance) {
-    nodes.add(classifierInstance);
+    nodes.addAll(jsonSerialization.serializeNodesToSerializationBlock(classifierInstance).getClassifierInstances());
   }
 
   public void addAttachPoint(AttachPoint attachPoint) {
@@ -32,12 +39,25 @@ public class BulkImport {
     return attachPoints;
   }
 
-  public List<ClassifierInstance<?>> getNodes() {
+  public List<SerializedClassifierInstance> getNodes() {
     return nodes;
+  }
+
+  public int numberOfNodes() {
+    return nodes.size();
   }
 
   public boolean isEmpty() {
     return nodes.isEmpty();
+  }
+
+  public void addNodes(List<SerializedClassifierInstance> classifierInstances) {
+    nodes.addAll(classifierInstances);
+  }
+
+  public void clear() {
+    attachPoints.clear();
+    nodes.clear();
   }
 
   public static class AttachPoint {
