@@ -5,8 +5,6 @@ import io.lionweb.lioncore.java.model.Node;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,7 +16,8 @@ public interface BulkAPIClient {
   @Nullable
   RepositoryVersionToken createPartitions(List<Node> partitions) throws IOException;
 
-  @Nullable RepositoryVersionToken createPartitions(String data) throws IOException;
+  @Nullable
+  RepositoryVersionToken createPartitions(String data) throws IOException;
 
   @Nullable
   RepositoryVersionToken deletePartitions(List<String> ids) throws IOException;

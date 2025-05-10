@@ -38,7 +38,8 @@ public class SerializedClassifierInstance {
   }
 
   public void clearContainments() {
-    containments.clear();;
+    containments.clear();
+    ;
   }
 
   public List<SerializedContainmentValue> getContainments() {

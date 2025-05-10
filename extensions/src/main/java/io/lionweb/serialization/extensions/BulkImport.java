@@ -7,15 +7,15 @@ import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
-
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
 public class BulkImport {
 
-  private static JsonSerialization jsonSerialization2023_1 = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-  private static JsonSerialization jsonSerialization2024_1 = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+  private static JsonSerialization jsonSerialization2023_1 =
+      SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+  private static JsonSerialization jsonSerialization2024_1 =
+      SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
 
   private static JsonSerialization getJsonSerialization(LionWebVersion lionWebVersion) {
     if (lionWebVersion == LionWebVersion.v2023_1) {
@@ -36,16 +36,19 @@ public class BulkImport {
 
   public BulkImport(List<AttachPoint> attachPoints, List<ClassifierInstance<?>> nodes) {
     this.attachPoints = attachPoints;
-    if (nodes.isEmpty()){
+    if (nodes.isEmpty()) {
       this.nodes = new LinkedList<>();
     } else {
-      JsonSerialization jsonSerialization = getJsonSerialization(nodes.get(0).getClassifier().getLionWebVersion());
-      this.nodes = jsonSerialization.serializeNodesToSerializationBlock(nodes).getClassifierInstances();
+      JsonSerialization jsonSerialization =
+          getJsonSerialization(nodes.get(0).getClassifier().getLionWebVersion());
+      this.nodes =
+          jsonSerialization.serializeNodesToSerializationBlock(nodes).getClassifierInstances();
     }
   }
 
   public void addNode(ClassifierInstance<?> classifierInstance) {
-    JsonSerialization jsonSerialization = getJsonSerialization(classifierInstance.getClassifier().getLionWebVersion());
+    JsonSerialization jsonSerialization =
+        getJsonSerialization(classifierInstance.getClassifier().getLionWebVersion());
     nodes.addAll(
         jsonSerialization
             .serializeNodesToSerializationBlock(classifierInstance)
