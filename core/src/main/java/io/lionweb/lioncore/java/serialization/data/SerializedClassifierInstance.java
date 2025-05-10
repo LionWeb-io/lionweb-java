@@ -38,8 +38,8 @@ public class SerializedClassifierInstance {
   }
 
   /**
-   * Remove all containments. This is useful when we want to create a partitions, as they cannot be
-   * created when having children.
+   * Remove all containments. This is useful when we want to create a partition, as they cannot be
+   * created with children. Children can only be added in a second moment.
    */
   public void clearContainments() {
     containments.clear();
