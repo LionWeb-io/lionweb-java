@@ -7,24 +7,18 @@ import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.lioncore.java.serialization.SerializationProvider;
 import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class BulkImport {
 
-  private static JsonSerialization jsonSerialization2023_1 =
-      SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-  private static JsonSerialization jsonSerialization2024_1 =
-      SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+  private static final Map<LionWebVersion, JsonSerialization> jsonSerializations = new HashMap<>();
 
   private static JsonSerialization getJsonSerialization(LionWebVersion lionWebVersion) {
-    if (lionWebVersion == LionWebVersion.v2023_1) {
-      return jsonSerialization2023_1;
-    } else if (lionWebVersion == LionWebVersion.v2024_1) {
-      return jsonSerialization2024_1;
-    } else {
-      throw new IllegalStateException();
-    }
+    return jsonSerializations.computeIfAbsent(
+        lionWebVersion, SerializationProvider::getStandardJsonSerialization);
   }
 
   private final List<AttachPoint> attachPoints;

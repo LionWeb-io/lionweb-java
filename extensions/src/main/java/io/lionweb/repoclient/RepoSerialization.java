@@ -31,6 +31,10 @@ public class RepoSerialization {
   private TransferFormat transferFormat = TransferFormat.FLATBUFFERS;
   private Compression compression = Compression.DISABLED;
 
+  /**
+   * Download all the content of the repository accessed by the apiClient into a directory. In this
+   * directory one file per partition is created. The file is in JSON format.
+   */
   public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsDirectory(
       C apiClient, File directory) throws IOException {
     for (String partitionID : apiClient.listPartitionsIDs()) {
@@ -45,6 +49,10 @@ public class RepoSerialization {
     }
   }
 
+  /**
+   * Download all the content of the repository accessed by the apiClient into a zip file. In this
+   * zip file, one entry per partition is created. The entry is in JSON format.
+   */
   public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsZip(
       C apiClient, File zipFile) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(zipFile);
@@ -65,6 +73,11 @@ public class RepoSerialization {
     }
   }
 
+  /**
+   * Upload all the content of a directory to a given repository, using the standard bulk API (and
+   * not the more performant bulk import). The directory and all the subdirectories are examined,
+   * looking for files with extension ".json" (ignoring case).
+   */
   public void simpleUploadDirectoryToRepo(RawBulkAPIClient apiClient, File directory)
       throws IOException {
     if (!directory.isDirectory()) {
@@ -95,7 +108,12 @@ public class RepoSerialization {
     }
   }
 
-  public void bulkUploadDirectoryToRepo(AdditionalAPIClient apiClient, File directory)
+  /**
+   * Upload all the content of a directory to a given repository, using the bulkImport operation
+   * (and not the standard bulk operations). The directory and all the subdirectories are examined,
+   * looking for files with extension ".json" (ignoring case).
+   */
+  public void uploadDirectoryToRepoUsingBulkImport(AdditionalAPIClient apiClient, File directory)
       throws IOException {
     if (!directory.isDirectory()) {
       throw new IllegalArgumentException(
@@ -118,6 +136,11 @@ public class RepoSerialization {
     }
   }
 
+  /**
+   * Upload all the content of a zip to a given repository, using the standard bulk API (and not the
+   * more performant bulk import). All the zip is examined, looking for entries with extension
+   * ".json" (ignoring case).
+   */
   public void simpleUploadZipToRepo(RawBulkAPIClient apiClient, File zip) throws IOException {
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
@@ -131,7 +154,7 @@ public class RepoSerialization {
       final int BUFFER_SIZE = 32 * 1024;
       byte[] buffer = new byte[BUFFER_SIZE];
       while ((entry = zis.getNextEntry()) != null) {
-        if (!entry.getName().endsWith(".json")) {
+        if (!entry.getName().toLowerCase().endsWith(".json")) {
           continue;
         }
 
@@ -167,7 +190,13 @@ public class RepoSerialization {
     }
   }
 
-  public void bulkUploadZipToRepo(AdditionalAPIClient apiClient, File zip) throws IOException {
+  /**
+   * Upload all the content of a zip to a given repository, using the bulkImport operation (and not
+   * the standard bulk operations). All the zip is examined, looking for entries with extension
+   * ".json" (ignoring case).
+   */
+  public void uploadZipToRepoUsingBulkImport(AdditionalAPIClient apiClient, File zip)
+      throws IOException {
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
           "Provided path is not a valid zip file: " + zip.getAbsolutePath());
@@ -185,7 +214,7 @@ public class RepoSerialization {
       byte[] buffer = new byte[BUFFER_SIZE];
 
       while ((entry = zis.getNextEntry()) != null) {
-        if (!entry.getName().endsWith(".json")) {
+        if (!entry.getName().toLowerCase().endsWith(".json")) {
           continue;
         }
 
@@ -224,7 +253,7 @@ public class RepoSerialization {
     try (Stream<Path> paths = Files.walk(directory.toPath())) {
       return paths
           .filter(Files::isRegularFile)
-          .filter(path -> path.toString().endsWith(".json"))
+          .filter(path -> path.toString().toLowerCase().endsWith(".json"))
           .map(Path::toFile)
           .collect(Collectors.toList());
     }
