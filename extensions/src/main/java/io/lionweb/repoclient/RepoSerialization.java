@@ -13,8 +13,12 @@ import io.lionweb.serialization.extensions.TransferFormat;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -66,12 +70,7 @@ public class RepoSerialization {
           "Provided file is not a directory: " + directory.getAbsolutePath());
     }
 
-    File[] files = directory.listFiles((dir, name) -> name.endsWith(".json"));
-    if (files == null) {
-      throw new IOException("Unable to list files in directory: " + directory.getAbsolutePath());
-    }
-
-    for (File file : files) {
+    for (File file : findJsonFilesRecursively(directory)) {
       String content = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
 
       LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
@@ -101,14 +100,9 @@ public class RepoSerialization {
           "Provided file is not a directory: " + directory.getAbsolutePath());
     }
 
-    File[] files = directory.listFiles((dir, name) -> name.endsWith(".json"));
-    if (files == null) {
-      throw new IOException("Unable to list files in directory: " + directory.getAbsolutePath());
-    }
-
     LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
     BulkImport bulkImport = new BulkImport();
-    for (File file : files) {
+    for (File file : findJsonFilesRecursively(directory)) {
       SerializedChunk serializedChunk =
           lowLevelJsonSerialization.deserializeSerializationBlock(file);
       bulkImport.addNodes(serializedChunk.getClassifierInstances());
@@ -222,6 +216,16 @@ public class RepoSerialization {
 
     if (!bulkImport.isEmpty()) {
       additionalAPIClient.bulkImport(bulkImport, transferFormat, compression);
+    }
+  }
+
+  private static List<File> findJsonFilesRecursively(File directory) throws IOException {
+    try (Stream<Path> paths = Files.walk(directory.toPath())) {
+      return paths
+              .filter(Files::isRegularFile)
+              .filter(path -> path.toString().endsWith(".json"))
+              .map(Path::toFile)
+              .collect(Collectors.toList());
     }
   }
 }
