@@ -17,9 +17,6 @@ public interface BulkAPIClient {
   RepositoryVersionToken createPartitions(List<Node> partitions) throws IOException;
 
   @Nullable
-  RepositoryVersionToken createPartitions(String data) throws IOException;
-
-  @Nullable
   RepositoryVersionToken deletePartitions(List<String> ids) throws IOException;
 
   List<Node> listPartitions() throws IOException;
@@ -33,10 +30,5 @@ public interface BulkAPIClient {
   @Nullable
   RepositoryVersionToken store(List<Node> nodes) throws IOException;
 
-  @Nullable
-  RepositoryVersionToken rawStore(String nodes) throws IOException;
-
   List<Node> retrieve(List<String> nodeIds, int limit) throws IOException;
-
-  String rawRetrieve(List<String> nodeIds, int limit) throws IOException;
 }

@@ -16,7 +16,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LionWebRepoClient
-    implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient, HistoryAPIClient {
+    implements RawBulkAPIClient,
+        BulkAPIClient,
+        DBAdminAPIClient,
+        InspectionAPIClient,
+        HistoryAPIClient {
 
   public class Builder {
     protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
@@ -95,6 +99,7 @@ public class LionWebRepoClient
   private final ClientForInspectionAPIs inspectionAPIs;
   private final ClientForDBAdminAPIs dbAdminAPIs;
   private final ClientForBulkAPIs bulkAPIs;
+  private final ClientForRawBulkAPIs rawBulkAPIs;
   private final ClientForHistoryAPIs historyAPIs;
 
   //
@@ -138,6 +143,7 @@ public class LionWebRepoClient
     RepoClientConfiguration conf = buildRepositoryConfiguration();
     this.inspectionAPIs = new ClientForInspectionAPIs(conf);
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
+    this.rawBulkAPIs = new ClientForRawBulkAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
     this.historyAPIs = new ClientForHistoryAPIs(conf);
   }
@@ -163,6 +169,27 @@ public class LionWebRepoClient
   }
 
   //
+  // Raw Bulk APIs
+  //
+
+  public @Nullable RepositoryVersionToken rawCreatePartitions(@NotNull String data)
+      throws IOException {
+    return rawBulkAPIs.rawCreatePartitions(data);
+  }
+
+  @Override
+  @Nullable
+  public RepositoryVersionToken rawStore(@NotNull String nodes) throws IOException {
+    return rawBulkAPIs.rawStore(nodes);
+  }
+
+  @Override
+  @NotNull
+  public String rawRetrieve(@NotNull List<String> nodeIds, int limit) throws IOException {
+    return rawBulkAPIs.rawRetrieve(nodeIds, limit);
+  }
+
+  //
   // Bulk APIs
   //
 
@@ -175,10 +202,6 @@ public class LionWebRepoClient
   public @Nullable RepositoryVersionToken createPartition(@NotNull Node partition)
       throws IOException {
     return createPartitions(Collections.singletonList(partition));
-  }
-
-  public @Nullable RepositoryVersionToken createPartitions(String data) throws IOException {
-    return bulkAPIs.createPartitions(data);
   }
 
   @Override
@@ -227,17 +250,6 @@ public class LionWebRepoClient
   @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
     return bulkAPIs.retrieve(nodeIds, limit);
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken rawStore(String nodes) throws IOException {
-    return bulkAPIs.rawStore(nodes);
-  }
-
-  @Override
-  public String rawRetrieve(List<String> nodeIds, int limit) throws IOException {
-    return bulkAPIs.rawRetrieve(nodeIds, limit);
   }
 
   @NotNull

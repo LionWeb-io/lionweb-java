@@ -6,6 +6,7 @@ import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
 import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
 import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.repoclient.api.BulkAPIClient;
+import io.lionweb.repoclient.api.RawBulkAPIClient;
 import io.lionweb.serialization.extensions.AdditionalAPIClient;
 import io.lionweb.serialization.extensions.BulkImport;
 import io.lionweb.serialization.extensions.Compression;
@@ -30,11 +31,11 @@ public class RepoSerialization {
   private TransferFormat transferFormat = TransferFormat.FLATBUFFERS;
   private Compression compression = Compression.DISABLED;
 
-  public void downloadRepoAsDirectory(BulkAPIClient bulkAPIClient, File directory)
-      throws IOException {
-    for (String partitionID : bulkAPIClient.listPartitionsIDs()) {
+  public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsDirectory(
+      C apiClient, File directory) throws IOException {
+    for (String partitionID : apiClient.listPartitionsIDs()) {
       String partitionData =
-          bulkAPIClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
+          apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
       File partitionFile = new File(directory, partitionID + ".json");
       Files.write(
           partitionFile.toPath(),
@@ -44,13 +45,14 @@ public class RepoSerialization {
     }
   }
 
-  public void downloadRepoAsZip(BulkAPIClient bulkAPIClient, File zipFile) throws IOException {
+  public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsZip(
+      C apiClient, File zipFile) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(zipFile);
         ZipOutputStream zos = new ZipOutputStream(fos)) {
 
-      for (String partitionID : bulkAPIClient.listPartitionsIDs()) {
+      for (String partitionID : apiClient.listPartitionsIDs()) {
         String partitionData =
-            bulkAPIClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
+            apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
 
         ZipEntry entry = new ZipEntry(partitionID + ".json");
         zos.putNextEntry(entry);
@@ -63,7 +65,7 @@ public class RepoSerialization {
     }
   }
 
-  public void simpleUploadDirectoryToRepo(BulkAPIClient bulkAPIClient, File directory)
+  public void simpleUploadDirectoryToRepo(RawBulkAPIClient apiClient, File directory)
       throws IOException {
     if (!directory.isDirectory()) {
       throw new IllegalArgumentException(
@@ -84,16 +86,16 @@ public class RepoSerialization {
       root.clearContainments();
       SerializedChunk limitedSerializedChunk =
           groupNodesIntoSerializationBlock(
-              Collections.singletonList(root), bulkAPIClient.getLionWebVersion());
+              Collections.singletonList(root), apiClient.getLionWebVersion());
       String limitedJson = lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
 
-      bulkAPIClient.createPartitions(limitedJson);
+      apiClient.rawCreatePartitions(limitedJson);
 
-      bulkAPIClient.rawStore(content);
+      apiClient.rawStore(content);
     }
   }
 
-  public void bulkUploadDirectoryToRepo(AdditionalAPIClient additionalAPIClient, File directory)
+  public void bulkUploadDirectoryToRepo(AdditionalAPIClient apiClient, File directory)
       throws IOException {
     if (!directory.isDirectory()) {
       throw new IllegalArgumentException(
@@ -107,16 +109,16 @@ public class RepoSerialization {
           lowLevelJsonSerialization.deserializeSerializationBlock(file);
       bulkImport.addNodes(serializedChunk.getClassifierInstances());
       if (bulkImport.numberOfNodes() >= nNodesThreshold) {
-        additionalAPIClient.bulkImport(bulkImport, transferFormat, compression);
+        apiClient.bulkImport(bulkImport, transferFormat, compression);
         bulkImport.clear();
       }
     }
     if (!bulkImport.isEmpty()) {
-      additionalAPIClient.bulkImport(bulkImport, transferFormat, compression);
+      apiClient.bulkImport(bulkImport, transferFormat, compression);
     }
   }
 
-  public void simpleUploadZipToRepo(BulkAPIClient bulkAPIClient, File zip) throws IOException {
+  public void simpleUploadZipToRepo(RawBulkAPIClient apiClient, File zip) throws IOException {
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
           "Provided path is not a valid zip file: " + zip.getAbsolutePath());
@@ -152,21 +154,20 @@ public class RepoSerialization {
         root.clearContainments();
         SerializedChunk limitedSerializedChunk =
             groupNodesIntoSerializationBlock(
-                Collections.singletonList(root), bulkAPIClient.getLionWebVersion());
+                Collections.singletonList(root), apiClient.getLionWebVersion());
         String limitedJson =
             lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
 
-        bulkAPIClient.createPartitions(limitedJson);
+        apiClient.rawCreatePartitions(limitedJson);
 
-        bulkAPIClient.rawStore(content);
+        apiClient.rawStore(content);
 
         zis.closeEntry();
       }
     }
   }
 
-  public void bulkUploadZipToRepo(AdditionalAPIClient additionalAPIClient, File zip)
-      throws IOException {
+  public void bulkUploadZipToRepo(AdditionalAPIClient apiClient, File zip) throws IOException {
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
           "Provided path is not a valid zip file: " + zip.getAbsolutePath());
@@ -206,7 +207,7 @@ public class RepoSerialization {
         bulkImport.addNodes(serializedChunk.getClassifierInstances());
 
         if (bulkImport.numberOfNodes() >= nNodesThreshold) {
-          additionalAPIClient.bulkImport(bulkImport, transferFormat, compression);
+          apiClient.bulkImport(bulkImport, transferFormat, compression);
           bulkImport.clear();
         }
 
@@ -215,17 +216,17 @@ public class RepoSerialization {
     }
 
     if (!bulkImport.isEmpty()) {
-      additionalAPIClient.bulkImport(bulkImport, transferFormat, compression);
+      apiClient.bulkImport(bulkImport, transferFormat, compression);
     }
   }
 
   private static List<File> findJsonFilesRecursively(File directory) throws IOException {
     try (Stream<Path> paths = Files.walk(directory.toPath())) {
       return paths
-              .filter(Files::isRegularFile)
-              .filter(path -> path.toString().endsWith(".json"))
-              .map(Path::toFile)
-              .collect(Collectors.toList());
+          .filter(Files::isRegularFile)
+          .filter(path -> path.toString().endsWith(".json"))
+          .map(Path::toFile)
+          .collect(Collectors.toList());
     }
   }
 }
