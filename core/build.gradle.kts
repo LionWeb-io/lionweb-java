@@ -6,7 +6,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
-    alias(libs.plugins.superPublish)
+    alias(libs.plugins.vtPublish)
 }
 
 repositories {
@@ -83,7 +83,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     signAllPublications()
 }
 
