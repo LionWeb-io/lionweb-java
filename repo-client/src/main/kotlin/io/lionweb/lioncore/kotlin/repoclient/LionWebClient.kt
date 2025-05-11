@@ -32,13 +32,10 @@ import kotlin.reflect.KProperty
 // Integer.MAX_VALUE       =         2,147,483,647
 val MAX_DEPTH = Integer.MAX_VALUE
 
-typealias SerializationDecorator = (JsonSerialization) -> Unit
-
 class LionWebClient(
     val hostname: String = "localhost",
     val port: Int = 3005,
     val debug: Boolean = false,
-    val jsonSerializationProvider: (() -> JsonSerialization)? = null,
     connectTimeOutInSeconds: Long = 60,
     callTimeoutInSeconds: Long = 60,
     authorizationToken: String? = null,
