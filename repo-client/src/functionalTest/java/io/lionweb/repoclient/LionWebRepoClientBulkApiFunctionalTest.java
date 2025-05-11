@@ -43,7 +43,7 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
     // Create partition
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesPartition);
-    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(f1));
+    client.rawCreatePartitions(client.getJsonSerialization().serializeNodesToJsonString(f1));
 
     // Check list
     List<Node> nodes1 = client.listPartitions();
@@ -55,7 +55,7 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     // Create partitions
     DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesPartition);
     DynamicNode f3 = new DynamicNode("f3", PropertiesLanguage.propertiesPartition);
-    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(f2, f3));
+    client.rawCreatePartitions(client.getJsonSerialization().serializeNodesToJsonString(f2, f3));
 
     // Check list
     List<Node> nodes2 = client.listPartitions();
@@ -93,7 +93,7 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
     // Create partition
     DynamicNode partition = new DynamicNode("partition", PropertiesLanguage.propertiesPartition);
-    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(partition));
+    client.rawCreatePartitions(client.getJsonSerialization().serializeNodesToJsonString(partition));
 
     // Check list
     List<Node> nodes1 = client.listPartitions();
@@ -138,7 +138,7 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
-    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
+    client.rawCreatePartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
 
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
     ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "my-path-1.txt");

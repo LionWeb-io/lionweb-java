@@ -39,7 +39,7 @@ public class LionWebRepoClientInspectionApiFunctionalTest extends AbstractRepoCl
 
     // Add nodes
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
-    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
+    client.rawCreatePartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
 
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
     ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "my-path-1.txt");
@@ -81,7 +81,7 @@ public class LionWebRepoClientInspectionApiFunctionalTest extends AbstractRepoCl
 
     // Add nodes
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
-    client.createPartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
+    client.rawCreatePartitions(client.getJsonSerialization().serializeNodesToJsonString(p1));
 
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
     ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "my-path-1.txt");
