@@ -1,12 +1,13 @@
 package io.lionweb.repoclient.impl;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import io.lionweb.repoclient.RequestFailureException;
+import io.lionweb.repoclient.api.RepositoryVersionToken;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.*;
 import okhttp3.*;
+import org.jetbrains.annotations.Nullable;
 
 abstract class LionWebRepoClientImplHelper {
   protected static final MediaType JSON = MediaType.get("application/json");
@@ -88,5 +89,26 @@ abstract class LionWebRepoClientImplHelper {
 
   protected Request.Builder addGZipCompressionHeader(Request.Builder builder) {
     return builder.addHeader("Content-Encoding", "gzip");
+  }
+
+  protected @Nullable RepositoryVersionToken getRepoVersionFromResponse(String responseBody) {
+    JsonArray data =
+        JsonParser.parseString(responseBody).getAsJsonObject().get("messages").getAsJsonArray();
+    Optional<JsonElement> repoVersionMessage =
+        data.asList().stream()
+            .filter(e -> e.getAsJsonObject().get("kind").getAsString().equals("RepoVersion"))
+            .findFirst();
+    if (!repoVersionMessage.isPresent()) {
+      return null;
+    }
+    long version =
+        repoVersionMessage
+            .get()
+            .getAsJsonObject()
+            .get("data")
+            .getAsJsonObject()
+            .get("version")
+            .getAsLong();
+    return new RepositoryVersionToken(Long.toString(version));
   }
 }
