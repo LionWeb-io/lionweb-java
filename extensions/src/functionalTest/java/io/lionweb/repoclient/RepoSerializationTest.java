@@ -27,16 +27,23 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     super(LionWebVersion.v2023_1, true);
   }
 
-  private int nPartitions = 100;
-  private int nFiles = 10;
+  private final int nPartitions = 100;
+  private final int nFiles = 10;
 
-  private void storePropertiesPartitions(String repositoryName) throws IOException {
+  private ExtendedLionWebRepoClient createRepoAndClient(String repositoryName) throws IOException {
     ExtendedLionWebRepoClient client =
         new ExtendedLionWebRepoClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
             repositoryName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
+
+    return client;
+  }
+
+  private ExtendedLionWebRepoClient storePropertiesPartitions(String repositoryName)
+      throws IOException {
+    ExtendedLionWebRepoClient client = createRepoAndClient(repositoryName);
 
     for (int i = 0; i < nPartitions; i++) {
       DynamicNode partition = new DynamicNode("p-" + i, PropertiesLanguage.propertiesPartition);
@@ -67,6 +74,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
       client.store(partition);
     }
     checkContentOfRepo(client);
+    return client;
   }
 
   private void checkContentOfRepo(ExtendedLionWebRepoClient client) throws IOException {
@@ -82,22 +90,14 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
   @Test
   public void uploadAndDownloadPartitionsAsAZip() throws IOException {
     String repositoryName = "uploadAndDownloadPartitionsAsAZip";
-    storePropertiesPartitions(repositoryName);
+    ExtendedLionWebRepoClient client = storePropertiesPartitions(repositoryName);
 
-    ExtendedLionWebRepoClient client =
-        new ExtendedLionWebRepoClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     File zip = Files.createTempFile("", ".zip").toFile();
     RepoSerialization repoSerialization = new RepoSerialization();
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
     repoSerialization.downloadRepoAsZip(client, zip);
 
-    ExtendedLionWebRepoClient clientCopy1 =
-        new ExtendedLionWebRepoClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName + "-copy1");
-    clientCopy1.createRepository(
-        new RepositoryConfiguration(
-            repositoryName + "-copy1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    ExtendedLionWebRepoClient clientCopy1 = createRepoAndClient(repositoryName + "-copy1");
     long t0 = System.currentTimeMillis();
     repoSerialization.simpleUploadZipToRepo(clientCopy1, zip);
     long t1 = System.currentTimeMillis();
@@ -105,14 +105,9 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     clientCopy1.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
     checkContentOfRepo(clientCopy1);
 
-    ExtendedLionWebRepoClient clientCopy2 =
-        new ExtendedLionWebRepoClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName + "-copy2");
-    clientCopy2.createRepository(
-        new RepositoryConfiguration(
-            repositoryName + "-copy2", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    ExtendedLionWebRepoClient clientCopy2 = createRepoAndClient(repositoryName + "-copy2");
     long t2 = System.currentTimeMillis();
-    repoSerialization.bulkUploadZipToRepo(clientCopy2, zip);
+    repoSerialization.uploadZipToRepoUsingBulkImport(clientCopy2, zip);
     long t3 = System.currentTimeMillis();
     System.out.println("Bulk upload took " + (t3 - t2) + "ms");
     clientCopy2.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -122,11 +117,8 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
   @Test
   public void uploadAndDownloadPartitionsAsDirectory() throws IOException {
     String repositoryName = "uploadAndDownloadPartitionsAsDirectory";
-    storePropertiesPartitions(repositoryName);
+    ExtendedLionWebRepoClient client = storePropertiesPartitions(repositoryName);
 
-    ExtendedLionWebRepoClient client =
-        new ExtendedLionWebRepoClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     File dir = Files.createTempDirectory("repo-data-dir").toFile();
     RepoSerialization repoSerialization = new RepoSerialization();
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -136,12 +128,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
         nPartitions,
         Arrays.stream(dir.listFiles()).filter(f -> f.getName().endsWith(".json")).count());
 
-    ExtendedLionWebRepoClient clientCopy1 =
-        new ExtendedLionWebRepoClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName + "-copy1");
-    clientCopy1.createRepository(
-        new RepositoryConfiguration(
-            repositoryName + "-copy1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    ExtendedLionWebRepoClient clientCopy1 = createRepoAndClient(repositoryName + "-copy1");
     long t0 = System.currentTimeMillis();
     repoSerialization.simpleUploadDirectoryToRepo(clientCopy1, dir);
     long t1 = System.currentTimeMillis();
@@ -149,14 +136,9 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     clientCopy1.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
     checkContentOfRepo(clientCopy1);
 
-    ExtendedLionWebRepoClient clientCopy2 =
-        new ExtendedLionWebRepoClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName + "-copy2");
-    clientCopy2.createRepository(
-        new RepositoryConfiguration(
-            repositoryName + "-copy2", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    ExtendedLionWebRepoClient clientCopy2 = createRepoAndClient(repositoryName + "-copy2");
     long t2 = System.currentTimeMillis();
-    repoSerialization.bulkUploadDirectoryToRepo(clientCopy2, dir);
+    repoSerialization.uploadDirectoryToRepoUsingBulkImport(clientCopy2, dir);
     long t3 = System.currentTimeMillis();
     System.out.println("Bulk upload took " + (t3 - t2) + "ms");
     clientCopy2.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);

@@ -15,10 +15,13 @@ public class SerializationStatus {
   private final IdentityHashMap<String, List<Reference>> references = new IdentityHashMap<>();
   private final Set<String> consideredLanguageIDs = new HashSet<>();
   private final SerializedChunk serializedChunk;
+  // This is a cache, reflecting the list of languages in serializedChunk,
+  // but as a set, for faster access
   private final Set<UsedLanguage> usedLanguages = new HashSet<>();
 
   public SerializationStatus(SerializedChunk serializedChunk) {
     this.serializedChunk = serializedChunk;
+    this.usedLanguages.addAll(serializedChunk.getLanguages());
   }
 
   public boolean hasConsideredClassifier(String classifierId) {
