@@ -27,7 +27,7 @@ import kotlin.text.Charsets;
 
 /** This class contains the logic to store and retrieve entire repositories at once. */
 public class RepoSerialization {
-  private int nNodesThreshold = 100_000;
+  private int numberOfNodesThreshold = 100_000;
   private TransferFormat transferFormat = TransferFormat.FLATBUFFERS;
   private Compression compression = Compression.DISABLED;
 
@@ -56,7 +56,8 @@ public class RepoSerialization {
   public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsZip(
       C apiClient, File zipFile) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(zipFile);
-        ZipOutputStream zos = new ZipOutputStream(fos)) {
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        ZipOutputStream zos = new ZipOutputStream(bos)) {
 
       for (String partitionID : apiClient.listPartitionsIDs()) {
         String partitionData =
@@ -126,7 +127,7 @@ public class RepoSerialization {
       SerializedChunk serializedChunk =
           lowLevelJsonSerialization.deserializeSerializationBlock(file);
       bulkImport.addNodes(serializedChunk.getClassifierInstances());
-      if (bulkImport.numberOfNodes() >= nNodesThreshold) {
+      if (bulkImport.numberOfNodes() >= numberOfNodesThreshold) {
         apiClient.bulkImport(bulkImport, transferFormat, compression);
         bulkImport.clear();
       }
@@ -235,7 +236,7 @@ public class RepoSerialization {
             lowLevelJsonSerialization.deserializeSerializationBlock(tempFile);
         bulkImport.addNodes(serializedChunk.getClassifierInstances());
 
-        if (bulkImport.numberOfNodes() >= nNodesThreshold) {
+        if (bulkImport.numberOfNodes() >= numberOfNodesThreshold) {
           apiClient.bulkImport(bulkImport, transferFormat, compression);
           bulkImport.clear();
         }

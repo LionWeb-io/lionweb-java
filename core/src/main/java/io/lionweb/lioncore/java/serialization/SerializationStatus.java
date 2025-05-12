@@ -69,32 +69,42 @@ public class SerializationStatus {
 
   /** Consider the given classifier and all of its properties to track the used languages. */
   public void consider(Classifier<?> classifier, Consumer<Language> languageConsumer) {
-    if (!hasConsideredClassifier(classifier.getID())) {
-      Objects.requireNonNull(classifier, "A node should have a concept in order to be serialized");
-      Language language = classifier.getLanguage();
-      if (language == null) {
-        throw new NullPointerException(
-            "A Concept should be part of a Language in order to be serialized. Concept "
-                + classifier
-                + " is not");
-      }
-      considerLanguageDuringSerialization(languageConsumer, language);
-      List<Feature<?>> features = classifier.allFeatures();
-      features.forEach(
-          f -> considerLanguageDuringSerialization(languageConsumer, f.getDeclaringLanguage()));
-      features.stream()
-          .filter(f -> f instanceof Property)
-          .map(f -> (Property) f)
-          .forEach(
-              p ->
-                  considerLanguageDuringSerialization(languageConsumer, p.getType().getLanguage()));
-      features.stream()
-          .filter(f -> f instanceof Link)
-          .map(f -> (Link<?>) f)
-          .forEach(
-              l ->
-                  considerLanguageDuringSerialization(languageConsumer, l.getType().getLanguage()));
-      markClassifierAsConsidered(classifier.getID());
+    Objects.requireNonNull(classifier, "A node should have a concept in order to be serialized");
+    if (hasConsideredClassifier(classifier.getID())) {
+      return;
     }
+    Language language = classifier.getLanguage();
+    if (language == null) {
+      throw new IllegalStateException(
+          "A Classifier should be part of a Language in order to be serialized. Classifier "
+              + classifier
+              + " is not");
+    }
+    considerLanguageDuringSerialization(languageConsumer, language);
+    List<Feature<?>> features = classifier.allFeatures();
+    features.forEach(
+        f -> considerLanguageDuringSerialization(languageConsumer, f.getDeclaringLanguage()));
+    features.stream()
+        .filter(f -> f instanceof Property)
+        .map(f -> (Property) f)
+        .forEach(
+            p -> {
+              DataType<?> dt = p.getType();
+              considerLanguageDuringSerialization(languageConsumer, dt.getLanguage());
+              if (dt instanceof StructuredDataType) {
+                StructuredDataType sdt = (StructuredDataType) dt;
+                sdt.getFields()
+                    .forEach(
+                        f ->
+                            considerLanguageDuringSerialization(
+                                languageConsumer, f.getType().getLanguage()));
+              }
+            });
+    features.stream()
+        .filter(f -> f instanceof Link)
+        .map(f -> (Link<?>) f)
+        .forEach(
+            l -> considerLanguageDuringSerialization(languageConsumer, l.getType().getLanguage()));
+    markClassifierAsConsidered(classifier.getID());
   }
 }
