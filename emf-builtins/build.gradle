@@ -3,7 +3,7 @@ import org.apache.tools.ant.taskdefs.condition.Os
 
 plugins {
     id 'java-library'
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.vtpublish)
     id "eclipse"
     id 'signing'
 }
@@ -94,8 +94,6 @@ processResources {
     from("plugin.xml")
 }
 
-var isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
-
 task javadocJar(type: Jar) {
     archiveClassifier.set("javadoc")
 }
@@ -159,7 +157,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     signAllPublications()
 }
 

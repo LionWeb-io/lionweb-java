@@ -2,7 +2,7 @@ import com.vanniktech.maven.publish.SonatypeHost
 
 plugins {
     id("java-library")
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.vtpublish)
     id("signing")
 }
 
@@ -49,8 +49,6 @@ tasks.register<Javadoc>("myJavadoc") {
         addStringOption("link", "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
     }
 }
-
-val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
 
 tasks.register<Jar>("javadocJar") {
     dependsOn("myJavadoc")
@@ -117,6 +115,6 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     signAllPublications()
 }
