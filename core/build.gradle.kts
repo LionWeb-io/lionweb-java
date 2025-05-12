@@ -5,7 +5,7 @@ plugins {
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    id("com.vanniktech.maven.publish")
+    alias(libs.plugins.vtpublish)
     jacoco
     alias(libs.plugins.protobuf)
 }
@@ -59,8 +59,6 @@ tasks.register<Javadoc>("myJavadoc") {
         addStringOption("Xdoclint:none", "-quiet")
     }
 }
-
-val isReleaseVersion = !(version as String).endsWith("SNAPSHOT")
 
 tasks.register<Jar>("javadocJar") {
     dependsOn("myJavadoc")
@@ -122,7 +120,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.S01, true)
+    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
     signAllPublications()
 }
 
