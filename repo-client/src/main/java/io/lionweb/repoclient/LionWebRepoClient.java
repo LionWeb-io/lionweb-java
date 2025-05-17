@@ -288,13 +288,14 @@ public class LionWebRepoClient
   //
 
   @Override
-  public Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
-    return inspectionAPIs.nodesByClassifier();
+  public Map<ClassifierKey, ClassifierResult> nodesByClassifier(@Nullable Integer limit)
+      throws IOException {
+    return inspectionAPIs.nodesByClassifier(limit);
   }
 
   @Override
-  public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
-    return inspectionAPIs.nodesByLanguage();
+  public Map<String, ClassifierResult> nodesByLanguage(@Nullable Integer limit) throws IOException {
+    return inspectionAPIs.nodesByLanguage(limit);
   }
 
   //

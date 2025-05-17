@@ -111,3 +111,7 @@ Introducing support for LionWeb 2024.1
 
 * Adding support for serializing and deserializing entire repositories
 
+### Version 0.4.7
+
+* Supporting limit parameter in inspection APIs
+

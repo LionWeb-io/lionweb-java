@@ -9,6 +9,7 @@ import io.lionweb.repoclient.api.InspectionAPIClient;
 import java.io.IOException;
 import java.util.*;
 import okhttp3.Request;
+import org.jetbrains.annotations.Nullable;
 
 public class ClientForInspectionAPIs extends LionWebRepoClientImplHelper
     implements InspectionAPIClient {
@@ -18,8 +19,15 @@ public class ClientForInspectionAPIs extends LionWebRepoClientImplHelper
   }
 
   @Override
-  public Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
-    Request.Builder rq = buildRequest("/inspection/nodesByClassifier");
+  public Map<ClassifierKey, ClassifierResult> nodesByClassifier(@Nullable Integer limit)
+      throws IOException {
+    Map<String, String> additionalParams = new HashMap<>();
+    if (limit != null) {
+      additionalParams.put("limit", limit.toString());
+    }
+    Request.Builder rq =
+        buildRequest("/inspection/nodesByClassifier", true, true, true, additionalParams);
+
     Request request = rq.get().build();
     return performCall(
         request,
@@ -46,8 +54,13 @@ public class ClientForInspectionAPIs extends LionWebRepoClientImplHelper
   }
 
   @Override
-  public Map<String, ClassifierResult> nodesByLanguage() throws IOException {
-    Request.Builder rq = buildRequest("/inspection/nodesByLanguage");
+  public Map<String, ClassifierResult> nodesByLanguage(@Nullable Integer limit) throws IOException {
+    Map<String, String> additionalParams = new HashMap<>();
+    if (limit != null) {
+      additionalParams.put("limit", limit.toString());
+    }
+    Request.Builder rq =
+        buildRequest("/inspection/nodesByLanguage", true, true, true, additionalParams);
     Request request = rq.get().build();
     return performCall(
         request,
