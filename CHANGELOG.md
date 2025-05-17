@@ -101,3 +101,10 @@ Introducing support for LionWeb 2024.1
 * Bug fix for ClientForBulkAPIs
 * Added retrieve(Node) method in LionWebRepoClient
 * Introducing documentation
+
+### Version 0.4.5
+
+### Version 0.4.6
+
+* Adding support for serializing and deserializing entire repositories
+
