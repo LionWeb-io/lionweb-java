@@ -104,6 +104,9 @@ Introducing support for LionWeb 2024.1
 
 ### Version 0.4.5
 
+* Implement support for history APIs
+* Adding documentation
+
 ### Version 0.4.6
 
 * Adding support for serializing and deserializing entire repositories
