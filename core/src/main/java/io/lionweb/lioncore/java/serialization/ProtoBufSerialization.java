@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.serialization;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -8,12 +9,26 @@ import io.lionweb.lioncore.protobuf.*;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class ProtoBufSerialization extends AbstractSerialization {
+
+  public ProtoBufSerialization() {
+    super();
+  }
+
+  public ProtoBufSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
 
   public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(byte[] bytes)
       throws IOException {
     return deserializeToNodes(new ByteArrayInputStream(bytes));
+  }
+
+  public SerializedChunk deserializeToChunk(byte[] bytes) throws IOException {
+    PBChunk pbChunk = PBChunk.parseFrom(new ByteArrayInputStream(bytes));
+    return deserializeSerializationChunk(pbChunk);
   }
 
   public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(File file)
