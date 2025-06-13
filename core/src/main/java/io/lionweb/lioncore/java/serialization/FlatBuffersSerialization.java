@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -10,6 +11,7 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class FlatBuffersSerialization extends AbstractSerialization {
 
@@ -124,6 +126,14 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     }
     ;
     return serializedChunk;
+  }
+
+  public FlatBuffersSerialization() {
+    super();
+  }
+
+  public FlatBuffersSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
   }
 
   public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {

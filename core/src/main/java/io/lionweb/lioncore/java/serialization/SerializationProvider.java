@@ -46,7 +46,13 @@ public class SerializationProvider {
 
   /** This has specific support for LionCore or LionCoreBuiltins. */
   public static FlatBuffersSerialization getStandardFlatBuffersSerialization() {
-    FlatBuffersSerialization serialization = new FlatBuffersSerialization();
+    return getStandardFlatBuffersSerialization(LionWebVersion.currentVersion);
+  }
+
+  public static FlatBuffersSerialization getStandardFlatBuffersSerialization(
+      @Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    FlatBuffersSerialization serialization = new FlatBuffersSerialization(lionWebVersion);
     standardInitialization(serialization);
     return serialization;
   }
