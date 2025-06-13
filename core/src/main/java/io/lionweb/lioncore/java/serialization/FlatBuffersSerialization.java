@@ -237,7 +237,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             FBProperty.createFBProperty(
                 builder,
                 offsetForMetaPointer(el.getMetaPointer()),
-                    nullableStringOffset(builder, el.getValue()));
+                nullableStringOffset(builder, el.getValue()));
       }
       return props;
     }
@@ -279,8 +279,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           values[k] =
               FBReferenceValue.createFBReferenceValue(
                   builder,
-                      nullableStringOffset(builder, el.getValue().get(k).getResolveInfo()),
-                      nullableStringOffset(builder, el.getValue().get(k).getReference()));
+                  nullableStringOffset(builder, el.getValue().get(k).getResolveInfo()),
+                  nullableStringOffset(builder, el.getValue().get(k).getReference()));
         }
         refs[j] =
             FBReference.createFBReference(
