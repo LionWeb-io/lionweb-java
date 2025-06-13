@@ -1,6 +1,7 @@
 package io.lionweb.lioncore.java.serialization;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -10,10 +11,19 @@ import java.io.*;
 import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class FlatBuffersSerialization extends AbstractSerialization {
 
   private static final String NULL_CONSTANT = "NULL";
+
+  public FlatBuffersSerialization() {
+    super();
+  }
+
+  public FlatBuffersSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
 
   public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(byte[] bytes)
       throws IOException {
@@ -34,9 +44,15 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return deserializeSerializationBlock(serializationBlock);
   }
 
-  private class DeserializationHelper {
+  public SerializedChunk deserializeToChunk(byte[] bytes) {
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
+    return deserializeSerializationChunk(FBChunk.getRootAsFBChunk(bb));
+  }
 
-    private IdentityHashMap<FBMetaPointer, MetaPointer> metaPointersCache = new IdentityHashMap<>();
+  private static class DeserializationHelper {
+
+    private final IdentityHashMap<FBMetaPointer, MetaPointer> metaPointersCache =
+        new IdentityHashMap<>();
 
     public MetaPointer deserialize(FBMetaPointer classifier) {
       if (classifier == null) {
@@ -222,7 +238,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             FBProperty.createFBProperty(
                 builder,
                 offsetForMetaPointer(el.getMetaPointer()),
-                builder.createSharedString(el.getValue()));
+                nullableStringOffset(builder, el.getValue()));
       }
       return props;
     }
@@ -248,6 +264,13 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return cons;
     }
 
+    private int nullableStringOffset(FlatBufferBuilder builder, String value) {
+      if (value == null) {
+        return 0; // Indicate absent field
+      }
+      return builder.createSharedString(value);
+    }
+
     public int[] referencesVector(List<SerializedReferenceValue> references) {
       int[] refs = new int[references.size()];
       for (int j = 0; j < references.size(); j++) {
@@ -257,8 +280,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           values[k] =
               FBReferenceValue.createFBReferenceValue(
                   builder,
-                  builder.createSharedString(el.getValue().get(k).getResolveInfo()),
-                  builder.createSharedString(el.getValue().get(k).getReference()));
+                  nullableStringOffset(builder, el.getValue().get(k).getResolveInfo()),
+                  nullableStringOffset(builder, el.getValue().get(k).getReference()));
         }
         refs[j] =
             FBReference.createFBReference(

@@ -33,10 +33,22 @@ public class SerializationProvider {
   }
 
   /** This has specific support for LionCore or LionCoreBuiltins. */
-  public static ProtoBufSerialization getStandardProtoBufSerialization() {
-    ProtoBufSerialization serialization = new ProtoBufSerialization();
+  public static ProtoBufSerialization getStandardProtoBufSerialization(
+      @Nonnull LionWebVersion lionWebVersion) {
+    ProtoBufSerialization serialization = new ProtoBufSerialization(lionWebVersion);
     standardInitialization(serialization);
     return serialization;
+  }
+
+  /** This has specific support for LionCore or LionCoreBuiltins. */
+  public static ProtoBufSerialization getStandardProtoBufSerialization() {
+    return getStandardProtoBufSerialization(LionWebVersion.currentVersion);
+  }
+
+  /** This has no specific support for LionCore or LionCoreBuiltins. */
+  public static ProtoBufSerialization getBasicProtoBufSerialization(
+      @Nonnull LionWebVersion lionWebVersion) {
+    return new ProtoBufSerialization(lionWebVersion);
   }
 
   /** This has no specific support for LionCore or LionCoreBuiltins. */
@@ -46,7 +58,13 @@ public class SerializationProvider {
 
   /** This has specific support for LionCore or LionCoreBuiltins. */
   public static FlatBuffersSerialization getStandardFlatBuffersSerialization() {
-    FlatBuffersSerialization serialization = new FlatBuffersSerialization();
+    return getStandardFlatBuffersSerialization(LionWebVersion.currentVersion);
+  }
+
+  public static FlatBuffersSerialization getStandardFlatBuffersSerialization(
+      @Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    FlatBuffersSerialization serialization = new FlatBuffersSerialization(lionWebVersion);
     standardInitialization(serialization);
     return serialization;
   }
@@ -54,6 +72,12 @@ public class SerializationProvider {
   /** This has no specific support for LionCore or LionCoreBuiltins. */
   public static FlatBuffersSerialization getBasicFlatBuffersSerialization() {
     return new FlatBuffersSerialization();
+  }
+
+  /** This has no specific support for LionCore or LionCoreBuiltins. */
+  public static FlatBuffersSerialization getBasicFlatBuffersSerialization(
+      @Nonnull LionWebVersion lionWebVersion) {
+    return new FlatBuffersSerialization(lionWebVersion);
   }
 
   protected static void standardInitialization(AbstractSerialization serialization) {
