@@ -1,15 +1,25 @@
 package io.lionweb.serialization.extensions;
 
 import com.google.flatbuffers.FlatBufferBuilder;
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
 import io.lionweb.lioncore.java.serialization.data.*;
 import io.lionweb.serialization.flatbuffers.gen.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 /** It contains the logic to serialize non-standard messages. */
 public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
+
+  public ExtraFlatBuffersSerialization() {
+    super();
+  }
+
+  public ExtraFlatBuffersSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
 
   public byte[] serializeBulkImport(BulkImport bulkImport) {
     FlatBufferBuilder builder = new FlatBufferBuilder(1024);
