@@ -41,9 +41,9 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return deserializeSerializationChunk(FBChunk.getRootAsFBChunk(bb));
   }
 
-  private class DeserializationHelper {
+  private static class DeserializationHelper {
 
-    private IdentityHashMap<FBMetaPointer, MetaPointer> metaPointersCache = new IdentityHashMap<>();
+    private final HashMap<FBMetaPointer, MetaPointer> metaPointersCache = new HashMap<>();
 
     public MetaPointer deserialize(FBMetaPointer classifier) {
       if (classifier == null) {
