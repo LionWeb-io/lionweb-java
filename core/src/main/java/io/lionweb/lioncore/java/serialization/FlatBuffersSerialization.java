@@ -17,6 +17,14 @@ public class FlatBuffersSerialization extends AbstractSerialization {
 
   private static final String NULL_CONSTANT = "NULL";
 
+  public FlatBuffersSerialization() {
+    super();
+  }
+
+  public FlatBuffersSerialization(@Nonnull LionWebVersion lionWebVersion) {
+    super(lionWebVersion);
+  }
+
   public List<io.lionweb.lioncore.java.model.Node> deserializeToNodes(byte[] bytes)
       throws IOException {
     ByteBuffer bb = ByteBuffer.wrap(bytes);
@@ -43,7 +51,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
 
   private static class DeserializationHelper {
 
-    private final HashMap<FBMetaPointer, MetaPointer> metaPointersCache = new HashMap<>();
+    private final IdentityHashMap<FBMetaPointer, MetaPointer> metaPointersCache =
+        new IdentityHashMap<>();
 
     public MetaPointer deserialize(FBMetaPointer classifier) {
       if (classifier == null) {
@@ -131,14 +140,6 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     }
     ;
     return serializedChunk;
-  }
-
-  public FlatBuffersSerialization() {
-    super();
-  }
-
-  public FlatBuffersSerialization(@Nonnull LionWebVersion lionWebVersion) {
-    super(lionWebVersion);
   }
 
   public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
