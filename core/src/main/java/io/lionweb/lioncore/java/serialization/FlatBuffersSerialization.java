@@ -36,6 +36,11 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     return deserializeSerializationBlock(serializationBlock);
   }
 
+  public SerializedChunk deserializeToChunk(byte[] bytes) {
+    ByteBuffer bb = ByteBuffer.wrap(bytes);
+    return deserializeSerializationChunk(FBChunk.getRootAsFBChunk(bb));
+  }
+
   private class DeserializationHelper {
 
     private IdentityHashMap<FBMetaPointer, MetaPointer> metaPointersCache = new IdentityHashMap<>();
@@ -232,7 +237,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
             FBProperty.createFBProperty(
                 builder,
                 offsetForMetaPointer(el.getMetaPointer()),
-                builder.createSharedString(el.getValue()));
+                    nullableStringOffset(builder, el.getValue()));
       }
       return props;
     }
@@ -258,6 +263,13 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return cons;
     }
 
+    private int nullableStringOffset(FlatBufferBuilder builder, String value) {
+      if (value == null) {
+        return 0; // Indicate absent field
+      }
+      return builder.createSharedString(value);
+    }
+
     public int[] referencesVector(List<SerializedReferenceValue> references) {
       int[] refs = new int[references.size()];
       for (int j = 0; j < references.size(); j++) {
@@ -267,8 +279,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           values[k] =
               FBReferenceValue.createFBReferenceValue(
                   builder,
-                  builder.createSharedString(el.getValue().get(k).getResolveInfo()),
-                  builder.createSharedString(el.getValue().get(k).getReference()));
+                      nullableStringOffset(builder, el.getValue().get(k).getResolveInfo()),
+                      nullableStringOffset(builder, el.getValue().get(k).getReference()));
         }
         refs[j] =
             FBReference.createFBReference(
