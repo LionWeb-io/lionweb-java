@@ -17,7 +17,13 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   protected final Map<String, Object> propertyValues = new HashMap<>();
   protected final Map<String, List<Node>> containmentValues = new HashMap<>();
 
-  protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  /*
+   * Most nodes will have no references, so when holding millions of nodes in memory
+   * it is convenient to avoid unnecessary allocations.
+   * Based on this, this field will be null when no references are present, so that the memory footprint
+   * can be contained.
+   */
+  protected @Nullable Map<String, List<ReferenceValue>> referenceValues;
 
   @Nullable
   public String getID() {
@@ -133,7 +139,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (referenceValues.containsKey(reference.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       return referenceValues.get(reference.getKey());
     } else {
       return Collections.emptyList();
@@ -160,7 +166,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (referenceValues.containsKey(reference.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       for (int i = 0; i < referenceValuesOfInterest.size(); i++) {
         ReferenceValue rv = referenceValuesOfInterest.get(i);
@@ -188,7 +194,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
-    if (referenceValues.containsKey(reference.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       if (referenceValuesOfInterest.size() > index) {
         referenceValuesOfInterest.remove(index);
@@ -209,6 +215,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     Objects.requireNonNull(reference.getKey(), "Reference.key should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
+    }
+    if (referenceValues == null) {
+      referenceValues = new HashMap<>();
     }
     referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
   }
@@ -247,8 +256,13 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   private void setReferenceSingleValue(Reference link, ReferenceValue value) {
     if (value == null) {
-      referenceValues.remove(link.getKey());
+      if (referenceValues != null) {
+        referenceValues.remove(link.getKey());
+      }
     } else {
+      if (referenceValues == null) {
+        referenceValues = new HashMap<>();
+      }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
     }
   }
@@ -258,9 +272,12 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (referenceValue == null) {
       return;
     }
-    if (referenceValues.containsKey(link.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
       referenceValues.get(link.getKey()).add(referenceValue);
     } else {
+      if (referenceValues == null) {
+        referenceValues = new HashMap<>();
+      }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(referenceValue)));
     }
   }
