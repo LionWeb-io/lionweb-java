@@ -307,17 +307,26 @@ public class ClassifierInstanceUtils {
 
   public static boolean shallowAnnotationsEquality(
       List<AnnotationInstance> annotations1, List<AnnotationInstance> annotations2) {
-    return annotations1.size() == annotations2.size()
-        && IntStream.range(0, annotations1.size())
-            .allMatch(
-                i -> shallowClassifierInstanceEquality(annotations1.get(i), annotations2.get(i)));
+    int size1 = annotations1 == null ? 0 : annotations1.size();
+    int size2 = annotations2 == null ? 0 : annotations2.size();
+    return size1 == size2
+        && (size1 == 0
+            || IntStream.range(0, annotations1.size())
+                .allMatch(
+                    i ->
+                        shallowClassifierInstanceEquality(
+                            annotations1.get(i), annotations2.get(i))));
   }
 
   public static boolean shallowContainmentEquality(
       List<? extends Node> childrenA, List<? extends Node> childrenB) {
-    return childrenA.size() == childrenB.size()
-        && IntStream.range(0, childrenA.size())
-            .allMatch(i -> shallowClassifierInstanceEquality(childrenA.get(i), childrenB.get(i)));
+    int size1 = childrenA == null ? 0 : childrenA.size();
+    int size2 = childrenB == null ? 0 : childrenB.size();
+    return size1 == size2
+        && (size1 == 0
+            || IntStream.range(0, childrenA.size())
+                .allMatch(
+                    i -> shallowClassifierInstanceEquality(childrenA.get(i), childrenB.get(i))));
   }
 
   public static boolean shallowReferenceEquality(

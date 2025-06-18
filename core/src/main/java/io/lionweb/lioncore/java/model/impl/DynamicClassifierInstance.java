@@ -14,10 +14,10 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;
 
-  protected final Map<String, Object> propertyValues = new HashMap<>();
-  protected final Map<String, List<Node>> containmentValues = new HashMap<>();
+  protected @Nullable Map<String, Object> propertyValues;
+  protected @Nullable Map<String, List<Node>> containmentValues;
 
-  protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  protected @Nullable Map<String, List<ReferenceValue>> referenceValues;
 
   @Nullable
   public String getID() {
@@ -38,6 +38,14 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
         property.getKey(), "Property.key should not be null (property: " + property + ")");
     if (!getClassifier().allProperties().contains(property)) {
       throw new IllegalArgumentException("Property not belonging to this classifier");
+    }
+    if (propertyValues == null) {
+      if (property.getType()
+              == LionCoreBuiltins.getBoolean(this.getClassifier().getLionWebVersion())
+          && property.isRequired()) {
+        return false;
+      }
+      return null;
     }
     Object storedValue = propertyValues.get(property.getKey());
     if (storedValue == null
@@ -60,8 +68,16 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
       // DynamicNode can be simplified
-      propertyValues.remove(property.getKey());
+      if (propertyValues != null) {
+        propertyValues.remove(property.getKey());
+        if (propertyValues.isEmpty()) {
+          propertyValues = null;
+        }
+      }
     } else {
+      if (propertyValues == null) {
+        propertyValues = new HashMap<>();
+      }
       propertyValues.put(property.getKey(), value);
     }
   }
@@ -75,7 +91,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
-    if (containmentValues.containsKey(containment.getKey())) {
+    if (containmentValues != null && containmentValues.containsKey(containment.getKey())) {
       return containmentValues.get(containment.getKey());
     } else {
       return Collections.emptyList();
@@ -95,13 +111,15 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeChild(Node node) {
-    for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
-      if (entry.getValue().contains(node)) {
-        entry.getValue().remove(node);
-        if (node instanceof HasSettableParent) {
-          ((HasSettableParent) node).setParent(null);
+    if (containmentValues != null) {
+      for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
+        if (entry.getValue().contains(node)) {
+          entry.getValue().remove(node);
+          if (node instanceof HasSettableParent) {
+            ((HasSettableParent) node).setParent(null);
+          }
+          return;
         }
-        return;
       }
     }
     throw new IllegalArgumentException("The given node is not a child of this node");
@@ -114,7 +132,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
-    if (containmentValues.containsKey(containment.getKey())) {
+    if (containmentValues != null && containmentValues.containsKey(containment.getKey())) {
       List<Node> children = containmentValues.get(containment.getKey());
       if (children.size() > index) {
         children.remove(index);
@@ -133,7 +151,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (referenceValues.containsKey(reference.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       return referenceValues.get(reference.getKey());
     } else {
       return Collections.emptyList();
@@ -160,7 +178,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (referenceValues.containsKey(reference.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       for (int i = 0; i < referenceValuesOfInterest.size(); i++) {
         ReferenceValue rv = referenceValuesOfInterest.get(i);
@@ -188,7 +206,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
-    if (referenceValues.containsKey(reference.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       if (referenceValuesOfInterest.size() > index) {
         referenceValuesOfInterest.remove(index);
@@ -210,6 +228,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
+    if (referenceValues == null) {
+      referenceValues = new HashMap<>();
+    }
     referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
   }
 
@@ -220,6 +241,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (value instanceof HasSettableParent) {
       ((HasSettableParent) value).setParent((ClassifierInstance<?>) this);
     }
+    if (containmentValues == null) {
+      containmentValues = new HashMap<>();
+    }
     if (containmentValues.containsKey(link.getKey())) {
       containmentValues.get(link.getKey()).add(value);
     } else {
@@ -228,16 +252,25 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   private void setContainmentSingleValue(Containment link, Node value) {
-    List<Node> prevValue = containmentValues.get(link.getKey());
+    List<Node> prevValue = null;
+    if (containmentValues != null) {
+      containmentValues.get(link.getKey());
+    }
     if (prevValue != null) {
       List<Node> copy = new LinkedList<>(prevValue);
       copy.forEach(c -> this.removeChild(c));
     }
     if (value == null) {
       containmentValues.remove(link.getKey());
+      if (containmentValues.isEmpty()) {
+        containmentValues = null;
+      }
     } else {
       if (value instanceof HasSettableParent) {
         ((HasSettableParent) value).setParent((Node) this);
+      }
+      if (containmentValues == null) {
+        containmentValues = new HashMap<>();
       }
       containmentValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
     }
@@ -247,8 +280,13 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   private void setReferenceSingleValue(Reference link, ReferenceValue value) {
     if (value == null) {
-      referenceValues.remove(link.getKey());
+      if (referenceValues != null) {
+        referenceValues.remove(link.getKey());
+      }
     } else {
+      if (referenceValues == null) {
+        referenceValues = new HashMap<>();
+      }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
     }
   }
@@ -258,9 +296,12 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (referenceValue == null) {
       return;
     }
-    if (referenceValues.containsKey(link.getKey())) {
+    if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
       referenceValues.get(link.getKey()).add(referenceValue);
     } else {
+      if (referenceValues == null) {
+        referenceValues = new HashMap<>();
+      }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(referenceValue)));
     }
   }

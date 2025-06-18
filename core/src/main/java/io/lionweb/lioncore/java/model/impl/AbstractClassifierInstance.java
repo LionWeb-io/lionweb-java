@@ -12,12 +12,15 @@ import javax.annotation.Nullable;
 
 public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     implements ClassifierInstance<T> {
-  protected final List<AnnotationInstance> annotations = new ArrayList<>();
+  protected List<AnnotationInstance> annotations = null;
 
   // Public methods for annotations
 
   @Override
   public @Nonnull List<AnnotationInstance> getAnnotations() {
+    if (annotations == null) {
+      return Collections.emptyList();
+    }
     return Collections.unmodifiableList(annotations);
   }
 
@@ -27,6 +30,9 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
    */
   @Override
   public @Nonnull List<AnnotationInstance> getAnnotations(@Nonnull Annotation annotation) {
+    if (annotations == null) {
+      return Collections.emptyList();
+    }
     return annotations.stream()
         .filter(a -> a.getAnnotationDefinition() == annotation)
         .collect(Collectors.toList());
@@ -35,6 +41,9 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   @Override
   public void addAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
+    if (this.annotations == null) {
+      this.annotations = new ArrayList<>();
+    }
     if (this.annotations.contains(instance)) {
       // necessary to avoid infinite loops and duplicate insertions
       return;
@@ -53,7 +62,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   @Override
   public void removeAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    if (!this.annotations.remove(instance)) {
+    if (annotations == null || !this.annotations.remove(instance)) {
       throw new IllegalArgumentException();
     }
     if (instance instanceof DynamicAnnotationInstance) {
@@ -63,7 +72,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   void tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    if (!this.annotations.remove(instance)) {
+    if (annotations == null || !this.annotations.remove(instance)) {
       return;
     }
     if (instance instanceof DynamicAnnotationInstance) {

@@ -82,6 +82,12 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   private static boolean shallowReferenceEquality(
       Map<String, List<ReferenceValue>> reference1, Map<String, List<ReferenceValue>> reference2) {
+    if (reference1 == null && reference2 == null) {
+      return true;
+    }
+    if (reference1 == null || reference2 == null) {
+      return false;
+    }
     if (!reference1.keySet().equals(reference2.keySet())) {
       return false;
     }
@@ -96,6 +102,12 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   private static boolean shallowContainmentsEquality(
       Map<String, List<Node>> containments1, Map<String, List<Node>> containments2) {
+    if (containments1 == null && containments2 == null) {
+      return true;
+    }
+    if (containments1 == null || containments2 == null) {
+      return false;
+    }
     if (!containments1.keySet().equals(containments2.keySet())) {
       return false;
     }
@@ -122,6 +134,33 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
       qualifiedName = "<cannot be calculated>";
     }
 
+    String propertyValuesStr = "<null>";
+    if (propertyValues != null) {
+      propertyValuesStr =
+          propertyValues.entrySet().stream()
+              .map(e -> e.getKey() + "=" + e.getValue())
+              .collect(Collectors.joining(", "));
+    }
+    String containmentValuesStr = "<null>";
+    if (containmentValues != null) {
+      containmentValuesStr =
+          containmentValues.entrySet().stream()
+              .map(
+                  e -> {
+                    String childrenRepr =
+                        e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
+                    return e.getKey() + "=" + childrenRepr;
+                  })
+              .collect(Collectors.joining(", "));
+    }
+    String referenceValuesStr = "<null>";
+    if (referenceValues != null) {
+      referenceValuesStr =
+          referenceValues.entrySet().stream()
+              .map(e -> e.getKey() + "=" + e.getValue())
+              .collect(Collectors.joining(", "));
+    }
+
     return "DynamicNode{"
         + "id='"
         + id
@@ -131,22 +170,11 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
         + ", concept="
         + qualifiedName
         + ", propertyValues={"
-        + propertyValues.entrySet().stream()
-            .map(e -> e.getKey() + "=" + e.getValue())
-            .collect(Collectors.joining(", "))
+        + propertyValuesStr
         + "}, containmentValues={"
-        + containmentValues.entrySet().stream()
-            .map(
-                e -> {
-                  String childrenRepr =
-                      e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
-                  return e.getKey() + "=" + childrenRepr;
-                })
-            .collect(Collectors.joining(", "))
+        + containmentValuesStr
         + "}, referenceValues={"
-        + referenceValues.entrySet().stream()
-            .map(e -> e.getKey() + "=" + e.getValue())
-            .collect(Collectors.joining(", "))
+        + referenceValuesStr
         + "}, annotations={"
         + annotations
         + "} }";
