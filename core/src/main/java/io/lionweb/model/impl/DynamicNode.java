@@ -69,6 +69,12 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   private static boolean shallowReferenceEquality(
       Map<String, List<ReferenceValue>> reference1, Map<String, List<ReferenceValue>> reference2) {
+    if (reference1 == null && reference2 == null) {
+      return true;
+    }
+    if (reference1 == null || reference2 == null) {
+      return false;
+    }
     if (!reference1.keySet().equals(reference2.keySet())) {
       return false;
     }
@@ -109,6 +115,14 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
       qualifiedName = "<cannot be calculated>";
     }
 
+    String referenceValuesStr = "<null>";
+    if (referenceValues != null) {
+      referenceValuesStr =
+          referenceValues.entrySet().stream()
+              .map(e -> e.getKey() + "=" + e.getValue())
+              .collect(Collectors.joining(", "));
+    }
+
     return "DynamicNode{"
         + "id='"
         + id
@@ -131,9 +145,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
                 })
             .collect(Collectors.joining(", "))
         + "}, referenceValues={"
-        + referenceValues.entrySet().stream()
-            .map(e -> e.getKey() + "=" + e.getValue())
-            .collect(Collectors.joining(", "))
+        + referenceValuesStr
         + "}, annotations={"
         + annotations
         + "} }";
