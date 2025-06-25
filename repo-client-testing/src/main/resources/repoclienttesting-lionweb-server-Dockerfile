@@ -1,10 +1,10 @@
 FROM nikolaik/python-nodejs:python3.12-nodejs22
-ARG lionwebRepositoryCommitId=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ARG lionwebServerCommitID=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 RUN apt-get update && apt-get install -y gettext-base
-RUN mkdir lionweb-repository
-WORKDIR lionweb-repository
+RUN mkdir lionweb-server
+WORKDIR lionweb-server
 RUN git init
-RUN git fetch --depth 1 https://github.com/LionWeb-io/lionweb-repository.git ${lionwebRepositoryCommitId}
+RUN git fetch --depth 1 https://github.com/LionWeb-io/lionweb-server.git ${lionwebServerCommitID}
 RUN git checkout FETCH_HEAD
 ADD server-config.template.json packages/server
 RUN npm install

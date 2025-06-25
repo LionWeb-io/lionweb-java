@@ -41,12 +41,12 @@ dependencies {
     runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
 }
 
-val lionwebRepositoryCommitID = extra["lionwebRepositoryCommitID"]
+val lionwebServerCommitID = extra["lionwebServerCommitID"]
 
 buildConfig {
     sourceSets.getByName("main") {
         packageName("io.lionweb.repoclient.testing")
-        buildConfigField("String", "LIONWEB_REPOSITORY_COMMIT_ID", "\"${lionwebRepositoryCommitID}\"")
+        buildConfigField("String", "LIONWEB_SERVER_COMMIT_ID", "\"${lionwebServerCommitID}\"")
         useJavaOutput()
     }
 }
