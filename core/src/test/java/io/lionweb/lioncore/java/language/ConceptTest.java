@@ -1,7 +1,9 @@
 package io.lionweb.lioncore.java.language;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
+import io.lionweb.lioncore.java.self.LionCore;
 import org.junit.Test;
 
 public class ConceptTest {
@@ -52,5 +54,43 @@ public class ConceptTest {
     assertEquals(1, c.inheritedFeatures().size());
     assertEquals(1, d.allFeatures().size());
     assertEquals(0, d.inheritedFeatures().size());
+  }
+
+  @Test
+  public void removingFeature() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    Property p1 = new Property("p1", a, "p1-id");
+    assertEquals(0, a.getFeatures().size());
+    a.addFeature(p1);
+    assertEquals(1, a.getFeatures().size());
+    assertEquals(a, p1.getParent());
+    assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());
+
+    a.removeChild(p1);
+    assertEquals(0, a.getFeatures().size());
+    assertNull(p1.getParent());
+    assertNull(p1.getContainmentFeature());
+
+    a.addFeature(p1);
+    assertEquals(1, a.getFeatures().size());
+    assertEquals(a, p1.getParent());
+    assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());
+
+    a.removeFeature(p1);
+    assertEquals(0, a.getFeatures().size());
+    assertNull(p1.getParent());
+    assertNull(p1.getContainmentFeature());
+  }
+
+  @Test
+  public void containingFeature() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    Property p1 = new Property("p1", a, "p1-id");
+    a.addFeature(p1);
+    assertNull(l.getContainmentFeature());
+    assertEquals(LionCore.getLanguage().getFeatureByName("entities"), a.getContainmentFeature());
+    assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());
   }
 }

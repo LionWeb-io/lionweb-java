@@ -3,10 +3,9 @@ package io.lionweb.lioncore.java.model.impl;
 import static io.lionweb.lioncore.java.model.ClassifierInstanceUtils.*;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.language.Property;
-import io.lionweb.lioncore.java.language.Reference;
+import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
+import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
 import java.util.*;
@@ -26,10 +25,10 @@ import javax.annotation.Nullable;
  * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
-    implements Node {
+    implements Node, HasSettableParent {
   private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;
-  private @Nullable Node parent;
+  private @Nullable ClassifierInstance<?> parent;
 
   // We use as keys of these maps the name of the features and not the IDs.
   // The reason why we do that, is to avoid a circular dependency as the classes for defining
@@ -53,27 +52,14 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     return (T) this;
   }
 
-  public T setParent(Node parent) {
+  public T setParent(ClassifierInstance<?> parent) {
     this.parent = parent;
     return (T) this;
   }
 
   @Override
-  public Node getRoot() {
-    if (getParent() == null) {
-      return this;
-    }
-    return getParent().getRoot();
-  }
-
-  @Override
-  public Node getParent() {
+  public ClassifierInstance<?> getParent() {
     return parent;
-  }
-
-  @Override
-  public Containment getContainmentFeature() {
-    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -138,8 +124,22 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Override
   public void removeChild(@Nonnull Node child) {
-    Objects.requireNonNull(child);
-    throw new UnsupportedOperationException();
+    Objects.requireNonNull(child, "child should not be null");
+    if (child.getParent() != this) {
+      throw new IllegalArgumentException(
+          "Cannot remove the given child, as this node it is not its parent");
+    }
+    Feature<?> feature = child.getContainmentFeature();
+    if (feature == null) {
+      throw new IllegalStateException(
+          "If the parent is not null, the containment feature should not be null");
+    }
+
+    List<Node> children = containmentValues.get(feature.getName());
+    children.remove(child);
+    if (child instanceof HasSettableParent) {
+      ((HasSettableParent) child).setParent(null);
+    }
   }
 
   @Nonnull

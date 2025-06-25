@@ -129,6 +129,14 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return (T) this;
   }
 
+  public void removeFeature(@Nonnull Feature<?> feature) {
+    Objects.requireNonNull(feature, "feature should not be null");
+    if (!getFeatures().contains(feature)) {
+      throw new IllegalArgumentException("The given feature does not belong to this concept");
+    }
+    this.removeChild(feature);
+  }
+
   @Override
   public String namespaceQualifier() {
     return this.qualifiedName();

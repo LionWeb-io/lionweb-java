@@ -37,7 +37,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
   }
 
   public @Nullable Enumeration getEnumeration() {
-    Node parent = getParent();
+    Node parent = (Node) getParent();
     if (parent == null) {
       return null;
     } else if (parent instanceof Enumeration) {
