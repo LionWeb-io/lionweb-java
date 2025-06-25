@@ -58,11 +58,10 @@ public class AbstractRepoClientFunctionalTest {
         new GenericContainer<>(
                 new ImageFromDockerfile()
                     .withFileFromClasspath(
-                        "Dockerfile", "repoclienttesting-lionweb-repository-Dockerfile")
+                        "Dockerfile", "repoclienttesting-lionweb-server-Dockerfile")
                     .withFileFromClasspath(
                         "server-config.template.json", "server-config.template.json")
-                    .withBuildArg(
-                        "lionwebRepositoryCommitId", BuildConfig.LIONWEB_REPOSITORY_COMMIT_ID))
+                    .withBuildArg("lionwebServerCommitID", BuildConfig.LIONWEB_SERVER_COMMIT_ID))
             .withReuse(true)
             .dependsOn(db)
             .withNetwork(network)

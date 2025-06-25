@@ -13,14 +13,14 @@ repositories {
     mavenCentral()
 }
 
-val lionwebRepositoryCommitID: String by project
+val lionwebServerCommitID: String by project
 
 val jvmVersion = extra["jvmVersion"] as String
 val specsVersion = extra["specsVersion"] as String
 
 tasks.withType<Jar>().configureEach {
     manifest {
-        attributes["lionwebRepositoryCommitID"] = lionwebRepositoryCommitID
+        attributes["lionwebServerCommitID"] = lionwebServerCommitID
     }
 }
 
