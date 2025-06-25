@@ -64,7 +64,19 @@ public interface Node extends ClassifierInstance<Concept> {
    *     href="https://download.eclipse.org/modeling/emf/emf/javadoc/2.6.0/org/eclipse/emf/ecore/EObject.html#eContainingFeature()">Ecore
    *     equivalent <i>EObject.eContainingFeature</i> in documentation</a>.
    */
-  Containment getContainmentFeature();
+  @Nullable
+  default Containment getContainmentFeature() {
+    ClassifierInstance<?> parent = getParent();
+    if (parent == null) {
+      return null;
+    }
+    for (Containment containment : parent.getClassifier().allContainments()) {
+      if (parent.getChildren(containment).stream().anyMatch(it -> it == this)) {
+        return containment;
+      }
+    }
+    throw new IllegalStateException("Unable to find the containment feature");
+  }
 
   /**
    * Return a list containing this node and all its descendants. Does <i>not</i> include
