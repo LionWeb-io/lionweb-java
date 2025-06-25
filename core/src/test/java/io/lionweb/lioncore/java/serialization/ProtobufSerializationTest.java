@@ -2,6 +2,7 @@ package io.lionweb.lioncore.java.serialization;
 
 import static org.junit.Assert.*;
 
+import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.AnnotationInstance;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
@@ -324,6 +325,123 @@ public class ProtobufSerializationTest extends SerializationTest {
     assertEquals(2, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
     assertSerializedChunkContainsLanguage(serializedChunk, LionCoreBuiltins.getInstance());
+  }
+
+  @Test
+  public void deserializeLanguageToChunk() throws IOException {
+    Language metaLang = new Language(LionWebVersion.v2023_1, "metaLang");
+    metaLang.setID("metaLang");
+    metaLang.setKey("metaLang");
+    metaLang.setVersion("1");
+    Annotation metaAnn = new Annotation(metaLang, "metaAnn", "metaAnn", "metaAnn");
+
+    Language l = new Language(LionWebVersion.v2023_1, "l");
+    l.setKey("l");
+    l.setID("l");
+    l.setVersion("1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+    DynamicAnnotationInstance ann = new DynamicAnnotationInstance("metaAnn_1", metaAnn, c);
+    c.addAnnotation(ann);
+
+    ProtoBufSerialization serialization =
+        SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
+    serialization.enableDynamicNodes();
+    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationBlock(l);
+
+    byte[] bytes = serialization.serializeToByteArray(serializedChunk);
+    SerializedChunk deserializedChunk = serialization.deserializeToChunk(bytes);
+
+    assertEquals(serializedChunk, deserializedChunk);
+  }
+
+  @Test
+  public void serializeAnnotationsUsingLW2023_1() {
+    Language l = new Language(LionWebVersion.v2023_1, "l");
+    l.setKey("l");
+    l.setID("l");
+    l.setVersion("1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
+    AnnotationInstance a1_2 = new DynamicAnnotationInstance("a1_2", a1, n1);
+    AnnotationInstance a2_3 = new DynamicAnnotationInstance("a2_3", a2, n1);
+
+    ProtoBufSerialization serialization =
+        SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
+    serialization.enableDynamicNodes();
+    SerializedChunk serializedChunk = serialization.serializeNodesToSerializationBlock(n1);
+
+    assertEquals(4, serializedChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
+    assertEquals("n1", serializedN1.getID());
+    assertNull(serializedN1.getParentNodeID());
+    assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
+    SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
+    assertEquals("n1", serializedA1_1.getParentNodeID());
+
+    List<ClassifierInstance<?>> deserialized =
+        serialization.deserializeSerializationBlock(serializedChunk);
+    assertEquals(4, deserialized.size());
+    assertInstancesAreEquals(a1_1, deserialized.get(1));
+    assertEquals(deserialized.get(0), deserialized.get(1).getParent());
+    assertInstancesAreEquals(a1_2, deserialized.get(2));
+    assertEquals(deserialized.get(0), deserialized.get(2).getParent());
+    assertInstancesAreEquals(a2_3, deserialized.get(3));
+    assertEquals(deserialized.get(0), deserialized.get(3).getParent());
+    assertInstancesAreEquals(n1, deserialized.get(0));
+    assertEquals(
+        Arrays.asList(deserialized.get(1), deserialized.get(2), deserialized.get(3)),
+        deserialized.get(0).getAnnotations());
+  }
+
+  @Test
+  public void serializeLanguage2023_1() {
+    Language metaLang = new Language(LionWebVersion.v2023_1, "metaLang");
+    metaLang.setID("metaLang");
+    metaLang.setKey("metaLang");
+    metaLang.setVersion("1");
+    Annotation metaAnn = new Annotation(metaLang, "metaAnn", "metaAnn", "metaAnn");
+
+    Language l = new Language(LionWebVersion.v2023_1, "l");
+    l.setKey("l");
+    l.setID("l");
+    l.setVersion("1");
+    Annotation a1 = new Annotation(l, "a1", "a1", "a1");
+    Annotation a2 = new Annotation(l, "a2", "a2", "a2");
+    Concept c = new Concept(l, "c", "c", "c");
+    DynamicAnnotationInstance ann = new DynamicAnnotationInstance("metaAnn_1", metaAnn, c);
+    c.addAnnotation(ann);
+
+    ProtoBufSerialization serialization =
+        SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
+    serialization.enableDynamicNodes();
+    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationBlock(l);
+
+    assertEquals(5, serializedChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
+    assertEquals("l", serializedL.getID());
+    assertNull(serializedL.getParentNodeID());
+
+    SerializedClassifierInstance serializedC = serializedChunk.getInstanceByID("c");
+    assertEquals("c", serializedC.getID());
+    assertEquals(Arrays.asList("metaAnn_1"), serializedC.getAnnotations());
+
+    serialization.registerLanguage(metaLang);
+    List<ClassifierInstance<?>> deserialized =
+        serialization.deserializeSerializationBlock(serializedChunk);
+    assertEquals(5, deserialized.size());
+    ClassifierInstance<?> deserializedC = deserialized.get(3);
+    assertInstancesAreEquals(c, deserializedC);
+    assertEquals(deserialized.get(0), deserializedC.getParent());
+    ClassifierInstance<?> deserializedAnn = deserialized.get(4);
+    assertInstancesAreEquals(ann, deserializedAnn);
+    assertEquals(deserializedC, deserializedAnn.getParent());
+    assertEquals(Arrays.asList(deserializedAnn), deserializedC.getAnnotations());
   }
 
   private void assertSerializedChunkContainsLanguage(

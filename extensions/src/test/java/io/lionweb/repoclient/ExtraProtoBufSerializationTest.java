@@ -1,14 +1,17 @@
 package io.lionweb.repoclient;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.*;
+import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.lioncore.java.language.Language;
+import io.lionweb.lioncore.java.language.LionCoreBuiltins;
+import io.lionweb.lioncore.java.language.Property;
 import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.serialization.data.*;
+import io.lionweb.lioncore.java.serialization.data.MetaPointer;
 import io.lionweb.serialization.extensions.BulkImport;
-import io.lionweb.serialization.extensions.ExtraFlatBuffersSerialization;
+import io.lionweb.serialization.extensions.ExtraProtoBufSerialization;
 import io.lionweb.serialization.extensions.ExtraSerializationProvider;
 import io.lionweb.serialization.flatbuffers.gen.FBAttachPoint;
 import io.lionweb.serialization.flatbuffers.gen.FBBulkImport;
@@ -17,8 +20,8 @@ import io.lionweb.serialization.flatbuffers.gen.FBNode;
 import java.nio.ByteBuffer;
 import org.junit.Test;
 
-/** Testing various functionalities of FlatBuffersSerialization. */
-public class ExtraFlatbuffersSerializationTest {
+/** Testing various functionalities of ProtoBufSerialization. */
+public class ExtraProtoBufSerializationTest {
 
   @Test
   public void bulkImportSerialization() {
@@ -37,9 +40,9 @@ public class ExtraFlatbuffersSerializationTest {
     bulkImport.addAttachPoint(
         new BulkImport.AttachPoint("n2", new MetaPointer("Foo", "1", "c-key"), "n1"));
 
-    ExtraFlatBuffersSerialization flatBuffersSerialization =
-        ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization();
-    byte[] bytes = flatBuffersSerialization.serializeBulkImport(bulkImport);
+    ExtraProtoBufSerialization serialization =
+        ExtraSerializationProvider.getExtraStandardProtoBufSerialization();
+    byte[] bytes = serialization.serializeBulkImportToBytes(bulkImport);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
     FBBulkImport fbBulkImport = FBBulkImport.getRootAsFBBulkImport(bb);
@@ -83,9 +86,9 @@ public class ExtraFlatbuffersSerializationTest {
     bulkImport.addAttachPoint(
         new BulkImport.AttachPoint("n2", new MetaPointer("Foo", "1", "c-key"), "n1"));
 
-    ExtraFlatBuffersSerialization flatBuffersSerialization =
-        ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
-    byte[] bytes = flatBuffersSerialization.serializeBulkImport(bulkImport);
+    ExtraProtoBufSerialization serialization =
+        ExtraSerializationProvider.getExtraStandardProtoBufSerialization(LionWebVersion.v2023_1);
+    byte[] bytes = serialization.serializeBulkImportToBytes(bulkImport);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
     FBBulkImport fbBulkImport = FBBulkImport.getRootAsFBBulkImport(bb);
@@ -128,9 +131,9 @@ public class ExtraFlatbuffersSerializationTest {
     BulkImport bulkImport = new BulkImport();
     bulkImport.addNode(n1);
 
-    ExtraFlatBuffersSerialization flatBuffersSerialization =
-        ExtraSerializationProvider.getExtraStandardFlatBuffersSerialization();
-    byte[] bytes = flatBuffersSerialization.serializeBulkImport(bulkImport);
+    ExtraProtoBufSerialization serialization =
+        ExtraSerializationProvider.getExtraStandardProtoBufSerialization();
+    byte[] bytes = serialization.serializeBulkImportToBytes(bulkImport);
 
     ByteBuffer bb = ByteBuffer.wrap(bytes);
     FBBulkImport fbBulkImport = FBBulkImport.getRootAsFBBulkImport(bb);
