@@ -7,5 +7,11 @@ import javax.annotation.Nullable;
  * node into a containment.
  */
 public interface HasSettableParent {
+  /**
+   * Set a new parent.
+   *
+   * @param parent the new parent to be assigned
+   * @return the element itself
+   */
   ClassifierInstance<?> setParent(@Nullable ClassifierInstance<?> parent);
 }

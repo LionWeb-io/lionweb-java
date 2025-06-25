@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.java.language;
 
 import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.impl.M3Node;
 import io.lionweb.lioncore.java.self.LionCore;
 import javax.annotation.Nonnull;
@@ -37,7 +37,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
   }
 
   public @Nullable Enumeration getEnumeration() {
-    Node parent = (Node) getParent();
+    ClassifierInstance<?> parent = getParent();
     if (parent == null) {
       return null;
     } else if (parent instanceof Enumeration) {
