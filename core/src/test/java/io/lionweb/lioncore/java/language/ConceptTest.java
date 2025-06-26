@@ -1,7 +1,6 @@
 package io.lionweb.lioncore.java.language;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import io.lionweb.lioncore.java.self.LionCore;
 import org.junit.Test;
@@ -92,5 +91,21 @@ public class ConceptTest {
     assertNull(l.getContainmentFeature());
     assertEquals(LionCore.getLanguage().getFeatureByName("entities"), a.getContainmentFeature());
     assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());
+  }
+
+  @Test
+  public void removingInheritedFeature() {
+    Language l = new Language("MyLanguage", "l-id", "l-key", "123");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    Property p1 = new Property("p1", a, "p1-id");
+    Concept b = new Concept(l, "B", "b-id", "b-key");
+    b.setExtendedConcept(a);
+    assertEquals(0, a.getFeatures().size());
+    a.addFeature(p1);
+    assertEquals(1, a.getFeatures().size());
+    assertEquals(a, p1.getParent());
+    assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());
+
+    assertThrows(IllegalArgumentException.class, () -> b.removeFeature(p1));
   }
 }

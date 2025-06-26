@@ -1,18 +1,17 @@
 package io.lionweb.lioncore.java.model.impl;
 
+import static io.lionweb.lioncore.java.model.ClassifierInstanceUtils.*;
+
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static io.lionweb.lioncore.java.model.ClassifierInstanceUtils.*;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Base class to help implements Node in the language package.

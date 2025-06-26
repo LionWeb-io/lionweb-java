@@ -36,7 +36,8 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
   T getClassifier();
 
   /** The immediate parent of the Node. This should be null only for root nodes. */
-  @Nullable ClassifierInstance<?> getParent();
+  @Nullable
+  ClassifierInstance<?> getParent();
 
   /** Collects `self` and all its descendants into `result`. */
   static <T extends ClassifierInstance<?>> void collectSelfAndDescendants(
