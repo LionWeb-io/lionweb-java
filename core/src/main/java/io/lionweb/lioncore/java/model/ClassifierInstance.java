@@ -6,6 +6,7 @@ import io.lionweb.lioncore.java.model.impl.ProxyNode;
 import java.util.Collection;
 import java.util.List;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureValues {
   /** Return all the annotations associated to this ClassifierInstance. */
@@ -35,7 +36,7 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
   T getClassifier();
 
   /** The immediate parent of the Node. This should be null only for root nodes. */
-  ClassifierInstance<?> getParent();
+  @Nullable ClassifierInstance<?> getParent();
 
   /** Collects `self` and all its descendants into `result`. */
   static <T extends ClassifierInstance<?>> void collectSelfAndDescendants(
