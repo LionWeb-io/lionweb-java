@@ -145,6 +145,12 @@ public class ModelComparator {
     }
   }
 
+  public static boolean areEquivalent(ClassifierInstance<?> a, ClassifierInstance<?> b) {
+    ModelComparator modelComparator = new ModelComparator();
+    ModelComparator.ComparisonResult comparisonResult = modelComparator.compare(a, b);
+    return comparisonResult.areEquivalent();
+  }
+
   public ComparisonResult compare(Node nodeA, Node nodeB) {
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");

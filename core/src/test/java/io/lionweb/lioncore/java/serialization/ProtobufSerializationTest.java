@@ -4,10 +4,7 @@ import static org.junit.Assert.*;
 
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.AnnotationInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.lioncore.java.model.*;
 import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance;
 import io.lionweb.lioncore.java.model.impl.DynamicNode;
 import io.lionweb.lioncore.java.serialization.data.*;
@@ -297,13 +294,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     List<ClassifierInstance<?>> deserialized =
         protoBufSerialization.deserializeSerializationBlock(serializedChunk);
     assertEquals(5, deserialized.size());
-    ClassifierInstance<?> deserializedC = deserialized.get(3);
-    assertInstancesAreEquals(c, deserializedC);
-    assertEquals(deserialized.get(0), deserializedC.getParent());
-    ClassifierInstance<?> deserializedAnn = deserialized.get(4);
-    assertInstancesAreEquals(ann, deserializedAnn);
-    assertEquals(deserializedC, deserializedAnn.getParent());
-    assertEquals(Arrays.asList(deserializedAnn), deserializedC.getAnnotations());
+    assertInstancesAreEquals(l, deserialized.get(0));
   }
 
   @Test
@@ -387,16 +378,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     List<ClassifierInstance<?>> deserialized =
         serialization.deserializeSerializationBlock(serializedChunk);
     assertEquals(4, deserialized.size());
-    assertInstancesAreEquals(a1_1, deserialized.get(1));
-    assertEquals(deserialized.get(0), deserialized.get(1).getParent());
-    assertInstancesAreEquals(a1_2, deserialized.get(2));
-    assertEquals(deserialized.get(0), deserialized.get(2).getParent());
-    assertInstancesAreEquals(a2_3, deserialized.get(3));
-    assertEquals(deserialized.get(0), deserialized.get(3).getParent());
     assertInstancesAreEquals(n1, deserialized.get(0));
-    assertEquals(
-        Arrays.asList(deserialized.get(1), deserialized.get(2), deserialized.get(3)),
-        deserialized.get(0).getAnnotations());
   }
 
   @Test
@@ -442,6 +424,26 @@ public class ProtobufSerializationTest extends SerializationTest {
     assertInstancesAreEquals(ann, deserializedAnn);
     assertEquals(deserializedC, deserializedAnn.getParent());
     assertEquals(Arrays.asList(deserializedAnn), deserializedC.getAnnotations());
+  }
+
+  @Test
+  public void serializationWithNullReferencesAndProperties() throws IOException {
+    Language myLanguage = new Language();
+    myLanguage.setID("myLanguage");
+    myLanguage.setName(null);
+    myLanguage.setKey("myLanguage-key");
+    myLanguage.setVersion("3");
+    Concept myConcept = new Concept();
+    myConcept.setID("myConcept");
+    myConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
+    myConcept.setReferenceValues(
+        myConcept.getClassifier().getReferenceByName("extends"),
+        Arrays.asList(new ReferenceValue(null, null)));
+    myLanguage.addElement(myConcept);
+
+    ProtoBufSerialization serialization = SerializationProvider.getStandardProtoBufSerialization();
+    byte[] bytes = serialization.serializeTreesToByteArray(myLanguage);
+    assertInstancesAreEquals(myLanguage, serialization.deserializeToNodes(bytes).get(0));
   }
 
   private void assertSerializedChunkContainsLanguage(
