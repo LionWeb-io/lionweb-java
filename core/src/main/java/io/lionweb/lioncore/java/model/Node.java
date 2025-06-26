@@ -63,6 +63,8 @@ public interface Node extends ClassifierInstance<Concept> {
    * @see <a
    *     href="https://download.eclipse.org/modeling/emf/emf/javadoc/2.6.0/org/eclipse/emf/ecore/EObject.html#eContainingFeature()">Ecore
    *     equivalent <i>EObject.eContainingFeature</i> in documentation</a>.
+   *
+   * @return the Containment holding the Node. Or null, if the Node has no parent
    */
   @Nullable
   default Containment getContainmentFeature() {

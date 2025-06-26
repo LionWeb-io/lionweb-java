@@ -8,6 +8,7 @@ import io.lionweb.lioncore.java.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * DynamicNode can be used to represent Node of any Concept. The drawback is that this class expose
@@ -43,7 +44,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public DynamicNode setParent(ClassifierInstance<?> parent) {
+  public DynamicNode setParent(@Nullable ClassifierInstance<?> parent) {
     this.parent = parent;
     return this;
   }

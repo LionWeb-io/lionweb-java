@@ -1,17 +1,18 @@
 package io.lionweb.lioncore.java.model.impl;
 
-import static io.lionweb.lioncore.java.model.ClassifierInstanceUtils.*;
-
 import io.lionweb.lioncore.java.LionWebVersion;
 import io.lionweb.lioncore.java.language.*;
 import io.lionweb.lioncore.java.model.ClassifierInstance;
 import io.lionweb.lioncore.java.model.HasSettableParent;
 import io.lionweb.lioncore.java.model.Node;
 import io.lionweb.lioncore.java.model.ReferenceValue;
-import java.util.*;
-import java.util.stream.Collectors;
+
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static io.lionweb.lioncore.java.model.ClassifierInstanceUtils.*;
 
 /**
  * Base class to help implements Node in the language package.
@@ -58,6 +59,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
+  @Nullable
   public ClassifierInstance<?> getParent() {
     return parent;
   }
@@ -129,6 +131,14 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       throw new IllegalArgumentException(
           "Cannot remove the given child, as this node it is not its parent");
     }
+    /*
+     * Note that, if the parent of the child is equal to this, it means the parent
+     * is not null, and therefore child.getContainmentFeature should not be null.
+     * Most implementation of the method (including the default one in Node) would
+     * either return a proper value or throw an exception to signal the inconsistency,
+     * so the extra check for feature not to be null is out of caution and to report
+     * the inconsistency, if somehow this has not been done by getContainmentFeature
+     */
     Feature<?> feature = child.getContainmentFeature();
     if (feature == null) {
       throw new IllegalStateException(
