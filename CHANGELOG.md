@@ -117,6 +117,6 @@ Introducing support for LionWeb 2024.1
 * Add possibility to remove feature from concept
 * Improve support for multiple LionWeb versions in ProtobufSerialization and FlatBuffersSerialization 
 
-### Version 0.5.0
+### Version 1.0.0
 
 * Reorganization of all packages
