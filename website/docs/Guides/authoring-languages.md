@@ -59,13 +59,13 @@ The following example shows how to define a minimal language with a single conce
 ```java
 package com.example;
 
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Language;
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
-import io.lionweb.lioncore.java.language.Property;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
-import io.lionweb.lioncore.java.utils.LanguageValidator;
+import io.lionweb.language.Concept;
+import io.lionweb.language.Language;
+import io.lionweb.language.LionCoreBuiltins;
+import io.lionweb.language.Property;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.SerializationProvider;
+import io.lionweb.utils.LanguageValidator;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;

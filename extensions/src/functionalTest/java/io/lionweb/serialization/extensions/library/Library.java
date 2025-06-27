@@ -1,7 +1,7 @@
 package io.lionweb.serialization.extensions.library;
 
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.language.Concept;
+import io.lionweb.model.impl.DynamicNode;
 
 public class Library extends DynamicNode {
 

@@ -2,9 +2,9 @@ package io.lionweb.repoclient;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.LionWebVersion;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.repoclient.api.ClassifierKey;
 import io.lionweb.repoclient.api.ClassifierResult;
 import io.lionweb.repoclient.api.HistorySupport;

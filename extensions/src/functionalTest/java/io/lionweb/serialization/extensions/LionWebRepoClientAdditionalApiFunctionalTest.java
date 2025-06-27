@@ -2,9 +2,9 @@ package io.lionweb.serialization.extensions;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.Containment;
+import io.lionweb.model.Node;
 import io.lionweb.repoclient.ExtendedLionWebRepoClient;
 import io.lionweb.repoclient.api.HistorySupport;
 import io.lionweb.repoclient.api.RepositoryConfiguration;

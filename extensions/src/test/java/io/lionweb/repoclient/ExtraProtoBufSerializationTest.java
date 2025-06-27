@@ -2,14 +2,14 @@ package io.lionweb.repoclient;
 
 import static org.junit.Assert.assertEquals;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Language;
-import io.lionweb.lioncore.java.language.LionCoreBuiltins;
-import io.lionweb.lioncore.java.language.Property;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.serialization.data.MetaPointer;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.Concept;
+import io.lionweb.language.Language;
+import io.lionweb.language.LionCoreBuiltins;
+import io.lionweb.language.Property;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.extensions.BulkImport;
 import io.lionweb.serialization.extensions.ExtraProtoBufSerialization;
 import io.lionweb.serialization.extensions.ExtraSerializationProvider;

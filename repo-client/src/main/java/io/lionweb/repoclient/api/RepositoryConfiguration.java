@@ -1,6 +1,6 @@
 package io.lionweb.repoclient.api;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.LionWebVersion;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 

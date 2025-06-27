@@ -2,12 +2,12 @@ package io.lionweb.serialization.extensions.library;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.language.Language;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.Concept;
+import io.lionweb.language.Language;
+import io.lionweb.model.Node;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.SerializationProvider;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;

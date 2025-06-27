@@ -3,10 +3,10 @@ package io.lionweb.repoclient.impl;
 import static io.lionweb.serialization.extensions.CompressionSupport.considerCompression;
 
 import com.google.gson.*;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
-import io.lionweb.lioncore.protobuf.PBBulkImport;
+import io.lionweb.protobuf.PBBulkImport;
 import io.lionweb.repoclient.RequestFailureException;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.extensions.*;
 import java.io.IOException;
 import java.util.*;

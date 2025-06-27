@@ -2,12 +2,12 @@ package io.lionweb.repoclient.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.ProxyNode;
-import io.lionweb.lioncore.java.utils.CommonChecks;
+import io.lionweb.model.Node;
+import io.lionweb.model.impl.ProxyNode;
 import io.lionweb.repoclient.RequestFailureException;
 import io.lionweb.repoclient.api.HistoryAPIClient;
 import io.lionweb.repoclient.api.RepositoryVersionToken;
+import io.lionweb.utils.CommonChecks;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;

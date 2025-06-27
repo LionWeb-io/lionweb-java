@@ -1,13 +1,13 @@
 package com.example;
 
-import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.serialization.Instantiator;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import io.lionweb.lioncore.java.utils.ValidationResult;
+import io.lionweb.language.*;
+import io.lionweb.model.Node;
+import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.serialization.Instantiator;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.SerializationProvider;
+import io.lionweb.utils.NodeTreeValidator;
+import io.lionweb.utils.ValidationResult;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

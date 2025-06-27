@@ -2,7 +2,7 @@ package io.lionweb.repoclient.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.LionWebVersion;
 import io.lionweb.repoclient.RequestFailureException;
 import io.lionweb.repoclient.api.*;
 import java.io.IOException;

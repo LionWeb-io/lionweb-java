@@ -1,9 +1,9 @@
 package com.example;
 
-import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import io.lionweb.lioncore.java.utils.ValidationResult;
+import io.lionweb.language.*;
+import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.utils.NodeTreeValidator;
+import io.lionweb.utils.ValidationResult;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;

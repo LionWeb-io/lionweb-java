@@ -1,6 +1,6 @@
 package io.lionweb.serialization.extensions.library;
 
-import io.lionweb.lioncore.java.language.Concept;
+import io.lionweb.language.Concept;
 
 public class GuideBookWriter extends Writer {
   public GuideBookWriter(String id, String name) {
