@@ -62,7 +62,7 @@ jar {
                 "Manifest-Version": "1.0",
                 "Bundle-ManifestVersion": "2",
                 "Bundle-Name": "emf-builtins",
-                "Bundle-SymbolicName": "io.lionweb.java.emf.builtins;singleton:=true",
+                "Bundle-SymbolicName": "io.lionweb.emf.builtins;singleton:=true",
                 "Bundle-Version": "${version}.qualifier",
                 "Require-Bundle": "org.eclipse.emf.ecore"
         )
