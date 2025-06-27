@@ -1,4 +1,4 @@
-module io.lionweb.java.emf.builtins
+module io.lionweb.emf.builtins
 
 import org.eclipse.xtext.xtext.generator.*
 import org.eclipse.xtext.xtext.generator.model.project.*

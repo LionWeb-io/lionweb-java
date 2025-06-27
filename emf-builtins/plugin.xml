@@ -14,7 +14,7 @@
       <!-- @generated builtins -->
       <package
             uri="http://lionweb.io/lionweb-java/emf/core/builtins/2023.1"
-            class="io.lionweb.java.emf.builtins.BuiltinsPackage"
+            class="io.lionweb.emf.builtins.BuiltinsPackage"
             genModel="src/main/model/builtins.genmodel"/>
    </extension>
 
