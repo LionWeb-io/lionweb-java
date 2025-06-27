@@ -1,12 +1,12 @@
 package io.lionweb.serialization.extensions;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
-import io.lionweb.lioncore.java.serialization.ProtoBufSerialization;
-import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
-import io.lionweb.lioncore.protobuf.PBAttachPoint;
-import io.lionweb.lioncore.protobuf.PBBulkImport;
-import io.lionweb.lioncore.protobuf.PBMetaPointer;
+import io.lionweb.LionWebVersion;
+import io.lionweb.protobuf.PBAttachPoint;
+import io.lionweb.protobuf.PBBulkImport;
+import io.lionweb.protobuf.PBMetaPointer;
+import io.lionweb.serialization.LowLevelJsonSerialization;
+import io.lionweb.serialization.ProtoBufSerialization;
+import io.lionweb.serialization.data.SerializedChunk;
 import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;

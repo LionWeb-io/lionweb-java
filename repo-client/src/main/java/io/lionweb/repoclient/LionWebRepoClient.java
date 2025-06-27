@@ -1,12 +1,12 @@
 package io.lionweb.repoclient;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
-import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy;
+import io.lionweb.LionWebVersion;
+import io.lionweb.model.Node;
 import io.lionweb.repoclient.api.*;
 import io.lionweb.repoclient.impl.*;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.SerializationProvider;
+import io.lionweb.serialization.UnavailableNodePolicy;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;

@@ -1,6 +1,6 @@
 package io.lionweb.repoclient;
 
-import io.lionweb.lioncore.java.LionWebVersion;
+import io.lionweb.LionWebVersion;
 import io.lionweb.repoclient.impl.ClientForAdditionalAPIs;
 import io.lionweb.repoclient.impl.RepoClientConfiguration;
 import io.lionweb.serialization.extensions.*;

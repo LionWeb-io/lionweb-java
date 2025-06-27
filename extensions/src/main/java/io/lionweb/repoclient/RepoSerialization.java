@@ -1,12 +1,12 @@
 package io.lionweb.repoclient;
 
-import static io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization.groupNodesIntoSerializationBlock;
+import static io.lionweb.serialization.LowLevelJsonSerialization.groupNodesIntoSerializationBlock;
 
-import io.lionweb.lioncore.java.serialization.LowLevelJsonSerialization;
-import io.lionweb.lioncore.java.serialization.data.SerializedChunk;
-import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
 import io.lionweb.repoclient.api.BulkAPIClient;
 import io.lionweb.repoclient.api.RawBulkAPIClient;
+import io.lionweb.serialization.LowLevelJsonSerialization;
+import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.extensions.AdditionalAPIClient;
 import io.lionweb.serialization.extensions.BulkImport;
 import io.lionweb.serialization.extensions.Compression;

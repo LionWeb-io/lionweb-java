@@ -39,7 +39,7 @@ tasks.register("cleanGeneratedEcore") {
 tasks.register("generateXtextLanguage", JavaExec) {
     mainClass.set("org.eclipse.emf.mwe2.launch.runtime.Mwe2Launcher")
     classpath = configurations.mwe2
-    args = args?.plus("src/main/java/io/lionweb/java/emf/builtins/GenerateBuiltins.mwe2")
+    args = args?.plus("src/main/java/io/lionweb/emf/builtins/GenerateBuiltins.mwe2")
     args = args?.plus("-p")
     args = args?.plus("rootPath=/${projectDir}")
 }

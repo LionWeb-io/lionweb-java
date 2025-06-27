@@ -3,10 +3,10 @@ package io.lionweb.repoclient;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.LionWebVersion;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.Node;
+import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.repoclient.api.HistorySupport;
 import io.lionweb.repoclient.api.RepositoryConfiguration;
 import io.lionweb.repoclient.api.RepositoryVersionToken;

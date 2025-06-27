@@ -1,11 +1,11 @@
 package com.example;
 
-import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import io.lionweb.lioncore.java.utils.ValidationResult;
+import io.lionweb.language.*;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.Node;
+import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.utils.NodeTreeValidator;
+import io.lionweb.utils.ValidationResult;
 import java.util.List;
 
 public class HomogeneousAPIExample {

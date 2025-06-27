@@ -1,7 +1,7 @@
 package io.lionweb.repoclient.impl;
 
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
 import io.lionweb.repoclient.Protocol;
+import io.lionweb.serialization.JsonSerialization;
 import okhttp3.OkHttpClient;
 
 public class RepoClientConfiguration {

@@ -1,8 +1,8 @@
 package io.lionweb.repoclient.testing;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.utils.ModelComparator;
+import io.lionweb.LionWebVersion;
+import io.lionweb.model.Node;
+import io.lionweb.utils.ModelComparator;
 import java.util.Collections;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;

@@ -1,9 +1,9 @@
 package io.lionweb.serialization.extensions;
 
 import com.google.flatbuffers.FlatBufferBuilder;
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.serialization.FlatBuffersSerialization;
-import io.lionweb.lioncore.java.serialization.data.*;
+import io.lionweb.LionWebVersion;
+import io.lionweb.serialization.FlatBuffersSerialization;
+import io.lionweb.serialization.data.*;
 import io.lionweb.serialization.flatbuffers.gen.*;
 import java.util.HashMap;
 import java.util.List;

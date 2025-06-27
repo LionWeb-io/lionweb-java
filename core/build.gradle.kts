@@ -218,7 +218,7 @@ tasks.test {
 
         val includeExpensive = project.findProperty("includeExpensiveTests") == "true"
         if (!includeExpensive) {
-            excludeCategories("io.lionweb.lioncore.java.PerformanceTest")
+            excludeCategories("io.lionweb.PerformanceTest")
         }
     }
 }

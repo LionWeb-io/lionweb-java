@@ -1,7 +1,7 @@
 package io.lionweb.repoclient.languages;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.*;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.*;
 
 public class PropertiesLanguage {
   public static final Concept propertiesPartition;

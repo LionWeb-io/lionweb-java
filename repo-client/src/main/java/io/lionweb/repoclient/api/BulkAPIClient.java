@@ -1,7 +1,7 @@
 package io.lionweb.repoclient.api;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.model.Node;
+import io.lionweb.LionWebVersion;
+import io.lionweb.model.Node;
 import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;

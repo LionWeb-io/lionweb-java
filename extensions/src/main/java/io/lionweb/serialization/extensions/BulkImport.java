@@ -1,12 +1,12 @@
 package io.lionweb.serialization.extensions;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.language.Containment;
-import io.lionweb.lioncore.java.model.ClassifierInstance;
-import io.lionweb.lioncore.java.serialization.JsonSerialization;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
-import io.lionweb.lioncore.java.serialization.data.MetaPointer;
-import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.Containment;
+import io.lionweb.model.ClassifierInstance;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.SerializationProvider;
+import io.lionweb.serialization.data.MetaPointer;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;

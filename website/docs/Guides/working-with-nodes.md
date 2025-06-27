@@ -43,12 +43,12 @@ This approach is ideal for **generic tools** and **runtime interoperability**. T
 ```java
 package com.example;
 
-import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.Node;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import io.lionweb.lioncore.java.utils.ValidationResult;
+import io.lionweb.language.*;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.Node;
+import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.utils.NodeTreeValidator;
+import io.lionweb.utils.ValidationResult;
 
 import java.util.List;
 
@@ -182,10 +182,10 @@ Or you can define a code generator which, given a language, produce the correspo
 ```java
 package com.example;
 
-import io.lionweb.lioncore.java.language.*;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
-import io.lionweb.lioncore.java.utils.NodeTreeValidator;
-import io.lionweb.lioncore.java.utils.ValidationResult;
+import io.lionweb.language.*;
+import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.utils.NodeTreeValidator;
+import io.lionweb.utils.ValidationResult;
 
 import java.util.List;
 import java.util.UUID;
@@ -213,7 +213,7 @@ public class HeterogeneousAPIExample {
         }
 
         List<Task> getTasks() {
-            return getChildren(tasksContainment).stream().map(n -> (Task)n).collect(Collectors.toList());
+            return getChildren(tasksContainment).stream().map(n -> (Task) n).collect(Collectors.toList());
         }
     }
 

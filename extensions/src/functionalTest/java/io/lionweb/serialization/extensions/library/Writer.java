@@ -1,8 +1,8 @@
 package io.lionweb.serialization.extensions.library;
 
-import io.lionweb.lioncore.java.language.Concept;
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils;
-import io.lionweb.lioncore.java.model.impl.DynamicNode;
+import io.lionweb.language.Concept;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.impl.DynamicNode;
 
 public class Writer extends DynamicNode {
 

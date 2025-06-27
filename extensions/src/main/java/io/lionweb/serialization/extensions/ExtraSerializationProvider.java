@@ -1,7 +1,7 @@
 package io.lionweb.serialization.extensions;
 
-import io.lionweb.lioncore.java.LionWebVersion;
-import io.lionweb.lioncore.java.serialization.SerializationProvider;
+import io.lionweb.LionWebVersion;
+import io.lionweb.serialization.SerializationProvider;
 import javax.annotation.Nonnull;
 
 public class ExtraSerializationProvider extends SerializationProvider {
