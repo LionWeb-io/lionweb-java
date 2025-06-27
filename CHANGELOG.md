@@ -114,4 +114,5 @@ Introducing support for LionWeb 2024.1
 ### Version 0.4.7
 
 * Supporting limit parameter in inspection APIs
-
+* Add possibility to remove feature from concept
+* Improve support for multiple LionWeb versions in ProtobufSerialization and FlatBuffersSerialization 
