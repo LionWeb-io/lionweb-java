@@ -1,5 +1,6 @@
 package io.lionweb.lioncore.java.model;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -13,5 +14,6 @@ public interface HasSettableParent {
    * @param parent the new parent to be assigned
    * @return the element itself
    */
+  @Nonnull
   ClassifierInstance<?> setParent(@Nullable ClassifierInstance<?> parent);
 }
