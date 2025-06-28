@@ -1,7 +1,9 @@
 package io.lionweb.utils;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
+import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.Node;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -170,6 +172,14 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateLanguageDependencies(Language language, ValidationResult result) {
+    // LionCore seems not to follow normal rules...
+    // see https://github.com/LionWeb-io/specification/issues/380
+    if (language == LionCore.getInstance(LionWebVersion.v2023_1)) {
+      return;
+    } else if (language == LionCore.getInstance(LionWebVersion.v2024_1)) {
+      return;
+    }
+
     Set<Language> usedLanguages = new HashSet<>();
     for (Concept concept : language.getConcepts()) {
       Concept extended = concept.getExtendedConcept();

@@ -171,7 +171,7 @@ public class LionCore {
     }
     if (!INSTANCES.containsKey(lionWebVersion)) {
       final Language instance = new Language(lionWebVersion, "LionCore_M3");
-      instance.addDependency(LionCoreBuiltins.getInstance(lionWebVersion));
+      // instance.addDependency(LionCoreBuiltins.getInstance(lionWebVersion));
       instance.setID("-id-LionCore-M3" + versionIDSuffix);
       instance.setKey("LionCore-M3");
       instance.setVersion(lionWebVersion.getVersionString());
