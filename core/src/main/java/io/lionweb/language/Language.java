@@ -2,7 +2,7 @@ package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.lioncore.LionCore;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import io.lionweb.model.impl.M3Node;
 import io.lionweb.utils.LanguageValidator;
 import io.lionweb.utils.ValidationResult;
@@ -95,7 +95,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   public Language addDependency(@Nonnull Language dependency) {
     Objects.requireNonNull(dependency, "dependency should not be null");
     this.addReferenceMultipleValue(
-        "dependsOn", new ReferenceValue(dependency, dependency.getName()));
+        "dependsOn", new GenericReferenceValue(dependency, dependency.getName()));
     return dependency;
   }
 

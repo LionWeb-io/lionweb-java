@@ -6,7 +6,7 @@ import com.google.gson.JsonArray;
 import io.lionweb.language.*;
 import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import io.lionweb.model.StructuredDataTypeInstanceUtils;
 import io.lionweb.serialization.*;
 import java.util.Arrays;
@@ -307,22 +307,23 @@ public class DynamicNodeTest {
     Reference r2 = n1.getClassifier().getReferenceByName("r2");
     assertEquals(Collections.emptyList(), ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r2, new ReferenceValue(null, "bar"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "bar"));
     assertEquals(
-        Arrays.asList(new ReferenceValue(null, "bar")),
+        Arrays.asList(new GenericReferenceValue(null, "bar")),
         ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r1, new ReferenceValue(null, "foo"));
-    assertEquals(
-        Arrays.asList(new ReferenceValue(null, "foo"), new ReferenceValue(null, "bar")),
-        ClassifierInstanceUtils.getReferenceValues(n1));
-
-    n1.addReferenceValue(r2, new ReferenceValue(null, "baz"));
+    n1.addReferenceValue(r1, new GenericReferenceValue(null, "foo"));
     assertEquals(
         Arrays.asList(
-            new ReferenceValue(null, "foo"),
-            new ReferenceValue(null, "bar"),
-            new ReferenceValue(null, "baz")),
+            new GenericReferenceValue(null, "foo"), new GenericReferenceValue(null, "bar")),
+        ClassifierInstanceUtils.getReferenceValues(n1));
+
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "baz"));
+    assertEquals(
+        Arrays.asList(
+            new GenericReferenceValue(null, "foo"),
+            new GenericReferenceValue(null, "bar"),
+            new GenericReferenceValue(null, "baz")),
         ClassifierInstanceUtils.getReferenceValues(n1));
   }
 
@@ -334,18 +335,19 @@ public class DynamicNodeTest {
     Reference r2 = n1.getClassifier().getReferenceByName("r2");
     assertEquals(Collections.emptyList(), ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r2, new ReferenceValue(null, "bar"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "bar"));
     assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
-    assertEquals(Arrays.asList(new ReferenceValue(null, "bar")), n1.getReferenceValues(r2));
+    assertEquals(Arrays.asList(new GenericReferenceValue(null, "bar")), n1.getReferenceValues(r2));
 
-    n1.addReferenceValue(r1, new ReferenceValue(null, "foo"));
-    assertEquals(Arrays.asList(new ReferenceValue(null, "foo")), n1.getReferenceValues(r1));
-    assertEquals(Arrays.asList(new ReferenceValue(null, "bar")), n1.getReferenceValues(r2));
+    n1.addReferenceValue(r1, new GenericReferenceValue(null, "foo"));
+    assertEquals(Arrays.asList(new GenericReferenceValue(null, "foo")), n1.getReferenceValues(r1));
+    assertEquals(Arrays.asList(new GenericReferenceValue(null, "bar")), n1.getReferenceValues(r2));
 
-    n1.addReferenceValue(r2, new ReferenceValue(null, "baz"));
-    assertEquals(Arrays.asList(new ReferenceValue(null, "foo")), n1.getReferenceValues(r1));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "baz"));
+    assertEquals(Arrays.asList(new GenericReferenceValue(null, "foo")), n1.getReferenceValues(r1));
     assertEquals(
-        Arrays.asList(new ReferenceValue(null, "bar"), new ReferenceValue(null, "baz")),
+        Arrays.asList(
+            new GenericReferenceValue(null, "bar"), new GenericReferenceValue(null, "baz")),
         n1.getReferenceValues(r2));
   }
 
@@ -358,16 +360,16 @@ public class DynamicNodeTest {
     Reference r2 = n1.getClassifier().getReferenceByName("r2");
     assertEquals(Collections.emptyList(), ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r2, new ReferenceValue(n1, "bar"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n1, "bar"));
     assertEquals(Arrays.asList(n1), ClassifierInstanceUtils.getReferredNodes(n1));
 
-    n1.addReferenceValue(r1, new ReferenceValue(n2, "foo"));
+    n1.addReferenceValue(r1, new GenericReferenceValue(n2, "foo"));
     assertEquals(Arrays.asList(n2, n1), ClassifierInstanceUtils.getReferredNodes(n1));
 
-    n1.addReferenceValue(r2, new ReferenceValue(n2, "baz"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n2, "baz"));
     assertEquals(Arrays.asList(n2, n1, n2), ClassifierInstanceUtils.getReferredNodes(n1));
 
-    n1.addReferenceValue(r2, new ReferenceValue(null, "baz3"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "baz3"));
     assertEquals(Arrays.asList(n2, n1, n2), ClassifierInstanceUtils.getReferredNodes(n1));
   }
 
@@ -380,19 +382,19 @@ public class DynamicNodeTest {
     Reference r2 = n1.getClassifier().getReferenceByName("r2");
     assertEquals(Collections.emptyList(), ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r2, new ReferenceValue(n1, "bar"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n1, "bar"));
     assertEquals(Arrays.asList(), ClassifierInstanceUtils.getReferredNodes(n1, r1));
     assertEquals(Arrays.asList(n1), ClassifierInstanceUtils.getReferredNodes(n1, r2));
 
-    n1.addReferenceValue(r1, new ReferenceValue(n2, "foo"));
+    n1.addReferenceValue(r1, new GenericReferenceValue(n2, "foo"));
     assertEquals(Arrays.asList(n2), ClassifierInstanceUtils.getReferredNodes(n1, r1));
     assertEquals(Arrays.asList(n1), ClassifierInstanceUtils.getReferredNodes(n1, r2));
 
-    n1.addReferenceValue(r2, new ReferenceValue(n2, "baz"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n2, "baz"));
     assertEquals(Arrays.asList(n2), ClassifierInstanceUtils.getReferredNodes(n1, r1));
     assertEquals(Arrays.asList(n1, n2), ClassifierInstanceUtils.getReferredNodes(n1, r2));
 
-    n1.addReferenceValue(r2, new ReferenceValue(null, "baz3"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "baz3"));
     assertEquals(Arrays.asList(n2), ClassifierInstanceUtils.getReferredNodes(n1, r1));
     assertEquals(Arrays.asList(n1, n2, null), ClassifierInstanceUtils.getReferredNodes(n1, r2));
   }
@@ -406,33 +408,34 @@ public class DynamicNodeTest {
     Reference r2 = n1.getClassifier().getReferenceByName("r2");
     assertEquals(Collections.emptyList(), ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r1, new ReferenceValue(n2, "foo"));
-    n1.addReferenceValue(r2, new ReferenceValue(n1, "bar"));
-    n1.addReferenceValue(r2, new ReferenceValue(n2, "baz"));
-    n1.addReferenceValue(r2, new ReferenceValue(null, "baz3"));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
+    n1.addReferenceValue(r1, new GenericReferenceValue(n2, "foo"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n1, "bar"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n2, "baz"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "baz3"));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
     assertEquals(
         Arrays.asList(
-            new ReferenceValue(n1, "bar"),
-            new ReferenceValue(n2, "baz"),
-            new ReferenceValue(null, "baz3")),
+            new GenericReferenceValue(n1, "bar"),
+            new GenericReferenceValue(n2, "baz"),
+            new GenericReferenceValue(null, "baz3")),
         n1.getReferenceValues(r2));
 
-    n1.removeReferenceValue(r2, new ReferenceValue(n1, "bar"));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
+    n1.removeReferenceValue(r2, new GenericReferenceValue(n1, "bar"));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
     assertEquals(
-        Arrays.asList(new ReferenceValue(n2, "baz"), new ReferenceValue(null, "baz3")),
+        Arrays.asList(
+            new GenericReferenceValue(n2, "baz"), new GenericReferenceValue(null, "baz3")),
         n1.getReferenceValues(r2));
 
-    n1.removeReferenceValue(r2, new ReferenceValue(null, "baz3"));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
+    n1.removeReferenceValue(r2, new GenericReferenceValue(null, "baz3"));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
 
-    n1.removeReferenceValue(r1, new ReferenceValue(n2, "foo"));
+    n1.removeReferenceValue(r1, new GenericReferenceValue(n2, "foo"));
     assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
 
-    n1.removeReferenceValue(r2, new ReferenceValue(n2, "baz"));
+    n1.removeReferenceValue(r2, new GenericReferenceValue(n2, "baz"));
     assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
     assertEquals(Arrays.asList(), n1.getReferenceValues(r2));
   }
@@ -446,31 +449,32 @@ public class DynamicNodeTest {
     Reference r2 = n1.getClassifier().getReferenceByName("r2");
     assertEquals(Collections.emptyList(), ClassifierInstanceUtils.getReferenceValues(n1));
 
-    n1.addReferenceValue(r1, new ReferenceValue(n2, "foo"));
-    n1.addReferenceValue(r2, new ReferenceValue(n1, "bar"));
-    n1.addReferenceValue(r2, new ReferenceValue(n2, "baz"));
-    n1.addReferenceValue(r2, new ReferenceValue(null, "baz3"));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
+    n1.addReferenceValue(r1, new GenericReferenceValue(n2, "foo"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n1, "bar"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(n2, "baz"));
+    n1.addReferenceValue(r2, new GenericReferenceValue(null, "baz3"));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
     assertEquals(
         Arrays.asList(
-            new ReferenceValue(n1, "bar"),
-            new ReferenceValue(n2, "baz"),
-            new ReferenceValue(null, "baz3")),
+            new GenericReferenceValue(n1, "bar"),
+            new GenericReferenceValue(n2, "baz"),
+            new GenericReferenceValue(null, "baz3")),
         n1.getReferenceValues(r2));
 
     n1.removeReferenceValue(r2, 0);
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
     assertEquals(
-        Arrays.asList(new ReferenceValue(n2, "baz"), new ReferenceValue(null, "baz3")),
+        Arrays.asList(
+            new GenericReferenceValue(n2, "baz"), new GenericReferenceValue(null, "baz3")),
         n1.getReferenceValues(r2));
 
     n1.removeReferenceValue(r2, 1);
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "foo")), n1.getReferenceValues(r1));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
 
     n1.removeReferenceValue(r1, 0);
     assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
-    assertEquals(Arrays.asList(new ReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
+    assertEquals(Arrays.asList(new GenericReferenceValue(n2, "baz")), n1.getReferenceValues(r2));
 
     n1.removeReferenceValue(r2, 0);
     assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
@@ -551,22 +555,22 @@ public class DynamicNodeTest {
     Reference reference = new Reference("ref");
 
     // Case: both nodes have the same reference values
-    node1.addReferenceValue(reference, new ReferenceValue(null, "resolve1"));
-    node2.addReferenceValue(reference, new ReferenceValue(null, "resolve1"));
+    node1.addReferenceValue(reference, new GenericReferenceValue(null, "resolve1"));
+    node2.addReferenceValue(reference, new GenericReferenceValue(null, "resolve1"));
     assertEquals(true, node1.equals(node2));
 
     // Case: nodes have different reference values
-    node2.addReferenceValue(reference, new ReferenceValue(null, "resolve2"));
+    node2.addReferenceValue(reference, new GenericReferenceValue(null, "resolve2"));
     assertEquals(false, node1.equals(node2));
 
     // Case: one node has a null referredID, the other has a non-null referredID
-    node1.addReferenceValue(reference, new ReferenceValue(null, "resolve2"));
-    node2.addReferenceValue(reference, new ReferenceValue(new DynamicNode(), null));
+    node1.addReferenceValue(reference, new GenericReferenceValue(null, "resolve2"));
+    node2.addReferenceValue(reference, new GenericReferenceValue(new DynamicNode(), null));
     assertEquals(false, node1.equals(node2));
 
     // Case: both nodes have null referredID and same resolveInfo
-    node1.addReferenceValue(reference, new ReferenceValue(null, "resolve3"));
-    node2.addReferenceValue(reference, new ReferenceValue(null, "resolve3"));
+    node1.addReferenceValue(reference, new GenericReferenceValue(null, "resolve3"));
+    node2.addReferenceValue(reference, new GenericReferenceValue(null, "resolve3"));
     assertEquals(true, node1.equals(node2));
   }
 

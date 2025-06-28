@@ -1,7 +1,7 @@
 package io.lionweb.language;
 
 import io.lionweb.lioncore.LionCore;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import io.lionweb.model.impl.M3Node;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -78,7 +78,7 @@ public class Field extends M3Node<Field> implements NamespacedEntity, IKeyed<Fie
     if (type == null) {
       this.setReferenceSingleValue("type", null);
     } else {
-      this.setReferenceSingleValue("type", new ReferenceValue(type, type.getName()));
+      this.setReferenceSingleValue("type", new GenericReferenceValue(type, type.getName()));
     }
   }
 

@@ -112,7 +112,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referenceValue) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }

@@ -2,6 +2,7 @@ package io.lionweb.serialization.refsmm;
 
 import io.lionweb.language.Concept;
 import io.lionweb.language.Reference;
+import io.lionweb.model.GenericReferenceValue;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.SimpleNode;
 import java.util.Collections;
@@ -49,19 +50,19 @@ public class RefNode extends SimpleNode {
   }
 
   @Override
-  protected List<ReferenceValue> concreteGetReferenceValues(Reference reference) {
+  protected List<ReferenceValue<?>> concreteGetReferenceValues(Reference reference) {
     if (reference.getName().equals("referred")) {
       if (referred == null) {
         return Collections.emptyList();
       }
-      return Collections.singletonList(new ReferenceValue(referred, ""));
+      return Collections.singletonList(new GenericReferenceValue(referred, ""));
     }
     return super.concreteGetReferenceValues(reference);
   }
 
   @Override
   public void concreteAddReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referredNode) {
     if (reference.getName().equals("referred")) {
       referred = (RefNode) referredNode.getReferred();
       return;

@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.Test;
@@ -72,7 +72,7 @@ public class ConceptReflectionTest {
     Reference reference = LionCore.getConcept().getReferenceByName("extends");
     concept.addReferenceValue(reference, null);
     assertNull(concept.getExtendedConcept());
-    concept.addReferenceValue(reference, new ReferenceValue(otherConcept, null));
+    concept.addReferenceValue(reference, new GenericReferenceValue(otherConcept, null));
     assertEquals(otherConcept, concept.getExtendedConcept());
   }
 
@@ -100,9 +100,9 @@ public class ConceptReflectionTest {
     Interface i2 = new Interface(language, "I2");
     Reference reference = LionCore.getConcept().getReferenceByName("implements");
     assertEquals(Collections.emptyList(), concept.getImplemented());
-    concept.addReferenceValue(reference, new ReferenceValue(i1, null));
+    concept.addReferenceValue(reference, new GenericReferenceValue(i1, null));
     assertEquals(Arrays.asList(i1), concept.getImplemented());
-    concept.addReferenceValue(reference, new ReferenceValue(i2, null));
+    concept.addReferenceValue(reference, new GenericReferenceValue(i2, null));
     assertEquals(Arrays.asList(i1, i2), concept.getImplemented());
   }
 }

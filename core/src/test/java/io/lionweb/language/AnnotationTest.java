@@ -5,7 +5,7 @@ import static org.junit.Assert.assertNull;
 
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import java.util.Arrays;
 import org.junit.Test;
 
@@ -54,7 +54,7 @@ public class AnnotationTest extends BaseTest {
     Concept myConcept = new Concept();
     annotation.addReferenceValue(
         LionCore.getAnnotation().getReferenceByName("annotates"),
-        new ReferenceValue(myConcept, null));
+        new GenericReferenceValue(myConcept, null));
     assertEquals(myConcept, annotation.getAnnotates());
   }
 

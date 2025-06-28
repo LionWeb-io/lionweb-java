@@ -53,13 +53,13 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
 
   @Nonnull
   @Override
-  public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
+  public List<ReferenceValue<?>> getReferenceValues(@Nonnull Reference reference) {
     throw cannotDoBecauseProxy();
   }
 
   @Override
   public void addReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referredNode) {
     throw cannotDoBecauseProxy();
   }
 
@@ -129,7 +129,7 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
 
   @Override
   public void removeReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referenceValue) {
     throw cannotDoBecauseProxy();
   }
 
@@ -140,7 +140,7 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
 
   @Override
   public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue<?>> values) {
     throw cannotDoBecauseProxy();
   }
 }

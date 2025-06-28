@@ -138,7 +138,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
                     .node
                     .getClassifier()
                     .getReferenceByName(postponedReference.eReference.getName());
-            List<ReferenceValue> referenceValues =
+            List<ReferenceValue<?>> referenceValues =
                 postponedReference.node.getReferenceValues(reference);
             if (postponedReference.eReference.isMany()) {
               List<EObject> referredEObjects =

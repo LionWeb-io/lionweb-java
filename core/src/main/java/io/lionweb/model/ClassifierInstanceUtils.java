@@ -126,9 +126,9 @@ public class ClassifierInstanceUtils {
   // Public methods about references
 
   @Nonnull
-  public static List<ReferenceValue> getReferenceValues(@Nonnull ClassifierInstance<?> _this) {
+  public static List<ReferenceValue<?>> getReferenceValues(@Nonnull ClassifierInstance<?> _this) {
     Objects.requireNonNull(_this, "_this should not be null");
-    List<ReferenceValue> allReferredValues = new LinkedList<>();
+    List<ReferenceValue<?>> allReferredValues = new LinkedList<>();
     _this.getClassifier().allReferences().stream()
         .map(r -> _this.getReferenceValues(r))
         .forEach(referenceValues -> allReferredValues.addAll(referenceValues));
@@ -138,7 +138,7 @@ public class ClassifierInstanceUtils {
   public static void setOnlyReferenceValue(
       @Nonnull ClassifierInstance<?> _this,
       @Nonnull Reference reference,
-      @Nullable ReferenceValue value) {
+      @Nullable ReferenceValue<?> value) {
     Objects.requireNonNull(_this, "_this should not be null");
     if (value == null) {
       _this.setReferenceValues(reference, Collections.emptyList());
@@ -150,7 +150,7 @@ public class ClassifierInstanceUtils {
   public static void setOnlyReferenceValueByName(
       @Nonnull ClassifierInstance<?> _this,
       @Nonnull String referenceName,
-      @Nullable ReferenceValue value) {
+      @Nullable ReferenceValue<?> value) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
     Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
@@ -160,7 +160,7 @@ public class ClassifierInstanceUtils {
   public static void setReferenceValuesByName(
       @Nonnull ClassifierInstance<?> _this,
       @Nonnull String referenceName,
-      @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull List<? extends ReferenceValue<?>> values) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
     Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
@@ -207,7 +207,7 @@ public class ClassifierInstanceUtils {
   }
 
   @Nonnull
-  public static List<ReferenceValue> getReferenceValueByName(
+  public static List<ReferenceValue<?>> getReferenceValueByName(
       @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
@@ -232,11 +232,11 @@ public class ClassifierInstanceUtils {
   }
 
   @Nullable
-  public static ReferenceValue getOnlyReferenceValueByReferenceName(
+  public static ReferenceValue<?> getOnlyReferenceValueByReferenceName(
       @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
-    List<ReferenceValue> referenceValues = getReferenceValueByName(_this, referenceName);
+    List<ReferenceValue<?>> referenceValues = getReferenceValueByName(_this, referenceName);
     if (referenceValues.size() > 1) {
       throw new IllegalStateException();
     } else if (referenceValues.isEmpty()) {
@@ -255,19 +255,20 @@ public class ClassifierInstanceUtils {
     _this.addChild(containment, child);
   }
 
-  public static ReferenceValue referenceTo(@Nonnull LanguageEntity<?> _this) {
+  public static ReferenceValue<?> referenceTo(@Nonnull LanguageEntity<?> _this) {
     // Unfortunately we cannot refer to LionCore and LionCoreBuiltins as this method get called
     // during their initialization
     if (_this.getLanguage() != null
         && "LionCore_M3".equals(_this.getLanguage().getName())
         && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return new ReferenceValue(_this, LIONCORE_AUTORESOLVE_PREFIX + _this.getName());
+      return new GenericReferenceValue(_this, LIONCORE_AUTORESOLVE_PREFIX + _this.getName());
     } else if (_this.getLanguage() != null
         && _this.getLanguage() instanceof LionCoreBuiltins
         && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return new ReferenceValue(_this, LIONCOREBUILTINS_AUTORESOLVE_PREFIX + _this.getName());
+      return new GenericReferenceValue(
+          _this, LIONCOREBUILTINS_AUTORESOLVE_PREFIX + _this.getName());
     } else {
-      return new ReferenceValue(_this, _this.getName());
+      return new GenericReferenceValue(_this, _this.getName());
     }
   }
 
@@ -321,7 +322,7 @@ public class ClassifierInstanceUtils {
   }
 
   public static boolean shallowReferenceEquality(
-      List<ReferenceValue> references1, List<ReferenceValue> references2) {
+      List<ReferenceValue<?>> references1, List<ReferenceValue<?>> references2) {
     return references1.size() == references2.size()
         && IntStream.range(0, references1.size())
             .allMatch(

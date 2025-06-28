@@ -2,7 +2,7 @@ package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.lioncore.LionCore;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,7 +79,7 @@ public class Annotation extends Classifier<Annotation> {
 
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "iface should not be null");
-    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
+    this.addReferenceMultipleValue("implements", new GenericReferenceValue(iface, iface.getName()));
   }
 
   // TODO should we verify the Annotation does not extend itself, even indirectly?
@@ -87,7 +87,8 @@ public class Annotation extends Classifier<Annotation> {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
-      this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
+      this.setReferenceSingleValue(
+          "extends", new GenericReferenceValue(extended, extended.getName()));
     }
   }
 
@@ -95,7 +96,8 @@ public class Annotation extends Classifier<Annotation> {
     if (target == null) {
       this.setReferenceSingleValue("annotates", null);
     } else {
-      this.setReferenceSingleValue("annotates", new ReferenceValue(target, target.getName()));
+      this.setReferenceSingleValue(
+          "annotates", new GenericReferenceValue(target, target.getName()));
     }
   }
 

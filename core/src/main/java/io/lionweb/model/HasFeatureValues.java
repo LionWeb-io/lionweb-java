@@ -50,7 +50,7 @@ public interface HasFeatureValues {
   void removeChild(@Nonnull Containment containment, int index);
 
   @Nonnull
-  List<ReferenceValue> getReferenceValues(@Nonnull Reference reference);
+  List<ReferenceValue<?>> getReferenceValues(@Nonnull Reference reference);
 
   /**
    * Add the Node to the list of Nodes referred to from this Node under the given Reference.
@@ -63,13 +63,14 @@ public interface HasFeatureValues {
    * <p>If the referredNode has not a Concept compatible with the target of the Reference, the
    * exception IllegalArgumentException will be thrown.
    */
-  void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
+  void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue<?> referredNode);
 
   /**
    * Remove the first reference value that is equal to the given referenceValue. Node. If there is
    * no match the exception IllegalArgumentException will be thrown.
    */
-  void removeReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referenceValue);
+  void removeReferenceValue(
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referenceValue);
 
   /**
    * Remove the reference value at the given index, considering the reference values under the given
@@ -80,5 +81,5 @@ public interface HasFeatureValues {
   void removeReferenceValue(@Nonnull Reference reference, int index);
 
   void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values);
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue<?>> values);
 }

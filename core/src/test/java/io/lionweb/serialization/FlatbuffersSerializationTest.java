@@ -444,7 +444,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     myConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
     myConcept.setReferenceValues(
         myConcept.getClassifier().getReferenceByName("extends"),
-        Arrays.asList(new ReferenceValue(null, null)));
+        Arrays.asList(new GenericReferenceValue(null, null)));
     myLanguage.addElement(myConcept);
 
     FlatBuffersSerialization flatBuffersSerialization =

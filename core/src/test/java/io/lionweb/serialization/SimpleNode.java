@@ -95,20 +95,20 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
 
   @Nonnull
   @Override
-  public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
+  public List<ReferenceValue<?>> getReferenceValues(@Nonnull Reference reference) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     return concreteGetReferenceValues(reference);
   }
 
-  protected List<ReferenceValue> concreteGetReferenceValues(Reference reference) {
+  protected List<ReferenceValue<?>> concreteGetReferenceValues(Reference reference) {
     throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
   }
 
   @Override
   public void addReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referredNode) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
@@ -116,7 +116,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   public void concreteAddReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referredNode) {
     throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
   }
 
@@ -132,7 +132,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
 
   @Override
   public void removeReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referenceValue) {
     throw new UnsupportedOperationException();
   }
 
@@ -143,7 +143,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
 
   @Override
   public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue<?>> values) {
     throw new UnsupportedOperationException();
   }
 }

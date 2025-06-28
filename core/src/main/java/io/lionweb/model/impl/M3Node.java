@@ -4,10 +4,7 @@ import static io.lionweb.model.ClassifierInstanceUtils.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.HasSettableParent;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -36,7 +33,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   // elements are inheriting from this class.
   private final Map<String, Object> propertyValues = new HashMap<>();
   private final Map<String, List<Node>> containmentValues = new HashMap<>();
-  private final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  private final Map<String, List<ReferenceValue<?>>> referenceValues = new HashMap<>();
 
   protected M3Node() {
     this.lionWebVersion = LionWebVersion.currentVersion;
@@ -153,7 +150,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Nonnull
   @Override
-  public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
+  public List<ReferenceValue<?>> getReferenceValues(@Nonnull Reference reference) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
@@ -163,7 +160,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Override
   public void addReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referenceValue) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
@@ -177,12 +174,12 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   @Override
   public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue<?>> values) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
+    referenceValues.put(reference.getName(), (List<ReferenceValue<?>>) values);
   }
 
   @Nullable
@@ -213,7 +210,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   protected <V extends Node> V getReferenceSingleValue(String linkName) {
     if (referenceValues.containsKey(linkName)) {
-      List<ReferenceValue> values = referenceValues.get(linkName);
+      List<ReferenceValue<?>> values = referenceValues.get(linkName);
       if (values.isEmpty()) {
         return null;
       } else if (values.size() == 1) {
@@ -272,7 +269,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
    * has been built, therefore we cannot look for the definition of the features to verify they
    * exist. We instead just trust a link with that name to exist.
    */
-  protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue value) {
+  protected void setReferenceSingleValue(
+      @Nonnull String linkName, @Nullable ReferenceValue<?> value) {
     if (value == null) {
       referenceValues.remove(linkName);
     } else {
@@ -301,7 +299,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     return true;
   }
 
-  protected void addReferenceMultipleValue(String linkName, ReferenceValue value) {
+  protected void addReferenceMultipleValue(String linkName, ReferenceValue<?> value) {
     if (value == null) {
       return;
     }

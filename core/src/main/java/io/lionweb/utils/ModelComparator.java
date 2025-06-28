@@ -1,10 +1,7 @@
 package io.lionweb.utils;
 
 import io.lionweb.language.*;
-import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -196,15 +193,15 @@ public class ModelComparator {
       ComparisonResult comparisonResult,
       String context) {
     for (Reference reference : concept.allReferences()) {
-      List<ReferenceValue> valueA = nodeA.getReferenceValues(reference);
-      List<ReferenceValue> valueB = nodeB.getReferenceValues(reference);
+      List<ReferenceValue<?>> valueA = nodeA.getReferenceValues(reference);
+      List<ReferenceValue<?>> valueB = nodeB.getReferenceValues(reference);
       if (valueA.size() != valueB.size()) {
         comparisonResult.markDifferentNumberOfReferences(
             context, nodeA.getID(), reference.qualifiedName(), valueA.size(), valueB.size());
       } else {
         for (int i = 0; i < valueA.size(); i++) {
-          ReferenceValue refA = valueA.get(i);
-          ReferenceValue refB = valueB.get(i);
+          ReferenceValue<?> refA = valueA.get(i);
+          ReferenceValue<?> refB = valueB.get(i);
           if (!Objects.equals(refA.getReferredID(), refB.getReferredID())) {
             comparisonResult.markDifferentReferredID(
                 context,

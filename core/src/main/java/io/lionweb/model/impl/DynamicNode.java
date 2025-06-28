@@ -68,15 +68,16 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   private static boolean shallowReferenceEquality(
-      Map<String, List<ReferenceValue>> reference1, Map<String, List<ReferenceValue>> reference2) {
+      Map<String, List<ReferenceValue<?>>> reference1,
+      Map<String, List<ReferenceValue<?>>> reference2) {
     if (!reference1.keySet().equals(reference2.keySet())) {
       return false;
     }
     return reference1.keySet().stream()
         .allMatch(
             referenceName -> {
-              List<ReferenceValue> references1 = reference1.get(referenceName);
-              List<ReferenceValue> references2 = reference2.get(referenceName);
+              List<ReferenceValue<?>> references1 = reference1.get(referenceName);
+              List<ReferenceValue<?>> references2 = reference2.get(referenceName);
               return ClassifierInstanceUtils.shallowReferenceEquality(references1, references2);
             });
   }

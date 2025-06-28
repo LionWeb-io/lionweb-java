@@ -1,10 +1,7 @@
 package io.lionweb.model.impl;
 
 import io.lionweb.language.*;
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.HasSettableParent;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.*;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -17,7 +14,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   protected final Map<String, Object> propertyValues = new HashMap<>();
   protected final Map<String, List<Node>> containmentValues = new HashMap<>();
 
-  protected final Map<String, List<ReferenceValue>> referenceValues = new HashMap<>();
+  protected final Map<String, List<ReferenceValue<?>>> referenceValues = new HashMap<>();
 
   @Nullable
   public String getID() {
@@ -127,7 +124,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Nonnull
   @Override
-  public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
+  public List<ReferenceValue<?>> getReferenceValues(@Nonnull Reference reference) {
     Objects.requireNonNull(reference);
     Objects.requireNonNull(reference.getKey());
     if (!getClassifier().allReferences().contains(reference)) {
@@ -141,7 +138,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
+  public void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue<?> value) {
     Objects.requireNonNull(reference, "Reference should not be null");
     if (reference.isMultiple()) {
       if (value != null) {
@@ -154,16 +151,16 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeReferenceValue(
-      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, @Nullable ReferenceValue<?> referenceValue) {
     Objects.requireNonNull(reference, "Reference should not be null");
     Objects.requireNonNull(reference.getKey(), "Reference.key should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     if (referenceValues.containsKey(reference.getKey())) {
-      List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
+      List<ReferenceValue<?>> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       for (int i = 0; i < referenceValuesOfInterest.size(); i++) {
-        ReferenceValue rv = referenceValuesOfInterest.get(i);
+        ReferenceValue<?> rv = referenceValuesOfInterest.get(i);
         if (referenceValue == null) {
           if (rv == null) {
             referenceValuesOfInterest.remove(i);
@@ -189,7 +186,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
     if (referenceValues.containsKey(reference.getKey())) {
-      List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
+      List<ReferenceValue<?>> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       if (referenceValuesOfInterest.size() > index) {
         referenceValuesOfInterest.remove(index);
       } else {
@@ -204,13 +201,13 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void setReferenceValues(
-      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue<?>> values) {
     Objects.requireNonNull(reference, "Reference should not be null");
     Objects.requireNonNull(reference.getKey(), "Reference.key should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
-    referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
+    referenceValues.put(reference.getKey(), (List<ReferenceValue<?>>) values);
   }
 
   // Private methods for containments
@@ -245,7 +242,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   // Private methods for references
 
-  private void setReferenceSingleValue(Reference link, ReferenceValue value) {
+  private void setReferenceSingleValue(Reference link, ReferenceValue<?> value) {
     if (value == null) {
       referenceValues.remove(link.getKey());
     } else {
@@ -253,7 +250,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
+  private void addReferenceMultipleValue(Reference link, ReferenceValue<?> referenceValue) {
     assert link.isMultiple();
     if (referenceValue == null) {
       return;

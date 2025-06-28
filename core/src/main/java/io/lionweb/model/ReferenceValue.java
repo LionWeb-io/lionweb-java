@@ -3,20 +3,20 @@ package io.lionweb.model;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-public class ReferenceValue {
-  private Node referred;
+public class ReferenceValue<T extends Node> {
+  protected T referred;
   private String resolveInfo;
 
   public ReferenceValue() {
     this(null, null);
   }
 
-  public ReferenceValue(@Nullable Node referred, @Nullable String resolveInfo) {
+  public ReferenceValue(@Nullable T referred, @Nullable String resolveInfo) {
     setReferred(referred);
     setResolveInfo(resolveInfo);
   }
 
-  public @Nullable Node getReferred() {
+  public @Nullable T getReferred() {
     return referred;
   }
 
@@ -27,7 +27,7 @@ public class ReferenceValue {
     return referred.getID();
   }
 
-  public void setReferred(@Nullable Node referred) {
+  public void setReferred(@Nullable T referred) {
     this.referred = referred;
   }
 

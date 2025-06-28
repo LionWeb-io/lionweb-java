@@ -2,7 +2,7 @@ package io.lionweb.serialization.extensions.library;
 
 import io.lionweb.language.Concept;
 import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.GenericReferenceValue;
 import io.lionweb.model.impl.DynamicNode;
 
 public class Book extends DynamicNode {
@@ -32,7 +32,8 @@ public class Book extends DynamicNode {
 
   public void setAuthor(Writer author) {
     this.addReferenceValue(
-        getClassifier().getReferenceByName("author"), new ReferenceValue(author, author.getName()));
+        getClassifier().getReferenceByName("author"),
+        new GenericReferenceValue(author, author.getName()));
   }
 
   @Override

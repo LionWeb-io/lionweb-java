@@ -38,7 +38,7 @@ public class JsonSerializationTest extends SerializationTest {
     Node book = new DynamicNode("foo123", LibraryLanguage.BOOK);
     Node writer = new DynamicNode("-Arthur-Foozillus-id-", LibraryLanguage.WRITER);
     book.addReferenceValue(
-        LibraryLanguage.BOOK.getReferenceByName("author"), new ReferenceValue(writer, null));
+        LibraryLanguage.BOOK.getReferenceByName("author"), new GenericReferenceValue(writer, null));
 
     // The library MM is not using the standard primitive types but its own, so we need to specify
     // how to serialize
@@ -907,12 +907,12 @@ public class JsonSerializationTest extends SerializationTest {
 
     // local reference
     assertEquals(
-        Arrays.asList(new ReferenceValue(pr1td0, "BD")),
+        Arrays.asList(new GenericReferenceValue(pr1td0, "BD")),
         ClassifierInstanceUtils.getReferenceValueByName(pr1td1, "prerequisite"));
 
     // external reference
     assertEquals(
-        Arrays.asList(new ReferenceValue(pr0td1, "garbage-out")),
+        Arrays.asList(new GenericReferenceValue(pr0td1, "garbage-out")),
         ClassifierInstanceUtils.getReferenceValueByName(pr1td2, "prerequisite"));
   }
 
@@ -954,12 +954,12 @@ public class JsonSerializationTest extends SerializationTest {
 
     // local reference
     assertEquals(
-        Arrays.asList(new ReferenceValue(pr1td0, "BD")),
+        Arrays.asList(new GenericReferenceValue(pr1td0, "BD")),
         ClassifierInstanceUtils.getReferenceValueByName(pr1td1, "prerequisite"));
 
     // external reference
     assertEquals(
-        Arrays.asList(new ReferenceValue(null, "garbage-out")),
+        Arrays.asList(new GenericReferenceValue(null, "garbage-out")),
         ClassifierInstanceUtils.getReferenceValueByName(pr1td2, "prerequisite"));
   }
 
@@ -1031,24 +1031,27 @@ public class JsonSerializationTest extends SerializationTest {
 
     Node todo0 = nodes.get(0);
     assertEquals(new ProxyNode("synthetic_my-wonderful-partition_projects_1"), todo0.getParent());
-    List<ReferenceValue> prerequisiteTodo0 =
+    List<ReferenceValue<?>> prerequisiteTodo0 =
         ClassifierInstanceUtils.getReferenceValueByName(todo0, "prerequisite");
     assertEquals(
-        Arrays.asList(new ReferenceValue(new ProxyNode("external-1"), null)), prerequisiteTodo0);
+        Arrays.asList(new GenericReferenceValue(new ProxyNode("external-1"), null)),
+        prerequisiteTodo0);
 
     Node todo1 = nodes.get(1);
     assertEquals(new ProxyNode("synthetic_my-wonderful-partition_projects_1"), todo1.getParent());
-    List<ReferenceValue> prerequisiteTodo1 =
+    List<ReferenceValue<?>> prerequisiteTodo1 =
         ClassifierInstanceUtils.getReferenceValueByName(todo1, "prerequisite");
     assertEquals(
-        Arrays.asList(new ReferenceValue(new ProxyNode("external-1"), null)), prerequisiteTodo1);
+        Arrays.asList(new GenericReferenceValue(new ProxyNode("external-1"), null)),
+        prerequisiteTodo1);
 
     Node todo2 = nodes.get(2);
     assertEquals(new ProxyNode("synthetic_my-wonderful-partition_projects_1"), todo2.getParent());
-    List<ReferenceValue> prerequisiteTodo2 =
+    List<ReferenceValue<?>> prerequisiteTodo2 =
         ClassifierInstanceUtils.getReferenceValueByName(todo2, "prerequisite");
     assertEquals(
-        Arrays.asList(new ReferenceValue(new ProxyNode("external-1"), null)), prerequisiteTodo2);
+        Arrays.asList(new GenericReferenceValue(new ProxyNode("external-1"), null)),
+        prerequisiteTodo2);
 
     assertTrue(nodes.get(3) instanceof ProxyNode);
     assertTrue(nodes.get(4) instanceof ProxyNode);

@@ -28,19 +28,19 @@ public class MyNodeWithReferences extends DynamicNode {
     super(id, CONCEPT);
   }
 
-  public ReferenceValue getR1() {
+  public ReferenceValue<?> getR1() {
     return ClassifierInstanceUtils.getOnlyReferenceValueByReferenceName(this, "r1");
   }
 
-  public List<ReferenceValue> getR2() {
+  public List<ReferenceValue<?>> getR2() {
     return ClassifierInstanceUtils.getReferenceValueByName(this, "r2");
   }
 
-  public void setP1(ReferenceValue value) {
+  public void setP1(ReferenceValue<?> value) {
     ClassifierInstanceUtils.setOnlyReferenceValueByName(this, "r1", value);
   }
 
-  public void setR2(List<ReferenceValue> values) {
+  public void setR2(List<ReferenceValue<?>> values) {
     ClassifierInstanceUtils.setReferenceValuesByName(this, "r1", values);
   }
 }

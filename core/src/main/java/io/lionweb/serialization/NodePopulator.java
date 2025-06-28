@@ -8,8 +8,8 @@ import io.lionweb.api.ClassifierInstanceResolver;
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.GenericReferenceValue;
 import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.HashMap;
 import java.util.List;
@@ -161,8 +161,8 @@ class NodePopulator {
                                       + serializedReferenceValue.getMetaPointer());
                           }
                         }
-                        ReferenceValue referenceValue =
-                            new ReferenceValue(referred, entry.getResolveInfo());
+                        GenericReferenceValue referenceValue =
+                            new GenericReferenceValue(referred, entry.getResolveInfo());
                         node.addReferenceValue(reference, referenceValue);
                       });
             });
