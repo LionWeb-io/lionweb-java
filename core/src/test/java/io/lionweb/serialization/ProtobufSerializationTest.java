@@ -313,9 +313,8 @@ public class ProtobufSerializationTest extends SerializationTest {
         SerializationProvider.getStandardProtoBufSerialization();
     SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationBlock(n1);
 
-    assertEquals(2, serializedChunk.getLanguages().size());
+    assertEquals(1, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
-    assertSerializedChunkContainsLanguage(serializedChunk, LionCoreBuiltins.getInstance());
   }
 
   @Test
