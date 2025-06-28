@@ -236,6 +236,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     Annotation a1 = new Annotation(l, "a1", "a1", "a1");
     Annotation a2 = new Annotation(l, "a2", "a2", "a2");
     Concept c = new Concept(l, "c", "c", "c");
+    assertEquals(3, l.getElements().size());
 
     DynamicNode n1 = new DynamicNode("n1", c);
     AnnotationInstance a1_1 = new DynamicAnnotationInstance("a1_1", a1, n1);
@@ -247,6 +248,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     flatBuffersSerialization.enableDynamicNodes();
     SerializedChunk serializedChunk =
         flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
+    assertEquals(1, serializedChunk.getLanguages().size());
+    assertEquals(new UsedLanguage("l", "1"), serializedChunk.getLanguages().get(0));
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -427,9 +430,8 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     SerializedChunk serializedChunk =
         flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
 
-    assertEquals(2, serializedChunk.getLanguages().size());
+    assertEquals(1, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
-    assertSerializedChunkContainsLanguage(serializedChunk, LionCoreBuiltins.getInstance());
   }
 
   @Test

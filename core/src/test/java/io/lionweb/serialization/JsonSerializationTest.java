@@ -223,7 +223,7 @@ public class JsonSerializationTest extends SerializationTest {
     Sum sum2 = new Sum(new IntLiteral(3), new IntLiteral(4));
     JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeTreesToJsonElement(sum1, sum2);
-    assertEquals(2, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
+    assertEquals(1, serialized.getAsJsonObject().get("languages").getAsJsonArray().size());
     assertEquals(6, serialized.getAsJsonObject().get("nodes").getAsJsonArray().size());
     prepareDeserializationOfSimpleMath(js);
     List<Sum> deserialized =
@@ -776,9 +776,8 @@ public class JsonSerializationTest extends SerializationTest {
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
 
-    assertEquals(2, serializedChunk.getLanguages().size());
+    assertEquals(1, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
-    assertSerializedChunkContainsLanguage(serializedChunk, LionCoreBuiltins.getInstance());
   }
 
   private void assertSerializedChunkContainsLanguage(

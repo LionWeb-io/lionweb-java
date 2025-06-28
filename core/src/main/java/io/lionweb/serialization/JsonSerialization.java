@@ -104,6 +104,10 @@ public class JsonSerialization extends AbstractSerialization {
   // Serialization
   //
 
+  public String serializeToJsonString(SerializedChunk serializedChunk) {
+    return new LowLevelJsonSerialization().serializeToJsonString(serializedChunk);
+  }
+
   public JsonElement serializeTreeToJsonElement(ClassifierInstance<?> classifierInstance) {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
