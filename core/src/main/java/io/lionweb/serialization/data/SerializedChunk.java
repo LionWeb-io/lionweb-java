@@ -55,8 +55,8 @@ public class SerializedChunk {
   }
 
   /**
-   * Traverse the SerializedChunk, collecting all the metapointers and
-   * populating the used languages accordingly.
+   * Traverse the SerializedChunk, collecting all the metapointers and populating the used languages
+   * accordingly.
    */
   public void populateUsedLanguages() {
     for (SerializedClassifierInstance classifierInstance : classifierInstances) {
