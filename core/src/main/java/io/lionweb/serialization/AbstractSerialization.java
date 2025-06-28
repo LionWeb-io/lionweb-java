@@ -172,9 +172,8 @@ public abstract class AbstractSerialization {
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
-    SerializationStatus serializationStatus = new SerializationStatus(serializedChunk);
-    Consumer<Language> languageConsumer =
-        language -> considerLanguageDuringSerialization(serializedChunk, language);
+    SerializationStatus serializationStatus = new SerializationStatus();
+    Consumer<Language> languageConsumer = this::considerLanguageDuringSerialization;
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializedChunk.addClassifierInstance(serializeNode(classifierInstance, serializationStatus));
@@ -184,27 +183,16 @@ public abstract class AbstractSerialization {
               annotationInstance -> {
                 serializedChunk.addClassifierInstance(
                     serializeAnnotationInstance(annotationInstance, serializationStatus));
-                String annotationID = annotationInstance.getClassifier().getID();
-                if (!serializationStatus.hasConsideredClassifier(annotationID)) {
-                  serializationStatus.considerLanguageDuringSerialization(
-                      language -> considerLanguageDuringSerialization(serializedChunk, language),
-                      annotationInstance.getClassifier().getLanguage());
-                  serializationStatus.markClassifierAsConsidered(annotationID);
-                }
               });
-      Classifier<?> classifier = classifierInstance.getClassifier();
-      serializationStatus.consider(classifier, languageConsumer);
+      serializationStatus.considerLanguageDuringSerialization(
+          languageConsumer, classifierInstance.getClassifier().getLanguage());
     }
+    serializedChunk.populateUsedLanguages();
     return serializedChunk;
   }
 
-  private void considerLanguageDuringSerialization(
-      SerializedChunk serializedChunk, Language language) {
+  private void considerLanguageDuringSerialization(Language language) {
     registerLanguage(language);
-    UsedLanguage languageKeyVersion = UsedLanguage.fromLanguage(language);
-    if (!serializedChunk.getLanguages().contains(languageKeyVersion)) {
-      serializedChunk.addLanguage(languageKeyVersion);
-    }
   }
 
   public SerializedChunk serializeNodesToSerializationBlock(

@@ -54,6 +54,25 @@ public class SerializedChunk {
     return Collections.unmodifiableList(languages);
   }
 
+  /**
+   * Traverse the SerializedChunk, collecting all the metapointers and
+   * populating the used languages accordingly.
+   */
+  public void populateUsedLanguages() {
+    for (SerializedClassifierInstance classifierInstance : classifierInstances) {
+      considerMetaPointer(classifierInstance.getClassifier());
+      for (SerializedContainmentValue containmentValue : classifierInstance.getContainments()) {
+        considerMetaPointer(containmentValue.getMetaPointer());
+      }
+      for (SerializedReferenceValue referenceValue : classifierInstance.getReferences()) {
+        considerMetaPointer(referenceValue.getMetaPointer());
+      }
+      for (SerializedPropertyValue propertyValue : classifierInstance.getProperties()) {
+        considerMetaPointer(propertyValue.getMetaPointer());
+      }
+    }
+  }
+
   @Override
   public String toString() {
     return "SerializationBlock{"
@@ -80,5 +99,12 @@ public class SerializedChunk {
   @Override
   public int hashCode() {
     return Objects.hash(serializationFormatVersion, languages, classifierInstances);
+  }
+
+  private void considerMetaPointer(MetaPointer metaPointer) {
+    UsedLanguage usedLanguage = UsedLanguage.fromMetaPointer(metaPointer);
+    if (!languages.contains(usedLanguage)) {
+      languages.add(usedLanguage);
+    }
   }
 }
