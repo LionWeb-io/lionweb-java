@@ -142,6 +142,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
+  public @Nullable Annotation getAnnotationByName(String name) {
+    return getElements().stream()
+        .filter(element -> element instanceof Annotation)
+        .map(element -> (Annotation) element)
+        .filter(element -> element.getName().equals(name))
+        .findFirst()
+        .orElse(null);
+  }
+
   public String getName() {
     return this.getPropertyValue("name", String.class);
   }
