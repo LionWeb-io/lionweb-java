@@ -1,8 +1,10 @@
 package io.lionweb.utils;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
 import io.lionweb.model.Node;
+import io.lionweb.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -87,6 +89,17 @@ public class LanguageValidator extends Validator<Language> {
     }
   }
 
+  private void validateLWVersionConsistency(Language language, ValidationResult result) {
+    Set<LionWebVersion> lwVersionsUsed =
+        language.thisAndAllDescendants().stream()
+            .filter(n -> n instanceof M3Node<?>)
+            .map(n -> ((M3Node<?>) n).getLionWebVersion())
+            .collect(Collectors.toSet());
+    if (lwVersionsUsed.size() > 1) {
+      result.addError("Inconsistent LionWeb Versions used", language);
+    }
+  }
+
   @Override
   public ValidationResult validate(Language language) {
     // Given languages are also valid node trees, we check against errors for node trees
@@ -97,6 +110,7 @@ public class LanguageValidator extends Validator<Language> {
     validateNamesAreUnique(language.getElements(), result);
     validateKeysAreNotNull(language, result);
     validateKeysAreUnique(language, result);
+    validateLWVersionConsistency(language, result);
 
     // TODO once we implement the Node interface we could navigate the tree differently
 
