@@ -124,6 +124,13 @@ public abstract class AbstractSerialization {
     return this.unavailableChildrenPolicy;
   }
 
+  public void setAllUnavailabilityPolicies(@Nonnull UnavailableNodePolicy unavailabilityPolicy) {
+    Objects.requireNonNull(unavailabilityPolicy);
+    this.unavailableChildrenPolicy = unavailabilityPolicy;
+    this.unavailableReferenceTargetPolicy = unavailabilityPolicy;
+    this.unavailableParentPolicy = unavailabilityPolicy;
+  }
+
   public void setUnavailableParentPolicy(@Nonnull UnavailableNodePolicy unavailableParentPolicy) {
     Objects.requireNonNull(unavailableParentPolicy);
     this.unavailableParentPolicy = unavailableParentPolicy;
