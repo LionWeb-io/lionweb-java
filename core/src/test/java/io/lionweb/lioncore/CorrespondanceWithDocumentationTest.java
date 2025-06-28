@@ -53,8 +53,6 @@ public class CorrespondanceWithDocumentationTest {
     assertTrue(comparison.toString(), comparison.areEquivalent());
   }
 
-  // This is failing pending the resolution of
-  // https://github.com/LionWeb-io/specification/issues/324
   @Test
   public void lioncoreIsTheSameAsInTheOrganizationRepo2024_1() throws IOException {
     JsonSerialization jsonSer = getStandardJsonSerialization(LionWebVersion.v2024_1);
