@@ -145,12 +145,11 @@ public class LowLevelJsonSerialization {
       LionWebVersion lionWebVersion) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
-    SerializationStatus serializationStatus = new SerializationStatus(serializedChunk);
     for (SerializedClassifierInstance serializedClassifierInstance :
         serializedClassifierInstances) {
       serializedChunk.addClassifierInstance(serializedClassifierInstance);
-      serializationStatus.consider(serializedClassifierInstance);
     }
+    serializedChunk.populateUsedLanguages();
     return serializedChunk;
   }
 
