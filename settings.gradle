@@ -8,8 +8,8 @@ include('core')
 include('emf')
 include('emf-builtins')
 include('extensions')
-include('repo-client')
-include('repo-client-testing')
+include('client')
+include('client-testing')
 include('docs-examples')
 
 dependencyResolutionManagement {
