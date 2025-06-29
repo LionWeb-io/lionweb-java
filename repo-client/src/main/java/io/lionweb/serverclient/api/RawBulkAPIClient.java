@@ -31,7 +31,7 @@ public interface RawBulkAPIClient {
   }
 
   @Nullable
-  RepositoryVersionToken createPartitionsAsChunk(@NotNull SerializedChunk data) throws IOException;
+  RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException;
 
   @Nullable
   RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException;

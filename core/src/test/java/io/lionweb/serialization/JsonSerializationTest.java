@@ -676,7 +676,7 @@ public class JsonSerializationTest extends SerializationTest {
 
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
     JsonSerialization jsonSer = SerializationProvider.getStandardJsonSerialization();
-    SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationBlock(myInstance);
+    SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationChunk(myInstance);
     assertEquals(1, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
         serializedChunk.getClassifierInstances().get(0);
@@ -702,7 +702,7 @@ public class JsonSerializationTest extends SerializationTest {
 
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     hjs.enableDynamicNodes();
-    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -740,7 +740,7 @@ public class JsonSerializationTest extends SerializationTest {
 
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     hjs.enableDynamicNodes();
-    SerializedChunk serializedChunk = hjs.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = hjs.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
@@ -774,7 +774,7 @@ public class JsonSerializationTest extends SerializationTest {
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
 
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
-    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationChunk(n1);
 
     assertEquals(2, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);

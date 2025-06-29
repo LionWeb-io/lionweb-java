@@ -161,7 +161,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    SerializedChunk serializationBlock = serializeNodesToSerializationBlock(classifierInstances);
+    SerializedChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
     return serializeToByteArray(serializationBlock);
   }
 
@@ -268,7 +268,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     SerializedChunk serializedChunk =
-        serializeNodesToSerializationBlock(
+        serializeNodesToSerializationChunk(
             classifierInstances.stream()
                 .filter(n -> !(n instanceof ProxyNode))
                 .collect(Collectors.toList()));

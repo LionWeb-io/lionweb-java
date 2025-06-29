@@ -212,7 +212,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     SerializedChunk serializedChunk =
-        protoBufSerialization.serializeNodesToSerializationBlock(myInstance);
+        protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
     assertEquals(1, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
         serializedChunk.getClassifierInstances().get(0);
@@ -239,7 +239,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -279,7 +279,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = protoBufSerialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = protoBufSerialization.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
@@ -311,7 +311,7 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
-    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(2, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
@@ -339,7 +339,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     serialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationChunk(l);
 
     byte[] bytes = serialization.serializeToByteArray(serializedChunk);
     SerializedChunk deserializedChunk = serialization.deserializeToChunk(bytes);
@@ -365,7 +365,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     serialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = serialization.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = serialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -402,7 +402,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     serialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);

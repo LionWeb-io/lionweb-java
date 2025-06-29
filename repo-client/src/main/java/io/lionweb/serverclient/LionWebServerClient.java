@@ -2,6 +2,7 @@ package io.lionweb.serverclient;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.model.Node;
+import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.serverclient.api.*;
 import io.lionweb.serverclient.impl.*;
 import io.lionweb.serialization.JsonSerialization;
@@ -187,6 +188,36 @@ public class LionWebServerClient
   @NotNull
   public String rawRetrieve(@NotNull List<String> nodeIds, int limit) throws IOException {
     return rawBulkAPIs.rawRetrieve(nodeIds, limit);
+  }
+
+  @NotNull
+  @Override
+  public String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
+    return RawBulkAPIClient.super.rawRetrieve(nodeIds);
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
+    return RawBulkAPIClient.super.retrieveAsChunk(nodeIds);
   }
 
   //

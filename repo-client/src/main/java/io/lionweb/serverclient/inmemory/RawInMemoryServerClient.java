@@ -88,7 +88,7 @@ public class RawInMemoryServerClient implements RawBulkAPIClient, DBAdminAPIClie
 
     @Nullable
     @Override
-    public RepositoryVersionToken createPartitionsAsChunk(@NotNull SerializedChunk data) throws IOException {
+    public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
         throw new UnsupportedOperationException();
     }
 

@@ -155,13 +155,19 @@ public abstract class AbstractSerialization {
   // Serialization to chunk
   //
 
-  public SerializedChunk serializeTreeToSerializationBlock(ClassifierInstance<?> root) {
+  public SerializedChunk serializeTreeToSerializationChunk(ClassifierInstance<?> root) {
     Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
-    return serializeNodesToSerializationBlock(classifierInstances);
+    return serializeNodesToSerializationChunk(classifierInstances);
   }
 
-  public SerializedChunk serializeNodesToSerializationBlock(
+  public SerializedChunk serializeTreesToSerializationChunk(List<? extends ClassifierInstance<?>> roots) {
+    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    roots.forEach(root -> ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances));
+    return serializeNodesToSerializationChunk(classifierInstances);
+  }
+
+  public SerializedChunk serializeNodesToSerializationChunk(
       Collection<ClassifierInstance<?>> classifierInstances) {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
@@ -200,9 +206,9 @@ public abstract class AbstractSerialization {
     }
   }
 
-  public SerializedChunk serializeNodesToSerializationBlock(
+  public SerializedChunk serializeNodesToSerializationChunk(
       ClassifierInstance<?>... classifierInstances) {
-    return serializeNodesToSerializationBlock(Arrays.asList(classifierInstances));
+    return serializeNodesToSerializationChunk(Arrays.asList(classifierInstances));
   }
 
   private SerializedClassifierInstance serializeNode(

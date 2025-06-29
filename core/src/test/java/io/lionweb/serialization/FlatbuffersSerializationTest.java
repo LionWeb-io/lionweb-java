@@ -218,7 +218,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
     SerializedChunk serializedChunk =
-        flatBuffersSerialization.serializeNodesToSerializationBlock(myInstance);
+        flatBuffersSerialization.serializeNodesToSerializationChunk(myInstance);
     assertEquals(1, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
         serializedChunk.getClassifierInstances().get(0);
@@ -246,7 +246,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
         SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
     SerializedChunk serializedChunk =
-        flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
+        flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -281,7 +281,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
         SerializationProvider.getStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
     flatBuffersSerialization.enableDynamicNodes();
     SerializedChunk serializedChunk =
-        flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
+        flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -312,7 +312,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
@@ -357,7 +357,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
@@ -402,7 +402,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationChunk(l);
 
     byte[] bytes = flatBuffersSerialization.serialize(serializedChunk);
     SerializedChunk deserializedChunk = flatBuffersSerialization.deserializeToChunk(bytes);
@@ -425,7 +425,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
     SerializedChunk serializedChunk =
-        flatBuffersSerialization.serializeNodesToSerializationBlock(n1);
+        flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(2, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
