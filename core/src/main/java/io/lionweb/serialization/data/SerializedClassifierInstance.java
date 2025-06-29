@@ -18,8 +18,13 @@ public class SerializedClassifierInstance {
 
   private final List<SerializedPropertyValue> properties = new ArrayList<>();
   private final List<SerializedContainmentValue> containments = new ArrayList<>();
-  private final List<SerializedReferenceValue> references = new ArrayList<>();
-  private final List<String> annotations = new ArrayList<>();
+
+  /** Given most nodes have no references, we avoid the instantiation, unless it is necessary. */
+  private @Nullable List<SerializedReferenceValue> references;
+
+  /** Given most nodes have no annotations, we avoid the instantiation, unless it is necessary. */
+  private @Nullable List<String> annotations;
+
   private String parentNodeID;
 
   public String getParentNodeID() {
@@ -56,10 +61,16 @@ public class SerializedClassifierInstance {
   }
 
   public List<SerializedReferenceValue> getReferences() {
+    if (this.references == null) {
+      return Collections.emptyList();
+    }
     return Collections.unmodifiableList(this.references);
   }
 
   public List<String> getAnnotations() {
+    if (this.annotations == null) {
+      return Collections.emptyList();
+    }
     return Collections.unmodifiableList(this.annotations);
   }
 
@@ -76,6 +87,9 @@ public class SerializedClassifierInstance {
   }
 
   public void addReferenceValue(SerializedReferenceValue referenceValue) {
+    if (this.references == null) {
+      this.references = new ArrayList<>(1);
+    }
     this.references.add(referenceValue);
   }
 
@@ -106,6 +120,9 @@ public class SerializedClassifierInstance {
 
   public void addReferenceValue(
       MetaPointer reference, List<SerializedReferenceValue.Entry> referenceValues) {
+    if (this.references == null) {
+      this.references = new ArrayList<>(1);
+    }
     this.references.add(new SerializedReferenceValue(reference, referenceValues));
   }
 
@@ -161,11 +178,18 @@ public class SerializedClassifierInstance {
   }
 
   public void setAnnotations(List<String> annotationIDs) {
-    this.annotations.clear();
+    if (this.annotations == null) {
+      this.annotations = new ArrayList<>(annotationIDs.size());
+    } else {
+      this.annotations.clear();
+    }
     this.annotations.addAll(annotationIDs);
   }
 
   public void addAnnotation(String annotationID) {
+    if (this.annotations == null) {
+      this.annotations = new ArrayList<>(1);
+    }
     this.annotations.add(annotationID);
   }
 
@@ -179,14 +203,14 @@ public class SerializedClassifierInstance {
         && Objects.equals(parentNodeID, that.parentNodeID)
         && Objects.equals(properties, that.properties)
         && Objects.equals(containments, that.containments)
-        && Objects.equals(references, that.references)
-        && Objects.equals(annotations, that.annotations);
+        && Objects.equals(getReferences(), that.getReferences())
+        && Objects.equals(getAnnotations(), that.getAnnotations());
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(
-        id, classifier, parentNodeID, properties, containments, references, annotations);
+        id, classifier, parentNodeID, properties, containments, getReferences(), getAnnotations());
   }
 
   @Override
@@ -205,9 +229,9 @@ public class SerializedClassifierInstance {
         + ", containments="
         + containments
         + ", references="
-        + references
+        + getReferences()
         + ", annotations="
-        + annotations
+        + getAnnotations()
         + '}';
   }
 }
