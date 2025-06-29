@@ -5,10 +5,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.Containment;
 import io.lionweb.model.Node;
-import io.lionweb.repoclient.ExtendedLionWebRepoClient;
-import io.lionweb.repoclient.api.HistorySupport;
-import io.lionweb.repoclient.api.RepositoryConfiguration;
-import io.lionweb.repoclient.testing.AbstractRepoClientFunctionalTest;
+import io.lionweb.serverclient.ExtendedLionWebServerClient;
+import io.lionweb.serverclient.api.HistorySupport;
+import io.lionweb.serverclient.api.RepositoryConfiguration;
+import io.lionweb.serverclient.testing.AbstractRepoClientFunctionalTest;
 import io.lionweb.serialization.extensions.library.Book;
 import io.lionweb.serialization.extensions.library.Library;
 import io.lionweb.serialization.extensions.library.LibraryLanguage;
@@ -74,8 +74,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   @Test
   public void nodeTree() throws IOException {
     String repositoryName = "repo_nodeTree";
-    ExtendedLionWebRepoClient client =
-        new ExtendedLionWebRepoClient(
+    ExtendedLionWebServerClient client =
+        new ExtendedLionWebServerClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
@@ -114,8 +114,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   private void bulkImportTestingRoutine(
       String repositoryName, TransferFormat transferFormat, Compression compression)
       throws IOException, InterruptedException {
-    ExtendedLionWebRepoClient client =
-        new ExtendedLionWebRepoClient(
+    ExtendedLionWebServerClient client =
+        new ExtendedLionWebServerClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
