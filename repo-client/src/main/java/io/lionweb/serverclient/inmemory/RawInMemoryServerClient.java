@@ -69,18 +69,8 @@ public class RawInMemoryServerClient implements RawBulkAPIClient, DBAdminAPIClie
     }
 
     @Nullable
-    public RepositoryVersionToken createPartitionsUsingChunk(@NotNull SerializedChunk serializedChunk) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nullable
     @Override
     public RepositoryVersionToken rawStore(@NotNull String nodes) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Nullable
-    public RepositoryVersionToken storeUsingChunk(@NotNull SerializedChunk nodes) {
         throw new UnsupportedOperationException();
     }
 
@@ -96,13 +86,21 @@ public class RawInMemoryServerClient implements RawBulkAPIClient, DBAdminAPIClie
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
-    public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) {
+    @Nullable
+    @Override
+    public RepositoryVersionToken createPartitionsAsChunk(@NotNull SerializedChunk data) throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    @Override
+    public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
         throw new UnsupportedOperationException();
     }
 
     @NotNull
-    public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) {
+    @Override
+    public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException {
         throw new UnsupportedOperationException();
     }
 }

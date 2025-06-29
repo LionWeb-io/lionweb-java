@@ -3,6 +3,8 @@ package io.lionweb.serverclient.api;
 import io.lionweb.LionWebVersion;
 import java.io.IOException;
 import java.util.List;
+
+import io.lionweb.serialization.data.SerializedChunk;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -26,5 +28,18 @@ public interface RawBulkAPIClient {
 
   default @NotNull String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
     return rawRetrieve(nodeIds, Integer.MAX_VALUE);
+  }
+
+  @Nullable
+  RepositoryVersionToken createPartitionsAsChunk(@NotNull SerializedChunk data) throws IOException;
+
+  @Nullable
+  RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException;
+
+  @NotNull
+  SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException;
+
+  default @NotNull SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
+    return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }
 }
