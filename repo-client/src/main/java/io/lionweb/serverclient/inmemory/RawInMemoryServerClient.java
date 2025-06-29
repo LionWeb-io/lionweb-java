@@ -2,6 +2,7 @@ package io.lionweb.serverclient.inmemory;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.model.Node;
+import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.serverclient.api.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -63,25 +64,45 @@ public class RawInMemoryServerClient implements RawBulkAPIClient, DBAdminAPIClie
 
     @Nullable
     @Override
-    public RepositoryVersionToken rawCreatePartitions(@NotNull String data) throws IOException {
+    public RepositoryVersionToken rawCreatePartitions(@NotNull String data) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    public RepositoryVersionToken createPartitionsUsingChunk(@NotNull SerializedChunk serializedChunk) {
         throw new UnsupportedOperationException();
     }
 
     @Nullable
     @Override
-    public RepositoryVersionToken rawStore(@NotNull String nodes) throws IOException {
+    public RepositoryVersionToken rawStore(@NotNull String nodes) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Nullable
+    public RepositoryVersionToken storeUsingChunk(@NotNull SerializedChunk nodes) {
         throw new UnsupportedOperationException();
     }
 
     @NotNull
     @Override
-    public String rawRetrieve(@Nullable List<String> nodeIds, int limit) throws IOException {
+    public String rawRetrieve(@Nullable List<String> nodeIds, int limit) {
         throw new UnsupportedOperationException();
     }
 
     @NotNull
     @Override
-    public String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
+    public String rawRetrieve(@Nullable List<String> nodeIds) {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) {
+        throw new UnsupportedOperationException();
+    }
+
+    @NotNull
+    public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) {
         throw new UnsupportedOperationException();
     }
 }
