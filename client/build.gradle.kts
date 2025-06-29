@@ -1,37 +1,27 @@
 import com.vanniktech.maven.publish.SonatypeHost
-import java.net.URI
 
 plugins {
+    `jvm-test-suite`
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
     alias(libs.plugins.vtpublish)
     jacoco
-    alias(libs.plugins.protobuf)
 }
 
 repositories {
     mavenCentral()
 }
 
+val lionwebServerCommitID: String by project
+
 val jvmVersion = extra["jvmVersion"] as String
 val specsVersion = extra["specsVersion"] as String
 
-val javadocConfig by configurations.creating {
-    extendsFrom(configurations.testImplementation.get())
-}
-
-dependencies {
-    implementation(project(":core"))
-    implementation(project(":client"))
-    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
-
-    implementation(libs.protobuf)
-    implementation(libs.flatbuffers)
-    implementation(libs.gson)
-    implementation(libs.okhttp)
-
-    testImplementation(libs.junit)
+tasks.withType<Jar>().configureEach {
+    manifest {
+        attributes["lionwebServerCommitID"] = lionwebServerCommitID
+    }
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -44,7 +34,7 @@ tasks.register<Jar>("sourcesJar") {
 mavenPublishing {
     coordinates(
         groupId = "io.lionweb.lionweb-java",
-        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+        artifactId = "lionweb-java-$specsVersion-" + project.name,
         version = project.version as String,
     )
 
@@ -101,23 +91,6 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
 
-val protobufVersion: String = libs.versions.protobufVersion.get()
-
-protobuf {
-    protoc {
-        // Apple Silicon processor would look for an unexisting platform-specific variant
-        artifact = "com.google.protobuf:protoc:${protobufVersion}" + if (osdetector.os == "osx") ":osx-x86_64" else ""
-    }
-    generateProtoTasks {
-        ofSourceSet("main").forEach {
-        }
-    }
-}
-
-tasks {
-    getByName("sourcesJar").dependsOn("generateProto")
-}
-
 tasks.withType<Test>().all {
     testLogging {
         showStandardStreams = true
@@ -148,14 +121,18 @@ testing {
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(libs.okhttp)
+    implementation(libs.gson)
+    testImplementation(libs.junit)
+
     "functionalTestImplementation"(project(":core"))
-    "functionalTestImplementation"(project(":extensions"))
     "functionalTestImplementation"(project(":client"))
     "functionalTestImplementation"(project(":client-testing"))
     "functionalTestImplementation"(libs.testcontainers)
     "functionalTestImplementation"(libs.testcontainersjunit)
     "functionalTestImplementation"(libs.testcontainerspg)
-    "functionalTestImplementation"(libs.junit.api)
-    "functionalTestImplementation"(libs.junit.engine)
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
+    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
     "functionalTestImplementation"(libs.gson)
 }
