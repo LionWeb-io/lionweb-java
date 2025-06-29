@@ -2,6 +2,7 @@ package io.lionweb.utils;
 
 import static org.junit.Assert.*;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 import java.util.Arrays;
@@ -411,5 +412,35 @@ public class LanguageValidatorTest {
     assertTrue(LanguageValidator.isCircular(sdtC));
     assertTrue(LanguageValidator.isCircular(sdtD));
     assertTrue(LanguageValidator.isCircular(sdtE));
+  }
+
+  @Test
+  public void signalLWVersionInconsistencyOnConcept() {
+    Language l = new Language(LionWebVersion.v2024_1, "MyLanguage").setID("l-id").setKey("l-key");
+    Concept c = new Concept(LionWebVersion.v2023_1, "MyConcept").setID("c-id").setKey("c-key");
+    l.addElement(c);
+
+    ValidationResult validationResult = new LanguageValidator().validate(l);
+    assertFalse(validationResult.isSuccessful());
+    assertEquals(1, validationResult.getIssues().size());
+    assertEquals(
+        new Issue(IssueSeverity.Error, "Inconsistent LionWeb Versions used", l),
+        validationResult.getIssues().iterator().next());
+  }
+
+  @Test
+  public void signalLWVersionInconsistencyOnFeature() {
+    Language l = new Language(LionWebVersion.v2024_1, "MyLanguage").setID("l-id").setKey("l-key");
+    Concept c = new Concept(LionWebVersion.v2024_1, "MyConcept").setID("c-id").setKey("c-key");
+    l.addElement(c);
+    Property p = new Property(LionWebVersion.v2023_1, "MyProperty").setID("p-id").setKey("p-key");
+    c.addFeature(p);
+
+    ValidationResult validationResult = new LanguageValidator().validate(l);
+    assertFalse(validationResult.isSuccessful());
+    assertEquals(1, validationResult.getIssues().size());
+    assertEquals(
+        new Issue(IssueSeverity.Error, "Inconsistent LionWeb Versions used", l),
+        validationResult.getIssues().iterator().next());
   }
 }

@@ -25,7 +25,7 @@ public class Property extends Feature<Property> {
   public static Property createOptional(
       @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType<?> type) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    Property property = new Property(lionWebVersion, name, null);
+    Property property = new Property(lionWebVersion, name);
     property.setOptional(true);
     property.setType(type);
     return property;
@@ -41,7 +41,7 @@ public class Property extends Feature<Property> {
   public static Property createRequired(
       @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nullable DataType<?> type) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    Property property = new Property(lionWebVersion, name, null);
+    Property property = new Property(lionWebVersion, name);
     property.setOptional(false);
     property.setType(type);
     return property;
@@ -105,11 +105,8 @@ public class Property extends Feature<Property> {
     super(lionWebVersion);
   }
 
-  public Property(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?> container) {
-    super(lionWebVersion, name, container);
+  public Property(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion, name, (Classifier<?>) null);
   }
 
   public Property(@Nullable String name, @Nullable Classifier<?> container) {
