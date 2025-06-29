@@ -28,7 +28,7 @@ public class PropertiesLanguage {
     // Register concept features
     propertiesPartition.setPartition(true);
     addContainment(propertiesPartition, "files", propertiesFile, Multiplicity.ZERO_TO_MANY);
-    Property filePath = new Property(LionWebVersion.v2023_1, "path", propertiesFile);
+    Property filePath = new Property("path", propertiesFile);
     filePath.setID(propertiesFile.getID() + "-path");
     filePath.setKey(propertiesFile.getKey() + "-path");
     filePath.setType(LionCoreBuiltins.getString(lionWebVersionUsed));
