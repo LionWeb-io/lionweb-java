@@ -446,7 +446,7 @@ public abstract class AbstractSerialization {
     return deserializationStatus;
   }
 
-  public List<ClassifierInstance<?>> deserializeSerializationBlock(
+  public List<ClassifierInstance<?>> deserializeSerializationChunk(
       SerializedChunk serializationBlock) {
     return deserializeClassifierInstances(
         LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()),

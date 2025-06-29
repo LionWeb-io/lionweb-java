@@ -49,7 +49,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
     SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
-    return deserializeSerializationBlock(serializationBlock);
+    return deserializeSerializationChunk(serializationBlock);
   }
 
   private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {

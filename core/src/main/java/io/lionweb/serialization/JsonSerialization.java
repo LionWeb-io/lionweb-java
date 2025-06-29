@@ -196,7 +196,7 @@ public class JsonSerialization extends AbstractSerialization {
     SerializedChunk serializationBlock =
         new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
-    return deserializeSerializationBlock(serializationBlock);
+    return deserializeSerializationChunk(serializationBlock);
   }
 
   public List<Node> deserializeToNodes(URL url) throws IOException {

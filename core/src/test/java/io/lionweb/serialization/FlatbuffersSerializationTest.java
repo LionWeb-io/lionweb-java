@@ -257,7 +257,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationBlock(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(n1, deserialized.get(0));
   }
@@ -292,7 +292,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationBlock(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(n1, deserialized.get(0));
   }
@@ -325,7 +325,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
 
     flatBuffersSerialization.registerLanguage(metaLang);
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationBlock(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(5, deserialized.size());
     ClassifierInstance<?> deserializedC = deserialized.get(3);
     assertInstancesAreEquals(c, deserializedC);
@@ -370,7 +370,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
 
     flatBuffersSerialization.registerLanguage(metaLang);
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationBlock(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(5, deserialized.size());
     ClassifierInstance<?> deserializedC = deserialized.get(3);
     assertInstancesAreEquals(c, deserializedC);

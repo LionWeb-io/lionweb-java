@@ -38,7 +38,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(FBChunk chunk) {
     SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
-    return deserializeSerializationBlock(serializationBlock);
+    return deserializeSerializationChunk(serializationBlock);
   }
 
   public SerializedChunk deserializeToChunk(byte[] bytes) {
