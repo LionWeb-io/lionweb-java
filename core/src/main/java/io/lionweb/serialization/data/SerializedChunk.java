@@ -1,5 +1,6 @@
 package io.lionweb.serialization.data;
 
+import io.lionweb.LionWebVersion;
 import java.util.*;
 import javax.annotation.Nonnull;
 
@@ -15,6 +16,20 @@ public class SerializedChunk {
   private String serializationFormatVersion;
   private final List<UsedLanguage> languages = new ArrayList<>();
   private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
+
+  public static SerializedChunk fromNodes(
+      @Nonnull LionWebVersion lionWebVersion, @Nonnull List<SerializedClassifierInstance> nodes) {
+    Objects.requireNonNull(lionWebVersion);
+    Objects.requireNonNull(nodes);
+    if (nodes.isEmpty()) {
+      throw new IllegalArgumentException();
+    }
+    SerializedChunk instance = new SerializedChunk();
+    instance.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    nodes.forEach(n -> instance.addClassifierInstance(n));
+    instance.populateUsedLanguages();
+    return instance;
+  }
 
   public void setSerializationFormatVersion(String value) {
     this.serializationFormatVersion = value;

@@ -212,7 +212,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     SerializedChunk serializedChunk =
-        protoBufSerialization.serializeNodesToSerializationBlock(myInstance);
+        protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
     assertEquals(1, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
         serializedChunk.getClassifierInstances().get(0);
@@ -239,7 +239,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -250,7 +250,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> deserialized =
-        protoBufSerialization.deserializeSerializationBlock(serializedChunk);
+        protoBufSerialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(a1_1, deserialized.get(1));
     assertEquals(deserialized.get(0), deserialized.get(1).getParent());
@@ -279,7 +279,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = protoBufSerialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = protoBufSerialization.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
@@ -292,7 +292,7 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     protoBufSerialization.registerLanguage(metaLang);
     List<ClassifierInstance<?>> deserialized =
-        protoBufSerialization.deserializeSerializationBlock(serializedChunk);
+        protoBufSerialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(5, deserialized.size());
     assertInstancesAreEquals(l, deserialized.get(0));
   }
@@ -311,7 +311,7 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
-    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = protoBufSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(1, serializedChunk.getLanguages().size());
     assertSerializedChunkContainsLanguage(serializedChunk, l);
@@ -338,7 +338,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     serialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationChunk(l);
 
     byte[] bytes = serialization.serializeToByteArray(serializedChunk);
     SerializedChunk deserializedChunk = serialization.deserializeToChunk(bytes);
@@ -364,7 +364,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     serialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = serialization.serializeNodesToSerializationBlock(n1);
+    SerializedChunk serializedChunk = serialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
@@ -375,7 +375,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> deserialized =
-        serialization.deserializeSerializationBlock(serializedChunk);
+        serialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(n1, deserialized.get(0));
   }
@@ -401,7 +401,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     serialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationBlock(l);
+    SerializedChunk serializedChunk = serialization.serializeTreeToSerializationChunk(l);
 
     assertEquals(5, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
@@ -414,7 +414,7 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     serialization.registerLanguage(metaLang);
     List<ClassifierInstance<?>> deserialized =
-        serialization.deserializeSerializationBlock(serializedChunk);
+        serialization.deserializeSerializationChunk(serializedChunk);
     assertEquals(5, deserialized.size());
     ClassifierInstance<?> deserializedC = deserialized.get(3);
     assertInstancesAreEquals(c, deserializedC);
