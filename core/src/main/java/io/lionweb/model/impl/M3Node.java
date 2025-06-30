@@ -44,7 +44,12 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     this.lionWebVersion = lionWebVersion;
   }
 
-  public @Nonnull T setID(@Nullable String id) {
+  /**
+   * The ID can be _temporarily_ left to null, but _eventually_ it should be not null, so we are
+   * preventing assigning null to it (see https://github.com/LionWeb-io/lionweb-java/pull/234).
+   */
+  public @Nonnull T setID(@Nonnull String id) {
+    Objects.requireNonNull(id);
     this.id = id;
     return (T) this;
   }

@@ -1,7 +1,6 @@
 package io.lionweb.model;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /** Certain nodes have an ID that can be set. */
 public interface HasSettableID {
@@ -12,5 +11,5 @@ public interface HasSettableID {
    * @return the element itself
    */
   @Nonnull
-  ClassifierInstance<?> setID(@Nullable String id);
+  ClassifierInstance<?> setID(@Nonnull String id);
 }
