@@ -33,8 +33,12 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     return id;
   }
 
-  /** The ID can be _temporarily_ set to null, but _eventually_ it should be not null. */
-  public @Nonnull DynamicClassifierInstance<T> setID(@Nullable String id) {
+  /**
+   * The ID can be _temporarily_ left to null, but _eventually_ it should be not null, so we are
+   * preventing assigning null to it (see https://github.com/LionWeb-io/lionweb-java/pull/234).
+   */
+  public @Nonnull DynamicClassifierInstance<T> setID(@Nonnull String id) {
+    Objects.requireNonNull(id);
     this.id = id;
     return this;
   }
