@@ -1,7 +1,9 @@
 package io.lionweb.utils;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
+import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.Node;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -97,8 +99,7 @@ public class LanguageValidator extends Validator<Language> {
     validateNamesAreUnique(language.getElements(), result);
     validateKeysAreNotNull(language, result);
     validateKeysAreUnique(language, result);
-
-    // TODO once we implement the Node interface we could navigate the tree differently
+    validateLanguageDependencies(language, result);
 
     language
         .getElements()
@@ -168,6 +169,72 @@ public class LanguageValidator extends Validator<Language> {
                 }
               }
             });
+  }
+
+  private void validateLanguageDependencies(Language language, ValidationResult result) {
+    // LionCore seems not to follow normal rules...
+    // see https://github.com/LionWeb-io/specification/issues/380
+    if (language == LionCore.getInstance(LionWebVersion.v2023_1)) {
+      return;
+    } else if (language == LionCore.getInstance(LionWebVersion.v2024_1)) {
+      return;
+    }
+
+    Set<Language> usedLanguages = new HashSet<>();
+    for (Concept concept : language.getConcepts()) {
+      Concept extended = concept.getExtendedConcept();
+      if (extended != null) {
+        Language l = extended.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+      for (Interface interfaze : concept.getImplemented()) {
+        Language l = interfaze.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+    }
+    for (Interface interfaze : language.getInterfaces()) {
+      for (Interface extendedInterface : interfaze.getExtendedInterfaces()) {
+        Language l = extendedInterface.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+    }
+    for (Annotation annotation : language.getAnnotationDefinitions()) {
+      Classifier<?> target = annotation.getAnnotates();
+      if (target != null) {
+        Language l = target.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+    }
+    for (StructuredDataType structuredDataType : language.getStructuredDataTypes()) {
+      for (Field field : structuredDataType.getFields()) {
+        DataType<?> fieldType = field.getType();
+        if (fieldType != null) {
+          Language l = fieldType.getLanguage();
+          if (l != null) {
+            usedLanguages.add(l);
+          }
+        }
+      }
+    }
+    usedLanguages.stream()
+        .filter(ul -> !language.dependsOn().contains(ul) && ul != language)
+        .forEach(
+            ul ->
+                result.addError(
+                    "Language "
+                        + ul.getKey()
+                        + " version "
+                        + ul.getVersion()
+                        + " is not listed among dependencies",
+                    language));
   }
 
   private void validateKeysAreUnique(Language language, ValidationResult result) {
@@ -272,20 +339,6 @@ public class LanguageValidator extends Validator<Language> {
   private void checkInterfacesCycles(Interface iface, ValidationResult validationResult) {
     if (iface.allExtendedInterfaces().contains(iface)) {
       validationResult.addError("Cyclic hierarchy found: the interface extends itself", iface);
-    }
-  }
-
-  private void checkAncestorsHelperForInterfaces(
-      Set<Interface> alreadyExplored, Interface iface, ValidationResult validationResult) {
-    if (alreadyExplored.contains(iface)) {
-      validationResult.addError("Cyclic hierarchy found", iface);
-    } else {
-      alreadyExplored.add(iface);
-      iface
-          .getExtendedInterfaces()
-          .forEach(
-              interf ->
-                  checkAncestorsHelperForInterfaces(alreadyExplored, interf, validationResult));
     }
   }
 }
