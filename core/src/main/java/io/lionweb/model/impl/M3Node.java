@@ -4,10 +4,7 @@ import static io.lionweb.model.ClassifierInstanceUtils.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.HasSettableParent;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.*;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -25,7 +22,7 @@ import javax.annotation.Nullable;
  * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
-    implements Node, HasSettableParent {
+    implements Node, HasSettableParent, HasSettableID {
   private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;
   private @Nullable ClassifierInstance<?> parent;
@@ -47,7 +44,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     this.lionWebVersion = lionWebVersion;
   }
 
-  public T setID(String id) {
+  public @Nonnull T setID(@Nullable String id) {
     this.id = id;
     return (T) this;
   }

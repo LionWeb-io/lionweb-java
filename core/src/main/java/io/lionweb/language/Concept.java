@@ -92,16 +92,26 @@ public class Concept extends Classifier<Concept> {
     return this.getPropertyValue("abstract", Boolean.class, false);
   }
 
-  public void setAbstract(boolean value) {
+  public @Nonnull Concept setAbstract(boolean value) {
     this.setPropertyValue("abstract", value);
+    return this;
+  }
+
+  public @Nonnull Concept makeAbstract() {
+    return setAbstract(true);
   }
 
   public boolean isPartition() {
     return this.getPropertyValue("partition", Boolean.class, false);
   }
 
-  public void setPartition(boolean value) {
+  public @Nonnull Concept setPartition(boolean value) {
     this.setPropertyValue("partition", value);
+    return this;
+  }
+
+  public @Nonnull Concept makePartition() {
+    return setPartition(true);
   }
 
   // TODO should this return BaseConcept when extended is equal null?
