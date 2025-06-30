@@ -78,6 +78,30 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     return (T) this;
   }
 
+  public T makeZeroToMany() {
+    setOptional(true);
+    setMultiple(true);
+    return (T) this;
+  }
+
+  public T makeOneToMany() {
+    setOptional(false);
+    setMultiple(true);
+    return (T) this;
+  }
+
+  public T makeZeroToOne() {
+    setOptional(true);
+    setMultiple(false);
+    return (T) this;
+  }
+
+  public T makeExactlyOne() {
+    setOptional(false);
+    setMultiple(false);
+    return (T) this;
+  }
+
   @Override
   public String toString() {
     return super.toString()

@@ -1,16 +1,13 @@
 package io.lionweb.model.impl;
 
 import io.lionweb.language.*;
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.HasSettableParent;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.*;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class DynamicClassifierInstance<T extends Classifier<T>>
-    extends AbstractClassifierInstance<T> implements ClassifierInstance<T> {
+    extends AbstractClassifierInstance<T> implements ClassifierInstance<T>, HasSettableID {
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;
 
@@ -37,8 +34,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   /** The ID can be _temporarily_ set to null, but _eventually_ it should be not null. */
-  public void setID(@Nullable String id) {
+  public @Nonnull DynamicClassifierInstance<T> setID(@Nullable String id) {
     this.id = id;
+    return this;
   }
 
   // Public methods for properties
