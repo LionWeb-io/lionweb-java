@@ -84,7 +84,7 @@ public class AbstractClientFunctionalTest {
     modelRepository.withCommand(); // empty command
     modelRepository.start();
 
-    System.setProperty("MODEL_REPO_PORT", Integer.toString(getModelRepoPort()));
+    System.setProperty("MODEL_REPO_PORT", Integer.toString(getServerPort()));
   }
 
   @AfterAll
@@ -97,7 +97,7 @@ public class AbstractClientFunctionalTest {
     }
   }
 
-  public int getModelRepoPort() {
+  public int getServerPort() {
     return modelRepository.getMappedPort(3005);
   }
 

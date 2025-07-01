@@ -7,11 +7,11 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
+import io.lionweb.client.languages.PropertiesLanguage;
 import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.client.languages.PropertiesLanguage;
 import java.io.IOException;
 import java.util.*;
 import org.junit.jupiter.api.Test;
@@ -28,7 +28,7 @@ public class LionWebClientHistoryApiFunctionalTest extends AbstractClientFunctio
   public void partitionsCRUD() throws IOException {
     String repoName = "myHistoryDB1";
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.ENABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -62,7 +62,7 @@ public class LionWebClientHistoryApiFunctionalTest extends AbstractClientFunctio
   public void partitionHistory() throws IOException {
     String repoName = "myHistoryDB2";
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.ENABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);

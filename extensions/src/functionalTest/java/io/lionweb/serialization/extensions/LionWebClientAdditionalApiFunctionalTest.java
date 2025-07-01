@@ -76,7 +76,7 @@ public class LionWebClientAdditionalApiFunctionalTest extends AbstractClientFunc
     String repositoryName = "repo_nodeTree";
     ExtendedLionWebClient client =
         new ExtendedLionWebClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
+            LionWebVersion.v2023_1, "localhost", getServerPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
             repositoryName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
@@ -116,7 +116,7 @@ public class LionWebClientAdditionalApiFunctionalTest extends AbstractClientFunc
       throws IOException, InterruptedException {
     ExtendedLionWebClient client =
         new ExtendedLionWebClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
+            LionWebVersion.v2023_1, "localhost", getServerPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
             repositoryName, LionWebVersion.v2023_1, HistorySupport.DISABLED));

@@ -7,10 +7,10 @@ import io.lionweb.client.api.ClassifierKey;
 import io.lionweb.client.api.ClassifierResult;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.languages.PropertiesLanguage;
 import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.client.languages.PropertiesLanguage;
 import java.io.IOException;
 import java.util.*;
 import org.junit.jupiter.api.Test;
@@ -27,7 +27,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
   public void nodesByClassifier() throws IOException {
     LionWebClient client =
         new LionWebClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "repo_nodesByClassifier");
+            LionWebVersion.v2023_1, "localhost", getServerPort(), "repo_nodesByClassifier");
     client.createRepository(
         new RepositoryConfiguration(
             "repo_nodesByClassifier", LionWebVersion.v2023_1, HistorySupport.DISABLED));
@@ -71,7 +71,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
         new LionWebClient(
             LionWebVersion.v2023_1,
             "localhost",
-            getModelRepoPort(),
+            getServerPort(),
             "repo_nodesByClassifierWithLimit");
     client.createRepository(
         new RepositoryConfiguration(
@@ -128,7 +128,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
   public void nodesByLanguage() throws IOException {
     LionWebClient client =
         new LionWebClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "repo_nodesByLanguage");
+            LionWebVersion.v2023_1, "localhost", getServerPort(), "repo_nodesByLanguage");
     client.createRepository(
         new RepositoryConfiguration(
             "repo_nodesByLanguage", LionWebVersion.v2023_1, HistorySupport.DISABLED));
@@ -163,10 +163,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
   public void nodesByLanguageWithLimit() throws IOException {
     LionWebClient client =
         new LionWebClient(
-            LionWebVersion.v2023_1,
-            "localhost",
-            getModelRepoPort(),
-            "repo_nodesByLanguageWithLimit");
+            LionWebVersion.v2023_1, "localhost", getServerPort(), "repo_nodesByLanguageWithLimit");
     client.createRepository(
         new RepositoryConfiguration(
             "repo_nodesByLanguageWithLimit", LionWebVersion.v2023_1, HistorySupport.DISABLED));

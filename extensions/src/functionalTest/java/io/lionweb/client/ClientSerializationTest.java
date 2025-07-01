@@ -34,7 +34,7 @@ public class ClientSerializationTest extends AbstractClientFunctionalTest {
       throws IOException {
     ExtendedLionWebClient client =
         new ExtendedLionWebClient(
-            LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
+            LionWebVersion.v2023_1, "localhost", getServerPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
             repositoryName, LionWebVersion.v2023_1, HistorySupport.DISABLED));

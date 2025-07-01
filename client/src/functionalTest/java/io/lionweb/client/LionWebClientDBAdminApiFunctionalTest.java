@@ -23,7 +23,7 @@ public class LionWebClientDBAdminApiFunctionalTest extends AbstractClientFunctio
   @Test
   public void repositoriesCRUD() throws IOException {
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2024_1, "localhost", getModelRepoPort(), "default");
+        new LionWebClient(LionWebVersion.v2024_1, "localhost", getServerPort(), "default");
 
     // Initially we should have one repository
     RepositoryConfiguration defaultRepository =

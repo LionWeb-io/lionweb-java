@@ -6,11 +6,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.languages.PropertiesLanguage;
 import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.client.languages.PropertiesLanguage;
 import io.lionweb.utils.CommonChecks;
 import java.io.IOException;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void noPartitionsOnNewModelRepository() throws IOException {
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
     List<Node> partitions = client.listPartitions();
     assertEquals(Collections.emptyList(), partitions);
   }
@@ -38,7 +38,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void partitionsCRUD() throws IOException {
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Create partition
@@ -86,7 +86,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   public void storeOnCustomRepository() throws IOException {
     String repoName = "my_repo";
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -117,7 +117,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void ids() throws IOException {
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
 
     List<String> ids1 = client.ids(78);
     assertEquals(78, ids1.size());
@@ -134,7 +134,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void storeAndRetrieve() throws IOException {
     LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
