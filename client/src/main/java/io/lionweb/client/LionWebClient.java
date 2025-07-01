@@ -17,7 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LionWebClient
-    implements RawBulkAPIClient,
+    implements JSONLevelBulkAPIClient,
         BulkAPIClient,
         DBAdminAPIClient,
         InspectionAPIClient,
@@ -100,7 +100,7 @@ public class LionWebClient
   private final ClientForInspectionAPIs inspectionAPIs;
   private final ClientForDBAdminAPIs dbAdminAPIs;
   private final ClientForBulkAPIs bulkAPIs;
-  private final ClientForRawBulkAPIs rawBulkAPIs;
+  private final ClientForJSONLevelBulkAPIs rawBulkAPIs;
   private final ClientForHistoryAPIs historyAPIs;
 
   //
@@ -144,7 +144,7 @@ public class LionWebClient
     ClientConfiguration conf = buildRepositoryConfiguration();
     this.inspectionAPIs = new ClientForInspectionAPIs(conf);
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
-    this.rawBulkAPIs = new ClientForRawBulkAPIs(conf);
+    this.rawBulkAPIs = new ClientForJSONLevelBulkAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
     this.historyAPIs = new ClientForHistoryAPIs(conf);
   }
@@ -193,7 +193,7 @@ public class LionWebClient
   @NotNull
   @Override
   public String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
-    return RawBulkAPIClient.super.rawRetrieve(nodeIds);
+    return JSONLevelBulkAPIClient.super.rawRetrieve(nodeIds);
   }
 
   @Nullable
@@ -218,7 +218,7 @@ public class LionWebClient
   @NotNull
   @Override
   public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
-    return RawBulkAPIClient.super.retrieveAsChunk(nodeIds);
+    return JSONLevelBulkAPIClient.super.retrieveAsChunk(nodeIds);
   }
 
   //

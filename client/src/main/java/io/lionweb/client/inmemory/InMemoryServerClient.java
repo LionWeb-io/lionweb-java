@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class InMemoryServerClient implements BulkAPIClient, DBAdminAPIClient {
-  private @NotNull InMemoryServer inMemoryServer;
+  private final @NotNull InMemoryServer inMemoryServer;
   private @Nullable String repositoryName;
 
   public InMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {

@@ -2,7 +2,7 @@ package io.lionweb.client.inmemory;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.DBAdminAPIClient;
-import io.lionweb.client.api.RawBulkAPIClient;
+import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.data.SerializedChunk;
@@ -13,15 +13,15 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class RawInMemoryServerClient implements RawBulkAPIClient, DBAdminAPIClient {
+public class JSONLevelInMemoryServerClient implements JSONLevelBulkAPIClient, DBAdminAPIClient {
   private @NotNull InMemoryServer inMemoryServer;
   private @Nullable String repositoryName;
 
-  public RawInMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
+  public JSONLevelInMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
     this.inMemoryServer = inMemoryServer;
   }
 
-  public RawInMemoryServerClient(
+  public JSONLevelInMemoryServerClient(
       @NotNull InMemoryServer inMemoryServer, @Nullable String repositoryName) {
     this.inMemoryServer = inMemoryServer;
     this.repositoryName = repositoryName;

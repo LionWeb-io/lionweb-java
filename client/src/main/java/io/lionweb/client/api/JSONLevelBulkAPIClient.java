@@ -12,7 +12,7 @@ import org.jetbrains.annotations.Nullable;
  * serialization or de-serialization of the data received. This is useful for performance reasons or
  * because we do not have the languages available, so we cannot proceed to a full deserialization.
  */
-public interface RawBulkAPIClient {
+public interface JSONLevelBulkAPIClient {
   @NotNull
   LionWebVersion getLionWebVersion();
 
@@ -27,19 +27,5 @@ public interface RawBulkAPIClient {
 
   default @NotNull String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
     return rawRetrieve(nodeIds, Integer.MAX_VALUE);
-  }
-
-  @Nullable
-  RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException;
-
-  @Nullable
-  RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException;
-
-  @NotNull
-  SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException;
-
-  default @NotNull SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds)
-      throws IOException {
-    return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }
 }

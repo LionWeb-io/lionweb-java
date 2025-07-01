@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.CompressionSupport;
 import io.lionweb.client.RequestFailureException;
-import io.lionweb.client.api.RawBulkAPIClient;
+import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.utils.CommonChecks;
@@ -27,9 +27,9 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientForRawBulkAPIs extends LionWebClientImplHelper implements RawBulkAPIClient {
+public class ClientForJSONLevelBulkAPIs extends LionWebClientImplHelper implements JSONLevelBulkAPIClient {
 
-  public ClientForRawBulkAPIs(ClientConfiguration clientConfiguration) {
+  public ClientForJSONLevelBulkAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);
   }
 

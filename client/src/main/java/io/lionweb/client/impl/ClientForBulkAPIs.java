@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.RequestFailureException;
 import io.lionweb.client.api.BulkAPIClient;
-import io.lionweb.client.api.RawBulkAPIClient;
+import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
@@ -22,11 +22,11 @@ import org.jetbrains.annotations.Nullable;
 
 public class ClientForBulkAPIs extends LionWebClientImplHelper implements BulkAPIClient {
 
-  private RawBulkAPIClient rawBulkAPIClient;
+  private JSONLevelBulkAPIClient rawBulkAPIClient;
 
   public ClientForBulkAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);
-    rawBulkAPIClient = new ClientForRawBulkAPIs(clientConfiguration);
+    rawBulkAPIClient = new ClientForJSONLevelBulkAPIs(clientConfiguration);
   }
 
   @NotNull
