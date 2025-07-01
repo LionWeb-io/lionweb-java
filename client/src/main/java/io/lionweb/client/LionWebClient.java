@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class LionWebClient
     implements JSONLevelBulkAPIClient,
+        ChunkLevelBulkAPIClient,
         BulkAPIClient,
         DBAdminAPIClient,
         InspectionAPIClient,
@@ -218,7 +219,7 @@ public class LionWebClient
   @NotNull
   @Override
   public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
-    return JSONLevelBulkAPIClient.super.retrieveAsChunk(nodeIds);
+    throw new UnsupportedOperationException();
   }
 
   //

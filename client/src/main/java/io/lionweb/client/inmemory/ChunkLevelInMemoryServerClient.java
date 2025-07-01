@@ -1,10 +1,7 @@
 package io.lionweb.client.inmemory;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.DBAdminAPIClient;
-import io.lionweb.client.api.JSONLevelBulkAPIClient;
-import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.api.RepositoryVersionToken;
+import io.lionweb.client.api.*;
 import io.lionweb.serialization.data.SerializedChunk;
 import java.io.IOException;
 import java.util.List;
@@ -13,15 +10,15 @@ import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class JSONLevelInMemoryServerClient implements JSONLevelBulkAPIClient, DBAdminAPIClient {
+public class ChunkLevelInMemoryServerClient implements ChunkLevelBulkAPIClient, DBAdminAPIClient {
   private @NotNull InMemoryServer inMemoryServer;
   private @Nullable String repositoryName;
 
-  public JSONLevelInMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
+  public ChunkLevelInMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
     this.inMemoryServer = inMemoryServer;
   }
 
-  public JSONLevelInMemoryServerClient(
+  public ChunkLevelInMemoryServerClient(
       @NotNull InMemoryServer inMemoryServer, @Nullable String repositoryName) {
     this.inMemoryServer = inMemoryServer;
     this.repositoryName = repositoryName;
@@ -62,30 +59,6 @@ public class JSONLevelInMemoryServerClient implements JSONLevelBulkAPIClient, DB
   @Override
   public Set<RepositoryConfiguration> listRepositories() {
     return inMemoryServer.listRepositories();
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken rawCreatePartitions(@NotNull String data) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken rawStore(@NotNull String nodes) {
-    throw new UnsupportedOperationException();
-  }
-
-  @NotNull
-  @Override
-  public String rawRetrieve(@Nullable List<String> nodeIds, int limit) {
-    throw new UnsupportedOperationException();
-  }
-
-  @NotNull
-  @Override
-  public String rawRetrieve(@Nullable List<String> nodeIds) {
-    throw new UnsupportedOperationException();
   }
 
   @Nullable

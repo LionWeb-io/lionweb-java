@@ -8,10 +8,8 @@ import io.lionweb.client.CompressionSupport;
 import io.lionweb.client.RequestFailureException;
 import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
-import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.utils.CommonChecks;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.util.*;
@@ -95,25 +93,6 @@ public class ClientForJSONLevelBulkAPIs extends LionWebClientImplHelper
           JsonElement chunkAsJson = responseData.get("chunk");
           return gson.toJson(chunkAsJson);
         });
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
-    throw new UnsupportedEncodingException();
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
-    throw new UnsupportedEncodingException();
-  }
-
-  @NotNull
-  @Override
-  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit)
-      throws IOException {
-    throw new UnsupportedEncodingException();
   }
 
   private @Nullable RepositoryVersionToken nodesStoringOperation(
