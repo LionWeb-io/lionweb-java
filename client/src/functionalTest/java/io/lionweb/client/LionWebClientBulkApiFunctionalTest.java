@@ -147,7 +147,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
     ClassifierInstanceUtils.addChild(p1, "files", f1);
     ClassifierInstanceUtils.addChild(p1, "files", f2);
 
-    client.store(Collections.singletonList(p1));
+    client.storeChunk(Collections.singletonList(p1));
 
     List<Node> retrievedNodes1 = client.retrieve(Collections.singletonList("p1"), 10);
     assertEquals(1, retrievedNodes1.size());

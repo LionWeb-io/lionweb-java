@@ -7,11 +7,13 @@ import io.lionweb.model.Node;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.UnavailableNodePolicy;
-import io.lionweb.serialization.data.SerializedChunk;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -197,40 +199,41 @@ public class LionWebClient
     return JSONLevelBulkAPIClient.super.rawRetrieve(nodeIds);
   }
 
-  @Nullable
-  @Override
-  public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
-    throw new UnsupportedOperationException();
-  }
+//  @Nullable
+//  @Override
+//  public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
+//    throw new UnsupportedOperationException();
+//  }
 
-  @Nullable
-  @Override
-  public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
-    throw new UnsupportedOperationException();
-  }
+//  @Nullable
+//  @Override
+//  public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
+//    throw new UnsupportedOperationException();
+//  }
 
-  @NotNull
-  @Override
-  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit)
-      throws IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  @NotNull
-  @Override
-  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
-    throw new UnsupportedOperationException();
-  }
+//  @NotNull
+//  @Override
+//  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit)
+//      throws IOException {
+//    throw new UnsupportedOperationException();
+//  }
+//
+//  @NotNull
+//  @Override
+//  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
+//    throw new UnsupportedOperationException();
+//  }
 
   //
   // Bulk APIs
   //
 
+  @Nullable
   @Override
-  public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
-      throws IOException {
+  public RepositoryVersionToken createPartitions(List<Node> partitions) throws IOException {
     return bulkAPIs.createPartitions(partitions);
   }
+
 
   public @Nullable RepositoryVersionToken createPartition(@NotNull Node partition)
       throws IOException {
@@ -289,6 +292,35 @@ public class LionWebClient
   @Override
   public LionWebVersion getLionWebVersion() {
     return buildRepositoryConfiguration().getJsonSerialization().getLionWebVersion();
+  }
+
+
+  //
+  // Bulk APIs - Chunk level
+  //
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken createPartitionsFromChunk(@NotNull List<SerializedClassifierInstance> data) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
+    throw new UnsupportedOperationException();
   }
 
   //

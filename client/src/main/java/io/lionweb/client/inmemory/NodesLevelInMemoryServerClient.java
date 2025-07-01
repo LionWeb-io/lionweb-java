@@ -1,26 +1,26 @@
 package io.lionweb.client.inmemory;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.BulkAPIClient;
-import io.lionweb.client.api.DBAdminAPIClient;
-import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.api.RepositoryVersionToken;
+import io.lionweb.client.api.*;
 import io.lionweb.model.Node;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class InMemoryServerClient implements BulkAPIClient, DBAdminAPIClient {
+import java.io.IOException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+public class NodesLevelInMemoryServerClient implements BulkAPIClient, DBAdminAPIClient {
   private final @NotNull InMemoryServer inMemoryServer;
   private @Nullable String repositoryName;
 
-  public InMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
+  public NodesLevelInMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
     this.inMemoryServer = inMemoryServer;
   }
 
-  public InMemoryServerClient(
+  public NodesLevelInMemoryServerClient(
       @NotNull InMemoryServer inMemoryServer, @Nullable String repositoryName) {
     this.inMemoryServer = inMemoryServer;
     this.repositoryName = repositoryName;
@@ -43,8 +43,18 @@ public class InMemoryServerClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Nullable
   @Override
-  public RepositoryVersionToken createPartitions(List<Node> partitions) {
-    return inMemoryServer.createPartitions(repositoryName, partitions);
+  public RepositoryVersionToken createPartitions(List<Node> partitions) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<String> listPartitionsIDs() throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public List<Node> retrieve(List<String> nodeIds) throws IOException {
+    throw new UnsupportedOperationException();
   }
 
   @Nullable
@@ -55,7 +65,8 @@ public class InMemoryServerClient implements BulkAPIClient, DBAdminAPIClient {
 
   @Override
   public List<Node> listPartitions() {
-    return inMemoryServer.listPartitions(repositoryName);
+    //return inMemoryServer.listPartitionIDs(repositoryName);
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -66,11 +77,13 @@ public class InMemoryServerClient implements BulkAPIClient, DBAdminAPIClient {
   @Nullable
   @Override
   public RepositoryVersionToken store(List<Node> nodes) {
-    return inMemoryServer.store(repositoryName, nodes);
+    // return inMemoryServer.store(repositoryName, nodes);
+    throw new UnsupportedOperationException();
   }
 
   @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) {
+    List<SerializedClassifierInstance> chunk = inMemoryServer.retrieve(repositoryName, nodeIds, limit);
     throw new UnsupportedOperationException();
   }
 

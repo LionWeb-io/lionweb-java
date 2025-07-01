@@ -3,19 +3,65 @@ package io.lionweb.client.inmemory;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 
 class RepositoryData {
   @NotNull RepositoryConfiguration configuration;
-  List<String> partitionIDs = new ArrayList<>();
-  private Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
+  final List<String> partitionIDs = new ArrayList<>();
+  private final Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
   private int currentVersion = 0;
   private int nextId = 1;
+
+  void deleteNodeAndDescendant(String nodeId) {
+    SerializedClassifierInstance curr = nodesByID.get(nodeId);
+    nodesByID.remove(nodeId);
+    curr.getChildren().forEach(c -> deleteNodeAndDescendant(c));
+  }
+
+  private class ChangeCalculator {
+    private Map<String, SerializedClassifierInstance> addedNodes = new HashMap<>();
+    private Map<String, SerializedClassifierInstance> changedNodes = new HashMap<>();
+    private Set<String> removedNodes = new HashSet<>();
+
+    void store(List<SerializedClassifierInstance> updatedNodes) {
+      Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
+      updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
+      for (SerializedClassifierInstance updatedNode : updatedNodes) {
+        if (nodesByID.containsKey(updatedNode)) {
+          // Have we changed children?
+          List<String> currentChildren = nodesByID.get(updatedNode).getChildren();
+          List<String> updatedChildren = updatedNode.getChildren();
+          updatedChildren.stream().filter(n -> !currentChildren.contains(n)).forEach(n ->
+                  this.addedNodes.put(n, updatedNodesAsMap.get(n)));
+          this.removedNodes.addAll(currentChildren.stream().filter(n -> !updatedChildren.contains(n)).collect(Collectors.toList()));
+        } else {
+          changedNodes.put(updatedNode.getID(), updatedNode);
+        }
+      }
+      // They have been moved and not removed
+      removedNodes.removeAll(addedNodes.keySet());
+      addedNodes.forEach((id, serializedClassifierInstance) -> {
+        nodesByID.put(id, serializedClassifierInstance);
+      });
+      changedNodes.forEach((id, serializedClassifierInstance) -> {
+        nodesByID.put(id, serializedClassifierInstance);
+      });
+    }
+
+    private void removeNode(String removeNodeId) {
+      SerializedClassifierInstance serializedClassifierInstance = nodesByID.get(removeNodeId);
+      for (String child : serializedClassifierInstance.getChildren()) {
+        if (!addedNodes.containsKey(child)) {
+          removeNode(child);
+        }
+      }
+    }
+  }
 
   RepositoryData(@NotNull RepositoryConfiguration configuration) {
     this.configuration = configuration;
@@ -34,13 +80,7 @@ class RepositoryData {
   }
 
   void store(List<SerializedClassifierInstance> newNodes) {
-    Map<String, SerializedClassifierInstance> newNodesByID = new HashMap<>(newNodes.size());
-    newNodes.stream().forEach(n -> newNodesByID.put(n.getID(), n));
-    Stream<SerializedClassifierInstance> heads =
-        newNodes.stream()
-            .filter(
-                n -> n.getParentNodeID() == null || !newNodesByID.containsKey(n.getParentNodeID()));
-    heads.forEach(h -> store(h, newNodesByID));
+    new ChangeCalculator().store(newNodes);
   }
 
   List<SerializedClassifierInstance> retrieveTrees(List<String> ids) {
@@ -73,5 +113,16 @@ class RepositoryData {
   private Stream<SerializedClassifierInstance> thisAndAllDescendants(
       SerializedClassifierInstance root) {
     throw new UnsupportedOperationException();
+  }
+
+  void retrieve(String nodeId, int limit, List<SerializedClassifierInstance> retrieved) {
+    SerializedClassifierInstance node = nodesByID.get(nodeId);
+    if (node == null) {
+      throw new IllegalArgumentException();
+    }
+    retrieved.add(node);
+    if (limit > 0) {
+      node.getChildren().forEach(c -> retrieve(c, limit - 1, retrieved));
+    }
   }
 }

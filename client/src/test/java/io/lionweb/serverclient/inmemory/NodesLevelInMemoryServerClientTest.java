@@ -6,18 +6,20 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
-import io.lionweb.client.inmemory.InMemoryServerClient;
+import io.lionweb.client.inmemory.NodesLevelInMemoryServerClient;
 import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
+
+import java.io.IOException;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 
-public class InMemoryServerClientTest {
+public class NodesLevelInMemoryServerClientTest {
 
   @Test
   public void testRepositoriesCRUD() {
     InMemoryServer server = new InMemoryServer();
-    InMemoryServerClient client = new InMemoryServerClient(server);
+    NodesLevelInMemoryServerClient client = new NodesLevelInMemoryServerClient(server);
     assertEquals(Collections.emptySet(), client.listRepositories());
 
     client.createRepository(
@@ -32,9 +34,9 @@ public class InMemoryServerClientTest {
   }
 
   @Test
-  public void testPartitionsCRUD() {
+  public void testPartitionsCRUD() throws IOException {
     InMemoryServer server = new InMemoryServer();
-    InMemoryServerClient client = new InMemoryServerClient(server);
+    NodesLevelInMemoryServerClient client = new NodesLevelInMemoryServerClient(server);
     client.createRepository(
         new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
     client.setRepositoryName("MyRepo");
@@ -54,4 +56,25 @@ public class InMemoryServerClientTest {
     client.deletePartitions(Collections.singletonList("l-id"));
     assertEquals(Collections.emptyList(), client.listPartitions());
   }
+
+  @Test
+  public void testNodesModification() throws IOException {
+    InMemoryServer server = new InMemoryServer();
+    NodesLevelInMemoryServerClient client = new NodesLevelInMemoryServerClient(server);
+    client.createRepository(
+            new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+    client.setRepositoryName("MyRepo");
+    Language l1 =
+            new Language(LionWebVersion.v2024_1, "MyLanguage")
+                    .setID("l-id")
+                    .setKey("l-key")
+                    .setVersion("1.0");
+    Concept c1 = new Concept(l1, "MyConcept").setID("c1-id").setKey("c1-key");
+
+    client.createPartitions(Collections.singletonList(l1));
+    assertEquals(Collections.singletonList(l1), client.listPartitions());
+    assertEquals(c1, client.retrieve(Collections.singletonList("c1-id")).get(0));
+
+  }
+
 }

@@ -1,9 +1,11 @@
 package io.lionweb.client.api;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.serialization.data.SerializedChunk;
+
 import java.io.IOException;
 import java.util.List;
+
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -16,16 +18,21 @@ public interface ChunkLevelBulkAPIClient {
   @NotNull
   LionWebVersion getLionWebVersion();
 
-  @Nullable
-  RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException;
+  @NotNull List<String> listPartitionsIDs() throws IOException;
 
   @Nullable
-  RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException;
+  RepositoryVersionToken createPartitionsFromChunk(@NotNull List<SerializedClassifierInstance> data) throws IOException;
+
+  @Nullable
+  RepositoryVersionToken deletePartitions(List<String> ids) throws IOException;
+
+  @Nullable
+  RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes) throws IOException;
 
   @NotNull
-  SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException;
+  List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException;
 
-  default @NotNull SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds)
+  default @NotNull List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds)
       throws IOException {
     return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }

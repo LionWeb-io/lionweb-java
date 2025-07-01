@@ -2,16 +2,20 @@ package io.lionweb.client.inmemory;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.model.Node;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
+
+import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ChunkLevelInMemoryServerClient implements ChunkLevelBulkAPIClient, DBAdminAPIClient {
-  private @NotNull InMemoryServer inMemoryServer;
+  private final @NotNull InMemoryServer inMemoryServer;
   private @Nullable String repositoryName;
 
   public ChunkLevelInMemoryServerClient(@NotNull InMemoryServer inMemoryServer) {
@@ -22,6 +26,10 @@ public class ChunkLevelInMemoryServerClient implements ChunkLevelBulkAPIClient, 
       @NotNull InMemoryServer inMemoryServer, @Nullable String repositoryName) {
     this.inMemoryServer = inMemoryServer;
     this.repositoryName = repositoryName;
+  }
+
+  @Override public @NotNull List<String> listPartitionsIDs() {
+    return inMemoryServer.listPartitionIDs(repositoryName);
   }
 
   @Nullable
@@ -37,6 +45,30 @@ public class ChunkLevelInMemoryServerClient implements ChunkLevelBulkAPIClient, 
   @Override
   public LionWebVersion getLionWebVersion() {
     return inMemoryServer.getRepositoryConfiguration(repositoryName).getLionWebVersion();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken createPartitionsFromChunk(@NotNull List<SerializedClassifierInstance> data) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken deletePartitions(List<String> ids) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException {
+    throw new UnsupportedOperationException();
   }
 
   @Override
@@ -59,24 +91,5 @@ public class ChunkLevelInMemoryServerClient implements ChunkLevelBulkAPIClient, 
   @Override
   public Set<RepositoryConfiguration> listRepositories() {
     return inMemoryServer.listRepositories();
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  @Nullable
-  @Override
-  public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
-    throw new UnsupportedOperationException();
-  }
-
-  @NotNull
-  @Override
-  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit)
-      throws IOException {
-    throw new UnsupportedOperationException();
   }
 }

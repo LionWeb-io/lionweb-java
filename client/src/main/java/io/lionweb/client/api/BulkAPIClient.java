@@ -31,4 +31,8 @@ public interface BulkAPIClient {
   RepositoryVersionToken store(List<Node> nodes) throws IOException;
 
   List<Node> retrieve(List<String> nodeIds, int limit) throws IOException;
+
+  default List<Node> retrieve(List<String> nodeIds) throws IOException {
+    return retrieve(nodeIds, Integer.MAX_VALUE);
+  }
 }

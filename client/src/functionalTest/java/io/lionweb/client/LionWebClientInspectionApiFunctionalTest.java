@@ -47,7 +47,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
     ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "my-path-2.txt");
     ClassifierInstanceUtils.addChild(p1, "files", f1);
     ClassifierInstanceUtils.addChild(p1, "files", f2);
-    client.store(Collections.singletonList(p1));
+    client.storeChunk(Collections.singletonList(p1));
 
     // Get data after insertion
     Map<ClassifierKey, ClassifierResult> res2 = client.nodesByClassifier();
@@ -92,7 +92,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
     ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "my-path-2.txt");
     ClassifierInstanceUtils.addChild(p1, "files", f1);
     ClassifierInstanceUtils.addChild(p1, "files", f2);
-    client.store(Collections.singletonList(p1));
+    client.storeChunk(Collections.singletonList(p1));
 
     // Get data after insertion
     Map<ClassifierKey, ClassifierResult> res2a = client.nodesByClassifier(1);
@@ -148,7 +148,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
     ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "my-path-2.txt");
     ClassifierInstanceUtils.addChild(p1, "files", f1);
     ClassifierInstanceUtils.addChild(p1, "files", f2);
-    client.store(Collections.singletonList(p1));
+    client.storeChunk(Collections.singletonList(p1));
 
     // Get data after insertion
     Map<String, ClassifierResult> res2 = client.nodesByLanguage();
@@ -183,7 +183,7 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
     ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "my-path-2.txt");
     ClassifierInstanceUtils.addChild(p1, "files", f1);
     ClassifierInstanceUtils.addChild(p1, "files", f2);
-    client.store(Collections.singletonList(p1));
+    client.storeChunk(Collections.singletonList(p1));
 
     // Get data after insertion
     Map<String, ClassifierResult> res2a = client.nodesByLanguage(1);

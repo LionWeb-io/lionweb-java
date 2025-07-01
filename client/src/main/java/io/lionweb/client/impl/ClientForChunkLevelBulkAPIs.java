@@ -7,6 +7,8 @@ import io.lionweb.serialization.data.SerializedChunk;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
+
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,22 +25,39 @@ public class ClientForChunkLevelBulkAPIs extends LionWebClientImplHelper
     return conf.getJsonSerialization().getLionWebVersion();
   }
 
-  @Nullable
+  @NotNull
   @Override
-  public RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException {
-    throw new UnsupportedEncodingException();
+  public List<String> listPartitionsIDs() {
+    throw new UnsupportedOperationException();
   }
 
   @Nullable
   @Override
-  public RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException {
-    throw new UnsupportedEncodingException();
+  public RepositoryVersionToken createPartitionsFromChunk(@NotNull List<SerializedClassifierInstance> data) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken deletePartitions(List<String> ids) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes) throws IOException {
+    throw new UnsupportedOperationException();
   }
 
   @NotNull
   @Override
-  public SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit)
-      throws IOException {
-    throw new UnsupportedEncodingException();
+  public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds, int limit) {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds) throws IOException {
+    return ChunkLevelBulkAPIClient.super.retrieveAsChunk(nodeIds);
   }
 }
