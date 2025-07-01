@@ -97,7 +97,7 @@ public class Concept extends Classifier<Concept> {
     return this;
   }
 
-  public @Nonnull Concept makeAbstract() {
+  public @Nonnull Concept setAbstract() {
     return setAbstract(true);
   }
 
@@ -110,7 +110,7 @@ public class Concept extends Classifier<Concept> {
     return this;
   }
 
-  public @Nonnull Concept makePartition() {
+  public @Nonnull Concept setPartition() {
     return setPartition(true);
   }
 
