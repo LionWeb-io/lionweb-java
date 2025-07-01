@@ -3,12 +3,14 @@ package io.lionweb.serverclient;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.client.ExtendedLionWebServerClient;
+import io.lionweb.client.RepoSerialization;
+import io.lionweb.client.api.HistorySupport;
+import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.serverclient.api.HistorySupport;
-import io.lionweb.serverclient.api.RepositoryConfiguration;
-import io.lionweb.serverclient.testing.AbstractRepoClientFunctionalTest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -30,7 +32,8 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
   private final int nPartitions = 100;
   private final int nFiles = 10;
 
-  private ExtendedLionWebServerClient createRepoAndClient(String repositoryName) throws IOException {
+  private ExtendedLionWebServerClient createRepoAndClient(String repositoryName)
+      throws IOException {
     ExtendedLionWebServerClient client =
         new ExtendedLionWebServerClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);

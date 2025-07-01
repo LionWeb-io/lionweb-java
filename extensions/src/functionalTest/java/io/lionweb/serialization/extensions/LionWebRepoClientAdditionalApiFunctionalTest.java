@@ -3,12 +3,12 @@ package io.lionweb.serialization.extensions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.client.ExtendedLionWebServerClient;
+import io.lionweb.client.api.HistorySupport;
+import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
 import io.lionweb.language.Containment;
 import io.lionweb.model.Node;
-import io.lionweb.serverclient.ExtendedLionWebServerClient;
-import io.lionweb.serverclient.api.HistorySupport;
-import io.lionweb.serverclient.api.RepositoryConfiguration;
-import io.lionweb.serverclient.testing.AbstractRepoClientFunctionalTest;
 import io.lionweb.serialization.extensions.library.Book;
 import io.lionweb.serialization.extensions.library.Library;
 import io.lionweb.serialization.extensions.library.LibraryLanguage;
