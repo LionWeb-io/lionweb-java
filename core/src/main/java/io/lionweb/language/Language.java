@@ -151,29 +151,30 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
-  public String getName() {
+  public @Nullable String getName() {
     return this.getPropertyValue("name", String.class);
   }
 
   @Override
-  public String getKey() {
+  public @Nullable String getKey() {
     return this.getPropertyValue("key", String.class);
   }
 
-  @Nullable
-  public String getVersion() {
+  public @Nullable String getVersion() {
     return this.getPropertyValue("version", String.class);
   }
 
-  public @Nullable LanguageEntity getElementByName(String name) {
+  public @Nullable LanguageEntity<?> getElementByName(@Nonnull String name) {
+    Objects.requireNonNull(name);
     return getElements().stream()
-        .filter(element -> element.getName().equals(name))
+        .filter(element -> Objects.equals(element.getName(), name))
         .findFirst()
         .orElse(null);
   }
 
-  public @Nullable PrimitiveType getPrimitiveTypeByName(String name) {
-    LanguageEntity element = this.getElementByName(name);
+  public @Nullable PrimitiveType getPrimitiveTypeByName(@Nonnull String name) {
+    Objects.requireNonNull(name);
+    LanguageEntity<?> element = this.getElementByName(name);
     if (element == null) {
       return null;
     }
