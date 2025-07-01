@@ -9,8 +9,20 @@ import io.lionweb.model.Node;
 import io.lionweb.utils.IdUtils;
 import javax.annotation.Nonnull;
 
+/**
+ * IDs can be assigned following a few common policies. For this reason it is useful to create them
+ * and reuse them, so that we can avoid writing a lot of boilerplate to assign Node IDs.
+ *
+ * <p>Notably, a common policy to assign IDs would be to use IDs obtained from the server. This
+ * policy is not implemented here as here we do not have access to the Client.
+ */
 public class CommonIDAssigners {
 
+  /**
+   * This IDAssigner set the ID of a node as the id of the parent followed by the name of this node,
+   * separated by dashes. Note that this work only for nodes implementing both HasSettableID and
+   * INamed.
+   */
   public static final IDAssigner qualifiedIDAssigner =
       new IDAssigner() {
         @Override

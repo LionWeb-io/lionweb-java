@@ -7,8 +7,16 @@ import io.lionweb.model.Node;
 import io.lionweb.utils.IdUtils;
 import javax.annotation.Nonnull;
 
+/**
+ * Keys can be assigned following a few common policies. For this reason it is useful to create them
+ * and reuse them, so that we can avoid writing a lot of boilerplate to assign keys.
+ */
 public class CommonKeyAssigners {
 
+  /**
+   * This KeyAssigner set the key of a node as the key of the parent followed by the name of this
+   * node, separated by dashes.
+   */
   public static final KeyAssigner qualifiedKeyAssigner =
       new KeyAssigner() {
         @Override
@@ -26,8 +34,7 @@ public class CommonKeyAssigners {
             }
             if (parent == null || parent instanceof Language) {
               // Keys must be unique within a language, so we do not include the language when
-              // calculating
-              // the key
+              // calculating the key
               keyed.setKey(IdUtils.cleanString(name));
             } else {
               String parentKey = ((IKeyed<?>) parent).getKey();

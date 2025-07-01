@@ -47,7 +47,7 @@ public class LanguageTest {
   @Test
   public void languageCreation() {
     // Define the 'TaskList' concept
-    Concept taskListConcept = new Concept("TaskList").makePartition();
+    Concept taskListConcept = new Concept("TaskList").setPartition();
 
     // Define the 'Task' concept
     Concept taskConcept = new Concept("Task");
