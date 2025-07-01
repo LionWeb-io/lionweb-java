@@ -12,11 +12,11 @@ import org.jetbrains.annotations.Nullable;
 abstract class LionWebClientImplHelper {
   protected static final MediaType JSON = MediaType.get("application/json");
 
-  protected final RepoClientConfiguration conf;
+  protected final ClientConfiguration conf;
   protected final Gson gson = new GsonBuilder().serializeNulls().create();
 
-  public LionWebClientImplHelper(RepoClientConfiguration repoClientConfiguration) {
-    this.conf = repoClientConfiguration;
+  public LionWebClientImplHelper(ClientConfiguration clientConfiguration) {
+    this.conf = clientConfiguration;
   }
 
   public interface ResponseHandler<R> {

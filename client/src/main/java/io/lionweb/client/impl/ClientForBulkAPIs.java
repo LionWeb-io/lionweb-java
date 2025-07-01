@@ -24,9 +24,9 @@ public class ClientForBulkAPIs extends LionWebClientImplHelper implements BulkAP
 
   private RawBulkAPIClient rawBulkAPIClient;
 
-  public ClientForBulkAPIs(RepoClientConfiguration repoClientConfiguration) {
-    super(repoClientConfiguration);
-    rawBulkAPIClient = new ClientForRawBulkAPIs(repoClientConfiguration);
+  public ClientForBulkAPIs(ClientConfiguration clientConfiguration) {
+    super(clientConfiguration);
+    rawBulkAPIClient = new ClientForRawBulkAPIs(clientConfiguration);
   }
 
   @NotNull

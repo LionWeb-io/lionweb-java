@@ -3,10 +3,10 @@ package io.lionweb.serialization.extensions;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.ExtendedLionWebServerClient;
+import io.lionweb.client.ExtendedLionWebClient;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
+import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.language.Containment;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.extensions.library.Book;
@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoClientFunctionalTest {
+public class LionWebClientAdditionalApiFunctionalTest extends AbstractClientFunctionalTest {
 
-  public LionWebRepoClientAdditionalApiFunctionalTest() {
+  public LionWebClientAdditionalApiFunctionalTest() {
     super(LionWebVersion.v2023_1, true);
   }
 
@@ -74,8 +74,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   @Test
   public void nodeTree() throws IOException {
     String repositoryName = "repo_nodeTree";
-    ExtendedLionWebServerClient client =
-        new ExtendedLionWebServerClient(
+    ExtendedLionWebClient client =
+        new ExtendedLionWebClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
@@ -114,8 +114,8 @@ public class LionWebRepoClientAdditionalApiFunctionalTest extends AbstractRepoCl
   private void bulkImportTestingRoutine(
       String repositoryName, TransferFormat transferFormat, Compression compression)
       throws IOException, InterruptedException {
-    ExtendedLionWebServerClient client =
-        new ExtendedLionWebServerClient(
+    ExtendedLionWebClient client =
+        new ExtendedLionWebClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(

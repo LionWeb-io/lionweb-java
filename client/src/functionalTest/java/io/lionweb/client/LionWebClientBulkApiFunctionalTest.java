@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
+import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
@@ -21,24 +21,24 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFunctionalTest {
+public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctionalTest {
 
-  public LionWebRepoClientBulkApiFunctionalTest() {
+  public LionWebClientBulkApiFunctionalTest() {
     super(LionWebVersion.v2023_1, false);
   }
 
   @Test
   public void noPartitionsOnNewModelRepository() throws IOException {
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
     List<Node> partitions = client.listPartitions();
     assertEquals(Collections.emptyList(), partitions);
   }
 
   @Test
   public void partitionsCRUD() throws IOException {
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Create partition
@@ -85,8 +85,8 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
   @Test
   public void storeOnCustomRepository() throws IOException {
     String repoName = "my_repo";
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -116,8 +116,8 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
   @Test
   public void ids() throws IOException {
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
 
     List<String> ids1 = client.ids(78);
     assertEquals(78, ids1.size());
@@ -133,8 +133,8 @@ public class LionWebRepoClientBulkApiFunctionalTest extends AbstractRepoClientFu
 
   @Test
   public void storeAndRetrieve() throws IOException {
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);

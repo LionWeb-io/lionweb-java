@@ -20,8 +20,8 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
   private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
   private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
 
-  public ClientForAdditionalAPIs(RepoClientConfiguration repoClientConfiguration) {
-    super(repoClientConfiguration);
+  public ClientForAdditionalAPIs(ClientConfiguration clientConfiguration) {
+    super(clientConfiguration);
   }
 
   @Override

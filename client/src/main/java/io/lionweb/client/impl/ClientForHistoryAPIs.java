@@ -17,8 +17,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClientForHistoryAPIs extends LionWebClientImplHelper implements HistoryAPIClient {
 
-  public ClientForHistoryAPIs(RepoClientConfiguration repoClientConfiguration) {
-    super(repoClientConfiguration);
+  public ClientForHistoryAPIs(ClientConfiguration clientConfiguration) {
+    super(clientConfiguration);
   }
 
   @Override

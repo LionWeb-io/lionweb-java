@@ -13,7 +13,7 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class AbstractRepoClientFunctionalTest {
+public class AbstractClientFunctionalTest {
   private static final int DB_CONTAINER_PORT = 5432;
 
   protected boolean modelRepoDebug = true;
@@ -24,11 +24,11 @@ public class AbstractRepoClientFunctionalTest {
 
   protected static final Network network = Network.newNetwork();
 
-  public AbstractRepoClientFunctionalTest() {
+  public AbstractClientFunctionalTest() {
     this(LionWebVersion.currentVersion, true);
   }
 
-  public AbstractRepoClientFunctionalTest(
+  public AbstractClientFunctionalTest(
       @NotNull LionWebVersion lionWebVersion, boolean modelRepoDebug) {
     this.lionWebVersion = lionWebVersion;
     this.modelRepoDebug = modelRepoDebug;
@@ -58,7 +58,7 @@ public class AbstractRepoClientFunctionalTest {
         new GenericContainer<>(
                 new ImageFromDockerfile()
                     .withFileFromClasspath(
-                        "Dockerfile", "repoclienttesting-lionweb-server-Dockerfile")
+                        "Dockerfile", "clienttesting-lionweb-server-Dockerfile")
                     .withFileFromClasspath(
                         "server-config.template.json", "server-config.template.json")
                     .withBuildArg("lionwebServerCommitID", BuildConfig.LIONWEB_SERVER_COMMIT_ID))

@@ -16,8 +16,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class ClientForDBAdminAPIs extends LionWebClientImplHelper implements DBAdminAPIClient {
 
-  public ClientForDBAdminAPIs(RepoClientConfiguration repoClientConfiguration) {
-    super(repoClientConfiguration);
+  public ClientForDBAdminAPIs(ClientConfiguration clientConfiguration) {
+    super(clientConfiguration);
   }
 
   @Override

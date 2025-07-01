@@ -4,7 +4,7 @@ import io.lionweb.client.Protocol;
 import io.lionweb.serialization.JsonSerialization;
 import okhttp3.OkHttpClient;
 
-public class RepoClientConfiguration {
+public class ClientConfiguration {
   protected final Protocol protocol;
   private final String hostname;
   private final int port;
@@ -14,7 +14,7 @@ public class RepoClientConfiguration {
   private final OkHttpClient httpClient;
   private final JsonSerialization jsonSerialization;
 
-  public RepoClientConfiguration(
+  public ClientConfiguration(
       Protocol protocol,
       String hostname,
       int port,

@@ -2,7 +2,7 @@ package io.lionweb.client;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.impl.ClientForAdditionalAPIs;
-import io.lionweb.client.impl.RepoClientConfiguration;
+import io.lionweb.client.impl.ClientConfiguration;
 import io.lionweb.serialization.extensions.*;
 import io.lionweb.serialization.extensions.AdditionalAPIClient;
 import io.lionweb.serialization.extensions.BulkImport;
@@ -12,15 +12,15 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ExtendedLionWebServerClient extends LionWebServerClient
+public class ExtendedLionWebClient extends LionWebClient
     implements AdditionalAPIClient {
 
   private final ClientForAdditionalAPIs additionalAPIs;
 
-  public class Builder extends LionWebServerClient.Builder {
+  public class Builder extends LionWebClient.Builder {
     @Override
-    public ExtendedLionWebServerClient build() {
-      return new ExtendedLionWebServerClient(
+    public ExtendedLionWebClient build() {
+      return new ExtendedLionWebClient(
           lionWebVersion,
           hostname,
           port,
@@ -32,14 +32,14 @@ public class ExtendedLionWebServerClient extends LionWebServerClient
     }
   }
 
-  public ExtendedLionWebServerClient(
+  public ExtendedLionWebClient(
       LionWebVersion lionWebVersion, String hostname, int port, String repository) {
     super(lionWebVersion, hostname, port, repository);
-    RepoClientConfiguration conf = buildRepositoryConfiguration();
+    ClientConfiguration conf = buildRepositoryConfiguration();
     this.additionalAPIs = new ClientForAdditionalAPIs(conf);
   }
 
-  public ExtendedLionWebServerClient(
+  public ExtendedLionWebClient(
       LionWebVersion lionWebVersion,
       String hostname,
       int port,
@@ -57,7 +57,7 @@ public class ExtendedLionWebServerClient extends LionWebServerClient
         repository,
         connectTimeoutInSeconds,
         callTimeoutInSeconds);
-    RepoClientConfiguration conf = buildRepositoryConfiguration();
+    ClientConfiguration conf = buildRepositoryConfiguration();
     this.additionalAPIs = new ClientForAdditionalAPIs(conf);
   }
 

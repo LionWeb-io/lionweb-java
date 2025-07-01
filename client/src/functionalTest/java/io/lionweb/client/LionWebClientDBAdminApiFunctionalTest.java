@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
+import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -14,16 +14,16 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public class LionWebRepoClientDBAdminApiFunctionalTest extends AbstractRepoClientFunctionalTest {
+public class LionWebClientDBAdminApiFunctionalTest extends AbstractClientFunctionalTest {
 
-  public LionWebRepoClientDBAdminApiFunctionalTest() {
+  public LionWebClientDBAdminApiFunctionalTest() {
     super(LionWebVersion.v2024_1, false);
   }
 
   @Test
   public void repositoriesCRUD() throws IOException {
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2024_1, "localhost", getModelRepoPort(), "default");
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2024_1, "localhost", getModelRepoPort(), "default");
 
     // Initially we should have one repository
     RepositoryConfiguration defaultRepository =

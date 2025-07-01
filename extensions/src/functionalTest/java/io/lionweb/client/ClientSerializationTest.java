@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
+import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
@@ -21,19 +21,19 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
+public class ClientSerializationTest extends AbstractClientFunctionalTest {
 
-  public RepoSerializationTest() {
+  public ClientSerializationTest() {
     super(LionWebVersion.v2023_1, true);
   }
 
   private final int nPartitions = 100;
   private final int nFiles = 10;
 
-  private ExtendedLionWebServerClient createRepoAndClient(String repositoryName)
+  private ExtendedLionWebClient createRepoAndClient(String repositoryName)
       throws IOException {
-    ExtendedLionWebServerClient client =
-        new ExtendedLionWebServerClient(
+    ExtendedLionWebClient client =
+        new ExtendedLionWebClient(
             LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repositoryName);
     client.createRepository(
         new RepositoryConfiguration(
@@ -42,9 +42,9 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     return client;
   }
 
-  private ExtendedLionWebServerClient storePropertiesPartitions(String repositoryName)
+  private ExtendedLionWebClient storePropertiesPartitions(String repositoryName)
       throws IOException {
-    ExtendedLionWebServerClient client = createRepoAndClient(repositoryName);
+    ExtendedLionWebClient client = createRepoAndClient(repositoryName);
 
     for (int i = 0; i < nPartitions; i++) {
       DynamicNode partition = new DynamicNode("p-" + i, PropertiesLanguage.propertiesPartition);
@@ -78,7 +78,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     return client;
   }
 
-  private void checkContentOfRepo(ExtendedLionWebServerClient client) throws IOException {
+  private void checkContentOfRepo(ExtendedLionWebClient client) throws IOException {
     Set<String> actualPartitionsIDs = new HashSet<>(client.listPartitionsIDs());
     Set<String> expectedPartitionsIDs =
         IntStream.range(0, 100).mapToObj(i -> "p-" + i).collect(Collectors.toSet());
@@ -91,14 +91,14 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
   @Test
   public void uploadAndDownloadPartitionsAsAZip() throws IOException {
     String repositoryName = "uploadAndDownloadPartitionsAsAZip";
-    ExtendedLionWebServerClient client = storePropertiesPartitions(repositoryName);
+    ExtendedLionWebClient client = storePropertiesPartitions(repositoryName);
 
     File zip = Files.createTempFile("", ".zip").toFile();
     RepoSerialization repoSerialization = new RepoSerialization();
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
     repoSerialization.downloadRepoAsZip(client, zip);
 
-    ExtendedLionWebServerClient clientCopy1 = createRepoAndClient(repositoryName + "-copy1");
+    ExtendedLionWebClient clientCopy1 = createRepoAndClient(repositoryName + "-copy1");
     long t0 = System.currentTimeMillis();
     repoSerialization.simpleUploadZipToRepo(clientCopy1, zip);
     long t1 = System.currentTimeMillis();
@@ -106,7 +106,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     clientCopy1.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
     checkContentOfRepo(clientCopy1);
 
-    ExtendedLionWebServerClient clientCopy2 = createRepoAndClient(repositoryName + "-copy2");
+    ExtendedLionWebClient clientCopy2 = createRepoAndClient(repositoryName + "-copy2");
     long t2 = System.currentTimeMillis();
     repoSerialization.uploadZipToRepoUsingBulkImport(clientCopy2, zip);
     long t3 = System.currentTimeMillis();
@@ -118,7 +118,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
   @Test
   public void uploadAndDownloadPartitionsAsDirectory() throws IOException {
     String repositoryName = "uploadAndDownloadPartitionsAsDirectory";
-    ExtendedLionWebServerClient client = storePropertiesPartitions(repositoryName);
+    ExtendedLionWebClient client = storePropertiesPartitions(repositoryName);
 
     File dir = Files.createTempDirectory("repo-data-dir").toFile();
     RepoSerialization repoSerialization = new RepoSerialization();
@@ -129,7 +129,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
         nPartitions,
         Arrays.stream(dir.listFiles()).filter(f -> f.getName().endsWith(".json")).count());
 
-    ExtendedLionWebServerClient clientCopy1 = createRepoAndClient(repositoryName + "-copy1");
+    ExtendedLionWebClient clientCopy1 = createRepoAndClient(repositoryName + "-copy1");
     long t0 = System.currentTimeMillis();
     repoSerialization.simpleUploadDirectoryToRepo(clientCopy1, dir);
     long t1 = System.currentTimeMillis();
@@ -137,7 +137,7 @@ public class RepoSerializationTest extends AbstractRepoClientFunctionalTest {
     clientCopy1.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
     checkContentOfRepo(clientCopy1);
 
-    ExtendedLionWebServerClient clientCopy2 = createRepoAndClient(repositoryName + "-copy2");
+    ExtendedLionWebClient clientCopy2 = createRepoAndClient(repositoryName + "-copy2");
     long t2 = System.currentTimeMillis();
     repoSerialization.uploadDirectoryToRepoUsingBulkImport(clientCopy2, dir);
     long t3 = System.currentTimeMillis();

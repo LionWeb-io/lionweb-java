@@ -29,8 +29,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class ClientForRawBulkAPIs extends LionWebClientImplHelper implements RawBulkAPIClient {
 
-  public ClientForRawBulkAPIs(RepoClientConfiguration repoClientConfiguration) {
-    super(repoClientConfiguration);
+  public ClientForRawBulkAPIs(ClientConfiguration clientConfiguration) {
+    super(clientConfiguration);
   }
 
   @NotNull

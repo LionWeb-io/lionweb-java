@@ -16,7 +16,7 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebServerClient
+public class LionWebClient
     implements RawBulkAPIClient,
         BulkAPIClient,
         DBAdminAPIClient,
@@ -73,8 +73,8 @@ public class LionWebServerClient
       return this;
     }
 
-    public LionWebServerClient build() {
-      return new LionWebServerClient(
+    public LionWebClient build() {
+      return new LionWebClient(
           lionWebVersion,
           hostname,
           port,
@@ -107,12 +107,12 @@ public class LionWebServerClient
   // Constructors
   //
 
-  public LionWebServerClient(
+  public LionWebClient(
       @NotNull LionWebVersion lionWebVersion, String hostname, int port, String repository) {
     this(lionWebVersion, hostname, port, null, "GenericJavaBasedLionWebClient", repository, 60, 60);
   }
 
-  public LionWebServerClient(
+  public LionWebClient(
       @NotNull LionWebVersion lionWebVersion,
       @NotNull String hostname,
       int port,
@@ -141,7 +141,7 @@ public class LionWebServerClient
     this.jsonSerialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
     this.jsonSerialization.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.PROXY_NODES);
 
-    RepoClientConfiguration conf = buildRepositoryConfiguration();
+    ClientConfiguration conf = buildRepositoryConfiguration();
     this.inspectionAPIs = new ClientForInspectionAPIs(conf);
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
     this.rawBulkAPIs = new ClientForRawBulkAPIs(conf);
@@ -149,8 +149,8 @@ public class LionWebServerClient
     this.historyAPIs = new ClientForHistoryAPIs(conf);
   }
 
-  protected RepoClientConfiguration buildRepositoryConfiguration() {
-    return new RepoClientConfiguration(
+  protected ClientConfiguration buildRepositoryConfiguration() {
+    return new ClientConfiguration(
         protocol,
         hostname,
         port,

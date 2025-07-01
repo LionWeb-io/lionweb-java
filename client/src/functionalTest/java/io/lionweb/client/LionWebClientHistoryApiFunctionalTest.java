@@ -7,7 +7,7 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
-import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
+import io.lionweb.client.testing.AbstractClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
@@ -18,17 +18,17 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 @Testcontainers
-public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClientFunctionalTest {
+public class LionWebClientHistoryApiFunctionalTest extends AbstractClientFunctionalTest {
 
-  public LionWebRepoClientHistoryApiFunctionalTest() {
+  public LionWebClientHistoryApiFunctionalTest() {
     super(LionWebVersion.v2023_1, false);
   }
 
   @Test
   public void partitionsCRUD() throws IOException {
     String repoName = "myHistoryDB1";
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.ENABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -61,8 +61,8 @@ public class LionWebRepoClientHistoryApiFunctionalTest extends AbstractRepoClien
   @Test
   public void partitionHistory() throws IOException {
     String repoName = "myHistoryDB2";
-    LionWebServerClient client =
-        new LionWebServerClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getModelRepoPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.ENABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);

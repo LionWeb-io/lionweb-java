@@ -14,8 +14,8 @@ import org.jetbrains.annotations.Nullable;
 public class ClientForInspectionAPIs extends LionWebClientImplHelper
     implements InspectionAPIClient {
 
-  public ClientForInspectionAPIs(RepoClientConfiguration repoClientConfiguration) {
-    super(repoClientConfiguration);
+  public ClientForInspectionAPIs(ClientConfiguration clientConfiguration) {
+    super(clientConfiguration);
   }
 
   @Override
