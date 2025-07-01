@@ -216,9 +216,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
-    if (referenceValues == null) {
-      referenceValues = new HashMap<>();
-    }
+    initReferences();
     referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
   }
 
@@ -254,15 +252,19 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   // Private methods for references
 
+  private void initReferences() {
+    if (referenceValues == null) {
+      referenceValues = new HashMap<>();
+    }
+  }
+
   private void setReferenceSingleValue(Reference link, ReferenceValue value) {
     if (value == null) {
       if (referenceValues != null) {
         referenceValues.remove(link.getKey());
       }
     } else {
-      if (referenceValues == null) {
-        referenceValues = new HashMap<>();
-      }
+      initReferences();
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
     }
   }
@@ -275,9 +277,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
       referenceValues.get(link.getKey()).add(referenceValue);
     } else {
-      if (referenceValues == null) {
-        referenceValues = new HashMap<>();
-      }
+      initReferences();
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(referenceValue)));
     }
   }
