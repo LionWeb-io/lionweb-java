@@ -1,4 +1,4 @@
-package io.lionweb.serverclient.languages;
+package io.lionweb.client.languages;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;

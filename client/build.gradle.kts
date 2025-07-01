@@ -126,8 +126,8 @@ dependencies {
     implementation(libs.gson)
     testImplementation(libs.junit)
 
-    "functionalTestImplementation"(project(":client"))
     "functionalTestImplementation"(project(":core"))
+    "functionalTestImplementation"(project(":client"))
     "functionalTestImplementation"(project(":client-testing"))
     "functionalTestImplementation"(libs.testcontainers)
     "functionalTestImplementation"(libs.testcontainersjunit)

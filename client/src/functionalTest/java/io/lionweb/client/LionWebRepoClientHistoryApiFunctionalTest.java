@@ -1,10 +1,9 @@
-package io.lionweb.serverclient;
+package io.lionweb.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.LionWebServerClient;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
@@ -12,7 +11,7 @@ import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.serverclient.languages.PropertiesLanguage;
+import io.lionweb.client.languages.PropertiesLanguage;
 import java.io.IOException;
 import java.util.*;
 import org.junit.jupiter.api.Test;

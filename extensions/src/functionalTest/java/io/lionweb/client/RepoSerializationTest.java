@@ -1,10 +1,8 @@
-package io.lionweb.serverclient;
+package io.lionweb.client;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.ExtendedLionWebServerClient;
-import io.lionweb.client.RepoSerialization;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.testing.AbstractRepoClientFunctionalTest;
