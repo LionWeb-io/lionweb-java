@@ -69,11 +69,13 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   private static boolean shallowReferenceEquality(
       Map<String, List<ReferenceValue>> reference1, Map<String, List<ReferenceValue>> reference2) {
-    if (reference1 == null && reference2 == null) {
-      return true;
-    }
-    if (reference1 == null || reference2 == null) {
+    boolean empty1 = reference1 == null || reference1.isEmpty();
+    boolean empty2 = reference2 == null || reference2.isEmpty();
+    if (empty1 != empty2) {
       return false;
+    }
+    if (empty1 && empty2) {
+      return true;
     }
     if (!reference1.keySet().equals(reference2.keySet())) {
       return false;
@@ -89,6 +91,14 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   private static boolean shallowContainmentsEquality(
       Map<String, List<Node>> containments1, Map<String, List<Node>> containments2) {
+    boolean empty1 = containments1 == null || containments1.isEmpty();
+    boolean empty2 = containments2 == null || containments2.isEmpty();
+    if (empty1 != empty2) {
+      return false;
+    }
+    if (empty1 && empty2) {
+      return true;
+    }
     if (!containments1.keySet().equals(containments2.keySet())) {
       return false;
     }
@@ -123,6 +133,18 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
               .collect(Collectors.joining(", "));
     }
 
+    String containmentValueStr = "<null>";
+    if (containmentValues != null) {
+      containmentValues.entrySet().stream()
+          .map(
+              e -> {
+                String childrenRepr =
+                    e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
+                return e.getKey() + "=" + childrenRepr;
+              })
+          .collect(Collectors.joining(", "));
+    }
+
     return "DynamicNode{"
         + "id='"
         + id
@@ -136,14 +158,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
             .map(e -> e.getKey() + "=" + e.getValue())
             .collect(Collectors.joining(", "))
         + "}, containmentValues={"
-        + containmentValues.entrySet().stream()
-            .map(
-                e -> {
-                  String childrenRepr =
-                      e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
-                  return e.getKey() + "=" + childrenRepr;
-                })
-            .collect(Collectors.joining(", "))
+        + containmentValueStr
         + "}, referenceValues={"
         + referenceValuesStr
         + "}, annotations={"

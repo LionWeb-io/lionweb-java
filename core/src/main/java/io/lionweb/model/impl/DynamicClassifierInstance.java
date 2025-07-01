@@ -15,7 +15,13 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   protected @Nullable String id;
 
   protected final Map<String, Object> propertyValues = new HashMap<>();
-  protected final Map<String, List<Node>> containmentValues = new HashMap<>();
+
+  /**
+   * If the tree is wide, most nodes will have no children, so when holding millions of nodes in
+   * memory it is convenient to avoid unnecessary allocations. Based on this, this field will be
+   * null when no containments are present, so that the memory footprint can be contained.
+   */
+  protected @Nullable Map<String, List<Node>> containmentValues;
 
   /*
    * Most nodes will have no references, so when holding millions of nodes in memory
@@ -81,7 +87,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
-    if (containmentValues.containsKey(containment.getKey())) {
+    if (containmentValues != null && containmentValues.containsKey(containment.getKey())) {
       return containmentValues.get(containment.getKey());
     } else {
       return Collections.emptyList();
@@ -101,13 +107,15 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeChild(Node node) {
-    for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
-      if (entry.getValue().contains(node)) {
-        entry.getValue().remove(node);
-        if (node instanceof HasSettableParent) {
-          ((HasSettableParent) node).setParent(null);
+    if (containmentValues != null) {
+      for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
+        if (entry.getValue().contains(node)) {
+          entry.getValue().remove(node);
+          if (node instanceof HasSettableParent) {
+            ((HasSettableParent) node).setParent(null);
+          }
+          return;
         }
-        return;
       }
     }
     throw new IllegalArgumentException("The given node is not a child of this node");
@@ -117,6 +125,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public void removeChild(@Nonnull Containment containment, int index) {
     Objects.requireNonNull(containment);
     Objects.requireNonNull(containment.getKey());
+    if (containmentValues == null) {
+      throw new IllegalArgumentException("Invalid index " + index + " when children are 0");
+    }
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
@@ -222,11 +233,18 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   // Private methods for containments
 
+  private void initContainments() {
+    if (containmentValues == null) {
+      containmentValues = new HashMap<>();
+    }
+  }
+
   private void addContainment(Containment link, Node value) {
     assert link.isMultiple();
     if (value instanceof HasSettableParent) {
       ((HasSettableParent) value).setParent((ClassifierInstance<?>) this);
     }
+    initContainments();
     if (containmentValues.containsKey(link.getKey())) {
       containmentValues.get(link.getKey()).add(value);
     } else {
@@ -235,6 +253,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   private void setContainmentSingleValue(Containment link, Node value) {
+    initContainments();
     List<Node> prevValue = containmentValues.get(link.getKey());
     if (prevValue != null) {
       List<Node> copy = new LinkedList<>(prevValue);

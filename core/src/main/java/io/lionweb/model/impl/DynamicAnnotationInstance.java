@@ -39,9 +39,19 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
         && Objects.equals(id, that.id)
         && Objects.equals(annotated, that.annotated)
         && Objects.equals(propertyValues, that.propertyValues)
-        && Objects.equals(containmentValues, that.containmentValues)
-        && Objects.equals(referenceValues, that.referenceValues)
-        && Objects.equals(annotations, that.annotations);
+        && Objects.equals(
+            containmentValues == null || containmentValues.isEmpty() ? null : containmentValues,
+            that.containmentValues == null || that.containmentValues.isEmpty()
+                ? null
+                : that.containmentValues)
+        && Objects.equals(
+            referenceValues == null || referenceValues.isEmpty() ? null : referenceValues,
+            that.referenceValues == null || that.referenceValues.isEmpty()
+                ? null
+                : that.referenceValues)
+        && Objects.equals(
+            annotations == null || annotations.isEmpty() ? null : annotations,
+            that.annotations == null || that.annotations.isEmpty() ? null : that.annotations);
   }
 
   @Override
