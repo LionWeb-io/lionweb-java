@@ -57,8 +57,7 @@ public class AbstractClientFunctionalTest {
     modelRepository =
         new GenericContainer<>(
                 new ImageFromDockerfile()
-                    .withFileFromClasspath(
-                        "Dockerfile", "clienttesting-lionweb-server-Dockerfile")
+                    .withFileFromClasspath("Dockerfile", "clienttesting-lionweb-server-Dockerfile")
                     .withFileFromClasspath(
                         "server-config.template.json", "server-config.template.json")
                     .withBuildArg("lionwebServerCommitID", BuildConfig.LIONWEB_SERVER_COMMIT_ID))

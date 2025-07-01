@@ -2,11 +2,10 @@ package io.lionweb.client.api;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.serialization.data.SerializedChunk;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * In certain cases it is convenient to communicate with the repository without forcing a full
@@ -20,7 +19,6 @@ public interface ChunkLevelBulkAPIClient {
   @Nullable
   RepositoryVersionToken createPartitions(@NotNull SerializedChunk data) throws IOException;
 
-
   @Nullable
   RepositoryVersionToken store(@NotNull SerializedChunk nodes) throws IOException;
 
@@ -28,8 +26,7 @@ public interface ChunkLevelBulkAPIClient {
   SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds, int limit) throws IOException;
 
   default @NotNull SerializedChunk retrieveAsChunk(@Nullable List<String> nodeIds)
-          throws IOException {
+      throws IOException {
     return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }
-
 }

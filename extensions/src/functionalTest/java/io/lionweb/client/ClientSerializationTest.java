@@ -30,8 +30,7 @@ public class ClientSerializationTest extends AbstractClientFunctionalTest {
   private final int nPartitions = 100;
   private final int nFiles = 10;
 
-  private ExtendedLionWebClient createRepoAndClient(String repositoryName)
-      throws IOException {
+  private ExtendedLionWebClient createRepoAndClient(String repositoryName) throws IOException {
     ExtendedLionWebClient client =
         new ExtendedLionWebClient(
             LionWebVersion.v2023_1, "localhost", getServerPort(), repositoryName);

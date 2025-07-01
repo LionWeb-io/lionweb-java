@@ -27,7 +27,8 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientForJSONLevelBulkAPIs extends LionWebClientImplHelper implements JSONLevelBulkAPIClient {
+public class ClientForJSONLevelBulkAPIs extends LionWebClientImplHelper
+    implements JSONLevelBulkAPIClient {
 
   public ClientForJSONLevelBulkAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);

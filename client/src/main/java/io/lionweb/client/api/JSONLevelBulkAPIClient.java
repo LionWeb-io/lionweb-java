@@ -1,7 +1,6 @@
 package io.lionweb.client.api;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.serialization.data.SerializedChunk;
 import java.io.IOException;
 import java.util.List;
 import org.jetbrains.annotations.NotNull;

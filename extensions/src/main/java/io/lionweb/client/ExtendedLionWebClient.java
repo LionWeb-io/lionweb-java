@@ -1,8 +1,8 @@
 package io.lionweb.client;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.impl.ClientForAdditionalAPIs;
 import io.lionweb.client.impl.ClientConfiguration;
+import io.lionweb.client.impl.ClientForAdditionalAPIs;
 import io.lionweb.serialization.extensions.*;
 import io.lionweb.serialization.extensions.AdditionalAPIClient;
 import io.lionweb.serialization.extensions.BulkImport;
@@ -12,8 +12,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ExtendedLionWebClient extends LionWebClient
-    implements AdditionalAPIClient {
+public class ExtendedLionWebClient extends LionWebClient implements AdditionalAPIClient {
 
   private final ClientForAdditionalAPIs additionalAPIs;
 
