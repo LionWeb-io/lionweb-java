@@ -17,7 +17,12 @@ public class SerializedClassifierInstance {
   private MetaPointer classifier;
 
   private final List<SerializedPropertyValue> properties = new ArrayList<>();
-  private final List<SerializedContainmentValue> containments = new ArrayList<>();
+
+  /**
+   * Given that in wide trees most nodes have no containments, we avoid the instantiation, unless it
+   * is necessary.
+   */
+  private @Nullable List<SerializedContainmentValue> containments;
 
   /** Given most nodes have no references, we avoid the instantiation, unless it is necessary. */
   private @Nullable List<SerializedReferenceValue> references;
@@ -47,14 +52,20 @@ public class SerializedClassifierInstance {
    * created with children. Children can only be added in a second moment.
    */
   public void clearContainments() {
-    containments.clear();
+    containments = null;
   }
 
   public List<SerializedContainmentValue> getContainments() {
+    if (containments == null) {
+      return Collections.emptyList();
+    }
     return Collections.unmodifiableList(this.containments);
   }
 
   public List<String> getChildren() {
+    if (containments == null) {
+      return Collections.emptyList();
+    }
     List<String> children = new ArrayList<>();
     this.containments.forEach(c -> children.addAll(c.getValue()));
     return Collections.unmodifiableList(children);
@@ -83,13 +94,12 @@ public class SerializedClassifierInstance {
   }
 
   public void addContainmentValue(SerializedContainmentValue containmentValue) {
+    initContainments();
     this.containments.add(containmentValue);
   }
 
   public void addReferenceValue(SerializedReferenceValue referenceValue) {
-    if (this.references == null) {
-      this.references = new ArrayList<>(1);
-    }
+    initReferences();
     this.references.add(referenceValue);
   }
 
@@ -115,6 +125,7 @@ public class SerializedClassifierInstance {
   }
 
   public void addChildren(MetaPointer containment, List<String> childrenIds) {
+    initContainments();
     this.containments.add(new SerializedContainmentValue(containment, childrenIds));
   }
 
@@ -202,7 +213,7 @@ public class SerializedClassifierInstance {
         && Objects.equals(classifier, that.classifier)
         && Objects.equals(parentNodeID, that.parentNodeID)
         && Objects.equals(properties, that.properties)
-        && Objects.equals(containments, that.containments)
+        && Objects.equals(getContainments(), that.getContainments())
         && Objects.equals(getReferences(), that.getReferences())
         && Objects.equals(getAnnotations(), that.getAnnotations());
   }
@@ -210,7 +221,13 @@ public class SerializedClassifierInstance {
   @Override
   public int hashCode() {
     return Objects.hash(
-        id, classifier, parentNodeID, properties, containments, getReferences(), getAnnotations());
+        id,
+        classifier,
+        parentNodeID,
+        properties,
+        getContainments(),
+        getReferences(),
+        getAnnotations());
   }
 
   @Override
@@ -227,11 +244,23 @@ public class SerializedClassifierInstance {
         + ", properties="
         + properties
         + ", containments="
-        + containments
+        + getContainments()
         + ", references="
         + getReferences()
         + ", annotations="
         + getAnnotations()
         + '}';
+  }
+
+  private void initReferences() {
+    if (this.references == null) {
+      this.references = new ArrayList<>(1);
+    }
+  }
+
+  private void initContainments() {
+    if (this.containments == null) {
+      this.containments = new ArrayList<>();
+    }
   }
 }
