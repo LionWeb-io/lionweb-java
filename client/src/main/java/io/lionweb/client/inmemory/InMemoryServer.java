@@ -21,7 +21,7 @@ import org.jetbrains.annotations.Nullable;
 public class InMemoryServer {
 
   /** Internally we store the data separately for each repository. */
-  private final Map<String, RepositoryData> repositories = new HashMap<>();
+  private final Map<String, RepositoryData> repositories = new LinkedHashMap<>();
 
   public @NotNull RepositoryConfiguration getRepositoryConfiguration(
       @NotNull String repositoryName) {
