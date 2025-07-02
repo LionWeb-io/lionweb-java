@@ -3,7 +3,7 @@ package io.lionweb.client;
 import static io.lionweb.serialization.LowLevelJsonSerialization.groupNodesIntoSerializationBlock;
 
 import io.lionweb.client.api.BulkAPIClient;
-import io.lionweb.client.api.RawBulkAPIClient;
+import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
@@ -35,7 +35,7 @@ public class RepoSerialization {
    * Download all the content of the repository accessed by the apiClient into a directory. In this
    * directory one file per partition is created. The file is in JSON format.
    */
-  public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsDirectory(
+  public <C extends JSONLevelBulkAPIClient & BulkAPIClient> void downloadRepoAsDirectory(
       C apiClient, File directory) throws IOException {
     for (String partitionID : apiClient.listPartitionsIDs()) {
       String partitionData =
@@ -53,7 +53,7 @@ public class RepoSerialization {
    * Download all the content of the repository accessed by the apiClient into a zip file. In this
    * zip file, one entry per partition is created. The entry is in JSON format.
    */
-  public <C extends RawBulkAPIClient & BulkAPIClient> void downloadRepoAsZip(
+  public <C extends JSONLevelBulkAPIClient & BulkAPIClient> void downloadRepoAsZip(
       C apiClient, File zipFile) throws IOException {
     try (FileOutputStream fos = new FileOutputStream(zipFile);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
@@ -79,7 +79,7 @@ public class RepoSerialization {
    * not the more performant bulk import). The directory and all the subdirectories are examined,
    * looking for files with extension ".json" (ignoring case).
    */
-  public void simpleUploadDirectoryToRepo(RawBulkAPIClient apiClient, File directory)
+  public void simpleUploadDirectoryToRepo(JSONLevelBulkAPIClient apiClient, File directory)
       throws IOException {
     if (!directory.isDirectory()) {
       throw new IllegalArgumentException(
@@ -142,7 +142,7 @@ public class RepoSerialization {
    * more performant bulk import). All the zip is examined, looking for entries with extension
    * ".json" (ignoring case).
    */
-  public void simpleUploadZipToRepo(RawBulkAPIClient apiClient, File zip) throws IOException {
+  public void simpleUploadZipToRepo(JSONLevelBulkAPIClient apiClient, File zip) throws IOException {
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
           "Provided path is not a valid zip file: " + zip.getAbsolutePath());
