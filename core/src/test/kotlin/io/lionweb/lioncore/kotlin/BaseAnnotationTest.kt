@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.model.ReferenceValue
+import io.lionweb.model.ReferenceValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -17,11 +17,11 @@ class BaseAnnotationTest {
                 MLAnnotationWithMultipleReference::class,
             )
         val n1 = MLSimpleAnnotation(1)
-        n1.id = "n1-id"
+        n1.setID("n1-id")
         val n2 = MLAnnotationWithSimpleReference()
-        n2.id = "n2-id"
+        n2.setID("n2-id")
         val n3 = MLSimpleAnnotation(2)
-        n3.id = "n3-id"
+        n3.setID("n3-id")
         assertEquals(emptyList(), n2.getReferenceValueByName("simple"))
         assertEquals(null, n2.simple)
 
@@ -33,7 +33,7 @@ class BaseAnnotationTest {
         assertEquals(null, n2.simple!!.resolveInfo)
 
         val n4 = MLSimpleNode()
-        n4.id = "n4-id"
+        n4.setID("n4-id")
         n2.simple = SpecificReferenceValue.create("foo", n4)
         assertEquals(1, n2.getReferenceValueByName("simple").size)
         assertEquals("n4-id", n2.getReferenceValueByName("simple")[0].referredID)
@@ -46,7 +46,7 @@ class BaseAnnotationTest {
         assertEquals(null, n2.simple)
 
         val n5 = MLSimpleNode()
-        n5.id = "n5-id"
+        n5.setID("n5-id")
         n2.setOnlyReferenceValueByName("simple", ReferenceValue(n5, "bar"))
         assertEquals(1, n2.getReferenceValueByName("simple").size)
         assertEquals("n5-id", n2.getReferenceValueByName("simple")[0].referredID)
@@ -71,16 +71,16 @@ class BaseAnnotationTest {
                 MLAnnotationWithMultipleReference::class,
             )
         val n1 = MLSimpleAnnotation(1)
-        n1.id = "n1-id"
+        n1.setID("n1-id")
         val n2 = MLAnnotationWithMultipleReference()
-        n2.id = "n2-id"
+        n2.setID("n2-id")
         val n3 = MLSimpleAnnotation(2)
-        n3.id = "n3-id"
+        n3.setID("n3-id")
         assertEquals(emptyList(), n2.getReferenceValueByName("list"))
         assertEquals(emptyList(), n2.list)
 
         val n4 = MLSimpleNode(4)
-        n4.id = "n4-id"
+        n4.setID("n4-id")
         n2.list =
             mutableListOf(
                 SpecificReferenceValue.create(null, null),

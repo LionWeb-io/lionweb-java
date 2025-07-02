@@ -1,9 +1,9 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.impl.ProxyNode
-import io.lionweb.lioncore.java.serialization.JsonSerialization
 import io.lionweb.lioncore.kotlin.children
+import io.lionweb.model.Node
+import io.lionweb.model.impl.ProxyNode
+import io.lionweb.serialization.JsonSerialization
 import java.io.File
 
 /**

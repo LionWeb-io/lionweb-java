@@ -1,14 +1,14 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.language.Concept
-import io.lionweb.lioncore.java.language.Reference
-import io.lionweb.lioncore.java.model.ClassifierInstance
-import io.lionweb.lioncore.java.model.ClassifierInstanceUtils
-import io.lionweb.lioncore.java.model.HasSettableParent
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.ReferenceValue
-import io.lionweb.lioncore.java.model.impl.DynamicNode
-import io.lionweb.lioncore.java.model.impl.ProxyNode
+import io.lionweb.language.Concept
+import io.lionweb.language.Reference
+import io.lionweb.model.ClassifierInstance
+import io.lionweb.model.ClassifierInstanceUtils
+import io.lionweb.model.HasSettableParent
+import io.lionweb.model.Node
+import io.lionweb.model.ReferenceValue
+import io.lionweb.model.impl.DynamicNode
+import io.lionweb.model.impl.ProxyNode
 import kotlin.random.Random
 import kotlin.reflect.KClass
 

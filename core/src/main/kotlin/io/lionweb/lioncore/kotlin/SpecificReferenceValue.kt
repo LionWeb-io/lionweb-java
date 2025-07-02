@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.ReferenceValue
-import io.lionweb.lioncore.java.model.impl.ProxyNode
+import io.lionweb.model.Node
+import io.lionweb.model.ReferenceValue
+import io.lionweb.model.impl.ProxyNode
 import kotlin.reflect.KClass
 
 interface Deproxifier {

@@ -1,33 +1,33 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.LionWebVersion
-import io.lionweb.lioncore.java.language.Annotation
-import io.lionweb.lioncore.java.language.Classifier
-import io.lionweb.lioncore.java.language.Concept
-import io.lionweb.lioncore.java.language.Containment
-import io.lionweb.lioncore.java.language.DataType
-import io.lionweb.lioncore.java.language.Enumeration
-import io.lionweb.lioncore.java.language.EnumerationLiteral
-import io.lionweb.lioncore.java.language.Feature
-import io.lionweb.lioncore.java.language.Field
-import io.lionweb.lioncore.java.language.Interface
-import io.lionweb.lioncore.java.language.Language
-import io.lionweb.lioncore.java.language.LanguageEntity
-import io.lionweb.lioncore.java.language.Link
-import io.lionweb.lioncore.java.language.LionCoreBuiltins
-import io.lionweb.lioncore.java.language.PrimitiveType
-import io.lionweb.lioncore.java.language.Property
-import io.lionweb.lioncore.java.language.Reference
-import io.lionweb.lioncore.java.language.StructuredDataType
-import io.lionweb.lioncore.java.model.AnnotationInstance
-import io.lionweb.lioncore.java.model.ClassifierInstance
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance
-import io.lionweb.lioncore.java.self.LionCore
-import io.lionweb.lioncore.java.serialization.AbstractSerialization
-import io.lionweb.lioncore.java.serialization.Instantiator
-import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization
-import io.lionweb.lioncore.java.serialization.data.SerializedClassifierInstance
+import io.lionweb.LionWebVersion
+import io.lionweb.language.Annotation
+import io.lionweb.language.Classifier
+import io.lionweb.language.Concept
+import io.lionweb.language.Containment
+import io.lionweb.language.DataType
+import io.lionweb.language.Enumeration
+import io.lionweb.language.EnumerationLiteral
+import io.lionweb.language.Feature
+import io.lionweb.language.Field
+import io.lionweb.language.Interface
+import io.lionweb.language.Language
+import io.lionweb.language.LanguageEntity
+import io.lionweb.language.Link
+import io.lionweb.language.LionCoreBuiltins
+import io.lionweb.language.PrimitiveType
+import io.lionweb.language.Property
+import io.lionweb.language.Reference
+import io.lionweb.language.StructuredDataType
+import io.lionweb.lioncore.LionCore
+import io.lionweb.model.AnnotationInstance
+import io.lionweb.model.ClassifierInstance
+import io.lionweb.model.Node
+import io.lionweb.model.impl.DynamicClassifierInstance
+import io.lionweb.serialization.AbstractSerialization
+import io.lionweb.serialization.Instantiator
+import io.lionweb.serialization.PrimitiveValuesSerialization
+import io.lionweb.serialization.data.SerializedClassifierInstance
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
@@ -157,7 +157,7 @@ object MetamodelRegistry {
                         ->
                         val result = constructor.callBy(emptyMap()) as ClassifierInstance<*>
                         if (result is DynamicClassifierInstance<*>) {
-                            result.id = serializedClassifierInstance.id
+                            result.setID(serializedClassifierInstance.id ?: throw IllegalStateException())
                         }
                         result
                     }

@@ -2,23 +2,23 @@ package io.lionweb.lioncore.kotlin.repoclient
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonParser
-import io.lionweb.lioncore.java.LionWebVersion
-import io.lionweb.lioncore.java.language.Language
-import io.lionweb.lioncore.java.model.AnnotationInstance
-import io.lionweb.lioncore.java.model.ClassifierInstance
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.ReferenceValue
-import io.lionweb.lioncore.java.model.impl.DynamicNode
-import io.lionweb.lioncore.java.model.impl.ProxyNode
-import io.lionweb.lioncore.java.serialization.JsonSerialization
+import io.lionweb.LionWebVersion
+import io.lionweb.client.ExtendedLionWebClient
+import io.lionweb.client.api.HistorySupport
+import io.lionweb.client.api.RepositoryConfiguration
+import io.lionweb.language.Language
 import io.lionweb.lioncore.kotlin.children
 import io.lionweb.lioncore.kotlin.getChildrenByContainmentName
 import io.lionweb.lioncore.kotlin.getReferenceValueByName
 import io.lionweb.lioncore.kotlin.setPropertyValueByName
 import io.lionweb.lioncore.kotlin.setReferenceValuesByName
-import io.lionweb.repoclient.ExtendedLionWebRepoClient
-import io.lionweb.repoclient.api.HistorySupport
-import io.lionweb.repoclient.api.RepositoryConfiguration
+import io.lionweb.model.AnnotationInstance
+import io.lionweb.model.ClassifierInstance
+import io.lionweb.model.Node
+import io.lionweb.model.ReferenceValue
+import io.lionweb.model.impl.DynamicNode
+import io.lionweb.model.impl.ProxyNode
+import io.lionweb.serialization.JsonSerialization
 import io.lionweb.serialization.extensions.BulkImport
 import io.lionweb.serialization.extensions.Compression
 import io.lionweb.serialization.extensions.NodeInfo
@@ -58,7 +58,7 @@ class LionWebClient(
         )
 
     private val jRepoClient =
-        ExtendedLionWebRepoClient(
+        ExtendedLionWebClient(
             lionWebVersion,
             hostname,
             port,
@@ -178,16 +178,16 @@ class LionWebClient(
         } else {
             var parent = node.parent
             if (node.parent is ProxyNode) {
-                parent = retrieve(node.parent.id!!, retrievalMode = RetrievalMode.SINGLE_NODE)
+                parent = retrieve(node.parent!!.id!!, retrievalMode = RetrievalMode.SINGLE_NODE)
             }
             return if (ancestorClass.isInstance(parent)) {
                 if (retrievalMode == RetrievalMode.SINGLE_NODE) {
                     parent as T
                 } else {
-                    retrieve(node.parent.id!!, retrievalMode = RetrievalMode.ENTIRE_SUBTREE) as T
+                    retrieve(node.parent!!.id!!, retrievalMode = RetrievalMode.ENTIRE_SUBTREE) as T
                 }
             } else {
-                retrieveAncestor(parent, ancestorClass, retrievalMode)
+                retrieveAncestor(parent!!, ancestorClass, retrievalMode)
             }
         }
     }

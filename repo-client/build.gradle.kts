@@ -158,7 +158,7 @@ tasks.withType<Test>().configureEach {
 
 val lwJavaJar =
     configurations.findByName("functionalTestRuntimeClasspath")!!
-        .find { it.name.startsWith("lionweb-java-2024.1-repo-client-0") } as File
+        .find { it.name.startsWith("lionweb-java-2024.1-client-1") } as File
 // Eventually we should use this value and drop it from gradle.properties
 val lwJavaLionwebRepositoryCommitID: String? =
     zipTree(lwJavaJar).matching {

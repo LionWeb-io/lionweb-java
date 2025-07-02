@@ -56,7 +56,7 @@ abstract class File : BaseNode(), Named {
             if (parent == null) {
                 "ROOT_"
             } else {
-                parent.id!!
+                parent!!.id!!
             }
         return "${base}___${(name ?: throw IllegalStateException("Cannot calculate ID if name is not set")).replace('.', '_')}"
     }

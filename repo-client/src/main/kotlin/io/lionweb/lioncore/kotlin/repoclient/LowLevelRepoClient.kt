@@ -1,7 +1,7 @@
 package io.lionweb.lioncore.kotlin.repoclient
 
 import com.google.gson.JsonParser
-import io.lionweb.lioncore.java.LionWebVersion
+import io.lionweb.LionWebVersion
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request

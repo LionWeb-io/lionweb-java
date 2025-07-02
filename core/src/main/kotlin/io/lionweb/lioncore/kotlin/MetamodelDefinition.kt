@@ -1,26 +1,26 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.LionWebVersion
-import io.lionweb.lioncore.java.language.Annotation
-import io.lionweb.lioncore.java.language.Classifier
-import io.lionweb.lioncore.java.language.Concept
-import io.lionweb.lioncore.java.language.Containment
-import io.lionweb.lioncore.java.language.DataType
-import io.lionweb.lioncore.java.language.Enumeration
-import io.lionweb.lioncore.java.language.EnumerationLiteral
-import io.lionweb.lioncore.java.language.IKeyed
-import io.lionweb.lioncore.java.language.Interface
-import io.lionweb.lioncore.java.language.Language
-import io.lionweb.lioncore.java.language.PrimitiveType
-import io.lionweb.lioncore.java.language.Property
-import io.lionweb.lioncore.java.language.Reference
-import io.lionweb.lioncore.java.model.AnnotationInstance
-import io.lionweb.lioncore.java.model.ClassifierInstance
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.ReferenceValue
-import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
-import io.lionweb.lioncore.java.serialization.PrimitiveValuesSerialization.PrimitiveSerializer
-import io.lionweb.lioncore.java.utils.IdUtils
+import io.lionweb.LionWebVersion
+import io.lionweb.language.Annotation
+import io.lionweb.language.Classifier
+import io.lionweb.language.Concept
+import io.lionweb.language.Containment
+import io.lionweb.language.DataType
+import io.lionweb.language.Enumeration
+import io.lionweb.language.EnumerationLiteral
+import io.lionweb.language.IKeyed
+import io.lionweb.language.Interface
+import io.lionweb.language.Language
+import io.lionweb.language.PrimitiveType
+import io.lionweb.language.Property
+import io.lionweb.language.Reference
+import io.lionweb.model.AnnotationInstance
+import io.lionweb.model.ClassifierInstance
+import io.lionweb.model.Node
+import io.lionweb.model.ReferenceValue
+import io.lionweb.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
+import io.lionweb.serialization.PrimitiveValuesSerialization.PrimitiveSerializer
+import io.lionweb.utils.IdUtils
 import java.lang.IllegalStateException
 import kotlin.reflect.KClass
 import kotlin.reflect.full.declaredMemberProperties
@@ -37,7 +37,7 @@ fun lwLanguage(
 ): Language {
     val cleanedName = name.lowercase().replace('.', '_')
     val language = Language(lionWebVersion, name)
-    language.id = "language-$cleanedName-id"
+    language.setID("language-$cleanedName-id")
     language.key = "language-$cleanedName-key"
     language.version = "1"
     // We register first the primitive types, as concepts could use them
@@ -286,7 +286,7 @@ fun Classifier<*>.createContainment(
     val containment =
         Containment(lionWebVersion).apply {
             this.name = name
-            this.id = this@createContainment.idForContainedElement(name)
+            this.setID(this@createContainment.idForContainedElement(name))
             this.key = this@createContainment.keyForContainedElement(name)
             this.type = containedClassifier
             this.setOptional(multiplicity.optional)
@@ -304,7 +304,7 @@ fun Classifier<*>.createReference(
     val reference =
         Reference(lionWebVersion).apply {
             this.name = name
-            this.id = this@createReference.idForContainedElement(name)
+            this.setID(this@createReference.idForContainedElement(name))
             this.key = this@createReference.keyForContainedElement(name)
             this.type = containedClassifier
             this.setOptional(multiplicity.optional)
@@ -323,7 +323,7 @@ fun Classifier<*>.createProperty(
     val property =
         Property(lionWebVersion).apply {
             this.setName(name)
-            this.id = this@createProperty.idForContainedElement(name)
+            this.setID(this@createProperty.idForContainedElement(name))
             this.key = this@createProperty.keyForContainedElement(name)
             this.type = type
             this.setOptional(multiplicity.optional)
@@ -355,7 +355,7 @@ fun String.lwIDCleanedVersion(): String {
 fun Enumeration.addLiteral(literalName: String): EnumerationLiteral {
     val enumerationLiteral =
         EnumerationLiteral(this, literalName).apply {
-            this.id = "${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id"
+            this.setID("${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id")
             this.key = "${this@addLiteral.id!!.removeSuffix("-key")}-${literalName.lwIDCleanedVersion()}-key"
         }
     this.addLiteral(enumerationLiteral)

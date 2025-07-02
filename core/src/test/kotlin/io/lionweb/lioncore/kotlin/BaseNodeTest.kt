@@ -1,6 +1,6 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.model.ReferenceValue
+import io.lionweb.model.ReferenceValue
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -14,11 +14,11 @@ class BaseNodeTest {
                 MLNodeWithSimpleReference::class,
             )
         val n1 = MLSimpleNode(1)
-        n1.id = "n1-id"
+        n1.setID("n1-id")
         val n2 = MLNodeWithSimpleReference()
-        n2.id = "n2-id"
+        n2.setID("n2-id")
         val n3 = MLSimpleNode(2)
-        n3.id = "n3-id"
+        n3.setID("n3-id")
         assertEquals(emptyList(), n2.getReferenceValueByName("simple"))
         assertEquals(null, n2.simple)
 
@@ -61,11 +61,11 @@ class BaseNodeTest {
                 MLNodeWithMultipleReference::class,
             )
         val n1 = MLSimpleNode(1)
-        n1.id = "n1-id"
+        n1.setID("n1-id")
         val n2 = MLNodeWithMultipleReference()
-        n2.id = "n2-id"
+        n2.setID("n2-id")
         val n3 = MLSimpleNode(2)
-        n3.id = "n3-id"
+        n3.setID("n3-id")
         assertEquals(emptyList(), n2.getReferenceValueByName("list"))
         assertEquals(emptyList(), n2.list)
 

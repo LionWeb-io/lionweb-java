@@ -1,9 +1,9 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.language.LionCoreBuiltins
-import io.lionweb.lioncore.java.model.impl.ProxyNode
-import io.lionweb.lioncore.java.serialization.SerializationProvider
-import io.lionweb.lioncore.java.serialization.UnavailableNodePolicy
+import io.lionweb.language.LionCoreBuiltins
+import io.lionweb.model.impl.ProxyNode
+import io.lionweb.serialization.SerializationProvider
+import io.lionweb.serialization.UnavailableNodePolicy
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -201,7 +201,7 @@ class MetamodelDefinitionTest {
         assertEquals("MyFile", deserializedTextFile.name)
         assertEquals("My contents", deserializedTextFile.contents)
         assert(deserializedTextFile.parent is ProxyNode)
-        assertEquals("ROOT____foo", deserializedTextFile.parent.id)
+        assertEquals("ROOT____foo", deserializedTextFile.parent!!.id)
     }
 
     @Test
@@ -249,7 +249,7 @@ class MetamodelDefinitionTest {
         assertEquals("MyFile", deserializedTextFile.name)
         assertEquals("My contents", deserializedTextFile.contents)
         assert(deserializedTextFile.parent is ProxyNode)
-        assertEquals("ROOT____foo", deserializedTextFile.parent.id)
+        assertEquals("ROOT____foo", deserializedTextFile.parent!!.id)
     }
 
     @Test

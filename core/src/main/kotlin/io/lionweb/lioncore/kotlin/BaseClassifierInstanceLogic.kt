@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.model.ClassifierInstance
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance
+import io.lionweb.model.ClassifierInstance
+import io.lionweb.model.Node
+import io.lionweb.model.impl.DynamicClassifierInstance
 import kotlin.properties.ReadWriteProperty
 import kotlin.reflect.KProperty
 

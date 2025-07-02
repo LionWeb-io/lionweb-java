@@ -1,8 +1,8 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.language.Containment
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.impl.DynamicClassifierInstance
+import io.lionweb.language.Containment
+import io.lionweb.model.Node
+import io.lionweb.model.impl.DynamicClassifierInstance
 
 /**
  * This is a list that represent the children part of a specific containment for a certain containing node.

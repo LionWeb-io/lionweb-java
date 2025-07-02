@@ -1,9 +1,9 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.LionWebVersion
-import io.lionweb.lioncore.java.language.Concept
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.impl.DynamicNode
+import io.lionweb.LionWebVersion
+import io.lionweb.language.Concept
+import io.lionweb.model.Node
+import io.lionweb.model.impl.DynamicNode
 import kotlin.properties.ReadWriteProperty
 
 @Target(AnnotationTarget.PROPERTY, AnnotationTarget.FUNCTION)

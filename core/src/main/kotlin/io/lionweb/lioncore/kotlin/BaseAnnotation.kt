@@ -1,9 +1,9 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.LionWebVersion
-import io.lionweb.lioncore.java.language.Annotation
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.model.impl.DynamicAnnotationInstance
+import io.lionweb.LionWebVersion
+import io.lionweb.language.Annotation
+import io.lionweb.model.Node
+import io.lionweb.model.impl.DynamicAnnotationInstance
 import kotlin.properties.ReadWriteProperty
 
 /**

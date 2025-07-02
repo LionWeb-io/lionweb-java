@@ -1,12 +1,12 @@
 package io.lionweb.lioncore.kotlin
 
-import io.lionweb.lioncore.java.language.Concept
-import io.lionweb.lioncore.java.language.Containment
-import io.lionweb.lioncore.java.language.Language
-import io.lionweb.lioncore.java.language.Reference
-import io.lionweb.lioncore.java.model.Node
-import io.lionweb.lioncore.java.self.LionCore
-import io.lionweb.lioncore.java.serialization.SerializationProvider
+import io.lionweb.language.Concept
+import io.lionweb.language.Containment
+import io.lionweb.language.Language
+import io.lionweb.language.Reference
+import io.lionweb.lioncore.LionCore
+import io.lionweb.model.Node
+import io.lionweb.serialization.SerializationProvider
 import kotlin.reflect.KClass
 import kotlin.test.Test
 import kotlin.test.assertEquals
