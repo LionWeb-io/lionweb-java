@@ -33,6 +33,7 @@ tasks.withType<Test>().all {
 dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
+    implementation(project(":client"))
     implementation(libs.gson)
     implementation(libs.testcontainers)
     implementation(libs.testcontainersjunit)
