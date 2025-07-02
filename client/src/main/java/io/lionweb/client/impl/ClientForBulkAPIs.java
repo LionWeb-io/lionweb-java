@@ -1,12 +1,11 @@
 package io.lionweb.client.impl;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.RequestFailureException;
 import io.lionweb.client.api.BulkAPIClient;
-import io.lionweb.client.api.RawBulkAPIClient;
+import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
@@ -20,13 +19,13 @@ import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientForBulkAPIs extends LionWebClientImplHelper implements BulkAPIClient {
+public class ClientForBulkAPIs extends BulkAPIsLionWebClientImplHelper implements BulkAPIClient {
 
-  private RawBulkAPIClient rawBulkAPIClient;
+  private final JSONLevelBulkAPIClient jsonLevelClient;
 
   public ClientForBulkAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);
-    rawBulkAPIClient = new ClientForRawBulkAPIs(clientConfiguration);
+    jsonLevelClient = new ClientForJSONLevelBulkAPIs(clientConfiguration);
   }
 
   @NotNull
@@ -38,26 +37,19 @@ public class ClientForBulkAPIs extends LionWebClientImplHelper implements BulkAP
   @Override
   public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
       throws IOException {
-    return rawBulkAPIClient.rawCreatePartitions(
+    return jsonLevelClient.rawCreatePartitions(
         conf.getJsonSerialization()
             .serializeTreesToJsonString(partitions.toArray(new ClassifierInstance[0])));
   }
 
   @Override
   public @Nullable RepositoryVersionToken deletePartitions(List<String> ids) throws IOException {
-    JsonArray ja = new JsonArray();
-    for (String id : ids) {
-      ja.add(id);
-    }
+    return super.deletePartitions(ids);
+  }
 
-    String bodyJson = gson.toJson(ja);
-    RequestBody body = RequestBody.create(bodyJson, JSON);
-
-    Request.Builder rq = buildRequest("/bulk/deletePartitions");
-    Request request = rq.post(body).build();
-
-    return performCall(
-        request, (response, responseBody) -> getRepoVersionFromResponse(responseBody));
+  @Override
+  public List<String> listPartitionsIDs() throws IOException {
+    return listPartitions().stream().map(n -> n.getID()).collect(Collectors.toList());
   }
 
   @Override
@@ -80,33 +72,6 @@ public class ClientForBulkAPIs extends LionWebClientImplHelper implements BulkAP
   }
 
   @Override
-  public List<String> ids(int count) throws IOException {
-    if (count < 0) {
-      throw new IllegalArgumentException("Count should be greater or equal to zero");
-    }
-    if (count == 0) {
-      return Collections.emptyList();
-    }
-    Map<String, String> params = new HashMap<>();
-    params.put("count", Integer.toString(count));
-    Request.Builder rq = buildRequest("/bulk/ids", true, true, true, params);
-    Request request = rq.post(RequestBody.create(new byte[0])).build();
-    return performCall(
-        request,
-        (response, responseBody) -> {
-          JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
-          boolean success = responseData.get("success").getAsBoolean();
-          if (!success) {
-            throw new RequestFailureException(
-                request.url().toString(), response.code(), responseBody);
-          }
-          return responseData.get("ids").getAsJsonArray().asList().stream()
-              .map(je -> je.getAsString())
-              .collect(Collectors.toList());
-        });
-  }
-
-  @Override
   public @Nullable RepositoryVersionToken store(List<Node> nodes) throws IOException {
     if (nodes.isEmpty()) {
       return null;
@@ -114,7 +79,7 @@ public class ClientForBulkAPIs extends LionWebClientImplHelper implements BulkAP
     String json =
         conf.getJsonSerialization()
             .serializeTreesToJsonString(nodes.toArray(new ClassifierInstance<?>[0]));
-    return rawBulkAPIClient.rawStore(json);
+    return jsonLevelClient.rawStore(json);
   }
 
   @Override

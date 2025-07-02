@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.CompressionSupport;
 import io.lionweb.client.RequestFailureException;
-import io.lionweb.client.api.RawBulkAPIClient;
+import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.utils.CommonChecks;
 import java.io.IOException;
@@ -25,9 +25,10 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class ClientForRawBulkAPIs extends LionWebClientImplHelper implements RawBulkAPIClient {
+public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
+    implements JSONLevelBulkAPIClient {
 
-  public ClientForRawBulkAPIs(ClientConfiguration clientConfiguration) {
+  public ClientForJSONLevelBulkAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);
   }
 
@@ -37,10 +38,22 @@ public class ClientForRawBulkAPIs extends LionWebClientImplHelper implements Raw
     return conf.getJsonSerialization().getLionWebVersion();
   }
 
+  @NotNull
+  @Override
+  public List<String> listPartitionsIDs() throws IOException {
+    return super.listPartitionsIDs();
+  }
+
   @Override
   public @Nullable RepositoryVersionToken rawCreatePartitions(@NotNull String data)
       throws IOException {
     return nodesStoringOperation(data, "createPartitions");
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken deletePartitions(List<String> ids) throws IOException {
+    return super.deletePartitions(ids);
   }
 
   @Nullable
