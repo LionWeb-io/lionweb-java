@@ -30,7 +30,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     SerializedChunk serializedChunk =
-        jsonSerialization.serializeTreeToSerializationBlock(
+        jsonSerialization.serializeTreeToSerializationChunk(
             LionCore.getInstance(LionWebVersion.v2023_1));
 
     assertEquals("2023.1", serializedChunk.getSerializationFormatVersion());
@@ -97,7 +97,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void serializeLionCoreToSerializedChunkV2024() {
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     SerializedChunk serializedChunk =
-        jsonSerialization.serializeTreeToSerializationBlock(LionCore.getInstance());
+        jsonSerialization.serializeTreeToSerializationChunk(LionCore.getInstance());
 
     assertEquals("2024.1", serializedChunk.getSerializationFormatVersion());
 

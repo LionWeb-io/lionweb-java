@@ -18,7 +18,7 @@ public class SerializationAndDeserializationExperiment {
 
     SerializedChunk chunk =
         SerializationProvider.getStandardJsonSerialization()
-            .serializeTreeToSerializationBlock(tree);
+            .serializeTreeToSerializationChunk(tree);
 
     System.out.println("= JSON serialization (without compression) =");
     long jt0 = System.currentTimeMillis();

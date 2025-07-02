@@ -36,7 +36,7 @@ public class BulkImport {
       JsonSerialization jsonSerialization =
           getJsonSerialization(nodes.get(0).getClassifier().getLionWebVersion());
       this.nodes =
-          jsonSerialization.serializeNodesToSerializationBlock(nodes).getClassifierInstances();
+          jsonSerialization.serializeNodesToSerializationChunk(nodes).getClassifierInstances();
     }
   }
 
@@ -45,7 +45,7 @@ public class BulkImport {
         getJsonSerialization(classifierInstance.getClassifier().getLionWebVersion());
     nodes.addAll(
         jsonSerialization
-            .serializeNodesToSerializationBlock(classifierInstance)
+            .serializeNodesToSerializationChunk(classifierInstance)
             .getClassifierInstances());
   }
 
