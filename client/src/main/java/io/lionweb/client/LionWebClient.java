@@ -7,6 +7,7 @@ import io.lionweb.model.Node;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.UnavailableNodePolicy;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -16,7 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class LionWebClient
-    implements RawBulkAPIClient,
+    implements JSONLevelBulkAPIClient,
+        ChunkLevelBulkAPIClient,
         BulkAPIClient,
         DBAdminAPIClient,
         InspectionAPIClient,
@@ -99,7 +101,8 @@ public class LionWebClient
   private final ClientForInspectionAPIs inspectionAPIs;
   private final ClientForDBAdminAPIs dbAdminAPIs;
   private final ClientForBulkAPIs bulkAPIs;
-  private final ClientForRawBulkAPIs rawBulkAPIs;
+  private final ClientForChunkLevelBulkAPIs chunkLevelBulkAPIs;
+  private final ClientForJSONLevelBulkAPIs jsonLevelBulkAPIs;
   private final ClientForHistoryAPIs historyAPIs;
 
   //
@@ -143,7 +146,8 @@ public class LionWebClient
     ClientConfiguration conf = buildRepositoryConfiguration();
     this.inspectionAPIs = new ClientForInspectionAPIs(conf);
     this.dbAdminAPIs = new ClientForDBAdminAPIs(conf);
-    this.rawBulkAPIs = new ClientForRawBulkAPIs(conf);
+    this.jsonLevelBulkAPIs = new ClientForJSONLevelBulkAPIs(conf);
+    this.chunkLevelBulkAPIs = new ClientForChunkLevelBulkAPIs(conf);
     this.bulkAPIs = new ClientForBulkAPIs(conf);
     this.historyAPIs = new ClientForHistoryAPIs(conf);
   }
@@ -174,28 +178,34 @@ public class LionWebClient
 
   public @Nullable RepositoryVersionToken rawCreatePartitions(@NotNull String data)
       throws IOException {
-    return rawBulkAPIs.rawCreatePartitions(data);
+    return jsonLevelBulkAPIs.rawCreatePartitions(data);
   }
 
   @Override
   @Nullable
   public RepositoryVersionToken rawStore(@NotNull String nodes) throws IOException {
-    return rawBulkAPIs.rawStore(nodes);
+    return jsonLevelBulkAPIs.rawStore(nodes);
   }
 
   @Override
   @NotNull
   public String rawRetrieve(@NotNull List<String> nodeIds, int limit) throws IOException {
-    return rawBulkAPIs.rawRetrieve(nodeIds, limit);
+    return jsonLevelBulkAPIs.rawRetrieve(nodeIds, limit);
+  }
+
+  @NotNull
+  @Override
+  public String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
+    return JSONLevelBulkAPIClient.super.rawRetrieve(nodeIds);
   }
 
   //
   // Bulk APIs
   //
 
+  @Nullable
   @Override
-  public @Nullable RepositoryVersionToken createPartitions(List<Node> partitions)
-      throws IOException {
+  public RepositoryVersionToken createPartitions(List<Node> partitions) throws IOException {
     return bulkAPIs.createPartitions(partitions);
   }
 
@@ -256,6 +266,38 @@ public class LionWebClient
   @Override
   public LionWebVersion getLionWebVersion() {
     return buildRepositoryConfiguration().getJsonSerialization().getLionWebVersion();
+  }
+
+  //
+  // Bulk APIs - Chunk level
+  //
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken createPartitionsFromChunk(
+      @NotNull List<SerializedClassifierInstance> data) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @Nullable
+  @Override
+  public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes)
+      throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public List<SerializedClassifierInstance> retrieveAsChunk(
+      @Nullable List<String> nodeIds, int limit) throws IOException {
+    throw new UnsupportedOperationException();
+  }
+
+  @NotNull
+  @Override
+  public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds)
+      throws IOException {
+    throw new UnsupportedOperationException();
   }
 
   //
