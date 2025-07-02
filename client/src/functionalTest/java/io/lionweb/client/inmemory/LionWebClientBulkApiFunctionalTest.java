@@ -39,7 +39,6 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientInMemoryFu
   public void partitionsCRUD() throws IOException {
     NodesLevelInMemoryServerClient client =
         new NodesLevelInMemoryServerClient(getServer(), "default");
-    // client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Create partition
     DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesPartition);
