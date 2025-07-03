@@ -4,6 +4,9 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,12 +36,32 @@ public interface ChunkLevelBulkAPIClient {
   RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes)
       throws IOException;
 
+  @Nullable
+  default RepositoryVersionToken storeChunk(@NotNull Iterable<SerializedClassifierInstance> nodes)
+      throws IOException {
+    return storeChunk(
+        StreamSupport.stream(nodes.spliterator(), false).collect(Collectors.toList()));
+  }
+
   @NotNull
-  List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds, int limit)
+  List<SerializedClassifierInstance> retrieveAsChunk(@NotNull List<String> nodeIds, int limit)
       throws IOException;
 
-  default @NotNull List<SerializedClassifierInstance> retrieveAsChunk(
-      @Nullable List<String> nodeIds) throws IOException {
+  @NotNull
+  default Iterable<SerializedClassifierInstance> retrieveAsIterableChunk(
+      @NotNull Iterable<String> nodeIds, int limit) throws IOException {
+    Objects.requireNonNull(nodeIds);
+    return retrieveAsChunk(
+        StreamSupport.stream(nodeIds.spliterator(), false).collect(Collectors.toList()), limit);
+  }
+
+  default @NotNull List<SerializedClassifierInstance> retrieveAsChunk(@NotNull List<String> nodeIds)
+      throws IOException {
     return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
+  }
+
+  default @NotNull Iterable<SerializedClassifierInstance> retrieveAsIterableChunk(
+      @NotNull Iterable<String> nodeIds) throws IOException {
+    return retrieveAsIterableChunk(nodeIds, Integer.MAX_VALUE);
   }
 }
