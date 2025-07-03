@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -37,7 +38,7 @@ public interface ChunkLevelBulkAPIClient {
       throws IOException;
 
   @Nullable
-  default RepositoryVersionToken storeChunk(@NotNull Iterable<SerializedClassifierInstance> nodes)
+  default RepositoryVersionToken storeChunk(@NotNull Stream<SerializedClassifierInstance> nodes)
       throws IOException {
     return storeChunk(
         StreamSupport.stream(nodes.spliterator(), false).collect(Collectors.toList()));
@@ -48,11 +49,10 @@ public interface ChunkLevelBulkAPIClient {
       throws IOException;
 
   @NotNull
-  default Iterable<SerializedClassifierInstance> retrieveAsIterableChunk(
-      @NotNull Iterable<String> nodeIds, int limit) throws IOException {
+  default Stream<SerializedClassifierInstance> retrieveAsStreamChunk(
+      @NotNull Stream<String> nodeIds, int limit) throws IOException {
     Objects.requireNonNull(nodeIds);
-    return retrieveAsChunk(
-        StreamSupport.stream(nodeIds.spliterator(), false).collect(Collectors.toList()), limit);
+    return retrieveAsChunk(nodeIds.collect(Collectors.toList()), limit).stream();
   }
 
   default @NotNull List<SerializedClassifierInstance> retrieveAsChunk(@NotNull List<String> nodeIds)
@@ -60,8 +60,8 @@ public interface ChunkLevelBulkAPIClient {
     return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }
 
-  default @NotNull Iterable<SerializedClassifierInstance> retrieveAsIterableChunk(
-      @NotNull Iterable<String> nodeIds) throws IOException {
-    return retrieveAsIterableChunk(nodeIds, Integer.MAX_VALUE);
+  default @NotNull Stream<SerializedClassifierInstance> ç(@NotNull Stream<String> nodeIds)
+      throws IOException {
+    return retrieveAsStreamChunk(nodeIds, Integer.MAX_VALUE);
   }
 }
