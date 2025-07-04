@@ -120,3 +120,10 @@ Introducing support for LionWeb 2024.1
 ### Version 1.0.0
 
 * Reorganization of all packages
+* Added In-Memory Server
+* LanguageValidator now verifies consistency of LionWeb Version usages
+* Made creation of languages more convenient
+* Added AbstractSerialization.setAllUnavailabilityPolicies
+* Added Language.getAnnotationByName
+* Revised how we calculate languages to list as used languages
+* Reduction of memory footprint for storing nodes
