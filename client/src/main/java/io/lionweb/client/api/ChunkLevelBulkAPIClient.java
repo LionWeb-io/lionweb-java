@@ -60,7 +60,7 @@ public interface ChunkLevelBulkAPIClient {
     return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }
 
-  default @NotNull Stream<SerializedClassifierInstance> ç(@NotNull Stream<String> nodeIds)
+  default @NotNull Stream<SerializedClassifierInstance> retrieveAsStreamChunk(@NotNull Stream<String> nodeIds)
       throws IOException {
     return retrieveAsStreamChunk(nodeIds, Integer.MAX_VALUE);
   }
