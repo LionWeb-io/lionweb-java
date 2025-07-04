@@ -20,25 +20,33 @@ class RepositoryData {
       throw new IllegalArgumentException("Node " + nodeId + " does not exist");
     }
     nodesByID.remove(nodeId);
-    curr.getChildren().forEach(c -> deleteNodeAndDescendant(c));
+    curr.getChildren().forEach(this::deleteNodeAndDescendant);
   }
 
   private class ChangeCalculator {
-    private Map<String, SerializedClassifierInstance> addedNodes = new HashMap<>();
-    private Map<String, SerializedClassifierInstance> changedNodes = new HashMap<>();
-    private Set<String> removedNodes = new HashSet<>();
+    private final Map<String, SerializedClassifierInstance> addedNodes = new HashMap<>();
+    private final Map<String, SerializedClassifierInstance> changedNodes = new HashMap<>();
+    private final Set<String> removedNodes = new HashSet<>();
 
     void store(List<SerializedClassifierInstance> updatedNodes) {
       Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
       updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
-        if (nodesByID.containsKey(updatedNode)) {
+        if (nodesByID.containsKey(updatedNode.getID())) {
           // Have we changed children?
-          List<String> currentChildren = nodesByID.get(updatedNode).getChildren();
+          List<String> currentChildren = nodesByID.get(updatedNode.getID()).getChildren();
           List<String> updatedChildren = updatedNode.getChildren();
           updatedChildren.stream()
               .filter(n -> !currentChildren.contains(n))
               .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
+          List<String> unknownChildren =
+              updatedChildren.stream()
+                  .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
+                  .collect(Collectors.toList());
+          if (!unknownChildren.isEmpty()) {
+            throw new IllegalArgumentException(
+                "We got unknown nodes as children: " + unknownChildren);
+          }
           this.removedNodes.addAll(
               currentChildren.stream()
                   .filter(n -> !updatedChildren.contains(n))
@@ -49,14 +57,9 @@ class RepositoryData {
       }
       // They have been moved and not removed
       removedNodes.removeAll(addedNodes.keySet());
-      addedNodes.forEach(
-          (id, serializedClassifierInstance) -> {
-            nodesByID.put(id, serializedClassifierInstance);
-          });
-      changedNodes.forEach(
-          (id, serializedClassifierInstance) -> {
-            nodesByID.put(id, serializedClassifierInstance);
-          });
+      nodesByID.putAll(addedNodes);
+      nodesByID.putAll(changedNodes);
+      removedNodes.forEach(this::removeNode);
     }
 
     private void removeNode(String removeNodeId) {
@@ -66,6 +69,7 @@ class RepositoryData {
           removeNode(child);
         }
       }
+      nodesByID.remove(removeNodeId);
     }
   }
 
@@ -86,6 +90,15 @@ class RepositoryData {
   }
 
   void store(List<SerializedClassifierInstance> newNodes) {
+    newNodes.stream()
+        .filter(n -> n.getParentNodeID() == null)
+        .forEach(
+            n -> {
+              if (!partitionIDs.contains(n.getID())) {
+                throw new IllegalArgumentException(
+                    "Node " + n + " should be registered as a partition");
+              }
+            });
     new ChangeCalculator().store(newNodes);
   }
 
