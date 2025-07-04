@@ -31,6 +31,12 @@ public interface ChunkLevelBulkAPIClient {
       throws IOException;
 
   @Nullable
+  default RepositoryVersionToken createPartitionsFromChunk(
+      @NotNull Stream<SerializedClassifierInstance> data) throws IOException {
+    return createPartitionsFromChunk(data.collect(Collectors.toList()));
+  }
+
+  @Nullable
   RepositoryVersionToken deletePartitions(List<String> ids) throws IOException;
 
   @Nullable
@@ -60,8 +66,8 @@ public interface ChunkLevelBulkAPIClient {
     return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
   }
 
-  default @NotNull Stream<SerializedClassifierInstance> retrieveAsStreamChunk(@NotNull Stream<String> nodeIds)
-      throws IOException {
+  default @NotNull Stream<SerializedClassifierInstance> retrieveAsStreamChunk(
+      @NotNull Stream<String> nodeIds) throws IOException {
     return retrieveAsStreamChunk(nodeIds, Integer.MAX_VALUE);
   }
 }
