@@ -164,3 +164,9 @@ mavenPublishing {
 task setup() {
     dependsOn("generateXtextLanguage")
 }
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
+}
