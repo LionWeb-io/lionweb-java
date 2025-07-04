@@ -1,12 +1,10 @@
-package io.lionweb.serverclient.inmemory;
+package io.lionweb.client.inmemory;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.client.inmemory.InMemoryServer;
-import io.lionweb.client.inmemory.NodesLevelInMemoryServerClient;
 import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 import java.util.Collections;

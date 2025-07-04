@@ -87,7 +87,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientInMemoryFu
     NodesLevelInMemoryServerClient client =
         new NodesLevelInMemoryServerClient(getServer(), repoName);
     client.createRepository(
-        new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
+        new RepositoryConfiguration(repoName, lionWebVersion, HistorySupport.DISABLED));
 
     // Create partition
     DynamicNode partition = new DynamicNode("partition", PropertiesLanguage.propertiesPartition);
