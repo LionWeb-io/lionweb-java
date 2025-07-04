@@ -57,8 +57,7 @@ class RepositoryData {
       }
       // They have been moved and not removed
       removedNodes.removeAll(addedNodes.keySet());
-      nodesByID.putAll(addedNodes);
-      nodesByID.putAll(changedNodes);
+      nodesByID.putAll(updatedNodesAsMap);
       removedNodes.forEach(this::removeNode);
     }
 

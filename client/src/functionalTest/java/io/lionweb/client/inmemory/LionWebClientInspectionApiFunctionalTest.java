@@ -90,18 +90,21 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientInMe
 
     // Get data after insertion
     Map<ClassifierKey, ClassifierResult> res2a = client.nodesByClassifier(1);
-    Map<ClassifierKey, ClassifierResult> exp2a = new HashMap<>();
-    exp2a.put(
+    // We do not know which ID will be returned but we know how many should be
+    // returned and the size
+    ClassifierKey keyPartition =
         new ClassifierKey(
             PropertiesLanguage.propertiesLanguage.getKey(),
-            PropertiesLanguage.propertiesPartition.getKey()),
-        new ClassifierResult(new HashSet<>(Arrays.asList("p1")), 1));
-    exp2a.put(
+            PropertiesLanguage.propertiesPartition.getKey());
+    ClassifierKey keyFile =
         new ClassifierKey(
             PropertiesLanguage.propertiesLanguage.getKey(),
-            PropertiesLanguage.propertiesFile.getKey()),
-        new ClassifierResult(new HashSet<>(Collections.singletonList("f1")), 2));
-    assertEquals(exp2a, res2a);
+            PropertiesLanguage.propertiesFile.getKey());
+    assertEquals(new HashSet<>(Arrays.asList(keyPartition, keyFile)), res2a.keySet());
+    assertEquals(Collections.singleton("p1"), res2a.get(keyPartition).getIds());
+    assertEquals(1, res2a.get(keyPartition).getSize());
+    assertEquals(1, res2a.get(keyFile).getIds().size());
+    assertEquals(2, res2a.get(keyFile).getSize());
 
     Map<ClassifierKey, ClassifierResult> res2b = client.nodesByClassifier(2);
     Map<ClassifierKey, ClassifierResult> exp2b = new HashMap<>();
@@ -177,18 +180,20 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientInMe
 
     // Get data after insertion
     Map<String, ClassifierResult> res2a = client.nodesByLanguage(1);
-    Map<String, ClassifierResult> exp2a = new HashMap<>();
-    exp2a.put(
-        PropertiesLanguage.propertiesLanguage.getKey(),
-        new ClassifierResult(new HashSet<>(Arrays.asList("p1")), 3));
-    assertEquals(exp2a, res2a);
+    // We do not know which ID will be returned but we know how many should be
+    // returned and the size
+    assertEquals(
+        new HashSet<>(Collections.singletonList(PropertiesLanguage.propertiesLanguage.getKey())),
+        res2a.keySet());
+    assertEquals(1, res2a.get(PropertiesLanguage.propertiesLanguage.getKey()).getIds().size());
+    assertEquals(3, res2a.get(PropertiesLanguage.propertiesLanguage.getKey()).getSize());
 
     Map<String, ClassifierResult> res2b = client.nodesByLanguage(2);
-    Map<String, ClassifierResult> exp2b = new HashMap<>();
-    exp2b.put(
-        PropertiesLanguage.propertiesLanguage.getKey(),
-        new ClassifierResult(new HashSet<>(Arrays.asList("p1", "f1")), 3));
-    assertEquals(exp2b, res2b);
+    assertEquals(
+        new HashSet<>(Collections.singletonList(PropertiesLanguage.propertiesLanguage.getKey())),
+        res2a.keySet());
+    assertEquals(2, res2b.get(PropertiesLanguage.propertiesLanguage.getKey()).getIds().size());
+    assertEquals(3, res2b.get(PropertiesLanguage.propertiesLanguage.getKey()).getSize());
 
     Map<String, ClassifierResult> res2c = client.nodesByLanguage(3);
     Map<String, ClassifierResult> exp2c = new HashMap<>();
