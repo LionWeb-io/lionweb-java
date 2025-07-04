@@ -38,7 +38,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(FBChunk chunk) {
     SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
-    return deserializeSerializationBlock(serializationBlock);
+    return deserializeSerializationChunk(serializationBlock);
   }
 
   public SerializedChunk deserializeToChunk(byte[] bytes) {
@@ -74,7 +74,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    SerializedChunk serializationBlock = serializeNodesToSerializationBlock(classifierInstances);
+    SerializedChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
     return serialize(serializationBlock);
   }
 
@@ -90,7 +90,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     SerializedChunk serializedChunk =
-        serializeNodesToSerializationBlock(
+        serializeNodesToSerializationChunk(
             classifierInstances.stream()
                 .filter(n -> !(n instanceof ProxyNode))
                 .collect(Collectors.toList()));

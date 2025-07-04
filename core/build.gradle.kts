@@ -188,8 +188,14 @@ tasks.jacocoTestReport {
 protobuf {
     protoc {
         protoc {
-            // Apple Silicon processor would look for an unexisting platform-specific variant
-            artifact = "com.google.protobuf:protoc:4.27.2" + if (osdetector.os == "osx") ":osx-x86_64" else ""
+            val arch = System.getProperty("os.arch")
+            val os = System.getProperty("os.name").lowercase()
+            val classifier = if (os.contains("mac") && arch == "aarch64") "osx-aarch_64" else ""
+
+            artifact = if (classifier.isNotEmpty())
+                "com.google.protobuf:protoc:4.27.2:$classifier"
+            else
+                "com.google.protobuf:protoc:4.27.2"
         }
     }
     generateProtoTasks {
