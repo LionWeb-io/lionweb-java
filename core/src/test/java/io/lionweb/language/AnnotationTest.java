@@ -121,7 +121,7 @@ public class AnnotationTest extends BaseTest {
 
   @Test
   public void containmentLinks() {
-    Language language = new Language("LangFoo", "lf", "lf");
+    Language language = new Language("LangFoo", "lf", "lf").setVersion("1");
     Concept myConcept = new Concept(language, "MyConcept", "c", "c");
 
     Annotation annotation = new Annotation(language, "MyAnnotation", "MyAnnotation-ID", "ma");

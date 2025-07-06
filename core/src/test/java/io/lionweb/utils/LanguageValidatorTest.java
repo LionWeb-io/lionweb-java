@@ -290,6 +290,7 @@ public class LanguageValidatorTest {
   @Test
   public void anSDTWithNoFieldsIsInvalid() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
     Set<Issue> issuesA = l.validate().getIssues();
     assertEquals(1, issuesA.size());
@@ -308,6 +309,7 @@ public class LanguageValidatorTest {
   @Test
   public void anSDTShouldNotHaveDirectlyCircularReferences() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
     sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
     assertEquals(Collections.emptySet(), l.validate().getIssues());
@@ -325,6 +327,7 @@ public class LanguageValidatorTest {
   @Test
   public void anSDTShouldNotHaveIndirectlyCircularReferences() {
     Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
     sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
@@ -442,5 +445,32 @@ public class LanguageValidatorTest {
     assertEquals(
         new Issue(IssueSeverity.Error, "Inconsistent LionWeb Versions used", l),
         validationResult.getIssues().iterator().next());
+  }
+
+  @Test
+  public void verifyLanguageDependencies() {
+    Language l1 = new Language("MyLanguage1", "my_language1_id", "my_language1_key");
+
+    ValidationResult r1 = new LanguageValidator().validate(l1);
+    assertTrue(r1.isSuccessful());
+
+    Language l2 = new Language("MyLanguag2e", "my_language2_id", "my_language2_key");
+    Concept c2 = new Concept(l2, "MyConcept2").setID("c2-d").setKey("c2-key");
+    Concept c1 = new Concept(l1, "MyConcept1").setID("c1-d").setKey("c1-key");
+
+    ValidationResult r2 = new LanguageValidator().validate(l1);
+    assertTrue(r2.isSuccessful());
+
+    c1.setExtendedConcept(c2);
+
+    ValidationResult r3 = new LanguageValidator().validate(l1);
+    assertFalse(r3.isSuccessful());
+    assertEquals(1, r3.getIssues().size());
+    assertEquals(
+        new Issue(
+            IssueSeverity.Error,
+            "Language my_language2_key version null is not listed among dependencies",
+            l1),
+        r3.getIssues().iterator().next());
   }
 }
