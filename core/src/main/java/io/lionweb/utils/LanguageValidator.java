@@ -185,11 +185,11 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateLanguageDependencies(Language language, ValidationResult result) {
-    // LionCore seems not to follow normal rules...
-    // see https://github.com/LionWeb-io/specification/issues/380
-    if (language == LionCore.getInstance(LionWebVersion.v2023_1)) {
-      return;
-    } else if (language == LionCore.getInstance(LionWebVersion.v2024_1)) {
+    // LionCore does not respect this rule.
+    // See https://github.com/LionWeb-io/specification/issues/380 but it actually applies to v2024_1
+    // too
+    if (language == LionCore.getInstance(LionWebVersion.v2023_1)
+        || language == LionCore.getInstance(LionWebVersion.v2024_1)) {
       return;
     }
 

@@ -83,12 +83,9 @@ public class SerializationOfLionCoreTest extends SerializationTest {
         Collections.singletonList(
             new SerializedReferenceValue(
                 new MetaPointer("LionCore-M3", "2023.1", "Language-dependsOn"),
-                // This feels wrong, see https://github.com/LionWeb-io/specification/issues/380
-                Collections.emptyList()
-                /* Collections.singletonList(
-                new SerializedReferenceValue.Entry(
-                    LionCoreBuiltins.getInstance(LionWebVersion.v2023_1).getID(),
-                    LionCoreBuiltins.getInstance(LionWebVersion.v2023_1).getName()))*/ )),
+                // This is wrong but see https://github.com/LionWeb-io/specification/issues/380
+                // to understand the reason
+                Collections.emptyList())),
         LionCore_M3.getReferences());
 
     SerializedClassifierInstance LionCore_M3_Interface_extends =
