@@ -98,6 +98,14 @@ public class SerializedClassifierInstance {
     this.containments.add(containmentValue);
   }
 
+  public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
+    Objects.requireNonNull(metaPointer);
+    if (this.containments == null) {
+      return false;
+    }
+    return this.containments.removeIf(c -> c.getMetaPointer().equals(metaPointer));
+  }
+
   public void addReferenceValue(SerializedReferenceValue referenceValue) {
     initReferences();
     this.references.add(referenceValue);
