@@ -1,9 +1,6 @@
 package io.lionweb.serialization.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -104,6 +101,22 @@ public class SerializedClassifierInstance {
       return false;
     }
     return this.containments.removeIf(c -> c.getMetaPointer().equals(metaPointer));
+  }
+
+  public void addChild(@Nonnull MetaPointer metaPointer, @Nonnull String childID) {
+    Objects.requireNonNull(metaPointer);
+    Objects.requireNonNull(childID);
+    initContainments();
+    Optional<SerializedContainmentValue> entry = this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+    if (entry.isPresent()) {
+      List<String> currValue = entry.get().getValue();
+      List<String> newValue = new ArrayList<>(currValue.size() + 1);
+      newValue.addAll(currValue);
+      newValue.add(childID);
+      entry.get().setValue(newValue);
+    } else {
+      addChildren(metaPointer, Arrays.asList(childID));
+    }
   }
 
   public void addReferenceValue(SerializedReferenceValue referenceValue) {
