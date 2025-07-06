@@ -1,7 +1,5 @@
 package io.lionweb.serialization.data;
 
-import io.lionweb.model.ReferenceValue;
-
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -109,7 +107,8 @@ public class SerializedClassifierInstance {
     Objects.requireNonNull(metaPointer);
     Objects.requireNonNull(childID);
     initContainments();
-    Optional<SerializedContainmentValue> entry = this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+    Optional<SerializedContainmentValue> entry =
+        this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
     if (entry.isPresent()) {
       List<String> currValue = entry.get().getValue();
       List<String> newValue = new ArrayList<>(currValue.size() + 1);
@@ -126,11 +125,13 @@ public class SerializedClassifierInstance {
     this.references.add(referenceValue);
   }
 
-  public void addReferenceValue(@Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
+  public void addReferenceValue(
+      @Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
     Objects.requireNonNull(metaPointer);
     Objects.requireNonNull(referenceValue);
     initReferences();
-    Optional<SerializedReferenceValue> entry = this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+    Optional<SerializedReferenceValue> entry =
+        this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
     if (entry.isPresent()) {
       List<SerializedReferenceValue.Entry> currValue = entry.get().getValue();
       List<SerializedReferenceValue.Entry> newValue = new ArrayList<>(currValue.size() + 1);
