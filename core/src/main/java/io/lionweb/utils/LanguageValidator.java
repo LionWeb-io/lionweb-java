@@ -111,8 +111,7 @@ public class LanguageValidator extends Validator<Language> {
     validateKeysAreNotNull(language, result);
     validateKeysAreUnique(language, result);
     validateLWVersionConsistency(language, result);
-
-    // TODO once we implement the Node interface we could navigate the tree differently
+    validateLanguageDependencies(language, result);
 
     language
         .getElements()
@@ -182,6 +181,64 @@ public class LanguageValidator extends Validator<Language> {
                 }
               }
             });
+  }
+
+  private void validateLanguageDependencies(Language language, ValidationResult result) {
+    Set<Language> usedLanguages = new HashSet<>();
+    for (Concept concept : language.getConcepts()) {
+      Concept extended = concept.getExtendedConcept();
+      if (extended != null) {
+        Language l = extended.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+      for (Interface interfaze : concept.getImplemented()) {
+        Language l = interfaze.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+    }
+    for (Interface interfaze : language.getInterfaces()) {
+      for (Interface extendedInterface : interfaze.getExtendedInterfaces()) {
+        Language l = extendedInterface.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+    }
+    for (Annotation annotation : language.getAnnotationDefinitions()) {
+      Classifier<?> target = annotation.getAnnotates();
+      if (target != null) {
+        Language l = target.getLanguage();
+        if (l != null) {
+          usedLanguages.add(l);
+        }
+      }
+    }
+    for (StructuredDataType structuredDataType : language.getStructuredDataTypes()) {
+      for (Field field : structuredDataType.getFields()) {
+        DataType<?> fieldType = field.getType();
+        if (fieldType != null) {
+          Language l = fieldType.getLanguage();
+          if (l != null) {
+            usedLanguages.add(l);
+          }
+        }
+      }
+    }
+    usedLanguages.stream()
+        .filter(ul -> !language.dependsOn().contains(ul) && ul != language)
+        .forEach(
+            ul ->
+                result.addError(
+                    "Language "
+                        + ul.getKey()
+                        + " version "
+                        + ul.getVersion()
+                        + " is not listed among dependencies",
+                    language));
   }
 
   private void validateKeysAreUnique(Language language, ValidationResult result) {
@@ -286,20 +343,6 @@ public class LanguageValidator extends Validator<Language> {
   private void checkInterfacesCycles(Interface iface, ValidationResult validationResult) {
     if (iface.allExtendedInterfaces().contains(iface)) {
       validationResult.addError("Cyclic hierarchy found: the interface extends itself", iface);
-    }
-  }
-
-  private void checkAncestorsHelperForInterfaces(
-      Set<Interface> alreadyExplored, Interface iface, ValidationResult validationResult) {
-    if (alreadyExplored.contains(iface)) {
-      validationResult.addError("Cyclic hierarchy found", iface);
-    } else {
-      alreadyExplored.add(iface);
-      iface
-          .getExtendedInterfaces()
-          .forEach(
-              interf ->
-                  checkAncestorsHelperForInterfaces(alreadyExplored, interf, validationResult));
     }
   }
 }

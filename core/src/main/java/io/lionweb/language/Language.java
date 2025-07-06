@@ -216,4 +216,25 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .map(e -> (StructuredDataType) e)
         .collect(Collectors.toList());
   }
+
+  public @Nonnull List<Concept> getConcepts() {
+    return getElements().stream()
+        .filter(e -> e instanceof Concept)
+        .map(e -> (Concept) e)
+        .collect(Collectors.toList());
+  }
+
+  public @Nonnull List<Interface> getInterfaces() {
+    return getElements().stream()
+        .filter(e -> e instanceof Interface)
+        .map(e -> (Interface) e)
+        .collect(Collectors.toList());
+  }
+
+  public @Nonnull List<Annotation> getAnnotationDefinitions() {
+    return getElements().stream()
+        .filter(e -> e instanceof Annotation)
+        .map(e -> (Annotation) e)
+        .collect(Collectors.toList());
+  }
 }
