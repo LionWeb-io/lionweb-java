@@ -8,6 +8,7 @@ import io.lionweb.model.Node;
 import io.lionweb.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class LanguageValidator extends Validator<Language> {
 
@@ -185,14 +186,6 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateLanguageDependencies(Language language, ValidationResult result) {
-    // LionCore does not respect this rule.
-    // See https://github.com/LionWeb-io/specification/issues/380 but it actually applies to v2024_1
-    // too
-    if (language == LionCore.getInstance(LionWebVersion.v2023_1)
-        || language == LionCore.getInstance(LionWebVersion.v2024_1)) {
-      return;
-    }
-
     Set<Language> usedLanguages = new HashSet<>();
     for (Concept concept : language.getConcepts()) {
       Concept extended = concept.getExtendedConcept();
@@ -238,7 +231,11 @@ public class LanguageValidator extends Validator<Language> {
       }
     }
     usedLanguages.stream()
-        .filter(ul -> !language.dependsOn().contains(ul) && ul != language)
+        .filter(
+            ul ->
+                !language.dependsOn().contains(ul)
+                    && ul != language
+                    && !isImplicitlyUsedLanguage(language.getLionWebVersion(), ul))
         .forEach(
             ul ->
                 result.addError(
@@ -248,6 +245,16 @@ public class LanguageValidator extends Validator<Language> {
                         + ul.getVersion()
                         + " is not listed among dependencies",
                     language));
+  }
+
+  private boolean isImplicitlyUsedLanguage(
+      @Nonnull LionWebVersion lionWebVersion, @Nonnull Language language) {
+    // https://lionweb.io/specification/metametamodel/metametamodel.html#Language
+    // As any Language depends (at least transitively and implicitly) on built-ins elements, a
+    // Language CAN declare a
+    // dependency on builtins but does not need to.
+    return language.equals(LionCore.getInstance(lionWebVersion))
+        || language.equals(LionCoreBuiltins.getInstance(lionWebVersion));
   }
 
   private void validateKeysAreUnique(Language language, ValidationResult result) {
