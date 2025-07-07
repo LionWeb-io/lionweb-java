@@ -149,16 +149,14 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "-id-Reference-2024-1",
                     "-id-StructuredDataType-2024-1"))),
         LionCore_M3.getContainments());
+    // This is the case because any Language depends (at least transitively and implicitly) on built-ins elements, a
+    // Language CAN declare a dependency on builtins but does not need to and for LionCore we decided NOT to
+    // list the dependency on LionCore-Builtins
     assertEquals(
         Collections.singletonList(
             new SerializedReferenceValue(
                 new MetaPointer("LionCore-M3", "2024.1", "Language-dependsOn"),
-                // This feels wrong, see https://github.com/LionWeb-io/specification/issues/380
-                Collections.emptyList()
-                /* Collections.singletonList(
-                new SerializedReferenceValue.Entry(
-                    LionCoreBuiltins.getInstance(LionWebVersion.v2024_1).getID(),
-                    LionCoreBuiltins.getInstance(LionWebVersion.v2024_1).getName()))*/ )),
+                Collections.emptyList())),
         LionCore_M3.getReferences());
 
     SerializedClassifierInstance LionCore_M3_Interface_extends =
