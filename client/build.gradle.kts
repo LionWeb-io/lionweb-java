@@ -1,12 +1,15 @@
 import com.vanniktech.maven.publish.SonatypeHost
+import java.util.jar.Manifest
 
 plugins {
     `jvm-test-suite`
-    alias(libs.plugins.kotlinJvm)
+
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
     alias(libs.plugins.vtPublish)
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.buildConfig)
 }
 
 repositories {
@@ -42,12 +45,49 @@ ktlint {
 
 val jvmVersion = extra["jvmVersion"] as String
 
+testing {
+    suites {
+        val test by getting(JvmTestSuite::class) {
+            useJUnitJupiter()
+        }
+
+        register<JvmTestSuite>("functionalTest") {
+
+            targets {
+                all {
+                    testTask.configure {
+                        shouldRunAfter(test)
+                    }
+                }
+            }
+        }
+    }
+}
+
 dependencies {
     implementation(libs.okhttp)
+    implementation(project(":core"))
     implementation(libs.lwjavacore)
+    implementation(libs.lwjavarepo)
+    implementation(libs.lwjavaextensions)
     implementation(libs.gson)
     implementation(libs.kotlinreflect)
-    testImplementation(libs.ktestjunit)
+    testImplementation(kotlin("test"))
+    implementation(libs.protobuf)
+
+    "functionalTestImplementation"(project(":core"))
+    "functionalTestImplementation"(project(":client"))
+    "functionalTestImplementation"(libs.lwjavacore)
+    "functionalTestImplementation"(libs.lwjavaextensions)
+    "functionalTestImplementation"(libs.ktestjunit)
+    "functionalTestImplementation"(libs.kotestrunner)
+    "functionalTestImplementation"(libs.kotestassertions)
+    "functionalTestImplementation"(libs.kotestproperty)
+    "functionalTestImplementation"(libs.testcontainers)
+    "functionalTestImplementation"(libs.testcontainersjunit)
+    "functionalTestImplementation"(libs.testcontainerspg)
+    "functionalTestImplementation"(libs.lwjavarepo)
+    "functionalTestImplementation"(libs.lwjavarepotesting)
 }
 
 val specsVersion: String by project
@@ -61,7 +101,7 @@ mavenPublishing {
 
     pom {
         name.set("lionweb-kotlin-" + project.name)
-        description.set("Bindings to facilitate usage of LionWeb Java from Kotlin")
+        description.set("Client library to connect to the LionWeb Repository")
         version = project.version as String
         packaging = "jar"
         url.set("https://github.com/LionWeb-io/lionweb-kotlin")
@@ -121,6 +161,19 @@ afterEvaluate {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
+
+val lwJavaJar =
+    configurations.findByName("functionalTestRuntimeClasspath")!!
+        .find { it.name.startsWith("lionweb-java-2024.1-client-1") } as File
+// Eventually we should use this value and drop it from gradle.properties
+val lwJavaLionwebRepositoryCommitID: String? =
+    zipTree(lwJavaJar).matching {
+        include("META-INF/MANIFEST.MF")
+    }.files.firstOrNull()?.let { manifestFile ->
+        manifestFile.inputStream().use {
+            Manifest(it)
+        }.mainAttributes.getValue("lionwebRepositoryCommitID")
+    }
 
 tasks.withType<Test> {
     testLogging {
