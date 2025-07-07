@@ -149,8 +149,10 @@ public class SerializationOfLionCoreTest extends SerializationTest {
                     "-id-Reference-2024-1",
                     "-id-StructuredDataType-2024-1"))),
         LionCore_M3.getContainments());
-    // This is the case because any Language depends (at least transitively and implicitly) on built-ins elements, a
-    // Language CAN declare a dependency on builtins but does not need to and for LionCore we decided NOT to
+    // This is the case because any Language depends (at least transitively and implicitly) on
+    // built-ins elements, a
+    // Language CAN declare a dependency on builtins but does not need to and for LionCore we
+    // decided NOT to
     // list the dependency on LionCore-Builtins
     assertEquals(
         Collections.singletonList(
