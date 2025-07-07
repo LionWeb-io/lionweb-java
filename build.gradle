@@ -29,7 +29,7 @@ release {
                   ":emf-builtins:publishAllPublicationsToMavenCentralRepository"]
     versionPropertyFile = './gradle.properties'
     git {
-        requireBranch.set('master')
+        requireBranch.set('main')
         pushToRemote.set('origin')
     }
 }
