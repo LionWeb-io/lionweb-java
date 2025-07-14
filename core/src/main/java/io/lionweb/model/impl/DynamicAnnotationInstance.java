@@ -36,7 +36,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
     }
     DynamicAnnotationInstance that = (DynamicAnnotationInstance) o;
     return Objects.equals(annotation, that.annotation)
-        && Objects.equals(id, that.id)
+        && Objects.equals(getID(), that.getID())
         && Objects.equals(annotated, that.annotated)
         && Objects.equals(propertyValues, that.propertyValues)
         && Objects.equals(
@@ -56,7 +56,7 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, annotation, annotated);
+    return Objects.hash(getID(), annotation, annotated);
   }
 
   public void setAnnotation(Annotation annotation) {
