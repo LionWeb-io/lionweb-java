@@ -58,7 +58,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
       return false;
     }
     DynamicNode that = (DynamicNode) o;
-    return Objects.equals(id, that.id)
+    return Objects.equals(getID(), that.getID())
         && shallowClassifierInstanceEquality(parent, that.parent)
         && shallowClassifierInstanceEquality(concept, that.getClassifier())
         && Objects.equals(propertyValues, that.propertyValues)
@@ -113,7 +113,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   @Override
   public int hashCode() {
-    return Objects.hash(id);
+    return Objects.hash(getID());
   }
 
   @Override
@@ -147,7 +147,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
     return "DynamicNode{"
         + "id='"
-        + id
+        + getID()
         + '\''
         + ", parent="
         + (parent == null ? "null" : parent.getID())
