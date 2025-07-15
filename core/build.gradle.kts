@@ -53,6 +53,7 @@ dependencies {
 val specsVersion: String by project
 
 mavenPublishing {
+
     coordinates(
         groupId = "io.lionweb.lionweb-kotlin",
         artifactId = "lionweb-kotlin-$specsVersion-" + project.name,
