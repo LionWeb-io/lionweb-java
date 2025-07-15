@@ -72,11 +72,7 @@ abstract class File : BaseNode(), Named {
         }
 }
 
-class Directory(id: String? = null) : File() {
-    init {
-        this.id = id
-    }
-
+class Directory() : File() {
     val files = multipleContainment<File>("files")
 }
 

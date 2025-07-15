@@ -22,7 +22,10 @@ abstract class BaseNode(val lionWebVersion: LionWebVersion = LionWebVersion.curr
     open fun calculateID(): String? = null
 
     override fun getID(): String? {
-        return calculateID() ?: this.id
+        if (this.id == null) {
+            this.id = calculateID()
+        }
+        return this.id
     }
 
     inline fun <P : BaseNode, reified T : Node> singleReference(referenceName: String): ReadWriteProperty<P, SpecificReferenceValue<T>?> {
