@@ -127,3 +127,7 @@ Introducing support for LionWeb 2024.1
 * Added Language.getAnnotationByName
 * Revised how we calculate languages to list as used languages
 * Reduction of memory footprint for storing nodes
+
+### Version 1.0.1
+
+* DynamicNode: uniformly use getID() to access node IDs
