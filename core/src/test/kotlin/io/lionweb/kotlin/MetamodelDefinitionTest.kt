@@ -177,7 +177,7 @@ class MetamodelDefinitionTest {
                 FSPosition::class,
             )
         val dir =
-            Directory("foo_dir_id").apply {
+            Directory().apply {
                 this.name = "foo"
             }
         val textFile =
@@ -225,7 +225,7 @@ class MetamodelDefinitionTest {
                 FSPosition::class,
             )
         val dir =
-            Directory("foo_dir_id").apply {
+            Directory().apply {
                 this.name = "foo"
             }
         val textFile =
