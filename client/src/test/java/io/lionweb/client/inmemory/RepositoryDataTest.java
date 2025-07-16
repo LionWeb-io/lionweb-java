@@ -22,7 +22,7 @@ public class RepositoryDataTest {
     assertEquals(Collections.emptySet(), repositoryData.nodesByID.keySet());
 
     SerializedClassifierInstance n1 =
-        new SerializedClassifierInstance("n1", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
 
     repositoryData.partitionIDs.add("n1");
     repositoryData.store(Collections.singletonList(n1));
@@ -35,15 +35,15 @@ public class RepositoryDataTest {
         new RepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
-        new SerializedClassifierInstance("n1", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n2 =
-        new SerializedClassifierInstance("n2", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n2", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n3 =
-        new SerializedClassifierInstance("n3", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n4 =
-        new SerializedClassifierInstance("n4", new MetaPointer("l1", "1.0", "c1"));
-    n1.addChildren(new MetaPointer("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
-    n2.addChildren(new MetaPointer("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
+        new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
+    n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
+    n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
@@ -60,15 +60,15 @@ public class RepositoryDataTest {
         new RepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
-        new SerializedClassifierInstance("n1", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n2 =
-        new SerializedClassifierInstance("n2", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n2", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n3 =
-        new SerializedClassifierInstance("n3", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n4 =
-        new SerializedClassifierInstance("n4", new MetaPointer("l1", "1.0", "c1"));
-    n1.addChildren(new MetaPointer("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
-    n2.addChildren(new MetaPointer("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
+        new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
+    n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
+    n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
@@ -79,12 +79,12 @@ public class RepositoryDataTest {
         new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4")), repositoryData.nodesByID.keySet());
 
     SerializedClassifierInstance n1b =
-        new SerializedClassifierInstance("n1", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n3b =
-        new SerializedClassifierInstance("n3", new MetaPointer("l1", "1.0", "c1"));
+        new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n5b =
-        new SerializedClassifierInstance("n5", new MetaPointer("l1", "1.0", "c1"));
-    n1b.addChildren(new MetaPointer("l1", "1.0", "containmentA"), Arrays.asList("n3", "n5"));
+        new SerializedClassifierInstance("n5", MetaPointer.get("l1", "1.0", "c1"));
+    n1b.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n5"));
     n3b.setParentNodeID("n1");
     n5b.setParentNodeID("n1");
     repositoryData.store(Arrays.asList(n1b, n3b, n5b));

@@ -271,10 +271,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return metaPointersCache.computeIfAbsent(
           classifier,
           fbMetaPointer -> {
-            MetaPointer metaPointer = new MetaPointer();
-            metaPointer.setKey(classifier.key());
-            metaPointer.setLanguage(classifier.language());
-            metaPointer.setVersion(classifier.version());
+            MetaPointer metaPointer =
+                MetaPointer.get(classifier.language(), classifier.version(), classifier.key());
             return metaPointer;
           });
     }

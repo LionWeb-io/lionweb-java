@@ -38,7 +38,7 @@ public class ExtraProtoBufSerializationTest {
     BulkImport bulkImport = new BulkImport();
     bulkImport.addNode(n1);
     bulkImport.addAttachPoint(
-        new BulkImport.AttachPoint("n2", new MetaPointer("Foo", "1", "c-key"), "n1"));
+        new BulkImport.AttachPoint("n2", MetaPointer.get("Foo", "1", "c-key"), "n1"));
 
     ExtraProtoBufSerialization serialization =
         ExtraSerializationProvider.getExtraStandardProtoBufSerialization();
@@ -84,7 +84,7 @@ public class ExtraProtoBufSerializationTest {
     BulkImport bulkImport = new BulkImport();
     bulkImport.addNode(n1);
     bulkImport.addAttachPoint(
-        new BulkImport.AttachPoint("n2", new MetaPointer("Foo", "1", "c-key"), "n1"));
+        new BulkImport.AttachPoint("n2", MetaPointer.get("Foo", "1", "c-key"), "n1"));
 
     ExtraProtoBufSerialization serialization =
         ExtraSerializationProvider.getExtraStandardProtoBufSerialization(LionWebVersion.v2023_1);

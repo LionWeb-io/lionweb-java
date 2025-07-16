@@ -60,10 +60,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
     Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
     for (int i = 0; i < chunk.getMetaPointersCount(); i++) {
       PBMetaPointer mp = chunk.getMetaPointers(i);
-      MetaPointer metaPointer = new MetaPointer();
-      metaPointer.setKey(stringsMap.get(mp.getKey()));
-      metaPointer.setLanguage(stringsMap.get(mp.getLanguage()));
-      metaPointer.setVersion(stringsMap.get(mp.getVersion()));
+      MetaPointer metaPointer =
+          MetaPointer.get(
+              stringsMap.get(mp.getLanguage()),
+              stringsMap.get(mp.getVersion()),
+              stringsMap.get(mp.getKey()));
       metapointersMap.put(i, metaPointer);
     }
     ;

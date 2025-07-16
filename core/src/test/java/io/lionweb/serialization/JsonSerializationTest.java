@@ -684,7 +684,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
     assertEquals(
-        new MetaPointer("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
+        MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
         serializedName.getMetaPointer());
   }
 
