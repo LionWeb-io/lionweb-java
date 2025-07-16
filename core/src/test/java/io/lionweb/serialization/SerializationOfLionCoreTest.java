@@ -46,21 +46,21 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             .findFirst()
             .get();
     assertEquals("-id-LionCore-M3", LionCore_M3.getID());
-    assertEquals(new MetaPointer("LionCore-M3", "2023.1", "Language"), LionCore_M3.getClassifier());
+    assertEquals(MetaPointer.get("LionCore-M3", "2023.1", "Language"), LionCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-M3", "2023.1", "Language-version"), "2023.1"),
+                MetaPointer.get("LionCore-M3", "2023.1", "Language-version"), "2023.1"),
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-M3", "2023.1", "IKeyed-key"), "LionCore-M3"),
+                MetaPointer.get("LionCore-M3", "2023.1", "IKeyed-key"), "LionCore-M3"),
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
+                MetaPointer.get("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
                 "LionCore_M3")),
         LionCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
             new SerializedContainmentValue(
-                new MetaPointer("LionCore-M3", "2023.1", "Language-entities"),
+                MetaPointer.get("LionCore-M3", "2023.1", "Language-entities"),
                 Arrays.asList(
                     "-id-Annotation",
                     "-id-Concept",
@@ -82,7 +82,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(
         Collections.singletonList(
             new SerializedReferenceValue(
-                new MetaPointer("LionCore-M3", "2023.1", "Language-dependsOn"),
+                MetaPointer.get("LionCore-M3", "2023.1", "Language-dependsOn"),
                 // This is wrong but see https://github.com/LionWeb-io/specification/issues/380
                 // to understand the reason
                 Collections.emptyList())),
@@ -114,21 +114,21 @@ public class SerializationOfLionCoreTest extends SerializationTest {
             .findFirst()
             .get();
     assertEquals("-id-LionCore-M3-2024-1", LionCore_M3.getID());
-    assertEquals(new MetaPointer("LionCore-M3", "2024.1", "Language"), LionCore_M3.getClassifier());
+    assertEquals(MetaPointer.get("LionCore-M3", "2024.1", "Language"), LionCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-M3", "2024.1", "Language-version"), "2024.1"),
+                MetaPointer.get("LionCore-M3", "2024.1", "Language-version"), "2024.1"),
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-M3", "2024.1", "IKeyed-key"), "LionCore-M3"),
+                MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "LionCore-M3"),
             new SerializedPropertyValue(
-                new MetaPointer("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
+                MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                 "LionCore_M3")),
         LionCore_M3.getProperties());
     assertEquals(
         Arrays.asList(
             new SerializedContainmentValue(
-                new MetaPointer("LionCore-M3", "2024.1", "Language-entities"),
+                MetaPointer.get("LionCore-M3", "2024.1", "Language-entities"),
                 Arrays.asList(
                     "-id-Annotation-2024-1",
                     "-id-Concept-2024-1",
@@ -157,7 +157,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(
         Collections.singletonList(
             new SerializedReferenceValue(
-                new MetaPointer("LionCore-M3", "2024.1", "Language-dependsOn"),
+                MetaPointer.get("LionCore-M3", "2024.1", "Language-dependsOn"),
                 Collections.emptyList())),
         LionCore_M3.getReferences());
 
