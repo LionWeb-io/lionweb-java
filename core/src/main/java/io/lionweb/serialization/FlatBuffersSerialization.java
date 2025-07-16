@@ -315,9 +315,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       sci.setClassifier(helper.deserialize(n.classifier()));
       for (int j = 0; j < n.propertiesLength(); j++) {
         FBProperty p = n.properties(j);
-        SerializedPropertyValue spv = new SerializedPropertyValue();
-        spv.setValue(p.value());
-        spv.setMetaPointer(helper.deserialize(p.metaPointer()));
+        SerializedPropertyValue spv =
+            SerializedPropertyValue.get(helper.deserialize(p.metaPointer()), p.value());
         sci.addPropertyValue(spv);
       }
 

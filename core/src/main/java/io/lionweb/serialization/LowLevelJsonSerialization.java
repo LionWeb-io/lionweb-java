@@ -268,7 +268,7 @@ public class LowLevelJsonSerialization {
           property -> {
             JsonObject propertyJO = property.getAsJsonObject();
             serializedClassifierInstance.addPropertyValue(
-                new SerializedPropertyValue(
+                SerializedPropertyValue.get(
                     SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
                     SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
           });

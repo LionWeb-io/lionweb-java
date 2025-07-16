@@ -92,9 +92,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
               n.getPropertiesList()
                   .forEach(
                       p -> {
-                        SerializedPropertyValue spv = new SerializedPropertyValue();
-                        spv.setValue(stringsMap.get(p.getValue()));
-                        spv.setMetaPointer(metapointersMap.get(p.getMetaPointerIndex()));
+                        SerializedPropertyValue spv =
+                            SerializedPropertyValue.get(
+                                metapointersMap.get(p.getMetaPointerIndex()),
+                                stringsMap.get(p.getValue()));
                         sci.addPropertyValue(spv);
                       });
               n.getContainmentsList()
