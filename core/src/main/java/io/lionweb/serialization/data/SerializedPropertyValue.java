@@ -1,15 +1,43 @@
 package io.lionweb.serialization.data;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 /** This represents the serialization of the value of a property in a Node. */
 public class SerializedPropertyValue {
-  private MetaPointer metaPointer;
-  private String value;
+  private static final int THRESHOLD = 128;
+  private static final Map<String, SerializedPropertyValue> INSTANCES = new HashMap<>();
+  private static final Map<MetaPointer, SerializedPropertyValue> NULL_INSTANCES = new HashMap<>();
 
-  public SerializedPropertyValue() {}
+  public static SerializedPropertyValue get(MetaPointer metaPointer, String value) {
+    if (value == null) {
+      if (!NULL_INSTANCES.containsKey(metaPointer)) {
+        NULL_INSTANCES.put(metaPointer, new SerializedPropertyValue(metaPointer, null));
+      }
+      return NULL_INSTANCES.get(metaPointer);
+    } else if (value.length() < THRESHOLD) {
+      String key =
+          metaPointer.getLanguage()
+              + ":"
+              + metaPointer.getVersion()
+              + ":"
+              + metaPointer.getKey()
+              + ":"
+              + value;
+      if (!INSTANCES.containsKey(key)) {
+        INSTANCES.put(key, new SerializedPropertyValue(metaPointer, value));
+      }
+      return INSTANCES.get(key);
+    } else {
+      return new SerializedPropertyValue(metaPointer, value);
+    }
+  }
 
-  public SerializedPropertyValue(MetaPointer metaPointer, String value) {
+  private final MetaPointer metaPointer;
+  private final String value;
+
+  private SerializedPropertyValue(MetaPointer metaPointer, String value) {
     this.metaPointer = metaPointer;
     this.value = value;
   }
@@ -18,16 +46,8 @@ public class SerializedPropertyValue {
     return metaPointer;
   }
 
-  public void setMetaPointer(MetaPointer metaPointer) {
-    this.metaPointer = metaPointer;
-  }
-
   public String getValue() {
     return value;
-  }
-
-  public void setValue(String value) {
-    this.value = value;
   }
 
   @Override

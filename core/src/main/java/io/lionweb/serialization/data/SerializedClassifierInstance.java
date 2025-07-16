@@ -161,7 +161,7 @@ public class SerializedClassifierInstance {
   }
 
   public void setPropertyValue(MetaPointer property, String serializedValue) {
-    this.properties.add(new SerializedPropertyValue(property, serializedValue));
+    this.properties.add(SerializedPropertyValue.get(property, serializedValue));
   }
 
   public void addChildren(MetaPointer containment, List<String> childrenIds) {

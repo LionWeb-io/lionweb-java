@@ -49,11 +49,11 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(MetaPointer.get("LionCore-M3", "2023.1", "Language"), LionCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
-            new SerializedPropertyValue(
+            SerializedPropertyValue.get(
                 MetaPointer.get("LionCore-M3", "2023.1", "Language-version"), "2023.1"),
-            new SerializedPropertyValue(
+            SerializedPropertyValue.get(
                 MetaPointer.get("LionCore-M3", "2023.1", "IKeyed-key"), "LionCore-M3"),
-            new SerializedPropertyValue(
+            SerializedPropertyValue.get(
                 MetaPointer.get("LionCore-builtins", "2023.1", "LionCore-builtins-INamed-name"),
                 "LionCore_M3")),
         LionCore_M3.getProperties());
@@ -117,11 +117,11 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(MetaPointer.get("LionCore-M3", "2024.1", "Language"), LionCore_M3.getClassifier());
     assertEquals(
         Arrays.asList(
-            new SerializedPropertyValue(
+            SerializedPropertyValue.get(
                 MetaPointer.get("LionCore-M3", "2024.1", "Language-version"), "2024.1"),
-            new SerializedPropertyValue(
+            SerializedPropertyValue.get(
                 MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "LionCore-M3"),
-            new SerializedPropertyValue(
+            SerializedPropertyValue.get(
                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                 "LionCore_M3")),
         LionCore_M3.getProperties());
