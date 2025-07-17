@@ -12,9 +12,11 @@ import java.io.*;
 public class SerializationAndDeserializationExperiment {
 
   public static void main(String[] args) throws IOException {
+    long gen0 = System.currentTimeMillis();
     TreeGenerator treeGenerator = new TreeGenerator(1);
     Node tree = treeGenerator.generate(100_000);
-    System.out.println("Tree generated");
+    long gen1 = System.currentTimeMillis();
+    System.out.println("Tree generated in " + (gen1 - gen0) + " ms");
 
     SerializedChunk chunk =
         SerializationProvider.getStandardJsonSerialization()
