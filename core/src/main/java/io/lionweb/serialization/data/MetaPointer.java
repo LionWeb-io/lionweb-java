@@ -9,21 +9,33 @@ import java.util.*;
 /**
  * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
  * element within that language.
+ *
+ * <p>We should never have multiple instances with the same value, so equality and identity
+ * coincides for this class.
  */
 public class MetaPointer {
-  private static Map<String, MetaPointer> INSTANCES = new HashMap<>();
+  private static final Map<String, Set<MetaPointer>> INSTANCES_BY_KEY = new HashMap<>();
 
+  /** Provide a MetaPointer with the given value, avoid allocations if unnecessary. */
   public static MetaPointer get(String language, String version, String key) {
-    String hashKey = language + ":" + version + ":" + key;
-    if (!INSTANCES.containsKey(hashKey)) {
-      INSTANCES.put(hashKey, new MetaPointer(language, version, key));
+    Set<MetaPointer> entryForKey = INSTANCES_BY_KEY.computeIfAbsent(key, k -> new HashSet<>());
+    Optional<MetaPointer> match =
+        entryForKey.stream()
+            .filter(
+                mp -> Objects.equals(mp.language, language) && Objects.equals(mp.version, version))
+            .findFirst();
+    if (match.isPresent()) {
+      return match.get();
+    } else {
+      MetaPointer metaPointer = new MetaPointer(language, version, key);
+      entryForKey.add(metaPointer);
+      return metaPointer;
     }
-    return INSTANCES.get(hashKey);
   }
 
-  private String key;
-  private String version;
-  private String language;
+  private final String key;
+  private final String version;
+  private final String language;
 
   private MetaPointer(String language, String version, String key) {
     this.key = key;
@@ -64,17 +76,12 @@ public class MetaPointer {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof MetaPointer)) return false;
-    MetaPointer that = (MetaPointer) o;
-    return Objects.equals(key, that.key)
-        && Objects.equals(version, that.version)
-        && Objects.equals(language, that.language);
+    return this == o;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(key, version, language);
+    return System.identityHashCode(this);
   }
 
   @Override
