@@ -12,6 +12,7 @@ import java.nio.ByteBuffer;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class FlatBuffersSerialization extends AbstractSerialization {
 
@@ -277,8 +278,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           });
     }
 
-    public SerializedContainmentValue deserialize(FBContainment containment) {
-      SerializedContainmentValue scv = new SerializedContainmentValue();
+    public @Nullable SerializedContainmentValue deserialize(FBContainment containment) {
       List<String> children = new ArrayList<>(containment.childrenLength());
       for (int k = 0; k < containment.childrenLength(); k++) {
         String child = containment.children(k);
@@ -288,9 +288,10 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           children.add(child);
         }
       }
-      scv.setValue(children);
-      scv.setMetaPointer(deserialize(containment.metaPointer()));
-      return scv;
+      if (children.isEmpty()) {
+        return null;
+      }
+      return new SerializedContainmentValue(deserialize(containment.metaPointer()), children);
     }
   }
 
@@ -322,12 +323,16 @@ public class FlatBuffersSerialization extends AbstractSerialization {
 
       for (int j = 0; j < n.containmentsLength(); j++) {
         FBContainment c = n.containments(j);
-        sci.addContainmentValue(helper.deserialize(c));
+        SerializedContainmentValue scv = helper.deserialize(c);
+        if (scv != null) {
+          sci.addContainmentValue(scv);
+        }
       }
 
       for (int j = 0; j < n.referencesLength(); j++) {
         FBReference r = n.references(j);
-        SerializedReferenceValue srv = new SerializedReferenceValue();
+        SerializedReferenceValue srv =
+            new SerializedReferenceValue(helper.deserialize(r.metaPointer()));
         for (int k = 0; k < r.valuesLength(); k++) {
           FBReferenceValue rv = r.values(k);
           SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
@@ -335,9 +340,9 @@ public class FlatBuffersSerialization extends AbstractSerialization {
           entry.setResolveInfo(rv.resolveInfo());
           srv.addValue(entry);
         }
-
-        srv.setMetaPointer(helper.deserialize(r.metaPointer()));
-        sci.addReferenceValue(srv);
+        if (!srv.getValue().isEmpty()) {
+          sci.addReferenceValue(srv);
+        }
       }
       for (int j = 0; j < n.annotationsLength(); j++) {
         String annotationID = n.annotations(j);

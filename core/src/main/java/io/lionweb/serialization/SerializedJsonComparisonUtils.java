@@ -96,13 +96,13 @@ public class SerializedJsonComparisonUtils {
           assertEquals("(" + context + ") different id", expected.get("id"), actual.get("id"));
           break;
         case "references":
-          assertEquivalentUnorderedArrays(
+          assertEquivalentReferences(
               expected.getAsJsonArray("references"),
               actual.getAsJsonArray("references"),
               "References of " + context);
           break;
         case "containments":
-          assertEquivalentUnorderedArrays(
+          assertEquivalentContainments(
               expected.getAsJsonArray("containments"),
               actual.getAsJsonArray("containments"),
               "Children of " + context);
@@ -123,6 +123,36 @@ public class SerializedJsonComparisonUtils {
           throw new AssertionError("(" + context + ") unexpected top-level key found: " + key);
       }
     }
+  }
+
+  private static void assertEquivalentReferences(
+      JsonArray expected, JsonArray actual, String context) {
+    assertEquivalentFilteringForEmpty(expected, actual, context, "targets");
+  }
+
+  private static void assertEquivalentContainments(
+      JsonArray expected, JsonArray actual, String context) {
+    assertEquivalentFilteringForEmpty(expected, actual, context, "children");
+  }
+
+  private static void assertEquivalentFilteringForEmpty(
+      JsonArray expected, JsonArray actual, String context, String keyToCheck) {
+    // Containments and references may or may not contain empty elements
+    JsonArray filteredExpected = new JsonArray();
+    expected.forEach(
+        e -> {
+          if (!e.getAsJsonObject().get(keyToCheck).getAsJsonArray().isEmpty()) {
+            filteredExpected.add(e);
+          }
+        });
+    JsonArray filteredActual = new JsonArray();
+    actual.forEach(
+        e -> {
+          if (!e.getAsJsonObject().get(keyToCheck).getAsJsonArray().isEmpty()) {
+            filteredActual.add(e);
+          }
+        });
+    assertEquivalentUnorderedArrays(filteredExpected, filteredActual, context);
   }
 
   private static void assertEquivalentUnorderedArrays(

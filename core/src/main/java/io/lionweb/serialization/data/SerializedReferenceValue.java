@@ -62,10 +62,11 @@ public class SerializedReferenceValue {
     }
   }
 
-  private MetaPointer metaPointer;
+  private final MetaPointer metaPointer;
   private final List<Entry> value;
 
-  public SerializedReferenceValue() {
+  public SerializedReferenceValue(MetaPointer metaPointer) {
+    this.metaPointer = metaPointer;
     value = new ArrayList<>();
   }
 
@@ -76,10 +77,6 @@ public class SerializedReferenceValue {
 
   public MetaPointer getMetaPointer() {
     return metaPointer;
-  }
-
-  public void setMetaPointer(MetaPointer metaPointer) {
-    this.metaPointer = metaPointer;
   }
 
   public List<Entry> getValue() {

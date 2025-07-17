@@ -101,22 +101,27 @@ public class ProtoBufSerialization extends AbstractSerialization {
               n.getContainmentsList()
                   .forEach(
                       c -> {
-                        SerializedContainmentValue scv = new SerializedContainmentValue();
                         if (c.getChildrenList().stream().anyMatch(el -> el < 0)) {
                           throw new DeserializationException(
                               "Unable to deserialize child identified by Null ID");
                         }
-                        scv.setValue(
+                        List<String> children =
                             c.getChildrenList().stream()
                                 .map(el -> stringsMap.get(el))
-                                .collect(Collectors.toList()));
-                        scv.setMetaPointer(metapointersMap.get(c.getMetaPointerIndex()));
-                        sci.addContainmentValue(scv);
+                                .collect(Collectors.toList());
+                        if (!children.isEmpty()) {
+                          SerializedContainmentValue scv =
+                              new SerializedContainmentValue(
+                                  metapointersMap.get(c.getMetaPointerIndex()), children);
+                          sci.addContainmentValue(scv);
+                        }
                       });
               n.getReferencesList()
                   .forEach(
                       r -> {
-                        SerializedReferenceValue srv = new SerializedReferenceValue();
+                        SerializedReferenceValue srv =
+                            new SerializedReferenceValue(
+                                metapointersMap.get(r.getMetaPointerIndex()));
                         r.getValuesList()
                             .forEach(
                                 rv -> {
@@ -126,8 +131,9 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                   entry.setResolveInfo(stringsMap.get(rv.getResolveInfo()));
                                   srv.addValue(entry);
                                 });
-                        srv.setMetaPointer(metapointersMap.get(r.getMetaPointerIndex()));
-                        sci.addReferenceValue(srv);
+                        if (!srv.getValue().isEmpty()) {
+                          sci.addReferenceValue(srv);
+                        }
                       });
               n.getAnnotationsList().forEach(a -> sci.addAnnotation(stringsMap.get(a)));
               serializedChunk.addClassifierInstance(sci);

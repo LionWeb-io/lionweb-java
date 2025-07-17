@@ -7,12 +7,8 @@ import java.util.Objects;
 
 /** This represents the serialization of the values of a containment link in a Node. */
 public class SerializedContainmentValue {
-  private MetaPointer metaPointer;
+  private final MetaPointer metaPointer;
   private final List<String> value;
-
-  public SerializedContainmentValue() {
-    this.value = new ArrayList<>();
-  }
 
   public SerializedContainmentValue(MetaPointer metaPointer, List<String> value) {
     this.metaPointer = metaPointer;
@@ -21,10 +17,6 @@ public class SerializedContainmentValue {
 
   public MetaPointer getMetaPointer() {
     return metaPointer;
-  }
-
-  public void setMetaPointer(MetaPointer metaPointer) {
-    this.metaPointer = metaPointer;
   }
 
   /** This returns the list of Node-IDs contained. */
