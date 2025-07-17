@@ -131,3 +131,7 @@ Introducing support for LionWeb 2024.1
 ### Version 1.0.1
 
 * DynamicNode: uniformly use getID() to access node IDs
+
+### Version 1.0.2
+
+* Internaling MetaPointers and most of SerializedPropertyValues
