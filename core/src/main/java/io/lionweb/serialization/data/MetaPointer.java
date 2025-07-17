@@ -1,7 +1,5 @@
 package io.lionweb.serialization.data;
 
-import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import io.lionweb.language.Feature;
 import io.lionweb.language.IKeyed;
 import io.lionweb.language.Language;
@@ -16,24 +14,15 @@ import java.util.*;
  * coincides for this class.
  */
 public class MetaPointer {
-  private static final Multimap<String, MetaPointer> INSTANCES_BY_KEY =
-      Multimaps.newSetMultimap(new WeakHashMap<>(), HashSet::new);
+  private static final Map<String, Map<String, WeakHashMap<String, MetaPointer>>>
+      INSTANCES_BY_KEY_LANGUAGE_VERSION = new HashMap<>();
 
   /** Provide a MetaPointer with the given value, avoid allocations if unnecessary. */
   public static MetaPointer get(String language, String version, String key) {
-    Collection<MetaPointer> entryForKey = INSTANCES_BY_KEY.get(key);
-    Optional<MetaPointer> match =
-        entryForKey.stream()
-            .filter(
-                mp -> Objects.equals(mp.language, language) && Objects.equals(mp.version, version))
-            .findFirst();
-    if (match.isPresent()) {
-      return match.get();
-    } else {
-      MetaPointer metaPointer = new MetaPointer(language, version, key);
-      entryForKey.add(metaPointer);
-      return metaPointer;
-    }
+    return INSTANCES_BY_KEY_LANGUAGE_VERSION
+        .computeIfAbsent(key, k -> new HashMap<>())
+        .computeIfAbsent(language, l -> new WeakHashMap<>())
+        .computeIfAbsent(version, v -> new MetaPointer(language, version, key));
   }
 
   private final String key;
