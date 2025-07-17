@@ -2,9 +2,9 @@ package io.lionweb.experiments;
 
 import io.lionweb.model.Node;
 import io.lionweb.serialization.FlatBuffersSerialization;
-import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.ProtoBufSerialization;
+import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.SerializedChunk;
 
 public class SerializationExperiment {
@@ -15,7 +15,8 @@ public class SerializationExperiment {
     System.out.println("Tree generated");
 
     SerializedChunk chunk =
-        JsonSerialization.getStandardSerialization().serializeTreeToSerializationBlock(tree);
+        SerializationProvider.getStandardJsonSerialization()
+            .serializeTreeToSerializationChunk(tree);
 
     System.out.println("= JSON serialization (without compression) =");
     long jt0 = System.currentTimeMillis();
@@ -34,7 +35,8 @@ public class SerializationExperiment {
 
     System.out.println("= ProtoBuf serialization =");
     long pt0 = System.currentTimeMillis();
-    ProtoBufSerialization protoBufSerialization = ProtoBufSerialization.getStandardSerialization();
+    ProtoBufSerialization protoBufSerialization =
+        SerializationProvider.getStandardProtoBufSerialization();
     protoBufSerialization.enableDynamicNodes();
     byte[] bytes = protoBufSerialization.serializeToByteArray(chunk);
     long pt1 = System.currentTimeMillis();
@@ -44,7 +46,7 @@ public class SerializationExperiment {
     System.out.println("= Flatbuffers serialization =");
     long ft0 = System.currentTimeMillis();
     FlatBuffersSerialization flatBuffersSerialization =
-        FlatBuffersSerialization.getStandardSerialization();
+        SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
     byte[] fbytes = flatBuffersSerialization.serialize(chunk);
     long ft1 = System.currentTimeMillis();
