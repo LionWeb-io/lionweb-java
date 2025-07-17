@@ -3,6 +3,7 @@ package io.lionweb.serialization.data;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.WeakHashMap;
 
 /**
  * This represents the serialization of the value of a property in a Node. This class is immutable
@@ -11,20 +12,20 @@ import java.util.Objects;
  */
 public class SerializedPropertyValue {
   private static final int THRESHOLD = 128;
-  private static final Map<MetaPointer, Map<String, SerializedPropertyValue>>
+  private static final Map<MetaPointer, WeakHashMap<String, SerializedPropertyValue>>
       INSTANCES_BY_METAPOINTER = new HashMap<>();
 
   /** This will avoid most unnecessary duplicate instantiations, but this is not guaranteed. */
   public static SerializedPropertyValue get(MetaPointer metaPointer, String value) {
     // Large values are expected to be more rarely reused, therefore we do not prevent their
-    // duplication
+    // duplication.
     // We are interested in preventing the duplication of very common values like "false", "true",
     // "0", "1", etc.
     if (value != null && value.length() >= THRESHOLD) {
       return new SerializedPropertyValue(metaPointer, value);
     }
     Map<String, SerializedPropertyValue> valuesForMetaPointer =
-        INSTANCES_BY_METAPOINTER.computeIfAbsent(metaPointer, k -> new HashMap<>());
+        INSTANCES_BY_METAPOINTER.computeIfAbsent(metaPointer, k -> new WeakHashMap<>());
     return valuesForMetaPointer.computeIfAbsent(
         value, v -> new SerializedPropertyValue(metaPointer, v));
   }
@@ -58,6 +59,8 @@ public class SerializedPropertyValue {
 
   @Override
   public boolean equals(Object o) {
+    // Note that Identity will correspond to Equality for common values but not for all values,
+    // so we need to inspect the actual values
     if (this == o) return true;
     if (!(o instanceof SerializedPropertyValue)) return false;
     SerializedPropertyValue that = (SerializedPropertyValue) o;
@@ -66,6 +69,8 @@ public class SerializedPropertyValue {
 
   @Override
   public int hashCode() {
+    // Note that Identity will correspond to Equality for common values but not for all values,
+    // therefore we cannot use System.identityHashCode()
     return Objects.hash(metaPointer, value);
   }
 }
