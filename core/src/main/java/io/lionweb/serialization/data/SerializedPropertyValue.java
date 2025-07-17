@@ -4,34 +4,29 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-/** This represents the serialization of the value of a property in a Node. */
+/**
+ * This represents the serialization of the value of a property in a Node. This class is immutable
+ * and multiple coinciding value share the same identity, but this is not guaranteed for all
+ * instances.
+ */
 public class SerializedPropertyValue {
   private static final int THRESHOLD = 128;
-  private static final Map<String, SerializedPropertyValue> INSTANCES = new HashMap<>();
-  private static final Map<MetaPointer, SerializedPropertyValue> NULL_INSTANCES = new HashMap<>();
+  private static final Map<MetaPointer, Map<String, SerializedPropertyValue>>
+      INSTANCES_BY_METAPOINTER = new HashMap<>();
 
+  /** This will avoid most unnecessary duplicate instantiations, but this is not guaranteed. */
   public static SerializedPropertyValue get(MetaPointer metaPointer, String value) {
-    if (value == null) {
-      if (!NULL_INSTANCES.containsKey(metaPointer)) {
-        NULL_INSTANCES.put(metaPointer, new SerializedPropertyValue(metaPointer, null));
-      }
-      return NULL_INSTANCES.get(metaPointer);
-    } else if (value.length() < THRESHOLD) {
-      String key =
-          metaPointer.getLanguage()
-              + ":"
-              + metaPointer.getVersion()
-              + ":"
-              + metaPointer.getKey()
-              + ":"
-              + value;
-      if (!INSTANCES.containsKey(key)) {
-        INSTANCES.put(key, new SerializedPropertyValue(metaPointer, value));
-      }
-      return INSTANCES.get(key);
-    } else {
+    // Large values are expected to be more rarely reused, therefore we do not prevent their
+    // duplication
+    // We are interested in preventing the duplication of very common values like "false", "true",
+    // "0", "1", etc.
+    if (value != null && value.length() >= THRESHOLD) {
       return new SerializedPropertyValue(metaPointer, value);
     }
+    Map<String, SerializedPropertyValue> valuesForMetaPointer =
+        INSTANCES_BY_METAPOINTER.computeIfAbsent(metaPointer, k -> new HashMap<>());
+    return valuesForMetaPointer.computeIfAbsent(
+        value, v -> new SerializedPropertyValue(metaPointer, v));
   }
 
   private final MetaPointer metaPointer;
