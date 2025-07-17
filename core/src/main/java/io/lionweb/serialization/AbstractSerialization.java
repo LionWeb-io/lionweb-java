@@ -268,11 +268,7 @@ public abstract class AbstractSerialization {
         .allReferences(classifierInstance.getClassifier())
         .forEach(
             reference -> {
-              SerializedReferenceValue referenceValue = new SerializedReferenceValue();
-              referenceValue.setMetaPointer(
-                  MetaPointer.from(
-                      reference, ((LanguageEntity<?>) reference.getContainer()).getLanguage()));
-              referenceValue.setValue(
+              List<SerializedReferenceValue.Entry> entries =
                   classifierInstance.getReferenceValues(reference).stream()
                       .map(
                           rv -> {
@@ -285,8 +281,15 @@ public abstract class AbstractSerialization {
                             return new SerializedReferenceValue.Entry(
                                 referredID, rv.getResolveInfo());
                           })
-                      .collect(Collectors.toList()));
-              serializedClassifierInstance.addReferenceValue(referenceValue);
+                      .collect(Collectors.toList());
+              if (!entries.isEmpty()) {
+                MetaPointer metaPointer =
+                    MetaPointer.from(
+                        reference, ((LanguageEntity<?>) reference.getContainer()).getLanguage());
+                SerializedReferenceValue referenceValue =
+                    new SerializedReferenceValue(metaPointer, entries);
+                serializedClassifierInstance.addReferenceValue(referenceValue);
+              }
             });
   }
 
@@ -299,15 +302,20 @@ public abstract class AbstractSerialization {
         .allContainments(classifierInstance.getClassifier())
         .forEach(
             containment -> {
-              SerializedContainmentValue containmentValue = new SerializedContainmentValue();
-              containmentValue.setMetaPointer(
-                  MetaPointer.from(
-                      containment, ((LanguageEntity<?>) containment.getContainer()).getLanguage()));
-              containmentValue.setValue(
+              List<String> value =
                   classifierInstance.getChildren(containment).stream()
                       .map(Node::getID)
-                      .collect(Collectors.toList()));
-              serializedClassifierInstance.addContainmentValue(containmentValue);
+                      .collect(Collectors.toList());
+              // We can avoid serializing empty values
+              if (!value.isEmpty()) {
+                MetaPointer metaPointer =
+                    MetaPointer.from(
+                        containment,
+                        ((LanguageEntity<?>) containment.getContainer()).getLanguage());
+                SerializedContainmentValue containmentValue =
+                    new SerializedContainmentValue(metaPointer, value);
+                serializedClassifierInstance.addContainmentValue(containmentValue);
+              }
             });
   }
 
