@@ -17,14 +17,6 @@ fun cleanId(id: String) =
         .replace("@", "_at_")
         .removeCharactersInvalidInLionWebIDs()
 
-fun Node.toChunk(lwVersion: LionWebVersion = LionWebVersion.currentVersion): SerializedChunk =
-    simpleSerializations.computeIfAbsent(lwVersion) {
-        SerializationProvider.getStandardJsonSerialization(it)
-    }
-        .serializeTreeToSerializationChunk(this)
-
-fun String.toChunk(): SerializedChunk = LowLevelJsonSerialization().deserializeSerializationBlock(this)
-
 fun String.removeCharactersInvalidInLionWebIDs(): String {
     return this.filter {
         it in setOf('-', '_') || it in CharRange('0', '9') ||
@@ -32,5 +24,13 @@ fun String.removeCharactersInvalidInLionWebIDs(): String {
             it in CharRange('A', 'Z')
     }
 }
+
+fun Node.toChunk(lwVersion: LionWebVersion = LionWebVersion.currentVersion): SerializedChunk =
+    simpleSerializations.computeIfAbsent(lwVersion) {
+        SerializationProvider.getStandardJsonSerialization(it)
+    }
+        .serializeTreeToSerializationChunk(this)
+
+fun String.toChunk(): SerializedChunk = LowLevelJsonSerialization().deserializeSerializationBlock(this)
 
 private val simpleSerializations = mutableMapOf<LionWebVersion, JsonSerialization>()
