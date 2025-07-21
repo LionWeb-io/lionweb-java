@@ -1,4 +1,4 @@
-package io.lionweb.kotlin
+package io.lionweb.kotlin.serialization.chunk
 
 import io.lionweb.LionWebVersion
 import io.lionweb.language.Classifier
@@ -54,7 +54,7 @@ fun SerializedClassifierInstance.addReference(
     addReferenceValue(metapointer, SerializedReferenceValue.Entry(target, resolveInfo))
 }
 
-fun SerializedClassifierInstance.children(
+fun SerializedClassifierInstance.getChildren(
     metaPointer: MetaPointer,
     chunk: SerializedChunk,
 ): List<SerializedClassifierInstance> {
@@ -64,11 +64,11 @@ fun SerializedClassifierInstance.children(
     }
 }
 
-fun SerializedClassifierInstance.child(
+fun SerializedClassifierInstance.getChild(
     metaPointer: MetaPointer,
     chunk: SerializedChunk,
 ): SerializedClassifierInstance? {
-    val children = children(metaPointer, chunk)
+    val children = getChildren(metaPointer, chunk)
     require(children.size <= 1)
     return children.firstOrNull()
 }

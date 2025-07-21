@@ -1,4 +1,4 @@
-package io.lionweb.kotlin
+package io.lionweb.kotlin.serialization
 
 import io.lionweb.LionWebVersion
 import io.lionweb.model.Node
