@@ -135,3 +135,7 @@ Introducing support for LionWeb 2024.1
 ### Version 1.0.2
 
 * Internaling MetaPointers and most of SerializedPropertyValues
+
+### Version 1.0.3
+
+* Fixed bug in SerializedChunk.equals
