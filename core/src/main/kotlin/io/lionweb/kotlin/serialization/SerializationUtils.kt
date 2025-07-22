@@ -25,11 +25,13 @@ fun String.removeCharactersInvalidInLionWebIDs(): String =
             it in CharRange('A', 'Z')
     }
 
-fun Node.toChunk(lwVersion: LionWebVersion = this.classifier.lionWebVersion): SerializedChunk =
-    simpleSerializations
+fun Node.toChunk(): SerializedChunk {
+    val lwVersion: LionWebVersion = this.classifier.lionWebVersion
+    return simpleSerializations
         .computeIfAbsent(lwVersion) {
             SerializationProvider.getStandardJsonSerialization(it)
         }.serializeTreeToSerializationChunk(this)
+}
 
 fun String.toChunk(): SerializedChunk = LowLevelJsonSerialization().deserializeSerializationBlock(this)
 
