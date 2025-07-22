@@ -11,21 +11,20 @@ interface Deproxifier {
     fun <T> deproxifyList(nodes: List<ProxyNode>): List<T>
 }
 
-class SpecificReferenceValue<T : Node>(val targetClass: KClass<T>) : ReferenceValue() {
+class SpecificReferenceValue<T : Node>(
+    val targetClass: KClass<T>,
+) : ReferenceValue() {
     companion object {
         inline fun <reified T : Node> create(
             resolveInfo: String?,
             referred: Node?,
-        ): SpecificReferenceValue<T> {
-            return SpecificReferenceValue(T::class).apply {
+        ): SpecificReferenceValue<T> =
+            SpecificReferenceValue(T::class).apply {
                 this.resolveInfo = resolveInfo
                 this.referred = referred
             }
-        }
 
-        inline fun <reified T : Node> createNull(): SpecificReferenceValue<T> {
-            return create(null, null)
-        }
+        inline fun <reified T : Node> createNull(): SpecificReferenceValue<T> = create(null, null)
     }
 
     fun getReferred(deproxifier: Deproxifier): T? {

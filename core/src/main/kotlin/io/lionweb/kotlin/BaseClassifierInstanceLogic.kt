@@ -90,8 +90,8 @@ inline fun <P : ClassifierInstance<*>, reified T : Node> multipleReference(
 internal fun <C : Node> multipleContainment(
     classifierInstance: DynamicClassifierInstance<*>,
     name: String,
-): MutableList<C> {
-    return ContainmentList(
+): MutableList<C> =
+    ContainmentList(
         classifierInstance,
         (
             classifierInstance.classifier ?: throw IllegalStateException(
@@ -102,16 +102,13 @@ internal fun <C : Node> multipleContainment(
             name,
         ),
     )
-}
 
-internal fun <P : ClassifierInstance<*>, C : Node> singleContainment(containmentName: String): ReadWriteProperty<P, C?> {
-    return object : ReadWriteProperty<P, C?> {
+internal fun <P : ClassifierInstance<*>, C : Node> singleContainment(containmentName: String): ReadWriteProperty<P, C?> =
+    object : ReadWriteProperty<P, C?> {
         override fun getValue(
             thisRef: P,
             property: KProperty<*>,
-        ): C? {
-            return thisRef.getOnlyChildByContainmentName(containmentName) as C?
-        }
+        ): C? = thisRef.getOnlyChildByContainmentName(containmentName) as C?
 
         override fun setValue(
             thisRef: P,
@@ -129,16 +126,13 @@ internal fun <P : ClassifierInstance<*>, C : Node> singleContainment(containment
             }
         }
     }
-}
 
-internal fun <P : ClassifierInstance<*>, V : Any> property(propertyName: String): ReadWriteProperty<P, V?> {
-    return object : ReadWriteProperty<P, V?> {
+internal fun <P : ClassifierInstance<*>, V : Any> property(propertyName: String): ReadWriteProperty<P, V?> =
+    object : ReadWriteProperty<P, V?> {
         override fun getValue(
             thisRef: P,
             property: KProperty<*>,
-        ): V? {
-            return thisRef.getPropertyValueByName(propertyName) as V?
-        }
+        ): V? = thisRef.getPropertyValueByName(propertyName) as V?
 
         override fun setValue(
             thisRef: P,
@@ -148,4 +142,3 @@ internal fun <P : ClassifierInstance<*>, V : Any> property(propertyName: String)
             thisRef.setPropertyValueByName(propertyName, value)
         }
     }
-}

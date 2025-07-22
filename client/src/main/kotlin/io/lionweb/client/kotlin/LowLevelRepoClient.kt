@@ -38,7 +38,8 @@ internal class LowLevelRepoClient(
         urlBuilder.addQueryParameter("clientId", clientID)
         urlBuilder.addQueryParameter("repository", repository)
         val request: Request =
-            Request.Builder()
+            Request
+                .Builder()
                 .url(urlBuilder.build())
                 .considerAuthenticationToken()
                 .post(body)
@@ -65,7 +66,8 @@ internal class LowLevelRepoClient(
             urlBuilder.addQueryParameter("limit", limit.toString())
         }
         val request: Request =
-            Request.Builder()
+            Request
+                .Builder()
                 .url(urlBuilder.build())
                 .considerAuthenticationToken()
                 .get()
@@ -87,19 +89,20 @@ internal class LowLevelRepoClient(
     }
 
     private var httpClient: OkHttpClient =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .callTimeout(
                 callTimeoutInSeconds,
                 TimeUnit.SECONDS,
             ).readTimeout(callTimeoutInSeconds, TimeUnit.SECONDS)
             .writeTimeout(callTimeoutInSeconds, TimeUnit.SECONDS)
-            .connectTimeout(connectTimeOutInSeconds, TimeUnit.SECONDS).build()
+            .connectTimeout(connectTimeOutInSeconds, TimeUnit.SECONDS)
+            .build()
 
-    private fun Request.Builder.considerAuthenticationToken(): Request.Builder {
-        return if (authorizationToken == null) {
+    private fun Request.Builder.considerAuthenticationToken(): Request.Builder =
+        if (authorizationToken == null) {
             this
         } else {
             this.addHeader("Authorization", authorizationToken)
         }
-    }
 }

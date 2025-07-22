@@ -1,9 +1,9 @@
 plugins {
     alias(libs.plugins.release)
-    alias(libs.plugins.vtPublish) apply(false)
-    alias(libs.plugins.kotlinJvm) apply(false)
+    alias(libs.plugins.vtPublish) apply (false)
+    alias(libs.plugins.kotlinJvm) apply (false)
     alias(libs.plugins.ktlint)
-    alias(libs.plugins.dokka) apply(false)
+    alias(libs.plugins.dokka) apply (false)
 }
 
 repositories {

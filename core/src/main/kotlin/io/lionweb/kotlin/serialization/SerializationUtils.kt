@@ -17,19 +17,19 @@ fun cleanId(id: String) =
         .replace("@", "_at_")
         .removeCharactersInvalidInLionWebIDs()
 
-fun String.removeCharactersInvalidInLionWebIDs(): String {
-    return this.filter {
-        it in setOf('-', '_') || it in CharRange('0', '9') ||
+fun String.removeCharactersInvalidInLionWebIDs(): String =
+    this.filter {
+        it in setOf('-', '_') ||
+            it in CharRange('0', '9') ||
             it in CharRange('a', 'z') ||
             it in CharRange('A', 'Z')
     }
-}
 
 fun Node.toChunk(lwVersion: LionWebVersion = LionWebVersion.currentVersion): SerializedChunk =
-    simpleSerializations.computeIfAbsent(lwVersion) {
-        SerializationProvider.getStandardJsonSerialization(it)
-    }
-        .serializeTreeToSerializationChunk(this)
+    simpleSerializations
+        .computeIfAbsent(lwVersion) {
+            SerializationProvider.getStandardJsonSerialization(it)
+        }.serializeTreeToSerializationChunk(this)
 
 fun String.toChunk(): SerializedChunk = LowLevelJsonSerialization().deserializeSerializationBlock(this)
 

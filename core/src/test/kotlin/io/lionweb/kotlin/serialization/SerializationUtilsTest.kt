@@ -4,7 +4,6 @@ import io.lionweb.LionWebVersion
 import io.lionweb.kotlin.createConcept
 import io.lionweb.kotlin.createInterface
 import io.lionweb.kotlin.lwLanguage
-import io.lionweb.serialization.SerializationProvider
 import io.lionweb.serialization.data.MetaPointer
 import io.lionweb.serialization.data.SerializedChunk
 import io.lionweb.serialization.data.SerializedClassifierInstance
@@ -124,7 +123,8 @@ class SerializationUtilsTest {
 
     @Test
     fun stringToChunk() {
-        val s = """
+        val s =
+            """
             {
               "serializationFormatVersion" : "2024.1",
               "languages" : [ {
@@ -242,7 +242,7 @@ class SerializationUtilsTest {
                 "parent" : "language-mylanguage-id"
               } ]
             }
-        """.trimIndent()
+            """.trimIndent()
         val deserializedChunk = s.toChunk()
         assertEquals(
             SerializedChunk().apply {
@@ -320,7 +320,7 @@ class SerializationUtilsTest {
                     }
                 addClassifierInstance(sc3)
             },
-            deserializedChunk
+            deserializedChunk,
         )
     }
 }

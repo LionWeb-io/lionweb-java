@@ -109,9 +109,7 @@ class LionWebClient(
         jRepoClient.deletePartitions(listOf(nodeID))
     }
 
-    fun getPartitionIDs(): List<String> {
-        return jRepoClient.listPartitionsIDs()
-    }
+    fun getPartitionIDs(): List<String> = jRepoClient.listPartitionsIDs()
 
     // Nodes
 
@@ -225,9 +223,7 @@ class LionWebClient(
         }
     }
 
-    fun listRepositiories(): Set<RepositoryConfiguration> {
-        return jRepoClient.listRepositories()
-    }
+    fun listRepositiories(): Set<RepositoryConfiguration> = jRepoClient.listRepositories()
 
     fun storeTree(node: Node) {
         jRepoClient.store(node)
@@ -449,9 +445,7 @@ class LionWebClient(
         storeTree(updatedNode)
     }
 
-    fun nodesByClassifier(limit: Int? = null): Map<ClassifierKey, ClassifierResult> {
-        return lowLevelRepoClient.nodesByClassifier(limit = limit)
-    }
+    fun nodesByClassifier(limit: Int? = null): Map<ClassifierKey, ClassifierResult> = lowLevelRepoClient.nodesByClassifier(limit = limit)
 
     fun childrenInContainment(
         containerId: String,
@@ -481,24 +475,18 @@ class LionWebClient(
     fun nodeTree(
         nodeID: String,
         depthLimit: Int? = null,
-    ): List<NodeInfo> {
-        return nodeTree(listOf(nodeID), depthLimit = depthLimit)
-    }
+    ): List<NodeInfo> = nodeTree(listOf(nodeID), depthLimit = depthLimit)
 
     fun nodeTree(
         nodeIDs: List<String>,
         depthLimit: Int? = null,
-    ): List<NodeInfo> {
-        return jRepoClient.getNodeTree(nodeIDs, depthLimit)
-    }
+    ): List<NodeInfo> = jRepoClient.getNodeTree(nodeIDs, depthLimit)
 
     fun bulkImport(
         bulkImport: BulkImport,
         transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
         compress: Boolean = false,
-    ) {
-        return jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
-    }
+    ) = jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
 
     // Private methods
 

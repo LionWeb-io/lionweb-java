@@ -150,10 +150,10 @@ object MetamodelRegistry {
                 val constructor = kClass.constructors.find { it.parameters.isEmpty() }
                 if (constructor != null) {
                     instantiator.registerCustomDeserializer(classifier.id!!) {
-                            _: Classifier<*>,
-                            serializedClassifierInstance: SerializedClassifierInstance,
-                            _: MutableMap<String, ClassifierInstance<*>>,
-                            _: MutableMap<Property, Any>,
+                        _: Classifier<*>,
+                        serializedClassifierInstance: SerializedClassifierInstance,
+                        _: MutableMap<String, ClassifierInstance<*>>,
+                        _: MutableMap<Property, Any>,
                         ->
                         val result = constructor.callBy(emptyMap()) as ClassifierInstance<*>
                         if (result is DynamicClassifierInstance<*>) {

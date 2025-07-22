@@ -44,9 +44,11 @@ fun lwLanguage(
     language.createPrimitiveTypes(*classes.filter { !it.isSubclassOf(Node::class) }.toTypedArray())
     language.createConcepts(*classes.filter { it.isSubclassOf(Node::class) }.map { it as KClass<out Node> }.toTypedArray())
     language.createAnnotations(
-        *classes.filter {
-            it.isSubclassOf(AnnotationInstance::class)
-        }.map { it as KClass<out AnnotationInstance> }.toTypedArray(),
+        *classes
+            .filter {
+                it.isSubclassOf(AnnotationInstance::class)
+            }.map { it as KClass<out AnnotationInstance> }
+            .toTypedArray(),
     )
     return language
 }
@@ -180,12 +182,19 @@ private fun populateFeaturesInClassifier(
     classifierClass.declaredMemberProperties.filter { it.annotations.none { it is Implementation } }.forEach { property ->
         when (property.returnType.classifier) {
             List::class -> {
-                val elementClassifier = property.returnType.arguments[0].type!!.classifier!! as KClass<*>
+                val elementClassifier =
+                    property.returnType.arguments[0]
+                        .type!!
+                        .classifier!! as KClass<*>
                 if (elementClassifier.isSubclassOf(ReferenceValue::class)) {
                     if (elementClassifier.isSubclassOf(SpecificReferenceValue::class)) {
                         val referenceType =
                             MetamodelRegistry.getClassifier(
-                                property.returnType.arguments[0].type!!.arguments[0].type!!.classifier!! as KClass<out Node>,
+                                property.returnType.arguments[0]
+                                    .type!!
+                                    .arguments[0]
+                                    .type!!
+                                    .classifier!! as KClass<out Node>,
                                 classifier.lionWebVersion,
                             ) as Classifier<*>
                         classifier.createReference(property.name, referenceType, Multiplicity.ZERO_TO_MANY)
@@ -218,7 +227,9 @@ private fun populateFeaturesInClassifier(
                     if (kClass.isSubclassOf(SpecificReferenceValue::class)) {
                         val referenceType =
                             MetamodelRegistry.getClassifier(
-                                property.returnType.arguments[0].type!!.classifier!! as KClass<out Node>,
+                                property.returnType.arguments[0]
+                                    .type!!
+                                    .classifier!! as KClass<out Node>,
                                 classifier.lionWebVersion,
                             ) as Classifier<*>
                         classifier.createReference(property.name, referenceType, Multiplicity.OPTIONAL)
@@ -238,11 +249,10 @@ private fun populateFeaturesInClassifier(
     }
 }
 
-fun Language.createPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>): List<PrimitiveType> {
-    return primitiveTypeClasses.map { primitiveTypeClass ->
+fun Language.createPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>): List<PrimitiveType> =
+    primitiveTypeClasses.map { primitiveTypeClass ->
         createPrimitiveType(primitiveTypeClass)
     }
-}
 
 fun <T : Any> Language.addSerializerAndDeserializer(
     primitiveTypeClass: KClass<T>,
@@ -271,7 +281,10 @@ fun Language.createPrimitiveType(
     return primitiveType
 }
 
-enum class Multiplicity(val optional: Boolean, val multiple: Boolean) {
+enum class Multiplicity(
+    val optional: Boolean,
+    val multiple: Boolean,
+) {
     OPTIONAL(true, false),
     SINGLE(false, false),
     ZERO_TO_MANY(true, true),
@@ -332,25 +345,17 @@ fun Classifier<*>.createProperty(
     return property
 }
 
-private fun Node.idPrefixForContainedElements(): String {
-    return this.id!!.removePrefix("language-").removeSuffix("-id")
-}
+private fun Node.idPrefixForContainedElements(): String = this.id!!.removePrefix("language-").removeSuffix("-id")
 
-private fun IKeyed<*>.keyPrefixForContainedElements(): String {
-    return this.key!!.removePrefix("language-").removeSuffix("-key")
-}
+private fun IKeyed<*>.keyPrefixForContainedElements(): String = this.key!!.removePrefix("language-").removeSuffix("-key")
 
-fun Node.idForContainedElement(containedElementName: String): String {
-    return "${this.idPrefixForContainedElements()}-${containedElementName.lwIDCleanedVersion()}-id"
-}
+fun Node.idForContainedElement(containedElementName: String): String =
+    "${this.idPrefixForContainedElements()}-${containedElementName.lwIDCleanedVersion()}-id"
 
-fun IKeyed<*>.keyForContainedElement(containedElementName: String): String {
-    return "${this.keyPrefixForContainedElements()}-${containedElementName.lwIDCleanedVersion()}-key"
-}
+fun IKeyed<*>.keyForContainedElement(containedElementName: String): String =
+    "${this.keyPrefixForContainedElements()}-${containedElementName.lwIDCleanedVersion()}-key"
 
-fun String.lwIDCleanedVersion(): String {
-    return IdUtils.cleanString(this)
-}
+fun String.lwIDCleanedVersion(): String = IdUtils.cleanString(this)
 
 fun Enumeration.addLiteral(literalName: String): EnumerationLiteral {
     val enumerationLiteral =

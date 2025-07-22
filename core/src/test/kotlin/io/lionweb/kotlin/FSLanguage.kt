@@ -31,7 +31,9 @@ interface Named {
     val name: String?
 }
 
-class Tenant : BaseNode(), Named {
+class Tenant :
+    BaseNode(),
+    Named {
     override var name: String? by property("name")
     val users = multipleContainment<FSUser>("users")
     val directories = multipleContainment<Directory>("directories")
@@ -39,7 +41,9 @@ class Tenant : BaseNode(), Named {
     override fun calculateID(): String? = "tenant-${name!!}"
 }
 
-class FSUser : BaseNode(), Named {
+class FSUser :
+    BaseNode(),
+    Named {
     // Note that this means users should be unique across all tenants
     override fun calculateID(): String? = "user-${name!!}"
 
@@ -48,7 +52,9 @@ class FSUser : BaseNode(), Named {
     var password: String? by property("password")
 }
 
-abstract class File : BaseNode(), Named {
+abstract class File :
+    BaseNode(),
+    Named {
     override var name: String? by property("name")
 
     override fun calculateID(): String {
@@ -72,11 +78,11 @@ abstract class File : BaseNode(), Named {
         }
 }
 
-class Directory() : File() {
+class Directory : File() {
     val files = multipleContainment<File>("files")
 }
 
-class TextFile() : File() {
+class TextFile : File() {
     var parsingResult: FSParsingResult? by singleContainment("parsingResult")
 
     var contents: String? by property("contents")
@@ -86,7 +92,7 @@ class TextFile() : File() {
         get() = parsingResult != null
 }
 
-class FSParsingResult() : BaseNode() {
+class FSParsingResult : BaseNode() {
     val issues = multipleContainment<FSIssue>("issues")
     var statistics: FSStatistics? by singleContainment("statistics")
 }
@@ -94,7 +100,10 @@ class FSParsingResult() : BaseNode() {
 /**
  * This emulates Kolasu's Position, which is not visible here
  */
-data class MyPosition(val start: MyPoint, val end: MyPoint)
+data class MyPosition(
+    val start: MyPoint,
+    val end: MyPoint,
+)
 
 data class MyPoint(
     val line: Int = 0,
@@ -108,26 +117,32 @@ class FSIssue : BaseNode() {
     var position: MyPosition? by property("position")
 }
 
-class FSStatistics() : BaseNode() {
+class FSStatistics : BaseNode() {
     val categories = multipleContainment<FSStatisticsCategory>("categories")
 }
 
-class FSStatisticsCategory() : BaseNode(), Named {
+class FSStatisticsCategory :
+    BaseNode(),
+    Named {
     override var name: String? by property("name")
     val entries = multipleContainment<FSStatisticEntry>("entries")
 }
 
-class FSStatisticEntry : BaseNode(), Named {
+class FSStatisticEntry :
+    BaseNode(),
+    Named {
     override var name: String? by property("name")
     val instances = multipleContainment<FSStatisticInstance>("instances")
 }
 
-class FSStatisticInstance() : BaseNode() {
+class FSStatisticInstance : BaseNode() {
     val fsPosition: FSPosition? by singleContainment("fsPosition")
     val attributes = multipleContainment<FSAttribute>("attributes")
 }
 
-class FSAttribute() : BaseNode(), Named {
+class FSAttribute :
+    BaseNode(),
+    Named {
     override var name: String? by property("name")
 
     val value: String? by property("value")

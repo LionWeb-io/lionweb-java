@@ -5,10 +5,10 @@ kotestVersion="5.9.1"
 testcontainersVersion="1.20.6"
 
 [plugins]
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "12.2.0" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.0.0" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version = "2.0.0" }
-vtPublish = { id = "com.vanniktech.maven.publish", version = "0.31.0" }
+vtPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
 buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.6.2" }
 release = { id = "net.researchgate.release", version = "3.1.0"}
 

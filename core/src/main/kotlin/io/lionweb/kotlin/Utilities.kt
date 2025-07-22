@@ -15,9 +15,7 @@ import kotlin.reflect.KClass
 /**
  * Create a Dynamic Node with the given Concept and a random node ID.
  */
-fun Concept.dynamicNode(nodeId: String = "node-id-rand-${Random.nextInt()}"): DynamicNode {
-    return DynamicNode(nodeId, this)
-}
+fun Concept.dynamicNode(nodeId: String = "node-id-rand-${Random.nextInt()}"): DynamicNode = DynamicNode(nodeId, this)
 
 fun <N> N.withParent(parent: Node?): N where N : Node, N : HasSettableParent {
     this.setParent(parent)

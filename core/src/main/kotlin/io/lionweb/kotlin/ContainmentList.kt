@@ -25,9 +25,7 @@ internal class ContainmentList<E : Node>(
         return children[index] as E
     }
 
-    override fun isEmpty(): Boolean {
-        return size == 0
-    }
+    override fun isEmpty(): Boolean = size == 0
 
     override fun iterator(): MutableIterator<E> {
         val children = classifierInstance.getChildren(containment)
