@@ -116,7 +116,7 @@ class RepositoryData {
   void retrieve(String nodeId, int limit, List<SerializedClassifierInstance> retrieved) {
     SerializedClassifierInstance node = nodesByID.get(nodeId);
     if (node == null) {
-      throw new IllegalArgumentException();
+      throw new IllegalArgumentException("Node with id " + nodeId + " cannot be found");
     }
     retrieved.add(node);
     if (limit > 0) {
