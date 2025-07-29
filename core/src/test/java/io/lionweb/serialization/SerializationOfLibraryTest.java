@@ -1,7 +1,6 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -12,11 +11,13 @@ import io.lionweb.language.Language;
 import io.lionweb.language.Property;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
+import io.lionweb.model.impl.ProxyNode;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -166,5 +167,68 @@ public class SerializationOfLibraryTest extends SerializationTest {
     Concept localLibrary = conceptByID(deserializedNodes2, "extendedlibrary-LocalLibrary");
     Property libraryName = localLibrary.getPropertyByName("name");
     assertNotNull(libraryName.getKey());
+  }
+
+  /**
+   * We provide the SerializationChunk containing a series of subtrees (i.e., we removed the
+   * Language instance which is containing everything else). When the unavailableParentPolicy is set
+   * to THROW_ERROR we cannot deserialize the chunk into nodes.
+   */
+  @Test(expected = DeserializationException.class)
+  public void deserializeSubtreesWithThrowErrorPolicy() {
+    InputStream inputStream =
+        this.getClass().getResourceAsStream("/serialization/partial-library-language.json");
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    jsonSerialization.unavailableParentPolicy = UnavailableNodePolicy.THROW_ERROR;
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(inputStream);
+  }
+
+  /**
+   * We provide the SerializationChunk containing a series of subtrees (i.e., we removed the
+   * Language instance which is containing everything else). When the unavailableParentPolicy is set
+   * to NULL_REFERENCES we can deserialize the chunk into nodes. For the parents which are not part
+   * of the chunk will be set to null.
+   */
+  @Test
+  public void deserializeSubtreesWithNullPolicy() {
+    InputStream inputStream =
+        this.getClass().getResourceAsStream("/serialization/partial-library-language.json");
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    jsonSerialization.unavailableParentPolicy = UnavailableNodePolicy.NULL_REFERENCES;
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(inputStream);
+    List<Node> concepts =
+        deserializedNodes.stream()
+            .filter(node -> node instanceof Concept)
+            .collect(Collectors.toList());
+    assertEquals(5, concepts.size());
+    assertTrue(concepts.stream().allMatch(n -> n.getParent() == null));
+  }
+
+  /**
+   * We provide the SerializationChunk containing a series of subtrees (i.e., we removed the
+   * Language instance which is containing everything else). When the unavailableParentPolicy is set
+   * to PROXY_NODES we can deserialize the chunk into nodes. For the parents which are not part of
+   * the chunk will be set to ProxyNodes.
+   */
+  @Test
+  public void deserializeSubtreesWithProxyPolicy() {
+    InputStream inputStream =
+        this.getClass().getResourceAsStream("/serialization/partial-library-language.json");
+    JsonSerialization jsonSerialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    jsonSerialization.unavailableParentPolicy = UnavailableNodePolicy.PROXY_NODES;
+    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(inputStream);
+    List<Node> concepts =
+        deserializedNodes.stream()
+            .filter(node -> node instanceof Concept)
+            .collect(Collectors.toList());
+    assertEquals(5, concepts.size());
+    assertTrue(
+        concepts.stream()
+            .allMatch(
+                n ->
+                    n.getParent() instanceof ProxyNode && n.getParent().getID().equals("library")));
   }
 }
