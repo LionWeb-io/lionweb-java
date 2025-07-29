@@ -427,16 +427,25 @@ public abstract class AbstractSerialization {
       int initialLength = deserializationStatus.howManySorted();
       for (int i = 0; i < deserializationStatus.howManyToSort(); i++) {
         SerializedClassifierInstance node = deserializationStatus.getNodeToSort(i);
-        if (node.getParentNodeID() == null
-            || deserializationStatus.isSortedID(node.getParentNodeID())) {
+
+        boolean parentIsNullOrSorted =
+            node.getParentNodeID() == null
+                || deserializationStatus.isSortedID(node.getParentNodeID());
+        boolean parentIsNotNeeded =
+            unavailableParentPolicy == UnavailableNodePolicy.NULL_REFERENCES
+                || unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES;
+
+        if (parentIsNullOrSorted || parentIsNotNeeded) {
           deserializationStatus.place(node);
           i--;
         }
       }
       if (initialLength == deserializationStatus.howManySorted()) {
-        if (deserializationStatus.howManySorted() == 0) {
+        if (deserializationStatus.howManySorted() == 0
+            && unavailableParentPolicy == UnavailableNodePolicy.THROW_ERROR) {
           throw new DeserializationException(
-              "No root found, we cannot deserialize this tree. Original list: " + originalList);
+              "No root found and parents cannot be proxied or set to null, so we cannot deserialize this tree. Original list: "
+                  + originalList);
         } else {
           throw new DeserializationException(
               "Something is not right: we are unable to complete sorting the list "
