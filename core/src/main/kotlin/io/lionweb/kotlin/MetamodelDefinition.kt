@@ -259,7 +259,7 @@ fun <T : Any> Language.addSerializerAndDeserializer(
     serializer: PrimitiveSerializer<T?>,
     deserializer: PrimitiveDeserializer<T?>,
     lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
-    metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry
+    metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry,
 ) {
     val primitiveType =
         metamodelRegistry.getPrimitiveType(primitiveTypeClass, lionWebVersion)
@@ -271,7 +271,7 @@ fun Language.createPrimitiveType(
     primitiveTypeClass: KClass<*>,
     serializer: PrimitiveSerializer<*>? = null,
     deserializer: PrimitiveDeserializer<*>? = null,
-    metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry
+    metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry,
 ): PrimitiveType {
     require(!primitiveTypeClass.isSubclassOf(Node::class))
     val primitiveType =
