@@ -259,17 +259,19 @@ fun <T : Any> Language.addSerializerAndDeserializer(
     serializer: PrimitiveSerializer<T?>,
     deserializer: PrimitiveDeserializer<T?>,
     lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry
 ) {
     val primitiveType =
-        DefaultMetamodelRegistry.getPrimitiveType(primitiveTypeClass, lionWebVersion)
+        metamodelRegistry.getPrimitiveType(primitiveTypeClass, lionWebVersion)
             ?: throw IllegalStateException("Unknown primitive type class $primitiveTypeClass")
-    DefaultMetamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
+    metamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
 }
 
 fun Language.createPrimitiveType(
     primitiveTypeClass: KClass<*>,
     serializer: PrimitiveSerializer<*>? = null,
     deserializer: PrimitiveDeserializer<*>? = null,
+    metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry
 ): PrimitiveType {
     require(!primitiveTypeClass.isSubclassOf(Node::class))
     val primitiveType =
@@ -277,7 +279,7 @@ fun Language.createPrimitiveType(
             primitiveTypeClass.simpleName
                 ?: throw IllegalArgumentException("Given primitiveTypeClass has no name"),
         )
-    DefaultMetamodelRegistry.registerMapping(primitiveTypeClass, primitiveType, serializer, deserializer)
+    metamodelRegistry.registerMapping(primitiveTypeClass, primitiveType, serializer, deserializer)
     return primitiveType
 }
 
