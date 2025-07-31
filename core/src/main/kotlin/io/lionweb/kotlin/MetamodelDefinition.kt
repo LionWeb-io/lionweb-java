@@ -113,7 +113,7 @@ fun Language.createAnnotations(vararg annotationClasses: KClass<out AnnotationIn
                     ?: throw IllegalArgumentException("Given annotationClass has no name"),
             )
         annotationsByClasses[annotationClass] = annotation
-        MetamodelRegistry.registerMapping(annotationClass, annotation)
+        DefaultMetamodelRegistry.registerMapping(annotationClass, annotation)
     }
 
     // Then we populate them all
@@ -147,7 +147,7 @@ fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
             )
         concept.isAbstract = conceptClass.isAbstract
         conceptsByClasses[conceptClass] = concept
-        MetamodelRegistry.registerMapping(conceptClass, concept)
+        DefaultMetamodelRegistry.registerMapping(conceptClass, concept)
     }
 
     // Then we populate them all
@@ -158,7 +158,7 @@ fun Language.createConcepts(vararg conceptClasses: KClass<out Node>) {
                 superClass.java.isInterface -> Unit
                 superClass.isSubclassOf(Node::class) -> {
                     val extendedConcept =
-                        conceptsByClasses[superClass] ?: MetamodelRegistry.getConcept(superClass as KClass<out Node>, lionWebVersion)
+                        conceptsByClasses[superClass] ?: DefaultMetamodelRegistry.getConcept(superClass as KClass<out Node>, lionWebVersion)
                     if (extendedConcept == null) {
                         throw IllegalStateException("Cannot handle superclass $superClass for concept class $conceptClass")
                     } else {
@@ -189,7 +189,7 @@ private fun populateFeaturesInClassifier(
                 if (elementClassifier.isSubclassOf(ReferenceValue::class)) {
                     if (elementClassifier.isSubclassOf(SpecificReferenceValue::class)) {
                         val referenceType =
-                            MetamodelRegistry.getClassifier(
+                            DefaultMetamodelRegistry.getClassifier(
                                 property.returnType.arguments[0]
                                     .type!!
                                     .arguments[0]
@@ -206,7 +206,7 @@ private fun populateFeaturesInClassifier(
                 } else {
                     val baseClassifier = elementClassifier as KClass<out Node>
                     val containmentType =
-                        MetamodelRegistry.getConcept(baseClassifier, classifier.lionWebVersion)
+                        DefaultMetamodelRegistry.getConcept(baseClassifier, classifier.lionWebVersion)
                             ?: throw IllegalStateException("Cannot find concept for $baseClassifier")
                     classifier.createContainment(property.name, containmentType, Multiplicity.ZERO_TO_MANY)
                 }
@@ -218,7 +218,7 @@ private fun populateFeaturesInClassifier(
                         as KClass<out Node>
                 if (kClass.isSubclassOf(Node::class)) {
                     val containmentType =
-                        MetamodelRegistry.getConcept(
+                        DefaultMetamodelRegistry.getConcept(
                             kClass,
                             classifier.lionWebVersion,
                         ) ?: throw IllegalStateException("Cannot find concept for $kClass")
@@ -226,7 +226,7 @@ private fun populateFeaturesInClassifier(
                 } else if (kClass.isSubclassOf(ReferenceValue::class)) {
                     if (kClass.isSubclassOf(SpecificReferenceValue::class)) {
                         val referenceType =
-                            MetamodelRegistry.getClassifier(
+                            DefaultMetamodelRegistry.getClassifier(
                                 property.returnType.arguments[0]
                                     .type!!
                                     .classifier!! as KClass<out Node>,
@@ -240,7 +240,7 @@ private fun populateFeaturesInClassifier(
                     }
                 } else {
                     val primitiveType =
-                        MetamodelRegistry.getPrimitiveType(kClass, classifier.lionWebVersion)
+                        DefaultMetamodelRegistry.getPrimitiveType(kClass, classifier.lionWebVersion)
                             ?: throw IllegalStateException("Cannot find primitive type for $kClass")
                     classifier.createProperty(property.name, primitiveType, Multiplicity.SINGLE)
                 }
@@ -261,9 +261,9 @@ fun <T : Any> Language.addSerializerAndDeserializer(
     lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
     val primitiveType =
-        MetamodelRegistry.getPrimitiveType(primitiveTypeClass, lionWebVersion)
+        DefaultMetamodelRegistry.getPrimitiveType(primitiveTypeClass, lionWebVersion)
             ?: throw IllegalStateException("Unknown primitive type class $primitiveTypeClass")
-    MetamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
+    DefaultMetamodelRegistry.addSerializerAndDeserializer(primitiveType, serializer, deserializer)
 }
 
 fun Language.createPrimitiveType(
@@ -277,7 +277,7 @@ fun Language.createPrimitiveType(
             primitiveTypeClass.simpleName
                 ?: throw IllegalArgumentException("Given primitiveTypeClass has no name"),
         )
-    MetamodelRegistry.registerMapping(primitiveTypeClass, primitiveType, serializer, deserializer)
+    DefaultMetamodelRegistry.registerMapping(primitiveTypeClass, primitiveType, serializer, deserializer)
     return primitiveType
 }
 

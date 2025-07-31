@@ -28,6 +28,8 @@ import io.lionweb.serialization.AbstractSerialization
 import io.lionweb.serialization.Instantiator
 import io.lionweb.serialization.PrimitiveValuesSerialization
 import io.lionweb.serialization.data.SerializedClassifierInstance
+import kotlin.collections.component1
+import kotlin.collections.component2
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 
@@ -35,7 +37,65 @@ import kotlin.reflect.full.isSubclassOf
  * This object knows about the association between Concepts and Kotlin classes
  * and between PrimitiveTypes and Kotlin classes.
  */
-object MetamodelRegistry {
+object DefaultMetamodelRegistry : MetamodelRegistry by MetamodelRegistryImpl()
+
+interface MetamodelRegistry {
+    fun registerMapping(
+        kClass: KClass<out ClassifierInstance<*>>,
+        classifier: Classifier<*>,
+        consideredByInstantiator: Boolean = true,
+    )
+
+    fun registerMapping(
+        kClass: KClass<*>,
+        primitiveType: PrimitiveType,
+        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>? = null,
+        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>? = null,
+    )
+
+    fun addSerializerAndDeserializer(
+        primitiveType: PrimitiveType,
+        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>,
+        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>,
+    )
+
+    fun getConcept(
+        kClass: KClass<out Node>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): Concept? =
+        getClassifier(
+            kClass,
+            lionWebVersion,
+        )?.let {
+            it as Concept
+        }
+
+    fun getAnnotation(
+        kClass: KClass<out AnnotationInstance>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): Annotation? = getClassifier(kClass, lionWebVersion)?.let { it as Annotation }
+
+    fun getClassifier(
+        kClass: KClass<out ClassifierInstance<*>>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): Classifier<*>?
+
+    fun getPrimitiveType(
+        kClass: KClass<*>,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    ): PrimitiveType?
+
+    fun prepareInstantiator(
+        instantiator: Instantiator,
+        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+    )
+
+    fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization)
+
+    fun prepareJsonSerialization(serialization: AbstractSerialization)
+}
+
+class MetamodelRegistryImpl : MetamodelRegistry {
     private val classToClassifier = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, Classifier<*>>>()
     private val classToPrimitiveType = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, PrimitiveType>>()
     private val serializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveSerializer<*>>()
@@ -73,10 +133,10 @@ object MetamodelRegistry {
     }
 
     @JvmOverloads
-    fun registerMapping(
+    override fun registerMapping(
         kClass: KClass<out ClassifierInstance<*>>,
         classifier: Classifier<*>,
-        consideredByInstantiator: Boolean = true,
+        consideredByInstantiator: Boolean,
     ) {
         classToClassifier.computeIfAbsent(classifier.lionWebVersion) { mutableMapOf() }[kClass] = classifier
         if (!consideredByInstantiator) {
@@ -84,11 +144,11 @@ object MetamodelRegistry {
         }
     }
 
-    fun registerMapping(
+    override fun registerMapping(
         kClass: KClass<*>,
         primitiveType: PrimitiveType,
-        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>? = null,
-        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>? = null,
+        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>?,
+        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>?,
     ) {
         require(!kClass.isSubclassOf(Node::class))
         classToPrimitiveType.computeIfAbsent(primitiveType.lionWebVersion) { mutableMapOf() }[kClass] = primitiveType
@@ -100,7 +160,7 @@ object MetamodelRegistry {
         }
     }
 
-    fun addSerializerAndDeserializer(
+    override fun addSerializerAndDeserializer(
         primitiveType: PrimitiveType,
         serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>,
         deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>,
@@ -109,41 +169,25 @@ object MetamodelRegistry {
         deserializers[primitiveType] = deserializer
     }
 
-    fun getConcept(
-        kClass: KClass<out Node>,
-        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
-    ): Concept? =
-        getClassifier(
-            kClass,
-            lionWebVersion,
-        )?.let {
-            it as Concept
-        }
-
-    fun getAnnotation(
-        kClass: KClass<out AnnotationInstance>,
-        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
-    ): Annotation? = getClassifier(kClass, lionWebVersion)?.let { it as Annotation }
-
-    fun getClassifier(
+    override fun getClassifier(
         kClass: KClass<out ClassifierInstance<*>>,
-        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+        lionWebVersion: LionWebVersion,
     ): Classifier<*>? =
         classToClassifier[lionWebVersion]?.get(
             kClass,
         )
 
-    fun getPrimitiveType(
+    override fun getPrimitiveType(
         kClass: KClass<*>,
-        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+        lionWebVersion: LionWebVersion,
     ): PrimitiveType? =
         classToPrimitiveType[lionWebVersion]?.get(
             kClass,
         )
 
-    fun prepareInstantiator(
+    override fun prepareInstantiator(
         instantiator: Instantiator,
-        lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
+        lionWebVersion: LionWebVersion,
     ) {
         classToClassifier[lionWebVersion]?.forEach { (kClass, classifier) ->
             if (classifier !in instantiatorExclusionList) {
@@ -166,7 +210,7 @@ object MetamodelRegistry {
         }
     }
 
-    fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization) {
+    override fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization) {
         serializers.forEach { primitiveType, serializer ->
             primitiveValuesSerialization.registerSerializer(primitiveType.id, serializer)
         }
@@ -175,7 +219,7 @@ object MetamodelRegistry {
         }
     }
 
-    fun prepareJsonSerialization(serialization: AbstractSerialization) {
+    override fun prepareJsonSerialization(serialization: AbstractSerialization) {
         prepareInstantiator(serialization.instantiator, serialization.lionWebVersion)
         preparePrimitiveValuesSerialization(serialization.primitiveValuesSerialization)
     }

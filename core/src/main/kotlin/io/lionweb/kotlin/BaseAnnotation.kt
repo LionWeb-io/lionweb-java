@@ -14,7 +14,7 @@ abstract class BaseAnnotation(
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) : DynamicAnnotationInstance(null) {
     override fun getClassifier(): Annotation? =
-        super.getAnnotationDefinition() ?: MetamodelRegistry.getAnnotation(this.javaClass.kotlin, lionWebVersion)
+        super.getAnnotationDefinition() ?: DefaultMetamodelRegistry.getAnnotation(this.javaClass.kotlin, lionWebVersion)
 
     inline fun <P : BaseAnnotation, reified T : Node> singleReference(
         referenceName: String,

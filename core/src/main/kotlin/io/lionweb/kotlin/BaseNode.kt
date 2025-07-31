@@ -17,7 +17,8 @@ annotation class Implementation
 abstract class BaseNode(
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) : DynamicNode() {
-    override fun getClassifier(): Concept? = super.getClassifier() ?: MetamodelRegistry.getConcept(this.javaClass.kotlin, lionWebVersion)
+    override fun getClassifier(): Concept? =
+        super.getClassifier() ?: DefaultMetamodelRegistry.getConcept(this.javaClass.kotlin, lionWebVersion)
 
     open fun calculateID(): String? = null
 

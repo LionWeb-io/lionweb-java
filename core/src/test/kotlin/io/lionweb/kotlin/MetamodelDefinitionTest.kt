@@ -148,7 +148,7 @@ class MetamodelDefinitionTest {
 
         val jsonSerialization =
             SerializationProvider.getStandardJsonSerialization().apply {
-                MetamodelRegistry.prepareJsonSerialization(this)
+                DefaultMetamodelRegistry.prepareJsonSerialization(this)
             }
 
         val serializedRoot = jsonSerialization.serializeNodesToJsonString(root)
@@ -191,7 +191,7 @@ class MetamodelDefinitionTest {
 
         val jsonSerialization =
             SerializationProvider.getStandardJsonSerialization().apply {
-                MetamodelRegistry.prepareJsonSerialization(this)
+                DefaultMetamodelRegistry.prepareJsonSerialization(this)
                 unavailableParentPolicy = UnavailableNodePolicy.PROXY_NODES
             }
 
@@ -239,7 +239,7 @@ class MetamodelDefinitionTest {
 
         val jsonSerialization =
             SerializationProvider.getStandardJsonSerialization().apply {
-                MetamodelRegistry.prepareJsonSerialization(this)
+                DefaultMetamodelRegistry.prepareJsonSerialization(this)
                 unavailableParentPolicy = UnavailableNodePolicy.PROXY_NODES
             }
 
