@@ -42,10 +42,10 @@ val jvmVersion = extra["jvmVersion"] as String
 
 dependencies {
     implementation(libs.okhttp)
-    implementation(libs.lwjavacore)
+    implementation(libs.lwjava.core)
     implementation(libs.gson)
-    implementation(libs.kotlinreflect)
-    testImplementation(libs.ktestjunit)
+    implementation(libs.kotlin.reflect)
+    testImplementation(libs.ktest.junit)
 }
 
 val specsVersion: String by project
