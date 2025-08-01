@@ -139,3 +139,7 @@ Introducing support for LionWeb 2024.1
 ### Version 1.0.3
 
 * Fixed bug in SerializedChunk.equals
+
+### Version 1.0.4
+
+* Fixed bug in RepositoryData.ids
