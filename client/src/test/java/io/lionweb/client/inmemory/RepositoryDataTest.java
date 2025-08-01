@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.language.LionCoreBuiltins;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.Arrays;
@@ -93,5 +94,15 @@ public class RepositoryDataTest {
     // n2 has two children: n3 and n4. n3 has been replaced under n1
     // however n4 should disappear
     assertEquals(new HashSet<>(Arrays.asList("n1", "n3", "n5")), repositoryData.nodesByID.keySet());
+  }
+
+  @Test
+  public void idsAssignation() {
+    RepositoryData repoData = new RepositoryData(new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    assertEquals(Collections.singletonList("id-1"), repoData.ids(1));
+    // If I store a node with id-2, the system should not assign me such id later on
+    repoData.partitionIDs.add("id-2");
+    repoData.store(Collections.singletonList(new SerializedClassifierInstance("id-2", MetaPointer.from(LionCoreBuiltins.getNode(LionWebVersion.v2023_1)))));
+    assertEquals(Collections.singletonList("id-3"), repoData.ids(1));
   }
 }

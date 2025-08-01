@@ -82,8 +82,11 @@ class RepositoryData {
 
   List<String> ids(int count) {
     List<String> res = new ArrayList<>(count);
-    for (int i = 0; i < count; i++) {
-      res.add("id-" + (nextId++));
+    while (res.size() < count) {
+      String candidate = "id-" + (nextId++);
+      if (!nodesByID.containsKey(candidate)) {
+        res.add(candidate);
+      }
     }
     return res;
   }
