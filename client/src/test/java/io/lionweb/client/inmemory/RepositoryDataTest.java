@@ -104,5 +104,8 @@ public class RepositoryDataTest {
     repoData.partitionIDs.add("id-2");
     repoData.store(Collections.singletonList(new SerializedClassifierInstance("id-2", MetaPointer.from(LionCoreBuiltins.getNode(LionWebVersion.v2023_1)))));
     assertEquals(Collections.singletonList("id-3"), repoData.ids(1));
+
+    // If I ask again for IDs to be assigned to me I should get different IDs
+    assertEquals(Collections.singletonList("id-4"), repoData.ids(1));
   }
 }
