@@ -80,14 +80,17 @@ class RepositoryData {
     return new RepositoryVersionToken("v-" + ++currentVersion);
   }
 
+  private Set<String> assignedIDs = new HashSet<>();
+
   List<String> ids(int count) {
     List<String> res = new ArrayList<>(count);
     while (res.size() < count) {
       String candidate = "id-" + (nextId++);
-      if (!nodesByID.containsKey(candidate)) {
+      if (!nodesByID.containsKey(candidate) && !assignedIDs.contains(candidate)) {
         res.add(candidate);
       }
     }
+    assignedIDs.addAll(res);
     return res;
   }
 
