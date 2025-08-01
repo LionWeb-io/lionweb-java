@@ -98,11 +98,16 @@ public class RepositoryDataTest {
 
   @Test
   public void idsAssignation() {
-    RepositoryData repoData = new RepositoryData(new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    RepositoryData repoData =
+        new RepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     assertEquals(Collections.singletonList("id-1"), repoData.ids(1));
     // If I store a node with id-2, the system should not assign me such id later on
     repoData.partitionIDs.add("id-2");
-    repoData.store(Collections.singletonList(new SerializedClassifierInstance("id-2", MetaPointer.from(LionCoreBuiltins.getNode(LionWebVersion.v2023_1)))));
+    repoData.store(
+        Collections.singletonList(
+            new SerializedClassifierInstance(
+                "id-2", MetaPointer.from(LionCoreBuiltins.getNode(LionWebVersion.v2023_1)))));
     assertEquals(Collections.singletonList("id-3"), repoData.ids(1));
 
     // If I ask again for IDs to be assigned to me I should get different IDs
