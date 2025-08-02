@@ -1,4 +1,4 @@
-package io.lionweb.delta;
+package io.lionweb.client.delta;
 
 public class Participation {
     /**

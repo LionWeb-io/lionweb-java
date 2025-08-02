@@ -1,52 +1,57 @@
-package io.lionweb.delta;
+package io.lionweb.client.delta;
 
+import io.lionweb.client.delta.messages.commands.ChangeProperty;
 import io.lionweb.language.Property;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.ObservableNode;
 import io.lionweb.model.ObservableNode.Observer;
 
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
+import io.lionweb.serialization.data.MetaPointer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DeltaSynchronizer {
+
+    private int nextId = 1;
 
     private class MyObserver implements Observer {
 
         private ObservableNode node;
 
         @Override
-        public void propertyChanged(ObservableNode node, @Nonnull Property property, @Nullable Object oldValue, @Nullable Object newValue) {
-
+        public void propertyChanged(ObservableNode node, @NotNull Property property, @Nullable Object oldValue, @Nullable Object newValue) {
+            channel.sendCommand(new ChangeProperty("cmd-"+(nextId++),
+                    node.getID(), MetaPointer.from(property), (String)newValue));
         }
 
         @Override
         public void childAdded(ObservableNode node) {
-
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void childRemoved(ObservableNode node) {
-
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void referenceValueAdded(ObservableNode node) {
-
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void referenceValueChanged(ObservableNode node) {
-
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void referenceValueRemoved(ObservableNode node) {
-
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public void parentChanged(ObservableNode node) {
-
+            throw new UnsupportedOperationException();
         }
     }
 

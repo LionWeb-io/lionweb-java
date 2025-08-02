@@ -1,9 +1,6 @@
-package io.lionweb.delta.messages.queries;
+package io.lionweb.client.delta.messages.queries;
 
-import io.lionweb.delta.messages.DeltaQuery;
-import io.lionweb.delta.messages.ProtocolMessage;
-
-import java.util.List;
+import io.lionweb.client.delta.messages.DeltaQuery;
 
 public class SubscribeToPartitionContents extends DeltaQuery {
 

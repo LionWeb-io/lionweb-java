@@ -1,9 +1,9 @@
-package io.lionweb.delta;
+package io.lionweb.client.delta;
 
-import io.lionweb.delta.messages.DeltaCommand;
-import io.lionweb.delta.messages.DeltaCommandResponse;
-import io.lionweb.delta.messages.DeltaQuery;
-import io.lionweb.delta.messages.DeltaQueryResponse;
+import io.lionweb.client.delta.messages.DeltaCommand;
+import io.lionweb.client.delta.messages.DeltaCommandResponse;
+import io.lionweb.client.delta.messages.DeltaQuery;
+import io.lionweb.client.delta.messages.DeltaQueryResponse;
 
 public interface DeltaChannel {
     /**
