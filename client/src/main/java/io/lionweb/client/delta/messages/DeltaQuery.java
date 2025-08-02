@@ -1,4 +1,4 @@
-package io.lionweb.delta.messages;
+package io.lionweb.client.delta.messages;
 
 import java.util.List;
 
