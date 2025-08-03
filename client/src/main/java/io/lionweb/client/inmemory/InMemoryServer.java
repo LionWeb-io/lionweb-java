@@ -181,4 +181,10 @@ public class InMemoryServer {
     }
     node.setPropertyValue(property, newValue);
   }
+
+  public void registerObserver(InMemoryServerObserver observer) {
+    observers.add(observer);
+  }
+
+  List<InMemoryServerObserver> observers = new ArrayList<>();
 }

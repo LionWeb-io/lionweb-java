@@ -13,6 +13,11 @@ class RepositoryData {
   final Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
   private int currentVersion = 0;
   private int nextId = 1;
+  private InMemoryServer server;
+
+  public RepositoryData(InMemoryServer server) {
+    this.server = server;
+  }
 
   void deleteNodeAndDescendant(String nodeId) {
     SerializedClassifierInstance curr = nodesByID.get(nodeId);
@@ -33,12 +38,19 @@ class RepositoryData {
       updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
         if (nodesByID.containsKey(updatedNode.getID())) {
+          // TODO iff we have observers we have to calculate the properties which changed
+          if (!server.observers.isEmpty()) {
+            throw new UnsupportedOperationException();
+          }
+
           // Have we changed children?
           List<String> currentChildren = nodesByID.get(updatedNode.getID()).getChildren();
           List<String> updatedChildren = updatedNode.getChildren();
           updatedChildren.stream()
               .filter(n -> !currentChildren.contains(n))
-              .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
+              .forEach(n -> {
+                this.addedNodes.put(n, updatedNodesAsMap.get(n));
+              });
           List<String> unknownChildren =
               updatedChildren.stream()
                   .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
@@ -69,6 +81,7 @@ class RepositoryData {
         }
       }
       nodesByID.remove(removeNodeId);
+      server.observers.forEach(o -> o.nodeDeleted(removeNodeId));
     }
   }
 
