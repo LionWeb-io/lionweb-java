@@ -165,4 +165,11 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
         + annotations
         + "} }";
   }
+
+  @Override
+  public void setObserver(@Nullable NodeObserver observer) {
+    this.observer = observer;
+  }
+
+  private @Nullable NodeObserver observer = null;
 }

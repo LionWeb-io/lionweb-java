@@ -22,7 +22,7 @@ import javax.annotation.Nullable;
  * differently depending on the version of LionWeb they are representing.
  */
 public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
-    implements ObservableNode, HasSettableParent, HasSettableID {
+    implements Node, HasSettableParent, HasSettableID {
   private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;
   private @Nullable ClassifierInstance<?> parent;
@@ -102,11 +102,11 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   protected void setPropertyValue(String propertyName, Object value) {
-    Object oldValue = propertyValues.getOrDefault(propertyName, null);
     propertyValues.put(propertyName, value);
-    observers.forEach(o -> {
-      o.propertyChanged(this, getClassifier().getPropertyByName(propertyName), oldValue, value);
-    });
+    if (observer != null) {
+      observer.propertyChanged(this, getClassifier().getPropertyByName(propertyName), value);
+    }
+    ;
   }
 
   @Override
@@ -348,9 +348,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   @Override
-  public void registerObserver(@Nonnull Observer observer) {
-    this.observers.add(observer);
+  public void setObserver(@Nullable NodeObserver observer) {
+    this.observer = observer;
   }
 
-  protected List<Observer> observers = new LinkedList<>();
+  protected @Nullable NodeObserver observer = null;
 }

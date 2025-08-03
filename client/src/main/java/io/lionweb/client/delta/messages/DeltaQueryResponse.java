@@ -1,4 +1,3 @@
 package io.lionweb.client.delta.messages;
 
-public class DeltaQueryResponse {
-}
+public class DeltaQueryResponse {}
