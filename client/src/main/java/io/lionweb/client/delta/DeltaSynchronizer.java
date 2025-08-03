@@ -1,5 +1,8 @@
 package io.lionweb.client.delta;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.ChangeProperty;
 import io.lionweb.language.Property;
 import io.lionweb.model.ClassifierInstanceUtils;
@@ -12,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 public class DeltaSynchronizer {
 
   private int nextId = 1;
+  private Multimap<String, Node> syncedNodes = ArrayListMultimap.create();
 
   private class MyObserver implements NodeObserver {
 
@@ -56,7 +60,12 @@ public class DeltaSynchronizer {
     }
   }
 
-  private class MyEventReceiver implements DeltaEventReceiver {}
+  private class MyEventReceiver implements DeltaEventReceiver {
+    @Override
+    public void receiveEvent(DeltaEvent event) {
+      throw new UnsupportedOperationException();
+    }
+  }
 
   private DeltaChannel channel;
 
@@ -67,6 +76,7 @@ public class DeltaSynchronizer {
 
   public void attachTree(Node node) {
     node.setObserver(new MyObserver());
+    syncedNodes.put(node.getID(), node);
 
     ClassifierInstanceUtils.getChildren(node).forEach(c -> attachTree(c));
   }
