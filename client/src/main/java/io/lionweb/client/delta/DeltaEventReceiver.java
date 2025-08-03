@@ -1,4 +1,3 @@
 package io.lionweb.client.delta;
 
-public interface DeltaEventReceiver {
-}
+public interface DeltaEventReceiver {}

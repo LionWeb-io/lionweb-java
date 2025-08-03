@@ -1,4 +1,3 @@
 package io.lionweb.client.delta.messages;
 
-public abstract class ProtocolMessage {
-}
+public abstract class ProtocolMessage {}
