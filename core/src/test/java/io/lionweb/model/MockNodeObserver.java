@@ -89,6 +89,31 @@ public class MockNodeObserver implements NodeObserver {
     }
   }
 
+  public static class ChildRemovedRecord extends Record {
+    public final @Nonnull Containment containment;
+    public final int index;
+    public final @Nonnull Node newChild;
+
+    public ChildRemovedRecord(@Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild) {
+      super(node);
+      this.containment = containment;
+      this.index = index;
+      this.newChild = newChild;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || getClass() != o.getClass()) return false;
+      ChildRemovedRecord that = (ChildRemovedRecord) o;
+      return index == that.index && Objects.equals(containment, that.containment) && Objects.equals(newChild, that.newChild);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(containment, index, newChild);
+    }
+  }
+
   private List<Record> records = new ArrayList<>();
 
   public void clearRecords() {
@@ -115,8 +140,8 @@ public class MockNodeObserver implements NodeObserver {
   }
 
   @Override
-  public void childRemoved(@Nonnull Node node) {
-    throw new UnsupportedOperationException();
+  public void childRemoved(@Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node removedChild) {
+    records.add(new ChildRemovedRecord(node, containment, index, removedChild));
   }
 
   @Override
