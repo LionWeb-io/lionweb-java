@@ -66,14 +66,20 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void removeAnnotation(@Nonnull AnnotationInstance instance) {
+  public int removeAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    if (annotations == null || !this.annotations.remove(instance)) {
+    int index = -1;
+    if (annotations != null) {
+      index = this.annotations.indexOf(instance);
+    }
+    if (index == -1) {
       throw new IllegalArgumentException();
     }
+    annotations.remove(index);
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
+    return index;
   }
 
   void tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {

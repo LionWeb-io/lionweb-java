@@ -99,7 +99,15 @@ public class M3NodeTest {
         observer.getRecords());
     observer.clearRecords();
 
-    // TODO annotationRemoved
+    // annotationRemoved
+    language.removeAnnotation(ann2);
+    language.removeAnnotation(ann1);
+    assertEquals(
+        Arrays.asList(
+            new MockNodeObserver.AnnotationRemovedRecord(language, 1, ann2),
+            new MockNodeObserver.AnnotationRemovedRecord(language, 0, ann1)),
+        observer.getRecords());
+    observer.clearRecords();
 
     // TODO referenceValueAdded
 
