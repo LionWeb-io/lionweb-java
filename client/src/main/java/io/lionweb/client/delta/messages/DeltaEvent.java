@@ -13,4 +13,8 @@ public class DeltaEvent {
     public DeltaEvent(int sequenceNumber) {
         this.sequenceNumber = sequenceNumber;
     }
+
+    public void addSource(CommandSource source) {
+        originCommands.add(source);
+    }
 }
