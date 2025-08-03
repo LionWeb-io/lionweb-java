@@ -20,7 +20,8 @@ public interface NodeObserver {
 
   void annotationAdded(@Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation);
 
-  void annotationRemoved(@Nonnull Node node);
+  void annotationRemoved(
+      @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation);
 
   void referenceValueAdded(@Nonnull Node node);
 

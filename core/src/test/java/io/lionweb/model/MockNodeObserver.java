@@ -146,6 +146,30 @@ public class MockNodeObserver implements NodeObserver {
     }
   }
 
+  public static class AnnotationRemovedRecord extends Record {
+    public final int index;
+    public final @Nonnull AnnotationInstance removedAnnotation;
+
+    public AnnotationRemovedRecord(
+        @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation) {
+      super(node);
+      this.index = index;
+      this.removedAnnotation = removedAnnotation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || getClass() != o.getClass()) return false;
+      AnnotationRemovedRecord that = (AnnotationRemovedRecord) o;
+      return index == that.index && Objects.equals(removedAnnotation, that.removedAnnotation);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(index, removedAnnotation);
+    }
+  }
+
   private List<Record> records = new ArrayList<>();
 
   public void clearRecords() {
@@ -184,8 +208,9 @@ public class MockNodeObserver implements NodeObserver {
   }
 
   @Override
-  public void annotationRemoved(@Nonnull Node node) {
-    throw new UnsupportedOperationException();
+  public void annotationRemoved(
+      @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation) {
+    records.add(new AnnotationRemovedRecord(node, index, removedAnnotation));
   }
 
   @Override

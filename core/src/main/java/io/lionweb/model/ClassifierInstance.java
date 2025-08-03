@@ -29,7 +29,7 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
    */
   boolean addAnnotation(@Nonnull AnnotationInstance instance);
 
-  void removeAnnotation(@Nonnull AnnotationInstance instance);
+  int removeAnnotation(@Nonnull AnnotationInstance instance);
 
   String getID();
 

@@ -380,4 +380,13 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     }
     return res;
   }
+
+  @Override
+  public int removeAnnotation(@Nonnull AnnotationInstance instance) {
+    int res = super.removeAnnotation(instance);
+    if (observer != null) {
+      observer.annotationRemoved(this, res, instance);
+    }
+    return res;
+  }
 }
