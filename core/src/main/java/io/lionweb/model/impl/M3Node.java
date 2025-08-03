@@ -102,9 +102,14 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   protected void setPropertyValue(String propertyName, Object value) {
+    Object oldValue = null;
+    if (observer != null) {
+      oldValue = getPropertyValue(getClassifier().getPropertyByName(propertyName));
+    }
     propertyValues.put(propertyName, value);
     if (observer != null) {
-      observer.propertyChanged(this, getClassifier().getPropertyByName(propertyName), value);
+      observer.propertyChanged(
+          this, getClassifier().getPropertyByName(propertyName), oldValue, value);
     }
   }
 
@@ -125,6 +130,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       addContainmentMultipleValue(containment.getName(), child);
     } else {
       setContainmentSingleValue(containment.getName(), child);
+    }
+    if (observer != null) {
+      observer.childAdded(this, containment, getChildren(containment).size() - 1, child);
     }
   }
 
@@ -302,6 +310,13 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       containmentValues.get(linkName).add(value);
     } else {
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+    }
+    if (observer != null) {
+      observer.childAdded(
+          this,
+          getClassifier().getContainmentByName(linkName),
+          getChildrenByContainmentName(this, linkName).size() - 1,
+          value);
     }
     return true;
   }

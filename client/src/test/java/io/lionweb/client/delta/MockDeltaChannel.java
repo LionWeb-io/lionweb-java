@@ -9,7 +9,6 @@ import io.lionweb.client.delta.messages.events.PropertyAdded;
 import io.lionweb.client.delta.messages.queries.GetAvailableIds;
 import io.lionweb.client.delta.messages.queries.SignOff;
 import io.lionweb.client.delta.messages.queries.SignOn;
-
 import java.util.*;
 
 public class MockDeltaChannel implements DeltaChannel {
@@ -37,7 +36,7 @@ public class MockDeltaChannel implements DeltaChannel {
       this.participationId = participationId;
       response.values.put("participationId", participationId);
       return response;
-    } else if( query instanceof SignOff) {
+    } else if (query instanceof SignOff) {
       SignOff signOff = (SignOff) query;
       DeltaQueryResponse response = new DeltaQueryResponse(query.queryId);
       this.participationId = null;
@@ -46,7 +45,7 @@ public class MockDeltaChannel implements DeltaChannel {
       GetAvailableIds getAvailableIds = (GetAvailableIds) query;
       DeltaQueryResponse response = new DeltaQueryResponse(query.queryId);
       List<String> ids = new ArrayList<>();
-      for (int i = 0; i <getAvailableIds.count; i++) {
+      for (int i = 0; i < getAvailableIds.count; i++) {
         ids.add("id-" + nextId++);
       }
       response.values.put("ids", ids);
@@ -62,8 +61,12 @@ public class MockDeltaChannel implements DeltaChannel {
 
     if (command instanceof ChangeProperty) {
       ChangeProperty changeProperty = (ChangeProperty) command;
-      PropertyAdded event = new PropertyAdded(eventSequence++,
-              changeProperty.node, changeProperty.property, changeProperty.newValue);
+      PropertyAdded event =
+          new PropertyAdded(
+              eventSequence++,
+              changeProperty.node,
+              changeProperty.property,
+              changeProperty.newValue);
       event.addSource(new CommandSource(participationId, command.commandId));
       receivers.forEach(r -> r.receiveEvent(event));
     }

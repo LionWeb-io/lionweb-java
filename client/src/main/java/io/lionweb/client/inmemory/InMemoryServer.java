@@ -70,7 +70,8 @@ public class InMemoryServer {
     RepositoryData repositoryData = getRepository(repositoryName);
     // We get all roots (i.e. -> partitions) which do not yet exist
     // and add them to the list of partition IDs
-    List<String> newPartitions = partitions.stream()
+    List<String> newPartitions =
+        partitions.stream()
             .filter(n -> n.getParentNodeID() == null)
             .map(SerializedClassifierInstance::getID)
             .filter(id -> !repositoryData.partitionIDs.contains(id))
@@ -175,7 +176,8 @@ public class InMemoryServer {
     return repositoryData;
   }
 
-  public void setProperty(@NotNull String repositoryName, String nodeId, MetaPointer property, String newValue) {
+  public void setProperty(
+      @NotNull String repositoryName, String nodeId, MetaPointer property, String newValue) {
     RepositoryData repositoryData = getRepository(repositoryName);
     SerializedClassifierInstance node = repositoryData.nodesByID.get(nodeId);
     if (node == null) {

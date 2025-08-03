@@ -4,5 +4,5 @@ import io.lionweb.client.delta.messages.DeltaEvent;
 
 public interface DeltaEventReceiver {
 
-    void receiveEvent(DeltaEvent event);
+  void receiveEvent(DeltaEvent event);
 }

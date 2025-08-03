@@ -6,6 +6,7 @@ import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.Node;
+import io.lionweb.model.NodeObserver;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.AbstractClassifierInstance;
 import java.util.ArrayList;
@@ -144,6 +145,11 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   @Override
   public void setReferenceValues(
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setObserver(@Nullable NodeObserver observer) {
     throw new UnsupportedOperationException();
   }
 }

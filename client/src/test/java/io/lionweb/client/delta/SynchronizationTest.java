@@ -1,12 +1,9 @@
 package io.lionweb.client.delta;
 
-import io.lionweb.client.delta.messages.commands.ChangeProperty;
-import io.lionweb.language.Language;
-import io.lionweb.language.LionCoreBuiltins;
-import io.lionweb.serialization.data.MetaPointer;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import io.lionweb.language.Language;
+import org.junit.jupiter.api.Test;
 
 public class SynchronizationTest {
 

@@ -48,9 +48,10 @@ class RepositoryData {
           List<String> updatedChildren = updatedNode.getChildren();
           updatedChildren.stream()
               .filter(n -> !currentChildren.contains(n))
-              .forEach(n -> {
-                this.addedNodes.put(n, updatedNodesAsMap.get(n));
-              });
+              .forEach(
+                  n -> {
+                    this.addedNodes.put(n, updatedNodesAsMap.get(n));
+                  });
           List<String> unknownChildren =
               updatedChildren.stream()
                   .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
