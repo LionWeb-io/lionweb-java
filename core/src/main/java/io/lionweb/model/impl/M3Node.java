@@ -148,19 +148,23 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
      * is not null, and therefore child.getContainmentFeature should not be null.
      * Most implementation of the method (including the default one in Node) would
      * either return a proper value or throw an exception to signal the inconsistency,
-     * so the extra check for feature not to be null is out of caution and to report
+     * so the extra check for containment not to be null is out of caution and to report
      * the inconsistency, if somehow this has not been done by getContainmentFeature
      */
-    Feature<?> feature = child.getContainmentFeature();
-    if (feature == null) {
+    Containment containment = child.getContainmentFeature();
+    if (containment == null) {
       throw new IllegalStateException(
-          "If the parent is not null, the containment feature should not be null");
+          "If the parent is not null, the containment containment should not be null");
     }
 
-    List<Node> children = containmentValues.get(feature.getName());
+    List<Node> children = containmentValues.get(containment.getName());
+    int index = children.indexOf(child);
     children.remove(child);
     if (child instanceof HasSettableParent) {
       ((HasSettableParent) child).setParent(null);
+    }
+    if (observer != null) {
+      observer.childRemoved(this, containment, index, child);
     }
   }
 
