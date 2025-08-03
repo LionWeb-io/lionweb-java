@@ -1,10 +1,9 @@
 package io.lionweb.client.delta;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.ChangeProperty;
 import io.lionweb.client.delta.messages.events.PropertyAdded;
+import io.lionweb.client.utils.IdentityMultimap;
 import io.lionweb.language.Property;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
@@ -13,12 +12,15 @@ import io.lionweb.serialization.data.MetaPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.IdentityHashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class DeltaSynchronizer {
 
   private int nextId = 1;
-  private Multimap<String, Node> syncedNodes = ArrayListMultimap.create();
+  private IdentityMultimap<String, Node> syncedNodes = new IdentityMultimap<>();
+  private Map<String, Node> cmdIdsToNode = new IdentityHashMap<>();
 
   private class MyObserver implements NodeObserver {
 
@@ -27,9 +29,11 @@ public class DeltaSynchronizer {
     @Override
     public void propertyChanged(
         @NotNull Node node, @NotNull Property property, @Nullable Object newValue) {
+      String cmdId = "cmd-" + (nextId++);
+      cmdIdsToNode.put(cmdId, node);
       channel.sendCommand(
           new ChangeProperty(
-              "cmd-" + (nextId++), node.getID(), MetaPointer.from(property), (String) newValue));
+                  cmdId, node.getID(), MetaPointer.from(property), (String) newValue));
     }
 
     @Override
@@ -69,9 +73,13 @@ public class DeltaSynchronizer {
       if (event instanceof PropertyAdded) {
         PropertyAdded propertyAdded = (PropertyAdded) event;
         syncedNodes.get(propertyAdded.node).forEach(n ->{
-          Property property = n.getClassifier().getPropertyByMetaPointer(propertyAdded.property);
-          if (Objects.equals(propertyAdded.newValue, n.getPropertyValue(property))) {
-            n.setPropertyValue(property, propertyAdded.newValue);
+          // Let's exclude the node that caused this
+          if (!event.originCommands.stream().allMatch(cmd -> cmdIdsToNode.get(cmd.commandId) == n)) {
+
+            Property property = n.getClassifier().getPropertyByMetaPointer(propertyAdded.property);
+            if (Objects.equals(propertyAdded.newValue, n.getPropertyValue(property))) {
+              n.setPropertyValue(property, propertyAdded.newValue);
+            }
           }
         });
 
