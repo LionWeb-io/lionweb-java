@@ -94,7 +94,8 @@ public class MockNodeObserver implements NodeObserver {
     public final int index;
     public final @Nonnull Node newChild;
 
-    public ChildRemovedRecord(@Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild) {
+    public ChildRemovedRecord(
+        @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild) {
       super(node);
       this.containment = containment;
       this.index = index;
@@ -105,12 +106,43 @@ public class MockNodeObserver implements NodeObserver {
     public boolean equals(Object o) {
       if (o == null || getClass() != o.getClass()) return false;
       ChildRemovedRecord that = (ChildRemovedRecord) o;
-      return index == that.index && Objects.equals(containment, that.containment) && Objects.equals(newChild, that.newChild);
+      return index == that.index
+          && Objects.equals(containment, that.containment)
+          && Objects.equals(newChild, that.newChild);
     }
 
     @Override
     public int hashCode() {
       return Objects.hash(containment, index, newChild);
+    }
+  }
+
+  public static class AnnotationAddedRecord extends Record {
+    public final int index;
+    public final @Nonnull AnnotationInstance newAnnotation;
+
+    public AnnotationAddedRecord(
+        @Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation) {
+      super(node);
+      this.index = index;
+      this.newAnnotation = newAnnotation;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || getClass() != o.getClass()) return false;
+      AnnotationAddedRecord that = (AnnotationAddedRecord) o;
+      return index == that.index && Objects.equals(newAnnotation, that.newAnnotation);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(index, newAnnotation);
+    }
+
+    @Override
+    public String toString() {
+      return "AnnotationAddedRecord{" + "index=" + index + ", newAnnotation=" + newAnnotation + '}';
     }
   }
 
@@ -140,13 +172,15 @@ public class MockNodeObserver implements NodeObserver {
   }
 
   @Override
-  public void childRemoved(@Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node removedChild) {
+  public void childRemoved(
+      @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node removedChild) {
     records.add(new ChildRemovedRecord(node, containment, index, removedChild));
   }
 
   @Override
-  public void annotationAdded(@Nonnull Node node) {
-    throw new UnsupportedOperationException();
+  public void annotationAdded(
+      @Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation) {
+    records.add(new AnnotationAddedRecord(node, index, newAnnotation));
   }
 
   @Override

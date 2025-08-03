@@ -371,4 +371,13 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   protected @Nullable NodeObserver observer = null;
+
+  @Override
+  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
+    boolean res = super.addAnnotation(instance);
+    if (res && observer != null) {
+      observer.annotationAdded(this, getAnnotations().size() - 1, instance);
+    }
+    return res;
+  }
 }

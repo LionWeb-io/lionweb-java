@@ -44,14 +44,14 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void addAnnotation(@Nonnull AnnotationInstance instance) {
+  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
     if (this.annotations.contains(instance)) {
       // necessary to avoid infinite loops and duplicate insertions
-      return;
+      return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
@@ -59,9 +59,10 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations.contains(instance)) {
       // necessary to avoid infinite loops and duplicate insertions
       // the previous setAnnotated could potentially have already set annotations
-      return;
+      return false;
     }
     this.annotations.add(instance);
+    return true;
   }
 
   @Override
