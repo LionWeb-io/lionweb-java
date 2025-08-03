@@ -110,6 +110,13 @@ public class M3NodeTest {
     observer.clearRecords();
 
     // TODO referenceValueAdded
+    Language language2 = new Language();
+    language2.setID("l2");
+    Language language3 = new Language();
+    language3.setID("l3");
+
+    language.addDependency(language2);
+    language.addDependency(language3);
 
     // TODO referenceValueChanged
 
