@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
+import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.MockNodeObserver;
 import java.util.Arrays;
 import org.junit.Test;
@@ -78,13 +79,25 @@ public class M3NodeTest {
     language.removeChild(c2);
     language.removeChild(c1);
     assertEquals(
-            Arrays.asList(
-                    new MockNodeObserver.ChildRemovedRecord(language, entities, 1, c2),
-                    new MockNodeObserver.ChildRemovedRecord(language, entities, 0, c1)),
-            observer.getRecords());
+        Arrays.asList(
+            new MockNodeObserver.ChildRemovedRecord(language, entities, 1, c2),
+            new MockNodeObserver.ChildRemovedRecord(language, entities, 0, c1)),
+        observer.getRecords());
     observer.clearRecords();
 
-    // TODO annotationAdded
+    // annotationAdded
+    Annotation annotation = new Annotation();
+    annotation.setID("a1");
+    AnnotationInstance ann1 = new DynamicAnnotationInstance("ai1", annotation);
+    AnnotationInstance ann2 = new DynamicAnnotationInstance("ai2", annotation);
+    language.addAnnotation(ann1);
+    language.addAnnotation(ann2);
+    assertEquals(
+        Arrays.asList(
+            new MockNodeObserver.AnnotationAddedRecord(language, 0, ann1),
+            new MockNodeObserver.AnnotationAddedRecord(language, 1, ann2)),
+        observer.getRecords());
+    observer.clearRecords();
 
     // TODO annotationRemoved
 

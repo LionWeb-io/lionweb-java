@@ -15,9 +15,10 @@ public interface NodeObserver {
   void childAdded(
       @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild);
 
-  void childRemoved(@Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node removedChild);
+  void childRemoved(
+      @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node removedChild);
 
-  void annotationAdded(@Nonnull Node node);
+  void annotationAdded(@Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation);
 
   void annotationRemoved(@Nonnull Node node);
 
