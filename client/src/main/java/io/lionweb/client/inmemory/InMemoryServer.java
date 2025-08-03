@@ -70,12 +70,13 @@ public class InMemoryServer {
     RepositoryData repositoryData = getRepository(repositoryName);
     // We get all roots (i.e. -> partitions) which do not yet exist
     // and add them to the list of partition IDs
-    repositoryData.partitionIDs.addAll(
-        partitions.stream()
+    List<String> newPartitions = partitions.stream()
             .filter(n -> n.getParentNodeID() == null)
             .map(SerializedClassifierInstance::getID)
             .filter(id -> !repositoryData.partitionIDs.contains(id))
-            .collect(Collectors.toList()));
+            .collect(Collectors.toList());
+    repositoryData.partitionIDs.addAll(newPartitions);
+    newPartitions.forEach(p -> observers.forEach(o -> o.partitionAdded(p)));
     repositoryData.store(partitions);
     return repositoryData.bumpVersion();
   }
@@ -85,6 +86,7 @@ public class InMemoryServer {
     Objects.requireNonNull(partitionIds);
     RepositoryData repositoryData = getRepository(repositoryName);
     repositoryData.partitionIDs.removeIf(partitionIds::contains);
+    partitionIds.forEach(p -> observers.forEach(o -> o.partitionRemoved(p)));
     partitionIds.forEach(repositoryData::deleteNodeAndDescendant);
     return repositoryData.bumpVersion();
   }
