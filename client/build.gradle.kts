@@ -125,6 +125,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.gson)
     testImplementation(libs.junit)
+    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
+    implementation("com.google.guava:guava:33.0.0-jre")
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))

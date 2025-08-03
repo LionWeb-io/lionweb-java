@@ -106,7 +106,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     if (observer != null) {
       observer.propertyChanged(this, getClassifier().getPropertyByName(propertyName), value);
     }
-    ;
   }
 
   @Override

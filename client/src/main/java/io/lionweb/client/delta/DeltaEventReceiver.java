@@ -1,3 +1,8 @@
 package io.lionweb.client.delta;
 
-public interface DeltaEventReceiver {}
+import io.lionweb.client.delta.messages.DeltaEvent;
+
+public interface DeltaEventReceiver {
+
+    void receiveEvent(DeltaEvent event);
+}
