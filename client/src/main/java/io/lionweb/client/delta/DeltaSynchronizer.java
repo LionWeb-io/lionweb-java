@@ -4,6 +4,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.ChangeProperty;
+import io.lionweb.client.delta.messages.events.PropertyAdded;
 import io.lionweb.language.Property;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
@@ -11,6 +12,8 @@ import io.lionweb.model.NodeObserver;
 import io.lionweb.serialization.data.MetaPointer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
 
 public class DeltaSynchronizer {
 
@@ -63,7 +66,18 @@ public class DeltaSynchronizer {
   private class MyEventReceiver implements DeltaEventReceiver {
     @Override
     public void receiveEvent(DeltaEvent event) {
-      throw new UnsupportedOperationException();
+      if (event instanceof PropertyAdded) {
+        PropertyAdded propertyAdded = (PropertyAdded) event;
+        syncedNodes.get(propertyAdded.node).forEach(n ->{
+          Property property = n.getClassifier().getPropertyByMetaPointer(propertyAdded.property);
+          if (Objects.equals(propertyAdded.newValue, n.getPropertyValue(property))) {
+            n.setPropertyValue(property, propertyAdded.newValue);
+          }
+        });
+
+      } else {
+        throw new UnsupportedOperationException();
+      }
     }
   }
 
