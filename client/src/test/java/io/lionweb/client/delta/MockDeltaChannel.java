@@ -13,6 +13,7 @@ import java.util.List;
 public class MockDeltaChannel implements DeltaChannel {
   List<DeltaCommand> commands = new LinkedList<>();
   int eventSequence = 1;
+  String participationId = "DUMMY-PARTICIPATION-ID";
 
   private List<DeltaEventReceiver> receivers = new LinkedList<>();
 
@@ -29,6 +30,7 @@ public class MockDeltaChannel implements DeltaChannel {
       ChangeProperty changeProperty = (ChangeProperty) command;
       PropertyAdded event = new PropertyAdded(eventSequence++,
               changeProperty.node, changeProperty.property, changeProperty.newValue);
+      event.addSource(new CommandSource(participationId, command.commandId));
       receivers.forEach(r -> r.receiveEvent(event));
     }
 
