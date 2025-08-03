@@ -172,4 +172,13 @@ public class InMemoryServer {
     }
     return repositoryData;
   }
+
+  public void setProperty(@NotNull String repositoryName, String nodeId, MetaPointer property, String newValue) {
+    RepositoryData repositoryData = getRepository(repositoryName);
+    SerializedClassifierInstance node = repositoryData.nodesByID.get(nodeId);
+    if (node == null) {
+      throw new IllegalArgumentException();
+    }
+    node.setPropertyValue(property, newValue);
+  }
 }

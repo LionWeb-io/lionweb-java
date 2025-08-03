@@ -13,7 +13,7 @@ public class SynchronizationTest {
   @Test
   public void setPropertyCommand() {
     MockDeltaChannel deltaClient = new MockDeltaChannel();
-    DeltaSynchronizer synchronizer = new DeltaSynchronizer(deltaClient);
+    DeltaSynchronizer synchronizer = new MockDeltaSynchronizer(deltaClient);
 
     Language l1a = new Language();
     l1a.setID("l1");

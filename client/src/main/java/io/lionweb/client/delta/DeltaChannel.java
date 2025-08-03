@@ -5,6 +5,11 @@ import io.lionweb.client.delta.messages.DeltaCommandResponse;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 
+/**
+ * The DeltaChannel must be a specific link between a Client and the Server.
+ * Different clients should use different DeltaChannels because the clientId must
+ * be determined from the channel.
+ */
 public interface DeltaChannel {
   /**
    * Queries initiated/requested by the client, with synchronous response by the repository. A query

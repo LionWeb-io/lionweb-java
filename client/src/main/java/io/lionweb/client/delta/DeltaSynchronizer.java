@@ -16,7 +16,14 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class DeltaSynchronizer {
+/**
+ * This object is responsible for ensuring that, the nodes indicated to it ar in sync
+ * with some given source.
+ *
+ * For example, we could sync nodes with a repository, so that changes to the nodes would
+ * be reflected on the repository and vice versa.
+ */
+public abstract class DeltaSynchronizer {
 
   private int nextId = 1;
   private IdentityMultimap<String, Node> syncedNodes = new IdentityMultimap<>();
@@ -97,9 +104,13 @@ public class DeltaSynchronizer {
   }
 
   public void attachTree(Node node) {
+    forceState(node);
+
     node.setObserver(new MyObserver());
     syncedNodes.put(node.getID(), node);
 
     ClassifierInstanceUtils.getChildren(node).forEach(c -> attachTree(c));
   }
+
+  protected abstract void forceState(Node node);
 }
