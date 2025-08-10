@@ -131,7 +131,22 @@ public class M3NodeTest {
         observer.getRecords());
     observer.clearRecords();
 
-    // TODO referenceValueChanged
+    // referenceValueChanged
+    ReferenceValue rvToL2 = language.getReferenceValues(languageDependsOn).get(0);
+      ReferenceValue rvToL3 = language.getReferenceValues(languageDependsOn).get(1);
+    rvToL2.setResolveInfo("Language 2");
+    rvToL2.setReferred(new ProxyNode("12345"));
+      rvToL3.setReferred(new ProxyNode("23456"));
+      assertEquals(
+              Arrays.asList(
+                      new MockClassifierInstanceObserver.ReferenceChangeddRecord(
+                              language, languageDependsOn, 0, "l2", "L2", "l2", "Language 2"),
+                      new MockClassifierInstanceObserver.ReferenceChangeddRecord(
+                              language, languageDependsOn, 0, "l2", "Language 2", "12345", "Language 2"),
+                      new MockClassifierInstanceObserver.ReferenceChangeddRecord(
+                              language, languageDependsOn, 1, "l3", "L3", "23456", "L3")),
+              observer.getRecords());
+      observer.clearRecords();
 
     // TODO referenceValueRemoved
   }
