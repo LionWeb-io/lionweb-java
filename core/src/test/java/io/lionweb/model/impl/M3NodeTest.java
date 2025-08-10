@@ -133,21 +133,31 @@ public class M3NodeTest {
 
     // referenceValueChanged
     ReferenceValue rvToL2 = language.getReferenceValues(languageDependsOn).get(0);
-      ReferenceValue rvToL3 = language.getReferenceValues(languageDependsOn).get(1);
+    ReferenceValue rvToL3 = language.getReferenceValues(languageDependsOn).get(1);
     rvToL2.setResolveInfo("Language 2");
     rvToL2.setReferred(new ProxyNode("12345"));
-      rvToL3.setReferred(new ProxyNode("23456"));
-      assertEquals(
-              Arrays.asList(
-                      new MockClassifierInstanceObserver.ReferenceChangeddRecord(
-                              language, languageDependsOn, 0, "l2", "L2", "l2", "Language 2"),
-                      new MockClassifierInstanceObserver.ReferenceChangeddRecord(
-                              language, languageDependsOn, 0, "l2", "Language 2", "12345", "Language 2"),
-                      new MockClassifierInstanceObserver.ReferenceChangeddRecord(
-                              language, languageDependsOn, 1, "l3", "L3", "23456", "L3")),
-              observer.getRecords());
-      observer.clearRecords();
+    rvToL3.setReferred(new ProxyNode("23456"));
+    assertEquals(
+        Arrays.asList(
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                language, languageDependsOn, 0, "l2", "L2", "l2", "Language 2"),
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                language, languageDependsOn, 0, "l2", "Language 2", "12345", "Language 2"),
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                language, languageDependsOn, 1, "l3", "L3", "23456", "L3")),
+        observer.getRecords());
+    observer.clearRecords();
 
-    // TODO referenceValueRemoved
+    // referenceValueRemoved
+    language.removeReferenceValue(languageDependsOn, 1);
+    language.removeReferenceValue(languageDependsOn, 0);
+    assertEquals(
+        Arrays.asList(
+            new MockClassifierInstanceObserver.ReferenceRemovedRecord(
+                language, languageDependsOn, 1, "23456", "L3"),
+            new MockClassifierInstanceObserver.ReferenceRemovedRecord(
+                language, languageDependsOn, 0, "12345", "Language 2")),
+        observer.getRecords());
+    observer.clearRecords();
   }
 }

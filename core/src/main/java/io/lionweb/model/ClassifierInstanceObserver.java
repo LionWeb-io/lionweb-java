@@ -35,9 +35,18 @@ public interface ClassifierInstanceObserver {
       @Nonnull Reference reference,
       @Nonnull ReferenceValue referenceValue);
 
-  void referenceValueChanged(@Nonnull ClassifierInstance<?> classifierInstance,
-                             @Nonnull Reference reference, int index, String oldReferred, String oldResolveInfo,
-                             String newReferred, String newResolveInfo);
+  void referenceValueChanged(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull Reference reference,
+      int index,
+      String oldReferred,
+      String oldResolveInfo,
+      String newReferred,
+      String newResolveInfo);
 
-  void referenceValueRemoved(@Nonnull ClassifierInstance<?> classifierInstance);
+  void referenceValueRemoved(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull Reference reference,
+      int index,
+      @Nonnull ReferenceValue referenceValue);
 }

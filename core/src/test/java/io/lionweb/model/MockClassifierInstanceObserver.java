@@ -204,35 +204,83 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
     }
   }
 
-  public static class ReferenceChangeddRecord extends Record {
-      public final @Nonnull Reference reference;
-      public final int index;
-      public final String oldReferred;
-      public final String oldResolveInfo;
-      public final String newReferred;
-      public final String newResolveInfo;
+  public static class ReferenceChangedRecord extends Record {
+    public final @Nonnull Reference reference;
+    public final int index;
+    public final String oldReferred;
+    public final String oldResolveInfo;
+    public final String newReferred;
+    public final String newResolveInfo;
 
-      public ReferenceChangeddRecord(@Nonnull ClassifierInstance<?> node, @Nonnull Reference reference, int index, String oldReferred, String oldResolveInfo, String newReferred, String newResolveInfo) {
-          super(node);
-          this.reference = reference;
-          this.index = index;
-          this.oldReferred = oldReferred;
-          this.oldResolveInfo = oldResolveInfo;
-          this.newReferred = newReferred;
-          this.newResolveInfo = newResolveInfo;
-      }
+    public ReferenceChangedRecord(
+        @Nonnull ClassifierInstance<?> node,
+        @Nonnull Reference reference,
+        int index,
+        String oldReferred,
+        String oldResolveInfo,
+        String newReferred,
+        String newResolveInfo) {
+      super(node);
+      this.reference = reference;
+      this.index = index;
+      this.oldReferred = oldReferred;
+      this.oldResolveInfo = oldResolveInfo;
+      this.newReferred = newReferred;
+      this.newResolveInfo = newResolveInfo;
+    }
 
-      @Override
-      public boolean equals(Object o) {
-          if (o == null || getClass() != o.getClass()) return false;
-          ReferenceChangeddRecord that = (ReferenceChangeddRecord) o;
-          return index == that.index && Objects.equals(reference, that.reference) && Objects.equals(oldReferred, that.oldReferred) && Objects.equals(oldResolveInfo, that.oldResolveInfo) && Objects.equals(newReferred, that.newReferred) && Objects.equals(newResolveInfo, that.newResolveInfo);
-      }
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || getClass() != o.getClass()) return false;
+      ReferenceChangedRecord that = (ReferenceChangedRecord) o;
+      return index == that.index
+          && Objects.equals(reference, that.reference)
+          && Objects.equals(oldReferred, that.oldReferred)
+          && Objects.equals(oldResolveInfo, that.oldResolveInfo)
+          && Objects.equals(newReferred, that.newReferred)
+          && Objects.equals(newResolveInfo, that.newResolveInfo);
+    }
 
-      @Override
-      public int hashCode() {
-          return Objects.hash(reference, index, oldReferred, oldResolveInfo, newReferred, newResolveInfo);
-      }
+    @Override
+    public int hashCode() {
+      return Objects.hash(
+          reference, index, oldReferred, oldResolveInfo, newReferred, newResolveInfo);
+    }
+  }
+
+  public static class ReferenceRemovedRecord extends Record {
+    public final @Nonnull Reference reference;
+    public final int index;
+    public final String referred;
+    public final String resolveInfo;
+
+    public ReferenceRemovedRecord(
+        @Nonnull ClassifierInstance<?> node,
+        @Nonnull Reference reference,
+        int index,
+        String referred,
+        String resolveInfo) {
+      super(node);
+      this.reference = reference;
+      this.index = index;
+      this.referred = referred;
+      this.resolveInfo = resolveInfo;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || getClass() != o.getClass()) return false;
+      ReferenceRemovedRecord that = (ReferenceRemovedRecord) o;
+      return index == that.index
+          && Objects.equals(reference, that.reference)
+          && Objects.equals(referred, that.referred)
+          && Objects.equals(resolveInfo, that.resolveInfo);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(reference, index, referred, resolveInfo);
+    }
   }
 
   private List<Record> records = new ArrayList<>();
@@ -293,14 +341,37 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
   }
 
   @Override
-  public void referenceValueChanged(@Nonnull ClassifierInstance<?> classifierInstance,
-                                    @Nonnull Reference reference, int index, String oldReferred, String oldResolveInfo,
-                                    String newReferred, String newResolveInfo) {
-    records.add(new ReferenceChangeddRecord(classifierInstance, reference, index, oldReferred, oldResolveInfo, newReferred, newResolveInfo));
+  public void referenceValueChanged(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull Reference reference,
+      int index,
+      String oldReferred,
+      String oldResolveInfo,
+      String newReferred,
+      String newResolveInfo) {
+    records.add(
+        new ReferenceChangedRecord(
+            classifierInstance,
+            reference,
+            index,
+            oldReferred,
+            oldResolveInfo,
+            newReferred,
+            newResolveInfo));
   }
 
   @Override
-  public void referenceValueRemoved(@Nonnull ClassifierInstance<?> node) {
-    throw new UnsupportedOperationException();
+  public void referenceValueRemoved(
+      @Nonnull ClassifierInstance<?> classifierInstance,
+      @Nonnull Reference reference,
+      int index,
+      @Nonnull ReferenceValue referenceValue) {
+    records.add(
+        new ReferenceRemovedRecord(
+            classifierInstance,
+            reference,
+            index,
+            referenceValue.getReferredID(),
+            referenceValue.getResolveInfo()));
   }
 }

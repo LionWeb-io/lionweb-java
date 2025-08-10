@@ -128,7 +128,10 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    getReferenceValues(reference).remove(index);
+    ReferenceValue removedReferenceValue = getReferenceValues(reference).remove(index);
+    if (observer != null) {
+      observer.referenceValueRemoved(this, reference, index, removedReferenceValue);
+    }
   }
 
   @Override
