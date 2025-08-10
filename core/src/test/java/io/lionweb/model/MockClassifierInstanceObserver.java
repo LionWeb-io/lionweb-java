@@ -2,18 +2,19 @@ package io.lionweb.model;
 
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
+import io.lionweb.language.Reference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MockNodeObserver implements NodeObserver {
+public class MockClassifierInstanceObserver implements ClassifierInstanceObserver {
 
   public abstract static class Record {
-    public final @Nonnull Node node;
+    public final @Nonnull ClassifierInstance<?> node;
 
-    public Record(@Nonnull Node node) {
+    public Record(@Nonnull ClassifierInstance<?> node) {
       this.node = node;
     }
   }
@@ -24,7 +25,7 @@ public class MockNodeObserver implements NodeObserver {
     public final @Nullable Object newValue;
 
     public PropertyChangedRecord(
-        @Nonnull Node node,
+        @Nonnull ClassifierInstance<?> node,
         @Nonnull Property property,
         @Nullable Object oldValue,
         @Nullable Object newValue) {
@@ -55,7 +56,10 @@ public class MockNodeObserver implements NodeObserver {
     public final @Nonnull Node newChild;
 
     public ChildAddedRecord(
-        @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild) {
+        @Nonnull ClassifierInstance<?> node,
+        @Nonnull Containment containment,
+        int index,
+        @Nonnull Node newChild) {
       super(node);
       this.containment = containment;
       this.index = index;
@@ -95,7 +99,10 @@ public class MockNodeObserver implements NodeObserver {
     public final @Nonnull Node newChild;
 
     public ChildRemovedRecord(
-        @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild) {
+        @Nonnull ClassifierInstance<?> node,
+        @Nonnull Containment containment,
+        int index,
+        @Nonnull Node newChild) {
       super(node);
       this.containment = containment;
       this.index = index;
@@ -170,6 +177,33 @@ public class MockNodeObserver implements NodeObserver {
     }
   }
 
+  public static class ReferenceAddedRecord extends Record {
+    public final @Nonnull Reference reference;
+    public final @Nonnull ReferenceValue referenceValue;
+
+    public ReferenceAddedRecord(
+        @Nonnull ClassifierInstance<?> node,
+        @Nonnull Reference reference,
+        @Nonnull ReferenceValue referenceValue) {
+      super(node);
+      this.reference = reference;
+      this.referenceValue = referenceValue;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+      if (o == null || getClass() != o.getClass()) return false;
+      ReferenceAddedRecord that = (ReferenceAddedRecord) o;
+      return Objects.equals(reference, that.reference)
+          && Objects.equals(referenceValue, that.referenceValue);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(reference, referenceValue);
+    }
+  }
+
   private List<Record> records = new ArrayList<>();
 
   public void clearRecords() {
@@ -182,7 +216,7 @@ public class MockNodeObserver implements NodeObserver {
 
   @Override
   public void propertyChanged(
-      @Nonnull Node node,
+      @Nonnull ClassifierInstance<?> node,
       @Nonnull Property property,
       @Nullable Object oldValue,
       @Nullable Object newValue) {
@@ -191,13 +225,19 @@ public class MockNodeObserver implements NodeObserver {
 
   @Override
   public void childAdded(
-      @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node newChild) {
+      @Nonnull ClassifierInstance<?> node,
+      @Nonnull Containment containment,
+      int index,
+      @Nonnull Node newChild) {
     records.add(new ChildAddedRecord(node, containment, index, newChild));
   }
 
   @Override
   public void childRemoved(
-      @Nonnull Node node, @Nonnull Containment containment, int index, @Nonnull Node removedChild) {
+      @Nonnull ClassifierInstance<?> node,
+      @Nonnull Containment containment,
+      int index,
+      @Nonnull Node removedChild) {
     records.add(new ChildRemovedRecord(node, containment, index, removedChild));
   }
 
@@ -214,17 +254,20 @@ public class MockNodeObserver implements NodeObserver {
   }
 
   @Override
-  public void referenceValueAdded(@Nonnull Node node) {
+  public void referenceValueAdded(
+      @Nonnull ClassifierInstance<?> node,
+      @Nonnull Reference reference,
+      @Nonnull ReferenceValue referenceValue) {
+    records.add(new ReferenceAddedRecord(node, reference, referenceValue));
+  }
+
+  @Override
+  public void referenceValueChanged(@Nonnull ClassifierInstance<?> node) {
     throw new UnsupportedOperationException();
   }
 
   @Override
-  public void referenceValueChanged(@Nonnull Node node) {
-    throw new UnsupportedOperationException();
-  }
-
-  @Override
-  public void referenceValueRemoved(@Nonnull Node node) {
+  public void referenceValueRemoved(@Nonnull ClassifierInstance<?> node) {
     throw new UnsupportedOperationException();
   }
 }

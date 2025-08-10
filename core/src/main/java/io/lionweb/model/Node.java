@@ -88,12 +88,4 @@ public interface Node extends ClassifierInstance<Concept> {
     ClassifierInstance.collectSelfAndDescendants(this, false, result);
     return result;
   }
-
-  // Observer methods
-
-  /**
-   * Note that we allow at most one observer as in this way we avoid having to allocate lists to
-   * hold multiple observers.
-   */
-  void setObserver(@Nullable NodeObserver observer);
 }

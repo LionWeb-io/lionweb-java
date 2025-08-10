@@ -2,7 +2,7 @@ package io.lionweb.serialization.refsmm;
 
 import io.lionweb.language.Concept;
 import io.lionweb.language.Reference;
-import io.lionweb.model.NodeObserver;
+import io.lionweb.model.ClassifierInstanceObserver;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.SimpleNode;
 import java.util.Collections;
@@ -32,7 +32,7 @@ public class RefNode extends SimpleNode {
   }
 
   @Override
-  public void setObserver(@Nullable NodeObserver observer) {
+  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
     throw new UnsupportedOperationException();
   }
 

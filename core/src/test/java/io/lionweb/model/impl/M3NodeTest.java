@@ -5,7 +5,8 @@ import static org.junit.Assert.assertEquals;
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.MockNodeObserver;
+import io.lionweb.model.MockClassifierInstanceObserver;
+import io.lionweb.model.ReferenceValue;
 import java.util.Arrays;
 import org.junit.Test;
 
@@ -45,8 +46,8 @@ public class M3NodeTest {
   public void observer() {
     Language language = new Language();
     language.setID("l1");
-    MockNodeObserver observer = new MockNodeObserver();
-    language.setObserver(observer);
+    MockClassifierInstanceObserver observer = new MockClassifierInstanceObserver();
+    language.addObserver(observer);
 
     // propertyChanged
     language.setName("MyLanguage");
@@ -54,8 +55,9 @@ public class M3NodeTest {
     Property name = LionCoreBuiltins.getINamed().getPropertyByName("name");
     assertEquals(
         Arrays.asList(
-            new MockNodeObserver.PropertyChangedRecord(language, name, null, "MyLanguage"),
-            new MockNodeObserver.PropertyChangedRecord(
+            new MockClassifierInstanceObserver.PropertyChangedRecord(
+                language, name, null, "MyLanguage"),
+            new MockClassifierInstanceObserver.PropertyChangedRecord(
                 language, name, "MyLanguage", "MyOtherLanguage")),
         observer.getRecords());
     observer.clearRecords();
@@ -70,8 +72,8 @@ public class M3NodeTest {
     Containment entities = LionCore.getLanguage().getContainmentByName("entities");
     assertEquals(
         Arrays.asList(
-            new MockNodeObserver.ChildAddedRecord(language, entities, 0, c1),
-            new MockNodeObserver.ChildAddedRecord(language, entities, 1, c2)),
+            new MockClassifierInstanceObserver.ChildAddedRecord(language, entities, 0, c1),
+            new MockClassifierInstanceObserver.ChildAddedRecord(language, entities, 1, c2)),
         observer.getRecords());
     observer.clearRecords();
 
@@ -80,8 +82,8 @@ public class M3NodeTest {
     language.removeChild(c1);
     assertEquals(
         Arrays.asList(
-            new MockNodeObserver.ChildRemovedRecord(language, entities, 1, c2),
-            new MockNodeObserver.ChildRemovedRecord(language, entities, 0, c1)),
+            new MockClassifierInstanceObserver.ChildRemovedRecord(language, entities, 1, c2),
+            new MockClassifierInstanceObserver.ChildRemovedRecord(language, entities, 0, c1)),
         observer.getRecords());
     observer.clearRecords();
 
@@ -94,8 +96,8 @@ public class M3NodeTest {
     language.addAnnotation(ann2);
     assertEquals(
         Arrays.asList(
-            new MockNodeObserver.AnnotationAddedRecord(language, 0, ann1),
-            new MockNodeObserver.AnnotationAddedRecord(language, 1, ann2)),
+            new MockClassifierInstanceObserver.AnnotationAddedRecord(language, 0, ann1),
+            new MockClassifierInstanceObserver.AnnotationAddedRecord(language, 1, ann2)),
         observer.getRecords());
     observer.clearRecords();
 
@@ -104,19 +106,30 @@ public class M3NodeTest {
     language.removeAnnotation(ann1);
     assertEquals(
         Arrays.asList(
-            new MockNodeObserver.AnnotationRemovedRecord(language, 1, ann2),
-            new MockNodeObserver.AnnotationRemovedRecord(language, 0, ann1)),
+            new MockClassifierInstanceObserver.AnnotationRemovedRecord(language, 1, ann2),
+            new MockClassifierInstanceObserver.AnnotationRemovedRecord(language, 0, ann1)),
         observer.getRecords());
     observer.clearRecords();
 
-    // TODO referenceValueAdded
+    // referenceValueAdded
     Language language2 = new Language();
+    language2.setName("L2");
     language2.setID("l2");
     Language language3 = new Language();
+    language3.setName("L3");
     language3.setID("l3");
 
     language.addDependency(language2);
     language.addDependency(language3);
+    Reference languageDependsOn = LionCore.getLanguage().getReferenceByName("dependsOn");
+    assertEquals(
+        Arrays.asList(
+            new MockClassifierInstanceObserver.ReferenceAddedRecord(
+                language, languageDependsOn, new ReferenceValue(language2, "L2")),
+            new MockClassifierInstanceObserver.ReferenceAddedRecord(
+                language, languageDependsOn, new ReferenceValue(language3, "L3"))),
+        observer.getRecords());
+    observer.clearRecords();
 
     // TODO referenceValueChanged
 

@@ -4,10 +4,12 @@ import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.ChangeProperty;
 import io.lionweb.client.delta.messages.events.PropertyAdded;
 import io.lionweb.client.utils.IdentityMultimap;
+import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
+import io.lionweb.model.AnnotationInstance;
+import io.lionweb.model.ClassifierInstanceObserver;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
-import io.lionweb.model.NodeObserver;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -28,13 +30,16 @@ public abstract class DeltaSynchronizer {
   private IdentityMultimap<String, Node> syncedNodes = new IdentityMultimap<>();
   private Map<String, Node> cmdIdsToNode = new IdentityHashMap<>();
 
-  private class MyObserver implements NodeObserver {
+  private class MyObserver implements ClassifierInstanceObserver {
 
     private Node node;
 
     @Override
     public void propertyChanged(
-        @NotNull Node node, @NotNull Property property, @Nullable Object newValue) {
+        @NotNull Node node,
+        @NotNull Property property,
+        @Nullable Object oldValue,
+        @Nullable Object newValue) {
       String cmdId = "cmd-" + (nextId++);
       cmdIdsToNode.put(cmdId, node);
       channel.sendCommand(
@@ -42,20 +47,23 @@ public abstract class DeltaSynchronizer {
     }
 
     @Override
-    public void childAdded(@NotNull Node node) {
-      throw new UnsupportedOperationException();
-    }
+    public void childAdded(
+        @NotNull Node node, @NotNull Containment containment, int index, @NotNull Node newChild) {}
 
     @Override
-    public void childRemoved(@NotNull Node node) {
-      throw new UnsupportedOperationException();
-    }
+    public void childRemoved(
+        @NotNull Node node,
+        @NotNull Containment containment,
+        int index,
+        @NotNull Node removedChild) {}
 
     @Override
-    public void annotationAdded(@NotNull Node node) {}
+    public void annotationAdded(
+        @NotNull Node node, int index, @NotNull AnnotationInstance newAnnotation) {}
 
     @Override
-    public void annotationRemoved(@NotNull Node node) {}
+    public void annotationRemoved(
+        @NotNull Node node, int index, @NotNull AnnotationInstance removedAnnotation) {}
 
     @Override
     public void referenceValueAdded(@NotNull Node node) {
@@ -110,7 +118,7 @@ public abstract class DeltaSynchronizer {
   public void attachTree(Node node) {
     forceState(node);
 
-    node.setObserver(new MyObserver());
+    node.addObserver(new MyObserver());
     syncedNodes.put(node.getID(), node);
 
     ClassifierInstanceUtils.getChildren(node).forEach(c -> attachTree(c));

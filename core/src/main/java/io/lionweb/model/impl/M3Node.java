@@ -334,6 +334,10 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
+    if (observer != null) {
+      Reference reference = getClassifier().getReferenceByName(linkName);
+      observer.referenceValueAdded(this, reference, value);
+    }
   }
 
   @Nonnull
@@ -364,13 +368,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   public int hashCode() {
     return Objects.hash(id);
   }
-
-  @Override
-  public void setObserver(@Nullable NodeObserver observer) {
-    this.observer = observer;
-  }
-
-  protected @Nullable NodeObserver observer = null;
 
   @Override
   public boolean addAnnotation(@Nonnull AnnotationInstance instance) {

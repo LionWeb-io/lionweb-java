@@ -167,9 +167,9 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public void setObserver(@Nullable NodeObserver observer) {
+  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
     this.observer = observer;
   }
 
-  private @Nullable NodeObserver observer = null;
+  private @Nullable ClassifierInstanceObserver observer = null;
 }

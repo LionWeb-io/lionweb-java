@@ -142,4 +142,22 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
           "The given reference value could not be found under reference " + reference.getName());
     }
   }
+
+  // Observer methods
+
+  @Override
+  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
+    this.observer = observer;
+  }
+
+  @Override
+  public void removeObserver(@Nonnull ClassifierInstanceObserver observer) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
+   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
+   */
+  protected @Nullable ClassifierInstanceObserver observer = null;
 }

@@ -54,4 +54,10 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
       }
     }
   }
+
+  // Observer methods
+
+  void addObserver(@Nonnull ClassifierInstanceObserver observer);
+
+  void removeObserver(@Nonnull ClassifierInstanceObserver observer);
 }
