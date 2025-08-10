@@ -6,10 +6,8 @@ import io.lionweb.client.delta.messages.events.PropertyAdded;
 import io.lionweb.client.utils.IdentityMultimap;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
-import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.ClassifierInstanceObserver;
-import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.Node;
+import io.lionweb.language.Reference;
+import io.lionweb.model.*;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -36,7 +34,7 @@ public abstract class DeltaSynchronizer {
 
     @Override
     public void propertyChanged(
-        @NotNull Node node,
+        @NotNull ClassifierInstance<?> classifierInstance,
         @NotNull Property property,
         @Nullable Object oldValue,
         @Nullable Object newValue) {
@@ -48,14 +46,21 @@ public abstract class DeltaSynchronizer {
 
     @Override
     public void childAdded(
-        @NotNull Node node, @NotNull Containment containment, int index, @NotNull Node newChild) {}
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Containment containment,
+        int index,
+        @NotNull Node newChild) {
+      throw new UnsupportedOperationException();
+    }
 
     @Override
     public void childRemoved(
-        @NotNull Node node,
+        @NotNull ClassifierInstance<?> classifierInstance,
         @NotNull Containment containment,
         int index,
-        @NotNull Node removedChild) {}
+        @NotNull Node removedChild) {
+      throw new UnsupportedOperationException();
+    }
 
     @Override
     public void annotationAdded(
@@ -66,17 +71,31 @@ public abstract class DeltaSynchronizer {
         @NotNull Node node, int index, @NotNull AnnotationInstance removedAnnotation) {}
 
     @Override
-    public void referenceValueAdded(@NotNull Node node) {
+    public void referenceValueAdded(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
+        @NotNull ReferenceValue referenceValue) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public void referenceValueChanged(@NotNull Node node) {
+    public void referenceValueChanged(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
+        int index,
+        String oldReferred,
+        String oldResolveInfo,
+        String newReferred,
+        String newResolveInfo) {
       throw new UnsupportedOperationException();
     }
 
     @Override
-    public void referenceValueRemoved(@NotNull Node node) {
+    public void referenceValueRemoved(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
+        int index,
+        @NotNull ReferenceValue referenceValue) {
       throw new UnsupportedOperationException();
     }
   }
