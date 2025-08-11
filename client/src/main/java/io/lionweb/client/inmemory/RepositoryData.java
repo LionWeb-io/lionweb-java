@@ -47,6 +47,19 @@ class RepositoryData {
             throw new IllegalArgumentException(
                 "We got unknown nodes as children: " + unknownChildren);
           }
+          List<String> currentAnnotations = nodesByID.get(updatedNode.getID()).getAnnotations();
+          List<String> updatedAnnotations = updatedNode.getAnnotations();
+            updatedAnnotations.stream()
+                    .filter(n -> !currentAnnotations.contains(n))
+                    .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
+            List<String> unknownAnnotations =
+                    updatedChildren.stream()
+                            .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
+                            .collect(Collectors.toList());
+            if (!unknownAnnotations.isEmpty()) {
+                throw new IllegalArgumentException(
+                        "We got unknown nodes as annotations: " + unknownChildren);
+            }
           this.removedNodes.addAll(
               currentChildren.stream()
                   .filter(n -> !updatedChildren.contains(n))
@@ -124,6 +137,7 @@ class RepositoryData {
     retrieved.add(node);
     if (limit > 0) {
       node.getChildren().forEach(c -> retrieve(c, limit - 1, retrieved));
+      node.getAnnotations().forEach(a -> retrieve(a, limit - 1, retrieved));
     }
   }
 }
