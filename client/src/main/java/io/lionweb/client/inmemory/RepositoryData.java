@@ -35,7 +35,7 @@ class RepositoryData {
      * @param newState the list of nodes after the change
      * @param role the role of the list, used for debugging purposes
      */
-    private void noteChanges(
+    private void calculateNodeListDifferences(
         Map<String, SerializedClassifierInstance> updatedNodesAsMap,
         List<String> oldState,
         List<String> newState,
@@ -59,12 +59,12 @@ class RepositoryData {
       updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
         if (nodesByID.containsKey(updatedNode.getID())) {
-          noteChanges(
+          calculateNodeListDifferences(
               updatedNodesAsMap,
               nodesByID.get(updatedNode.getID()).getChildren(),
               updatedNode.getChildren(),
               "children");
-          noteChanges(
+          calculateNodeListDifferences(
               updatedNodesAsMap,
               nodesByID.get(updatedNode.getID()).getAnnotations(),
               updatedNode.getAnnotations(),
