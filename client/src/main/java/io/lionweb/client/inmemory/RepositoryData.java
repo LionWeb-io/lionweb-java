@@ -25,47 +25,42 @@ class RepositoryData {
 
   private class ChangeCalculator {
     private final Map<String, SerializedClassifierInstance> addedNodes = new HashMap<>();
-    private final Map<String, SerializedClassifierInstance> changedNodes = new HashMap<>();
     private final Set<String> removedNodes = new HashSet<>();
+
+    private void noteChanges(
+        Map<String, SerializedClassifierInstance> updatedNodesAsMap,
+        List<String> oldState,
+        List<String> newState,
+        String role) {
+      newState.stream()
+          .filter(n -> !oldState.contains(n))
+          .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
+      List<String> unknownNodes =
+          newState.stream()
+              .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
+              .collect(Collectors.toList());
+      if (!unknownNodes.isEmpty()) {
+        throw new IllegalArgumentException("We got unknown nodes as " + role + ": " + unknownNodes);
+      }
+      this.removedNodes.addAll(
+          oldState.stream().filter(n -> !newState.contains(n)).collect(Collectors.toList()));
+    }
 
     void store(List<SerializedClassifierInstance> updatedNodes) {
       Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
       updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
         if (nodesByID.containsKey(updatedNode.getID())) {
-          // Have we changed children?
-          List<String> currentChildren = nodesByID.get(updatedNode.getID()).getChildren();
-          List<String> updatedChildren = updatedNode.getChildren();
-          updatedChildren.stream()
-              .filter(n -> !currentChildren.contains(n))
-              .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
-          List<String> unknownChildren =
-              updatedChildren.stream()
-                  .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
-                  .collect(Collectors.toList());
-          if (!unknownChildren.isEmpty()) {
-            throw new IllegalArgumentException(
-                "We got unknown nodes as children: " + unknownChildren);
-          }
-          List<String> currentAnnotations = nodesByID.get(updatedNode.getID()).getAnnotations();
-          List<String> updatedAnnotations = updatedNode.getAnnotations();
-            updatedAnnotations.stream()
-                    .filter(n -> !currentAnnotations.contains(n))
-                    .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
-            List<String> unknownAnnotations =
-                    updatedChildren.stream()
-                            .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
-                            .collect(Collectors.toList());
-            if (!unknownAnnotations.isEmpty()) {
-                throw new IllegalArgumentException(
-                        "We got unknown nodes as annotations: " + unknownChildren);
-            }
-          this.removedNodes.addAll(
-              currentChildren.stream()
-                  .filter(n -> !updatedChildren.contains(n))
-                  .collect(Collectors.toList()));
-        } else {
-          changedNodes.put(updatedNode.getID(), updatedNode);
+          noteChanges(
+              updatedNodesAsMap,
+              nodesByID.get(updatedNode.getID()).getChildren(),
+              updatedNode.getChildren(),
+              "children");
+          noteChanges(
+              updatedNodesAsMap,
+              nodesByID.get(updatedNode.getID()).getAnnotations(),
+              updatedNode.getAnnotations(),
+              "annotations");
         }
       }
       // They have been moved and not removed

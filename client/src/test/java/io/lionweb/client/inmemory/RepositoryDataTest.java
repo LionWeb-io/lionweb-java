@@ -8,10 +8,8 @@ import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.language.LionCoreBuiltins;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
-
 import java.util.*;
 import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
 
 public class RepositoryDataTest {
@@ -115,37 +113,40 @@ public class RepositoryDataTest {
     assertEquals(Collections.singletonList("id-4"), repoData.ids(1));
   }
 
-    @Test
-    public void addAnnotationToExistingNode() {
-        RepositoryData repositoryData =
-                new RepositoryData(
-                        new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
-        SerializedClassifierInstance n1 =
-                new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
-        SerializedClassifierInstance n2 =
-                new SerializedClassifierInstance("n2", MetaPointer.get("l1", "1.0", "c1"));
-        SerializedClassifierInstance n3 =
-                new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
-        SerializedClassifierInstance n4 =
-                new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
-        n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
-        n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
-        n2.setParentNodeID("n1");
-        n3.setParentNodeID("n2");
-        n4.setParentNodeID("n2");
+  @Test
+  public void addAnnotationToExistingNode() {
+    RepositoryData repositoryData =
+        new RepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    SerializedClassifierInstance n1 =
+        new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
+    SerializedClassifierInstance n2 =
+        new SerializedClassifierInstance("n2", MetaPointer.get("l1", "1.0", "c1"));
+    SerializedClassifierInstance n3 =
+        new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
+    SerializedClassifierInstance n4 =
+        new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
+    n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
+    n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
+    n2.setParentNodeID("n1");
+    n3.setParentNodeID("n2");
+    n4.setParentNodeID("n2");
 
-        repositoryData.partitionIDs.add("n1");
-        repositoryData.store(Arrays.asList(n1, n2, n3, n4));
-        SerializedClassifierInstance ann1 =
-                new SerializedClassifierInstance("ann1", MetaPointer.get("lAnnotations", "1.0", "a1"));
-        ann1.setParentNodeID("n1");
-        n1.addAnnotation("ann1");
-        repositoryData.store(Arrays.asList(n1, n2, n3, n4, ann1));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2, n3, n4));
+    SerializedClassifierInstance ann1 =
+        new SerializedClassifierInstance("ann1", MetaPointer.get("lAnnotations", "1.0", "a1"));
+    ann1.setParentNodeID("n1");
+    n1.addAnnotation("ann1");
+    repositoryData.store(Arrays.asList(n1, n2, n3, n4, ann1));
 
-        assertEquals(
-                new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")), repositoryData.nodesByID.keySet());
-        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-        repositoryData.retrieve("n1", 2, retrieved);
-        assertEquals(new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")), retrieved.stream().map(n -> n.getID()).collect(Collectors.toSet()));
-    }
+    assertEquals(
+        new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")),
+        repositoryData.nodesByID.keySet());
+    List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+    repositoryData.retrieve("n1", 2, retrieved);
+    assertEquals(
+        new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")),
+        retrieved.stream().map(n -> n.getID()).collect(Collectors.toSet()));
+  }
 }
