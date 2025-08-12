@@ -27,6 +27,14 @@ class RepositoryData {
     private final Map<String, SerializedClassifierInstance> addedNodes = new HashMap<>();
     private final Set<String> removedNodes = new HashSet<>();
 
+    /**
+     * Given the two lists of nodes, it track the changes in terms of added or removed nodes
+     *
+     * @param updatedNodesAsMap the map id -> Node
+     * @param oldState the list of nodes before the change
+     * @param newState the list of nodes after the change
+     * @param role the role of the list, used for debugging purposes
+     */
     private void noteChanges(
         Map<String, SerializedClassifierInstance> updatedNodesAsMap,
         List<String> oldState,
