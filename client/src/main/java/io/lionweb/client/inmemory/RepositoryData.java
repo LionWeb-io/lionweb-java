@@ -45,12 +45,12 @@ class RepositoryData {
         List<String> oldState,
         List<String> newState,
         String role) {
-        // TODO iff we have observers we have to calculate the features which changed
-        if (!server.observers.isEmpty()) {
-            throw new UnsupportedOperationException();
-        }
+      // TODO iff we have observers we have to calculate the features which changed
+      if (!server.observers.isEmpty()) {
+        throw new UnsupportedOperationException();
+      }
 
-        newState.stream()
+      newState.stream()
           .filter(n -> !oldState.contains(n))
           .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
       List<String> unknownNodes =
@@ -75,7 +75,7 @@ class RepositoryData {
               updatedNode.getChildren(),
               "children");
           calculateNodeListDifferences(
-                    updatedNodesAsMap,
+              updatedNodesAsMap,
               nodesByID.get(updatedNode.getID()).getAnnotations(),
               updatedNode.getAnnotations(),
               "annotations");
