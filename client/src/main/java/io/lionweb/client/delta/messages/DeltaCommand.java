@@ -1,9 +1,8 @@
 package io.lionweb.client.delta.messages;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.util.LinkedList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public class DeltaCommand {
   public final @NotNull String commandId;

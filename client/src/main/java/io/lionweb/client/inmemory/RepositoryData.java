@@ -75,7 +75,7 @@ class RepositoryData {
               updatedNode.getChildren(),
               "children");
           calculateNodeListDifferences(
-              updatedNodesAsMap,
+                    updatedNodesAsMap,
               nodesByID.get(updatedNode.getID()).getAnnotations(),
               updatedNode.getAnnotations(),
               "annotations");

@@ -9,19 +9,18 @@ import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.NodeObserver;
 import io.lionweb.serialization.data.MetaPointer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * This object is responsible for ensuring that, the nodes indicated to it ar in sync
- * with some given source.
+ * This object is responsible for ensuring that, the nodes indicated to it ar in sync with some
+ * given source.
  *
- * For example, we could sync nodes with a repository, so that changes to the nodes would
- * be reflected on the repository and vice versa.
+ * <p>For example, we could sync nodes with a repository, so that changes to the nodes would be
+ * reflected on the repository and vice versa.
  */
 public abstract class DeltaSynchronizer {
 
@@ -39,8 +38,7 @@ public abstract class DeltaSynchronizer {
       String cmdId = "cmd-" + (nextId++);
       cmdIdsToNode.put(cmdId, node);
       channel.sendCommand(
-          new ChangeProperty(
-                  cmdId, node.getID(), MetaPointer.from(property), (String) newValue));
+          new ChangeProperty(cmdId, node.getID(), MetaPointer.from(property), (String) newValue));
     }
 
     @Override
@@ -52,6 +50,12 @@ public abstract class DeltaSynchronizer {
     public void childRemoved(@NotNull Node node) {
       throw new UnsupportedOperationException();
     }
+
+    @Override
+    public void annotationAdded(@NotNull Node node) {}
+
+    @Override
+    public void annotationRemoved(@NotNull Node node) {}
 
     @Override
     public void referenceValueAdded(@NotNull Node node) {
@@ -67,11 +71,6 @@ public abstract class DeltaSynchronizer {
     public void referenceValueRemoved(@NotNull Node node) {
       throw new UnsupportedOperationException();
     }
-
-    @Override
-    public void parentChanged(@NotNull Node node) {
-      throw new UnsupportedOperationException();
-    }
   }
 
   private class MyEventReceiver implements DeltaEventReceiver {
@@ -79,16 +78,21 @@ public abstract class DeltaSynchronizer {
     public void receiveEvent(DeltaEvent event) {
       if (event instanceof PropertyAdded) {
         PropertyAdded propertyAdded = (PropertyAdded) event;
-        syncedNodes.get(propertyAdded.node).forEach(n ->{
-          // Let's exclude the node that caused this
-          if (!event.originCommands.stream().allMatch(cmd -> cmdIdsToNode.get(cmd.commandId) == n)) {
+        syncedNodes
+            .get(propertyAdded.node)
+            .forEach(
+                n -> {
+                  // Let's exclude the node that caused this
+                  if (!event.originCommands.stream()
+                      .allMatch(cmd -> cmdIdsToNode.get(cmd.commandId) == n)) {
 
-            Property property = n.getClassifier().getPropertyByMetaPointer(propertyAdded.property);
-            if (Objects.equals(propertyAdded.newValue, n.getPropertyValue(property))) {
-              n.setPropertyValue(property, propertyAdded.newValue);
-            }
-          }
-        });
+                    Property property =
+                        n.getClassifier().getPropertyByMetaPointer(propertyAdded.property);
+                    if (Objects.equals(propertyAdded.newValue, n.getPropertyValue(property))) {
+                      n.setPropertyValue(property, propertyAdded.newValue);
+                    }
+                  }
+                });
 
       } else {
         throw new UnsupportedOperationException();
