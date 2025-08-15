@@ -28,6 +28,8 @@ val javadocConfig by configurations.creating {
 dependencies {
     // Use JUnit test framework.
     testImplementation(libs.junit)
+    testImplementation("com.strumenta.kolasu:kolasu-core:1.5.61")
+    testImplementation(files("src/test/classes"))
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api("org.apache.commons:commons-math3:3.6.1")
