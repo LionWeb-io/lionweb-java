@@ -13,6 +13,11 @@ class RepositoryData {
   final Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
   private int currentVersion = 0;
   private int nextId = 1;
+  private InMemoryServer server;
+
+  public RepositoryData(InMemoryServer server) {
+    this.server = server;
+  }
 
   void deleteNodeAndDescendant(String nodeId) {
     SerializedClassifierInstance curr = nodesByID.get(nodeId);
@@ -40,7 +45,12 @@ class RepositoryData {
         List<String> oldState,
         List<String> newState,
         String role) {
-      newState.stream()
+        // TODO iff we have observers we have to calculate the features which changed
+        if (!server.observers.isEmpty()) {
+            throw new UnsupportedOperationException();
+        }
+
+        newState.stream()
           .filter(n -> !oldState.contains(n))
           .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
       List<String> unknownNodes =
@@ -85,6 +95,7 @@ class RepositoryData {
         }
       }
       nodesByID.remove(removeNodeId);
+      server.observers.forEach(o -> o.nodeDeleted(removeNodeId));
     }
   }
 
