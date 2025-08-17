@@ -65,7 +65,9 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
 
   // Observer methods
 
+  /** @throws IllegalArgumentException if the same observer is registered more than once */
   void registerObserver(@Nonnull ClassifierInstanceObserver observer);
 
+  /** @throws IllegalArgumentException if the observer is not registered */
   void unregisterObserver(@Nonnull ClassifierInstanceObserver observer);
 }
