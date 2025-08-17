@@ -6,17 +6,17 @@ import javax.annotation.Nullable;
 
 public class CompositeReferenceValueObserver implements ReferenceValueObserver {
   private static final int INTERN_LIMIT = 3;
-  private static final Map<List<ReferenceValueObserver>, ReferenceValueObserver> INTERN_CACHE =
+  private static final Map<Set<ReferenceValueObserver>, ReferenceValueObserver> INTERN_CACHE =
       new WeakHashMap<>();
 
-  private final List<ReferenceValueObserver> elements;
+  private final Set<ReferenceValueObserver> elements;
 
-  private CompositeReferenceValueObserver(List<ReferenceValueObserver> elements) {
+  private CompositeReferenceValueObserver(Set<ReferenceValueObserver> elements) {
     this.elements = elements;
   }
 
   public static ReferenceValueObserver combine(ReferenceValueObserver a, ReferenceValueObserver b) {
-    List<ReferenceValueObserver> combined = new ArrayList<>();
+    Set<ReferenceValueObserver> combined = new HashSet<>();
 
     // flatten left
     if (a instanceof CompositeReferenceValueObserver) {
@@ -34,19 +34,19 @@ public class CompositeReferenceValueObserver implements ReferenceValueObserver {
 
     // intern if small, but don’t intern larger ones
     if (combined.size() <= INTERN_LIMIT) {
-      List<ReferenceValueObserver> key = Collections.unmodifiableList(new ArrayList<>(combined));
+      Set<ReferenceValueObserver> key = Collections.unmodifiableSet(new HashSet<>(combined));
       return INTERN_CACHE.computeIfAbsent(
-          key, k -> k.size() == 1 ? k.get(0) : new CompositeReferenceValueObserver(k));
+          key, k -> k.size() == 1 ? k.iterator().next() : new CompositeReferenceValueObserver(k));
     } else {
-      return new CompositeReferenceValueObserver(Collections.unmodifiableList(combined));
+      return new CompositeReferenceValueObserver(Collections.unmodifiableSet(combined));
     }
   }
 
-  public void addReferenceValueObserver(ReferenceValueObserver observer) {
+  public void addElement(ReferenceValueObserver observer) {
     elements.add(observer);
   }
 
-  public void removeReferenceValueObserver(ReferenceValueObserver observer) {
+  public void removeElement(ReferenceValueObserver observer) {
     elements.remove(observer);
   }
 
@@ -67,7 +67,7 @@ public class CompositeReferenceValueObserver implements ReferenceValueObserver {
     this.elements.forEach(element -> element.referredIDChanged(referenceValue, oldValue, newValue));
   }
 
-  public List<ReferenceValueObserver> getElements() {
+  public Set<ReferenceValueObserver> getElements() {
     return elements;
   }
 }

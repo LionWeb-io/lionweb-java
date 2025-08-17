@@ -49,16 +49,18 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
-    if (instance.getID() != null && annotations.stream().anyMatch(a -> a.getID().equals(instance.getID()))) {
+    if (instance.getID() != null
+        && annotations.stream().anyMatch(a -> a.getID().equals(instance.getID()))) {
       // necessary to avoid infinite loops and duplicate insertions
       return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-      if (instance.getID() == null || annotations.stream().noneMatch(a -> a.getID().equals(instance.getID()))) {
-          this.annotations.add(instance);
-      }
+    if (instance.getID() == null
+        || annotations.stream().noneMatch(a -> a.getID().equals(instance.getID()))) {
+      this.annotations.add(instance);
+    }
     return true;
   }
 
@@ -147,12 +149,27 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void registerObserver(@Nullable ClassifierInstanceObserver observer) {
-    this.observer = observer;
+    if (this.observer == observer) {
+      throw new IllegalArgumentException("Observer already registered: " + observer);
+    }
+    if (this.observer == null) {
+      this.observer = observer;
+    } else {
+      this.observer = CompositeClassifierInstanceObserver.combine(this.observer, observer);
+    }
   }
 
   @Override
   public void unregisterObserver(@Nonnull ClassifierInstanceObserver observer) {
-    throw new UnsupportedOperationException();
+    if (this.observer == observer) {
+      this.observer = null;
+      return;
+    }
+    if (this.observer instanceof CompositeClassifierInstanceObserver) {
+      this.observer = ((CompositeClassifierInstanceObserver) this.observer).remove(observer);
+    } else {
+      throw new IllegalArgumentException("Observer not registered: " + observer);
+    }
   }
 
   /**
