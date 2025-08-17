@@ -47,7 +47,7 @@ public class M3NodeTest {
     Language language = new Language();
     language.setID("l1");
     MockClassifierInstanceObserver observer = new MockClassifierInstanceObserver();
-    language.addObserver(observer);
+    language.registerObserver(observer);
 
     // propertyChanged
     language.setName("MyLanguage");

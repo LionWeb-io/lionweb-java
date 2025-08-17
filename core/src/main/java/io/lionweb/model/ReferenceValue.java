@@ -70,20 +70,12 @@ public class ReferenceValue {
         + '}';
   }
 
-  public interface Observer {
-    void resolveInfoChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue);
-
-    void referredIDChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue);
-  }
-
-  public void addObserver(@Nonnull Observer observer) {
+  public void addObserver(@Nonnull ReferenceValueObserver observer) {
     if (this.observer != null) {
       throw new UnsupportedOperationException();
     }
     this.observer = observer;
   }
 
-  private @Nullable Observer observer = null;
+  private @Nullable ReferenceValueObserver observer = null;
 }
