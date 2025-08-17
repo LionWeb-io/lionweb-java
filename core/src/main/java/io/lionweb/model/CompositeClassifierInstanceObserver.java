@@ -101,13 +101,15 @@ public class CompositeClassifierInstanceObserver implements ClassifierInstanceOb
 
   @Override
   public void annotationAdded(
-      @Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation) {
+      @Nonnull ClassifierInstance<?> node, int index, @Nonnull AnnotationInstance newAnnotation) {
     elements.forEach(e -> e.annotationAdded(node, index, newAnnotation));
   }
 
   @Override
   public void annotationRemoved(
-      @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation) {
+      @Nonnull ClassifierInstance<?> node,
+      int index,
+      @Nonnull AnnotationInstance removedAnnotation) {
     elements.forEach(e -> e.annotationRemoved(node, index, removedAnnotation));
   }
 

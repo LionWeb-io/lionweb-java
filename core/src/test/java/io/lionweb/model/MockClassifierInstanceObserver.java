@@ -129,7 +129,7 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
     public final @Nonnull AnnotationInstance newAnnotation;
 
     public AnnotationAddedRecord(
-        @Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation) {
+        @Nonnull ClassifierInstance<?> node, int index, @Nonnull AnnotationInstance newAnnotation) {
       super(node);
       this.index = index;
       this.newAnnotation = newAnnotation;
@@ -158,7 +158,9 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
     public final @Nonnull AnnotationInstance removedAnnotation;
 
     public AnnotationRemovedRecord(
-        @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation) {
+        @Nonnull ClassifierInstance<?> node,
+        int index,
+        @Nonnull AnnotationInstance removedAnnotation) {
       super(node);
       this.index = index;
       this.removedAnnotation = removedAnnotation;
@@ -322,13 +324,15 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
 
   @Override
   public void annotationAdded(
-      @Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation) {
+      @Nonnull ClassifierInstance<?> node, int index, @Nonnull AnnotationInstance newAnnotation) {
     records.add(new AnnotationAddedRecord(node, index, newAnnotation));
   }
 
   @Override
   public void annotationRemoved(
-      @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation) {
+      @Nonnull ClassifierInstance<?> node,
+      int index,
+      @Nonnull AnnotationInstance removedAnnotation) {
     records.add(new AnnotationRemovedRecord(node, index, removedAnnotation));
   }
 

@@ -79,39 +79,39 @@ public class AbstractClassifierInstanceTest {
     assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
   }
 
-    @Test
-    public void addAndRemoveManyObservers() {
-        SimpleNode n1 = new IntLiteral(1);
+  @Test
+  public void addAndRemoveManyObservers() {
+    SimpleNode n1 = new IntLiteral(1);
 
-        ClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
-        ClassifierInstanceObserver observer2 = new MockClassifierInstanceObserver();
-        ClassifierInstanceObserver observer3 = new MockClassifierInstanceObserver();
-        ClassifierInstanceObserver observer4 = new MockClassifierInstanceObserver();
-        ClassifierInstanceObserver observer5 = new MockClassifierInstanceObserver();
-        n1.registerObserver(observer1);
-        n1.registerObserver(observer2);
-        n1.registerObserver(observer3);
-        n1.registerObserver(observer4);
-        n1.registerObserver(observer5);
-        n1.unregisterObserver(observer1);
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-        n1.unregisterObserver(observer2);
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-        n1.unregisterObserver(observer3);
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
-        n1.unregisterObserver(observer4);
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer4));
-        n1.unregisterObserver(observer5);
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer4));
-        assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer5));
-    }
+    ClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
+    ClassifierInstanceObserver observer2 = new MockClassifierInstanceObserver();
+    ClassifierInstanceObserver observer3 = new MockClassifierInstanceObserver();
+    ClassifierInstanceObserver observer4 = new MockClassifierInstanceObserver();
+    ClassifierInstanceObserver observer5 = new MockClassifierInstanceObserver();
+    n1.registerObserver(observer1);
+    n1.registerObserver(observer2);
+    n1.registerObserver(observer3);
+    n1.registerObserver(observer4);
+    n1.registerObserver(observer5);
+    n1.unregisterObserver(observer1);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
+    n1.unregisterObserver(observer2);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
+    n1.unregisterObserver(observer3);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
+    n1.unregisterObserver(observer4);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer4));
+    n1.unregisterObserver(observer5);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer4));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer5));
+  }
 }

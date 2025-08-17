@@ -374,22 +374,4 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   public int hashCode() {
     return Objects.hash(id);
   }
-
-  @Override
-  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
-    boolean res = super.addAnnotation(instance);
-    if (res && observer != null) {
-      observer.annotationAdded(this, getAnnotations().size() - 1, instance);
-    }
-    return res;
-  }
-
-  @Override
-  public int removeAnnotation(@Nonnull AnnotationInstance instance) {
-    int res = super.removeAnnotation(instance);
-    if (observer != null) {
-      observer.annotationRemoved(this, res, instance);
-    }
-    return res;
-  }
 }
