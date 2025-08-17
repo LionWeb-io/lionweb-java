@@ -102,7 +102,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   }
 
   protected void setPropertyValue(String propertyName, Object value) {
+    Object oldValue = null;
+    if (observer != null) {
+      oldValue = getPropertyValue(getClassifier().getPropertyByName(propertyName));
+    }
     propertyValues.put(propertyName, value);
+    if (observer != null) {
+      observer.propertyChanged(
+          this, getClassifier().getPropertyByName(propertyName), oldValue, value);
+    }
   }
 
   @Override
@@ -123,6 +131,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     } else {
       setContainmentSingleValue(containment.getName(), child);
     }
+    if (observer != null) {
+      observer.childAdded(this, containment, getChildren(containment).size() - 1, child);
+    }
   }
 
   @Override
@@ -137,19 +148,23 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
      * is not null, and therefore child.getContainmentFeature should not be null.
      * Most implementation of the method (including the default one in Node) would
      * either return a proper value or throw an exception to signal the inconsistency,
-     * so the extra check for feature not to be null is out of caution and to report
+     * so the extra check for containment not to be null is out of caution and to report
      * the inconsistency, if somehow this has not been done by getContainmentFeature
      */
-    Feature<?> feature = child.getContainmentFeature();
-    if (feature == null) {
+    Containment containment = child.getContainmentFeature();
+    if (containment == null) {
       throw new IllegalStateException(
-          "If the parent is not null, the containment feature should not be null");
+          "If the parent is not null, the containment containment should not be null");
     }
 
-    List<Node> children = containmentValues.get(feature.getName());
+    List<Node> children = containmentValues.get(containment.getName());
+    int index = children.indexOf(child);
     children.remove(child);
     if (child instanceof HasSettableParent) {
       ((HasSettableParent) child).setParent(null);
+    }
+    if (observer != null) {
+      observer.childRemoved(this, containment, index, child);
     }
   }
 
@@ -300,6 +315,13 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     } else {
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
+    if (observer != null) {
+      observer.childAdded(
+          this,
+          getClassifier().getContainmentByName(linkName),
+          getChildrenByContainmentName(this, linkName).size() - 1,
+          value);
+    }
     return true;
   }
 
@@ -311,6 +333,16 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       referenceValues.get(linkName).add(value);
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
+    }
+    if (observer != null) {
+      Reference reference = getClassifier().getReferenceByName(linkName);
+      observer.referenceValueAdded(this, reference, value);
+      // TODO add observers on existing reference values when observers are added later
+      value.addObserver(
+          new ObserverOnReferenceValue(
+              this,
+              getClassifier().getReferenceByName(linkName),
+              referenceValues.get(linkName).size() - 1));
     }
   }
 
@@ -341,5 +373,23 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   @Override
   public int hashCode() {
     return Objects.hash(id);
+  }
+
+  @Override
+  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
+    boolean res = super.addAnnotation(instance);
+    if (res && observer != null) {
+      observer.annotationAdded(this, getAnnotations().size() - 1, instance);
+    }
+    return res;
+  }
+
+  @Override
+  public int removeAnnotation(@Nonnull AnnotationInstance instance) {
+    int res = super.removeAnnotation(instance);
+    if (observer != null) {
+      observer.annotationRemoved(this, res, instance);
+    }
+    return res;
   }
 }

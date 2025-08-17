@@ -1,6 +1,7 @@
 package io.lionweb.model;
 
 import java.util.Objects;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ReferenceValue {
@@ -28,6 +29,9 @@ public class ReferenceValue {
   }
 
   public void setReferred(@Nullable Node referred) {
+    if (observer != null) {
+      observer.referredIDChanged(this, this.referred.getID(), referred.getID());
+    }
     this.referred = referred;
   }
 
@@ -36,6 +40,9 @@ public class ReferenceValue {
   }
 
   public void setResolveInfo(@Nullable String resolveInfo) {
+    if (observer != null) {
+      observer.resolveInfoChanged(this, this.resolveInfo, resolveInfo);
+    }
     this.resolveInfo = resolveInfo;
   }
 
@@ -62,4 +69,21 @@ public class ReferenceValue {
         + '\''
         + '}';
   }
+
+  public interface Observer {
+    void resolveInfoChanged(
+        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue);
+
+    void referredIDChanged(
+        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue);
+  }
+
+  public void addObserver(@Nonnull Observer observer) {
+    if (this.observer != null) {
+      throw new UnsupportedOperationException();
+    }
+    this.observer = observer;
+  }
+
+  private @Nullable Observer observer = null;
 }

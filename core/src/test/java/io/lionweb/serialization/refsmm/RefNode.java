@@ -2,6 +2,7 @@ package io.lionweb.serialization.refsmm;
 
 import io.lionweb.language.Concept;
 import io.lionweb.language.Reference;
+import io.lionweb.model.ClassifierInstanceObserver;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.SimpleNode;
 import java.util.Collections;
@@ -28,6 +29,11 @@ public class RefNode extends SimpleNode {
   @Override
   public Concept getClassifier() {
     return RefsLanguage.REF_NODE;
+  }
+
+  @Override
+  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

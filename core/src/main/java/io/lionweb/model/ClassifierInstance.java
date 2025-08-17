@@ -27,9 +27,9 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
    * @throws IllegalArgumentException In case the specified Annotation link cannot be used on Nodes
    *     of this Concept.
    */
-  void addAnnotation(@Nonnull AnnotationInstance instance);
+  boolean addAnnotation(@Nonnull AnnotationInstance instance);
 
-  void removeAnnotation(@Nonnull AnnotationInstance instance);
+  int removeAnnotation(@Nonnull AnnotationInstance instance);
 
   String getID();
 
@@ -54,4 +54,10 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
       }
     }
   }
+
+  // Observer methods
+
+  void addObserver(@Nonnull ClassifierInstanceObserver observer);
+
+  void removeObserver(@Nonnull ClassifierInstanceObserver observer);
 }

@@ -44,14 +44,14 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void addAnnotation(@Nonnull AnnotationInstance instance) {
+  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
     if (this.annotations.contains(instance)) {
       // necessary to avoid infinite loops and duplicate insertions
-      return;
+      return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
@@ -59,20 +59,27 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations.contains(instance)) {
       // necessary to avoid infinite loops and duplicate insertions
       // the previous setAnnotated could potentially have already set annotations
-      return;
+      return false;
     }
     this.annotations.add(instance);
+    return true;
   }
 
   @Override
-  public void removeAnnotation(@Nonnull AnnotationInstance instance) {
+  public int removeAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    if (annotations == null || !this.annotations.remove(instance)) {
+    int index = -1;
+    if (annotations != null) {
+      index = this.annotations.indexOf(instance);
+    }
+    if (index == -1) {
       throw new IllegalArgumentException();
     }
+    annotations.remove(index);
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
+    return index;
   }
 
   void tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
@@ -121,7 +128,10 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    getReferenceValues(reference).remove(index);
+    ReferenceValue removedReferenceValue = getReferenceValues(reference).remove(index);
+    if (observer != null) {
+      observer.referenceValueRemoved(this, reference, index, removedReferenceValue);
+    }
   }
 
   @Override
@@ -133,6 +143,68 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (!getReferenceValues(reference).remove(referenceValue)) {
       throw new IllegalArgumentException(
           "The given reference value could not be found under reference " + reference.getName());
+    }
+  }
+
+  // Observer methods
+
+  @Override
+  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
+    this.observer = observer;
+  }
+
+  @Override
+  public void removeObserver(@Nonnull ClassifierInstanceObserver observer) {
+    throw new UnsupportedOperationException();
+  }
+
+  /**
+   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
+   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
+   */
+  protected @Nullable ClassifierInstanceObserver observer = null;
+
+  protected class ObserverOnReferenceValue implements ReferenceValue.Observer {
+
+    private ClassifierInstance<?> classifierInstance;
+    private Reference reference;
+    private int index;
+
+    public ObserverOnReferenceValue(
+        ClassifierInstance<?> classifierInstance, Reference reference, int index) {
+      this.classifierInstance = classifierInstance;
+      this.reference = reference;
+      this.index = index;
+    }
+
+    @Override
+    public void resolveInfoChanged(
+        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue) {
+      if (observer != null) {
+        observer.referenceValueChanged(
+            classifierInstance,
+            reference,
+            index,
+            referenceValue.getReferredID(),
+            oldValue,
+            referenceValue.getReferredID(),
+            newValue);
+      }
+    }
+
+    @Override
+    public void referredIDChanged(
+        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue) {
+      if (observer != null) {
+        observer.referenceValueChanged(
+            classifierInstance,
+            reference,
+            index,
+            oldValue,
+            referenceValue.getResolveInfo(),
+            newValue,
+            referenceValue.getResolveInfo());
+      }
     }
   }
 }
