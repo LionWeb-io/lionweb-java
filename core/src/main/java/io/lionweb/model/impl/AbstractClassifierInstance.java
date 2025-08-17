@@ -149,12 +149,12 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   // Observer methods
 
   @Override
-  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
+  public void registerObserver(@Nullable ClassifierInstanceObserver observer) {
     this.observer = observer;
   }
 
   @Override
-  public void removeObserver(@Nonnull ClassifierInstanceObserver observer) {
+  public void unregisterObserver(@Nonnull ClassifierInstanceObserver observer) {
     throw new UnsupportedOperationException();
   }
 
@@ -164,7 +164,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
    */
   protected @Nullable ClassifierInstanceObserver observer = null;
 
-  protected class ObserverOnReferenceValue implements ReferenceValue.Observer {
+  protected class ObserverOnReferenceValue implements ReferenceValueObserver {
 
     private ClassifierInstance<?> classifierInstance;
     private Reference reference;
@@ -179,7 +179,9 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
     @Override
     public void resolveInfoChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue) {
+        @Nonnull ReferenceValue referenceValue,
+        @Nullable String oldValue,
+        @Nullable String newValue) {
       if (observer != null) {
         observer.referenceValueChanged(
             classifierInstance,
@@ -194,7 +196,9 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
     @Override
     public void referredIDChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue) {
+        @Nonnull ReferenceValue referenceValue,
+        @Nullable String oldValue,
+        @Nullable String newValue) {
       if (observer != null) {
         observer.referenceValueChanged(
             classifierInstance,

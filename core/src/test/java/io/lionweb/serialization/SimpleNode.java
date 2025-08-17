@@ -149,7 +149,7 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   @Override
-  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
+  public void registerObserver(@Nullable ClassifierInstanceObserver observer) {
     throw new UnsupportedOperationException();
   }
 }

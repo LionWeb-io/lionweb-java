@@ -39,10 +39,10 @@ public interface ClassifierInstanceObserver {
       @Nonnull ClassifierInstance<?> classifierInstance,
       @Nonnull Reference reference,
       int index,
-      String oldReferred,
-      String oldResolveInfo,
-      String newReferred,
-      String newResolveInfo);
+      @Nullable String oldReferred,
+      @Nullable String oldResolveInfo,
+      @Nullable String newReferred,
+      @Nullable String newResolveInfo);
 
   void referenceValueRemoved(
       @Nonnull ClassifierInstance<?> classifierInstance,
