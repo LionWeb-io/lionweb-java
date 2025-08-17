@@ -32,13 +32,17 @@ public class CompositeReferenceValueObserver implements ReferenceValueObserver {
       combined.add(b);
     }
 
+    return getInstance(combined);
+  }
+
+  private static ReferenceValueObserver getInstance(Set<ReferenceValueObserver> elements) {
     // intern if small, but don’t intern larger ones
-    if (combined.size() <= INTERN_LIMIT) {
-      Set<ReferenceValueObserver> key = Collections.unmodifiableSet(new HashSet<>(combined));
+    if (elements.size() <= INTERN_LIMIT) {
+      Set<ReferenceValueObserver> key = Collections.unmodifiableSet(new HashSet<>(elements));
       return INTERN_CACHE.computeIfAbsent(
           key, k -> k.size() == 1 ? k.iterator().next() : new CompositeReferenceValueObserver(k));
     } else {
-      return new CompositeReferenceValueObserver(Collections.unmodifiableSet(combined));
+      return new CompositeReferenceValueObserver(Collections.unmodifiableSet(elements));
     }
   }
 
@@ -69,5 +73,14 @@ public class CompositeReferenceValueObserver implements ReferenceValueObserver {
 
   public Set<ReferenceValueObserver> getElements() {
     return elements;
+  }
+
+  public ReferenceValueObserver remove(ReferenceValueObserver observer) {
+    if (!this.elements.contains(observer)) {
+      throw new IllegalArgumentException("Cannot remove unknown observer: " + observer);
+    }
+    Set<ReferenceValueObserver> newElements = new HashSet<>(this.elements);
+    newElements.remove(observer);
+    return getInstance(newElements);
   }
 }
