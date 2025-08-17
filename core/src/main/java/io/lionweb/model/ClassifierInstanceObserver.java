@@ -25,10 +25,13 @@ public interface ClassifierInstanceObserver {
       int index,
       @Nonnull Node removedChild);
 
-  void annotationAdded(@Nonnull Node node, int index, @Nonnull AnnotationInstance newAnnotation);
+  void annotationAdded(
+      @Nonnull ClassifierInstance<?> node, int index, @Nonnull AnnotationInstance newAnnotation);
 
   void annotationRemoved(
-      @Nonnull Node node, int index, @Nonnull AnnotationInstance removedAnnotation);
+      @Nonnull ClassifierInstance<?> node,
+      int index,
+      @Nonnull AnnotationInstance removedAnnotation);
 
   void referenceValueAdded(
       @Nonnull ClassifierInstance<?> classifierInstance,

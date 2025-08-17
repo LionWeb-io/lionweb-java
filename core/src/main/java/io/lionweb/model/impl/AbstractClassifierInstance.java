@@ -60,6 +60,9 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (instance.getID() == null
         || annotations.stream().noneMatch(a -> a.getID().equals(instance.getID()))) {
       this.annotations.add(instance);
+      if (observer != null) {
+        observer.annotationAdded(this, this.annotations.size() - 1, instance);
+      }
     }
     return true;
   }
@@ -77,6 +80,9 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     annotations.remove(index);
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
+    }
+    if (observer != null) {
+      observer.annotationRemoved(this, index, instance);
     }
     return index;
   }
