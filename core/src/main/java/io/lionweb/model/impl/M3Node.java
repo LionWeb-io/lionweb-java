@@ -338,7 +338,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
       Reference reference = getClassifier().getReferenceByName(linkName);
       observer.referenceValueAdded(this, reference, value);
       // TODO add observers on existing reference values when observers are added later
-      value.addObserver(
+      value.registerObserver(
           new ObserverOnReferenceValue(
               this,
               getClassifier().getReferenceByName(linkName),

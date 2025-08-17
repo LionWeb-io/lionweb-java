@@ -148,4 +148,9 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   public void registerObserver(@Nullable ClassifierInstanceObserver observer) {
     throw cannotDoBecauseProxy();
   }
+
+  @Override
+  public void unregisterObserver(@Nonnull ClassifierInstanceObserver observer) {
+    throw cannotDoBecauseProxy();
+  }
 }

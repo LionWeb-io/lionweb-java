@@ -70,13 +70,32 @@ public class ReferenceValue {
         + '}';
   }
 
-  public void addObserver(@Nonnull ReferenceValueObserver observer) {
-    if (this.observer != null) {
-      this.observer = CompositeReferenceValueObserver.combine(this.observer, observer);
-    } else {
+  public void registerObserver(@Nullable ReferenceValueObserver observer) {
+    if (this.observer == observer) {
+      throw new IllegalArgumentException("Observer already registered: " + observer);
+    }
+    if (this.observer == null) {
       this.observer = observer;
+    } else {
+      this.observer = CompositeReferenceValueObserver.combine(this.observer, observer);
     }
   }
 
-  private @Nullable ReferenceValueObserver observer = null;
+  public void unregisterObserver(@Nonnull ReferenceValueObserver observer) {
+    if (this.observer == observer) {
+      this.observer = null;
+      return;
+    }
+    if (this.observer instanceof CompositeReferenceValueObserver) {
+      this.observer = ((CompositeReferenceValueObserver) this.observer).remove(observer);
+    } else {
+      throw new IllegalArgumentException("Observer not registered: " + observer);
+    }
+  }
+
+  /**
+   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
+   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
+   */
+  protected @Nullable ReferenceValueObserver observer = null;
 }
