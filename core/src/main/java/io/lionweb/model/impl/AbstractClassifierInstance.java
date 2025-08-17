@@ -49,19 +49,16 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
-    if (this.annotations.contains(instance)) {
+    if (instance.getID() != null && annotations.stream().anyMatch(a -> a.getID().equals(instance.getID()))) {
       // necessary to avoid infinite loops and duplicate insertions
       return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-    if (this.annotations.contains(instance)) {
-      // necessary to avoid infinite loops and duplicate insertions
-      // the previous setAnnotated could potentially have already set annotations
-      return false;
-    }
-    this.annotations.add(instance);
+      if (instance.getID() == null || annotations.stream().noneMatch(a -> a.getID().equals(instance.getID()))) {
+          this.annotations.add(instance);
+      }
     return true;
   }
 

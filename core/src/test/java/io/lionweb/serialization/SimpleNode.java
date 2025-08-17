@@ -19,7 +19,6 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
 
   private String id;
   private Node parent;
-  private final List<AnnotationInstance> annotations = new ArrayList<>();
 
   protected void assignRandomID() {
     String randomId = "id_" + Math.abs(new Random().nextLong());
@@ -43,11 +42,6 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   @Override
   public Node getParent() {
     return parent;
-  }
-
-  @Override
-  public List<AnnotationInstance> getAnnotations() {
-    return annotations;
   }
 
   @Override
