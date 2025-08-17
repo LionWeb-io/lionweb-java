@@ -72,9 +72,10 @@ public class ReferenceValue {
 
   public void addObserver(@Nonnull ReferenceValueObserver observer) {
     if (this.observer != null) {
-      throw new UnsupportedOperationException();
+      this.observer = CompositeReferenceValueObserver.combine(this.observer, observer);
+    } else {
+      this.observer = observer;
     }
-    this.observer = observer;
   }
 
   private @Nullable ReferenceValueObserver observer = null;
