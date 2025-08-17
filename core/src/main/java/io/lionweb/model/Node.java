@@ -88,7 +88,4 @@ public interface Node extends ClassifierInstance<Concept> {
     ClassifierInstance.collectSelfAndDescendants(this, false, result);
     return result;
   }
-
-  // References methods
-
 }

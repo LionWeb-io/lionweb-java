@@ -143,4 +143,9 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
     throw cannotDoBecauseProxy();
   }
+
+  @Override
+  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
+    throw cannotDoBecauseProxy();
+  }
 }
