@@ -248,6 +248,18 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
       return Objects.hash(
           reference, index, oldReferred, oldResolveInfo, newReferred, newResolveInfo);
     }
+
+      @Override
+      public String toString() {
+          return "ReferenceChangedRecord{" +
+                  "reference=" + reference +
+                  ", index=" + index +
+                  ", oldReferred='" + oldReferred + '\'' +
+                  ", oldResolveInfo='" + oldResolveInfo + '\'' +
+                  ", newReferred='" + newReferred + '\'' +
+                  ", newResolveInfo='" + newResolveInfo + '\'' +
+                  '}';
+      }
   }
 
   public static class ReferenceRemovedRecord extends Record {

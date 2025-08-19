@@ -12,11 +12,9 @@ import io.lionweb.model.ClassifierInstanceObserver;
 import io.lionweb.model.MockClassifierInstanceObserver;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.SimpleNode;
-import io.lionweb.serialization.refsmm.RefNode;
 import io.lionweb.serialization.simplemath.IntLiteral;
-import org.junit.Test;
-
 import java.util.Arrays;
+import org.junit.Test;
 
 public class AbstractClassifierInstanceTest {
 
@@ -122,55 +120,57 @@ public class AbstractClassifierInstanceTest {
     assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer5));
   }
 
-    @Test
-    public void referenceObservability() {
-        Annotation annotation = new Annotation();
-        annotation.setID("annotation-A");
+  @Test
+  public void referenceObservability() {
+    Annotation annotation = new Annotation();
+    annotation.setID("annotation-A");
 
-        Language language = new Language();
-        language.setID("language-A");
+    Language language = new Language();
+    language.setID("language-A");
 
-        Concept c1 = new Concept();
-        c1.setName("c1");
-        c1.setID("c1-id");
+    Concept c1 = new Concept();
+    c1.setName("c1");
+    c1.setID("c1-id");
 
-        language.addElement(c1);
+    language.addElement(c1);
 
-        Reference r1 = new Reference();
-        r1.setName("r1");
-        r1.setID("r1-id");
-        r1.setKey("r1-key");
-        c1.addFeature(r1);
+    Reference r1 = new Reference();
+    r1.setName("r1");
+    r1.setID("r1-id");
+    r1.setKey("r1-key");
+    c1.addFeature(r1);
 
-        DynamicNode n1 = new DynamicNode("id-1", c1);
-        DynamicNode n2 = new DynamicNode("id-2", c1);
-        ReferenceValue rv1 = new ReferenceValue();
-        rv1.setResolveInfo("foo");
-        n1.addReferenceValue(r1, rv1);
-        MockClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
-        n1.registerObserver(observer1);
+    DynamicNode n1 = new DynamicNode("id-1", c1);
+    DynamicNode n2 = new DynamicNode("id-2", c1);
+    ReferenceValue rv1 = new ReferenceValue();
+    rv1.setResolveInfo("foo");
+    n1.addReferenceValue(r1, rv1);
+    MockClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
+    n1.registerObserver(observer1);
 
-        rv1.setReferred(n2);
-        assertEquals(Arrays.asList(new MockClassifierInstanceObserver.ReferenceChangedRecord(
-                n1, r1, 0, null, "foo", "id-2", "foo"
-                )),
-                observer1.getRecords());
+    rv1.setReferred(n2);
+    assertEquals(
+        Arrays.asList(
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                n1, r1, 0, null, "foo", "id-2", "foo")),
+        observer1.getRecords());
 
-        n1.unregisterObserver(observer1);
-        rv1.setReferred(n1);
-        assertEquals(Arrays.asList(new MockClassifierInstanceObserver.ReferenceChangedRecord(
-                        n1, r1, 0, null, "foo", "id-2", "foo"
-                )),
-                observer1.getRecords());
+    n1.unregisterObserver(observer1);
+    rv1.setReferred(n1);
+    assertEquals(
+        Arrays.asList(
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                n1, r1, 0, null, "foo", "id-2", "foo")),
+        observer1.getRecords());
 
-        n1.registerObserver(observer1);
-        rv1.setReferred(n2);
-        assertEquals(Arrays.asList(new MockClassifierInstanceObserver.ReferenceChangedRecord(
-                        n1, r1, 0, null, "foo", "id-2", "foo"
-                ), new MockClassifierInstanceObserver.ReferenceChangedRecord(
-                        n1, r1, 0, null, "foo", "id-2", "foo"
-                )),
-                observer1.getRecords());
-    }
-
+    n1.registerObserver(observer1);
+    rv1.setReferred(n2);
+    assertEquals(
+        Arrays.asList(
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                n1, r1, 0, null, "foo", "id-2", "foo"),
+            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+                n1, r1, 0, null, "foo", "id-2", "foo")),
+        observer1.getRecords());
+  }
 }
