@@ -159,20 +159,23 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Observer already registered: " + observer);
     }
     if (this.observer == null) {
-        if (refObservers == null) {
-            refObservers = new HashSet<>();
-        }
-        // We track the ObserverOnReferenceValue, so that we can remove them later,
-        // if observer is set to null
-        getClassifier().allReferences().forEach(reference -> {
-            for (int i=0;i<this.getReferenceValues(reference).size();i++) {
-                ReferenceValue referenceValue = this.getReferenceValues(reference).get(i);
-                ObserverOnReferenceValue newRefObserver = new ObserverOnReferenceValue(this,
-                        reference, i);
-                referenceValue.registerObserver(newRefObserver);
-                refObservers.add(newRefObserver);
-            }
-        });
+      if (refObservers == null) {
+        refObservers = new IdentityHashMap<>();
+      }
+      // We track the ObserverOnReferenceValue, so that we can remove them later,
+      // if observer is set to null
+      getClassifier()
+          .allReferences()
+          .forEach(
+              reference -> {
+                for (int i = 0; i < this.getReferenceValues(reference).size(); i++) {
+                  ReferenceValue referenceValue = this.getReferenceValues(reference).get(i);
+                  ObserverOnReferenceValue newRefObserver =
+                      new ObserverOnReferenceValue(this, reference, i);
+                  referenceValue.registerObserver(newRefObserver);
+                  refObservers.put(referenceValue, newRefObserver);
+                }
+              });
       this.observer = observer;
     } else {
       this.observer = CompositeClassifierInstanceObserver.combine(this.observer, observer);
@@ -188,9 +191,8 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.observer instanceof CompositeClassifierInstanceObserver) {
       this.observer = ((CompositeClassifierInstanceObserver) this.observer).remove(observer);
       if (this.observer == null) {
-          refObservers.forEach(ro ->
-                  ro.);
-          refObservers = null;
+        refObservers.forEach(ReferenceValue::unregisterObserver);
+        refObservers = null;
       }
     } else {
       throw new IllegalArgumentException("Observer not registered: " + observer);
@@ -251,6 +253,5 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  private Set<ObserverOnReferenceValue> refObservers = null;
-
+  private IdentityHashMap<ReferenceValue, ObserverOnReferenceValue> refObservers = null;
 }

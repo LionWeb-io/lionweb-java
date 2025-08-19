@@ -30,7 +30,10 @@ public class ReferenceValue {
 
   public void setReferred(@Nullable Node referred) {
     if (observer != null) {
-      observer.referredIDChanged(this, this.referred == null ? null : this.referred.getID(), referred == null ? null : referred.getID());
+      observer.referredIDChanged(
+          this,
+          this.referred == null ? null : this.referred.getID(),
+          referred == null ? null : referred.getID());
     }
     this.referred = referred;
   }
