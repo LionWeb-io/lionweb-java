@@ -1,12 +1,12 @@
 package io.lionweb.model;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ReferenceValue {
   private Node referred;
   private String resolveInfo;
+  private ClassifierInstance<?> owner;
 
   public ReferenceValue() {
     this(null, null);
@@ -28,13 +28,18 @@ public class ReferenceValue {
     return referred.getID();
   }
 
+  // TODO for the ReferenceValue to trigger the event, the ReferenceValue must known where it is hold
+    // perhaps we could make ReferenceValue immutable and force mutations to happen throw the holding ClassifierInstance
   public void setReferred(@Nullable Node referred) {
-    if (observer != null) {
-      observer.referredIDChanged(
-          this,
-          this.referred == null ? null : this.referred.getID(),
-          referred == null ? null : referred.getID());
-    }
+      if (owner != null) {
+          PartitionObserver observer = owner.registeredPartitionObserver();
+          if (observer != null) {
+              observer.referredIDChanged(
+                      this,
+                      this.referred == null ? null : this.referred.getID(),
+                      referred == null ? null : referred.getID());
+          }
+      }
     this.referred = referred;
   }
 
@@ -73,32 +78,11 @@ public class ReferenceValue {
         + '}';
   }
 
-  public void registerObserver(@Nullable ReferenceValueObserver observer) {
-    if (this.observer == observer) {
-      throw new IllegalArgumentException("Observer already registered: " + observer);
+    public ClassifierInstance<?> getOwner() {
+        return owner;
     }
-    if (this.observer == null) {
-      this.observer = observer;
-    } else {
-      this.observer = CompositeReferenceValueObserver.combine(this.observer, observer);
-    }
-  }
 
-  public void unregisterObserver(@Nonnull ReferenceValueObserver observer) {
-    if (this.observer == observer) {
-      this.observer = null;
-      return;
+    public void setOwner(ClassifierInstance<?> owner) {
+        this.owner = owner;
     }
-    if (this.observer instanceof CompositeReferenceValueObserver) {
-      this.observer = ((CompositeReferenceValueObserver) this.observer).remove(observer);
-    } else {
-      throw new IllegalArgumentException("Observer not registered: " + observer);
-    }
-  }
-
-  /**
-   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
-   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
-   */
-  protected @Nullable ReferenceValueObserver observer = null;
 }
