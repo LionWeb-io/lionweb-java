@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
  * differently depending on the version of LionWeb they are representing.
  */
-public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
+public abstract class M3Node<T extends M3Node> extends AbstractNode
     implements Node, HasSettableParent, HasSettableID {
   private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;

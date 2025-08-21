@@ -1,18 +1,17 @@
 package io.lionweb.serialization;
 
-import io.lionweb.language.Concept;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.Node;
 import io.lionweb.model.ReferenceValue;
-import io.lionweb.model.impl.AbstractClassifierInstance;
+import io.lionweb.model.impl.AbstractNode;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class SimpleNode extends AbstractClassifierInstance<Concept> implements Node {
+public abstract class SimpleNode extends AbstractNode {
 
   private String id;
   private Node parent;

@@ -6,7 +6,7 @@ import io.lionweb.language.Reference;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public interface ClassifierInstanceObserver {
+public interface PartitionObserver {
   void propertyChanged(
       @Nonnull ClassifierInstance<?> classifierInstance,
       @Nonnull Property property,
