@@ -12,7 +12,7 @@ import javax.annotation.Nullable;
  * know which Node should be used in a particular point, but at this time we cannot/do not want to
  * retrieve the data necessary to properly instantiate it.
  */
-public class ProxyNode extends AbstractClassifierInstance<Concept> implements Node {
+public class ProxyNode extends AbstractNode {
 
   private @Nonnull String id;
 
@@ -145,12 +145,22 @@ public class ProxyNode extends AbstractClassifierInstance<Concept> implements No
   }
 
   @Override
-  public void registerObserver(@Nullable ClassifierInstanceObserver observer) {
+  public void registerPartitionObserver(@Nullable PartitionObserver observer) {
     throw cannotDoBecauseProxy();
   }
 
   @Override
-  public void unregisterObserver(@Nonnull ClassifierInstanceObserver observer) {
+  public void unregisterPartitionObserver(@Nonnull PartitionObserver observer) {
     throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public void partitionObserverUnregistered() {
+    // We will ignore this
+  }
+
+  @Override
+  public void partitionObserverRegistered(@Nonnull PartitionObserver observer) {
+    // We will ignore this
   }
 }

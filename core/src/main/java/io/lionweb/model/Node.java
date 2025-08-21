@@ -88,4 +88,10 @@ public interface Node extends ClassifierInstance<Concept> {
     ClassifierInstance.collectSelfAndDescendants(this, false, result);
     return result;
   }
+
+  /** @throws IllegalArgumentException if the same observer is registered more than once */
+  void registerPartitionObserver(@Nonnull PartitionObserver observer);
+
+  /** @throws IllegalArgumentException if the observer is not registered */
+  void unregisterPartitionObserver(@Nonnull PartitionObserver observer);
 }

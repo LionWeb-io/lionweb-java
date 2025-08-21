@@ -44,6 +44,77 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
+  public void registerPartitionObserver(@Nullable PartitionObserver observer) {
+    if (!this.isRoot()) {
+      throw new UnsupportedOperationException(
+          "Cannot register a partition observer on a node which is not root");
+    }
+    if (this.observer == observer) {
+      throw new IllegalArgumentException("Observer already registered: " + observer);
+    }
+    if (this.observer == null) {
+      throw new UnsupportedOperationException();
+      //            if (refObservers == null) {
+      //                refObservers = new IdentityHashMap<>();
+      //            }
+      // We track the ObserverOnReferenceValue, so that we can remove them later,
+      // if observer is set to null
+      //            getClassifier()
+      //                    .allReferences()
+      //                    .forEach(
+      //                            reference -> {
+      ////                                for (int i = 0; i <
+      // this.getReferenceValues(reference).size(); i++) {
+      ////                                    ReferenceValue referenceValue =
+      // this.getReferenceValues(reference).get(i);
+      ////                                    AbstractNode.ObserverOnReferenceValue newRefObserver =
+      ////                                            new
+      // AbstractNode.ObserverOnReferenceValue(this, reference, i);
+      ////                                    referenceValue.registerObserver(newRefObserver);
+      ////                                    refObservers.put(referenceValue, newRefObserver);
+      ////                                }
+      //                                throw new UnsupportedOperationException();
+      //                            });
+      // this.observer = observer;
+    } else {
+      this.observer = CompositePartitionObserver.combine(this.observer, observer);
+    }
+    thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
+  }
+
+  @Override
+  public void unregisterPartitionObserver(@Nonnull PartitionObserver observer) {
+    if (!this.isRoot()) {
+      throw new UnsupportedOperationException(
+          "Cannot unregister a partition observer on a node which is not root");
+    }
+    if (this.observer == observer) {
+      this.observer = null;
+      thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
+      return;
+    }
+    if (this.observer instanceof CompositePartitionObserver) {
+      this.observer = ((CompositePartitionObserver) this.observer).remove(observer);
+      thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
+      if (this.observer == null) {
+        // refObservers.forEach(ReferenceValue::unregisterObserver);
+        // refObservers = null;
+        throw new UnsupportedOperationException();
+      } else {
+        thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
+      }
+    } else {
+      throw new IllegalArgumentException("Observer not registered: " + observer);
+    }
+  }
+
+  /**
+   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
+   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
+   */
+  protected @Nullable PartitionObserver observer = null;
+
+  @Override
   public DynamicNode setParent(@Nullable ClassifierInstance<?> parent) {
     this.parent = parent;
     return this;

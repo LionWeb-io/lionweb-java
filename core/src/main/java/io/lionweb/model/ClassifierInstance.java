@@ -65,9 +65,15 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
 
   // Observer methods
 
-  /** @throws IllegalArgumentException if the same observer is registered more than once */
-  void registerObserver(@Nonnull ClassifierInstanceObserver observer);
+  /**
+   * This method should only be called by the ancestor of the node, when the observer is registered
+   * on the partition.
+   */
+  void partitionObserverRegistered(@Nonnull PartitionObserver observer);
 
-  /** @throws IllegalArgumentException if the observer is not registered */
-  void unregisterObserver(@Nonnull ClassifierInstanceObserver observer);
+  /**
+   * This method should only be called by the ancestor of the node, when the observer is
+   * unregistered on the partition.
+   */
+  void partitionObserverUnregistered();
 }

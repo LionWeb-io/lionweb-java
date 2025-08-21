@@ -7,31 +7,30 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class CompositeClassifierInstanceObserver implements ClassifierInstanceObserver {
+public class CompositePartitionObserver implements PartitionObserver {
   private static final int INTERN_LIMIT = 3;
-  private static final Map<Set<ClassifierInstanceObserver>, ClassifierInstanceObserver>
-      INTERN_CACHE = new WeakHashMap<>();
+  private static final Map<Set<PartitionObserver>, PartitionObserver> INTERN_CACHE =
+      new WeakHashMap<>();
 
-  private final Set<ClassifierInstanceObserver> elements;
+  private final Set<PartitionObserver> elements;
 
-  private CompositeClassifierInstanceObserver(Set<ClassifierInstanceObserver> elements) {
+  private CompositePartitionObserver(Set<PartitionObserver> elements) {
     this.elements = elements;
   }
 
-  public static ClassifierInstanceObserver combine(
-      ClassifierInstanceObserver a, ClassifierInstanceObserver b) {
-    Set<ClassifierInstanceObserver> combined = new HashSet<>();
+  public static PartitionObserver combine(PartitionObserver a, PartitionObserver b) {
+    Set<PartitionObserver> combined = new HashSet<>();
 
     // flatten left
-    if (a instanceof CompositeClassifierInstanceObserver) {
-      combined.addAll(((CompositeClassifierInstanceObserver) a).elements);
+    if (a instanceof CompositePartitionObserver) {
+      combined.addAll(((CompositePartitionObserver) a).elements);
     } else {
       combined.add(a);
     }
 
     // flatten right
-    if (b instanceof CompositeClassifierInstanceObserver) {
-      combined.addAll(((CompositeClassifierInstanceObserver) b).elements);
+    if (b instanceof CompositePartitionObserver) {
+      combined.addAll(((CompositePartitionObserver) b).elements);
     } else {
       combined.add(b);
     }
@@ -39,36 +38,35 @@ public class CompositeClassifierInstanceObserver implements ClassifierInstanceOb
     return getInstance(combined);
   }
 
-  private static ClassifierInstanceObserver getInstance(Set<ClassifierInstanceObserver> elements) {
+  private static PartitionObserver getInstance(Set<PartitionObserver> elements) {
     // intern if small, but don’t intern larger ones
     if (elements.size() <= INTERN_LIMIT) {
-      Set<ClassifierInstanceObserver> key = Collections.unmodifiableSet(new HashSet<>(elements));
+      Set<PartitionObserver> key = Collections.unmodifiableSet(new HashSet<>(elements));
       return INTERN_CACHE.computeIfAbsent(
-          key,
-          k -> k.size() == 1 ? k.iterator().next() : new CompositeClassifierInstanceObserver(k));
+          key, k -> k.size() == 1 ? k.iterator().next() : new CompositePartitionObserver(k));
     } else {
-      return new CompositeClassifierInstanceObserver(Collections.unmodifiableSet(elements));
+      return new CompositePartitionObserver(Collections.unmodifiableSet(elements));
     }
   }
 
-  public ClassifierInstanceObserver remove(ClassifierInstanceObserver observer) {
+  public PartitionObserver remove(PartitionObserver observer) {
     if (!this.elements.contains(observer)) {
       throw new IllegalArgumentException("Cannot remove unknown observer: " + observer);
     }
-    Set<ClassifierInstanceObserver> newElements = new HashSet<>(this.elements);
+    Set<PartitionObserver> newElements = new HashSet<>(this.elements);
     newElements.remove(observer);
     return getInstance(newElements);
   }
 
-  public void addElement(ClassifierInstanceObserver observer) {
+  public void addElement(PartitionObserver observer) {
     elements.add(observer);
   }
 
-  public void removeElement(ClassifierInstanceObserver observer) {
+  public void removeElement(PartitionObserver observer) {
     elements.remove(observer);
   }
 
-  public Set<ClassifierInstanceObserver> getElements() {
+  public Set<PartitionObserver> getElements() {
     return elements;
   }
 

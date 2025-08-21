@@ -9,7 +9,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class MockClassifierInstanceObserver implements ClassifierInstanceObserver {
+public class MockPartitionObserver implements PartitionObserver {
 
   public abstract static class Record {
     public final @Nonnull ClassifierInstance<?> node;
@@ -249,17 +249,27 @@ public class MockClassifierInstanceObserver implements ClassifierInstanceObserve
           reference, index, oldReferred, oldResolveInfo, newReferred, newResolveInfo);
     }
 
-      @Override
-      public String toString() {
-          return "ReferenceChangedRecord{" +
-                  "reference=" + reference +
-                  ", index=" + index +
-                  ", oldReferred='" + oldReferred + '\'' +
-                  ", oldResolveInfo='" + oldResolveInfo + '\'' +
-                  ", newReferred='" + newReferred + '\'' +
-                  ", newResolveInfo='" + newResolveInfo + '\'' +
-                  '}';
-      }
+    @Override
+    public String toString() {
+      return "ReferenceChangedRecord{"
+          + "reference="
+          + reference
+          + ", index="
+          + index
+          + ", oldReferred='"
+          + oldReferred
+          + '\''
+          + ", oldResolveInfo='"
+          + oldResolveInfo
+          + '\''
+          + ", newReferred='"
+          + newReferred
+          + '\''
+          + ", newResolveInfo='"
+          + newResolveInfo
+          + '\''
+          + '}';
+    }
   }
 
   public static class ReferenceRemovedRecord extends Record {

@@ -8,8 +8,8 @@ import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 import io.lionweb.language.Reference;
 import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.ClassifierInstanceObserver;
-import io.lionweb.model.MockClassifierInstanceObserver;
+import io.lionweb.model.MockPartitionObserver;
+import io.lionweb.model.PartitionObserver;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.SimpleNode;
 import io.lionweb.serialization.simplemath.IntLiteral;
@@ -77,47 +77,47 @@ public class AbstractClassifierInstanceTest {
   public void addAndRemoveObservers() {
     SimpleNode n1 = new IntLiteral(1);
 
-    ClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
-    n1.registerObserver(observer1);
-    assertThrows(IllegalArgumentException.class, () -> n1.registerObserver(observer1));
-    n1.unregisterObserver(observer1);
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
+    PartitionObserver observer1 = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer1);
+    assertThrows(IllegalArgumentException.class, () -> n1.registerPartitionObserver(observer1));
+    n1.unregisterPartitionObserver(observer1);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
   }
 
   @Test
   public void addAndRemoveManyObservers() {
     SimpleNode n1 = new IntLiteral(1);
 
-    ClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
-    ClassifierInstanceObserver observer2 = new MockClassifierInstanceObserver();
-    ClassifierInstanceObserver observer3 = new MockClassifierInstanceObserver();
-    ClassifierInstanceObserver observer4 = new MockClassifierInstanceObserver();
-    ClassifierInstanceObserver observer5 = new MockClassifierInstanceObserver();
-    n1.registerObserver(observer1);
-    n1.registerObserver(observer2);
-    n1.registerObserver(observer3);
-    n1.registerObserver(observer4);
-    n1.registerObserver(observer5);
-    n1.unregisterObserver(observer1);
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-    n1.unregisterObserver(observer2);
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-    n1.unregisterObserver(observer3);
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
-    n1.unregisterObserver(observer4);
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer4));
-    n1.unregisterObserver(observer5);
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer1));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer2));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer3));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer4));
-    assertThrows(IllegalArgumentException.class, () -> n1.unregisterObserver(observer5));
+    PartitionObserver observer1 = new MockPartitionObserver();
+    PartitionObserver observer2 = new MockPartitionObserver();
+    PartitionObserver observer3 = new MockPartitionObserver();
+    PartitionObserver observer4 = new MockPartitionObserver();
+    PartitionObserver observer5 = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer1);
+    n1.registerPartitionObserver(observer2);
+    n1.registerPartitionObserver(observer3);
+    n1.registerPartitionObserver(observer4);
+    n1.registerPartitionObserver(observer5);
+    n1.unregisterPartitionObserver(observer1);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
+    n1.unregisterPartitionObserver(observer2);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer2));
+    n1.unregisterPartitionObserver(observer3);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer2));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer3));
+    n1.unregisterPartitionObserver(observer4);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer2));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer3));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer4));
+    n1.unregisterPartitionObserver(observer5);
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer2));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer3));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer4));
+    assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer5));
   }
 
   @Test
@@ -145,31 +145,30 @@ public class AbstractClassifierInstanceTest {
     ReferenceValue rv1 = new ReferenceValue();
     rv1.setResolveInfo("foo");
     n1.addReferenceValue(r1, rv1);
-    MockClassifierInstanceObserver observer1 = new MockClassifierInstanceObserver();
-    n1.registerObserver(observer1);
+    MockPartitionObserver observer1 = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer1);
 
     rv1.setReferred(n2);
     assertEquals(
         Arrays.asList(
-            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+            new MockPartitionObserver.ReferenceChangedRecord(
                 n1, r1, 0, null, "foo", "id-2", "foo")),
         observer1.getRecords());
 
-    n1.unregisterObserver(observer1);
+    n1.unregisterPartitionObserver(observer1);
     rv1.setReferred(n1);
     assertEquals(
         Arrays.asList(
-            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+            new MockPartitionObserver.ReferenceChangedRecord(
                 n1, r1, 0, null, "foo", "id-2", "foo")),
         observer1.getRecords());
 
-    n1.registerObserver(observer1);
+    n1.registerPartitionObserver(observer1);
     rv1.setReferred(n2);
     assertEquals(
         Arrays.asList(
-            new MockClassifierInstanceObserver.ReferenceChangedRecord(
-                n1, r1, 0, null, "foo", "id-2", "foo"),
-            new MockClassifierInstanceObserver.ReferenceChangedRecord(
+            new MockPartitionObserver.ReferenceChangedRecord(n1, r1, 0, null, "foo", "id-2", "foo"),
+            new MockPartitionObserver.ReferenceChangedRecord(
                 n1, r1, 0, null, "foo", "id-2", "foo")),
         observer1.getRecords());
   }

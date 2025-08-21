@@ -60,8 +60,8 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (instance.getID() == null
         || annotations.stream().noneMatch(a -> a.getID().equals(instance.getID()))) {
       this.annotations.add(instance);
-      if (observer != null) {
-        observer.annotationAdded(this, this.annotations.size() - 1, instance);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
       }
     }
     return true;
@@ -81,8 +81,8 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
-    if (observer != null) {
-      observer.annotationRemoved(this, index, instance);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationRemoved(this, index, instance);
     }
     return index;
   }
@@ -134,8 +134,8 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     ReferenceValue removedReferenceValue = getReferenceValues(reference).remove(index);
-    if (observer != null) {
-      observer.referenceValueRemoved(this, reference, index, removedReferenceValue);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueRemoved(this, reference, index, removedReferenceValue);
     }
   }
 
@@ -151,107 +151,15 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  // Observer methods
-
   @Override
-  public void registerObserver(@Nullable ClassifierInstanceObserver observer) {
-    if (this.observer == observer) {
-      throw new IllegalArgumentException("Observer already registered: " + observer);
-    }
-    if (this.observer == null) {
-      if (refObservers == null) {
-        refObservers = new IdentityHashMap<>();
-      }
-      // We track the ObserverOnReferenceValue, so that we can remove them later,
-      // if observer is set to null
-      getClassifier()
-          .allReferences()
-          .forEach(
-              reference -> {
-                for (int i = 0; i < this.getReferenceValues(reference).size(); i++) {
-                  ReferenceValue referenceValue = this.getReferenceValues(reference).get(i);
-                  ObserverOnReferenceValue newRefObserver =
-                      new ObserverOnReferenceValue(this, reference, i);
-                  referenceValue.registerObserver(newRefObserver);
-                  refObservers.put(referenceValue, newRefObserver);
-                }
-              });
-      this.observer = observer;
-    } else {
-      this.observer = CompositeClassifierInstanceObserver.combine(this.observer, observer);
-    }
+  public void partitionObserverRegistered(@Nonnull PartitionObserver observer) {
+    this.partitionObserverCache = observer;
   }
 
   @Override
-  public void unregisterObserver(@Nonnull ClassifierInstanceObserver observer) {
-    if (this.observer == observer) {
-      this.observer = null;
-      return;
-    }
-    if (this.observer instanceof CompositeClassifierInstanceObserver) {
-      this.observer = ((CompositeClassifierInstanceObserver) this.observer).remove(observer);
-      if (this.observer == null) {
-        refObservers.forEach(ReferenceValue::unregisterObserver);
-        refObservers = null;
-      }
-    } else {
-      throw new IllegalArgumentException("Observer not registered: " + observer);
-    }
+  public void partitionObserverUnregistered() {
+    this.partitionObserverCache = null;
   }
 
-  /**
-   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
-   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
-   */
-  protected @Nullable ClassifierInstanceObserver observer = null;
-
-  protected class ObserverOnReferenceValue implements ReferenceValueObserver {
-
-    private ClassifierInstance<?> classifierInstance;
-    private Reference reference;
-    private int index;
-
-    public ObserverOnReferenceValue(
-        ClassifierInstance<?> classifierInstance, Reference reference, int index) {
-      this.classifierInstance = classifierInstance;
-      this.reference = reference;
-      this.index = index;
-    }
-
-    @Override
-    public void resolveInfoChanged(
-        @Nonnull ReferenceValue referenceValue,
-        @Nullable String oldValue,
-        @Nullable String newValue) {
-      if (observer != null) {
-        observer.referenceValueChanged(
-            classifierInstance,
-            reference,
-            index,
-            referenceValue.getReferredID(),
-            oldValue,
-            referenceValue.getReferredID(),
-            newValue);
-      }
-    }
-
-    @Override
-    public void referredIDChanged(
-        @Nonnull ReferenceValue referenceValue,
-        @Nullable String oldValue,
-        @Nullable String newValue) {
-      if (observer != null) {
-        observer.referenceValueChanged(
-            classifierInstance,
-            reference,
-            index,
-            oldValue,
-            referenceValue.getResolveInfo(),
-            newValue,
-            referenceValue.getResolveInfo());
-      }
-    }
-  }
-
-  private IdentityHashMap<ReferenceValue, ObserverOnReferenceValue> refObservers = null;
+  protected @Nullable PartitionObserver partitionObserverCache = null;
 }
