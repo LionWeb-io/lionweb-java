@@ -6,7 +6,6 @@ import javax.annotation.Nullable;
 public class ReferenceValue {
   private Node referred;
   private String resolveInfo;
-  private ClassifierInstance<?> owner;
 
   public ReferenceValue() {
     this(null, null);
@@ -28,18 +27,12 @@ public class ReferenceValue {
     return referred.getID();
   }
 
-  // TODO for the ReferenceValue to trigger the event, the ReferenceValue must known where it is hold
-    // perhaps we could make ReferenceValue immutable and force mutations to happen throw the holding ClassifierInstance
+  /**
+   * Note that changing a ReferenceValue directly will not trigger notifications to observers of the
+   * holding Node, if any. For this reason using this method is discouraged.
+   */
+  @Deprecated
   public void setReferred(@Nullable Node referred) {
-      if (owner != null) {
-          PartitionObserver observer = owner.registeredPartitionObserver();
-          if (observer != null) {
-              observer.referredIDChanged(
-                      this,
-                      this.referred == null ? null : this.referred.getID(),
-                      referred == null ? null : referred.getID());
-          }
-      }
     this.referred = referred;
   }
 
@@ -47,10 +40,12 @@ public class ReferenceValue {
     return resolveInfo;
   }
 
+  /**
+   * Note that changing a ReferenceValue directly will not trigger notifications to observers of the
+   * holding Node, if any. For this reason using this method is discouraged.
+   */
+  @Deprecated
   public void setResolveInfo(@Nullable String resolveInfo) {
-    if (observer != null) {
-      observer.resolveInfoChanged(this, this.resolveInfo, resolveInfo);
-    }
     this.resolveInfo = resolveInfo;
   }
 
@@ -77,12 +72,4 @@ public class ReferenceValue {
         + '\''
         + '}';
   }
-
-    public ClassifierInstance<?> getOwner() {
-        return owner;
-    }
-
-    public void setOwner(ClassifierInstance<?> owner) {
-        this.owner = owner;
-    }
 }

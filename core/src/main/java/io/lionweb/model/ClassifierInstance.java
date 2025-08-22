@@ -77,6 +77,6 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
    */
   void partitionObserverUnregistered();
 
-  @Nullable PartitionObserver registeredPartitionObserver();
-
+  @Nullable
+  PartitionObserver registeredPartitionObserver();
 }
