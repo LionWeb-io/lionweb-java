@@ -160,14 +160,17 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
-  public void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
+  public int addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue value) {
     Objects.requireNonNull(reference, "Reference should not be null");
     if (reference.isMultiple()) {
       if (value != null) {
-        addReferenceMultipleValue(reference, value);
+        return addReferenceMultipleValue(reference, value);
+      } else {
+        return -1;
       }
     } else {
       setReferenceSingleValue(reference, value);
+      return 0;
     }
   }
 
@@ -231,6 +234,48 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     initReferences();
     referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
+    // TODO observer
+  }
+
+  @Override
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
+    List<ReferenceValue> refValues = getReferenceValues(reference);
+    if (index >= refValues.size()) {
+      throw new IllegalArgumentException();
+    }
+    ReferenceValue rv = refValues.get(index);
+    refValues.set(index, rv.withReferred(referredNode));
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueChanged(
+          this,
+          reference,
+          index,
+          rv.getReferredID(),
+          rv.getResolveInfo(),
+          referredNode == null ? null : referredNode.getID(),
+          rv.getResolveInfo());
+    }
+  }
+
+  @Override
+  public void setResolveInfo(
+      @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
+    List<ReferenceValue> refValues = getReferenceValues(reference);
+    if (index >= refValues.size()) {
+      throw new IllegalArgumentException();
+    }
+    ReferenceValue rv = refValues.get(index);
+    refValues.set(index, rv.withResolveInfo(resolveInfo));
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueChanged(
+          this,
+          reference,
+          index,
+          rv.getReferredID(),
+          rv.getResolveInfo(),
+          rv.getReferredID(),
+          resolveInfo);
+    }
   }
 
   // Private methods for containments
@@ -290,16 +335,19 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
-  private void addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
+  private int addReferenceMultipleValue(Reference link, ReferenceValue referenceValue) {
     assert link.isMultiple();
     if (referenceValue == null) {
-      return;
+      return -1;
     }
     if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
-      referenceValues.get(link.getKey()).add(referenceValue);
+      List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(link.getKey());
+      referenceValuesOfInterest.add(referenceValue);
+      return referenceValuesOfInterest.size() - 1;
     } else {
       initReferences();
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(referenceValue)));
+      return 0;
     }
   }
 }

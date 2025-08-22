@@ -121,7 +121,7 @@ public class AbstractClassifierInstanceTest {
   }
 
   @Test
-  public void referenceObservability() {
+  public void referenceObservabilityForReferred() {
     Annotation annotation = new Annotation();
     annotation.setID("annotation-A");
 
@@ -142,13 +142,12 @@ public class AbstractClassifierInstanceTest {
 
     DynamicNode n1 = new DynamicNode("id-1", c1);
     DynamicNode n2 = new DynamicNode("id-2", c1);
-    ReferenceValue rv1 = new ReferenceValue();
-    rv1.setResolveInfo("foo");
-    n1.addReferenceValue(r1, rv1);
+    ReferenceValue rv1 = new ReferenceValue(null, "foo");
+    int rv1Index = n1.addReferenceValue(r1, rv1);
     MockPartitionObserver observer1 = new MockPartitionObserver();
     n1.registerPartitionObserver(observer1);
 
-    rv1.setReferred(n2);
+    n1.setReferred(r1, rv1Index, n2);
     assertEquals(
         Arrays.asList(
             new MockPartitionObserver.ReferenceChangedRecord(
@@ -156,7 +155,7 @@ public class AbstractClassifierInstanceTest {
         observer1.getRecords());
 
     n1.unregisterPartitionObserver(observer1);
-    rv1.setReferred(n1);
+    n1.setReferred(r1, rv1Index, n1);
     assertEquals(
         Arrays.asList(
             new MockPartitionObserver.ReferenceChangedRecord(
@@ -164,12 +163,60 @@ public class AbstractClassifierInstanceTest {
         observer1.getRecords());
 
     n1.registerPartitionObserver(observer1);
-    rv1.setReferred(n2);
+    n1.setReferred(r1, rv1Index, n2);
     assertEquals(
         Arrays.asList(
             new MockPartitionObserver.ReferenceChangedRecord(n1, r1, 0, null, "foo", "id-2", "foo"),
             new MockPartitionObserver.ReferenceChangedRecord(
-                n1, r1, 0, null, "foo", "id-2", "foo")),
+                n1, r1, 0, "id-1", "foo", "id-2", "foo")),
+        observer1.getRecords());
+  }
+
+  @Test
+  public void referenceObservabilityForResolveInfo() {
+    Annotation annotation = new Annotation();
+    annotation.setID("annotation-A");
+
+    Language language = new Language();
+    language.setID("language-A");
+
+    Concept c1 = new Concept();
+    c1.setName("c1");
+    c1.setID("c1-id");
+
+    language.addElement(c1);
+
+    Reference r1 = new Reference();
+    r1.setName("r1");
+    r1.setID("r1-id");
+    r1.setKey("r1-key");
+    c1.addFeature(r1);
+
+    DynamicNode n1 = new DynamicNode("id-1", c1);
+    ReferenceValue rv1 = new ReferenceValue(null, "foo");
+    int rv1Index = n1.addReferenceValue(r1, rv1);
+    MockPartitionObserver observer1 = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer1);
+
+    n1.setResolveInfo(r1, rv1Index, "B");
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ReferenceChangedRecord(n1, r1, 0, null, "foo", null, "B")),
+        observer1.getRecords());
+
+    n1.unregisterPartitionObserver(observer1);
+    n1.setResolveInfo(r1, rv1Index, "A");
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ReferenceChangedRecord(n1, r1, 0, null, "foo", null, "B")),
+        observer1.getRecords());
+
+    n1.registerPartitionObserver(observer1);
+    n1.setResolveInfo(r1, rv1Index, "B");
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ReferenceChangedRecord(n1, r1, 0, null, "foo", null, "B"),
+            new MockPartitionObserver.ReferenceChangedRecord(n1, r1, 0, null, "A", null, "B")),
         observer1.getRecords());
   }
 }

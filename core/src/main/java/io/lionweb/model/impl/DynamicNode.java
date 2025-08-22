@@ -53,29 +53,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
       throw new IllegalArgumentException("Observer already registered: " + observer);
     }
     if (this.observer == null) {
-      throw new UnsupportedOperationException();
-      //            if (refObservers == null) {
-      //                refObservers = new IdentityHashMap<>();
-      //            }
-      // We track the ObserverOnReferenceValue, so that we can remove them later,
-      // if observer is set to null
-      //            getClassifier()
-      //                    .allReferences()
-      //                    .forEach(
-      //                            reference -> {
-      ////                                for (int i = 0; i <
-      // this.getReferenceValues(reference).size(); i++) {
-      ////                                    ReferenceValue referenceValue =
-      // this.getReferenceValues(reference).get(i);
-      ////                                    AbstractNode.ObserverOnReferenceValue newRefObserver =
-      ////                                            new
-      // AbstractNode.ObserverOnReferenceValue(this, reference, i);
-      ////                                    referenceValue.registerObserver(newRefObserver);
-      ////                                    refObservers.put(referenceValue, newRefObserver);
-      ////                                }
-      //                                throw new UnsupportedOperationException();
-      //                            });
-      // this.observer = observer;
+      this.observer = observer;
     } else {
       this.observer = CompositePartitionObserver.combine(this.observer, observer);
     }
