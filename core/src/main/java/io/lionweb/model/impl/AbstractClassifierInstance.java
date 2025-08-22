@@ -161,5 +161,10 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     this.partitionObserverCache = null;
   }
 
+  @Override
+  public @Nullable PartitionObserver registeredPartitionObserver() {
+    return this.partitionObserverCache;
+  }
+
   protected @Nullable PartitionObserver partitionObserverCache = null;
 }

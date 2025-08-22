@@ -337,12 +337,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     if (observer != null) {
       Reference reference = getClassifier().getReferenceByName(linkName);
       observer.referenceValueAdded(this, reference, value);
-      // TODO add observers on existing reference values when observers are added later
-      value.registerObserver(
-          new ObserverOnReferenceValue(
-              this,
-              getClassifier().getReferenceByName(linkName),
-              referenceValues.get(linkName).size() - 1));
     }
   }
 

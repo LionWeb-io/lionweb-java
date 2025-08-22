@@ -1,9 +1,7 @@
 package io.lionweb.model.impl;
 
 import io.lionweb.language.Concept;
-import io.lionweb.language.Reference;
 import io.lionweb.model.*;
-import java.util.IdentityHashMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,23 +16,6 @@ public abstract class AbstractNode extends AbstractClassifierInstance<Concept> i
       throw new IllegalArgumentException("Observer already registered: " + observer);
     }
     if (this.observer == null) {
-      if (refObservers == null) {
-        refObservers = new IdentityHashMap<>();
-      }
-      // We track the ObserverOnReferenceValue, so that we can remove them later,
-      // if observer is set to null
-      getClassifier()
-          .allReferences()
-          .forEach(
-              reference -> {
-                for (int i = 0; i < this.getReferenceValues(reference).size(); i++) {
-                  ReferenceValue referenceValue = this.getReferenceValues(reference).get(i);
-                  ObserverOnReferenceValue newRefObserver =
-                      new ObserverOnReferenceValue(this, reference, i);
-                  referenceValue.registerObserver(newRefObserver);
-                  refObservers.put(referenceValue, newRefObserver);
-                }
-              });
       this.observer = observer;
     } else {
       this.observer = CompositePartitionObserver.combine(this.observer, observer);
@@ -55,10 +36,8 @@ public abstract class AbstractNode extends AbstractClassifierInstance<Concept> i
     }
     if (this.observer instanceof CompositePartitionObserver) {
       this.observer = ((CompositePartitionObserver) this.observer).remove(observer);
-      thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
       if (this.observer == null) {
-        refObservers.forEach(ReferenceValue::unregisterObserver);
-        refObservers = null;
+        thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
       } else {
         thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
       }
@@ -72,54 +51,4 @@ public abstract class AbstractNode extends AbstractClassifierInstance<Concept> i
    * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
    */
   protected @Nullable PartitionObserver observer = null;
-
-  protected class ObserverOnReferenceValue implements ReferenceValueObserver {
-
-    private ClassifierInstance<?> classifierInstance;
-    private Reference reference;
-    private int index;
-
-    public ObserverOnReferenceValue(
-        ClassifierInstance<?> classifierInstance, Reference reference, int index) {
-      this.classifierInstance = classifierInstance;
-      this.reference = reference;
-      this.index = index;
-    }
-
-    @Override
-    public void resolveInfoChanged(
-        @Nonnull ReferenceValue referenceValue,
-        @Nullable String oldValue,
-        @Nullable String newValue) {
-      if (observer != null) {
-        observer.referenceValueChanged(
-            classifierInstance,
-            reference,
-            index,
-            referenceValue.getReferredID(),
-            oldValue,
-            referenceValue.getReferredID(),
-            newValue);
-      }
-    }
-
-    @Override
-    public void referredIDChanged(
-        @Nonnull ReferenceValue referenceValue,
-        @Nullable String oldValue,
-        @Nullable String newValue) {
-      if (observer != null) {
-        observer.referenceValueChanged(
-            classifierInstance,
-            reference,
-            index,
-            oldValue,
-            referenceValue.getResolveInfo(),
-            newValue,
-            referenceValue.getResolveInfo());
-      }
-    }
-  }
-
-  private IdentityHashMap<ReferenceValue, ObserverOnReferenceValue> refObservers = null;
 }
