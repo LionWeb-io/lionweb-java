@@ -72,4 +72,12 @@ public class ReferenceValue {
         + '\''
         + '}';
   }
+
+  public ReferenceValue withReferred(@Nullable Node referredNode) {
+    return new ReferenceValue(referredNode, this.resolveInfo);
+  }
+
+  public ReferenceValue withResolveInfo(@Nullable String resolveInfo) {
+    return new ReferenceValue(this.referred, resolveInfo);
+  }
 }

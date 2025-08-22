@@ -60,12 +60,12 @@ public class RefNode extends SimpleNode {
   }
 
   @Override
-  public void concreteAddReferenceValue(
+  public int concreteAddReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
     if (reference.getName().equals("referred")) {
       referred = (RefNode) referredNode.getReferred();
-      return;
+      return 0;
     }
-    super.concreteAddReferenceValue(reference, referredNode);
+    return super.concreteAddReferenceValue(reference, referredNode);
   }
 }

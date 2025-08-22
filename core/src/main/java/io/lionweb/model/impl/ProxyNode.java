@@ -58,7 +58,7 @@ public class ProxyNode extends AbstractNode {
   }
 
   @Override
-  public void addReferenceValue(
+  public int addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
     throw cannotDoBecauseProxy();
   }
@@ -135,6 +135,17 @@ public class ProxyNode extends AbstractNode {
 
   @Override
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public void setResolveInfo(
+      @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
     throw cannotDoBecauseProxy();
   }
 

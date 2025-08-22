@@ -98,17 +98,28 @@ public abstract class SimpleNode extends AbstractNode {
   }
 
   @Override
-  public void addReferenceValue(
+  public int addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    concreteAddReferenceValue(reference, referredNode);
+    return concreteAddReferenceValue(reference, referredNode);
   }
 
-  public void concreteAddReferenceValue(
+  public int concreteAddReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
     throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
+  }
+
+  @Override
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setResolveInfo(
+      @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

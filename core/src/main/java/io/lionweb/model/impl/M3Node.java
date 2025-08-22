@@ -179,16 +179,17 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
   }
 
   @Override
-  public void addReferenceValue(
+  public int addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
     }
     if (reference.isMultiple()) {
-      addReferenceMultipleValue(reference.getName(), referenceValue);
+      return addReferenceMultipleValue(reference.getName(), referenceValue);
     } else {
       setReferenceSingleValue(reference.getName(), referenceValue);
+      return 0;
     }
   }
 
@@ -200,6 +201,47 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
+  }
+
+  @Override
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
+    List<ReferenceValue> refValues = getReferenceValues(reference);
+    if (index >= refValues.size()) {
+      throw new IllegalArgumentException();
+    }
+    ReferenceValue rv = refValues.get(index);
+    refValues.set(index, rv.withReferred(referredNode));
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueChanged(
+          this,
+          reference,
+          index,
+          rv.getReferredID(),
+          rv.getResolveInfo(),
+          referredNode == null ? null : referredNode.getID(),
+          rv.getResolveInfo());
+    }
+  }
+
+  @Override
+  public void setResolveInfo(
+      @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
+    List<ReferenceValue> refValues = getReferenceValues(reference);
+    if (index >= refValues.size()) {
+      throw new IllegalArgumentException();
+    }
+    ReferenceValue rv = refValues.get(index);
+    refValues.set(index, rv.withResolveInfo(resolveInfo));
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueChanged(
+          this,
+          reference,
+          index,
+          rv.getReferredID(),
+          rv.getResolveInfo(),
+          rv.getReferredID(),
+          resolveInfo);
+    }
   }
 
   @Nullable
@@ -325,19 +367,24 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     return true;
   }
 
-  protected void addReferenceMultipleValue(String linkName, ReferenceValue value) {
+  protected int addReferenceMultipleValue(String linkName, ReferenceValue value) {
     if (value == null) {
-      return;
+      return -1;
     }
+    int index;
     if (referenceValues.containsKey(linkName)) {
-      referenceValues.get(linkName).add(value);
+      List<ReferenceValue> values = referenceValues.get(linkName);
+      values.add(value);
+      index = values.size() - 1;
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
+      index = 0;
     }
     if (observer != null) {
       Reference reference = getClassifier().getReferenceByName(linkName);
       observer.referenceValueAdded(this, reference, value);
     }
+    return index;
   }
 
   @Nonnull

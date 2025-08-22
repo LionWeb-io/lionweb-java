@@ -131,11 +131,9 @@ public class M3NodeTest {
     observer.clearRecords();
 
     // referenceValueChanged
-    ReferenceValue rvToL2 = language.getReferenceValues(languageDependsOn).get(0);
-    ReferenceValue rvToL3 = language.getReferenceValues(languageDependsOn).get(1);
-    rvToL2.setResolveInfo("Language 2");
-    rvToL2.setReferred(new ProxyNode("12345"));
-    rvToL3.setReferred(new ProxyNode("23456"));
+    language.setResolveInfo(languageDependsOn, 0, "Language 2");
+    language.setReferred(languageDependsOn, 0, new ProxyNode("12345"));
+    language.setReferred(languageDependsOn, 1, new ProxyNode("23456"));
     assertEquals(
         Arrays.asList(
             new MockPartitionObserver.ReferenceChangedRecord(
