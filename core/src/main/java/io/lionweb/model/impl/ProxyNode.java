@@ -166,11 +166,6 @@ public class ProxyNode extends AbstractNode {
   }
 
   @Override
-  public void partitionObserverUnregistered() {
-    // We will ignore this
-  }
-
-  @Override
   public void partitionObserverRegistered(@Nonnull PartitionObserver observer) {
     // We will ignore this
   }

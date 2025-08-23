@@ -683,4 +683,42 @@ public class DynamicNodeTest {
         observer.getRecords());
     observer.clearRecords();
   }
+
+  @Test
+  public void observerPropagationAfterAddingInTree() {
+    Library library = new Library("library1", "My Glorious Library");
+    MockPartitionObserver observer = new MockPartitionObserver();
+    library.registerPartitionObserver(observer);
+    Book book = new Book("book1");
+    library.addBook(book);
+
+    book.setTitle("La Divina Commedia - 2025");
+
+    Containment books = library.getClassifier().getContainmentByName("books");
+    Property title = book.getClassifier().getPropertyByName("title");
+
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ChildAddedRecord(library, books, 0, book),
+            new MockPartitionObserver.PropertyChangedRecord(
+                book, title, null, "La Divina Commedia - 2025")),
+        observer.getRecords());
+    observer.clearRecords();
+  }
+
+  @Test
+  public void observerAutoRemovalAfterAddingInTree() {
+    Library library = new Library("library1", "My Glorious Library");
+    Book book = new Book("book1");
+    MockPartitionObserver observer = new MockPartitionObserver();
+    book.registerPartitionObserver(observer);
+
+    // When the book is not root anymore, the observer is auto-removed
+    library.addBook(book);
+
+    book.setTitle("La Divina Commedia - 2025");
+
+    assertEquals(Collections.emptyList(), observer.getRecords());
+    observer.clearRecords();
+  }
 }

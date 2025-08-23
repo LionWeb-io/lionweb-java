@@ -69,13 +69,7 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
    * This method should only be called by the ancestor of the node, when the observer is registered
    * on the partition.
    */
-  void partitionObserverRegistered(@Nonnull PartitionObserver observer);
-
-  /**
-   * This method should only be called by the ancestor of the node, when the observer is
-   * unregistered on the partition.
-   */
-  void partitionObserverUnregistered();
+  void partitionObserverRegistered(@Nullable PartitionObserver observer);
 
   @Nullable
   PartitionObserver registeredPartitionObserver();
