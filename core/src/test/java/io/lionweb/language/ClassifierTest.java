@@ -1,5 +1,6 @@
 package io.lionweb.language;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.lioncore.LionCore;
 import org.junit.Test;
 
@@ -23,5 +24,21 @@ public class ClassifierTest {
                 LionCore.getLanguage().getReferenceByName("dependsOn"),
                 LionCore.getLanguage().getContainmentByName("entities")
         )), new HashSet(LionCore.getLanguage().allLinks()));
+    }
+
+    @Test
+    public void getPropertyByID() {
+        assertEquals(LionCore.getLanguage(LionWebVersion.v2023_1).getPropertyByName("name"),
+                LionCore.getLanguage(LionWebVersion.v2023_1).getPropertyByID("LionCore-builtins-INamed-name"));
+        assertEquals(LionCore.getLanguage(LionWebVersion.v2024_1).getPropertyByName("name"),
+                LionCore.getLanguage(LionWebVersion.v2024_1).getPropertyByID("LionCore-builtins-INamed-name-2024-1"));
+    }
+
+    @Test
+    public void getContainmentByID() {
+        assertEquals(LionCore.getLanguage(LionWebVersion.v2023_1).getContainmentByName("entities"),
+                LionCore.getLanguage(LionWebVersion.v2023_1).getContainmentByID("-id-Language-entities"));
+        assertEquals(LionCore.getLanguage(LionWebVersion.v2024_1).getContainmentByName("entities"),
+                LionCore.getLanguage(LionWebVersion.v2024_1).getContainmentByID("-id-Language-entities-2024-1"));
     }
 }
