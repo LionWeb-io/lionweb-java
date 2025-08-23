@@ -71,6 +71,10 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException(
           "Property " + property + " is not belonging to classifier " + getClassifier());
     }
+    if (partitionObserverCache != null) {
+        partitionObserverCache.propertyChanged(this,
+                property, propertyValues.get(property.getKey()), value);
+    }
     if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
       // DynamicNode can be simplified
@@ -327,10 +331,25 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   private void setReferenceSingleValue(Reference link, ReferenceValue value) {
     if (value == null) {
       if (referenceValues != null) {
+          if (partitionObserverCache != null) {
+              partitionObserverCache.referenceValueRemoved(this, link, 0,
+                      referenceValues.get(link.getKey()).get(0));
+          }
         referenceValues.remove(link.getKey());
       }
+
     } else {
       initReferences();
+      if (partitionObserverCache != null) {
+          List<ReferenceValue> currentValues = referenceValues.get(link.getKey());
+          if (currentValues != null && currentValues.size() > 0) {
+              ReferenceValue oldValue = currentValues.get(0);
+              partitionObserverCache.referenceValueChanged(this, link, 0,
+                      oldValue.getReferredID(), oldValue.getResolveInfo(), value.getReferredID(), value.getResolveInfo());
+          } else {
+              partitionObserverCache.referenceValueAdded(this, link, value);
+          }
+      }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
     }
   }
@@ -339,6 +358,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     assert link.isMultiple();
     if (referenceValue == null) {
       return -1;
+    }
+    if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueAdded(this, link, referenceValue);
     }
     if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(link.getKey());

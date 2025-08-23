@@ -4,10 +4,8 @@ import static org.junit.Assert.*;
 
 import com.google.gson.JsonArray;
 import io.lionweb.language.*;
-import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.ReferenceValue;
-import io.lionweb.model.StructuredDataTypeInstanceUtils;
+import io.lionweb.lioncore.LionCore;
+import io.lionweb.model.*;
 import io.lionweb.serialization.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -589,4 +587,104 @@ public class DynamicNodeTest {
     node1.addAnnotation(new DynamicAnnotationInstance("a2", annotation, node1));
     assertEquals(true, node1.equals(node2));
   }
+
+    @Test
+    public void observer() {
+      Book book = new Book("book1");
+        MockPartitionObserver observer = new MockPartitionObserver();
+        book.registerPartitionObserver(observer);
+
+        // propertyChanged
+        book.setPages(200);
+        book.setTitle("La Divina Commedia - 2025");
+        Property pages = book.getClassifier().getPropertyByName("pages");
+        Property title = book.getClassifier().getPropertyByName("title");
+        assertEquals(
+                Arrays.asList(
+                        new MockPartitionObserver.PropertyChangedRecord(book, pages, null, 200),
+                        new MockPartitionObserver.PropertyChangedRecord(
+                                book, title, null, "La Divina Commedia - 2025")),
+                observer.getRecords());
+        observer.clearRecords();
+
+//        // childAdded
+//        Concept c1 = new Concept();
+//        c1.setID("c1");
+//        Concept c2 = new Concept();
+//        c2.setID("c2");
+//        language.addElement(c1);
+//        language.addElement(c2);
+//        Containment entities = LionCore.getLanguage().getContainmentByName("entities");
+//        assertEquals(
+//                Arrays.asList(
+//                        new MockPartitionObserver.ChildAddedRecord(language, entities, 0, c1),
+//                        new MockPartitionObserver.ChildAddedRecord(language, entities, 1, c2)),
+//                observer.getRecords());
+//        observer.clearRecords();
+//
+//        // childRemoved
+//        language.removeChild(c2);
+//        language.removeChild(c1);
+//        assertEquals(
+//                Arrays.asList(
+//                        new MockPartitionObserver.ChildRemovedRecord(language, entities, 1, c2),
+//                        new MockPartitionObserver.ChildRemovedRecord(language, entities, 0, c1)),
+//                observer.getRecords());
+//        observer.clearRecords();
+
+        // annotationAdded
+        Annotation annotation = new Annotation();
+        annotation.setID("a1");
+        AnnotationInstance ann1 = new DynamicAnnotationInstance("ai1", annotation);
+        AnnotationInstance ann2 = new DynamicAnnotationInstance("ai2", annotation);
+        book.addAnnotation(ann1);
+        book.addAnnotation(ann2);
+        assertEquals(
+                Arrays.asList(
+                        new MockPartitionObserver.AnnotationAddedRecord(book, 0, ann1),
+                        new MockPartitionObserver.AnnotationAddedRecord(book, 1, ann2)),
+                observer.getRecords());
+        observer.clearRecords();
+
+        // annotationRemoved
+        book.removeAnnotation(ann2);
+        book.removeAnnotation(ann1);
+        assertEquals(
+                Arrays.asList(
+                        new MockPartitionObserver.AnnotationRemovedRecord(book, 1, ann2),
+                        new MockPartitionObserver.AnnotationRemovedRecord(book, 0, ann1)),
+                observer.getRecords());
+        observer.clearRecords();
+
+        // referenceValueAdded and Changed
+        Writer writer1 = new Writer("writer1");
+        writer1.setName("Dante Alighieri");
+        Writer writer2 = new Writer("writer2");
+        writer2.setName("Fernando Pessoa");
+
+        book.setAuthor(writer1);
+        book.setAuthor(writer2);
+        Reference author = book.getClassifier().getReferenceByName("author");
+        assertEquals(
+                Arrays.asList(
+                        new MockPartitionObserver.ReferenceAddedRecord(
+                                book, author, new ReferenceValue(writer1, "Dante Alighieri")),
+                        new MockPartitionObserver.ReferenceChangedRecord(
+                                book, author, 0, "writer1", "Dante Alighieri",
+                                "writer2", "Fernando Pessoa")),
+                observer.getRecords());
+        observer.clearRecords();
+
+//        // referenceValueRemoved
+//        language.removeReferenceValue(languageDependsOn, 1);
+//        language.removeReferenceValue(languageDependsOn, 0);
+//        assertEquals(
+//                Arrays.asList(
+//                        new MockPartitionObserver.ReferenceRemovedRecord(
+//                                language, languageDependsOn, 1, "23456", "L3"),
+//                        new MockPartitionObserver.ReferenceRemovedRecord(
+//                                language, languageDependsOn, 0, "12345", "Language 2")),
+//                observer.getRecords());
+//        observer.clearRecords();
+    }
 }
