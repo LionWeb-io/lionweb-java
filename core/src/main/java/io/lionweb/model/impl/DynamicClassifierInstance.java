@@ -206,6 +206,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
         } else {
           if (referenceValue.equals(rv)) {
             referenceValuesOfInterest.remove(i);
+            if (partitionObserverCache != null) {
+              partitionObserverCache.referenceValueRemoved(this, reference, i, referenceValue);
+            }
             return;
           }
         }
@@ -249,8 +252,18 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Reference not belonging to this classifier");
     }
     initReferences();
+    if (partitionObserverCache != null) {
+      List<ReferenceValue> current = referenceValues.get(reference.getKey());
+      for (int i = 0; i < current.size(); i++) {
+        partitionObserverCache.referenceValueRemoved(this, reference, i, current.get(i));
+      }
+    }
     referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
-    // TODO observer
+    if (partitionObserverCache != null) {
+      for (int i = 0; i < values.size(); i++) {
+        partitionObserverCache.referenceValueAdded(this, reference, values.get(i));
+      }
+    }
   }
 
   @Override
@@ -330,12 +343,23 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       copy.forEach(c -> this.removeChild(c));
     }
     if (value == null) {
-      containmentValues.remove(link.getKey());
+      List<Node> removed = containmentValues.remove(link.getKey());
+      if (partitionObserverCache != null) {
+        if (removed.size() > 0) {
+          throw new IllegalStateException();
+        }
+        if (removed.size() == 1) {
+          partitionObserverCache.childRemoved(this, link, 0, removed.get(0));
+        }
+      }
     } else {
       if (value instanceof HasSettableParent) {
         ((HasSettableParent) value).setParent((Node) this);
       }
       containmentValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childAdded(this, link, 0, value);
+      }
     }
   }
 
