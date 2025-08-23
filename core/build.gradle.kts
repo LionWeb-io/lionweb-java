@@ -182,7 +182,11 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
 }
 
 tasks.jacocoTestReport {
-    dependsOn(tasks.test) // tests are required to run before generating the report
+    dependsOn(tasks.test) // run tests before generating report
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
 }
 
 protobuf {
@@ -218,6 +222,8 @@ sourceSets {
 }
 
 tasks.test {
+    useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport) // run report after tests
     useJUnit {
         // This cast enables access to includeCategories and excludeCategories
         this as JUnitOptions
