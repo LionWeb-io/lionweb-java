@@ -41,4 +41,12 @@ public class ClassifierTest {
         assertEquals(LionCore.getLanguage(LionWebVersion.v2024_1).getContainmentByName("entities"),
                 LionCore.getLanguage(LionWebVersion.v2024_1).getContainmentByID("-id-Language-entities-2024-1"));
     }
+
+    @Test
+    public void getReferenceByID() {
+        assertEquals(LionCore.getLanguage(LionWebVersion.v2023_1).getReferenceByName("dependsOn"),
+                LionCore.getLanguage(LionWebVersion.v2023_1).getReferenceByID("-id-Language-dependsOn"));
+        assertEquals(LionCore.getLanguage(LionWebVersion.v2024_1).getReferenceByName("dependsOn"),
+                LionCore.getLanguage(LionWebVersion.v2024_1).getReferenceByID("-id-Language-dependsOn-2024-1"));
+    }
 }
