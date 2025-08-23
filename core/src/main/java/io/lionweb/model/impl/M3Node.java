@@ -56,6 +56,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
 
   public T setParent(ClassifierInstance<?> parent) {
     this.parent = parent;
+    this.partitionObserverRegistered(
+        this.parent == null ? null : this.parent.registeredPartitionObserver());
     return (T) this;
   }
 

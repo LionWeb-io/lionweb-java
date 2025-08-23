@@ -68,19 +68,12 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
     }
     if (this.observer == observer) {
       this.observer = null;
-      thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
+      partitionObserverRegistered(this.observer);
       return;
     }
     if (this.observer instanceof CompositePartitionObserver) {
       this.observer = ((CompositePartitionObserver) this.observer).remove(observer);
-      thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
-      if (this.observer == null) {
-        // refObservers.forEach(ReferenceValue::unregisterObserver);
-        // refObservers = null;
-        throw new UnsupportedOperationException();
-      } else {
-        thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
-      }
+      partitionObserverRegistered(this.observer);
     } else {
       throw new IllegalArgumentException("Observer not registered: " + observer);
     }
@@ -95,6 +88,8 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   @Override
   public DynamicNode setParent(@Nullable ClassifierInstance<?> parent) {
     this.parent = parent;
+    this.partitionObserverRegistered(
+        this.parent == null ? null : this.parent.registeredPartitionObserver());
     return this;
   }
 

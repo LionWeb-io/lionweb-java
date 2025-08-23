@@ -20,7 +20,7 @@ public abstract class AbstractNode extends AbstractClassifierInstance<Concept> i
     } else {
       this.observer = CompositePartitionObserver.combine(this.observer, observer);
     }
-    thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
+    this.partitionObserverRegistered(this.observer);
   }
 
   @Override
@@ -31,19 +31,15 @@ public abstract class AbstractNode extends AbstractClassifierInstance<Concept> i
     }
     if (this.observer == observer) {
       this.observer = null;
-      thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
+      this.partitionObserverRegistered(this.observer);
       return;
     }
     if (this.observer instanceof CompositePartitionObserver) {
       this.observer = ((CompositePartitionObserver) this.observer).remove(observer);
-      if (this.observer == null) {
-        thisAndAllDescendants().forEach(ClassifierInstance::partitionObserverUnregistered);
-      } else {
-        thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
-      }
     } else {
       throw new IllegalArgumentException("Observer not registered: " + observer);
     }
+    this.partitionObserverRegistered(this.observer);
   }
 
   /**

@@ -153,12 +153,11 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void partitionObserverRegistered(@Nonnull PartitionObserver observer) {
-    this.partitionObserverCache = observer;
-  }
-
-  @Override
-  public void partitionObserverUnregistered() {
-    this.partitionObserverCache = null;
+    if (this.partitionObserverCache != observer) {
+      this.partitionObserverCache = observer;
+      ClassifierInstanceUtils.getChildren(this)
+          .forEach(child -> child.partitionObserverRegistered(observer));
+    }
   }
 
   @Override
