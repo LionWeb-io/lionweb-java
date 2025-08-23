@@ -87,23 +87,38 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     return index;
   }
 
-  void tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
+  int tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    if (annotations == null || !this.annotations.remove(instance)) {
-      return;
+    int index = -1;
+    if (annotations != null) {
+      index = this.annotations.indexOf(instance);
     }
+    if (index == -1) {
+      return -1;
+    }
+    annotations.remove(index);
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationRemoved(this, index, instance);
+    }
+    return index;
   }
 
   // Public methods for containments
 
   @Override
-  public void removeChild(Node child) {
+  public void removeChild(@Nonnull Node child) {
+    Objects.requireNonNull(child);
     for (Containment containment : this.getClassifier().allContainments()) {
       List<? extends Node> children = this.getChildren(containment);
-      if (children.remove(child)) {
+      int index = children.indexOf(child);
+      if (index != -1) {
+        children.remove(index);
+        if (partitionObserverCache != null) {
+          partitionObserverCache.childRemoved(this, containment, index, child);
+        }
         if (child instanceof HasSettableParent) {
           ((HasSettableParent) child).setParent(null);
         }
@@ -119,7 +134,10 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     }
     List<? extends Node> children = this.getChildren(containment);
     if (children.size() > index) {
-      children.remove(index);
+      Node removed = children.remove(index);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childRemoved(this, containment, index, removed);
+      }
     } else {
       throw new IllegalArgumentException(
           "Invalid index " + index + " when children are " + children.size());
@@ -145,9 +163,15 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (!getReferenceValues(reference).remove(referenceValue)) {
+    List<ReferenceValue> referenceValues = getReferenceValues(reference);
+    int index = referenceValues.indexOf(referenceValue);
+    if (index == -1) {
       throw new IllegalArgumentException(
           "The given reference value could not be found under reference " + reference.getName());
+    } else {
+      if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueRemoved(this, reference, index, referenceValue);
+      }
     }
   }
 
