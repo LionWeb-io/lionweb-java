@@ -105,12 +105,12 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
 
   protected void setPropertyValue(String propertyName, Object value) {
     Object oldValue = null;
-    if (observer != null) {
+    if (partitionObserverCache != null) {
       oldValue = getPropertyValue(getClassifier().getPropertyByName(propertyName));
     }
     propertyValues.put(propertyName, value);
-    if (observer != null) {
-      observer.propertyChanged(
+    if (partitionObserverCache != null) {
+      partitionObserverCache.propertyChanged(
           this, getClassifier().getPropertyByName(propertyName), oldValue, value);
     }
   }
@@ -132,9 +132,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       addContainmentMultipleValue(containment.getName(), child);
     } else {
       setContainmentSingleValue(containment.getName(), child);
-    }
-    if (observer != null) {
-      observer.childAdded(this, containment, getChildren(containment).size() - 1, child);
     }
   }
 
@@ -165,8 +162,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     if (child instanceof HasSettableParent) {
       ((HasSettableParent) child).setParent(null);
     }
-    if (observer != null) {
-      observer.childRemoved(this, containment, index, child);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.childRemoved(this, containment, index, child);
     }
   }
 
@@ -202,7 +199,19 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
+    if (partitionObserverCache != null) {
+      List<ReferenceValue> current =
+          referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
+      for (int i = 0; i < current.size(); i++) {
+        partitionObserverCache.referenceValueRemoved(this, reference, i, current.get(i));
+      }
+    }
     referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
+    if (partitionObserverCache != null) {
+      for (ReferenceValue value : values) {
+        partitionObserverCache.referenceValueAdded(this, reference, value);
+      }
+    }
   }
 
   @Override
@@ -321,10 +330,23 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       copy.forEach(c -> this.removeChild(c));
     }
     if (value == null) {
-      containmentValues.remove(linkName);
+      List<Node> removed = containmentValues.remove(linkName);
+      if (partitionObserverCache != null) {
+        if (removed.size() > 1) {
+          throw new IllegalStateException();
+        }
+        if (removed.size() == 1) {
+          partitionObserverCache.childRemoved(
+              this, getClassifier().getContainmentByName(linkName), 0, removed.get(0));
+        }
+      }
     } else {
       ((M3Node) value).setParent(this);
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childAdded(
+            this, getClassifier().getContainmentByName(linkName), 0, value);
+      }
     }
   }
 
@@ -335,9 +357,23 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
    */
   protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue value) {
     if (value == null) {
+      if (partitionObserverCache != null) {
+        List<ReferenceValue> removed = referenceValues.get(linkName);
+        if (removed.size() > 1) {
+          throw new IllegalStateException();
+        }
+        if (removed.size() == 1) {
+          partitionObserverCache.referenceValueRemoved(
+              this, getClassifier().getReferenceByName(linkName), 0, removed.get(0));
+        }
+      }
       referenceValues.remove(linkName);
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
+      if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueAdded(
+            this, getClassifier().getReferenceByName(linkName), value);
+      }
     }
   }
 
@@ -359,8 +395,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     } else {
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
-    if (observer != null) {
-      observer.childAdded(
+    if (partitionObserverCache != null) {
+      partitionObserverCache.childAdded(
           this,
           getClassifier().getContainmentByName(linkName),
           getChildrenByContainmentName(this, linkName).size() - 1,
@@ -382,9 +418,9 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
       index = 0;
     }
-    if (observer != null) {
+    if (partitionObserverCache != null) {
       Reference reference = getClassifier().getReferenceByName(linkName);
-      observer.referenceValueAdded(this, reference, value);
+      partitionObserverCache.referenceValueAdded(this, reference, value);
     }
     return index;
   }
