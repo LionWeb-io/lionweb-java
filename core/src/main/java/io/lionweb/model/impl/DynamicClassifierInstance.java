@@ -147,7 +147,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       if (children.size() > index) {
         Node removed = children.remove(index);
         if (partitionObserverCache != null) {
-            partitionObserverCache.childRemoved(this, containment, index, removed);
+          partitionObserverCache.childRemoved(this, containment, index, removed);
         }
       } else {
         throw new IllegalArgumentException(
