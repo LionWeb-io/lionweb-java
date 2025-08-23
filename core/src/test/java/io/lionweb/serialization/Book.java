@@ -4,6 +4,7 @@ import io.lionweb.language.Concept;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.DynamicNode;
+import javax.annotation.Nullable;
 
 public class Book extends DynamicNode {
 
@@ -30,9 +31,14 @@ public class Book extends DynamicNode {
     return (String) ClassifierInstanceUtils.getPropertyValueByName(this, "title");
   }
 
-  public void setAuthor(Writer author) {
-    this.addReferenceValue(
-        getClassifier().getReferenceByName("author"), new ReferenceValue(author, author.getName()));
+  public void setAuthor(@Nullable Writer author) {
+    if (author == null) {
+      this.removeReferenceValue(getClassifier().getReferenceByName("author"), 0);
+    } else {
+      this.addReferenceValue(
+          getClassifier().getReferenceByName("author"),
+          new ReferenceValue(author, author.getName()));
+    }
   }
 
   @Override

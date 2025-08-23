@@ -172,6 +172,16 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
+  public @Nullable Containment getContainmentByKey(@Nonnull String containmentKey) {
+    Objects.requireNonNull(containmentKey, "containmentKey should not be null");
+    return allFeatures().stream()
+        .filter(f -> f instanceof Containment)
+        .map(f -> (Containment) f)
+        .filter(c -> Objects.equals(c.getKey(), containmentKey))
+        .findFirst()
+        .orElse(null);
+  }
+
   public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     return allFeatures().stream()
