@@ -89,9 +89,11 @@ public interface Node extends ClassifierInstance<Concept> {
     return result;
   }
 
-  /** @throws IllegalArgumentException if the same observer is registered more than once */
+  /** @throws IllegalArgumentException if the same observer is registered more than once
+   * @throws UnsupportedOperationException if invoked on a Node that is not root */
   void registerPartitionObserver(@Nonnull PartitionObserver observer);
 
-  /** @throws IllegalArgumentException if the observer is not registered */
+  /** @throws IllegalArgumentException if the observer is not registered
+   * @throws UnsupportedOperationException if invoked on a Node that is not root*/
   void unregisterPartitionObserver(@Nonnull PartitionObserver observer);
 }
