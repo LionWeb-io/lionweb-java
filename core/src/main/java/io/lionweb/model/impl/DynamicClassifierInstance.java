@@ -145,7 +145,10 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (containmentValues.containsKey(containment.getKey())) {
       List<Node> children = containmentValues.get(containment.getKey());
       if (children.size() > index) {
-        children.remove(index);
+        Node removed = children.remove(index);
+        if (partitionObserverCache != null) {
+            partitionObserverCache.childRemoved(this, containment, index, removed);
+        }
       } else {
         throw new IllegalArgumentException(
             "Invalid index " + index + " when children are " + children.size());
