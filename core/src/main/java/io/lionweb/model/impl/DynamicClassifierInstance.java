@@ -72,8 +72,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
           "Property " + property + " is not belonging to classifier " + getClassifier());
     }
     if (partitionObserverCache != null) {
-        partitionObserverCache.propertyChanged(this,
-                property, propertyValues.get(property.getKey()), value);
+      partitionObserverCache.propertyChanged(
+          this, property, propertyValues.get(property.getKey()), value);
     }
     if ((value == null || value == Boolean.FALSE) && property.isRequired()) {
       // We remove values corresponding to default values, so that comparisons of instances of
@@ -115,10 +115,15 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public void removeChild(Node node) {
     if (containmentValues != null) {
       for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
-        if (entry.getValue().contains(node)) {
+        int index = entry.getValue().indexOf(node);
+        if (index != -1) {
           entry.getValue().remove(node);
           if (node instanceof HasSettableParent) {
             ((HasSettableParent) node).setParent(null);
+          }
+          if (partitionObserverCache != null) {
+            partitionObserverCache.childRemoved(
+                this, getClassifier().getContainmentByKey(entry.getKey()), index, node);
           }
           return;
         }
@@ -217,7 +222,11 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       if (referenceValuesOfInterest.size() > index) {
-        referenceValuesOfInterest.remove(index);
+
+        ReferenceValue removed = referenceValuesOfInterest.remove(index);
+        if (partitionObserverCache != null) {
+          partitionObserverCache.referenceValueRemoved(this, reference, index, removed);
+        }
       } else {
         throw new IllegalArgumentException(
             "Invalid index "
@@ -293,13 +302,20 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   private void addContainment(Containment link, Node value) {
     assert link.isMultiple();
     if (value instanceof HasSettableParent) {
-      ((HasSettableParent) value).setParent((ClassifierInstance<?>) this);
+      ((HasSettableParent) value).setParent(this);
     }
     initContainments();
     if (containmentValues.containsKey(link.getKey())) {
-      containmentValues.get(link.getKey()).add(value);
+      List<Node> children = containmentValues.get(link.getKey());
+      children.add(value);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childAdded(this, link, children.size() - 1, value);
+      }
     } else {
       containmentValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childAdded(this, link, 0, value);
+      }
     }
   }
 
@@ -331,24 +347,30 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   private void setReferenceSingleValue(Reference link, ReferenceValue value) {
     if (value == null) {
       if (referenceValues != null) {
-          if (partitionObserverCache != null) {
-              partitionObserverCache.referenceValueRemoved(this, link, 0,
-                      referenceValues.get(link.getKey()).get(0));
-          }
+        if (partitionObserverCache != null) {
+          partitionObserverCache.referenceValueRemoved(
+              this, link, 0, referenceValues.get(link.getKey()).get(0));
+        }
         referenceValues.remove(link.getKey());
       }
 
     } else {
       initReferences();
       if (partitionObserverCache != null) {
-          List<ReferenceValue> currentValues = referenceValues.get(link.getKey());
-          if (currentValues != null && currentValues.size() > 0) {
-              ReferenceValue oldValue = currentValues.get(0);
-              partitionObserverCache.referenceValueChanged(this, link, 0,
-                      oldValue.getReferredID(), oldValue.getResolveInfo(), value.getReferredID(), value.getResolveInfo());
-          } else {
-              partitionObserverCache.referenceValueAdded(this, link, value);
-          }
+        List<ReferenceValue> currentValues = referenceValues.get(link.getKey());
+        if (currentValues != null && currentValues.size() > 0) {
+          ReferenceValue oldValue = currentValues.get(0);
+          partitionObserverCache.referenceValueChanged(
+              this,
+              link,
+              0,
+              oldValue.getReferredID(),
+              oldValue.getResolveInfo(),
+              value.getReferredID(),
+              value.getResolveInfo());
+        } else {
+          partitionObserverCache.referenceValueAdded(this, link, value);
+        }
       }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
     }
@@ -360,7 +382,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       return -1;
     }
     if (partitionObserverCache != null) {
-        partitionObserverCache.referenceValueAdded(this, link, referenceValue);
+      partitionObserverCache.referenceValueAdded(this, link, referenceValue);
     }
     if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(link.getKey());

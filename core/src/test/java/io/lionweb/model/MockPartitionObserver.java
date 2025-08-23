@@ -96,17 +96,17 @@ public class MockPartitionObserver implements PartitionObserver {
   public static class ChildRemovedRecord extends Record {
     public final @Nonnull Containment containment;
     public final int index;
-    public final @Nonnull Node newChild;
+    public final @Nonnull Node removedChild;
 
     public ChildRemovedRecord(
         @Nonnull ClassifierInstance<?> node,
         @Nonnull Containment containment,
         int index,
-        @Nonnull Node newChild) {
+        @Nonnull Node removedChild) {
       super(node);
       this.containment = containment;
       this.index = index;
-      this.newChild = newChild;
+      this.removedChild = removedChild;
     }
 
     @Override
@@ -115,12 +115,12 @@ public class MockPartitionObserver implements PartitionObserver {
       ChildRemovedRecord that = (ChildRemovedRecord) o;
       return index == that.index
           && Objects.equals(containment, that.containment)
-          && Objects.equals(newChild, that.newChild);
+          && Objects.equals(removedChild, that.removedChild);
     }
 
     @Override
     public int hashCode() {
-      return Objects.hash(containment, index, newChild);
+      return Objects.hash(containment, index, removedChild);
     }
   }
 

@@ -12,8 +12,8 @@ public class ReferenceValue {
   }
 
   public ReferenceValue(@Nullable Node referred, @Nullable String resolveInfo) {
-      this.referred = referred;
-      this.resolveInfo = resolveInfo;
+    this.referred = referred;
+    this.resolveInfo = resolveInfo;
   }
 
   public @Nullable Node getReferred() {
