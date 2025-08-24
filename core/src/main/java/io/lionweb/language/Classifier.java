@@ -212,6 +212,15 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
+  public @Nonnull Property requirePropertyByName(@Nonnull String propertyName) {
+    Property property = getPropertyByName(propertyName);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Property " + propertyName + " not found in Classifier " + getName());
+    }
+    return property;
+  }
+
   public @Nonnull Containment requireContainmentByName(@Nonnull String containmentName) {
     Containment containment = getContainmentByName(containmentName);
     if (containment == null) {

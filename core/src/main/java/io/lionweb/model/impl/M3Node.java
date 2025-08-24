@@ -128,10 +128,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
   public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     Objects.requireNonNull(containment);
     Objects.requireNonNull(child);
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
     if (containment.isMultiple()) {
       addContainmentMultipleValue(containment.getName(), child);
     } else {
-      setContainmentSingleValue(containment.getName(), child);
+      throw new UnsupportedOperationException(
+          "There are not containments which are not multiple in LionCore, so this "
+              + "is not supported at the moment");
     }
   }
 
@@ -266,21 +271,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     return this.getClass().getSimpleName() + "[" + this.getID() + "]";
   }
 
-  protected <V extends Node> V getContainmentSingleValue(String linkName) {
-    if (containmentValues.containsKey(linkName)) {
-      List<Node> values = containmentValues.get(linkName);
-      if (values.isEmpty()) {
-        return null;
-      } else if (values.size() == 1) {
-        return (V) (values.get(0));
-      } else {
-        throw new IllegalStateException();
-      }
-    } else {
-      return null;
-    }
-  }
-
   protected <V extends Node> V getReferenceSingleValue(String linkName) {
     if (referenceValues.containsKey(linkName)) {
       List<ReferenceValue> values = referenceValues.get(linkName);
@@ -315,38 +305,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       return values;
     } else {
       return Collections.emptyList();
-    }
-  }
-
-  /*
-   * This method could be invoked by the language elements classes before the LionCore language
-   * has been built, therefore we cannot look for the definition of the features to verify they
-   * exist. We instead just trust a link with that name to exist.
-   */
-  private void setContainmentSingleValue(String linkName, Node value) {
-    List<Node> prevValue = containmentValues.get(linkName);
-    if (prevValue != null) {
-      List<Node> copy = new LinkedList<>(prevValue);
-      copy.forEach(c -> this.removeChild(c));
-    }
-    if (value == null) {
-      List<Node> removed = containmentValues.remove(linkName);
-      if (partitionObserverCache != null) {
-        if (removed.size() > 1) {
-          throw new IllegalStateException();
-        }
-        if (removed.size() == 1) {
-          partitionObserverCache.childRemoved(
-              this, getClassifier().getContainmentByName(linkName), 0, removed.get(0));
-        }
-      }
-    } else {
-      ((M3Node) value).setParent(this);
-      containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
-      if (partitionObserverCache != null) {
-        partitionObserverCache.childAdded(
-            this, getClassifier().getContainmentByName(linkName), 0, value);
-      }
     }
   }
 
