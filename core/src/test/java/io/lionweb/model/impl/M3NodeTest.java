@@ -1,6 +1,7 @@
 package io.lionweb.model.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThrows;
 
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
@@ -156,5 +157,22 @@ public class M3NodeTest {
                 language, languageDependsOn, 0, "12345", "Language 2")),
         observer.getRecords());
     observer.clearRecords();
+  }
+
+  @Test
+  public void getAndSetPropertyValueWithInvalidProperty() {
+    Language language = new Language();
+    Property abs = LionCore.getConcept().requirePropertyByName("abstract");
+    assertThrows(IllegalArgumentException.class, () -> language.getPropertyValue(abs));
+    assertThrows(IllegalArgumentException.class, () -> language.setPropertyValue(abs, false));
+  }
+
+  @Test
+  public void getChildrenWithInvalidContainment() {
+    Language language = new Language();
+    Containment fields = LionCore.getStructuredDataType().requireContainmentByName("fields");
+    assertThrows(IllegalArgumentException.class, () -> language.getChildren(fields));
+    Field field = new Field();
+    assertThrows(IllegalArgumentException.class, () -> language.addChild(fields, field));
   }
 }
