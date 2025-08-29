@@ -169,7 +169,14 @@ public class SerializedClassifierInstance {
     this.containments.add(new SerializedContainmentValue(containment, childrenIds));
   }
 
-  public boolean removeChild(String child) {
+  /**
+   * Removes the specified child from the containments, if present.
+   *
+   * @param child the identifier of the child to be removed; must not be null
+   * @return true if the child was successfully removed, false otherwise
+   */
+  public boolean removeChild(@Nonnull String child) {
+    Objects.requireNonNull(child, "child should not be null");
     if (this.containments == null) {
       return false;
     }
@@ -256,7 +263,14 @@ public class SerializedClassifierInstance {
     this.annotations.add(annotationID);
   }
 
-  public boolean removeAnnotation(String annotationID) {
+  /**
+   * Removes the specified annotation identified by its ID from the list of annotations.
+   *
+   * @param annotationID the ID of the annotation to be removed; must not be null
+   * @return true if the annotation was successfully removed, otherwise false
+   */
+  public boolean removeAnnotation(@Nonnull String annotationID) {
+    Objects.requireNonNull(annotationID, "annotationID must not be null");
     if (this.annotations == null) {
       return false;
     }

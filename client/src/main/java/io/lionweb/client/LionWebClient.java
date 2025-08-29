@@ -290,14 +290,14 @@ public class LionWebClient
   @Override
   public List<SerializedClassifierInstance> retrieveAsChunk(
       @Nullable List<String> nodeIds, int limit) throws IOException {
-    throw new UnsupportedOperationException();
+    return this.chunkLevelBulkAPIs.retrieveAsChunk(nodeIds, limit);
   }
 
   @NotNull
   @Override
   public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds)
       throws IOException {
-    throw new UnsupportedOperationException();
+    return this.chunkLevelBulkAPIs.retrieveAsChunk(nodeIds);
   }
 
   //
