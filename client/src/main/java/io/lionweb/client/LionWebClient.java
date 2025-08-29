@@ -279,12 +279,12 @@ public class LionWebClient
     return this.chunkLevelBulkAPIs.createPartitionsFromChunk(data);
   }
 
-    @Nullable
-    @Override
-    public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes)
-            throws IOException {
-        return this.chunkLevelBulkAPIs.storeChunk(nodes);
-    }
+  @Nullable
+  @Override
+  public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes)
+      throws IOException {
+    return this.chunkLevelBulkAPIs.storeChunk(nodes);
+  }
 
   @NotNull
   @Override
