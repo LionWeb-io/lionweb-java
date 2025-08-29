@@ -27,6 +27,8 @@ public class SerializedClassifierInstanceTest {
     assertTrue(sci.getReferences().isEmpty());
     assertTrue(sci.getAnnotations().isEmpty());
 
+    // Adding a feature’s value is possible, just not through directly manipulating the immutable list.
+    // One should use the specific add methods instead
     assertThrows(
         UnsupportedOperationException.class,
         () -> sci.getProperties().add(SerializedPropertyValue.get(simpleMetaPointer("foo"), "a")));
