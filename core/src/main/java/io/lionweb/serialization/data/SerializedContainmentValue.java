@@ -30,6 +30,10 @@ public class SerializedContainmentValue {
     this.value.addAll(value);
   }
 
+  public boolean removeChild(String child) {
+    return value.remove(child);
+  }
+
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
