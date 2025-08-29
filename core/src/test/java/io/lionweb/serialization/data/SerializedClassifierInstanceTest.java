@@ -27,10 +27,25 @@ public class SerializedClassifierInstanceTest {
     assertTrue(sci.getReferences().isEmpty());
     assertTrue(sci.getAnnotations().isEmpty());
 
-    assertThrows(UnsupportedOperationException.class, () -> sci.getProperties().add(null));
-    assertThrows(UnsupportedOperationException.class, () -> sci.getContainments().add(null));
-    assertThrows(UnsupportedOperationException.class, () -> sci.getReferences().add(null));
-    assertThrows(UnsupportedOperationException.class, () -> sci.getAnnotations().add(null));
+    assertThrows(
+        UnsupportedOperationException.class,
+        () -> sci.getProperties().add(SerializedPropertyValue.get(simpleMetaPointer("foo"), "a")));
+    assertThrows(
+        UnsupportedOperationException.class,
+        () ->
+            sci.getContainments()
+                .add(
+                    new SerializedContainmentValue(
+                        simpleMetaPointer("bar"), Collections.singletonList("child1"))));
+    assertThrows(
+        UnsupportedOperationException.class,
+        () ->
+            sci.getReferences()
+                .add(
+                    new SerializedReferenceValue(
+                        simpleMetaPointer("zum"),
+                        Arrays.asList(new SerializedReferenceValue.Entry("a", "b")))));
+    assertThrows(UnsupportedOperationException.class, () -> sci.getAnnotations().add("ann-1"));
     assertThrows(UnsupportedOperationException.class, () -> sci.getChildren().add("x"));
   }
 
