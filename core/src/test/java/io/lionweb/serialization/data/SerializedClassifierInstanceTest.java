@@ -9,7 +9,7 @@ import org.junit.Test;
 
 public class SerializedClassifierInstanceTest {
 
-  private static MetaPointer mp(String key) {
+  private static MetaPointer simpleMetaPointer(String key) {
     return MetaPointer.get("L", "1", key);
   }
 
@@ -36,7 +36,7 @@ public class SerializedClassifierInstanceTest {
 
   @Test
   public void constructorSetsIdAndClassifier() {
-    MetaPointer classifier = mp("C");
+    MetaPointer classifier = simpleMetaPointer("C");
     SerializedClassifierInstance sci = new SerializedClassifierInstance("n1", classifier);
 
     assertEquals("n1", sci.getID());
@@ -46,7 +46,7 @@ public class SerializedClassifierInstanceTest {
   @Test
   public void idClassifierParentSettersGetters() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer classifier = mp("C");
+    MetaPointer classifier = simpleMetaPointer("C");
 
     sci.setID("id-123");
     sci.setClassifier(classifier);
@@ -60,8 +60,8 @@ public class SerializedClassifierInstanceTest {
   @Test
   public void propertiesAddAndGetByKeyAndMeta() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer pA = mp("propA");
-    MetaPointer pB = mp("propB");
+    MetaPointer pA = simpleMetaPointer("propA");
+    MetaPointer pB = simpleMetaPointer("propB");
 
     sci.addPropertyValue(SerializedPropertyValue.get(pA, "VA"));
     sci.setPropertyValue(pB, "VB"); // via convenience
@@ -73,14 +73,14 @@ public class SerializedClassifierInstanceTest {
 
     assertEquals("VA", sci.getPropertyValue(pA));
     assertEquals("VB", sci.getPropertyValue(pB));
-    assertNull(sci.getPropertyValue(mp("other")));
+    assertNull(sci.getPropertyValue(simpleMetaPointer("other")));
   }
 
   @Test
   public void containmentsAddChildrenGetChildrenAndClear() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer contA = mp("contA");
-    MetaPointer contB = mp("contB");
+    MetaPointer contA = simpleMetaPointer("contA");
+    MetaPointer contB = simpleMetaPointer("contB");
 
     sci.addChildren(contA, Arrays.asList("c1", "c2"));
     sci.addChildren(contB, Collections.singletonList("c3"));
@@ -99,7 +99,7 @@ public class SerializedClassifierInstanceTest {
   @Test
   public void addChildAppendsOrCreatesEntry() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer cont = mp("cont");
+    MetaPointer cont = simpleMetaPointer("cont");
 
     // When containment absent, addChild creates it
     sci.addChild(cont, "x1");
@@ -113,8 +113,8 @@ public class SerializedClassifierInstanceTest {
   @Test
   public void removeContainmentValueByMeta() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer cont = mp("cont");
-    MetaPointer other = mp("other");
+    MetaPointer cont = simpleMetaPointer("cont");
+    MetaPointer other = simpleMetaPointer("other");
     sci.addChildren(cont, Arrays.asList("a", "b"));
 
     assertFalse(sci.removeContainmentValue(other));
@@ -125,8 +125,8 @@ public class SerializedClassifierInstanceTest {
   @Test
   public void removeChildRemovesFromAnyContainment() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer c1 = mp("c1");
-    MetaPointer c2 = mp("c2");
+    MetaPointer c1 = simpleMetaPointer("c1");
+    MetaPointer c2 = simpleMetaPointer("c2");
     sci.addChildren(c1, Arrays.asList("a1", "a2"));
     sci.addChildren(c2, Arrays.asList("b1", "b2"));
 
@@ -140,8 +140,8 @@ public class SerializedClassifierInstanceTest {
   @Test
   public void referencesAddAndGet() {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
-    MetaPointer r1 = mp("ref1");
-    MetaPointer r2 = mp("ref2");
+    MetaPointer r1 = simpleMetaPointer("ref1");
+    MetaPointer r2 = simpleMetaPointer("ref2");
 
     SerializedReferenceValue.Entry e11 = new SerializedReferenceValue.Entry("RID-1", "RI-1");
     SerializedReferenceValue.Entry e12 = new SerializedReferenceValue.Entry("RID-2", "RI-2");
@@ -162,7 +162,7 @@ public class SerializedClassifierInstanceTest {
     assertEquals(Collections.singletonList(e21), r2ValsByMP);
 
     assertNull(sci.getReferenceValues("unknown"));
-    assertTrue(sci.getReferenceValues(mp("unknown")).isEmpty());
+    assertTrue(sci.getReferenceValues(simpleMetaPointer("unknown")).isEmpty());
 
     // Unmodifiable
     assertThrows(UnsupportedOperationException.class, () -> r1ValsByKey.add(e21));
@@ -189,10 +189,10 @@ public class SerializedClassifierInstanceTest {
 
   @Test
   public void equalsAndHashCodeConsiderAllFields() {
-    MetaPointer classifier = mp("C");
-    MetaPointer p = mp("prop");
-    MetaPointer cont = mp("cont");
-    MetaPointer ref = mp("ref");
+    MetaPointer classifier = simpleMetaPointer("C");
+    MetaPointer p = simpleMetaPointer("prop");
+    MetaPointer cont = simpleMetaPointer("cont");
+    MetaPointer ref = simpleMetaPointer("ref");
 
     SerializedClassifierInstance a = new SerializedClassifierInstance("id", classifier);
     a.setParentNodeID("parent");
@@ -219,7 +219,7 @@ public class SerializedClassifierInstanceTest {
 
   @Test
   public void toStringContainsKeyInfo() {
-    SerializedClassifierInstance sci = new SerializedClassifierInstance("idX", mp("C"));
+    SerializedClassifierInstance sci = new SerializedClassifierInstance("idX", simpleMetaPointer("C"));
     sci.setParentNodeID("pY");
     String s = sci.toString();
     assertNotNull(s);
