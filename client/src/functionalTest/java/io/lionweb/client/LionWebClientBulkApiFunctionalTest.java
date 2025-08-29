@@ -8,9 +8,12 @@ import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.languages.PropertiesLanguage;
 import io.lionweb.client.testing.AbstractClientFunctionalTest;
+import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.CommonChecks;
 import java.io.IOException;
 import java.util.Arrays;
@@ -83,6 +86,40 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   }
 
   @Test
+  public void partitionsCRUDUsingChunkLevelAPIs() throws IOException {
+    String repoName = "repo_partitionsCRUDUsingChunkLevelAPIs";
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
+    client.createRepository(
+        new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
+
+    // Create partition
+    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesPartition);
+    client.createPartitionsFromChunk(
+        client.getJsonSerialization().serializeNodesToSerializationChunk(f1));
+
+    // Check list
+    List<Node> nodes1 = client.listPartitions();
+    assertEquals(1, nodes1.size());
+    assertEquals("f1", nodes1.get(0).getID());
+    assertEquals(PropertiesLanguage.propertiesPartition, nodes1.get(0).getClassifier());
+    assertEquals(Collections.singletonList("f1"), client.listPartitionsIDs());
+
+    // Create partitions
+    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesPartition);
+    DynamicNode f3 = new DynamicNode("f3", PropertiesLanguage.propertiesPartition);
+    client.createPartitionsFromChunk(
+        client.getJsonSerialization().serializeNodesToSerializationChunk(f2, f3));
+
+    // Check list
+    List<Node> nodes2 = client.listPartitions();
+    assertEquals(3, nodes2.size());
+    assertEquals(
+        new HashSet<>(Arrays.asList("f1", "f2", "f3")), new HashSet<>(client.listPartitionsIDs()));
+  }
+
+  @Test
   public void storeOnCustomRepository() throws IOException {
     String repoName = "my_repo";
     LionWebClient client =
@@ -150,6 +187,40 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
     client.store(Collections.singletonList(p1));
 
     List<Node> retrievedNodes1 = client.retrieve(Collections.singletonList("p1"), 10);
+    assertEquals(1, retrievedNodes1.size());
+    assertEquals(p1, retrievedNodes1.get(0));
+  }
+
+  @Test
+  public void storeAtChunkLevelAndRetrieve() throws IOException {
+    String repoName = "repo_storeAtChunkLevelAndRetrieve";
+    LionWebClient client =
+        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
+    client.createRepository(
+        new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
+
+    DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
+    client.createPartitionsFromChunk(
+        client.getJsonSerialization().serializeTreeToSerializationChunk(p1));
+
+    DynamicNode f1 = new DynamicNode("f1", PropertiesLanguage.propertiesFile);
+    ClassifierInstanceUtils.setPropertyValueByName(f1, "path", "my-path-1.txt");
+    DynamicNode f2 = new DynamicNode("f2", PropertiesLanguage.propertiesFile);
+    ClassifierInstanceUtils.setPropertyValueByName(f2, "path", "my-path-2.txt");
+    ClassifierInstanceUtils.addChild(p1, "files", f1);
+    ClassifierInstanceUtils.addChild(p1, "files", f2);
+
+    client.storeChunk(client.getJsonSerialization().serializeTreeToSerializationChunk(p1));
+
+    List<SerializedClassifierInstance> retrievedNodes1Chunk =
+        client.retrieveAsChunk(Collections.singletonList("p1"), 0);
+    assertEquals(1, retrievedNodes1Chunk.size());
+    List<ClassifierInstance<?>> retrievedNodes1 =
+        client
+            .getJsonSerialization()
+            .deserializeSerializationChunk(
+                SerializedChunk.fromNodes(LionWebVersion.v2023_1, retrievedNodes1Chunk));
     assertEquals(1, retrievedNodes1.size());
     assertEquals(p1, retrievedNodes1.get(0));
   }
