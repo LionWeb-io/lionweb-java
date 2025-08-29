@@ -50,7 +50,8 @@ public class SerializedContainmentValueTest {
   @Test
   public void removeChildRemovesAndReturnsFlag() {
     SerializedContainmentValue scv =
-        new SerializedContainmentValue(simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("a", "b", "c")));
+        new SerializedContainmentValue(
+            simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("a", "b", "c")));
 
     assertTrue(scv.removeChild("b"));
     assertEquals(Arrays.asList("a", "c"), scv.getValue());
@@ -62,7 +63,8 @@ public class SerializedContainmentValueTest {
   @Test
   public void removeChildRemovesOnlyOneOccurrence() {
     SerializedContainmentValue scv =
-        new SerializedContainmentValue(simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("x", "y", "y")));
+        new SerializedContainmentValue(
+            simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("x", "y", "y")));
 
     assertTrue(scv.removeChild("y"));
     assertEquals(Arrays.asList("x", "y"), scv.getValue());

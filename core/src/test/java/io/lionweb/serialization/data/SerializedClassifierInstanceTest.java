@@ -219,7 +219,8 @@ public class SerializedClassifierInstanceTest {
 
   @Test
   public void toStringContainsKeyInfo() {
-    SerializedClassifierInstance sci = new SerializedClassifierInstance("idX", simpleMetaPointer("C"));
+    SerializedClassifierInstance sci =
+        new SerializedClassifierInstance("idX", simpleMetaPointer("C"));
     sci.setParentNodeID("pY");
     String s = sci.toString();
     assertNotNull(s);
