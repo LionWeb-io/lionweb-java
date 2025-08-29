@@ -9,13 +9,13 @@ import org.junit.Test;
 
 public class SerializedContainmentValueTest {
 
-  private static MetaPointer mp(String key) {
+  private static MetaPointer simpleMetaPointer(String key) {
     return MetaPointer.get("L", "1", key);
   }
 
   @Test
   public void constructorCopiesInputListAndExposesUnmodifiableView() {
-    MetaPointer c = mp("cont");
+    MetaPointer c = simpleMetaPointer("cont");
     ArrayList<String> input = new ArrayList<>(Arrays.asList("a", "b"));
     SerializedContainmentValue scv = new SerializedContainmentValue(c, input);
 
@@ -29,7 +29,7 @@ public class SerializedContainmentValueTest {
 
   @Test
   public void gettersReturnExpectedValues() {
-    MetaPointer c = mp("contX");
+    MetaPointer c = simpleMetaPointer("contX");
     SerializedContainmentValue scv = new SerializedContainmentValue(c, Arrays.asList("n1", "n2"));
 
     assertSame(c, scv.getMetaPointer());
@@ -39,7 +39,7 @@ public class SerializedContainmentValueTest {
   @Test
   public void setValueReplacesContentAndIsExposedUnmodifiable() {
     SerializedContainmentValue scv =
-        new SerializedContainmentValue(mp("cont"), Arrays.asList("a", "b"));
+        new SerializedContainmentValue(simpleMetaPointer("cont"), Arrays.asList("a", "b"));
 
     scv.setValue(Arrays.asList("x", "y", "z"));
     assertEquals(Arrays.asList("x", "y", "z"), scv.getValue());
@@ -50,7 +50,7 @@ public class SerializedContainmentValueTest {
   @Test
   public void removeChildRemovesAndReturnsFlag() {
     SerializedContainmentValue scv =
-        new SerializedContainmentValue(mp("cont"), new ArrayList<>(Arrays.asList("a", "b", "c")));
+        new SerializedContainmentValue(simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("a", "b", "c")));
 
     assertTrue(scv.removeChild("b"));
     assertEquals(Arrays.asList("a", "c"), scv.getValue());
@@ -62,7 +62,7 @@ public class SerializedContainmentValueTest {
   @Test
   public void removeChildRemovesOnlyOneOccurrence() {
     SerializedContainmentValue scv =
-        new SerializedContainmentValue(mp("cont"), new ArrayList<>(Arrays.asList("x", "y", "y")));
+        new SerializedContainmentValue(simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("x", "y", "y")));
 
     assertTrue(scv.removeChild("y"));
     assertEquals(Arrays.asList("x", "y"), scv.getValue());
@@ -70,8 +70,8 @@ public class SerializedContainmentValueTest {
 
   @Test
   public void equalsAndHashCodeDependOnMetaPointerAndValue() {
-    MetaPointer c1 = mp("cont");
-    MetaPointer c2 = mp("cont2");
+    MetaPointer c1 = simpleMetaPointer("cont");
+    MetaPointer c2 = simpleMetaPointer("cont2");
     SerializedContainmentValue a = new SerializedContainmentValue(c1, Arrays.asList("n1", "n2"));
     SerializedContainmentValue b = new SerializedContainmentValue(c1, Arrays.asList("n1", "n2"));
     SerializedContainmentValue c =
@@ -88,7 +88,7 @@ public class SerializedContainmentValueTest {
   @Test
   public void toStringContainsKeyInfo() {
     SerializedContainmentValue scv =
-        new SerializedContainmentValue(mp("cont"), Arrays.asList("a", "b"));
+        new SerializedContainmentValue(simpleMetaPointer("cont"), Arrays.asList("a", "b"));
     String s = scv.toString();
     assertNotNull(s);
     assertTrue(s.contains("metaPointer"));
