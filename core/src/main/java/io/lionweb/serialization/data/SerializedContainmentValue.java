@@ -32,15 +32,15 @@ public class SerializedContainmentValue {
   }
 
   /**
-   * Removes a child from the list of Node-IDs contained.
+   * Removes a childId from the list of Node-IDs contained.
    *
-   * @param child the identifier of the child to be removed; must not be null
-   * @return true if the child was successfully removed, false otherwise
-   * @throws NullPointerException if the child is null
+   * @param childId the identifier of the childId to be removed; must not be null
+   * @return true if the childId was successfully removed, false otherwise
+   * @throws NullPointerException if the childId is null
    */
-  public boolean removeChild(@Nonnull String child) {
-    Objects.requireNonNull(child, "child must not be null");
-    return value.remove(child);
+  public boolean removeChild(@Nonnull String childId) {
+    Objects.requireNonNull(childId, "childId must not be null");
+    return value.remove(childId);
   }
 
   @Override
