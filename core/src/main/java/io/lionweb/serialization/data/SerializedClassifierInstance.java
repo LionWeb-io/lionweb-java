@@ -170,18 +170,18 @@ public class SerializedClassifierInstance {
   }
 
   /**
-   * Removes the specified child from the containments, if present.
+   * Removes the specified childId from the containments, if present.
    *
-   * @param child the identifier of the child to be removed; must not be null
-   * @return true if the child was successfully removed, false otherwise
+   * @param childId the identifier of the childId to be removed; must not be null
+   * @return true if the childId was successfully removed, false otherwise
    */
-  public boolean removeChild(@Nonnull String child) {
-    Objects.requireNonNull(child, "child should not be null");
+  public boolean removeChild(@Nonnull String childId) {
+    Objects.requireNonNull(childId, "childId should not be null");
     if (this.containments == null) {
       return false;
     }
     for (SerializedContainmentValue containment : this.containments) {
-      if (containment.removeChild(child)) {
+      if (containment.removeChild(childId)) {
         return true;
       }
     }
