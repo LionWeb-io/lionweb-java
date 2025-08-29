@@ -169,6 +169,18 @@ public class SerializedClassifierInstance {
     this.containments.add(new SerializedContainmentValue(containment, childrenIds));
   }
 
+  public boolean removeChild(String child) {
+    if (this.containments == null) {
+      return false;
+    }
+    for (SerializedContainmentValue containment : this.containments) {
+      if (containment.removeChild(child)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void addReferenceValue(
       MetaPointer reference, List<SerializedReferenceValue.Entry> referenceValues) {
     if (this.references == null) {
@@ -242,6 +254,13 @@ public class SerializedClassifierInstance {
       this.annotations = new ArrayList<>(1);
     }
     this.annotations.add(annotationID);
+  }
+
+  public boolean removeAnnotation(String annotationID) {
+    if (this.annotations == null) {
+      return false;
+    }
+    return this.annotations.remove(annotationID);
   }
 
   @Override
