@@ -739,13 +739,13 @@ public class DynamicNodeTest {
   }
 
   @Test
-  public void registerPartitionObserver_throwsWhenAlreadyRegistered() {
+  public void registerPartitionObserver_returnFalseWhenAlreadyRegistered() {
     Concept concept = new Concept();
     DynamicNode root = new DynamicNode("root", concept);
     MockPartitionObserver observer = new MockPartitionObserver();
 
     root.registerPartitionObserver(observer);
-    assertThrows(IllegalArgumentException.class, () -> root.registerPartitionObserver(observer));
+    assertFalse(root.registerPartitionObserver(observer));
   }
 
   @Test
