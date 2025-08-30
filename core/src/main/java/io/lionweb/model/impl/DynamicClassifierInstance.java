@@ -117,6 +117,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
         int index = entry.getValue().indexOf(node);
         if (index != -1) {
+          if (entry.getValue().size() == 1) {
+            containmentValues.remove(entry.getKey());
+          }
           entry.getValue().remove(node);
           if (node instanceof HasSettableParent) {
             ((HasSettableParent) node).setParent(null);
