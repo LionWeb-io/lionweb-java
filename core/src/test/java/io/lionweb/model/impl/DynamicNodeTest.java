@@ -751,17 +751,20 @@ public class DynamicNodeTest {
   @Test
   public void toString_withContainmentsBuildsString() {
     Concept concept = new Concept();
-    DynamicNode parent = new DynamicNode("parent", concept);
-    DynamicNode child = new DynamicNode("child", concept);
-
     Containment containment = new Containment();
     containment.setName("children");
     containment.setMultiple(true);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+
     parent.addChild(containment, child);
 
     String result = parent.toString();
     assertNotNull(result);
-    assertTrue(result.contains("DynamicNode{"));
+    assertTrue(result.contains("containmentValues={children-key=child}"));
   }
 
   @Test
@@ -775,25 +778,6 @@ public class DynamicNodeTest {
 
     // Second registration of same observer should return false
     assertFalse(root.registerPartitionObserver(observer));
-  }
-
-  @Test
-  public void toString_containmentValueStrNotUsedInOutput() {
-    Concept concept = new Concept();
-    DynamicNode parent = new DynamicNode("parent", concept);
-    DynamicNode child = new DynamicNode("child", concept);
-
-    Containment containment = new Containment();
-    containment.setName("children");
-    containment.setMultiple(true);
-    parent.addChild(containment, child);
-
-    String result = parent.toString();
-
-    // The bug in toString: containmentValueStr is built but not assigned/used
-    // So it still shows "<null>" even when containments exist
-    assertTrue(result.contains("containmentValues={<null>}"));
-    assertFalse(result.contains("children=child"));
   }
 
   @Test
@@ -864,15 +848,17 @@ public class DynamicNodeTest {
 
     // Remove one - should still have composite with two observers
     root.unregisterPartitionObserver(obs1);
+    assertNotNull(root.registeredPartitionObserver());
 
     // Remove another - should have single observer remaining
     root.unregisterPartitionObserver(obs2);
+    assertNotNull(root.registeredPartitionObserver());
 
     // Remove the last one
     root.unregisterPartitionObserver(obs3);
 
     // Should not throw - all observers removed successfully
-    assertNotNull(root.toString());
+    assertNull(root.registeredPartitionObserver());
   }
 
   @Test
@@ -918,14 +904,18 @@ public class DynamicNodeTest {
   @Test
   public void equals_shallowContainmentsEquality_oneNullOneEmpty() {
     Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setKey("children-key");
+    containment.setMultiple(true);
+    concept.addFeature(containment);
+
     DynamicNode node1 = new DynamicNode("same-id", concept);
     DynamicNode node2 = new DynamicNode("same-id", concept);
 
     // node1 has null containmentValues (default)
     // node2 has empty containmentValues - add and remove a child to initialize the map
-    Containment containment = new Containment();
-    containment.setName("children");
-    containment.setMultiple(true);
+
     DynamicNode tempChild = new DynamicNode("temp", concept);
     node2.addChild(containment, tempChild);
     node2.removeChild(tempChild);
@@ -947,12 +937,14 @@ public class DynamicNodeTest {
   @Test
   public void equals_shallowContainmentsEquality_bothEmpty() {
     Concept concept = new Concept();
-    DynamicNode node1 = new DynamicNode("same-id", concept);
-    DynamicNode node2 = new DynamicNode("same-id", concept);
-
     Containment containment = new Containment();
     containment.setName("children");
+    containment.setKey("children-key");
     containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
 
     // Initialize both maps as empty by adding and removing children
     DynamicNode temp1 = new DynamicNode("temp1", concept);
@@ -971,12 +963,14 @@ public class DynamicNodeTest {
   @Test
   public void equals_shallowContainmentsEquality_differentChildCount() {
     Concept concept = new Concept();
-    DynamicNode node1 = new DynamicNode("same-id", concept);
-    DynamicNode node2 = new DynamicNode("same-id", concept);
-
     Containment containment = new Containment();
     containment.setName("children");
+    containment.setKey("children-key");
     containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
 
     DynamicNode child1 = new DynamicNode("child1", concept);
     DynamicNode child2 = new DynamicNode("child2", concept);
@@ -992,12 +986,14 @@ public class DynamicNodeTest {
   @Test
   public void equals_shallowContainmentsEquality_sameChildrenDifferentOrder() {
     Concept concept = new Concept();
-    DynamicNode node1 = new DynamicNode("same-id", concept);
-    DynamicNode node2 = new DynamicNode("same-id", concept);
-
     Containment containment = new Containment();
     containment.setName("children");
+    containment.setKey("children-key");
     containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
 
     DynamicNode child1 = new DynamicNode("child1", concept);
     DynamicNode child2 = new DynamicNode("child2", concept);
@@ -1016,12 +1012,14 @@ public class DynamicNodeTest {
   @Test
   public void equals_shallowContainmentsEquality_differentChildIDs() {
     Concept concept = new Concept();
-    DynamicNode node1 = new DynamicNode("same-id", concept);
-    DynamicNode node2 = new DynamicNode("same-id", concept);
-
     Containment containment = new Containment();
     containment.setName("children");
+    containment.setKey("children-key");
     containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
 
     DynamicNode child1 = new DynamicNode("child1", concept);
     DynamicNode child2 = new DynamicNode("child2", concept);

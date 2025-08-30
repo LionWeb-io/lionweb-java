@@ -104,6 +104,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     Objects.requireNonNull(containment);
     Objects.requireNonNull(child);
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException();
+    }
     if (containment.isMultiple()) {
       addContainment(containment, child);
     } else {
