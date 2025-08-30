@@ -5,9 +5,8 @@ import static org.junit.Assert.*;
 import io.lionweb.language.*;
 import io.lionweb.model.MockPartitionObserver;
 import io.lionweb.model.ReferenceValue;
-import org.junit.Test;
-
 import java.util.Collections;
+import org.junit.Test;
 
 public class ProxyNodeTest {
 
@@ -22,7 +21,7 @@ public class ProxyNodeTest {
 
     Property p = new Property();
     Containment c = new Containment();
-      Reference r = new Reference();
+    Reference r = new Reference();
     ProxyNode anotherProxyNode = new ProxyNode("id-124");
 
     assertThrows(ProxyNode.CannotDoBecauseProxyException.class, proxyNode::getAnnotations);
@@ -42,19 +41,34 @@ public class ProxyNodeTest {
         () -> proxyNode.removeChild(anotherProxyNode));
     assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.removeChild(c, 0));
 
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.getReferenceValues(r));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.addReferenceValue(r, new ReferenceValue(new ProxyNode("foo"), "bar")));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.removeReferenceValue(r, new ReferenceValue(new ProxyNode("foo"), "bar")));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.removeReferenceValue(r, 0));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.setReferenceValues(r, Collections.emptyList()));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.setReferred(r, 0, new ProxyNode("foo")));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.setResolveInfo(r, 0, "bar"));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.getReferenceValues(r));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class,
+        () -> proxyNode.addReferenceValue(r, new ReferenceValue(new ProxyNode("foo"), "bar")));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class,
+        () -> proxyNode.removeReferenceValue(r, new ReferenceValue(new ProxyNode("foo"), "bar")));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.removeReferenceValue(r, 0));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class,
+        () -> proxyNode.setReferenceValues(r, Collections.emptyList()));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class,
+        () -> proxyNode.setReferred(r, 0, new ProxyNode("foo")));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.setResolveInfo(r, 0, "bar"));
 
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.registerPartitionObserver(new MockPartitionObserver()));
-      assertThrows(ProxyNode.CannotDoBecauseProxyException.class, () -> proxyNode.unregisterPartitionObserver(new MockPartitionObserver()));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class,
+        () -> proxyNode.registerPartitionObserver(new MockPartitionObserver()));
+    assertThrows(
+        ProxyNode.CannotDoBecauseProxyException.class,
+        () -> proxyNode.unregisterPartitionObserver(new MockPartitionObserver()));
 
-      // Does not throw
-      proxyNode.partitionObserverRegistered(new MockPartitionObserver());
+    // Does not throw
+    proxyNode.partitionObserverRegistered(new MockPartitionObserver());
   }
 
   @Test

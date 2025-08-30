@@ -722,47 +722,45 @@ public class DynamicNodeTest {
     observer.clearRecords();
   }
 
-    @Test
-    public void toString_handlesQualifiedNameException() {
-        Concept badConcept = new Concept() {
-            @Override
-            public String qualifiedName() {
-                throw new RuntimeException("test exception");
-            }
+  @Test
+  public void toString_handlesQualifiedNameException() {
+    Concept badConcept =
+        new Concept() {
+          @Override
+          public String qualifiedName() {
+            throw new RuntimeException("test exception");
+          }
         };
-        DynamicNode node = new DynamicNode("test-id", badConcept);
+    DynamicNode node = new DynamicNode("test-id", badConcept);
 
-        String result = node.toString();
-        assertTrue(result.contains("concept=<cannot be calculated>"));
-        assertTrue(result.contains("id='test-id'"));
-    }
+    String result = node.toString();
+    assertTrue(result.contains("concept=<cannot be calculated>"));
+    assertTrue(result.contains("id='test-id'"));
+  }
 
-    @Test
-    public void registerPartitionObserver_throwsWhenAlreadyRegistered() {
-        Concept concept = new Concept();
-        DynamicNode root = new DynamicNode("root", concept);
-        MockPartitionObserver observer = new MockPartitionObserver();
+  @Test
+  public void registerPartitionObserver_throwsWhenAlreadyRegistered() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
 
-        root.registerPartitionObserver(observer);
-        assertThrows(IllegalArgumentException.class,
-                () -> root.registerPartitionObserver(observer));
-    }
+    root.registerPartitionObserver(observer);
+    assertThrows(IllegalArgumentException.class, () -> root.registerPartitionObserver(observer));
+  }
 
-    @Test
-    public void toString_withContainmentsBuildsString() {
-        Concept concept = new Concept();
-        DynamicNode parent = new DynamicNode("parent", concept);
-        DynamicNode child = new DynamicNode("child", concept);
+  @Test
+  public void toString_withContainmentsBuildsString() {
+    Concept concept = new Concept();
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
 
-        Containment containment = new Containment();
-        containment.setName("children");
-        containment.setMultiple(true);
-        parent.addChild(containment, child);
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setMultiple(true);
+    parent.addChild(containment, child);
 
-        String result = parent.toString();
-        assertNotNull(result);
-        assertTrue(result.contains("DynamicNode{"));
-    }
-
-
+    String result = parent.toString();
+    assertNotNull(result);
+    assertTrue(result.contains("DynamicNode{"));
+  }
 }
