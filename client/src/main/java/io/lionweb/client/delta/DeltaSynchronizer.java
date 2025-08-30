@@ -28,7 +28,7 @@ public abstract class DeltaSynchronizer {
   private IdentityMultimap<String, Node> syncedNodes = new IdentityMultimap<>();
   private Map<String, Node> cmdIdsToNode = new IdentityHashMap<>();
 
-  private class MyObserver implements ClassifierInstanceObserver {
+  private class MyObserver implements PartitionObserver {
 
     private Node node;
 
@@ -64,11 +64,17 @@ public abstract class DeltaSynchronizer {
 
     @Override
     public void annotationAdded(
-        @NotNull Node node, int index, @NotNull AnnotationInstance newAnnotation) {}
+        @NotNull ClassifierInstance<?> node, int index, @NotNull AnnotationInstance newAnnotation) {
+      throw new UnsupportedOperationException();
+    }
 
     @Override
     public void annotationRemoved(
-        @NotNull Node node, int index, @NotNull AnnotationInstance removedAnnotation) {}
+        @NotNull ClassifierInstance<?> node,
+        int index,
+        @NotNull AnnotationInstance removedAnnotation) {
+      throw new UnsupportedOperationException();
+    }
 
     @Override
     public void referenceValueAdded(
@@ -137,7 +143,7 @@ public abstract class DeltaSynchronizer {
   public void attachTree(Node node) {
     forceState(node);
 
-    node.addObserver(new MyObserver());
+    node.registerPartitionObserver(new MyObserver());
     syncedNodes.put(node.getID(), node);
 
     ClassifierInstanceUtils.getChildren(node).forEach(c -> attachTree(c));

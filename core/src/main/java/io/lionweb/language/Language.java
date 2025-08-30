@@ -2,7 +2,6 @@ package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.lioncore.LionCore;
-import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.M3Node;
 import io.lionweb.utils.LanguageValidator;
@@ -97,12 +96,6 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     Objects.requireNonNull(dependency, "dependency should not be null");
     ReferenceValue rv = new ReferenceValue(dependency, dependency.getName());
     this.addReferenceMultipleValue("dependsOn", rv);
-    if (observer != null) {
-      // TODO add observers on existing reference values when observers are added later
-      rv.addObserver(
-          new ObserverOnReferenceValue(
-              this, getClassifier().getReferenceByName("dependsOn"), dependsOn().size() - 1));
-    }
     return dependency;
   }
 
@@ -243,49 +236,5 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .filter(e -> e instanceof Annotation)
         .map(e -> (Annotation) e)
         .collect(Collectors.toList());
-  }
-
-  private class ObserverOnReferenceValue implements ReferenceValue.Observer {
-
-    private ClassifierInstance<?> classifierInstance;
-    private Reference reference;
-    private int index;
-
-    public ObserverOnReferenceValue(
-        ClassifierInstance<?> classifierInstance, Reference reference, int index) {
-      this.classifierInstance = classifierInstance;
-      this.reference = reference;
-      this.index = index;
-    }
-
-    @Override
-    public void resolveInfoChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue) {
-      if (observer != null) {
-        observer.referenceValueChanged(
-            classifierInstance,
-            reference,
-            index,
-            referenceValue.getReferredID(),
-            oldValue,
-            referenceValue.getReferredID(),
-            newValue);
-      }
-    }
-
-    @Override
-    public void referredIDChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue) {
-      if (observer != null) {
-        observer.referenceValueChanged(
-            classifierInstance,
-            reference,
-            index,
-            oldValue,
-            referenceValue.getResolveInfo(),
-            newValue,
-            referenceValue.getResolveInfo());
-      }
-    }
   }
 }

@@ -33,9 +33,6 @@ public class ReferenceValue {
    */
   @Deprecated
   public void setReferred(@Nullable Node referred) {
-    if (observer != null) {
-      observer.referredIDChanged(this, this.referred.getID(), referred.getID());
-    }
     this.referred = referred;
   }
 
@@ -49,9 +46,6 @@ public class ReferenceValue {
    */
   @Deprecated
   public void setResolveInfo(@Nullable String resolveInfo) {
-    if (observer != null) {
-      observer.resolveInfoChanged(this, this.resolveInfo, resolveInfo);
-    }
     this.resolveInfo = resolveInfo;
   }
 
