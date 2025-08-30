@@ -181,14 +181,15 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
     String containmentValueStr = "<null>";
     if (containmentValues != null) {
-      containmentValues.entrySet().stream()
-          .map(
-              e -> {
-                String childrenRepr =
-                    e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
-                return e.getKey() + "=" + childrenRepr;
-              })
-          .collect(Collectors.joining(", "));
+      containmentValueStr =
+          containmentValues.entrySet().stream()
+              .map(
+                  e -> {
+                    String childrenRepr =
+                        e.getValue().stream().map(c -> c.getID()).collect(Collectors.joining(", "));
+                    return e.getKey() + "=" + childrenRepr;
+                  })
+              .collect(Collectors.joining(", "));
     }
 
     return "DynamicNode{"
