@@ -182,6 +182,20 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     return referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
   }
 
+  /**
+   * Adds a {@link ReferenceValue} to the specified {@link Reference}. If the reference is multiple,
+   * the value is appended to the existing values. Otherwise, it sets the single reference value,
+   * replacing any previous value.
+   *
+   * @param reference the reference to which the {@link ReferenceValue} will be added; must not be
+   *     null
+   * @param referenceValue the value to add to the reference; can be null
+   * @return an integer indicating the index of the newly added value if the reference is multiple,
+   *     or 0 if the reference is single
+   * @throws NullPointerException if the reference is null
+   * @throws IllegalArgumentException if the reference does not belong to the concept associated
+   *     with the node
+   */
   @Override
   public int addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
@@ -219,6 +233,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     }
   }
 
+  /**
+   * Sets the referred node for a specific reference at a given index. Updates the reference values
+   * and notifies observers if the referred node changes.
+   *
+   * @param reference the reference for which the node is being set; must not be null
+   * @param index the index in the reference's list of values to update
+   * @param referredNode the new node to be referred; can be null
+   * @throws IllegalArgumentException if the index is out of bounds
+   */
   @Override
   public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
     List<ReferenceValue> refValues = getReferenceValues(reference);
@@ -239,6 +262,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     }
   }
 
+  /**
+   * Updates the resolve information for a specific reference at a given index. Notifies observers
+   * of changes if applicable.
+   *
+   * @param reference the reference for which the resolve information is being set; must not be null
+   * @param index the index in the reference's list of values to update
+   * @param resolveInfo the new resolve information to be set; can be null
+   * @throws IllegalArgumentException if the index is out of bounds
+   */
   @Override
   public void setResolveInfo(
       @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
