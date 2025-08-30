@@ -2,6 +2,7 @@ package io.lionweb.model.impl;
 
 import static io.lionweb.model.ClassifierInstanceUtils.shallowAnnotationsEquality;
 import static io.lionweb.model.ClassifierInstanceUtils.shallowClassifierInstanceEquality;
+import static io.lionweb.model.impl.AbstractNode.contains;
 
 import io.lionweb.language.*;
 import io.lionweb.model.*;
@@ -44,20 +45,21 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
   }
 
   @Override
-  public void registerPartitionObserver(@Nullable PartitionObserver observer) {
+  public boolean registerPartitionObserver(@Nullable PartitionObserver observer) {
     if (!this.isRoot()) {
       throw new UnsupportedOperationException(
           "Cannot register a partition observer on a node which is not root");
     }
-    if (this.observer == observer) {
-      throw new IllegalArgumentException("Observer already registered: " + observer);
+    if (contains(this.observer, observer)) {
+      return false;
     }
     if (this.observer == null) {
       this.observer = observer;
     } else {
       this.observer = CompositePartitionObserver.combine(this.observer, observer);
     }
-    thisAndAllDescendants().forEach(d -> d.partitionObserverRegistered(this.observer));
+    this.partitionObserverRegistered(this.observer);
+    return true;
   }
 
   @Override

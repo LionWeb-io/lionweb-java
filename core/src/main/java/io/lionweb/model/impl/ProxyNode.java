@@ -156,7 +156,7 @@ public class ProxyNode extends AbstractNode {
   }
 
   @Override
-  public void registerPartitionObserver(@Nullable PartitionObserver observer) {
+  public boolean registerPartitionObserver(@Nullable PartitionObserver observer) {
     throw cannotDoBecauseProxy();
   }
 

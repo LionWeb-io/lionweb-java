@@ -79,7 +79,7 @@ public class AbstractClassifierInstanceTest {
 
     PartitionObserver observer1 = new MockPartitionObserver();
     n1.registerPartitionObserver(observer1);
-    assertThrows(IllegalArgumentException.class, () -> n1.registerPartitionObserver(observer1));
+    assertEquals(false, n1.registerPartitionObserver(observer1));
     n1.unregisterPartitionObserver(observer1);
     assertThrows(IllegalArgumentException.class, () -> n1.unregisterPartitionObserver(observer1));
   }
