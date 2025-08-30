@@ -172,6 +172,13 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
+  /**
+   * Retrieves a {@link Containment} object from the list of features based on a specified key.
+   *
+   * @param containmentKey the key of the desired Containment; it must not be null
+   * @return the {@link Containment} object with the specified key if found, or null if no matching
+   *     Containment is found
+   */
   public @Nullable Containment getContainmentByKey(@Nonnull String containmentKey) {
     Objects.requireNonNull(containmentKey, "containmentKey should not be null");
     return allFeatures().stream()
@@ -212,6 +219,15 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         .orElse(null);
   }
 
+  /**
+   * This method retrieves a {@link Property} object by its name from the list of features. If the
+   * property with the given name is not found, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param propertyName the name of the property to retrieve; must not be null
+   * @return the {@link Property} object with the specified name if it exists; never null
+   * @throws IllegalArgumentException if no property with the given name is found
+   * @throws NullPointerException if the provided property name is null
+   */
   public @Nonnull Property requirePropertyByName(@Nonnull String propertyName) {
     Property property = getPropertyByName(propertyName);
     if (property == null) {
