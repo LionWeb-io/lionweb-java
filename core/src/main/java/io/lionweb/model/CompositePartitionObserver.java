@@ -51,14 +51,6 @@ public class CompositePartitionObserver implements PartitionObserver {
     return getInstance(newElements);
   }
 
-  public void addElement(PartitionObserver observer) {
-    elements.add(observer);
-  }
-
-  public void removeElement(PartitionObserver observer) {
-    elements.remove(observer);
-  }
-
   public Set<PartitionObserver> getElements() {
     return elements;
   }

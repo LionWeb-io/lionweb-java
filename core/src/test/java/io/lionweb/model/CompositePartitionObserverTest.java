@@ -3,6 +3,7 @@ package io.lionweb.model;
 import static org.junit.Assert.*;
 
 import io.lionweb.language.*;
+import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.model.impl.DynamicNode;
 import java.util.Arrays;
 import org.junit.Test;
@@ -147,5 +148,124 @@ public class CompositePartitionObserverTest {
     assertEquals(
         Arrays.asList(new MockPartitionObserver.ReferenceAddedRecord(node, reference, refValue)),
         obs2.getRecords());
+  }
+
+  @Test
+  public void combine_withSameObserverTwice_deduplicates() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    // Combine obs1 and obs2
+    CompositePartitionObserver composite1 =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    // Combine the composite with obs1 again - should not duplicate
+    PartitionObserver result = CompositePartitionObserver.combine(composite1, obs1);
+
+    assertEquals(2, ((CompositePartitionObserver) result).getElements().size());
+    assertTrue(((CompositePartitionObserver) result).getElements().contains(obs1));
+    assertTrue(((CompositePartitionObserver) result).getElements().contains(obs2));
+  }
+
+  @Test
+  public void childRemoved_notifiesAllObservers() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    CompositePartitionObserver composite =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    Concept concept = new Concept();
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+    Containment containment = new Containment();
+
+    composite.childRemoved(parent, containment, 0, child);
+
+    assertEquals(1, obs1.getRecords().size());
+    assertEquals(1, obs2.getRecords().size());
+    assertTrue(obs1.getRecords().get(0) instanceof MockPartitionObserver.ChildRemovedRecord);
+    assertTrue(obs2.getRecords().get(0) instanceof MockPartitionObserver.ChildRemovedRecord);
+  }
+
+  @Test
+  public void annotationAdded_notifiesAllObservers() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    CompositePartitionObserver composite =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    Concept concept = new Concept();
+    DynamicNode node = new DynamicNode("node", concept);
+    DynamicAnnotationInstance annotation = new DynamicAnnotationInstance("ann", new Annotation());
+
+    composite.annotationAdded(node, 0, annotation);
+
+    assertEquals(1, obs1.getRecords().size());
+    assertEquals(1, obs2.getRecords().size());
+    assertTrue(obs1.getRecords().get(0) instanceof MockPartitionObserver.AnnotationAddedRecord);
+    assertTrue(obs2.getRecords().get(0) instanceof MockPartitionObserver.AnnotationAddedRecord);
+  }
+
+  @Test
+  public void annotationRemoved_notifiesAllObservers() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    CompositePartitionObserver composite =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    Concept concept = new Concept();
+    DynamicNode node = new DynamicNode("node", concept);
+    DynamicAnnotationInstance annotation = new DynamicAnnotationInstance("ann", new Annotation());
+
+    composite.annotationRemoved(node, 0, annotation);
+
+    assertEquals(1, obs1.getRecords().size());
+    assertEquals(1, obs2.getRecords().size());
+    assertTrue(obs1.getRecords().get(0) instanceof MockPartitionObserver.AnnotationRemovedRecord);
+    assertTrue(obs2.getRecords().get(0) instanceof MockPartitionObserver.AnnotationRemovedRecord);
+  }
+
+  @Test
+  public void referenceValueChanged_notifiesAllObservers() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    CompositePartitionObserver composite =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    Concept concept = new Concept();
+    DynamicNode node = new DynamicNode("node", concept);
+    Reference reference = new Reference();
+
+    composite.referenceValueChanged(node, reference, 0, "oldRef", "oldInfo", "newRef", "newInfo");
+
+    assertEquals(1, obs1.getRecords().size());
+    assertEquals(1, obs2.getRecords().size());
+    assertTrue(obs1.getRecords().get(0) instanceof MockPartitionObserver.ReferenceChangedRecord);
+    assertTrue(obs2.getRecords().get(0) instanceof MockPartitionObserver.ReferenceChangedRecord);
+  }
+
+  @Test
+  public void referenceValueRemoved_notifiesAllObservers() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    CompositePartitionObserver composite =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    Concept concept = new Concept();
+    DynamicNode node = new DynamicNode("node", concept);
+    Reference reference = new Reference();
+    ReferenceValue refValue = new ReferenceValue(node, "resolve");
+
+    composite.referenceValueRemoved(node, reference, 0, refValue);
+
+    assertEquals(1, obs1.getRecords().size());
+    assertEquals(1, obs2.getRecords().size());
+    assertTrue(obs1.getRecords().get(0) instanceof MockPartitionObserver.ReferenceRemovedRecord);
+    assertTrue(obs2.getRecords().get(0) instanceof MockPartitionObserver.ReferenceRemovedRecord);
   }
 }
