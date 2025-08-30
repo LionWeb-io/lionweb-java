@@ -8,9 +8,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class CompositePartitionObserver implements PartitionObserver {
-  private static final int INTERN_LIMIT = 3;
-  private static final Map<Set<PartitionObserver>, PartitionObserver> INTERN_CACHE =
-      new WeakHashMap<>();
 
   private final Set<PartitionObserver> elements;
 
@@ -39,14 +36,10 @@ public class CompositePartitionObserver implements PartitionObserver {
   }
 
   private static PartitionObserver getInstance(Set<PartitionObserver> elements) {
-    // intern if small, but don’t intern larger ones
-    if (elements.size() <= INTERN_LIMIT) {
-      Set<PartitionObserver> key = Collections.unmodifiableSet(new HashSet<>(elements));
-      return INTERN_CACHE.computeIfAbsent(
-          key, k -> k.size() == 1 ? k.iterator().next() : new CompositePartitionObserver(k));
-    } else {
-      return new CompositePartitionObserver(Collections.unmodifiableSet(elements));
+    if (elements.size() == 1) {
+      return elements.iterator().next();
     }
+    return new CompositePartitionObserver(Collections.unmodifiableSet(elements));
   }
 
   public PartitionObserver remove(PartitionObserver observer) {
