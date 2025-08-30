@@ -73,10 +73,27 @@ public class ReferenceValue {
         + '}';
   }
 
+  /**
+   * Creates a new ReferenceValue instance with the given referred Node while retaining the current
+   * resolveInfo.
+   *
+   * @param referredNode the Node to be referred to by the new ReferenceValue. Can be null.
+   * @return a new ReferenceValue object with the specified referred Node and the current
+   *     resolveInfo.
+   */
   public ReferenceValue withReferred(@Nullable Node referredNode) {
     return new ReferenceValue(referredNode, this.resolveInfo);
   }
 
+  /**
+   * Creates a new ReferenceValue instance with the given resolve information while retaining the
+   * current referred Node.
+   *
+   * @param resolveInfo the resolve information to be associated with the new ReferenceValue. Can be
+   *     null.
+   * @return a new ReferenceValue object with the specified resolve information and the current
+   *     referred Node.
+   */
   public ReferenceValue withResolveInfo(@Nullable String resolveInfo) {
     return new ReferenceValue(this.referred, resolveInfo);
   }
