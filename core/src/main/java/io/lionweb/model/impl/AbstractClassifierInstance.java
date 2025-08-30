@@ -50,15 +50,18 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       this.annotations = new ArrayList<>();
     }
     if (instance.getID() != null
-        && annotations.stream().anyMatch(a -> a.getID().equals(instance.getID()))) {
+        && annotations.stream().anyMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
       // necessary to avoid infinite loops and duplicate insertions
       return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
+    if (instance.getID() == null && annotations.stream().anyMatch(a -> a == instance)) {
+      return false;
+    }
     if (instance.getID() == null
-        || annotations.stream().noneMatch(a -> a.getID().equals(instance.getID()))) {
+        || annotations.stream().noneMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
       this.annotations.add(instance);
       if (partitionObserverCache != null) {
         partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
@@ -87,6 +90,15 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     return index;
   }
 
+  /**
+   * Attempts to remove a specific {@link AnnotationInstance} from the list of annotations
+   * associated with the current instance. If the specified annotation is removed successfully,
+   * additional actions may be performed, such as updating observers or modifying the state of the
+   * removed annotation.
+   *
+   * @param instance the {@link AnnotationInstance} to be removed; must not be null
+   * @return the index at which the annotation was removed, or -1 if the annotation was not found
+   */
   int tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
     int index = -1;

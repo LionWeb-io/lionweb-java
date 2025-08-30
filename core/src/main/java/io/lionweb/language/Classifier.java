@@ -173,7 +173,8 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   /**
-   * Retrieves a {@link Containment} object from the list of features based on a specified key.
+   * Retrieves a {@link Containment} object from the list of features based on a specified key. It
+   * considers also inherited features.
    *
    * @param containmentKey the key of the desired Containment; it must not be null
    * @return the {@link Containment} object with the specified key if found, or null if no matching
@@ -220,8 +221,9 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   /**
-   * This method retrieves a {@link Property} object by its name from the list of features. If the
-   * property with the given name is not found, an {@link IllegalArgumentException} is thrown.
+   * This method retrieves a {@link Property} object by its name from the list of features. It
+   * considers also inherited features. If the property with the given name is not found, an {@link
+   * IllegalArgumentException} is thrown.
    *
    * @param propertyName the name of the property to retrieve; must not be null
    * @return the {@link Property} object with the specified name if it exists; never null
