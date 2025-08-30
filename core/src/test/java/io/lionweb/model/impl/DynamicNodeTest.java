@@ -4,10 +4,7 @@ import static org.junit.Assert.*;
 
 import com.google.gson.JsonArray;
 import io.lionweb.language.*;
-import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.ClassifierInstanceUtils;
-import io.lionweb.model.ReferenceValue;
-import io.lionweb.model.StructuredDataTypeInstanceUtils;
+import io.lionweb.model.*;
 import io.lionweb.serialization.*;
 import java.util.Arrays;
 import java.util.Collections;
@@ -588,5 +585,449 @@ public class DynamicNodeTest {
     // Case: nodes have the same annotations again
     node1.addAnnotation(new DynamicAnnotationInstance("a2", annotation, node1));
     assertEquals(true, node1.equals(node2));
+  }
+
+  @Test
+  public void observer() {
+    Library library = new Library("library1", "My Glorious Library");
+
+    Book book = new Book("book1");
+    library.addBook(book);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    library.registerPartitionObserver(observer);
+
+    // propertyChanged
+    book.setPages(200);
+    book.setTitle("La Divina Commedia - 2025");
+    Property pages = book.getClassifier().getPropertyByName("pages");
+    Property title = book.getClassifier().getPropertyByName("title");
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.PropertyChangedRecord(book, pages, null, 200),
+            new MockPartitionObserver.PropertyChangedRecord(
+                book, title, null, "La Divina Commedia - 2025")),
+        observer.getRecords());
+    observer.clearRecords();
+
+    // childAdded
+    Book book2 = new Book("book2");
+    library.addBook(book2);
+    Book book3 = new Book("book3");
+    library.addBook(book3);
+    Containment books = library.getClassifier().getContainmentByName("books");
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ChildAddedRecord(library, books, 1, book2),
+            new MockPartitionObserver.ChildAddedRecord(library, books, 2, book3)),
+        observer.getRecords());
+    observer.clearRecords();
+
+    // childRemoved
+    library.removeChild(book3);
+    library.removeChild(book2);
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ChildRemovedRecord(library, books, 2, book3),
+            new MockPartitionObserver.ChildRemovedRecord(library, books, 1, book2)),
+        observer.getRecords());
+    observer.clearRecords();
+
+    // annotationAdded
+    Annotation annotation = new Annotation();
+    annotation.setID("a1");
+    AnnotationInstance ann1 = new DynamicAnnotationInstance("ai1", annotation);
+    AnnotationInstance ann2 = new DynamicAnnotationInstance("ai2", annotation);
+    book.addAnnotation(ann1);
+    book.addAnnotation(ann2);
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.AnnotationAddedRecord(book, 0, ann1),
+            new MockPartitionObserver.AnnotationAddedRecord(book, 1, ann2)),
+        observer.getRecords());
+    observer.clearRecords();
+
+    // annotationRemoved
+    book.removeAnnotation(ann2);
+    book.removeAnnotation(ann1);
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.AnnotationRemovedRecord(book, 1, ann2),
+            new MockPartitionObserver.AnnotationRemovedRecord(book, 0, ann1)),
+        observer.getRecords());
+    observer.clearRecords();
+
+    // referenceValueAdded and Changed
+    Writer writer1 = new Writer("writer1");
+    writer1.setName("Dante Alighieri");
+    Writer writer2 = new Writer("writer2");
+    writer2.setName("Fernando Pessoa");
+
+    book.setAuthor(writer1);
+    book.setAuthor(writer2);
+    Reference author = book.getClassifier().getReferenceByName("author");
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ReferenceAddedRecord(
+                book, author, new ReferenceValue(writer1, "Dante Alighieri")),
+            new MockPartitionObserver.ReferenceChangedRecord(
+                book, author, 0, "writer1", "Dante Alighieri", "writer2", "Fernando Pessoa")),
+        observer.getRecords());
+    observer.clearRecords();
+
+    // referenceValueRemoved
+    book.setAuthor(null);
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ReferenceRemovedRecord(
+                book, author, 0, "writer2", "Fernando Pessoa")),
+        observer.getRecords());
+    observer.clearRecords();
+  }
+
+  @Test
+  public void observerPropagationAfterAddingInTree() {
+    Library library = new Library("library1", "My Glorious Library");
+    MockPartitionObserver observer = new MockPartitionObserver();
+    library.registerPartitionObserver(observer);
+    Book book = new Book("book1");
+    library.addBook(book);
+
+    book.setTitle("La Divina Commedia - 2025");
+
+    Containment books = library.getClassifier().getContainmentByName("books");
+    Property title = book.getClassifier().getPropertyByName("title");
+
+    assertEquals(
+        Arrays.asList(
+            new MockPartitionObserver.ChildAddedRecord(library, books, 0, book),
+            new MockPartitionObserver.PropertyChangedRecord(
+                book, title, null, "La Divina Commedia - 2025")),
+        observer.getRecords());
+    observer.clearRecords();
+  }
+
+  @Test
+  public void observerAutoRemovalAfterAddingInTree() {
+    Library library = new Library("library1", "My Glorious Library");
+    Book book = new Book("book1");
+    MockPartitionObserver observer = new MockPartitionObserver();
+    book.registerPartitionObserver(observer);
+
+    // When the book is not root anymore, the observer is auto-removed
+    library.addBook(book);
+
+    book.setTitle("La Divina Commedia - 2025");
+
+    assertEquals(Collections.emptyList(), observer.getRecords());
+    observer.clearRecords();
+  }
+
+  @Test
+  public void toString_handlesQualifiedNameException() {
+    Concept badConcept =
+        new Concept() {
+          @Override
+          public String qualifiedName() {
+            throw new RuntimeException("test exception");
+          }
+        };
+    DynamicNode node = new DynamicNode("test-id", badConcept);
+
+    String result = node.toString();
+    assertTrue(result.contains("concept=<cannot be calculated>"));
+    assertTrue(result.contains("id='test-id'"));
+  }
+
+  @Test
+  public void registerPartitionObserver_returnFalseWhenAlreadyRegistered() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
+
+    root.registerPartitionObserver(observer);
+    assertFalse(root.registerPartitionObserver(observer));
+  }
+
+  @Test
+  public void toString_withContainmentsBuildsString() {
+    Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setMultiple(true);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+
+    parent.addChild(containment, child);
+
+    String result = parent.toString();
+    assertNotNull(result);
+    assertTrue(result.contains("containmentValues={children-key=child}"));
+  }
+
+  @Test
+  public void registerPartitionObserver_returnsFalseWhenAlreadyRegistered() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
+
+    // First registration should return true
+    assertTrue(root.registerPartitionObserver(observer));
+
+    // Second registration of same observer should return false
+    assertFalse(root.registerPartitionObserver(observer));
+  }
+
+  @Test
+  public void setConcept_allowsChangingConcept() {
+    Concept concept1 = new Concept();
+    concept1.setName("Concept1");
+    Concept concept2 = new Concept();
+    concept2.setName("Concept2");
+
+    DynamicNode node = new DynamicNode("test", concept1);
+    assertEquals(concept1, node.getClassifier());
+
+    node.setConcept(concept2);
+    assertEquals(concept2, node.getClassifier());
+  }
+
+  @Test
+  public void registerPartitionObserver_throwsOnNonRootNode() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+    child.setParent(root);
+
+    MockPartitionObserver observer = new MockPartitionObserver();
+
+    assertFalse(child.isRoot());
+    assertThrows(
+        UnsupportedOperationException.class, () -> child.registerPartitionObserver(observer));
+  }
+
+  @Test
+  public void unregisterPartitionObserver_throwsOnNonRootNode() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+    child.setParent(root);
+
+    MockPartitionObserver observer = new MockPartitionObserver();
+
+    assertFalse(child.isRoot());
+    assertThrows(
+        UnsupportedOperationException.class, () -> child.unregisterPartitionObserver(observer));
+  }
+
+  @Test
+  public void registerPartitionObserver_worksOnRootNode() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
+
+    assertTrue(root.isRoot());
+    assertTrue(root.registerPartitionObserver(observer));
+    assertFalse(root.registerPartitionObserver(observer)); // second time returns false
+  }
+
+  @Test
+  public void unregisterPartitionObserver_createsCompositeWhenMultipleObservers() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+    MockPartitionObserver obs3 = new MockPartitionObserver();
+
+    // Register three observers
+    root.registerPartitionObserver(obs1);
+    root.registerPartitionObserver(obs2);
+    root.registerPartitionObserver(obs3);
+
+    // Remove one - should still have composite with two observers
+    root.unregisterPartitionObserver(obs1);
+    assertNotNull(root.registeredPartitionObserver());
+
+    // Remove another - should have single observer remaining
+    root.unregisterPartitionObserver(obs2);
+    assertNotNull(root.registeredPartitionObserver());
+
+    // Remove the last one
+    root.unregisterPartitionObserver(obs3);
+
+    // Should not throw - all observers removed successfully
+    assertNull(root.registeredPartitionObserver());
+  }
+
+  @Test
+  public void unregisterPartitionObserver_throwsWhenObserverNotRegistered() {
+    Concept concept = new Concept();
+    DynamicNode root = new DynamicNode("root", concept);
+    MockPartitionObserver registered = new MockPartitionObserver();
+    MockPartitionObserver unregistered = new MockPartitionObserver();
+
+    root.registerPartitionObserver(registered);
+
+    // Should throw when trying to unregister an observer that wasn't registered
+    assertThrows(
+        IllegalArgumentException.class, () -> root.unregisterPartitionObserver(unregistered));
+  }
+
+  @Test
+  public void compositePartitionObserver_combine_returnsSingleWhenOnlyOne() {
+    MockPartitionObserver obs = new MockPartitionObserver();
+
+    // When combining results in only one observer, should return that observer directly
+    PartitionObserver result = CompositePartitionObserver.combine(obs, obs);
+
+    // Should return the single observer, not a composite
+    assertEquals(obs, result);
+  }
+
+  @Test
+  public void compositePartitionObserver_getInstance_returnsSingleWhenSetHasOne() {
+    MockPartitionObserver obs1 = new MockPartitionObserver();
+    MockPartitionObserver obs2 = new MockPartitionObserver();
+
+    CompositePartitionObserver composite =
+        (CompositePartitionObserver) CompositePartitionObserver.combine(obs1, obs2);
+
+    // When removing one observer from composite with two, should return single observer
+    PartitionObserver result = composite.remove(obs1);
+
+    assertEquals(obs2, result);
+    assertFalse(result instanceof CompositePartitionObserver);
+  }
+
+  @Test
+  public void equals_shallowContainmentsEquality_oneNullOneEmpty() {
+    Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setKey("children-key");
+    containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
+
+    // node1 has null containmentValues (default)
+    // node2 has empty containmentValues - add and remove a child to initialize the map
+
+    DynamicNode tempChild = new DynamicNode("temp", concept);
+    node2.addChild(containment, tempChild);
+    node2.removeChild(tempChild);
+
+    // One null, one empty - should be equal
+    assertEquals(node1, node2);
+  }
+
+  @Test
+  public void equals_shallowContainmentsEquality_bothNull() {
+    Concept concept = new Concept();
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
+
+    // Both have null containmentValues (default state)
+    assertEquals(node1, node2);
+  }
+
+  @Test
+  public void equals_shallowContainmentsEquality_bothEmpty() {
+    Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setKey("children-key");
+    containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
+
+    // Initialize both maps as empty by adding and removing children
+    DynamicNode temp1 = new DynamicNode("temp1", concept);
+    DynamicNode temp2 = new DynamicNode("temp2", concept);
+
+    node1.addChild(containment, temp1);
+    node1.removeChild(temp1);
+
+    node2.addChild(containment, temp2);
+    node2.removeChild(temp2);
+
+    // Both empty maps - should be equal
+    assertEquals(node1, node2);
+  }
+
+  @Test
+  public void equals_shallowContainmentsEquality_differentChildCount() {
+    Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setKey("children-key");
+    containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
+
+    DynamicNode child1 = new DynamicNode("child1", concept);
+    DynamicNode child2 = new DynamicNode("child2", concept);
+
+    // node1 has 1 child, node2 has 2 children
+    node1.addChild(containment, child1);
+    node2.addChild(containment, child1);
+    node2.addChild(containment, child2);
+
+    assertNotEquals(node1, node2);
+  }
+
+  @Test
+  public void equals_shallowContainmentsEquality_sameChildrenDifferentOrder() {
+    Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setKey("children-key");
+    containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
+
+    DynamicNode child1 = new DynamicNode("child1", concept);
+    DynamicNode child2 = new DynamicNode("child2", concept);
+
+    // Add same children in different order
+    node1.addChild(containment, child1);
+    node1.addChild(containment, child2);
+
+    node2.addChild(containment, child2);
+    node2.addChild(containment, child1);
+
+    // Should not be equal due to different order (shallowContainmentEquality checks by index)
+    assertNotEquals(node1, node2);
+  }
+
+  @Test
+  public void equals_shallowContainmentsEquality_differentChildIDs() {
+    Concept concept = new Concept();
+    Containment containment = new Containment();
+    containment.setName("children");
+    containment.setKey("children-key");
+    containment.setMultiple(true);
+    concept.addFeature(containment);
+
+    DynamicNode node1 = new DynamicNode("same-id", concept);
+    DynamicNode node2 = new DynamicNode("same-id", concept);
+
+    DynamicNode child1 = new DynamicNode("child1", concept);
+    DynamicNode child2 = new DynamicNode("child2", concept);
+
+    // Same position, different child IDs
+    node1.addChild(containment, child1);
+    node2.addChild(containment, child2);
+
+    assertNotEquals(node1, node2);
   }
 }

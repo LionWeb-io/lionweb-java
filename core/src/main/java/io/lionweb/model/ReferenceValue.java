@@ -1,7 +1,6 @@
 package io.lionweb.model;
 
 import java.util.Objects;
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public class ReferenceValue {
@@ -13,8 +12,8 @@ public class ReferenceValue {
   }
 
   public ReferenceValue(@Nullable Node referred, @Nullable String resolveInfo) {
-    setReferred(referred);
-    setResolveInfo(resolveInfo);
+    this.referred = referred;
+    this.resolveInfo = resolveInfo;
   }
 
   public @Nullable Node getReferred() {
@@ -28,6 +27,11 @@ public class ReferenceValue {
     return referred.getID();
   }
 
+  /**
+   * Note that changing a ReferenceValue directly will not trigger notifications to observers of the
+   * holding Node, if any. For this reason using this method is discouraged.
+   */
+  @Deprecated
   public void setReferred(@Nullable Node referred) {
     if (observer != null) {
       observer.referredIDChanged(this, this.referred.getID(), referred.getID());
@@ -39,6 +43,11 @@ public class ReferenceValue {
     return resolveInfo;
   }
 
+  /**
+   * Note that changing a ReferenceValue directly will not trigger notifications to observers of the
+   * holding Node, if any. For this reason using this method is discouraged.
+   */
+  @Deprecated
   public void setResolveInfo(@Nullable String resolveInfo) {
     if (observer != null) {
       observer.resolveInfoChanged(this, this.resolveInfo, resolveInfo);
@@ -70,20 +79,28 @@ public class ReferenceValue {
         + '}';
   }
 
-  public interface Observer {
-    void resolveInfoChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue);
-
-    void referredIDChanged(
-        ReferenceValue referenceValue, @Nullable String oldValue, @Nullable String newValue);
+  /**
+   * Creates a new ReferenceValue instance with the given referred Node while retaining the current
+   * resolveInfo.
+   *
+   * @param referredNode the Node to be referred to by the new ReferenceValue. Can be null.
+   * @return a new ReferenceValue object with the specified referred Node and the current
+   *     resolveInfo.
+   */
+  public ReferenceValue withReferred(@Nullable Node referredNode) {
+    return new ReferenceValue(referredNode, this.resolveInfo);
   }
 
-  public void addObserver(@Nonnull Observer observer) {
-    if (this.observer != null) {
-      throw new UnsupportedOperationException();
-    }
-    this.observer = observer;
+  /**
+   * Creates a new ReferenceValue instance with the given resolve information while retaining the
+   * current referred Node.
+   *
+   * @param resolveInfo the resolve information to be associated with the new ReferenceValue. Can be
+   *     null.
+   * @return a new ReferenceValue object with the specified resolve information and the current
+   *     referred Node.
+   */
+  public ReferenceValue withResolveInfo(@Nullable String resolveInfo) {
+    return new ReferenceValue(this.referred, resolveInfo);
   }
-
-  private @Nullable Observer observer = null;
 }

@@ -169,6 +169,25 @@ public class SerializedClassifierInstance {
     this.containments.add(new SerializedContainmentValue(containment, childrenIds));
   }
 
+  /**
+   * Removes the specified childId from the containments, if present.
+   *
+   * @param childId the identifier of the childId to be removed; must not be null
+   * @return true if the childId was successfully removed, false otherwise
+   */
+  public boolean removeChild(@Nonnull String childId) {
+    Objects.requireNonNull(childId, "childId should not be null");
+    if (this.containments == null) {
+      return false;
+    }
+    for (SerializedContainmentValue containment : this.containments) {
+      if (containment.removeChild(childId)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   public void addReferenceValue(
       MetaPointer reference, List<SerializedReferenceValue.Entry> referenceValues) {
     if (this.references == null) {
@@ -242,6 +261,20 @@ public class SerializedClassifierInstance {
       this.annotations = new ArrayList<>(1);
     }
     this.annotations.add(annotationID);
+  }
+
+  /**
+   * Removes the specified annotation identified by its ID from the list of annotations.
+   *
+   * @param annotationID the ID of the annotation to be removed; must not be null
+   * @return true if the annotation was successfully removed, otherwise false
+   */
+  public boolean removeAnnotation(@Nonnull String annotationID) {
+    Objects.requireNonNull(annotationID, "annotationID must not be null");
+    if (this.annotations == null) {
+      return false;
+    }
+    return this.annotations.remove(annotationID);
   }
 
   @Override

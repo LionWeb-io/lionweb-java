@@ -1,25 +1,20 @@
 package io.lionweb.serialization;
 
-import io.lionweb.language.Concept;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
-import io.lionweb.model.AnnotationInstance;
-import io.lionweb.model.ClassifierInstanceObserver;
 import io.lionweb.model.Node;
 import io.lionweb.model.ReferenceValue;
-import io.lionweb.model.impl.AbstractClassifierInstance;
-import java.util.ArrayList;
+import io.lionweb.model.impl.AbstractNode;
 import java.util.List;
 import java.util.Random;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public abstract class SimpleNode extends AbstractClassifierInstance<Concept> implements Node {
+public abstract class SimpleNode extends AbstractNode {
 
   private String id;
   private Node parent;
-  private final List<AnnotationInstance> annotations = new ArrayList<>();
 
   protected void assignRandomID() {
     String randomId = "id_" + Math.abs(new Random().nextLong());
@@ -43,11 +38,6 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   @Override
   public Node getParent() {
     return parent;
-  }
-
-  @Override
-  public List<AnnotationInstance> getAnnotations() {
-    return annotations;
   }
 
   @Override
@@ -108,17 +98,28 @@ public abstract class SimpleNode extends AbstractClassifierInstance<Concept> imp
   }
 
   @Override
-  public void addReferenceValue(
+  public int addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    concreteAddReferenceValue(reference, referredNode);
+    return concreteAddReferenceValue(reference, referredNode);
   }
 
-  public void concreteAddReferenceValue(
+  public int concreteAddReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
     throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
+  }
+
+  @Override
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
+  public void setResolveInfo(
+      @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
+    throw new UnsupportedOperationException();
   }
 
   @Override

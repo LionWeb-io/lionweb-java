@@ -21,7 +21,7 @@ import javax.annotation.Nullable;
  * <p>Each M3Node is connected to a specific version of lionWebVersion, as these elements may behave
  * differently depending on the version of LionWeb they are representing.
  */
-public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstance<Concept>
+public abstract class M3Node<T extends M3Node> extends AbstractNode
     implements Node, HasSettableParent, HasSettableID {
   private final @Nonnull LionWebVersion lionWebVersion;
   private @Nullable String id;
@@ -56,6 +56,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   public T setParent(ClassifierInstance<?> parent) {
     this.parent = parent;
+    this.partitionObserverRegistered(
+        this.parent == null ? null : this.parent.registeredPartitionObserver());
     return (T) this;
   }
 
@@ -103,12 +105,12 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
 
   protected void setPropertyValue(String propertyName, Object value) {
     Object oldValue = null;
-    if (observer != null) {
+    if (partitionObserverCache != null) {
       oldValue = getPropertyValue(getClassifier().getPropertyByName(propertyName));
     }
     propertyValues.put(propertyName, value);
-    if (observer != null) {
-      observer.propertyChanged(
+    if (partitionObserverCache != null) {
+      partitionObserverCache.propertyChanged(
           this, getClassifier().getPropertyByName(propertyName), oldValue, value);
     }
   }
@@ -126,10 +128,15 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     Objects.requireNonNull(containment);
     Objects.requireNonNull(child);
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
     if (containment.isMultiple()) {
       addContainmentMultipleValue(containment.getName(), child);
     } else {
-      setContainmentSingleValue(containment.getName(), child);
+      throw new UnsupportedOperationException(
+          "There are not containments which are not multiple in LionCore, so this "
+              + "is not supported at the moment");
     }
     if (observer != null) {
       observer.childAdded(this, containment, getChildren(containment).size() - 1, child);
@@ -163,8 +170,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     if (child instanceof HasSettableParent) {
       ((HasSettableParent) child).setParent(null);
     }
-    if (observer != null) {
-      observer.childRemoved(this, containment, index, child);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.childRemoved(this, containment, index, child);
     }
   }
 
@@ -178,17 +185,32 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     return referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
   }
 
+  /**
+   * Adds a {@link ReferenceValue} to the specified {@link Reference}. If the reference is multiple,
+   * the value is appended to the existing values. Otherwise, it sets the single reference value,
+   * replacing any previous value.
+   *
+   * @param reference the reference to which the {@link ReferenceValue} will be added; must not be
+   *     null
+   * @param referenceValue the value to add to the reference; can be null
+   * @return an integer indicating the index of the newly added value if the reference is multiple,
+   *     which is always 0 if the reference is single
+   * @throws NullPointerException if the reference is null
+   * @throws IllegalArgumentException if the reference does not belong to the concept associated
+   *     with the node
+   */
   @Override
-  public void addReferenceValue(
+  public int addReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
     Objects.requireNonNull(reference, "reference should not be null");
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
     }
     if (reference.isMultiple()) {
-      addReferenceMultipleValue(reference.getName(), referenceValue);
+      return addReferenceMultipleValue(reference.getName(), referenceValue);
     } else {
       setReferenceSingleValue(reference.getName(), referenceValue);
+      return 0;
     }
   }
 
@@ -199,7 +221,78 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
+    if (partitionObserverCache != null) {
+      List<ReferenceValue> current =
+          referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
+      for (int i = 0; i < current.size(); i++) {
+        partitionObserverCache.referenceValueRemoved(this, reference, i, current.get(i));
+      }
+    }
     referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
+    if (partitionObserverCache != null) {
+      for (ReferenceValue value : values) {
+        partitionObserverCache.referenceValueAdded(this, reference, value);
+      }
+    }
+  }
+
+  /**
+   * Sets the referred node for a specific reference at a given index. Updates the reference values
+   * and notifies observers if the referred node changes.
+   *
+   * @param reference the reference for which the node is being set; must not be null
+   * @param index the index in the reference's list of values to update
+   * @param referredNode the new node to be referred; can be null
+   * @throws IllegalArgumentException if the index is out of bounds
+   */
+  @Override
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
+    List<ReferenceValue> refValues = getReferenceValues(reference);
+    if (index >= refValues.size()) {
+      throw new IllegalArgumentException();
+    }
+    ReferenceValue rv = refValues.get(index);
+    refValues.set(index, rv.withReferred(referredNode));
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueChanged(
+          this,
+          reference,
+          index,
+          rv.getReferredID(),
+          rv.getResolveInfo(),
+          referredNode == null ? null : referredNode.getID(),
+          rv.getResolveInfo());
+    }
+  }
+
+  /**
+   * Updates the resolve information for a specific reference at a given index. Notifies observers
+   * of changes if applicable.
+   *
+   * @param reference the reference for which the resolve information is being set; must not be null
+   * @param index the index in the reference's list of values to update
+   * @param resolveInfo the new resolve information to be set; can be null
+   * @throws IllegalArgumentException if the index is out of bounds
+   */
+  @Override
+  public void setResolveInfo(
+      @Nonnull Reference reference, int index, @Nullable String resolveInfo) {
+    List<ReferenceValue> refValues = getReferenceValues(reference);
+    if (index >= refValues.size()) {
+      throw new IllegalArgumentException();
+    }
+    ReferenceValue rv = refValues.get(index);
+    refValues.set(index, rv.withResolveInfo(resolveInfo));
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueChanged(
+          this,
+          reference,
+          index,
+          rv.getReferredID(),
+          rv.getResolveInfo(),
+          rv.getReferredID(),
+          resolveInfo);
+    }
   }
 
   @Nullable
@@ -211,21 +304,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
   @Override
   public String toString() {
     return this.getClass().getSimpleName() + "[" + this.getID() + "]";
-  }
-
-  protected <V extends Node> V getContainmentSingleValue(String linkName) {
-    if (containmentValues.containsKey(linkName)) {
-      List<Node> values = containmentValues.get(linkName);
-      if (values.isEmpty()) {
-        return null;
-      } else if (values.size() == 1) {
-        return (V) (values.get(0));
-      } else {
-        throw new IllegalStateException();
-      }
-    } else {
-      return null;
-    }
   }
 
   protected <V extends Node> V getReferenceSingleValue(String linkName) {
@@ -270,30 +348,25 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
    * has been built, therefore we cannot look for the definition of the features to verify they
    * exist. We instead just trust a link with that name to exist.
    */
-  private void setContainmentSingleValue(String linkName, Node value) {
-    List<Node> prevValue = containmentValues.get(linkName);
-    if (prevValue != null) {
-      List<Node> copy = new LinkedList<>(prevValue);
-      copy.forEach(c -> this.removeChild(c));
-    }
-    if (value == null) {
-      containmentValues.remove(linkName);
-    } else {
-      ((M3Node) value).setParent(this);
-      containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
-    }
-  }
-
-  /*
-   * This method could be invoked by the language elements classes before the LionCore language
-   * has been built, therefore we cannot look for the definition of the features to verify they
-   * exist. We instead just trust a link with that name to exist.
-   */
   protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue value) {
     if (value == null) {
+      if (partitionObserverCache != null) {
+        List<ReferenceValue> removed = referenceValues.get(linkName);
+        if (removed.size() > 1) {
+          throw new IllegalStateException();
+        }
+        if (removed.size() == 1) {
+          partitionObserverCache.referenceValueRemoved(
+              this, getClassifier().getReferenceByName(linkName), 0, removed.get(0));
+        }
+      }
       referenceValues.remove(linkName);
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
+      if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueAdded(
+            this, getClassifier().getReferenceByName(linkName), value);
+      }
     }
   }
 
@@ -315,8 +388,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     } else {
       containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
     }
-    if (observer != null) {
-      observer.childAdded(
+    if (partitionObserverCache != null) {
+      partitionObserverCache.childAdded(
           this,
           getClassifier().getContainmentByName(linkName),
           getChildrenByContainmentName(this, linkName).size() - 1,
@@ -325,19 +398,24 @@ public abstract class M3Node<T extends M3Node> extends AbstractClassifierInstanc
     return true;
   }
 
-  protected void addReferenceMultipleValue(String linkName, ReferenceValue value) {
+  protected int addReferenceMultipleValue(String linkName, ReferenceValue value) {
     if (value == null) {
-      return;
+      return -1;
     }
+    int index;
     if (referenceValues.containsKey(linkName)) {
-      referenceValues.get(linkName).add(value);
+      List<ReferenceValue> values = referenceValues.get(linkName);
+      values.add(value);
+      index = values.size() - 1;
     } else {
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
+      index = 0;
     }
-    if (observer != null) {
+    if (partitionObserverCache != null) {
       Reference reference = getClassifier().getReferenceByName(linkName);
-      observer.referenceValueAdded(this, reference, value);
+      partitionObserverCache.referenceValueAdded(this, reference, value);
     }
+    return index;
   }
 
   @Nonnull

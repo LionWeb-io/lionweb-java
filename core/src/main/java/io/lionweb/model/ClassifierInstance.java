@@ -26,9 +26,17 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
    *
    * @throws IllegalArgumentException In case the specified Annotation link cannot be used on Nodes
    *     of this Concept.
+   * @return true if the annotation has been actually added, false if it was already present
    */
   boolean addAnnotation(@Nonnull AnnotationInstance instance);
 
+  /**
+   * Remove the given annotation from this classifier instance.
+   *
+   * @param instance annotation to be removed
+   * @return index of the removed annotation
+   * @throws IllegalArgumentException if the annotation is not present
+   */
   int removeAnnotation(@Nonnull AnnotationInstance instance);
 
   String getID();
@@ -57,7 +65,12 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
 
   // Observer methods
 
-  void addObserver(@Nonnull ClassifierInstanceObserver observer);
+  /**
+   * This method should only be called by the ancestor of the node, when the observer is registered
+   * on the partition.
+   */
+  void partitionObserverRegistered(@Nullable PartitionObserver observer);
 
-  void removeObserver(@Nonnull ClassifierInstanceObserver observer);
+  @Nullable
+  PartitionObserver registeredPartitionObserver();
 }

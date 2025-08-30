@@ -62,8 +62,11 @@ public interface HasFeatureValues {
    *
    * <p>If the referredNode has not a Concept compatible with the target of the Reference, the
    * exception IllegalArgumentException will be thrown.
+   *
+   * @return the index of the added ReferenceValue or -1 if the ReferenceValue is not added
+   *     (typically because it is null)
    */
-  void addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
+  int addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
 
   /**
    * Remove the first reference value that is equal to the given referenceValue. Node. If there is
@@ -81,4 +84,8 @@ public interface HasFeatureValues {
 
   void setReferenceValues(
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values);
+
+  void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode);
+
+  void setResolveInfo(@Nonnull Reference reference, int index, @Nullable String resolveInfo);
 }

@@ -88,4 +88,20 @@ public interface Node extends ClassifierInstance<Concept> {
     ClassifierInstance.collectSelfAndDescendants(this, false, result);
     return result;
   }
+
+  /**
+   * Register an observer for the whole partition. Should be invoked only on root nodes.
+   *
+   * @return false if the observer was already registered, true otherwise
+   * @throws UnsupportedOperationException if invoked on a Node that is not root
+   */
+  boolean registerPartitionObserver(@Nonnull PartitionObserver observer);
+
+  /**
+   * Unregister an observer for the whole partition. Should be invoked only on root nodes.
+   *
+   * @throws IllegalArgumentException if the observer is not registered
+   * @throws UnsupportedOperationException if invoked on a Node that is not root
+   */
+  void unregisterPartitionObserver(@Nonnull PartitionObserver observer);
 }

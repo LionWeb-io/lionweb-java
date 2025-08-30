@@ -49,19 +49,24 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
-    if (this.annotations.contains(instance)) {
+    if (instance.getID() != null
+        && annotations.stream().anyMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
       // necessary to avoid infinite loops and duplicate insertions
       return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-    if (this.annotations.contains(instance)) {
-      // necessary to avoid infinite loops and duplicate insertions
-      // the previous setAnnotated could potentially have already set annotations
+    if (instance.getID() == null && annotations.stream().anyMatch(a -> a == instance)) {
       return false;
     }
-    this.annotations.add(instance);
+    if (instance.getID() == null
+        || annotations.stream().noneMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
+      this.annotations.add(instance);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
+      }
+    }
     return true;
   }
 
@@ -79,26 +84,53 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationRemoved(this, index, instance);
+    }
     return index;
   }
 
-  void tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
+  /**
+   * Attempts to remove a specific {@link AnnotationInstance} from the list of annotations
+   * associated with the current instance. If the specified annotation is removed successfully,
+   * additional actions may be performed, such as updating observers or modifying the state of the
+   * removed annotation.
+   *
+   * @param instance the {@link AnnotationInstance} to be removed; must not be null
+   * @return the index at which the annotation was removed, or -1 if the annotation was not found
+   */
+  int tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    if (annotations == null || !this.annotations.remove(instance)) {
-      return;
+    int index = -1;
+    if (annotations != null) {
+      index = this.annotations.indexOf(instance);
     }
+    if (index == -1) {
+      return -1;
+    }
+    annotations.remove(index);
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(null);
     }
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationRemoved(this, index, instance);
+    }
+    return index;
   }
 
   // Public methods for containments
 
   @Override
-  public void removeChild(Node child) {
+  public void removeChild(@Nonnull Node child) {
+    Objects.requireNonNull(child);
     for (Containment containment : this.getClassifier().allContainments()) {
       List<? extends Node> children = this.getChildren(containment);
-      if (children.remove(child)) {
+      int index = children.indexOf(child);
+      if (index != -1) {
+        children.remove(index);
+        if (partitionObserverCache != null) {
+          partitionObserverCache.childRemoved(this, containment, index, child);
+        }
         if (child instanceof HasSettableParent) {
           ((HasSettableParent) child).setParent(null);
         }
@@ -114,7 +146,10 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     }
     List<? extends Node> children = this.getChildren(containment);
     if (children.size() > index) {
-      children.remove(index);
+      Node removed = children.remove(index);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childRemoved(this, containment, index, removed);
+      }
     } else {
       throw new IllegalArgumentException(
           "Invalid index " + index + " when children are " + children.size());
@@ -129,8 +164,8 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     ReferenceValue removedReferenceValue = getReferenceValues(reference).remove(index);
-    if (observer != null) {
-      observer.referenceValueRemoved(this, reference, index, removedReferenceValue);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.referenceValueRemoved(this, reference, index, removedReferenceValue);
     }
   }
 
@@ -140,27 +175,31 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    if (!getReferenceValues(reference).remove(referenceValue)) {
+    List<ReferenceValue> referenceValues = getReferenceValues(reference);
+    int index = referenceValues.indexOf(referenceValue);
+    if (index == -1) {
       throw new IllegalArgumentException(
           "The given reference value could not be found under reference " + reference.getName());
+    } else {
+      if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueRemoved(this, reference, index, referenceValue);
+      }
     }
   }
 
-  // Observer methods
-
   @Override
-  public void addObserver(@Nullable ClassifierInstanceObserver observer) {
-    this.observer = observer;
+  public void partitionObserverRegistered(@Nonnull PartitionObserver observer) {
+    if (this.partitionObserverCache != observer) {
+      this.partitionObserverCache = observer;
+      ClassifierInstanceUtils.getChildren(this)
+          .forEach(child -> child.partitionObserverRegistered(observer));
+    }
   }
 
   @Override
-  public void removeObserver(@Nonnull ClassifierInstanceObserver observer) {
-    throw new UnsupportedOperationException();
+  public @Nullable PartitionObserver registeredPartitionObserver() {
+    return this.partitionObserverCache;
   }
 
-  /**
-   * In most cases we will have no observers or one observer, shared across many nodes, so we avoid
-   * instantiating lists. We Represent multiple observers with a CompositeObserver instead.
-   */
-  protected @Nullable ClassifierInstanceObserver observer = null;
+  protected @Nullable PartitionObserver partitionObserverCache = null;
 }

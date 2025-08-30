@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 /** This represents the serialization of the values of a containment link in a Node. */
 public class SerializedContainmentValue {
@@ -28,6 +29,18 @@ public class SerializedContainmentValue {
   public void setValue(List<String> value) {
     this.value.clear();
     this.value.addAll(value);
+  }
+
+  /**
+   * Removes a childId from the list of Node-IDs contained.
+   *
+   * @param childId the identifier of the childId to be removed; must not be null
+   * @return true if the childId was successfully removed, false otherwise
+   * @throws NullPointerException if the childId is null
+   */
+  public boolean removeChild(@Nonnull String childId) {
+    Objects.requireNonNull(childId, "childId must not be null");
+    return value.remove(childId);
   }
 
   @Override

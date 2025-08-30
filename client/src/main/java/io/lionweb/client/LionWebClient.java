@@ -276,28 +276,28 @@ public class LionWebClient
   @Override
   public RepositoryVersionToken createPartitionsFromChunk(
       @NotNull List<SerializedClassifierInstance> data) throws IOException {
-    throw new UnsupportedOperationException();
+    return this.chunkLevelBulkAPIs.createPartitionsFromChunk(data);
   }
 
   @Nullable
   @Override
   public RepositoryVersionToken storeChunk(@NotNull List<SerializedClassifierInstance> nodes)
       throws IOException {
-    throw new UnsupportedOperationException();
+    return this.chunkLevelBulkAPIs.storeChunk(nodes);
   }
 
   @NotNull
   @Override
   public List<SerializedClassifierInstance> retrieveAsChunk(
       @Nullable List<String> nodeIds, int limit) throws IOException {
-    throw new UnsupportedOperationException();
+    return this.chunkLevelBulkAPIs.retrieveAsChunk(nodeIds, limit);
   }
 
   @NotNull
   @Override
   public List<SerializedClassifierInstance> retrieveAsChunk(@Nullable List<String> nodeIds)
       throws IOException {
-    throw new UnsupportedOperationException();
+    return this.chunkLevelBulkAPIs.retrieveAsChunk(nodeIds);
   }
 
   //
