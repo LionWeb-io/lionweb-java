@@ -191,7 +191,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
    *     null
    * @param referenceValue the value to add to the reference; can be null
    * @return an integer indicating the index of the newly added value if the reference is multiple,
-   *     or 0 if the reference is single
+   *     which is always 0 if the reference is single
    * @throws NullPointerException if the reference is null
    * @throws IllegalArgumentException if the reference does not belong to the concept associated
    *     with the node

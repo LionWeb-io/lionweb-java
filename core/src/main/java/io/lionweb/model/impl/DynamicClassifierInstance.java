@@ -345,7 +345,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (value == null) {
       List<Node> removed = containmentValues.remove(link.getKey());
       if (partitionObserverCache != null) {
-        if (removed.size() > 0) {
+        if (removed.size() > 1) {
           throw new IllegalStateException();
         }
         if (removed.size() == 1) {
