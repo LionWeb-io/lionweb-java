@@ -63,6 +63,32 @@ public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureV
     }
   }
 
+  /**
+   * Counts the number of elements in a tree-like structure, including the current element (`self`)
+   * and optionally including annotations.
+   *
+   * @param self the root element for which the count of itself and its descendants will be
+   *     calculated
+   * @param includeAnnotations if true, annotations associated with the element and its descendants
+   *     will also be included in the count
+   * @return the total number of elements, including the current element, its descendants, and
+   *     optionally its annotations. The return value is guaranteed to be greater or equal to 1
+   */
+  static int countSelfAndDescendants(ClassifierInstance<?> self, boolean includeAnnotations) {
+    int res = 1;
+    if (includeAnnotations) {
+      for (AnnotationInstance annotation : self.getAnnotations()) {
+        res += countSelfAndDescendants(annotation, includeAnnotations);
+      }
+    }
+    for (Node child : ClassifierInstanceUtils.getChildren(self)) {
+      if (!(child instanceof ProxyNode)) {
+        res += countSelfAndDescendants(child, includeAnnotations);
+      }
+    }
+    return res;
+  }
+
   // Observer methods
 
   /**
