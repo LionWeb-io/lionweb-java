@@ -143,3 +143,15 @@ Introducing support for LionWeb 2024.1
 ### Version 1.0.4
 
 * Fixed bug in RepositoryData.ids
+
+### Version 1.0.5
+
+* Ensure that RepositoryData do not propose IDs of existing nodes
+
+### Version 1.0.6
+
+* Considering annotation in InMemoryStorage
+
+### Version 1.0.7
+
+* Add support for partition observers
