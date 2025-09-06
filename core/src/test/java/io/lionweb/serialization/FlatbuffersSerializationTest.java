@@ -249,7 +249,7 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     SerializedChunk serializedChunk =
         flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
     assertEquals(1, serializedChunk.getLanguages().size());
-    assertEquals(new UsedLanguage("l", "1"), serializedChunk.getLanguages().get(0));
+    assertEquals(LanguageVersion.of("l", "1"), serializedChunk.getLanguages().get(0));
 
     assertEquals(4, serializedChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);

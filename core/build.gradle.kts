@@ -44,7 +44,7 @@ dependencies {
     javadocConfig("org.modelix:model-api:1.3.2")
     implementation(libs.gson)
     implementation("com.networknt:json-schema-validator:1.0.77")
-    implementation("com.google.protobuf:protobuf-java:4.27.2")
+    implementation("com.google.protobuf:protobuf-java:4.32.0")
     implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
 }
 
@@ -197,9 +197,9 @@ protobuf {
             val classifier = if (os.contains("mac") && arch == "aarch64") "osx-aarch_64" else ""
 
             artifact = if (classifier.isNotEmpty())
-                "com.google.protobuf:protoc:4.27.2:$classifier"
+                "com.google.protobuf:protoc:4.32.0:$classifier"
             else
-                "com.google.protobuf:protoc:4.27.2"
+                "com.google.protobuf:protoc:4.32.0"
         }
     }
     generateProtoTasks {

@@ -14,7 +14,7 @@ public class SerializedChunk {
   private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
   private String serializationFormatVersion;
-  private final List<UsedLanguage> languages = new ArrayList<>();
+  private final List<LanguageVersion> languages = new ArrayList<>();
   private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
   public static SerializedChunk fromNodes(
@@ -57,7 +57,7 @@ public class SerializedChunk {
     return instance;
   }
 
-  public void addLanguage(UsedLanguage language) {
+  public void addLanguage(LanguageVersion language) {
     this.languages.add(language);
   }
 
@@ -65,7 +65,7 @@ public class SerializedChunk {
     return Collections.unmodifiableMap(classifierInstancesByID);
   }
 
-  public List<UsedLanguage> getLanguages() {
+  public List<LanguageVersion> getLanguages() {
     return Collections.unmodifiableList(languages);
   }
 
@@ -117,9 +117,9 @@ public class SerializedChunk {
   }
 
   private void considerMetaPointer(MetaPointer metaPointer) {
-    UsedLanguage usedLanguage = UsedLanguage.fromMetaPointer(metaPointer);
-    if (!languages.contains(usedLanguage)) {
-      languages.add(usedLanguage);
+    LanguageVersion languageVersion = LanguageVersion.fromMetaPointer(metaPointer);
+    if (!languages.contains(languageVersion)) {
+      languages.add(languageVersion);
     }
   }
 }

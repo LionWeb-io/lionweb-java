@@ -5,6 +5,7 @@ import io.lionweb.language.IKeyed;
 import io.lionweb.language.Language;
 import io.lionweb.language.LanguageEntity;
 import java.util.*;
+import javax.annotation.Nullable;
 
 /**
  * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
@@ -25,11 +26,11 @@ public class MetaPointer {
         .computeIfAbsent(version, v -> new MetaPointer(language, version, key));
   }
 
-  private final String key;
-  private final String version;
-  private final String language;
+  private final @Nullable String key;
+  private final @Nullable String version;
+  private final @Nullable String language;
 
-  private MetaPointer(String language, String version, String key) {
+  private MetaPointer(@Nullable String language, @Nullable String version, @Nullable String key) {
     this.key = key;
     this.version = version;
     this.language = language;
@@ -64,6 +65,10 @@ public class MetaPointer {
 
   public String getVersion() {
     return version;
+  }
+
+  public LanguageVersion getLanguageVersion() {
+    return LanguageVersion.of(language, version);
   }
 
   @Override

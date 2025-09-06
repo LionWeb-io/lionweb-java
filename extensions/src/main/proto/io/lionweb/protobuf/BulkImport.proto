@@ -11,14 +11,15 @@ import "io/lionweb/protobuf/Chunk.proto";
 
 message PBBulkImport {
   // We use this mechanism both to save space and to represent nulls (identified by -1)
-  repeated string stringValues = 1;
-  repeated PBMetaPointer metaPointers= 2;
-  repeated PBAttachPoint attachPoints = 3;
+  repeated string interned_strings = 1;
+  repeated PBMetaPointer interned_meta_pointers= 2;
+  repeated PBLanguage interned_languages = 5;
+  repeated PBAttachPoint attach_points = 3;
   repeated PBNode nodes = 4;
 }
 
 message PBAttachPoint {
-  int32 container = 1;
-  int32 metaPointerIndex = 2;
-  int32 rootId = 3;
+  uint32 container = 1;
+  uint32 meta_pointer_index = 2;
+  uint32 rootId = 3;
 }

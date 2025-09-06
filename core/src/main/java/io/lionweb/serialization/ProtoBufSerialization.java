@@ -54,32 +54,34 @@ public class ProtoBufSerialization extends AbstractSerialization {
 
   private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
     Map<Integer, String> stringsMap = new HashMap<>();
-    for (int i = 0; i < chunk.getStringValuesCount(); i++) {
-      stringsMap.put(i, chunk.getStringValues(i));
+    for (int i = 0; i < chunk.getInternedStringsCount(); i++) {
+      stringsMap.put(i, chunk.getInternedStrings(i));
+    }
+    Map<Integer, LanguageVersion> languagesMap = new HashMap<>();
+    for (int i = 0; i < chunk.getInternedLanguagesCount(); i++) {
+      PBLanguage l = chunk.getInternedLanguages(i);
+      String key = stringsMap.get(l.getKey());
+      String version = stringsMap.get(l.getVersion());
+      LanguageVersion lv = LanguageVersion.of(key, version);
+      languagesMap.put(i, lv);
     }
     Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
-    for (int i = 0; i < chunk.getMetaPointersCount(); i++) {
-      PBMetaPointer mp = chunk.getMetaPointers(i);
+    for (int i = 0; i < chunk.getInternedMetaPointersCount(); i++) {
+      PBMetaPointer mp = chunk.getInternedMetaPointers(i);
+      LanguageVersion languageVersion = languagesMap.get(mp.getLanguage());
+      if (languageVersion == null) {
+        throw new DeserializationException(
+            "Unable to deserialize meta pointer with language " + mp.getLanguage());
+      }
       MetaPointer metaPointer =
           MetaPointer.get(
-              stringsMap.get(mp.getLanguage()),
-              stringsMap.get(mp.getVersion()),
-              stringsMap.get(mp.getKey()));
+              languageVersion.getKey(), languageVersion.getVersion(), stringsMap.get(mp.getKey()));
       metapointersMap.put(i, metaPointer);
     }
-    ;
 
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
-    chunk
-        .getLanguagesList()
-        .forEach(
-            l -> {
-              UsedLanguage usedLanguage = new UsedLanguage();
-              usedLanguage.setKey(stringsMap.get(l.getKey()));
-              usedLanguage.setVersion(stringsMap.get(l.getVersion()));
-              serializedChunk.addLanguage(usedLanguage);
-            });
+    languagesMap.values().forEach(serializedChunk::addLanguage);
 
     chunk
         .getNodesList()
@@ -94,7 +96,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                       p -> {
                         SerializedPropertyValue spv =
                             SerializedPropertyValue.get(
-                                metapointersMap.get(p.getMetaPointerIndex()),
+                                metapointersMap.get(p.getMetaPointer()),
                                 stringsMap.get(p.getValue()));
                         sci.addPropertyValue(spv);
                       });
@@ -112,7 +114,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         if (!children.isEmpty()) {
                           SerializedContainmentValue scv =
                               new SerializedContainmentValue(
-                                  metapointersMap.get(c.getMetaPointerIndex()), children);
+                                  metapointersMap.get(c.getMetaPointer()), children);
                           sci.addContainmentValue(scv);
                         }
                       });
@@ -120,8 +122,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                   .forEach(
                       r -> {
                         SerializedReferenceValue srv =
-                            new SerializedReferenceValue(
-                                metapointersMap.get(r.getMetaPointerIndex()));
+                            new SerializedReferenceValue(metapointersMap.get(r.getMetaPointer()));
                         r.getValuesList()
                             .forEach(
                                 rv -> {
@@ -184,6 +185,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
   protected class SerializeHelper {
     private final Map<MetaPointer, Integer> metaPointers = new HashMap<>();
     private final Map<String, Integer> strings = new HashMap<>();
+    private final Map<LanguageVersion, Integer> languages = new HashMap<>();
 
     public Map<MetaPointer, Integer> getMetaPointers() {
       return metaPointers;
@@ -191,6 +193,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
 
     public Map<String, Integer> getStrings() {
       return strings;
+    }
+
+    public Map<LanguageVersion, Integer> getLanguages() {
+      return languages;
     }
 
     public SerializeHelper() {}
@@ -205,7 +211,19 @@ public class ProtoBufSerialization extends AbstractSerialization {
       int index = strings.size();
       strings.put(string, index);
       return index;
-    };
+    }
+
+    public int languageIndexer(LanguageVersion language) {
+      if (language == null) {
+        return -1;
+      }
+      if (languages.containsKey(language)) {
+        return languages.get(language);
+      }
+      int index = languages.size();
+      languages.put(language, index);
+      return index;
+    }
 
     public int metaPointerIndexer(MetaPointer metaPointer) {
       if (metaPointers.containsKey(metaPointer)) {
@@ -213,9 +231,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
       }
       PBMetaPointer metaPointerDef =
           PBMetaPointer.newBuilder()
+              .setLanguage(languageIndexer(metaPointer.getLanguageVersion()))
               .setKey(stringIndexer(metaPointer.getKey()))
-              .setVersion(stringIndexer(metaPointer.getVersion()))
-              .setLanguage(stringIndexer(metaPointer.getLanguage()))
               .build();
       int index = metaPointers.size();
       metaPointers.put(metaPointer, index);
@@ -232,7 +249,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
               p -> {
                 PBProperty.Builder b = PBProperty.newBuilder();
                 b.setValue(this.stringIndexer(p.getValue()));
-                b.setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())));
+                b.setMetaPointer(this.metaPointerIndexer((p.getMetaPointer())));
                 nodeBuilder.addProperties(b.build());
               });
       n.getContainments()
@@ -244,7 +261,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                               p.getValue().stream()
                                   .map(v -> this.stringIndexer(v))
                                   .collect(Collectors.toList()))
-                          .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))
+                          .setMetaPointer(this.metaPointerIndexer((p.getMetaPointer())))
                           .build()));
       n.getReferences()
           .forEach(
@@ -261,7 +278,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                         return b.build();
                                       })
                                   .collect(Collectors.toList()))
-                          .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))
+                          .setMetaPointer(this.metaPointerIndexer((p.getMetaPointer())))
                           .build()));
       n.getAnnotations().forEach(a -> nodeBuilder.addAnnotations(this.stringIndexer(a)));
       return nodeBuilder.build();
@@ -287,26 +304,27 @@ public class ProtoBufSerialization extends AbstractSerialization {
     PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
     chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
     SerializeHelper serializeHelper = new SerializeHelper();
-    serializedChunk
-        .getLanguages()
-        .forEach(
-            ul -> {
-              chunkBuilder.addLanguages(
-                  PBLanguage.newBuilder()
-                      .setKey(serializeHelper.stringIndexer(ul.getKey()))
-                      .setVersion(serializeHelper.stringIndexer(ul.getVersion()))
-                      .build());
-            });
 
     serializedChunk
         .getClassifierInstances()
         .forEach(n -> chunkBuilder.addNodes(serializeHelper.serializeNode(n)));
 
+    // We need to process languages before strings, otherwise we might end up with null pointers
+    serializeHelper.languages.entrySet().stream()
+        .sorted(Map.Entry.comparingByValue())
+        .forEach(
+            entry -> {
+              chunkBuilder.addInternedLanguages(
+                  PBLanguage.newBuilder()
+                      .setKey(serializeHelper.stringIndexer(entry.getKey().getKey()))
+                      .setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()))
+                      .build());
+            });
     serializeHelper.strings.entrySet().stream()
         .sorted(Map.Entry.comparingByValue())
         .forEach(
             entry -> {
-              chunkBuilder.addStringValues(entry.getKey());
+              chunkBuilder.addInternedStrings(entry.getKey());
             });
     serializeHelper.metaPointers.entrySet().stream()
         .sorted(Map.Entry.comparingByValue())
@@ -314,9 +332,9 @@ public class ProtoBufSerialization extends AbstractSerialization {
             entry -> {
               PBMetaPointer.Builder metaPointer = PBMetaPointer.newBuilder();
               metaPointer.setKey(serializeHelper.stringIndexer(entry.getKey().getKey()));
-              metaPointer.setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()));
-              metaPointer.setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()));
-              chunkBuilder.addMetaPointers(metaPointer.build());
+              metaPointer.setLanguage(
+                  serializeHelper.languageIndexer(entry.getKey().getLanguageVersion()));
+              chunkBuilder.addInternedMetaPointers(metaPointer.build());
             });
     return chunkBuilder.build();
   }
