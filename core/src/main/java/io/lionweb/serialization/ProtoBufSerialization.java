@@ -320,11 +320,13 @@ public class ProtoBufSerialization extends AbstractSerialization {
     chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
     SerializeHelper serializeHelper = new SerializeHelper();
 
-    serializedChunk
-        .getClassifierInstances()
-        .forEach(n -> chunkBuilder.addNodes(serializeHelper.serializeNode(n)));
+      // Process all nodes first to build indices
+      List<SerializedClassifierInstance> instances = serializedChunk.getClassifierInstances();
+      for (SerializedClassifierInstance instance : instances) {
+          chunkBuilder.addNodes(serializeHelper.serializeNode(instance));
+      }
 
-    // We need to process languages before strings, otherwise we might end up with null pointers
+      // We need to process languages before strings, otherwise we might end up with null pointers
     for (LanguageVersion languageVersion : serializeHelper.languages) {
       chunkBuilder.addInternedLanguages(
           PBLanguage.newBuilder()
