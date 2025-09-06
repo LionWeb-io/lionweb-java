@@ -33,7 +33,7 @@ public class LanguageVersion {
     return of(languageVersion.key, languageVersion.version);
   }
 
-  private LanguageVersion(String key, String version) {
+  private LanguageVersion(@Nullable String key, @Nullable String version) {
     this.key = key;
     this.version = version;
   }
@@ -51,25 +51,24 @@ public class LanguageVersion {
     return of(metaPointer.getLanguage(), metaPointer.getVersion());
   }
 
-  public String getKey() {
+  public @Nullable String getKey() {
     return key;
   }
 
-  public String getVersion() {
+  public @Nullable String getVersion() {
     return version;
   }
 
   @Override
-  public boolean equals(Object o) {
-    if (this == o) return true;
-    if (!(o instanceof LanguageVersion)) return false;
-    LanguageVersion that = (LanguageVersion) o;
-    return Objects.equals(key, that.key) && Objects.equals(version, that.version);
+  public boolean equals(@Nullable Object o) {
+    // Instances are canonicalized via interning, so reference equality suffices
+    return this == o;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(key, version);
+    // Must be consistent with equals' reference semantics
+    return System.identityHashCode(this);
   }
 
   @Override
