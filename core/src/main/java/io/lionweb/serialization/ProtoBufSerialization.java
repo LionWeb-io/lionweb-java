@@ -53,51 +53,60 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
-    Map<Integer, String> stringsMap = new HashMap<>();
-    for (int i = 0; i < chunk.getInternedStringsCount(); i++) {
-      stringsMap.put(i, chunk.getInternedStrings(i));
+      // Pre-size arrays for better performance
+      int stringCount = chunk.getInternedStringsCount();
+      int languageCount = chunk.getInternedLanguagesCount();
+      int metaPointerCount = chunk.getInternedMetaPointersCount();
+
+
+      String[] stringsArray = new String[stringCount];
+      for (int i = 0; i < chunk.getInternedStringsCount(); i++) {
+          stringsArray[i] =  chunk.getInternedStrings(i);
     }
-    Map<Integer, LanguageVersion> languagesMap = new HashMap<>();
+    LanguageVersion[] languagesArray = new LanguageVersion[languageCount];
     for (int i = 0; i < chunk.getInternedLanguagesCount(); i++) {
       PBLanguage l = chunk.getInternedLanguages(i);
-      String key = stringsMap.get(l.getKey());
-      String version = stringsMap.get(l.getVersion());
+      String key = stringsArray[l.getKey()];
+      String version = stringsArray[l.getVersion()];
       LanguageVersion lv = LanguageVersion.of(key, version);
-      languagesMap.put(i, lv);
+        languagesArray[i] = lv;
     }
-    Map<Integer, MetaPointer> metapointersMap = new HashMap<>();
+    MetaPointer[] metapointersArray = new MetaPointer[metaPointerCount];
     for (int i = 0; i < chunk.getInternedMetaPointersCount(); i++) {
       PBMetaPointer mp = chunk.getInternedMetaPointers(i);
-      LanguageVersion languageVersion = languagesMap.get(mp.getLanguage());
-      if (languageVersion == null) {
+
+      if (mp.getLanguage() >= languagesArray.length) {
         throw new DeserializationException(
             "Unable to deserialize meta pointer with language " + mp.getLanguage());
       }
+        LanguageVersion languageVersion = languagesArray[mp.getLanguage()];
       MetaPointer metaPointer =
           MetaPointer.get(
-              languageVersion.getKey(), languageVersion.getVersion(), stringsMap.get(mp.getKey()));
-      metapointersMap.put(i, metaPointer);
+              languageVersion.getKey(), languageVersion.getVersion(), stringsArray[mp.getKey()]);
+      metapointersArray[i] = metaPointer;
     }
 
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
-    languagesMap.values().forEach(serializedChunk::addLanguage);
+    for (LanguageVersion languageVersion : languagesArray) {
+        serializedChunk.addLanguage(languageVersion);
+    }
 
     chunk
         .getNodesList()
         .forEach(
             n -> {
               SerializedClassifierInstance sci = new SerializedClassifierInstance();
-              sci.setID(stringsMap.get(n.getId()));
-              sci.setParentNodeID(stringsMap.get(n.getParent()));
-              sci.setClassifier(metapointersMap.get(n.getClassifier()));
+              sci.setID(n.getId() == -1 ? null : stringsArray[n.getId()]);
+              sci.setParentNodeID(n.getParent() == -1 ? null : stringsArray[n.getParent()]);
+              sci.setClassifier(metapointersArray[n.getClassifier()]);
               n.getPropertiesList()
                   .forEach(
                       p -> {
                         SerializedPropertyValue spv =
                             SerializedPropertyValue.get(
-                                metapointersMap.get(p.getMetaPointer()),
-                                stringsMap.get(p.getValue()));
+                                metapointersArray[p.getMetaPointer()],
+                                    p.getValue() == -1 ? null : stringsArray[p.getValue()]);
                         sci.addPropertyValue(spv);
                       });
               n.getContainmentsList()
@@ -109,12 +118,12 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         }
                         List<String> children =
                             c.getChildrenList().stream()
-                                .map(el -> stringsMap.get(el))
+                                .map(el -> stringsArray[el])
                                 .collect(Collectors.toList());
                         if (!children.isEmpty()) {
                           SerializedContainmentValue scv =
                               new SerializedContainmentValue(
-                                  metapointersMap.get(c.getMetaPointer()), children);
+                                  metapointersArray[c.getMetaPointer()], children);
                           sci.addContainmentValue(scv);
                         }
                       });
@@ -122,21 +131,21 @@ public class ProtoBufSerialization extends AbstractSerialization {
                   .forEach(
                       r -> {
                         SerializedReferenceValue srv =
-                            new SerializedReferenceValue(metapointersMap.get(r.getMetaPointer()));
+                            new SerializedReferenceValue(metapointersArray[r.getMetaPointer()]);
                         r.getValuesList()
                             .forEach(
                                 rv -> {
                                   SerializedReferenceValue.Entry entry =
                                       new SerializedReferenceValue.Entry();
-                                  entry.setReference(stringsMap.get(rv.getReferred()));
-                                  entry.setResolveInfo(stringsMap.get(rv.getResolveInfo()));
+                                  entry.setReference(rv.getReferred() == -1 ? null : stringsArray[rv.getReferred()]);
+                                  entry.setResolveInfo(rv.getResolveInfo() == -1 ? null : stringsArray[rv.getResolveInfo()]);
                                   srv.addValue(entry);
                                 });
                         if (!srv.getValue().isEmpty()) {
                           sci.addReferenceValue(srv);
                         }
                       });
-              n.getAnnotationsList().forEach(a -> sci.addAnnotation(stringsMap.get(a)));
+              n.getAnnotationsList().forEach(a -> sci.addAnnotation(stringsArray[a]));
               serializedChunk.addClassifierInstance(sci);
             });
     return serializedChunk;
