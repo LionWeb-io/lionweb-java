@@ -53,15 +53,14 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
-      // Pre-size arrays for better performance
-      int stringCount = chunk.getInternedStringsCount();
-      int languageCount = chunk.getInternedLanguagesCount();
-      int metaPointerCount = chunk.getInternedMetaPointersCount();
+    // Pre-size arrays for better performance
+    int stringCount = chunk.getInternedStringsCount();
+    int languageCount = chunk.getInternedLanguagesCount();
+    int metaPointerCount = chunk.getInternedMetaPointersCount();
 
-
-      String[] stringsArray = new String[stringCount];
-      for (int i = 0; i < chunk.getInternedStringsCount(); i++) {
-          stringsArray[i] =  chunk.getInternedStrings(i);
+    String[] stringsArray = new String[stringCount];
+    for (int i = 0; i < chunk.getInternedStringsCount(); i++) {
+      stringsArray[i] = chunk.getInternedStrings(i);
     }
     LanguageVersion[] languagesArray = new LanguageVersion[languageCount];
     for (int i = 0; i < chunk.getInternedLanguagesCount(); i++) {
@@ -69,7 +68,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
       String key = stringsArray[l.getKey()];
       String version = stringsArray[l.getVersion()];
       LanguageVersion lv = LanguageVersion.of(key, version);
-        languagesArray[i] = lv;
+      languagesArray[i] = lv;
     }
     MetaPointer[] metapointersArray = new MetaPointer[metaPointerCount];
     for (int i = 0; i < chunk.getInternedMetaPointersCount(); i++) {
@@ -79,7 +78,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
         throw new DeserializationException(
             "Unable to deserialize meta pointer with language " + mp.getLanguage());
       }
-        LanguageVersion languageVersion = languagesArray[mp.getLanguage()];
+      LanguageVersion languageVersion = languagesArray[mp.getLanguage()];
       MetaPointer metaPointer =
           MetaPointer.get(
               languageVersion.getKey(), languageVersion.getVersion(), stringsArray[mp.getKey()]);
@@ -89,7 +88,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
     for (LanguageVersion languageVersion : languagesArray) {
-        serializedChunk.addLanguage(languageVersion);
+      serializedChunk.addLanguage(languageVersion);
     }
 
     chunk
@@ -106,7 +105,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         SerializedPropertyValue spv =
                             SerializedPropertyValue.get(
                                 metapointersArray[p.getMetaPointer()],
-                                    p.getValue() == -1 ? null : stringsArray[p.getValue()]);
+                                p.getValue() == -1 ? null : stringsArray[p.getValue()]);
                         sci.addPropertyValue(spv);
                       });
               n.getContainmentsList()
@@ -137,8 +136,14 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                 rv -> {
                                   SerializedReferenceValue.Entry entry =
                                       new SerializedReferenceValue.Entry();
-                                  entry.setReference(rv.getReferred() == -1 ? null : stringsArray[rv.getReferred()]);
-                                  entry.setResolveInfo(rv.getResolveInfo() == -1 ? null : stringsArray[rv.getResolveInfo()]);
+                                  entry.setReference(
+                                      rv.getReferred() == -1
+                                          ? null
+                                          : stringsArray[rv.getReferred()]);
+                                  entry.setResolveInfo(
+                                      rv.getResolveInfo() == -1
+                                          ? null
+                                          : stringsArray[rv.getResolveInfo()]);
                                   srv.addValue(entry);
                                 });
                         if (!srv.getValue().isEmpty()) {
@@ -151,41 +156,40 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serializedChunk;
   }
 
-    public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
-        // Use LinkedHashSet with initial capacity to reduce resizing
-        Set<String> nodesIDs = new HashSet<>(1024);
-        List<ClassifierInstance<?>> allNodes = new ArrayList<>(1024);
+  public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
+    // Use LinkedHashSet with initial capacity to reduce resizing
+    Set<String> nodesIDs = new HashSet<>(1024);
+    List<ClassifierInstance<?>> allNodes = new ArrayList<>(1024);
 
-        for (ClassifierInstance<?> root : roots) {
-            Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>(512);
-            ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
+    for (ClassifierInstance<?> root : roots) {
+      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>(512);
+      ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
 
-            // Process in batches to reduce memory allocation
-            for (ClassifierInstance<?> n : classifierInstances) {
-                if (n.getID() != null) {
-                    if (!nodesIDs.contains(n.getID())) {
-                        allNodes.add(n);
-                        nodesIDs.add(n.getID());
-                    }
-                } else {
-                    allNodes.add(n);
-                }
-            }
+      // Process in batches to reduce memory allocation
+      for (ClassifierInstance<?> n : classifierInstances) {
+        if (n.getID() != null) {
+          if (!nodesIDs.contains(n.getID())) {
+            allNodes.add(n);
+            nodesIDs.add(n.getID());
+          }
+        } else {
+          allNodes.add(n);
         }
-
-        // Filter out proxy nodes more efficiently
-        List<ClassifierInstance<?>> filteredNodes = new ArrayList<>(allNodes.size());
-        for (ClassifierInstance<?> node : allNodes) {
-            if (!(node instanceof ProxyNode)) {
-                filteredNodes.add(node);
-            }
-        }
-
-        return serializeNodesToByteArray(filteredNodes);
+      }
     }
 
+    // Filter out proxy nodes more efficiently
+    List<ClassifierInstance<?>> filteredNodes = new ArrayList<>(allNodes.size());
+    for (ClassifierInstance<?> node : allNodes) {
+      if (!(node instanceof ProxyNode)) {
+        filteredNodes.add(node);
+      }
+    }
 
-    public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
+    return serializeNodesToByteArray(filteredNodes);
+  }
+
+  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
@@ -330,13 +334,13 @@ public class ProtoBufSerialization extends AbstractSerialization {
     chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
     SerializeHelper serializeHelper = new SerializeHelper();
 
-      // Process all nodes first to build indices
-      List<SerializedClassifierInstance> instances = serializedChunk.getClassifierInstances();
-      for (SerializedClassifierInstance instance : instances) {
-          chunkBuilder.addNodes(serializeHelper.serializeNode(instance));
-      }
+    // Process all nodes first to build indices
+    List<SerializedClassifierInstance> instances = serializedChunk.getClassifierInstances();
+    for (SerializedClassifierInstance instance : instances) {
+      chunkBuilder.addNodes(serializeHelper.serializeNode(instance));
+    }
 
-      // We need to process languages before strings, otherwise we might end up with null pointers
+    // We need to process languages before strings, otherwise we might end up with null pointers
     for (LanguageVersion languageVersion : serializeHelper.languages) {
       chunkBuilder.addInternedLanguages(
           PBLanguage.newBuilder()
