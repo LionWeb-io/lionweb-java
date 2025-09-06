@@ -174,10 +174,10 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       return serializedMetapointers.get(metaPointer);
     }
 
-    public int[] languagesVector(List<UsedLanguage> usedLanguages) {
-      int[] languagesOffsets = new int[usedLanguages.size()];
-      for (int i = 0; i < usedLanguages.size(); i++) {
-        UsedLanguage ul = usedLanguages.get(i);
+    public int[] languagesVector(List<LanguageVersion> languageVersions) {
+      int[] languagesOffsets = new int[languageVersions.size()];
+      for (int i = 0; i < languageVersions.size(); i++) {
+        LanguageVersion ul = languageVersions.get(i);
         languagesOffsets[i] =
             FBLanguage.createFBLanguage(
                 builder,
@@ -302,10 +302,8 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     serializedChunk.setSerializationFormatVersion(chunk.serializationFormatVersion());
     for (int i = 0; i < chunk.languagesLength(); i++) {
       FBLanguage l = chunk.languages(i);
-      UsedLanguage usedLanguage = new UsedLanguage();
-      usedLanguage.setKey(l.key());
-      usedLanguage.setVersion(l.version());
-      serializedChunk.addLanguage(usedLanguage);
+      LanguageVersion languageVersion = LanguageVersion.of(l.key(), l.version());
+      serializedChunk.addLanguage(languageVersion);
     }
 
     for (int i = 0; i < chunk.nodesLength(); i++) {

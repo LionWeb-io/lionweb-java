@@ -3,11 +3,13 @@ package io.lionweb.serialization.extensions;
 import io.lionweb.LionWebVersion;
 import io.lionweb.protobuf.PBAttachPoint;
 import io.lionweb.protobuf.PBBulkImport;
+import io.lionweb.protobuf.PBLanguage;
 import io.lionweb.protobuf.PBMetaPointer;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.ProtoBufSerialization;
+import io.lionweb.serialization.data.LanguageVersion;
+import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedChunk;
-import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -50,20 +52,25 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
               bulkImportBuilder.addNodes(serializeHelper.serializeNode(serializedNode));
             });
 
-    serializeHelper.getStrings().entrySet().stream()
-        .sorted(Map.Entry.comparingByValue())
-        .forEach(entry -> bulkImportBuilder.addStringValues(entry.getKey()));
+    // We need to process languages before strings, otherwise we might end up with null pointers
+    for (LanguageVersion languageVersion : serializedChunk.getLanguages()) {
+      bulkImportBuilder.addInternedLanguages(
+          PBLanguage.newBuilder()
+              .setKey(serializeHelper.stringIndexer(languageVersion.getKey()))
+              .setVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
+              .build());
+    }
 
-    serializeHelper.getMetaPointers().entrySet().stream()
-        .sorted(Map.Entry.comparingByValue())
-        .forEach(
-            entry ->
-                bulkImportBuilder.addMetaPointers(
-                    PBMetaPointer.newBuilder()
-                        .setLanguage(serializeHelper.stringIndexer(entry.getKey().getLanguage()))
-                        .setKey(serializeHelper.stringIndexer(entry.getKey().getKey()))
-                        .setVersion(serializeHelper.stringIndexer(entry.getKey().getVersion()))
-                        .build()));
+    for (String string : serializeHelper.getStrings()) {
+      bulkImportBuilder.addInternedStrings(string);
+    }
+
+    for (MetaPointer metaPointer : serializeHelper.getMetaPointers()) {
+      PBMetaPointer.Builder pbMetaPointer = PBMetaPointer.newBuilder();
+      pbMetaPointer.setKey(serializeHelper.stringIndexer(metaPointer.getKey()));
+      pbMetaPointer.setLanguage(serializeHelper.languageIndexer(metaPointer.getLanguageVersion()));
+      bulkImportBuilder.addInternedMetaPointers(pbMetaPointer.build());
+    }
     return bulkImportBuilder.build();
   }
 

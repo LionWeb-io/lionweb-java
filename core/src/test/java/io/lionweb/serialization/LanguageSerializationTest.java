@@ -29,9 +29,9 @@ public class LanguageSerializationTest extends SerializationTest {
     assertEquals(
         new HashSet(
             Arrays.asList(
-                new UsedLanguage(
+                LanguageVersion.of(
                     LionCore.getInstance().getKey(), LionCore.getInstance().getVersion()),
-                new UsedLanguage(
+                LanguageVersion.of(
                     LionCoreBuiltins.getInstance().getKey(),
                     LionCoreBuiltins.getInstance().getVersion()))),
         new HashSet(chunk.getLanguages()));

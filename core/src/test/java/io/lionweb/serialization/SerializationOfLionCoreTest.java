@@ -37,7 +37,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     assertEquals(2, serializedChunk.getLanguages().size());
     Assert.assertEquals(
-        new UsedLanguage("LionCore-M3", "2023.1"),
+        LanguageVersion.of("LionCore-M3", "2023.1"),
         serializedChunk.getLanguages().iterator().next());
 
     SerializedClassifierInstance LionCore_M3 =
@@ -101,7 +101,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
 
     assertEquals(2, serializedChunk.getLanguages().size());
     Assert.assertEquals(
-        new UsedLanguage("LionCore-M3", "2024.1"),
+        LanguageVersion.of("LionCore-M3", "2024.1"),
         serializedChunk.getLanguages().iterator().next());
 
     SerializedClassifierInstance LionCore_M3 =
