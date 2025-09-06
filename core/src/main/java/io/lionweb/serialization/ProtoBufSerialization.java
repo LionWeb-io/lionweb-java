@@ -151,31 +151,41 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serializedChunk;
   }
 
-  public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
-    Set<String> nodesIDs = new HashSet<>();
-    List<ClassifierInstance<?>> allNodes = new ArrayList<>();
-    for (ClassifierInstance<?> root : roots) {
-      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
-      ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
-      classifierInstances.forEach(
-          n -> {
-            // We support serialization of incorrect nodes, so we allow nodes without ID to be
-            // serialized
-            if (n.getID() != null) {
-              if (!nodesIDs.contains(n.getID())) {
-                allNodes.add(n);
-                nodesIDs.add(n.getID());
-              }
-            } else {
-              allNodes.add(n);
-            }
-          });
-    }
-    return serializeNodesToByteArray(
-        allNodes.stream().filter(n -> !(n instanceof ProxyNode)).collect(Collectors.toList()));
-  }
+    public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
+        // Use LinkedHashSet with initial capacity to reduce resizing
+        Set<String> nodesIDs = new HashSet<>(1024);
+        List<ClassifierInstance<?>> allNodes = new ArrayList<>(1024);
 
-  public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
+        for (ClassifierInstance<?> root : roots) {
+            Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>(512);
+            ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
+
+            // Process in batches to reduce memory allocation
+            for (ClassifierInstance<?> n : classifierInstances) {
+                if (n.getID() != null) {
+                    if (!nodesIDs.contains(n.getID())) {
+                        allNodes.add(n);
+                        nodesIDs.add(n.getID());
+                    }
+                } else {
+                    allNodes.add(n);
+                }
+            }
+        }
+
+        // Filter out proxy nodes more efficiently
+        List<ClassifierInstance<?>> filteredNodes = new ArrayList<>(allNodes.size());
+        for (ClassifierInstance<?> node : allNodes) {
+            if (!(node instanceof ProxyNode)) {
+                filteredNodes.add(node);
+            }
+        }
+
+        return serializeNodesToByteArray(filteredNodes);
+    }
+
+
+    public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
