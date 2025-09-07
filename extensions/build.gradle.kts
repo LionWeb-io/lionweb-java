@@ -27,7 +27,6 @@ dependencies {
     compileOnly("com.google.code.findbugs:jsr305:3.0.2")
 
     implementation(libs.protobuf)
-    implementation(libs.flatbuffers)
     implementation(libs.gson)
     implementation(libs.okhttp)
 

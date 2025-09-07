@@ -45,8 +45,6 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.jsonSchemaValidator)
     implementation(libs.protobuf)
-    // To be updated or removed
-    implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
 }
 
 tasks.register<Javadoc>("myJavadoc") {

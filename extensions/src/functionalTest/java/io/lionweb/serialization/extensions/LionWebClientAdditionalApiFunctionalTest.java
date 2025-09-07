@@ -55,23 +55,6 @@ public class LionWebClientAdditionalApiFunctionalTest extends AbstractClientFunc
   }
 
   @Test
-  public void bulkImportUsingFlatbuffersAndNoCompression()
-      throws IOException, InterruptedException {
-    bulkImportTestingRoutine(
-        "repo_bulkImportUsingFlatbuffersAndNoCompression",
-        TransferFormat.FLATBUFFERS,
-        Compression.DISABLED);
-  }
-
-  @Test
-  public void bulkImportUsingFlatbuffersAndCompression() throws IOException, InterruptedException {
-    bulkImportTestingRoutine(
-        "repo_bulkImportUsingFlatbuffersAndCompression",
-        TransferFormat.FLATBUFFERS,
-        Compression.ENABLED);
-  }
-
-  @Test
   public void nodeTree() throws IOException {
     String repositoryName = "repo_nodeTree";
     ExtendedLionWebClient client =

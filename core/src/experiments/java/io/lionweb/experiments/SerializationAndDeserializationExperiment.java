@@ -104,30 +104,6 @@ public class SerializationAndDeserializationExperiment {
           "  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
       System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
     }
-
-    System.out.println("= Comparison (flatbuffers against uncompressed JSON)=");
-    {
-      double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (jt1 - jt0);
-      double deserializationTimeRatio = ((double) (ft2 - ft1) * 100) / (jt2 - jt1);
-      double sizeRatio = ((double) (fbytes.length) * 100) / (json.getBytes().length);
-      System.out.println(
-          "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-      System.out.println(
-          "  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
-      System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
-
-    System.out.println("= Comparison (flatbuffers against compressed JSON)=");
-    {
-      double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (ct1 - ct0);
-      double deserializationTimeRatio = ((double) (ft2 - ft1) * 100) / (ct2 - ct1);
-      double sizeRatio = ((double) (fbytes.length) * 100) / (compressed.length);
-      System.out.println(
-          "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-      System.out.println(
-          "  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
-      System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
   }
 
   private static void assertInstancesAreEquals(ClassifierInstance<?> a, ClassifierInstance<?> b) {
