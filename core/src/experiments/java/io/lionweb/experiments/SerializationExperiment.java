@@ -1,7 +1,6 @@
 package io.lionweb.experiments;
 
 import io.lionweb.model.Node;
-import io.lionweb.serialization.FlatBuffersSerialization;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.SerializationProvider;
@@ -43,16 +42,6 @@ public class SerializationExperiment {
     System.out.println("  serialized in " + (pt1 - pt0) + "ms");
     System.out.println("  size " + bytes.length + " bytes");
 
-    System.out.println("= Flatbuffers serialization =");
-    long ft0 = System.currentTimeMillis();
-    FlatBuffersSerialization flatBuffersSerialization =
-        SerializationProvider.getStandardFlatBuffersSerialization();
-    flatBuffersSerialization.enableDynamicNodes();
-    byte[] fbytes = flatBuffersSerialization.serialize(chunk);
-    long ft1 = System.currentTimeMillis();
-    System.out.println("  serialized in " + (ft1 - ft0) + "ms");
-    System.out.println("  size " + fbytes.length + " bytes");
-
     System.out.println("= Comparison (protobuf against uncompressed JSON)=");
     {
       double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (jt1 - jt0);
@@ -66,24 +55,6 @@ public class SerializationExperiment {
     {
       double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (ct1 - ct0);
       double sizeRatio = ((double) (bytes.length) * 100) / (compressed.length);
-      System.out.println(
-          "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-      System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
-
-    System.out.println("= Comparison (flatbuffers against uncompressed JSON)=");
-    {
-      double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (jt1 - jt0);
-      double sizeRatio = ((double) (fbytes.length) * 100) / (json.getBytes().length);
-      System.out.println(
-          "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-      System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
-
-    System.out.println("= Comparison (flatbuffers against compressed JSON)=");
-    {
-      double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (ct1 - ct0);
-      double sizeRatio = ((double) (fbytes.length) * 100) / (compressed.length);
       System.out.println(
           "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
       System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");

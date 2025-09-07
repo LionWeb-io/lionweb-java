@@ -81,27 +81,6 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
     assertInstancesAreEquals(tree, pUnserializedTree);
 
-    System.out.println("= Flatbuffers serialization =");
-    long ft0 = System.currentTimeMillis();
-    FlatBuffersSerialization flatBuffersSerialization =
-        SerializationProvider.getStandardFlatBuffersSerialization();
-    flatBuffersSerialization.enableDynamicNodes();
-    byte[] fbytes = flatBuffersSerialization.serialize(chunk);
-    long ft1 = System.currentTimeMillis();
-    System.out.println("  serialized in " + (ft1 - ft0) + "ms");
-    System.out.println("  size " + fbytes.length + " bytes");
-    // Note that this method include the transformation from SerializedChunk to node,
-    // which is common to all deserialization operations
-    FlatBuffersSerialization flatBuffersSerializationForDeserialization =
-        SerializationProvider.getStandardFlatBuffersSerialization();
-    flatBuffersSerializationForDeserialization.registerLanguage(SimpleLanguage.language);
-    flatBuffersSerializationForDeserialization.enableDynamicNodes();
-    Node fUnserializedTree =
-        flatBuffersSerializationForDeserialization.deserializeToNodes(fbytes).get(0);
-    long ft2 = System.currentTimeMillis();
-    System.out.println("  unserialized in " + (ft2 - ft1) + "ms");
-    assertInstancesAreEquals(tree, fUnserializedTree);
-
     System.out.println("= Comparison (protobuf against uncompressed JSON)=");
     {
       double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (jt1 - jt0);

@@ -11,8 +11,8 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 
 /**
- * It contains the logic to serialize non-standard messages.
- * Deprecated: use ExtraProtoBufSerialization instead
+ * It contains the logic to serialize non-standard messages. Deprecated: use
+ * ExtraProtoBufSerialization instead
  */
 @Deprecated
 public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
