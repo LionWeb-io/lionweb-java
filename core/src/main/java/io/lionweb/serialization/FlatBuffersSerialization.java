@@ -14,6 +14,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Use ProtobufSerialization instead.
+ */
+@Deprecated
 public class FlatBuffersSerialization extends AbstractSerialization {
 
   public FlatBuffersSerialization() {

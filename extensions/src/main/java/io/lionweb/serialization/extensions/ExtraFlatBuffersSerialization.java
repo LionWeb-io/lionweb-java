@@ -10,7 +10,11 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
-/** It contains the logic to serialize non-standard messages. */
+/**
+ * It contains the logic to serialize non-standard messages.
+ * Deprecated: use ExtraProtoBufSerialization instead
+ */
+@Deprecated
 public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
 
   public ExtraFlatBuffersSerialization() {

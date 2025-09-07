@@ -12,7 +12,7 @@ public class CompressionSupport {
 
   public static final MediaType JSON = MediaType.get("application/json");
   public static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  public static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
+  public static final MediaType FLATBUFFERS = MediaType.get("application/x-flatbuffers");
 
   /** Converts a String to a compressed RequestBody using JSON MediaType. */
   public static RequestBody compress(String content) {

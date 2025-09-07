@@ -18,7 +18,7 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
     implements AdditionalAPIClient {
 
   private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
+  private static final MediaType FLATBUFFERS = MediaType.get("application/x-flatbuffers");
 
   public ClientForAdditionalAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);
