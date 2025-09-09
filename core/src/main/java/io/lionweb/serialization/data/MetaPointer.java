@@ -90,4 +90,8 @@ public class MetaPointer {
         + '\''
         + '}';
   }
+
+  public UsedLanguage getUsedLanguage() {
+    return UsedLanguage.fromMetaPointer(this);
+  }
 }

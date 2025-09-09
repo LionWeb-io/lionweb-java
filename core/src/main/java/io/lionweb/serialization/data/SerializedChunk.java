@@ -48,6 +48,10 @@ public class SerializedChunk {
     classifierInstances.add(instance);
   }
 
+  public void addClassifierInstances(SerializedClassifierInstance... instances) {
+    Arrays.stream(instances).forEach(this::addClassifierInstance);
+  }
+
   @Nonnull
   public SerializedClassifierInstance getInstanceByID(String instanceID) {
     SerializedClassifierInstance instance = this.classifierInstancesByID.get(instanceID);
@@ -59,6 +63,12 @@ public class SerializedChunk {
 
   public void addLanguage(UsedLanguage language) {
     this.languages.add(language);
+  }
+
+  public void addLanguages(UsedLanguage... languages) {
+    for (UsedLanguage language : languages) {
+      addLanguage(language);
+    }
   }
 
   public Map<String, SerializedClassifierInstance> getClassifierInstancesByID() {
