@@ -1,9 +1,6 @@
 package io.lionweb.serialization.data;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 
 /** This represents the serialization of the values of a containment link in a Node. */
@@ -14,6 +11,11 @@ public class SerializedContainmentValue {
   public SerializedContainmentValue(MetaPointer metaPointer, List<String> value) {
     this.metaPointer = metaPointer;
     this.value = new ArrayList<>(value);
+  }
+
+  public SerializedContainmentValue(MetaPointer metaPointer, String... values) {
+    this.metaPointer = metaPointer;
+    this.value = Arrays.asList(values);
   }
 
   public MetaPointer getMetaPointer() {

@@ -336,4 +336,20 @@ public class SerializedClassifierInstance {
       this.containments = new ArrayList<>();
     }
   }
+
+  public boolean contains(String id) {
+    if (this.containments != null) {
+      for (SerializedContainmentValue containmentValue : this.containments) {
+        for (String child : containmentValue.getValue()) {
+          if (child.equals(id)) {
+            return true;
+          }
+        }
+      }
+    }
+    if (this.annotations != null) {
+      return this.annotations.contains(id);
+    }
+    return false;
+  }
 }

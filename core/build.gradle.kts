@@ -34,6 +34,7 @@ dependencies {
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation("com.google.guava:guava:33.0.0-jre")
+    testImplementation(libs.junit.jupiter)
 
     javadocConfig(emf.ecore)
 
