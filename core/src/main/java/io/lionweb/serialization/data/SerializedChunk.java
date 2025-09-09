@@ -43,12 +43,24 @@ public class SerializedChunk {
     return Collections.unmodifiableList(classifierInstances);
   }
 
-  public void addClassifierInstance(SerializedClassifierInstance instance) {
+  /**
+   * Adds a single {@link SerializedClassifierInstance} to the current SerializedChunk.
+   *
+   * @param instance the {@code SerializedClassifierInstance} to add; must not be null
+   * @throws NullPointerException if {@code instance} is null
+   */
+  public void addClassifierInstance(@Nonnull SerializedClassifierInstance instance) {
+    Objects.requireNonNull(instance, "instance should not be null");
     this.classifierInstancesByID.put(instance.getID(), instance);
     classifierInstances.add(instance);
   }
 
-  public void addClassifierInstances(SerializedClassifierInstance... instances) {
+  /**
+   * Adds multiple classifier instances to the current SerializedChunk.
+   *
+   * @param instances an array of SerializedClassifierInstance objects to be added
+   */
+  public void addClassifierInstances(@Nonnull SerializedClassifierInstance... instances) {
     Arrays.stream(instances).forEach(this::addClassifierInstance);
   }
 
@@ -61,11 +73,24 @@ public class SerializedChunk {
     return instance;
   }
 
-  public void addLanguage(UsedLanguage language) {
+  /**
+   * Adds a language to the current SerializedChunk.
+   *
+   * @param language the {@code UsedLanguage} instance to add; must not be null
+   * @throws NullPointerException if {@code language} is null
+   */
+  public void addLanguage(@Nonnull UsedLanguage language) {
+    Objects.requireNonNull(language, "language should not be null");
     this.languages.add(language);
   }
 
-  public void addLanguages(UsedLanguage... languages) {
+  /**
+   * Adds multiple {@link UsedLanguage} instances to the current SerializedChunk.
+   *
+   * @param languages an array of {@code UsedLanguage} instances to be added; must not be null
+   * @throws NullPointerException if any element in {@code languages} is null
+   */
+  public void addLanguages(@Nonnull UsedLanguage... languages) {
     for (UsedLanguage language : languages) {
       addLanguage(language);
     }

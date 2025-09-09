@@ -5,12 +5,19 @@ import static java.util.stream.Collectors.*;
 import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedContainmentValue;
+import java.util.Objects;
 import java.util.Set;
+import javax.annotation.Nonnull;
 
+/**
+ * Verify a Chunk represents a valid partition. It does all the checks done by ChunkValidator, plus
+ * some checks specific to partitions.
+ */
 public class PartitionChunkValidator extends ChunkValidator {
 
   @Override
-  public ValidationResult validate(SerializedChunk chunk) {
+  public ValidationResult validate(@Nonnull SerializedChunk chunk) {
+    Objects.requireNonNull(chunk, "chunk should not be null");
     ValidationResult validationResult = super.validate(chunk);
 
     // All contained nodes are present in the chunk

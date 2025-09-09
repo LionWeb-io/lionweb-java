@@ -5,6 +5,7 @@ import io.lionweb.language.IKeyed;
 import io.lionweb.language.Language;
 import io.lionweb.language.LanguageEntity;
 import java.util.*;
+import javax.annotation.Nonnull;
 
 /**
  * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
@@ -91,7 +92,13 @@ public class MetaPointer {
         + '}';
   }
 
-  public UsedLanguage getUsedLanguage() {
+  /**
+   * Retrieves the associated {@link UsedLanguage} instance for the current {@link MetaPointer}.
+   *
+   * @return a {@link UsedLanguage} instance representing the language and version associated with
+   *     this {@link MetaPointer}
+   */
+  public @Nonnull UsedLanguage getUsedLanguage() {
     return UsedLanguage.fromMetaPointer(this);
   }
 }

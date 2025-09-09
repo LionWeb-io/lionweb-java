@@ -2,6 +2,7 @@ package io.lionweb.utils;
 
 import io.lionweb.serialization.data.*;
 import java.util.*;
+import javax.annotation.Nonnull;
 
 /**
  * Validate a generic chunk, which may contain part of a partition, an entire partition, or perhaps
@@ -9,7 +10,8 @@ import java.util.*;
  */
 public class ChunkValidator extends Validator<SerializedChunk> {
   @Override
-  public ValidationResult validate(SerializedChunk chunk) {
+  public ValidationResult validate(@Nonnull SerializedChunk chunk) {
+    Objects.requireNonNull(chunk, "chunk should not be null");
     ValidationResult validationResult = new ValidationResult();
 
     // Prepare supporting structures
@@ -88,7 +90,9 @@ public class ChunkValidator extends Validator<SerializedChunk> {
           containedNodes.add(annotationId);
         }
         SerializedClassifierInstance annotation = nodesByID.get(annotationId);
-        if (annotationId != null && !annotation.getParentNodeID().equals(node.getID())) {
+        if (annotationId != null
+            && annotation != null
+            && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
           // We do not set the subject as the subject is not a node
           validationResult.addError(
               annotationId
