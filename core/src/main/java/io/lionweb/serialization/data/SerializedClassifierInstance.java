@@ -337,11 +337,20 @@ public class SerializedClassifierInstance {
     }
   }
 
-  public boolean contains(String id) {
+  /**
+   * Checks whether the specified identifier is contained in the list of containments or annotations
+   * associated with this instance.
+   *
+   * @param id the identifier to check for containment; must not be null
+   * @return true if the identifier is found in either the containments or annotations, false
+   *     otherwise
+   */
+  public boolean contains(@Nonnull String id) {
+    Objects.requireNonNull(id, "id must not be null");
     if (this.containments != null) {
       for (SerializedContainmentValue containmentValue : this.containments) {
         for (String child : containmentValue.getValue()) {
-          if (child.equals(id)) {
+          if (Objects.equals(child, id)) {
             return true;
           }
         }

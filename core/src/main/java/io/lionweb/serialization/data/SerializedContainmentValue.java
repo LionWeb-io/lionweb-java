@@ -8,11 +8,27 @@ public class SerializedContainmentValue {
   private final MetaPointer metaPointer;
   private final List<String> value;
 
-  public SerializedContainmentValue(MetaPointer metaPointer, List<String> value) {
+  /**
+   * Constructs a SerializedContainmentValue instance with the specified MetaPointer and a list of
+   * string values.
+   *
+   * @param metaPointer the MetaPointer associated with this containment value; may be null
+   * @param value a non-null list of string values representing Node-IDs; must not be null
+   * @throws NullPointerException if the value parameter is null
+   */
+  public SerializedContainmentValue(MetaPointer metaPointer, @Nonnull List<String> value) {
+    Objects.requireNonNull(value, "value must not be null");
     this.metaPointer = metaPointer;
     this.value = new ArrayList<>(value);
   }
 
+  /**
+   * Constructs a SerializedContainmentValue instance with the specified MetaPointer and an array of
+   * values.
+   *
+   * @param metaPointer the MetaPointer associated with this containment value; must not be null
+   * @param values an optional array of string values representing Node-IDs; may be empty
+   */
   public SerializedContainmentValue(MetaPointer metaPointer, String... values) {
     this.metaPointer = metaPointer;
     this.value = Arrays.asList(values);
