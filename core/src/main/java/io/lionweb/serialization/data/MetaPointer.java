@@ -5,6 +5,7 @@ import io.lionweb.language.IKeyed;
 import io.lionweb.language.Language;
 import io.lionweb.language.LanguageEntity;
 import java.util.*;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -94,5 +95,15 @@ public class MetaPointer {
         + language
         + '\''
         + '}';
+  }
+
+  /**
+   * Retrieves the associated {@link UsedLanguage} instance for the current {@link MetaPointer}.
+   *
+   * @return a {@link UsedLanguage} instance representing the language and version associated with
+   *     this {@link MetaPointer}
+   */
+  public @Nonnull UsedLanguage getUsedLanguage() {
+    return UsedLanguage.fromMetaPointer(this);
   }
 }

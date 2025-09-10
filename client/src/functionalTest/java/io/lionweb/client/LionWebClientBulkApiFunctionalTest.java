@@ -12,7 +12,7 @@ import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.CommonChecks;
 import java.io.IOException;
@@ -220,7 +220,7 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
         client
             .getJsonSerialization()
             .deserializeSerializationChunk(
-                SerializedChunk.fromNodes(LionWebVersion.v2023_1, retrievedNodes1Chunk));
+                SerializationChunk.fromNodes(LionWebVersion.v2023_1, retrievedNodes1Chunk));
     assertEquals(1, retrievedNodes1.size());
     assertEquals(p1, retrievedNodes1.get(0));
   }

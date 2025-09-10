@@ -4,7 +4,7 @@ import io.lionweb.model.Node;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.SerializationProvider;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 
 public class SerializationExperiment {
 
@@ -13,7 +13,7 @@ public class SerializationExperiment {
     Node tree = treeGenerator.generate(500_000);
     System.out.println("Tree generated");
 
-    SerializedChunk chunk =
+    SerializationChunk chunk =
         SerializationProvider.getStandardJsonSerialization()
             .serializeTreeToSerializationChunk(tree);
 

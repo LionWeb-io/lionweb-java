@@ -5,7 +5,7 @@ import static io.lionweb.experiments.GZipFacade.decompress;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.utils.ModelComparator;
 import java.io.*;
 
@@ -18,7 +18,7 @@ public class SerializationAndDeserializationExperiment {
     long gen1 = System.currentTimeMillis();
     System.out.println("Tree generated in " + (gen1 - gen0) + " ms");
 
-    SerializedChunk chunk =
+    SerializationChunk chunk =
         SerializationProvider.getStandardJsonSerialization()
             .serializeTreeToSerializationChunk(tree);
 

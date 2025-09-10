@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
  * inconsistent. This is a low-level representation, intended to represent broken chunks or as an
  * intermediate step during serialization or deserialization.
  */
-public class SerializedChunk {
+public class SerializationChunk {
 
   private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
@@ -17,14 +17,14 @@ public class SerializedChunk {
   private final List<LanguageVersion> languages = new ArrayList<>();
   private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
-  public static SerializedChunk fromNodes(
+  public static SerializationChunk fromNodes(
       @Nonnull LionWebVersion lionWebVersion, @Nonnull List<SerializedClassifierInstance> nodes) {
     Objects.requireNonNull(lionWebVersion);
     Objects.requireNonNull(nodes);
     if (nodes.isEmpty()) {
       throw new IllegalArgumentException();
     }
-    SerializedChunk instance = new SerializedChunk();
+    SerializationChunk instance = new SerializationChunk();
     instance.setSerializationFormatVersion(lionWebVersion.getVersionString());
     nodes.forEach(n -> instance.addClassifierInstance(n));
     instance.populateUsedLanguages();
@@ -43,9 +43,25 @@ public class SerializedChunk {
     return Collections.unmodifiableList(classifierInstances);
   }
 
-  public void addClassifierInstance(SerializedClassifierInstance instance) {
+  /**
+   * Adds a single {@link SerializedClassifierInstance} to the current SerializedChunk.
+   *
+   * @param instance the {@code SerializedClassifierInstance} to add; must not be null
+   * @throws NullPointerException if {@code instance} is null
+   */
+  public void addClassifierInstance(@Nonnull SerializedClassifierInstance instance) {
+    Objects.requireNonNull(instance, "instance should not be null");
     this.classifierInstancesByID.put(instance.getID(), instance);
     classifierInstances.add(instance);
+  }
+
+  /**
+   * Adds multiple classifier instances to the current SerializedChunk.
+   *
+   * @param instances an array of SerializedClassifierInstance objects to be added
+   */
+  public void addClassifierInstances(@Nonnull SerializedClassifierInstance... instances) {
+    Arrays.stream(instances).forEach(this::addClassifierInstance);
   }
 
   @Nonnull
@@ -57,8 +73,27 @@ public class SerializedChunk {
     return instance;
   }
 
-  public void addLanguage(LanguageVersion language) {
+  /**
+   * Adds a language to the current SerializedChunk.
+   *
+   * @param language the {@code UsedLanguage} instance to add; must not be null
+   * @throws NullPointerException if {@code language} is null
+   */
+  public void addLanguage(@Nonnull LanguageVersion language) {
+    Objects.requireNonNull(language, "language should not be null");
     this.languages.add(language);
+  }
+
+  /**
+   * Adds multiple {@link LanguageVersion} instances to the current SerializedChunk.
+   *
+   * @param languages an array of {@code UsedLanguage} instances to be added; must not be null
+   * @throws NullPointerException if any element in {@code languages} is null
+   */
+  public void addLanguages(@Nonnull LanguageVersion... languages) {
+    for (LanguageVersion language : languages) {
+      addLanguage(language);
+    }
   }
 
   public Map<String, SerializedClassifierInstance> getClassifierInstancesByID() {
@@ -104,8 +139,8 @@ public class SerializedChunk {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof SerializedChunk)) return false;
-    SerializedChunk that = (SerializedChunk) o;
+    if (!(o instanceof SerializationChunk)) return false;
+    SerializationChunk that = (SerializationChunk) o;
     return Objects.equals(serializationFormatVersion, that.serializationFormatVersion)
         && Objects.equals(languages, that.languages)
         && Objects.equals(classifierInstances, that.classifierInstances);

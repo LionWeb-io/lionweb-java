@@ -31,9 +31,10 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-    SerializedChunk serializedChunk = jsonSerialization.deserializeSerializationBlock(jsonElement);
+    SerializationChunk serializationChunk =
+        jsonSerialization.deserializeSerializationBlock(jsonElement);
     List<SerializedClassifierInstance> deserializedSerializedClassifierInstanceData =
-        serializedChunk.getClassifierInstances();
+        serializationChunk.getClassifierInstances();
 
     SerializedClassifierInstance lioncore = deserializedSerializedClassifierInstanceData.get(0);
     assertEquals(MetaPointer.get("LionCore-M3", "2023.1", "Language"), lioncore.getClassifier());
@@ -54,12 +55,13 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
         this.getClass().getResourceAsStream("/serialization/library-language.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-    SerializedChunk serializedChunk = jsonSerialization.deserializeSerializationBlock(jsonElement);
-    SerializedClassifierInstance book = serializedChunk.getInstanceByID("library-Book");
+    SerializationChunk serializationChunk =
+        jsonSerialization.deserializeSerializationBlock(jsonElement);
+    SerializedClassifierInstance book = serializationChunk.getInstanceByID("library-Book");
     assertEquals("Book", book.getPropertyValue("LionCore-builtins-INamed-name"));
 
     SerializedClassifierInstance guidedBookWriter =
-        serializedChunk.getInstanceByID("library-GuideBookWriter");
+        serializationChunk.getInstanceByID("library-GuideBookWriter");
     assertEquals(
         "GuideBookWriter", guidedBookWriter.getPropertyValue("LionCore-builtins-INamed-name"));
     assertEquals(
@@ -130,8 +132,9 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     InputStream inputStream = this.getClass().getResourceAsStream(filePath);
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
-    SerializedChunk serializedChunk = jsonSerialization.deserializeSerializationBlock(jsonElement);
-    JsonElement reserialized = jsonSerialization.serializeToJsonElement(serializedChunk);
+    SerializationChunk serializationChunk =
+        jsonSerialization.deserializeSerializationBlock(jsonElement);
+    JsonElement reserialized = jsonSerialization.serializeToJsonElement(serializationChunk);
     assertEquivalentLionWebJson(jsonElement.getAsJsonObject(), reserialized.getAsJsonObject());
   }
 }

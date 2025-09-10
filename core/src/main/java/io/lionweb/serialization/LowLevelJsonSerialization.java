@@ -29,15 +29,15 @@ public class LowLevelJsonSerialization {
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
    */
-  public SerializedChunk deserializeSerializationBlock(JsonElement jsonElement) {
-    SerializedChunk serializedChunk = new SerializedChunk();
+  public SerializationChunk deserializeSerializationBlock(JsonElement jsonElement) {
+    SerializationChunk serializationChunk = new SerializationChunk();
     if (jsonElement.isJsonObject()) {
       JsonObject topLevel = jsonElement.getAsJsonObject();
       checkNoExtraKeys(topLevel, Arrays.asList("nodes", "serializationFormatVersion", "languages"));
-      readSerializationFormatVersion(serializedChunk, topLevel);
-      readLanguages(serializedChunk, topLevel);
-      deserializeClassifierInstances(serializedChunk, topLevel);
-      return serializedChunk;
+      readSerializationFormatVersion(serializationChunk, topLevel);
+      readLanguages(serializationChunk, topLevel);
+      deserializeClassifierInstances(serializationChunk, topLevel);
+      return serializationChunk;
     } else {
       throw new IllegalArgumentException(
           "We expected a Json Object, we got instead: " + jsonElement);
@@ -54,7 +54,7 @@ public class LowLevelJsonSerialization {
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
    */
-  public SerializedChunk deserializeSerializationBlock(String json) {
+  public SerializationChunk deserializeSerializationBlock(String json) {
     return deserializeSerializationBlock(JsonParser.parseString(json));
   }
 
@@ -68,21 +68,21 @@ public class LowLevelJsonSerialization {
    * <p>This method follows a "best-effort" approach, try to limit exception thrown and return data
    * whenever is possible, in the measure that it is possible.
    */
-  public SerializedChunk deserializeSerializationBlock(File file) throws FileNotFoundException {
+  public SerializationChunk deserializeSerializationBlock(File file) throws FileNotFoundException {
     return deserializeSerializationBlock(JsonParser.parseReader(new FileReader(file)));
   }
 
-  public JsonElement serializeToJsonElement(SerializedChunk serializedChunk) {
+  public JsonElement serializeToJsonElement(SerializationChunk serializationChunk) {
     JsonObject topLevel = new JsonObject();
     topLevel.addProperty(
-        "serializationFormatVersion", serializedChunk.getSerializationFormatVersion());
+        "serializationFormatVersion", serializationChunk.getSerializationFormatVersion());
 
     JsonArray languages = new JsonArray();
-    serializedChunk.getLanguages().forEach(m -> languages.add(serializeToJsonElement(m)));
+    serializationChunk.getLanguages().forEach(m -> languages.add(serializeToJsonElement(m)));
     topLevel.add("languages", languages);
 
     JsonArray nodes = new JsonArray();
-    for (SerializedClassifierInstance node : serializedChunk.getClassifierInstances()) {
+    for (SerializedClassifierInstance node : serializationChunk.getClassifierInstances()) {
       JsonObject nodeJson = new JsonObject();
       nodeJson.addProperty("id", node.getID());
 
@@ -101,7 +101,7 @@ public class LowLevelJsonSerialization {
       for (SerializedContainmentValue childrenValue : node.getContainments()) {
         JsonObject children = new JsonObject();
         children.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
-        children.add("children", SerializationUtils.toJsonArray(childrenValue.getValue()));
+        children.add("children", SerializationUtils.toJsonArray(childrenValue.getChildrenIds()));
         containments.add(children);
       }
       nodeJson.add("containments", containments);
@@ -131,26 +131,26 @@ public class LowLevelJsonSerialization {
     return topLevel;
   }
 
-  public String serializeToJsonString(SerializedChunk serializedChunk) {
+  public String serializeToJsonString(SerializationChunk serializationChunk) {
     return new GsonBuilder()
         .serializeNulls()
         .setPrettyPrinting()
         .create()
-        .toJson(serializeToJsonElement(serializedChunk));
+        .toJson(serializeToJsonElement(serializationChunk));
   }
 
   /** Create a SerializedChunk containing the given nodes. */
-  public static SerializedChunk groupNodesIntoSerializationBlock(
+  public static SerializationChunk groupNodesIntoSerializationBlock(
       Collection<SerializedClassifierInstance> serializedClassifierInstances,
       LionWebVersion lionWebVersion) {
-    SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    SerializationChunk serializationChunk = new SerializationChunk();
+    serializationChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     for (SerializedClassifierInstance serializedClassifierInstance :
         serializedClassifierInstances) {
-      serializedChunk.addClassifierInstance(serializedClassifierInstance);
+      serializationChunk.addClassifierInstance(serializedClassifierInstance);
     }
-    serializedChunk.populateUsedLanguages();
-    return serializedChunk;
+    serializationChunk.populateUsedLanguages();
+    return serializationChunk;
   }
 
   //
@@ -158,17 +158,17 @@ public class LowLevelJsonSerialization {
   //
 
   private void readSerializationFormatVersion(
-      SerializedChunk serializedChunk, JsonObject topLevel) {
+      SerializationChunk serializationChunk, JsonObject topLevel) {
     if (!topLevel.has("serializationFormatVersion")) {
       throw new IllegalArgumentException("serializationFormatVersion not specified");
     }
     JsonElement serializationFormatVersion = topLevel.get("serializationFormatVersion");
     requireIsString(serializationFormatVersion, "serializationFormatVersion");
     String serializationFormatVersionValue = serializationFormatVersion.getAsString();
-    serializedChunk.setSerializationFormatVersion(serializationFormatVersionValue);
+    serializationChunk.setSerializationFormatVersion(serializationFormatVersionValue);
   }
 
-  private void readLanguages(SerializedChunk serializedChunk, JsonObject topLevel) {
+  private void readLanguages(SerializationChunk serializationChunk, JsonObject topLevel) {
     if (!topLevel.has("languages")) {
       throw new IllegalArgumentException("languages not specified");
     }
@@ -195,7 +195,7 @@ public class LowLevelJsonSerialization {
                     throw new IllegalArgumentException(
                         "Language should be an object. Found: " + element);
                   }
-                  serializedChunk.addLanguage(languageKeyVersion);
+                  serializationChunk.addLanguage(languageKeyVersion);
                 } catch (Exception e) {
                   throw new RuntimeException("Issue while deserializing " + element, e);
                 }
@@ -207,7 +207,7 @@ public class LowLevelJsonSerialization {
   }
 
   private void deserializeClassifierInstances(
-      SerializedChunk serializedChunk, JsonObject topLevel) {
+      SerializationChunk serializationChunk, JsonObject topLevel) {
     if (!topLevel.has("nodes")) {
       throw new IllegalArgumentException("nodes not specified");
     }
@@ -217,7 +217,7 @@ public class LowLevelJsonSerialization {
               element -> {
                 try {
                   SerializedClassifierInstance instance = deserializeClassifierInstance(element);
-                  serializedChunk.addClassifierInstance(instance);
+                  serializationChunk.addClassifierInstance(instance);
                 } catch (DeserializationException e) {
                   throw new DeserializationException(
                       "Issue while deserializing classifier instances", e);

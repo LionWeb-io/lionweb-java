@@ -6,7 +6,7 @@ import com.google.gson.JsonParser;
 import io.lionweb.client.RequestFailureException;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.LowLevelJsonSerialization;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
@@ -63,7 +63,7 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
             throw new RequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
-          SerializedChunk serializationBlock =
+          SerializationChunk serializationBlock =
               new LowLevelJsonSerialization()
                   .deserializeSerializationBlock(responseData.get("chunk"));
           return serializationBlock.getClassifierInstances().stream()

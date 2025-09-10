@@ -10,6 +10,8 @@ import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.data.LanguageVersion;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -42,11 +44,11 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
               bulkImportBuilder.addAttachPoints(attachPointBuilder.build());
             });
 
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         LowLevelJsonSerialization.groupNodesIntoSerializationBlock(
             bulkImport.getNodes(), getLionWebVersion());
 
-    serializedChunk
+    serializationChunk
         .getClassifierInstances()
         .forEach(
             serializedNode -> {

@@ -92,10 +92,10 @@ class NodePopulator {
                         + concept);
               }
               Objects.requireNonNull(
-                  serializedContainmentValue.getValue(),
+                  serializedContainmentValue.getChildrenIds(),
                   "The containment value should not be null");
               List<ClassifierInstance<?>> deserializedValue =
-                  serializedContainmentValue.getValue().stream()
+                  serializedContainmentValue.getChildrenIds().stream()
                       .map(
                           childNodeID -> {
                             if (serialization.getUnavailableChildrenPolicy()
