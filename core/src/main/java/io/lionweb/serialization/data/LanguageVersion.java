@@ -9,7 +9,9 @@ import javax.annotation.Nullable;
 
 /**
  * The pair Language Key and Language Version identify a specific version of a language. This pair
- * is defined UsedLanguage (see https://github.com/LionWeb-io/specification/issues/129).
+ * is defined as UsedLanguage in the specifications (see https://github.com/LionWeb-io/specification/issues/129).
+ * In this implementation, the pair has a more general name as UsedLanguage is just one role or use we can attribute
+ * to the pair language key and version.
  */
 public class LanguageVersion {
   private @Nullable String key;
@@ -41,6 +43,7 @@ public class LanguageVersion {
   public static LanguageVersion fromLanguage(@Nonnull Language language) {
     Objects.requireNonNull(language, "Language parameter should not be null");
     Objects.requireNonNull(language.getVersion(), "Language version should not be null");
+      Objects.requireNonNull(language.getKey(), "Language key should not be null");
     return of(language.getKey(), language.getVersion());
   }
 
