@@ -19,14 +19,12 @@ public class ChunkValidator extends Validator<SerializedChunk> {
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       // Verifying IDs are valid
       if (!CommonChecks.isValidID(node.getID())) {
-        // We do not set the subject as the subject is not a node
-        validationResult.addError("Invalid node id: " + node.getID(), null);
+        validationResult.addError("Invalid node id: " + node.getID(), node.getID());
       }
 
       if (nodesByID.containsKey(node.getID())) {
         // Verifying there are no duplicate node ids
-        // We do not set the subject as the subject is not a node
-        validationResult.addError("Duplicate node id: " + node.getID(), null);
+        validationResult.addError("Duplicate node id: " + node.getID(), node.getID());
       } else {
         nodesByID.put(node.getID(), node);
       }
@@ -47,45 +45,40 @@ public class ChunkValidator extends Validator<SerializedChunk> {
       }
     }
     if (!usedLanguages.equals(new HashSet<>(chunk.getLanguages()))) {
-      // We do not set the subject as the subject is not a node
       validationResult.addError(
           "We expected these used languages: "
               + usedLanguages
               + " and we found "
-              + chunk.getLanguages(),
-          null);
+              + chunk.getLanguages());
     }
 
-    // Ensuring that containments + annotations are the inverse of parent relationships
+    // Ensuring that containments and annotations are the inverse of parent relationships
     Set<String> containedNodes = new HashSet<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getValue()) {
           // Verifying nodes do not appear in multiple containments or annotations
           if (containedNodes.contains(childId)) {
-            // We do not set the subject as the subject is not a node
-            validationResult.addError(childId + " is listed in multiple places", null);
+            validationResult.addError(childId + " is listed in multiple places", childId);
           } else {
             containedNodes.add(childId);
           }
           SerializedClassifierInstance child = nodesByID.get(childId);
           if (child != null && !child.getParentNodeID().equals(node.getID())) {
-            // We do not set the subject as the subject is not a node
             validationResult.addError(
                 childId
                     + " is listed as child of "
                     + node.getID()
                     + " but it has as parent "
                     + child.getParentNodeID(),
-                null);
+                node.getID());
           }
         }
       }
       for (String annotationId : node.getAnnotations()) {
         // Verifying nodes do not appear in multiple containments or annotations
         if (containedNodes.contains(annotationId)) {
-          // We do not set the subject as the subject is not a node
-          validationResult.addError(annotationId + " is listed in multiple places", null);
+          validationResult.addError(annotationId + " is listed in multiple places", annotationId);
         } else {
           containedNodes.add(annotationId);
         }
@@ -93,14 +86,13 @@ public class ChunkValidator extends Validator<SerializedChunk> {
         if (annotationId != null
             && annotation != null
             && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
-          // We do not set the subject as the subject is not a node
           validationResult.addError(
               annotationId
                   + " is listed as an annotation of "
                   + node.getID()
                   + " but it has as parent "
                   + annotation.getParentNodeID(),
-              null);
+              node.getID());
         }
       }
 
@@ -113,7 +105,7 @@ public class ChunkValidator extends Validator<SerializedChunk> {
                   + " list as parent "
                   + node.getParentNodeID()
                   + " but such parent does not contain it",
-              null);
+              node.getID());
         }
       }
     }

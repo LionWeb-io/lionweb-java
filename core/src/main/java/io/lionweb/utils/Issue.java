@@ -1,18 +1,30 @@
 package io.lionweb.utils;
 
-import io.lionweb.model.Node;
+import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.impl.ProxyNode;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 public class Issue {
   private final String message;
   private final IssueSeverity severity;
 
-  private final Node subject;
+  private final @Nullable ClassifierInstance<?> subject;
 
-  public Issue(IssueSeverity severity, String message, Node subject) {
+  public Issue(
+      @Nonnull IssueSeverity severity,
+      @Nonnull String message,
+      @Nullable ClassifierInstance<?> subject) {
+    Objects.requireNonNull(severity, "severity should not be null");
+    Objects.requireNonNull(message, "message should not be null");
     this.message = message;
     this.severity = severity;
     this.subject = subject;
+  }
+
+  public Issue(@Nonnull IssueSeverity severity, @Nonnull String message, @Nullable String nodeID) {
+    this(severity, message, nodeID == null ? null : new ProxyNode(nodeID));
   }
 
   public String getMessage() {
@@ -23,9 +35,7 @@ public class Issue {
     return severity;
   }
 
-  // TODO once each element of the Language implement the Node interface this method could return a
-  // Node
-  public Node getSubject() {
+  public @Nullable ClassifierInstance<?> getSubject() {
     return subject;
   }
 

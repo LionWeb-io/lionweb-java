@@ -26,15 +26,13 @@ public class PartitionChunkValidator extends ChunkValidator {
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getValue()) {
-          // We do not set the subject as the subject is not a node
           validationResult.checkForError(
-              !nodesPresent.contains(childId), "Missing node: " + childId, null);
+              !nodesPresent.contains(childId), "Missing node: " + childId, childId);
         }
       }
       for (String annotationId : node.getAnnotations()) {
-        // We do not set the subject as the subject is not a node
         validationResult.checkForError(
-            !nodesPresent.contains(annotationId), "Missing node: " + annotationId, null);
+            !nodesPresent.contains(annotationId), "Missing node: " + annotationId, annotationId);
       }
     }
 
@@ -44,9 +42,7 @@ public class PartitionChunkValidator extends ChunkValidator {
             .filter(n -> n.getParentNodeID() == null)
             .map(n -> n.getID())
             .collect(toSet());
-    // We do not set the subject as the subject is not a node
-    validationResult.checkForError(
-        roots.size() != 1, "Expected exactly one root, found: " + roots, null);
+    validationResult.checkForError(roots.size() != 1, "Expected exactly one root, found: " + roots);
 
     return validationResult;
   }
