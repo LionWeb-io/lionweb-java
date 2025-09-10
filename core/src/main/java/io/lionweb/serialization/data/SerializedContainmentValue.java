@@ -6,20 +6,20 @@ import javax.annotation.Nonnull;
 /** This represents the serialization of the values of a containment link in a Node. */
 public class SerializedContainmentValue {
   private final MetaPointer metaPointer;
-  private final List<String> value;
+  private final List<String> childrenIds;
 
   /**
    * Constructs a SerializedContainmentValue instance with the specified MetaPointer and a list of
    * string values.
    *
-   * @param metaPointer the MetaPointer associated with this containment value; may be null
-   * @param value a non-null list of string values representing Node-IDs; must not be null
-   * @throws NullPointerException if the value parameter is null
+   * @param metaPointer the MetaPointer associated with this containment childrenIds; may be null
+   * @param childrenIds a non-null list of string values representing Node-IDs; must not be null
+   * @throws NullPointerException if the childrenIds parameter is null
    */
-  public SerializedContainmentValue(MetaPointer metaPointer, @Nonnull List<String> value) {
-    Objects.requireNonNull(value, "value must not be null");
+  public SerializedContainmentValue(MetaPointer metaPointer, @Nonnull List<String> childrenIds) {
+    Objects.requireNonNull(childrenIds, "childrenIds must not be null");
     this.metaPointer = metaPointer;
-    this.value = new ArrayList<>(value);
+    this.childrenIds = new ArrayList<>(childrenIds);
   }
 
   /**
@@ -31,7 +31,7 @@ public class SerializedContainmentValue {
    */
   public SerializedContainmentValue(MetaPointer metaPointer, String... values) {
     this.metaPointer = metaPointer;
-    this.value = Arrays.asList(values);
+    this.childrenIds = Arrays.asList(values);
   }
 
   public MetaPointer getMetaPointer() {
@@ -39,14 +39,14 @@ public class SerializedContainmentValue {
   }
 
   /** This returns the list of Node-IDs contained. */
-  public List<String> getValue() {
-    return Collections.unmodifiableList(value);
+  public List<String> getChildrenIds() {
+    return Collections.unmodifiableList(childrenIds);
   }
 
   /** This expects the list of Node-IDs contained. */
-  public void setValue(List<String> value) {
-    this.value.clear();
-    this.value.addAll(value);
+  public void setChildrenIds(List<String> childrenIds) {
+    this.childrenIds.clear();
+    this.childrenIds.addAll(childrenIds);
   }
 
   /**
@@ -58,7 +58,7 @@ public class SerializedContainmentValue {
    */
   public boolean removeChild(@Nonnull String childId) {
     Objects.requireNonNull(childId, "childId must not be null");
-    return value.remove(childId);
+    return childrenIds.remove(childId);
   }
 
   @Override
@@ -66,16 +66,22 @@ public class SerializedContainmentValue {
     if (this == o) return true;
     if (!(o instanceof SerializedContainmentValue)) return false;
     SerializedContainmentValue that = (SerializedContainmentValue) o;
-    return Objects.equals(metaPointer, that.metaPointer) && Objects.equals(value, that.value);
+    return Objects.equals(metaPointer, that.metaPointer)
+        && Objects.equals(childrenIds, that.childrenIds);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(metaPointer, value);
+    return Objects.hash(metaPointer, childrenIds);
   }
 
   @Override
   public String toString() {
-    return "SerializedContainmentValue{" + "metaPointer=" + metaPointer + ", value=" + value + '}';
+    return "SerializedContainmentValue{"
+        + "metaPointer="
+        + metaPointer
+        + ", value="
+        + childrenIds
+        + '}';
   }
 }

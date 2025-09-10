@@ -81,7 +81,7 @@ public class ExtraFlatBuffersSerialization extends FlatBuffersSerialization {
         contOffsets = new int[containments.size()];
         int fi = 0;
         for (SerializedContainmentValue containment : containments) {
-          List<String> children = containment.getValue();
+          List<String> children = containment.getChildrenIds();
           int[] childOffsets = new int[children.size()];
           int ci = 0;
           for (String child : children) {

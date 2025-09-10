@@ -204,12 +204,12 @@ public class FlatBuffersSerialization extends AbstractSerialization {
       int[] cons = new int[containments.size()];
       for (int j = 0; j < containments.size(); j++) {
         SerializedContainmentValue el = containments.get(j);
-        int[] children = new int[el.getValue().size()];
-        for (int k = 0; k < el.getValue().size(); k++) {
-          if (el.getValue().get(k) == null) {
+        int[] children = new int[el.getChildrenIds().size()];
+        for (int k = 0; k < el.getChildrenIds().size(); k++) {
+          if (el.getChildrenIds().get(k) == null) {
             children[k] = builder.createSharedString(NULL_CONSTANT);
           } else {
-            children[k] = builder.createSharedString(el.getValue().get(k));
+            children[k] = builder.createSharedString(el.getChildrenIds().get(k));
           }
         }
         cons[j] =

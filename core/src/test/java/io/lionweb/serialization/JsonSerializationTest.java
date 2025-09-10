@@ -206,13 +206,15 @@ public class JsonSerializationTest extends SerializationTest {
                       .filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_left"))
                       .findFirst()
                       .get();
-              IntLiteral left = (IntLiteral) deserializedNodesByID.get(leftSCV.getValue().get(0));
+              IntLiteral left =
+                  (IntLiteral) deserializedNodesByID.get(leftSCV.getChildrenIds().get(0));
               SerializedContainmentValue rightSCV =
                   serializedNode.getContainments().stream()
                       .filter(c -> c.getMetaPointer().getKey().equals("SimpleMath_Sum_right"))
                       .findFirst()
                       .get();
-              IntLiteral right = (IntLiteral) deserializedNodesByID.get(rightSCV.getValue().get(0));
+              IntLiteral right =
+                  (IntLiteral) deserializedNodesByID.get(rightSCV.getChildrenIds().get(0));
               return new Sum(left, right, serializedNode.getID());
             });
   }
