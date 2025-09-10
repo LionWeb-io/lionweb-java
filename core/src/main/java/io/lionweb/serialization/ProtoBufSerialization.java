@@ -338,7 +338,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     SerializeHelper serializeHelper = new SerializeHelper();
 
     // Process all nodes first to build indices
-    List<SerializedClassifierInstance> instances = serializedChunk.getClassifierInstances();
+    List<SerializedClassifierInstance> instances = serializationChunk.getClassifierInstances();
     for (SerializedClassifierInstance instance : instances) {
       chunkBuilder.addNodes(serializeHelper.serializeNode(instance));
     }

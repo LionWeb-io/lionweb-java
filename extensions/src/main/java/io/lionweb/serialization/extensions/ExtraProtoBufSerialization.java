@@ -9,9 +9,7 @@ import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.data.LanguageVersion;
 import io.lionweb.serialization.data.MetaPointer;
-import io.lionweb.serialization.data.SerializedChunk;
 import io.lionweb.serialization.data.SerializationChunk;
-import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
@@ -56,7 +54,7 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
             });
 
     // We need to process languages before strings, otherwise we might end up with null pointers
-    for (LanguageVersion languageVersion : serializedChunk.getLanguages()) {
+    for (LanguageVersion languageVersion : serializationChunk.getLanguages()) {
       bulkImportBuilder.addInternedLanguages(
           PBLanguage.newBuilder()
               .setSiKey(serializeHelper.stringIndexer(languageVersion.getKey()))

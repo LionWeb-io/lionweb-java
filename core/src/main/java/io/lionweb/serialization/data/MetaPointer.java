@@ -98,12 +98,12 @@ public class MetaPointer {
   }
 
   /**
-   * Retrieves the associated {@link UsedLanguage} instance for the current {@link MetaPointer}.
+   * Retrieves the associated {@link LanguageVersion} instance for the current {@link MetaPointer}.
    *
-   * @return a {@link UsedLanguage} instance representing the language and version associated with
-   *     this {@link MetaPointer}
+   * @return a {@link LanguageVersion} instance representing the language and version associated
+   *     with this {@link MetaPointer}
    */
-  public @Nonnull UsedLanguage getUsedLanguage() {
-    return UsedLanguage.fromMetaPointer(this);
+  public @Nonnull LanguageVersion getUsedLanguage() {
+    return LanguageVersion.fromMetaPointer(this);
   }
 }

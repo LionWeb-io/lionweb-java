@@ -33,7 +33,7 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     }
 
     // Check languages
-    Set<UsedLanguage> usedLanguages = new HashSet<>();
+    Set<LanguageVersion> usedLanguages = new HashSet<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       usedLanguages.add(node.getClassifier().getUsedLanguage());
       for (SerializedPropertyValue propertyValue : node.getProperties()) {
@@ -47,7 +47,7 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
     }
     if (!usedLanguages.equals(new HashSet<>(chunk.getLanguages()))) {
-      Function<UsedLanguage, String> languageFormatter =
+      Function<LanguageVersion, String> languageFormatter =
           lang -> lang.getKey() + "/" + lang.getVersion();
 
       String extraLanguages =

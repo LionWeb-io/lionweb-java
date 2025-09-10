@@ -471,10 +471,10 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
 
-    PBChunk pbChunk = protoBufSerialization.serialize(serializedChunk);
+    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
 
     // There must be at least one language (most likely two: built-ins + our language)
     int languagesCount = pbChunk.getInternedLanguagesCount();
@@ -511,10 +511,10 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
 
-    PBChunk pbChunk = protoBufSerialization.serialize(serializedChunk);
+    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
 
     // There must be at least one language (most likely two: built-ins + our language)
     int languagesCount = pbChunk.getInternedLanguagesCount();
