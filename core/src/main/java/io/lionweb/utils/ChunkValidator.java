@@ -2,6 +2,8 @@ package io.lionweb.utils;
 
 import io.lionweb.serialization.data.*;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -45,11 +47,32 @@ public class ChunkValidator extends Validator<SerializedChunk> {
       }
     }
     if (!usedLanguages.equals(new HashSet<>(chunk.getLanguages()))) {
+      Function<UsedLanguage, String> languageFormatter =
+          lang -> lang.getKey() + "/" + lang.getVersion();
+
+      String extraLanguages =
+          chunk.getLanguages().stream()
+              .filter(e -> !usedLanguages.contains(e))
+              .map(languageFormatter)
+              .sorted()
+              .collect(Collectors.joining(", "));
+
+      String missingLanguages =
+          usedLanguages.stream()
+              .filter(e -> !chunk.getLanguages().contains(e))
+              .map(languageFormatter)
+              .sorted()
+              .collect(Collectors.joining(", "));
+
       validationResult.addError(
           "We expected these used languages: "
               + usedLanguages
               + " and we found "
-              + chunk.getLanguages());
+              + chunk.getLanguages()
+              + ". Extra languages: "
+              + extraLanguages
+              + ". Missing languages: "
+              + missingLanguages);
     }
 
     // Ensuring that containments and annotations are the inverse of parent relationships
