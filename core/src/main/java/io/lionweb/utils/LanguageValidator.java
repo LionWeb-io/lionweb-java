@@ -24,7 +24,7 @@ public class LanguageValidator extends Validator<Language> {
         .getLiterals()
         .forEach(
             (EnumerationLiteral lit) ->
-                result.checkForError(lit.getName() == null, "Simple name not set", lit));
+                result.addErrorIf(lit.getName() == null, "Simple name not set", lit));
     validateNamesAreUnique(enumeration.getLiterals(), result);
   }
 
@@ -34,9 +34,9 @@ public class LanguageValidator extends Validator<Language> {
         .forEach(
             (Feature feature) ->
                 result
-                    .checkForError(feature.getName() == null, "Simple name not set", feature)
-                    .checkForError(feature.getContainer() == null, "Container not set", feature)
-                    .checkForError(
+                    .addErrorIf(feature.getName() == null, "Simple name not set", feature)
+                    .addErrorIf(feature.getContainer() == null, "Container not set", feature)
+                    .addErrorIf(
                         feature.getContainer() != null
                             && ((Node) feature.getContainer()).getID() != null
                             && !((Node) feature.getContainer()).getID().equals(classifier.getID()),
@@ -51,7 +51,7 @@ public class LanguageValidator extends Validator<Language> {
 
   private void validateConcept(ValidationResult result, Concept concept) {
     checkAncestors(concept, result);
-    result.checkForError(
+    result.addErrorIf(
         concept.getImplemented().size() != concept.getImplemented().stream().distinct().count(),
         "The same interface has been implemented multiple times",
         concept);
@@ -107,7 +107,7 @@ public class LanguageValidator extends Validator<Language> {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
-    result.checkForError(language.getName() == null, "Qualified name not set", language);
+    result.addErrorIf(language.getName() == null, "Qualified name not set", language);
 
     validateNamesAreUnique(language.getElements(), result);
     validateKeysAreNotNull(language, result);
@@ -120,9 +120,9 @@ public class LanguageValidator extends Validator<Language> {
         .forEach(
             (LanguageEntity el) -> {
               result
-                  .checkForError(el.getName() == null, "Simple name not set", el)
-                  .checkForError(el.getLanguage() == null, "Language not set", el)
-                  .checkForError(
+                  .addErrorIf(el.getName() == null, "Simple name not set", el)
+                  .addErrorIf(el.getLanguage() == null, "Language not set", el)
+                  .addErrorIf(
                       el.getLanguage() != null && el.getLanguage() != language,
                       "Language not set correctly",
                       el);
@@ -292,11 +292,11 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void checkAnnotates(Annotation annotation, ValidationResult validationResult) {
-    validationResult.checkForError(
+    validationResult.addErrorIf(
         annotation.getEffectivelyAnnotated() == null,
         "An annotation should specify annotates or inherit it",
         annotation);
-    validationResult.checkForError(
+    validationResult.addErrorIf(
         annotation.getExtendedAnnotation() != null
             && annotation.getAnnotates() != null
             && annotation.getAnnotates() != annotation.getExtendedAnnotation().getAnnotates(),

@@ -47,7 +47,7 @@ public class ValidationResult {
    *     true
    * @throws NullPointerException if the message is null
    */
-  public <S extends ClassifierInstance<?>> ValidationResult checkForError(
+  public <S extends ClassifierInstance<?>> ValidationResult addErrorIf(
       boolean check, @Nonnull String message, @Nullable S subject) {
     Objects.requireNonNull(message, "message should not be null");
     if (check) {
@@ -68,7 +68,7 @@ public class ValidationResult {
    *     condition was true
    * @throws NullPointerException if the message is null
    */
-  public ValidationResult checkForError(
+  public ValidationResult addErrorIf(
       boolean check, @Nonnull String message, @Nullable String subject) {
     Objects.requireNonNull(message, "message should not be null");
     if (check) {
@@ -87,8 +87,8 @@ public class ValidationResult {
    *     condition was true
    * @throws NullPointerException if the message is null
    */
-  public ValidationResult checkForError(boolean check, @Nonnull String message) {
-    return checkForError(check, message, (String) null);
+  public ValidationResult addErrorIf(boolean check, @Nonnull String message) {
+    return addErrorIf(check, message, (String) null);
   }
 
   @Override
