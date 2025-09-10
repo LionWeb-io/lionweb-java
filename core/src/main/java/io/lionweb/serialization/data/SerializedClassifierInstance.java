@@ -349,8 +349,8 @@ public class SerializedClassifierInstance {
     Objects.requireNonNull(id, "id must not be null");
     if (this.containments != null) {
       for (SerializedContainmentValue containmentValue : this.containments) {
-        for (String child : containmentValue.getValue()) {
-          if (Objects.equals(child, id)) {
+        for (String childId : containmentValue.getValue()) {
+          if (Objects.equals(childId, id)) {
             return true;
           }
         }
