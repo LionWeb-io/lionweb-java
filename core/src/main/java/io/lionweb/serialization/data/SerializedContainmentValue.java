@@ -24,14 +24,14 @@ public class SerializedContainmentValue {
 
   /**
    * Constructs a SerializedContainmentValue instance with the specified MetaPointer and an array of
-   * values.
+   * childrenIds.
    *
    * @param metaPointer the MetaPointer associated with this containment value; must not be null
-   * @param values an optional array of string values representing Node-IDs; may be empty
+   * @param childrenIds an optional array of string childrenIds representing Node-IDs; may be empty
    */
-  public SerializedContainmentValue(MetaPointer metaPointer, String... values) {
+  public SerializedContainmentValue(MetaPointer metaPointer, String... childrenIds) {
     this.metaPointer = metaPointer;
-    this.childrenIds = Arrays.asList(values);
+    this.childrenIds = Arrays.asList(childrenIds);
   }
 
   public MetaPointer getMetaPointer() {
