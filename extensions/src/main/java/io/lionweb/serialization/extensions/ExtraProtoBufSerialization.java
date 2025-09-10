@@ -34,9 +34,10 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
         .forEach(
             attachPoint -> {
               PBAttachPoint.Builder attachPointBuilder = PBAttachPoint.newBuilder();
-              attachPointBuilder.setContainer(serializeHelper.stringIndexer(attachPoint.container));
-              attachPointBuilder.setRootId(serializeHelper.stringIndexer(attachPoint.rootId));
-              attachPointBuilder.setMetaPointerIndex(
+              attachPointBuilder.setSiContainer(
+                  serializeHelper.stringIndexer(attachPoint.container));
+              attachPointBuilder.setSiRoot(serializeHelper.stringIndexer(attachPoint.rootId));
+              attachPointBuilder.setMpiMetaPointer(
                   serializeHelper.metaPointerIndexer(attachPoint.containment));
               bulkImportBuilder.addAttachPoints(attachPointBuilder.build());
             });
@@ -56,8 +57,8 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
     for (LanguageVersion languageVersion : serializedChunk.getLanguages()) {
       bulkImportBuilder.addInternedLanguages(
           PBLanguage.newBuilder()
-              .setKey(serializeHelper.stringIndexer(languageVersion.getKey()))
-              .setVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
+              .setSiKey(serializeHelper.stringIndexer(languageVersion.getKey()))
+              .setSiVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
               .build());
     }
 
@@ -67,8 +68,9 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
 
     for (MetaPointer metaPointer : serializeHelper.getMetaPointers()) {
       PBMetaPointer.Builder pbMetaPointer = PBMetaPointer.newBuilder();
-      pbMetaPointer.setKey(serializeHelper.stringIndexer(metaPointer.getKey()));
-      pbMetaPointer.setLanguage(serializeHelper.languageIndexer(metaPointer.getLanguageVersion()));
+      pbMetaPointer.setSiKey(serializeHelper.stringIndexer(metaPointer.getKey()));
+      pbMetaPointer.setLiLanguage(
+          serializeHelper.languageIndexer(metaPointer.getLanguageVersion()));
       bulkImportBuilder.addInternedMetaPointers(pbMetaPointer.build());
     }
     return bulkImportBuilder.build();

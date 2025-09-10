@@ -8,6 +8,11 @@ option java_outer_classname = "BulkImportProtos";
 
 import "io/lionweb/protobuf/Chunk.proto";
 
+// We make use of interned strings, languages, and meta-pointers because this is leading to significant performance
+// benefits.
+// So many integer values are indexes into tables of interned values.
+// Values prefixed with "si_" are string indexes
+// Values prefixed with "mpi_" are meta-pointer indexes
 
 message PBBulkImport {
   // We use this mechanism both to save space and to represent nulls (identified by -1)
@@ -19,7 +24,7 @@ message PBBulkImport {
 }
 
 message PBAttachPoint {
-  uint32 container = 1;
-  uint32 meta_pointer_index = 2;
-  uint32 rootId = 3;
+  uint32 si_container = 1;
+  uint32 mpi_meta_pointer = 2;
+  uint32 si_root = 3;
 }

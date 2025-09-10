@@ -52,28 +52,30 @@ public class ExtraProtoBufSerializationTest {
 
     PBAttachPoint pbAttachPoint = pbBulkImport.getAttachPoints(0);
 
-    assertEquals("n2", pbBulkImport.getInternedStrings(pbAttachPoint.getContainer()));
-    assertEquals("n1", pbBulkImport.getInternedStrings(pbAttachPoint.getRootId()));
+    assertEquals("n2", pbBulkImport.getInternedStrings(pbAttachPoint.getSiContainer()));
+    assertEquals("n1", pbBulkImport.getInternedStrings(pbAttachPoint.getSiRoot()));
 
     PBMetaPointer pbAttachPointContainment =
-        pbBulkImport.getInternedMetaPointers(pbAttachPoint.getMetaPointerIndex());
+        pbBulkImport.getInternedMetaPointers(pbAttachPoint.getMpiMetaPointer());
     assertEquals(
         "Foo",
         pbBulkImport.getInternedStrings(
-            pbBulkImport.getInternedLanguages(pbAttachPointContainment.getLanguage()).getKey()));
+            pbBulkImport
+                .getInternedLanguages(pbAttachPointContainment.getLiLanguage())
+                .getSiKey()));
     assertEquals(
         "1",
         pbBulkImport.getInternedStrings(
             pbBulkImport
-                .getInternedLanguages(pbAttachPointContainment.getLanguage())
-                .getVersion()));
-    assertEquals("c-key", pbBulkImport.getInternedStrings(pbAttachPointContainment.getKey()));
+                .getInternedLanguages(pbAttachPointContainment.getLiLanguage())
+                .getSiVersion()));
+    assertEquals("c-key", pbBulkImport.getInternedStrings(pbAttachPointContainment.getSiKey()));
 
     PBNode fbNode = pbBulkImport.getNodes(0);
-    assertEquals("n1", pbBulkImport.getInternedStrings(fbNode.getId()));
+    assertEquals("n1", pbBulkImport.getInternedStrings(fbNode.getSiId()));
     // Here, even if we serialized a node that had no parent, the parent is obtained from the
     // attach point
-    assertEquals("n2", pbBulkImport.getInternedStrings(fbNode.getParent()));
+    assertEquals("n2", pbBulkImport.getInternedStrings(fbNode.getSiParent()));
   }
 
   @Test
@@ -111,22 +113,22 @@ public class ExtraProtoBufSerializationTest {
 
     PBAttachPoint fbAttachPoint = fbBulkImport.getAttachPoints(0);
 
-    assertEquals("n2", fbBulkImport.getInternedStrings(fbAttachPoint.getContainer()));
-    assertEquals("n1", fbBulkImport.getInternedStrings(fbAttachPoint.getRootId()));
+    assertEquals("n2", fbBulkImport.getInternedStrings(fbAttachPoint.getSiContainer()));
+    assertEquals("n1", fbBulkImport.getInternedStrings(fbAttachPoint.getSiRoot()));
 
     PBMetaPointer fbAttachPointContainment =
-        fbBulkImport.getInternedMetaPointers(fbAttachPoint.getMetaPointerIndex());
+        fbBulkImport.getInternedMetaPointers(fbAttachPoint.getMpiMetaPointer());
     PBLanguage fbLanguage =
-        fbBulkImport.getInternedLanguages(fbAttachPointContainment.getLanguage());
-    assertEquals("Foo", fbBulkImport.getInternedStrings(fbLanguage.getKey()));
-    assertEquals("1", fbBulkImport.getInternedStrings(fbLanguage.getVersion()));
-    assertEquals("c-key", fbBulkImport.getInternedStrings(fbAttachPointContainment.getKey()));
+        fbBulkImport.getInternedLanguages(fbAttachPointContainment.getLiLanguage());
+    assertEquals("Foo", fbBulkImport.getInternedStrings(fbLanguage.getSiKey()));
+    assertEquals("1", fbBulkImport.getInternedStrings(fbLanguage.getSiVersion()));
+    assertEquals("c-key", fbBulkImport.getInternedStrings(fbAttachPointContainment.getSiKey()));
 
     PBNode fbNode = fbBulkImport.getNodes(0);
-    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getId()));
+    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getSiId()));
     // Here, even if we serialized a node that had no parent, the parent is obtained from the
     // attach point
-    assertEquals("n2", fbBulkImport.getInternedStrings(fbNode.getParent()));
+    assertEquals("n2", fbBulkImport.getInternedStrings(fbNode.getSiParent()));
   }
 
   /**
@@ -157,7 +159,7 @@ public class ExtraProtoBufSerializationTest {
     assertEquals(1, fbBulkImport.getNodesCount());
 
     PBNode fbNode = fbBulkImport.getNodes(0);
-    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getId()));
-    assertEquals(null, fbBulkImport.getInternedStrings(fbNode.getParent()));
+    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getSiId()));
+    assertEquals(null, fbBulkImport.getInternedStrings(fbNode.getSiParent()));
   }
 }

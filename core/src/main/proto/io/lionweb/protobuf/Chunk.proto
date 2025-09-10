@@ -6,6 +6,13 @@ option java_multiple_files = true;
 option java_package = "io.lionweb.protobuf";
 option java_outer_classname = "ChunkProtos";
 
+// We make use of interned strings, languages, and meta-pointers because this is leading to significant performance
+// benefits.
+// So many integer values are indexes into tables of interned values.
+// Values prefixed with "si_" are string indexes
+// Values prefixed with "li_" are language indexes
+// Values prefixed with "mpi_" are meta-pointer indexes
+
 message PBChunk {
   string serialization_format_version = 1;
 
@@ -19,46 +26,46 @@ message PBChunk {
 }
 
 message PBLanguage {
-  optional uint32 key = 1;
-  optional uint32 version = 2;
+  optional uint32 si_key = 1;
+  optional uint32 si_version = 2;
 }
 
 message PBNode {
   // Yes, we should _not_ have null IDs, but if necessary we can represent them
-  optional uint32 id = 1;
-  uint32 classifier = 2;
+  optional uint32 si_id = 1;
+  uint32 mpi_classifier = 2;
   repeated PBProperty properties = 3;
   repeated PBContainment containments = 4;
   repeated PBReference references = 5;
   /* This is a list of indexes representing the string values corresponding to the IDs of the annotations */
   /* int to accomodate potential null values */
-  repeated int32 annotations = 6 [packed = true];
-  optional uint32 parent = 7;
+  repeated int32 si_annotations = 6 [packed = true];
+  optional uint32 si_parent = 7;
 }
 
 message PBMetaPointer {
   // Instead of duplicating language+version as raw numbers everywhere,
   // point to the languages table.
-  uint32 language = 1; // index into PBChunk.languages
-  optional uint32 key            = 2; // concept/key within that language
+  uint32 li_language = 1; // index into PBChunk.languages
+  optional uint32 si_key            = 2; // concept/key within that language
 }
 
 message PBProperty {
-  uint32 meta_pointer = 1;
-  optional uint32 value = 2;
+  uint32 mpi_meta_pointer = 1;
+  optional uint32 si_value = 2;
 }
 
 message PBContainment {
-  uint32 meta_pointer = 1;
-  repeated int32 children = 2; // int32 to accomodate potential null values
+  uint32 mpi_meta_pointer = 1;
+  repeated int32 si_children = 2; // int32 to accomodate potential null values
 }
 
 message PBReference {
-  uint32 meta_pointer = 1;
+  uint32 mpi_meta_pointer = 1;
   repeated PBReferenceValue values = 2;
 }
 
 message PBReferenceValue {
-  optional uint32 resolveInfo = 1;
-  optional uint32 referred = 2;
+  optional uint32 si_resolveInfo = 1;
+  optional uint32 si_referred = 2;
 }

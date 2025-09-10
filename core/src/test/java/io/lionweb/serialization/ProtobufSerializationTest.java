@@ -475,15 +475,15 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     // Every metapointer must reference an existing language index
     for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
-      int languageIndex = mp.getLanguage();
+      int languageIndex = mp.getLiLanguage();
       assertTrue(
           "PBMetaPointer.language index must be within interned languages table",
           languageIndex >= 0 && languageIndex < languagesCount);
 
       // Language key/version must point to valid entries in the interned strings table
       PBLanguage lang = pbChunk.getInternedLanguages(languageIndex);
-      String key = pbChunk.getInternedStrings(lang.getKey());
-      String version = pbChunk.getInternedStrings(lang.getVersion());
+      String key = pbChunk.getInternedStrings(lang.getSiKey());
+      String version = pbChunk.getInternedStrings(lang.getSiVersion());
       assertNotNull("Language key must resolve to a string", key);
       assertNotNull("Language version must resolve to a string", version);
     }
@@ -515,21 +515,21 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     // Every metapointer must reference an existing language index
     for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
-      int languageIndex = mp.getLanguage();
+      int languageIndex = mp.getLiLanguage();
       assertTrue(
           "PBMetaPointer.language index must be within interned languages table",
           languageIndex >= 0 && languageIndex < languagesCount);
 
       // Language key/version must point to valid entries in the interned strings table
       PBLanguage lang = pbChunk.getInternedLanguages(languageIndex);
-      String key = pbChunk.getInternedStrings(lang.getKey());
-      String version = pbChunk.getInternedStrings(lang.getVersion());
+      String key = pbChunk.getInternedStrings(lang.getSiKey());
+      String version = pbChunk.getInternedStrings(lang.getSiVersion());
       assertNotNull("Language key must resolve to a string", key);
       assertNotNull("Language version must resolve to a string", version);
 
       // Metapointer key must also resolve to a string
-      assertNotEquals(-1, mp.getKey());
-      String mpKey = pbChunk.getInternedStrings(mp.getKey());
+      assertNotEquals(-1, mp.getSiKey());
+      String mpKey = pbChunk.getInternedStrings(mp.getSiKey());
       assertNotNull("MetaPointer key must resolve to a string", mpKey);
     }
   }
@@ -549,16 +549,16 @@ public class ProtobufSerializationTest extends SerializationTest {
     // Add a metapointer that references language index 0 (which doesn't exist)
     PBMetaPointer badMetaPointer =
         PBMetaPointer.newBuilder()
-            .setLanguage(0)
-            .setKey(0) // index into interned_strings ("dummy-key")
+            .setLiLanguage(0)
+            .setSiKey(0) // index into interned_strings ("dummy-key")
             .build();
     chunkBuilder.addInternedMetaPointers(badMetaPointer);
 
     // Add a node referencing the bad metapointer as classifier
     PBNode badNode =
         PBNode.newBuilder()
-            .setId(0) // "dummy-key" as ID (not important for this test)
-            .setClassifier(0) // index of the bad metapointer
+            .setSiId(0) // "dummy-key" as ID (not important for this test)
+            .setMpiClassifier(0) // index of the bad metapointer
             .build();
     chunkBuilder.addNodes(badNode);
 
