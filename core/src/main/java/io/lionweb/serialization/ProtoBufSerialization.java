@@ -58,17 +58,19 @@ public class ProtoBufSerialization extends AbstractSerialization {
     int languageCount = chunk.getInternedLanguagesCount();
     int metaPointerCount = chunk.getInternedMetaPointersCount();
 
-    String[] stringsArray = new String[stringCount];
+    String[] stringsArray = new String[stringCount + 1];
+    stringsArray[0] = null;
     for (int i = 0; i < chunk.getInternedStringsCount(); i++) {
-      stringsArray[i] = chunk.getInternedStrings(i);
+      stringsArray[i + 1] = chunk.getInternedStrings(i);
     }
-    LanguageVersion[] languagesArray = new LanguageVersion[languageCount];
+    LanguageVersion[] languagesArray = new LanguageVersion[languageCount + 1];
+    languagesArray[0] = null;
     for (int i = 0; i < chunk.getInternedLanguagesCount(); i++) {
       PBLanguage l = chunk.getInternedLanguages(i);
       String key = stringsArray[l.getSiKey()];
       String version = stringsArray[l.getSiVersion()];
       LanguageVersion lv = LanguageVersion.of(key, version);
-      languagesArray[i] = lv;
+      languagesArray[i + 1] = lv;
     }
     MetaPointer[] metapointersArray = new MetaPointer[metaPointerCount];
     for (int i = 0; i < chunk.getInternedMetaPointersCount(); i++) {
@@ -88,7 +90,9 @@ public class ProtoBufSerialization extends AbstractSerialization {
     SerializedChunk serializedChunk = new SerializedChunk();
     serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
     for (LanguageVersion languageVersion : languagesArray) {
-      serializedChunk.addLanguage(languageVersion);
+      if (languageVersion != null) {
+        serializedChunk.addLanguage(languageVersion);
+      }
     }
 
     chunk
@@ -96,8 +100,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .forEach(
             n -> {
               SerializedClassifierInstance sci = new SerializedClassifierInstance();
-              sci.setID(n.getSiId() == -1 ? null : stringsArray[n.getSiId()]);
-              sci.setParentNodeID(n.getSiParent() == -1 ? null : stringsArray[n.getSiParent()]);
+              sci.setID(stringsArray[n.getSiId()]);
+              sci.setParentNodeID(stringsArray[n.getSiParent()]);
               sci.setClassifier(metapointersArray[n.getMpiClassifier()]);
               n.getPropertiesList()
                   .forEach(
@@ -105,13 +109,13 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         SerializedPropertyValue spv =
                             SerializedPropertyValue.get(
                                 metapointersArray[p.getMpiMetaPointer()],
-                                p.getSiValue() == -1 ? null : stringsArray[p.getSiValue()]);
+                                stringsArray[p.getSiValue()]);
                         sci.addPropertyValue(spv);
                       });
               n.getContainmentsList()
                   .forEach(
                       c -> {
-                        if (c.getSiChildrenList().stream().anyMatch(el -> el < 0)) {
+                        if (c.getSiChildrenList().stream().anyMatch(el -> el == 0)) {
                           throw new DeserializationException(
                               "Unable to deserialize child identified by Null ID");
                         }
@@ -136,14 +140,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                 rv -> {
                                   SerializedReferenceValue.Entry entry =
                                       new SerializedReferenceValue.Entry();
-                                  entry.setReference(
-                                      rv.getSiReferred() == -1
-                                          ? null
-                                          : stringsArray[rv.getSiReferred()]);
-                                  entry.setResolveInfo(
-                                      rv.getSiResolveInfo() == -1
-                                          ? null
-                                          : stringsArray[rv.getSiResolveInfo()]);
+                                  entry.setReference(stringsArray[rv.getSiReferred()]);
+                                  entry.setResolveInfo(stringsArray[rv.getSiResolveInfo()]);
                                   srv.addValue(entry);
                                 });
                         if (!srv.getValue().isEmpty()) {
@@ -228,11 +226,16 @@ public class ProtoBufSerialization extends AbstractSerialization {
       return languages;
     }
 
-    public SerializeHelper() {}
+    public SerializeHelper() {
+      stringIndexMap.put(null, 0);
+      languageIndexMap.put(null, 0);
+      strings.add(null);
+      languages.add(null);
+    }
 
     public int stringIndexer(String string) {
       if (string == null) {
-        return -1;
+        return 0;
       }
       if (stringIndexMap.containsKey(string)) {
         return stringIndexMap.get(string);
@@ -245,7 +248,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
 
     public int languageIndexer(LanguageVersion language) {
       if (language == null) {
-        return -1;
+        return 0;
       }
       if (languageIndexMap.containsKey(language)) {
         return languageIndexMap.get(language);
@@ -342,15 +345,19 @@ public class ProtoBufSerialization extends AbstractSerialization {
 
     // We need to process languages before strings, otherwise we might end up with null pointers
     for (LanguageVersion languageVersion : serializeHelper.languages) {
-      chunkBuilder.addInternedLanguages(
-          PBLanguage.newBuilder()
-              .setSiKey(serializeHelper.stringIndexer(languageVersion.getKey()))
-              .setSiVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
-              .build());
+      if (languageVersion != null) {
+        chunkBuilder.addInternedLanguages(
+            PBLanguage.newBuilder()
+                .setSiKey(serializeHelper.stringIndexer(languageVersion.getKey()))
+                .setSiVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
+                .build());
+      }
     }
 
     for (String string : serializeHelper.strings) {
-      chunkBuilder.addInternedStrings(string);
+      if (string != null) {
+        chunkBuilder.addInternedStrings(string);
+      }
     }
     for (MetaPointer metaPointer : serializeHelper.metaPointers) {
       chunkBuilder.addInternedMetaPointers(

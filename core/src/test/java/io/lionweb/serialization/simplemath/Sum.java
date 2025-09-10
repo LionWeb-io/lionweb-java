@@ -7,10 +7,11 @@ import io.lionweb.serialization.SimpleNode;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
 
 public class Sum extends SimpleNode {
-  private final IntLiteral left;
-  private final IntLiteral right;
+  private IntLiteral left;
+  private IntLiteral right;
 
   public Sum(IntLiteral left, IntLiteral right) {
     this.left = left;
@@ -58,5 +59,16 @@ public class Sum extends SimpleNode {
       return Arrays.asList(right);
     }
     return super.concreteGetChildren(containment);
+  }
+
+  @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
+    if (containment.getName().equals("left")) {
+      this.left = (IntLiteral) child;
+    } else if (containment.getName().equals("right")) {
+      this.right = (IntLiteral) child;
+    } else {
+      super.addChild(containment, child);
+    }
   }
 }

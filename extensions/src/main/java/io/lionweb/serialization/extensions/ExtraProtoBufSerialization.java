@@ -63,7 +63,9 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
     }
 
     for (String string : serializeHelper.getStrings()) {
-      bulkImportBuilder.addInternedStrings(string);
+      if (string != null) {
+        bulkImportBuilder.addInternedStrings(string);
+      }
     }
 
     for (MetaPointer metaPointer : serializeHelper.getMetaPointers()) {
