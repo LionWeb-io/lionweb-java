@@ -12,6 +12,11 @@ option java_outer_classname = "ChunkProtos";
 // Values prefixed with "si_" are string indexes
 // Values prefixed with "li_" are language indexes
 // Values prefixed with "mpi_" are meta-pointer indexes
+//
+// Null values for strings and languages are encoded as 0, so indexes into these tables
+// are shifted by one. Specifically:
+// - During serialization: null → 0; value i → index (i + 1), where i is the position in the interned table.
+// - During deserialization: 0 → null; index i → element (i - 1) of the interned table.
 
 message PBChunk {
   string serialization_format_version = 1;
@@ -39,7 +44,7 @@ message PBNode {
   repeated PBReference references = 5;
   /* This is a list of indexes representing the string values corresponding to the IDs of the annotations */
   /* int to accomodate potential null values */
-  repeated int32 si_annotations = 6 [packed = true];
+  repeated uint32 si_annotations = 6 [packed = true];
   optional uint32 si_parent = 7;
 }
 
@@ -57,7 +62,7 @@ message PBProperty {
 
 message PBContainment {
   uint32 mpi_meta_pointer = 1;
-  repeated int32 si_children = 2; // int32 to accomodate potential null values
+  repeated uint32 si_children = 2;
 }
 
 message PBReference {
