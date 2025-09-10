@@ -29,19 +29,19 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void serializeLionCoreToSerializedChunkV2023() {
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         jsonSerialization.serializeTreeToSerializationChunk(
             LionCore.getInstance(LionWebVersion.v2023_1));
 
-    assertEquals("2023.1", serializedChunk.getSerializationFormatVersion());
+    assertEquals("2023.1", serializationChunk.getSerializationFormatVersion());
 
-    assertEquals(2, serializedChunk.getLanguages().size());
+    assertEquals(2, serializationChunk.getLanguages().size());
     Assert.assertEquals(
         new UsedLanguage("LionCore-M3", "2023.1"),
-        serializedChunk.getLanguages().iterator().next());
+        serializationChunk.getLanguages().iterator().next());
 
     SerializedClassifierInstance LionCore_M3 =
-        serializedChunk.getClassifierInstances().stream()
+        serializationChunk.getClassifierInstances().stream()
             .filter(n -> "-id-LionCore-M3".equals(n.getID()))
             .findFirst()
             .get();
@@ -85,7 +85,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(Collections.emptyList(), LionCore_M3.getReferences());
 
     SerializedClassifierInstance LionCore_M3_Interface_extends =
-        serializedChunk.getClassifierInstances().stream()
+        serializationChunk.getClassifierInstances().stream()
             .filter(n -> "-id-Interface-extends".equals(n.getID()))
             .findFirst()
             .get();
@@ -94,18 +94,18 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   @Test
   public void serializeLionCoreToSerializedChunkV2024() {
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         jsonSerialization.serializeTreeToSerializationChunk(LionCore.getInstance());
 
-    assertEquals("2024.1", serializedChunk.getSerializationFormatVersion());
+    assertEquals("2024.1", serializationChunk.getSerializationFormatVersion());
 
-    assertEquals(2, serializedChunk.getLanguages().size());
+    assertEquals(2, serializationChunk.getLanguages().size());
     Assert.assertEquals(
         new UsedLanguage("LionCore-M3", "2024.1"),
-        serializedChunk.getLanguages().iterator().next());
+        serializationChunk.getLanguages().iterator().next());
 
     SerializedClassifierInstance LionCore_M3 =
-        serializedChunk.getClassifierInstances().stream()
+        serializationChunk.getClassifierInstances().stream()
             .filter(n -> "-id-LionCore-M3-2024-1".equals(n.getID()))
             .findFirst()
             .get();
@@ -152,7 +152,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals(Collections.emptyList(), LionCore_M3.getReferences());
 
     SerializedClassifierInstance LionCore_M3_Interface_extends =
-        serializedChunk.getClassifierInstances().stream()
+        serializationChunk.getClassifierInstances().stream()
             .filter(n -> "-id-Interface-extends-2024-1".equals(n.getID()))
             .findFirst()
             .get();
@@ -174,12 +174,12 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   public void deserializeLionCoreToSerializedChunk() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
     List<SerializedClassifierInstance> deserializedSerializedClassifierInstanceData =
-        serializedChunk.getClassifierInstances();
+        serializationChunk.getClassifierInstances();
 
-    SerializedClassifierInstance lioncore = serializedChunk.getInstanceByID("-id-LionCore-M3");
+    SerializedClassifierInstance lioncore = serializationChunk.getInstanceByID("-id-LionCore-M3");
     assertEquals(
         MetaPointer.from(LionCore.getLanguage(LionWebVersion.v2023_1)), lioncore.getClassifier());
     assertEquals("-id-LionCore-M3", lioncore.getID());

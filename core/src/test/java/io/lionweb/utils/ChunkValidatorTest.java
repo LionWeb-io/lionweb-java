@@ -11,14 +11,14 @@ import org.junit.Test;
 public class ChunkValidatorTest {
 
   private ChunkValidator validator;
-  private SerializedChunk chunk;
+  private SerializationChunk chunk;
   private UsedLanguage testLanguage;
   private MetaPointer testMetaPointer;
 
   @Before
   public void setUp() {
     validator = new ChunkValidator();
-    chunk = new SerializedChunk();
+    chunk = new SerializationChunk();
     testLanguage = new UsedLanguage("test-lang", "1.0");
     testMetaPointer = MetaPointer.get("test-lang", "1.0", "TestProperty");
   }

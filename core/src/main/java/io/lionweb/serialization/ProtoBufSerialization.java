@@ -25,7 +25,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return deserializeToNodes(new ByteArrayInputStream(bytes));
   }
 
-  public SerializedChunk deserializeToChunk(byte[] bytes) throws IOException {
+  public SerializationChunk deserializeToChunk(byte[] bytes) throws IOException {
     PBChunk pbChunk = PBChunk.parseFrom(new ByteArrayInputStream(bytes));
     return deserializeSerializationChunk(pbChunk);
   }
@@ -47,12 +47,12 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
-    SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
+    SerializationChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
     return deserializeSerializationChunk(serializationBlock);
   }
 
-  private SerializedChunk deserializeSerializationChunk(PBChunk chunk) {
+  private SerializationChunk deserializeSerializationChunk(PBChunk chunk) {
     Map<Integer, String> stringsMap = new HashMap<>();
     for (int i = 0; i < chunk.getStringValuesCount(); i++) {
       stringsMap.put(i, chunk.getStringValues(i));
@@ -69,8 +69,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
     }
     ;
 
-    SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
+    SerializationChunk serializationChunk = new SerializationChunk();
+    serializationChunk.setSerializationFormatVersion(chunk.getSerializationFormatVersion());
     chunk
         .getLanguagesList()
         .forEach(
@@ -78,7 +78,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
               UsedLanguage usedLanguage = new UsedLanguage();
               usedLanguage.setKey(stringsMap.get(l.getKey()));
               usedLanguage.setVersion(stringsMap.get(l.getVersion()));
-              serializedChunk.addLanguage(usedLanguage);
+              serializationChunk.addLanguage(usedLanguage);
             });
 
     chunk
@@ -136,9 +136,9 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         }
                       });
               n.getAnnotationsList().forEach(a -> sci.addAnnotation(stringsMap.get(a)));
-              serializedChunk.addClassifierInstance(sci);
+              serializationChunk.addClassifierInstance(sci);
             });
-    return serializedChunk;
+    return serializationChunk;
   }
 
   public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
@@ -169,7 +169,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    SerializedChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
+    SerializationChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
     return serializeToByteArray(serializationBlock);
   }
 
@@ -177,8 +177,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return serializeNodesToByteArray(Arrays.asList(classifierInstances));
   }
 
-  public byte[] serializeToByteArray(SerializedChunk serializedChunk) {
-    return serialize(serializedChunk).toByteArray();
+  public byte[] serializeToByteArray(SerializationChunk serializationChunk) {
+    return serialize(serializationChunk).toByteArray();
   }
 
   protected class SerializeHelper {
@@ -275,19 +275,19 @@ public class ProtoBufSerialization extends AbstractSerialization {
     Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         serializeNodesToSerializationChunk(
             classifierInstances.stream()
                 .filter(n -> !(n instanceof ProxyNode))
                 .collect(Collectors.toList()));
-    return serialize(serializedChunk);
+    return serialize(serializationChunk);
   }
 
-  public PBChunk serialize(SerializedChunk serializedChunk) {
+  public PBChunk serialize(SerializationChunk serializationChunk) {
     PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
-    chunkBuilder.setSerializationFormatVersion(serializedChunk.getSerializationFormatVersion());
+    chunkBuilder.setSerializationFormatVersion(serializationChunk.getSerializationFormatVersion());
     SerializeHelper serializeHelper = new SerializeHelper();
-    serializedChunk
+    serializationChunk
         .getLanguages()
         .forEach(
             ul -> {
@@ -298,7 +298,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                       .build());
             });
 
-    serializedChunk
+    serializationChunk
         .getClassifierInstances()
         .forEach(n -> chunkBuilder.addNodes(serializeHelper.serializeNode(n)));
 

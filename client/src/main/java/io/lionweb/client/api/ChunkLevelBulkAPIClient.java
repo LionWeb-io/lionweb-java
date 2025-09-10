@@ -1,7 +1,7 @@
 package io.lionweb.client.api;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
 import java.util.List;
@@ -38,7 +38,7 @@ public interface ChunkLevelBulkAPIClient {
   }
 
   @Nullable
-  default RepositoryVersionToken createPartitionsFromChunk(@NotNull SerializedChunk chunk)
+  default RepositoryVersionToken createPartitionsFromChunk(@NotNull SerializationChunk chunk)
       throws IOException {
     Objects.requireNonNull(chunk, "chunk should not be null");
     return createPartitionsFromChunk(chunk.getClassifierInstances());
@@ -59,7 +59,7 @@ public interface ChunkLevelBulkAPIClient {
   }
 
   @Nullable
-  default RepositoryVersionToken storeChunk(@NotNull SerializedChunk chunk) throws IOException {
+  default RepositoryVersionToken storeChunk(@NotNull SerializationChunk chunk) throws IOException {
     Objects.requireNonNull(chunk, "chunk should not be null");
     return storeChunk(chunk.getClassifierInstances());
   }

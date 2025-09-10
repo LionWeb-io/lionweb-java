@@ -10,9 +10,9 @@ import javax.annotation.Nonnull;
  * Validate a generic chunk, which may contain part of a partition, an entire partition, or perhaps
  * multiple partitions.
  */
-public class ChunkValidator extends Validator<SerializedChunk> {
+public class ChunkValidator extends Validator<SerializationChunk> {
   @Override
-  public ValidationResult validate(@Nonnull SerializedChunk chunk) {
+  public ValidationResult validate(@Nonnull SerializationChunk chunk) {
     Objects.requireNonNull(chunk, "chunk should not be null");
     ValidationResult validationResult = new ValidationResult();
 

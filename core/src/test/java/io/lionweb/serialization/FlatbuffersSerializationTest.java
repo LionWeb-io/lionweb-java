@@ -217,11 +217,11 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         flatBuffersSerialization.serializeNodesToSerializationChunk(myInstance);
-    assertEquals(1, serializedChunk.getClassifierInstances().size());
+    assertEquals(1, serializationChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
-        serializedChunk.getClassifierInstances().get(0);
+        serializationChunk.getClassifierInstances().get(0);
     assertEquals("instance-a", serializedClassifierInstance.getID());
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
@@ -246,21 +246,22 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
-    assertEquals(1, serializedChunk.getLanguages().size());
-    assertEquals(new UsedLanguage("l", "1"), serializedChunk.getLanguages().get(0));
+    assertEquals(1, serializationChunk.getLanguages().size());
+    assertEquals(new UsedLanguage("l", "1"), serializationChunk.getLanguages().get(0));
 
-    assertEquals(4, serializedChunk.getClassifierInstances().size());
-    SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
+    assertEquals(4, serializationChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedN1 = serializationChunk.getClassifierInstances().get(0);
     assertEquals("n1", serializedN1.getID());
     assertNull(serializedN1.getParentNodeID());
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
-    SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
+    SerializedClassifierInstance serializedA1_1 =
+        serializationChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializationChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(n1, deserialized.get(0));
   }
@@ -283,19 +284,20 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
 
-    assertEquals(4, serializedChunk.getClassifierInstances().size());
-    SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
+    assertEquals(4, serializationChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedN1 = serializationChunk.getClassifierInstances().get(0);
     assertEquals("n1", serializedN1.getID());
     assertNull(serializedN1.getParentNodeID());
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
-    SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
+    SerializedClassifierInstance serializedA1_1 =
+        serializationChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializationChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(n1, deserialized.get(0));
   }
@@ -315,20 +317,21 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationChunk(l);
+    SerializationChunk serializationChunk =
+        flatBuffersSerialization.serializeTreeToSerializationChunk(l);
 
-    assertEquals(5, serializedChunk.getClassifierInstances().size());
-    SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
+    assertEquals(5, serializationChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedL = serializationChunk.getClassifierInstances().get(0);
     assertEquals("l", serializedL.getID());
     assertNull(serializedL.getParentNodeID());
 
-    SerializedClassifierInstance serializedC = serializedChunk.getInstanceByID("c");
+    SerializedClassifierInstance serializedC = serializationChunk.getInstanceByID("c");
     assertEquals("c", serializedC.getID());
     assertEquals(Arrays.asList("metaAnn_1"), serializedC.getAnnotations());
 
     flatBuffersSerialization.registerLanguage(metaLang);
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializationChunk);
     assertEquals(5, deserialized.size());
     ClassifierInstance<?> deserializedC = deserialized.get(3);
     assertInstancesAreEquals(c, deserializedC);
@@ -360,20 +363,21 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationChunk(l);
+    SerializationChunk serializationChunk =
+        flatBuffersSerialization.serializeTreeToSerializationChunk(l);
 
-    assertEquals(5, serializedChunk.getClassifierInstances().size());
-    SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
+    assertEquals(5, serializationChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedL = serializationChunk.getClassifierInstances().get(0);
     assertEquals("l", serializedL.getID());
     assertNull(serializedL.getParentNodeID());
 
-    SerializedClassifierInstance serializedC = serializedChunk.getInstanceByID("c");
+    SerializedClassifierInstance serializedC = serializationChunk.getInstanceByID("c");
     assertEquals("c", serializedC.getID());
     assertEquals(Arrays.asList("metaAnn_1"), serializedC.getAnnotations());
 
     flatBuffersSerialization.registerLanguage(metaLang);
     List<ClassifierInstance<?>> deserialized =
-        flatBuffersSerialization.deserializeSerializationChunk(serializedChunk);
+        flatBuffersSerialization.deserializeSerializationChunk(serializationChunk);
     assertEquals(5, deserialized.size());
     ClassifierInstance<?> deserializedC = deserialized.get(3);
     assertInstancesAreEquals(c, deserializedC);
@@ -405,12 +409,13 @@ public class FlatbuffersSerializationTest extends SerializationTest {
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization(LionWebVersion.v2023_1);
     flatBuffersSerialization.enableDynamicNodes();
-    SerializedChunk serializedChunk = flatBuffersSerialization.serializeTreeToSerializationChunk(l);
+    SerializationChunk serializationChunk =
+        flatBuffersSerialization.serializeTreeToSerializationChunk(l);
 
-    byte[] bytes = flatBuffersSerialization.serialize(serializedChunk);
-    SerializedChunk deserializedChunk = flatBuffersSerialization.deserializeToChunk(bytes);
+    byte[] bytes = flatBuffersSerialization.serialize(serializationChunk);
+    SerializationChunk deserializedChunk = flatBuffersSerialization.deserializeToChunk(bytes);
 
-    assertEquals(serializedChunk, deserializedChunk);
+    assertEquals(serializationChunk, deserializedChunk);
   }
 
   @Test
@@ -427,11 +432,11 @@ public class FlatbuffersSerializationTest extends SerializationTest {
 
     FlatBuffersSerialization flatBuffersSerialization =
         SerializationProvider.getStandardFlatBuffersSerialization();
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         flatBuffersSerialization.serializeNodesToSerializationChunk(n1);
 
-    assertEquals(1, serializedChunk.getLanguages().size());
-    assertSerializedChunkContainsLanguage(serializedChunk, l);
+    assertEquals(1, serializationChunk.getLanguages().size());
+    assertSerializedChunkContainsLanguage(serializationChunk, l);
   }
 
   @Test
@@ -456,9 +461,9 @@ public class FlatbuffersSerializationTest extends SerializationTest {
   }
 
   private void assertSerializedChunkContainsLanguage(
-      SerializedChunk serializedChunk, Language language) {
+      SerializationChunk serializationChunk, Language language) {
     assertTrue(
-        serializedChunk.getLanguages().stream()
+        serializationChunk.getLanguages().stream()
             .anyMatch(
                 entry ->
                     entry.getKey().equals(language.getKey())

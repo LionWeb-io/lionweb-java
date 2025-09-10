@@ -9,7 +9,7 @@ import javax.annotation.Nonnull;
  * inconsistent. This is a low-level representation, intended to represent broken chunks or as an
  * intermediate step during serialization or deserialization.
  */
-public class SerializedChunk {
+public class SerializationChunk {
 
   private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
@@ -17,14 +17,14 @@ public class SerializedChunk {
   private final List<UsedLanguage> languages = new ArrayList<>();
   private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
-  public static SerializedChunk fromNodes(
+  public static SerializationChunk fromNodes(
       @Nonnull LionWebVersion lionWebVersion, @Nonnull List<SerializedClassifierInstance> nodes) {
     Objects.requireNonNull(lionWebVersion);
     Objects.requireNonNull(nodes);
     if (nodes.isEmpty()) {
       throw new IllegalArgumentException();
     }
-    SerializedChunk instance = new SerializedChunk();
+    SerializationChunk instance = new SerializationChunk();
     instance.setSerializationFormatVersion(lionWebVersion.getVersionString());
     nodes.forEach(n -> instance.addClassifierInstance(n));
     instance.populateUsedLanguages();
@@ -139,8 +139,8 @@ public class SerializedChunk {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof SerializedChunk)) return false;
-    SerializedChunk that = (SerializedChunk) o;
+    if (!(o instanceof SerializationChunk)) return false;
+    SerializationChunk that = (SerializationChunk) o;
     return Objects.equals(serializationFormatVersion, that.serializationFormatVersion)
         && Objects.equals(languages, that.languages)
         && Objects.equals(classifierInstances, that.classifierInstances);
