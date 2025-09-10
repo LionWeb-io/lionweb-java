@@ -27,8 +27,10 @@ public class MetaPointer {
         .computeIfAbsent(version, v -> new MetaPointer(language, version, key));
   }
 
-  // Note that theese tree values are nullable solely because of fault-tolerance. Semantically they should not be null,
-  // but when writing code we should expect these to be potentially null, in case we are representing an incorrect state
+  // Note that theese tree values are nullable solely because of fault-tolerance. Semantically they
+  // should not be null,
+  // but when writing code we should expect these to be potentially null, in case we are
+  // representing an incorrect state
   private final @Nullable String key;
   private final @Nullable String version;
   private final @Nullable String language;
