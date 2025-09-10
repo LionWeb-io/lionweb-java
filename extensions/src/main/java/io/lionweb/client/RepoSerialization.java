@@ -5,7 +5,7 @@ import static io.lionweb.serialization.LowLevelJsonSerialization.groupNodesIntoS
 import io.lionweb.client.api.BulkAPIClient;
 import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.serialization.LowLevelJsonSerialization;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.extensions.AdditionalAPIClient;
 import io.lionweb.serialization.extensions.BulkImport;
@@ -90,18 +90,19 @@ public class RepoSerialization {
       String content = new String(Files.readAllBytes(file.toPath()), Charsets.UTF_8);
 
       LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
-      SerializedChunk serializedChunk =
+      SerializationChunk serializationChunk =
           lowLevelJsonSerialization.deserializeSerializationBlock(content);
       SerializedClassifierInstance root =
-          serializedChunk.getClassifierInstances().stream()
+          serializationChunk.getClassifierInstances().stream()
               .filter(n -> n.getParentNodeID() == null)
               .findFirst()
               .get();
       root.clearContainments();
-      SerializedChunk limitedSerializedChunk =
+      SerializationChunk limitedSerializationChunk =
           groupNodesIntoSerializationBlock(
               Collections.singletonList(root), apiClient.getLionWebVersion());
-      String limitedJson = lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
+      String limitedJson =
+          lowLevelJsonSerialization.serializeToJsonString(limitedSerializationChunk);
 
       apiClient.rawCreatePartitions(limitedJson);
 
@@ -124,9 +125,9 @@ public class RepoSerialization {
     LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
     BulkImport bulkImport = new BulkImport();
     for (File file : findJsonFilesRecursively(directory)) {
-      SerializedChunk serializedChunk =
+      SerializationChunk serializationChunk =
           lowLevelJsonSerialization.deserializeSerializationBlock(file);
-      bulkImport.addNodes(serializedChunk.getClassifierInstances());
+      bulkImport.addNodes(serializationChunk.getClassifierInstances());
       if (bulkImport.numberOfNodes() >= numberOfNodesThreshold) {
         apiClient.bulkImport(bulkImport, transferFormat, compression);
         bulkImport.clear();
@@ -168,19 +169,19 @@ public class RepoSerialization {
         String content = new String(baos.toByteArray(), StandardCharsets.UTF_8);
 
         LowLevelJsonSerialization lowLevelJsonSerialization = new LowLevelJsonSerialization();
-        SerializedChunk serializedChunk =
+        SerializationChunk serializationChunk =
             lowLevelJsonSerialization.deserializeSerializationBlock(content);
         SerializedClassifierInstance root =
-            serializedChunk.getClassifierInstances().stream()
+            serializationChunk.getClassifierInstances().stream()
                 .filter(n -> n.getParentNodeID() == null)
                 .findFirst()
                 .get();
         root.clearContainments();
-        SerializedChunk limitedSerializedChunk =
+        SerializationChunk limitedSerializationChunk =
             groupNodesIntoSerializationBlock(
                 Collections.singletonList(root), apiClient.getLionWebVersion());
         String limitedJson =
-            lowLevelJsonSerialization.serializeToJsonString(limitedSerializedChunk);
+            lowLevelJsonSerialization.serializeToJsonString(limitedSerializationChunk);
 
         apiClient.rawCreatePartitions(limitedJson);
 
@@ -232,9 +233,9 @@ public class RepoSerialization {
           baos.writeTo(fos);
         }
 
-        SerializedChunk serializedChunk =
+        SerializationChunk serializationChunk =
             lowLevelJsonSerialization.deserializeSerializationBlock(tempFile);
-        bulkImport.addNodes(serializedChunk.getClassifierInstances());
+        bulkImport.addNodes(serializationChunk.getClassifierInstances());
 
         if (bulkImport.numberOfNodes() >= numberOfNodesThreshold) {
           apiClient.bulkImport(bulkImport, transferFormat, compression);

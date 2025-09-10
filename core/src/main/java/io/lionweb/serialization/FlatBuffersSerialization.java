@@ -37,12 +37,12 @@ public class FlatBuffersSerialization extends AbstractSerialization {
   }
 
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(FBChunk chunk) {
-    SerializedChunk serializationBlock = deserializeSerializationChunk(chunk);
+    SerializationChunk serializationBlock = deserializeSerializationChunk(chunk);
     validateSerializationBlock(serializationBlock);
     return deserializeSerializationChunk(serializationBlock);
   }
 
-  public SerializedChunk deserializeToChunk(byte[] bytes) {
+  public SerializationChunk deserializeToChunk(byte[] bytes) {
     ByteBuffer bb = ByteBuffer.wrap(bytes);
     return deserializeSerializationChunk(FBChunk.getRootAsFBChunk(bb));
   }
@@ -75,7 +75,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    SerializedChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
+    SerializationChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
     return serialize(serializationBlock);
   }
 
@@ -90,24 +90,24 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
-    SerializedChunk serializedChunk =
+    SerializationChunk serializationChunk =
         serializeNodesToSerializationChunk(
             classifierInstances.stream()
                 .filter(n -> !(n instanceof ProxyNode))
                 .collect(Collectors.toList()));
-    return serialize(serializedChunk);
+    return serialize(serializationChunk);
   }
 
-  public byte[] serialize(SerializedChunk serializedChunk) {
+  public byte[] serialize(SerializationChunk serializationChunk) {
     FlatBufferBuilder builder = new FlatBufferBuilder(1024);
 
     FBHelper helper = new FBHelper(builder);
 
-    int[] languagesOffsets = helper.languagesVector(serializedChunk.getLanguages());
+    int[] languagesOffsets = helper.languagesVector(serializationChunk.getLanguages());
 
-    int[] nodesOffsets = new int[serializedChunk.getClassifierInstances().size()];
-    for (int i = 0; i < serializedChunk.getClassifierInstances().size(); i++) {
-      SerializedClassifierInstance sci = serializedChunk.getClassifierInstances().get(i);
+    int[] nodesOffsets = new int[serializationChunk.getClassifierInstances().size()];
+    for (int i = 0; i < serializationChunk.getClassifierInstances().size(); i++) {
+      SerializedClassifierInstance sci = serializationChunk.getClassifierInstances().get(i);
 
       int idOffset = sci.getID() == null ? -1 : builder.createSharedString(sci.getID());
       int classifierOffset = helper.offsetForMetaPointer(sci.getClassifier());
@@ -142,7 +142,7 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     int chunk =
         FBChunk.createFBChunk(
             builder,
-            builder.createSharedString(serializedChunk.getSerializationFormatVersion()),
+            builder.createSharedString(serializationChunk.getSerializationFormatVersion()),
             FBChunk.createLanguagesVector(builder, languagesOffsets),
             FBChunk.createNodesVector(builder, nodesOffsets));
 
@@ -295,17 +295,17 @@ public class FlatBuffersSerialization extends AbstractSerialization {
     }
   }
 
-  private SerializedChunk deserializeSerializationChunk(FBChunk chunk) {
+  private SerializationChunk deserializeSerializationChunk(FBChunk chunk) {
     DeserializationHelper helper = new DeserializationHelper();
 
-    SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(chunk.serializationFormatVersion());
+    SerializationChunk serializationChunk = new SerializationChunk();
+    serializationChunk.setSerializationFormatVersion(chunk.serializationFormatVersion());
     for (int i = 0; i < chunk.languagesLength(); i++) {
       FBLanguage l = chunk.languages(i);
       UsedLanguage usedLanguage = new UsedLanguage();
       usedLanguage.setKey(l.key());
       usedLanguage.setVersion(l.version());
-      serializedChunk.addLanguage(usedLanguage);
+      serializationChunk.addLanguage(usedLanguage);
     }
 
     for (int i = 0; i < chunk.nodesLength(); i++) {
@@ -348,9 +348,9 @@ public class FlatBuffersSerialization extends AbstractSerialization {
         String annotationID = n.annotations(j);
         sci.addAnnotation(annotationID);
       }
-      serializedChunk.addClassifierInstance(sci);
+      serializationChunk.addClassifierInstance(sci);
     }
     ;
-    return serializedChunk;
+    return serializationChunk;
   }
 }

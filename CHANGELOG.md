@@ -155,3 +155,7 @@ Introducing support for LionWeb 2024.1
 ### Version 1.0.7
 
 * Add support for partition observers
+
+### Version 1.1.0
+
+* Renamed SerializedChunk into SerializationChunk

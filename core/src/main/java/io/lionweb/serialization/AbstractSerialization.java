@@ -162,13 +162,13 @@ public abstract class AbstractSerialization {
   // Serialization to chunk
   //
 
-  public SerializedChunk serializeTreeToSerializationChunk(ClassifierInstance<?> root) {
+  public SerializationChunk serializeTreeToSerializationChunk(ClassifierInstance<?> root) {
     Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
     ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
     return serializeNodesToSerializationChunk(classifierInstances);
   }
 
-  public SerializedChunk serializeTreesToSerializationChunk(
+  public SerializationChunk serializeTreesToSerializationChunk(
       List<? extends ClassifierInstance<?>> roots) {
     Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
     roots.forEach(
@@ -176,34 +176,35 @@ public abstract class AbstractSerialization {
     return serializeNodesToSerializationChunk(classifierInstances);
   }
 
-  public SerializedChunk serializeNodesToSerializationChunk(
+  public SerializationChunk serializeNodesToSerializationChunk(
       Collection<ClassifierInstance<?>> classifierInstances) {
-    SerializedChunk serializedChunk = new SerializedChunk();
-    serializedChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    SerializationChunk serializationChunk = new SerializationChunk();
+    serializationChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     SerializationStatus serializationStatus = new SerializationStatus();
     Consumer<Language> languageConsumer = this::considerLanguageDuringSerialization;
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
-      serializedChunk.addClassifierInstance(serializeNode(classifierInstance, serializationStatus));
+      serializationChunk.addClassifierInstance(
+          serializeNode(classifierInstance, serializationStatus));
       classifierInstance.getAnnotations().stream()
           .filter(a -> !classifierInstances.contains(a))
           .forEach(
               annotationInstance -> {
-                serializedChunk.addClassifierInstance(
+                serializationChunk.addClassifierInstance(
                     serializeAnnotationInstance(annotationInstance, serializationStatus));
               });
       serializationStatus.considerLanguageDuringSerialization(
           languageConsumer, classifierInstance.getClassifier().getLanguage());
     }
-    serializedChunk.populateUsedLanguages();
-    return serializedChunk;
+    serializationChunk.populateUsedLanguages();
+    return serializationChunk;
   }
 
   private void considerLanguageDuringSerialization(Language language) {
     registerLanguage(language);
   }
 
-  public SerializedChunk serializeNodesToSerializationChunk(
+  public SerializationChunk serializeNodesToSerializationChunk(
       ClassifierInstance<?>... classifierInstances) {
     return serializeNodesToSerializationChunk(Arrays.asList(classifierInstances));
   }
@@ -351,7 +352,7 @@ public abstract class AbstractSerialization {
   // Deserialization - Protected and Private
   //
 
-  protected void validateSerializationBlock(@Nonnull SerializedChunk serializationBlock) {
+  protected void validateSerializationBlock(@Nonnull SerializationChunk serializationBlock) {
     Objects.requireNonNull(serializationBlock, "serializationBlock should not be null");
     if (serializationBlock.getSerializationFormatVersion() == null) {
       throw new IllegalArgumentException("The serializationFormatVersion should not be null");
@@ -460,7 +461,7 @@ public abstract class AbstractSerialization {
   }
 
   public List<ClassifierInstance<?>> deserializeSerializationChunk(
-      SerializedChunk serializationBlock) {
+      SerializationChunk serializationBlock) {
     return deserializeClassifierInstances(
         LionWebVersion.fromValue(serializationBlock.getSerializationFormatVersion()),
         serializationBlock.getClassifierInstances());

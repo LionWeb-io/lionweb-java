@@ -3,21 +3,20 @@ package io.lionweb.utils;
 import static org.junit.Assert.*;
 
 import io.lionweb.serialization.data.*;
-import java.util.*;
 import org.junit.Before;
 import org.junit.Test;
 
 public class PartitionChunkValidatorTest {
 
   private PartitionChunkValidator validator;
-  private SerializedChunk chunk;
+  private SerializationChunk chunk;
   private UsedLanguage testLanguage;
   private MetaPointer testMetaPointer;
 
   @Before
   public void setUp() {
     validator = new PartitionChunkValidator();
-    chunk = new SerializedChunk();
+    chunk = new SerializationChunk();
     testLanguage = new UsedLanguage("test-lang", "1.0");
     testMetaPointer = MetaPointer.get("test-lang", "1.0", "TestContainment");
   }

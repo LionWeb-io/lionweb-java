@@ -104,8 +104,8 @@ public class JsonSerialization extends AbstractSerialization {
   // Serialization
   //
 
-  public String serializeToJsonString(SerializedChunk serializedChunk) {
-    return new LowLevelJsonSerialization().serializeToJsonString(serializedChunk);
+  public String serializeToJsonString(SerializationChunk serializationChunk) {
+    return new LowLevelJsonSerialization().serializeToJsonString(serializationChunk);
   }
 
   public JsonElement serializeTreeToJsonElement(ClassifierInstance<?> classifierInstance) {
@@ -149,8 +149,8 @@ public class JsonSerialization extends AbstractSerialization {
     if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    SerializedChunk serializedChunk = serializeNodesToSerializationChunk(classifierInstances);
-    return new LowLevelJsonSerialization().serializeToJsonElement(serializedChunk);
+    SerializationChunk serializationChunk = serializeNodesToSerializationChunk(classifierInstances);
+    return new LowLevelJsonSerialization().serializeToJsonElement(serializationChunk);
   }
 
   public JsonElement serializeNodesToJsonElement(ClassifierInstance<?>... classifierInstances) {
@@ -197,7 +197,7 @@ public class JsonSerialization extends AbstractSerialization {
   }
 
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(JsonElement jsonElement) {
-    SerializedChunk serializationBlock =
+    SerializationChunk serializationBlock =
         new LowLevelJsonSerialization().deserializeSerializationBlock(jsonElement);
     validateSerializationBlock(serializationBlock);
     return deserializeSerializationChunk(serializationBlock);

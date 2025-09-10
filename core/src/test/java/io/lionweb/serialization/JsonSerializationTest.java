@@ -676,10 +676,10 @@ public class JsonSerializationTest extends SerializationTest {
 
     DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
     JsonSerialization jsonSer = SerializationProvider.getStandardJsonSerialization();
-    SerializedChunk serializedChunk = jsonSer.serializeNodesToSerializationChunk(myInstance);
-    assertEquals(1, serializedChunk.getClassifierInstances().size());
+    SerializationChunk serializationChunk = jsonSer.serializeNodesToSerializationChunk(myInstance);
+    assertEquals(1, serializationChunk.getClassifierInstances().size());
     SerializedClassifierInstance serializedClassifierInstance =
-        serializedChunk.getClassifierInstances().get(0);
+        serializationChunk.getClassifierInstances().get(0);
     assertEquals("instance-a", serializedClassifierInstance.getID());
     assertEquals(1, serializedClassifierInstance.getProperties().size());
     SerializedPropertyValue serializedName = serializedClassifierInstance.getProperties().get(0);
@@ -702,17 +702,19 @@ public class JsonSerializationTest extends SerializationTest {
 
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     hjs.enableDynamicNodes();
-    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationChunk(n1);
+    SerializationChunk serializationChunk = hjs.serializeNodesToSerializationChunk(n1);
 
-    assertEquals(4, serializedChunk.getClassifierInstances().size());
-    SerializedClassifierInstance serializedN1 = serializedChunk.getClassifierInstances().get(0);
+    assertEquals(4, serializationChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedN1 = serializationChunk.getClassifierInstances().get(0);
     assertEquals("n1", serializedN1.getID());
     assertNull(serializedN1.getParentNodeID());
     assertEquals(Arrays.asList("a1_1", "a1_2", "a2_3"), serializedN1.getAnnotations());
-    SerializedClassifierInstance serializedA1_1 = serializedChunk.getClassifierInstances().get(1);
+    SerializedClassifierInstance serializedA1_1 =
+        serializationChunk.getClassifierInstances().get(1);
     assertEquals("n1", serializedA1_1.getParentNodeID());
 
-    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationChunk(serializedChunk);
+    List<ClassifierInstance<?>> deserialized =
+        hjs.deserializeSerializationChunk(serializationChunk);
     assertEquals(4, deserialized.size());
     assertInstancesAreEquals(a1_1, deserialized.get(1));
     assertEquals(deserialized.get(0), deserialized.get(1).getParent());
@@ -740,19 +742,20 @@ public class JsonSerializationTest extends SerializationTest {
 
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
     hjs.enableDynamicNodes();
-    SerializedChunk serializedChunk = hjs.serializeTreeToSerializationChunk(l);
+    SerializationChunk serializationChunk = hjs.serializeTreeToSerializationChunk(l);
 
-    assertEquals(5, serializedChunk.getClassifierInstances().size());
-    SerializedClassifierInstance serializedL = serializedChunk.getClassifierInstances().get(0);
+    assertEquals(5, serializationChunk.getClassifierInstances().size());
+    SerializedClassifierInstance serializedL = serializationChunk.getClassifierInstances().get(0);
     assertEquals("l", serializedL.getID());
     assertNull(serializedL.getParentNodeID());
 
-    SerializedClassifierInstance serializedC = serializedChunk.getInstanceByID("c");
+    SerializedClassifierInstance serializedC = serializationChunk.getInstanceByID("c");
     assertEquals("c", serializedC.getID());
     assertEquals(Arrays.asList("metaAnn_1"), serializedC.getAnnotations());
 
     hjs.registerLanguage(metaLang);
-    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationChunk(serializedChunk);
+    List<ClassifierInstance<?>> deserialized =
+        hjs.deserializeSerializationChunk(serializationChunk);
     assertEquals(5, deserialized.size());
     ClassifierInstance<?> deserializedC = deserialized.get(3);
     assertInstancesAreEquals(c, deserializedC);
@@ -774,16 +777,16 @@ public class JsonSerializationTest extends SerializationTest {
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");
 
     JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
-    SerializedChunk serializedChunk = hjs.serializeNodesToSerializationChunk(n1);
+    SerializationChunk serializationChunk = hjs.serializeNodesToSerializationChunk(n1);
 
-    assertEquals(1, serializedChunk.getLanguages().size());
-    assertSerializedChunkContainsLanguage(serializedChunk, l);
+    assertEquals(1, serializationChunk.getLanguages().size());
+    assertSerializedChunkContainsLanguage(serializationChunk, l);
   }
 
   private void assertSerializedChunkContainsLanguage(
-      SerializedChunk serializedChunk, Language language) {
+      SerializationChunk serializationChunk, Language language) {
     assertTrue(
-        serializedChunk.getLanguages().stream()
+        serializationChunk.getLanguages().stream()
             .anyMatch(
                 entry ->
                     entry.getKey().equals(language.getKey())

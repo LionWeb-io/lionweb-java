@@ -2,7 +2,7 @@ package io.lionweb.utils;
 
 import static java.util.stream.Collectors.*;
 
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedContainmentValue;
 import java.util.Objects;
@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 public class PartitionChunkValidator extends ChunkValidator {
 
   @Override
-  public ValidationResult validate(@Nonnull SerializedChunk chunk) {
+  public ValidationResult validate(@Nonnull SerializationChunk chunk) {
     Objects.requireNonNull(chunk, "chunk should not be null");
     ValidationResult validationResult = super.validate(chunk);
 
