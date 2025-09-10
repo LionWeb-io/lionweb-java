@@ -43,7 +43,6 @@ message PBNode {
   repeated PBContainment containments = 4;
   repeated PBReference references = 5;
   /* This is a list of indexes representing the string values corresponding to the IDs of the annotations */
-  /* int to accomodate potential null values */
   repeated uint32 si_annotations = 6 [packed = true];
   optional uint32 si_parent = 7;
 }
@@ -52,7 +51,7 @@ message PBMetaPointer {
   // Instead of duplicating language+version as raw numbers everywhere,
   // point to the languages table.
   uint32 li_language = 1; // index into PBChunk.languages
-  optional uint32 si_key            = 2; // concept/key within that language
+  optional uint32 si_key = 2; // concept/key within that language
 }
 
 message PBProperty {
@@ -62,7 +61,7 @@ message PBProperty {
 
 message PBContainment {
   uint32 mpi_meta_pointer = 1;
-  repeated uint32 si_children = 2;
+  repeated uint32 si_children = 2 [packed = true];
 }
 
 message PBReference {
