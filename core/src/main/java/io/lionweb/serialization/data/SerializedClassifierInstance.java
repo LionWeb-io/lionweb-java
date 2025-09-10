@@ -64,7 +64,7 @@ public class SerializedClassifierInstance {
       return Collections.emptyList();
     }
     List<String> children = new ArrayList<>();
-    this.containments.forEach(c -> children.addAll(c.getValue()));
+    this.containments.forEach(c -> children.addAll(c.getChildrenIds()));
     return Collections.unmodifiableList(children);
   }
 
@@ -110,11 +110,11 @@ public class SerializedClassifierInstance {
     Optional<SerializedContainmentValue> entry =
         this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
     if (entry.isPresent()) {
-      List<String> currValue = entry.get().getValue();
+      List<String> currValue = entry.get().getChildrenIds();
       List<String> newValue = new ArrayList<>(currValue.size() + 1);
       newValue.addAll(currValue);
       newValue.add(childID);
-      entry.get().setValue(newValue);
+      entry.get().setChildrenIds(newValue);
     } else {
       addChildren(metaPointer, Arrays.asList(childID));
     }
@@ -241,7 +241,7 @@ public class SerializedClassifierInstance {
   public List<String> getContainmentValues(@Nonnull MetaPointer containmentMetaPointer) {
     for (SerializedContainmentValue cv : this.getContainments()) {
       if (containmentMetaPointer.equals(cv.getMetaPointer())) {
-        return Collections.unmodifiableList(cv.getValue());
+        return Collections.unmodifiableList(cv.getChildrenIds());
       }
     }
     return Collections.emptyList();
@@ -349,7 +349,7 @@ public class SerializedClassifierInstance {
     Objects.requireNonNull(id, "id must not be null");
     if (this.containments != null) {
       for (SerializedContainmentValue containmentValue : this.containments) {
-        for (String childId : containmentValue.getValue()) {
+        for (String childId : containmentValue.getChildrenIds()) {
           if (Objects.equals(childId, id)) {
             return true;
           }

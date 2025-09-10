@@ -241,7 +241,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                   nodeBuilder.addContainments(
                       PBContainment.newBuilder()
                           .addAllChildren(
-                              p.getValue().stream()
+                              p.getChildrenIds().stream()
                                   .map(v -> this.stringIndexer(v))
                                   .collect(Collectors.toList()))
                           .setMetaPointerIndex(this.metaPointerIndexer((p.getMetaPointer())))

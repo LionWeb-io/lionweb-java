@@ -25,7 +25,7 @@ public class PartitionChunkValidator extends ChunkValidator {
         chunk.getClassifierInstances().stream().map(n -> n.getID()).collect(toSet());
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
-        for (String childId : containmentValue.getValue()) {
+        for (String childId : containmentValue.getChildrenIds()) {
           validationResult.checkForError(
               !nodesPresent.contains(childId), "Missing node: " + childId, childId);
         }

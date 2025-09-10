@@ -79,7 +79,7 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     Set<String> containedNodes = new HashSet<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
-        for (String childId : containmentValue.getValue()) {
+        for (String childId : containmentValue.getChildrenIds()) {
           // Verifying nodes do not appear in multiple containments or annotations
           if (containedNodes.contains(childId)) {
             validationResult.addError(childId + " is listed in multiple places", childId);

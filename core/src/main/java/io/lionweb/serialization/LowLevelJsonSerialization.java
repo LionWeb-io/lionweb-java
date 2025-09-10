@@ -101,7 +101,7 @@ public class LowLevelJsonSerialization {
       for (SerializedContainmentValue childrenValue : node.getContainments()) {
         JsonObject children = new JsonObject();
         children.add("containment", serializeToJsonElement(childrenValue.getMetaPointer()));
-        children.add("children", SerializationUtils.toJsonArray(childrenValue.getValue()));
+        children.add("children", SerializationUtils.toJsonArray(childrenValue.getChildrenIds()));
         containments.add(children);
       }
       nodeJson.add("containments", containments);
