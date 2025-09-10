@@ -76,15 +76,23 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     }
 
     // Ensuring that containments and annotations are the inverse of parent relationships
-    Set<String> containedNodes = new HashSet<>();
+    Map<String, Set<String>> containedNodes = new HashMap<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getChildrenIds()) {
           // Verifying nodes do not appear in multiple containments or annotations
-          if (containedNodes.contains(childId)) {
-            validationResult.addError(childId + " is listed in multiple places", childId);
+          String newPlacement = node.getID() + " at " + containmentValue.getMetaPointer();
+          if (containedNodes.containsKey(childId)) {
+            validationResult.addError(
+                childId
+                    + " is listed in multiple places: "
+                    + containedNodes.get(node.getID())
+                    + " and now "
+                    + newPlacement,
+                childId);
+            containedNodes.get(childId).add(newPlacement);
           } else {
-            containedNodes.add(childId);
+            containedNodes.put(childId, new HashSet<>(Arrays.asList(newPlacement)));
           }
           SerializedClassifierInstance child = nodesByID.get(childId);
           if (child != null && !child.getParentNodeID().equals(node.getID())) {
@@ -100,10 +108,12 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
       for (String annotationId : node.getAnnotations()) {
         // Verifying nodes do not appear in multiple containments or annotations
-        if (containedNodes.contains(annotationId)) {
+        String newPlacement = node.getID() + " among annotations";
+        if (containedNodes.containsKey(annotationId)) {
           validationResult.addError(annotationId + " is listed in multiple places", annotationId);
+          containedNodes.get(annotationId).add(newPlacement);
         } else {
-          containedNodes.add(annotationId);
+          containedNodes.put(annotationId, new HashSet<>(Arrays.asList(newPlacement)));
         }
         SerializedClassifierInstance annotation = nodesByID.get(annotationId);
         if (annotationId != null
