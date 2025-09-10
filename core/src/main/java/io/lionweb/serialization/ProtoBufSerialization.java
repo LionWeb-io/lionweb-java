@@ -115,14 +115,14 @@ public class ProtoBufSerialization extends AbstractSerialization {
               n.getContainmentsList()
                   .forEach(
                       c -> {
-                        if (c.getSiChildrenList().stream().anyMatch(el -> el == 0)) {
-                          throw new DeserializationException(
-                              "Unable to deserialize child identified by Null ID");
+                        List<String> children = new ArrayList<>(c.getSiChildrenList().size());
+                        for (int childIndex : c.getSiChildrenList()) {
+                          if (childIndex == 0) {
+                            throw new DeserializationException(
+                                "Unable to deserialize child identified by Null ID");
+                          }
+                          children.add(stringsArray[childIndex]);
                         }
-                        List<String> children =
-                            c.getSiChildrenList().stream()
-                                .map(el -> stringsArray[el])
-                                .collect(Collectors.toList());
                         if (!children.isEmpty()) {
                           SerializedContainmentValue scv =
                               new SerializedContainmentValue(
