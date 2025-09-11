@@ -6,6 +6,7 @@ import io.lionweb.language.Language;
 import io.lionweb.language.LanguageEntity;
 import java.util.*;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
@@ -26,11 +27,15 @@ public class MetaPointer {
         .computeIfAbsent(version, v -> new MetaPointer(language, version, key));
   }
 
-  private final String key;
-  private final String version;
-  private final String language;
+  // Note that theese tree values are nullable solely because of fault-tolerance. Semantically they
+  // should not be null,
+  // but when writing code we should expect these to be potentially null, in case we are
+  // representing an incorrect state
+  private final @Nullable String key;
+  private final @Nullable String version;
+  private final @Nullable String language;
 
-  private MetaPointer(String language, String version, String key) {
+  private MetaPointer(@Nullable String language, @Nullable String version, @Nullable String key) {
     this.key = key;
     this.version = version;
     this.language = language;
@@ -67,6 +72,10 @@ public class MetaPointer {
     return version;
   }
 
+  public LanguageVersion getLanguageVersion() {
+    return LanguageVersion.of(language, version);
+  }
+
   @Override
   public boolean equals(Object o) {
     return this == o;
@@ -93,12 +102,12 @@ public class MetaPointer {
   }
 
   /**
-   * Retrieves the associated {@link UsedLanguage} instance for the current {@link MetaPointer}.
+   * Retrieves the associated {@link LanguageVersion} instance for the current {@link MetaPointer}.
    *
-   * @return a {@link UsedLanguage} instance representing the language and version associated with
-   *     this {@link MetaPointer}
+   * @return a {@link LanguageVersion} instance representing the language and version associated
+   *     with this {@link MetaPointer}
    */
-  public @Nonnull UsedLanguage getUsedLanguage() {
-    return UsedLanguage.fromMetaPointer(this);
+  public @Nonnull LanguageVersion getUsedLanguage() {
+    return LanguageVersion.fromMetaPointer(this);
   }
 }

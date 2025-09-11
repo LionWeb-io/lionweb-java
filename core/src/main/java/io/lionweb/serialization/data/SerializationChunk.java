@@ -14,7 +14,7 @@ public class SerializationChunk {
   private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
 
   private String serializationFormatVersion;
-  private final List<UsedLanguage> languages = new ArrayList<>();
+  private final List<LanguageVersion> languages = new ArrayList<>();
   private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
 
   public static SerializationChunk fromNodes(
@@ -79,19 +79,19 @@ public class SerializationChunk {
    * @param language the {@code UsedLanguage} instance to add; must not be null
    * @throws NullPointerException if {@code language} is null
    */
-  public void addLanguage(@Nonnull UsedLanguage language) {
+  public void addLanguage(@Nonnull LanguageVersion language) {
     Objects.requireNonNull(language, "language should not be null");
     this.languages.add(language);
   }
 
   /**
-   * Adds multiple {@link UsedLanguage} instances to the current SerializedChunk.
+   * Adds multiple {@link LanguageVersion} instances to the current SerializedChunk.
    *
    * @param languages an array of {@code UsedLanguage} instances to be added; must not be null
    * @throws NullPointerException if any element in {@code languages} is null
    */
-  public void addLanguages(@Nonnull UsedLanguage... languages) {
-    for (UsedLanguage language : languages) {
+  public void addLanguages(@Nonnull LanguageVersion... languages) {
+    for (LanguageVersion language : languages) {
       addLanguage(language);
     }
   }
@@ -100,7 +100,7 @@ public class SerializationChunk {
     return Collections.unmodifiableMap(classifierInstancesByID);
   }
 
-  public List<UsedLanguage> getLanguages() {
+  public List<LanguageVersion> getLanguages() {
     return Collections.unmodifiableList(languages);
   }
 
@@ -152,9 +152,9 @@ public class SerializationChunk {
   }
 
   private void considerMetaPointer(MetaPointer metaPointer) {
-    UsedLanguage usedLanguage = UsedLanguage.fromMetaPointer(metaPointer);
-    if (!languages.contains(usedLanguage)) {
-      languages.add(usedLanguage);
+    LanguageVersion languageVersion = LanguageVersion.fromMetaPointer(metaPointer);
+    if (!languages.contains(languageVersion)) {
+      languages.add(languageVersion);
     }
   }
 }

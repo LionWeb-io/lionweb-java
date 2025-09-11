@@ -28,7 +28,7 @@ import kotlin.text.Charsets;
 /** This class contains the logic to store and retrieve entire repositories at once. */
 public class RepoSerialization {
   private int numberOfNodesThreshold = 100_000;
-  private TransferFormat transferFormat = TransferFormat.FLATBUFFERS;
+  private TransferFormat transferFormat = TransferFormat.PROTOBUF;
   private Compression compression = Compression.DISABLED;
 
   /**

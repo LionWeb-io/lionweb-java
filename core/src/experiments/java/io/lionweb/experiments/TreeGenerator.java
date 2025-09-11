@@ -57,11 +57,19 @@ public class TreeGenerator {
     return Math.min(random.nextInt(100), Math.min(random.nextInt(100), random.nextInt(100)));
   }
 
+  private boolean randomNull() {
+    return random.nextInt(100) < 7;
+  }
+
   private Node generateNode() {
     Concept concept =
         SimpleLanguage.subConcepts.get(random.nextInt(SimpleLanguage.subConcepts.size()));
     Node node = new DynamicNode("node-" + random.nextLong(), concept);
-    ClassifierInstanceUtils.setPropertyValueByName(node, "stringProp", randomString());
+    if (randomNull()) {
+      ClassifierInstanceUtils.setPropertyValueByName(node, "stringProp", null);
+    } else {
+      ClassifierInstanceUtils.setPropertyValueByName(node, "stringProp", randomString());
+    }
     ClassifierInstanceUtils.setPropertyValueByName(
         node, "intProp", Integer.toString(skewRandomInt()));
     return node;

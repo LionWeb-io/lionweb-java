@@ -7,6 +7,10 @@ import io.lionweb.language.*;
 import io.lionweb.model.*;
 import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.protobuf.PBChunk;
+import io.lionweb.protobuf.PBLanguage;
+import io.lionweb.protobuf.PBMetaPointer;
+import io.lionweb.protobuf.PBNode;
 import io.lionweb.serialization.data.*;
 import io.lionweb.serialization.refsmm.ContainerNode;
 import io.lionweb.serialization.refsmm.RefNode;
@@ -16,6 +20,7 @@ import io.lionweb.serialization.simplemath.SimpleMathLanguage;
 import io.lionweb.serialization.simplemath.Sum;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Assert;
@@ -450,6 +455,135 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization = SerializationProvider.getStandardProtoBufSerialization();
     byte[] bytes = serialization.serializeTreesToByteArray(myLanguage);
     assertInstancesAreEquals(myLanguage, serialization.deserializeToNodes(bytes).get(0));
+  }
+
+  @Test
+  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithNullKey() {
+    // Build a minimal language with a concept implementing INamed to force inclusion of built-ins
+    Language myLanguage = new Language();
+    myLanguage.setKey("myLanguage-key");
+    myLanguage.setVersion("3");
+    Concept myConcept = new Concept();
+    myConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
+    myLanguage.addElement(myConcept);
+
+    DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
+
+    ProtoBufSerialization protoBufSerialization =
+        SerializationProvider.getStandardProtoBufSerialization();
+    SerializationChunk serializationChunk =
+        protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
+
+    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
+
+    // There must be at least one language (most likely two: built-ins + our language)
+    int languagesCount = pbChunk.getInternedLanguagesCount();
+    assertTrue("Expected at least one interned language", languagesCount >= 1);
+
+    // Every metapointer must reference an existing language index
+    for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
+      int languageIndex = mp.getLiLanguage();
+      assertTrue(
+          "PBMetaPointer.language index must be within interned languages table",
+          languageIndex >= 0 && languageIndex <= languagesCount);
+
+      // Language key/version must point to valid entries in the interned strings table
+      PBLanguage lang = pbChunk.getInternedLanguages(languageIndex - 1);
+      String key = pbChunk.getInternedStrings(lang.getSiKey() - 1);
+      String version = pbChunk.getInternedStrings(lang.getSiVersion() - 1);
+      assertNotNull("Language key must resolve to a string", key);
+      assertNotNull("Language version must resolve to a string", version);
+    }
+  }
+
+  @Test
+  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithProperKey() {
+    // Build a minimal language with a concept implementing INamed to force inclusion of built-ins
+    Language myLanguage = new Language();
+    myLanguage.setKey("myLanguage-key");
+    myLanguage.setVersion("3");
+    Concept myConcept = new Concept();
+    myConcept.setKey("myconceptkey");
+    myConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
+    myLanguage.addElement(myConcept);
+
+    DynamicNode myInstance = new DynamicNode("instance-a", myConcept);
+
+    ProtoBufSerialization protoBufSerialization =
+        SerializationProvider.getStandardProtoBufSerialization();
+    SerializationChunk serializationChunk =
+        protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
+
+    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
+
+    // There must be at least one language (most likely two: built-ins + our language)
+    int languagesCount = pbChunk.getInternedLanguagesCount();
+    assertTrue("Expected at least one interned language", languagesCount >= 1);
+
+    // Every metapointer must reference an existing language index
+    for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
+      int languageIndex = mp.getLiLanguage();
+      assertTrue(
+          "PBMetaPointer.language index must be within interned languages table",
+          languageIndex >= 0 && languageIndex <= languagesCount);
+
+      // Language key/version must point to valid entries in the interned strings table
+      PBLanguage lang = pbChunk.getInternedLanguages(languageIndex - 1);
+      String key = pbChunk.getInternedStrings(lang.getSiKey() - 1);
+      String version = pbChunk.getInternedStrings(lang.getSiVersion() - 1);
+      assertNotNull("Language key must resolve to a string", key);
+      assertNotNull("Language version must resolve to a string", version);
+
+      // Metapointer key must also resolve to a string
+      assertNotEquals(-1, mp.getSiKey());
+      String mpKey = pbChunk.getInternedStrings(mp.getSiKey());
+      assertNotNull("MetaPointer key must resolve to a string", mpKey);
+    }
+  }
+
+  @Test(expected = DeserializationException.class)
+  public void deserializationFailsWhenMetaPointerReferencesMissingLanguage() {
+    // Build a PBChunk with a meta pointer referencing a non-existent language index (0),
+    // and no languages in interned_languages. This should trigger a DeserializationException.
+    PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
+    chunkBuilder.setSerializationFormatVersion("test");
+
+    // Add a dummy string at index 0, to use as a metapointer key
+    chunkBuilder.addInternedStrings("dummy-key");
+
+    // No interned_languages added intentionally.
+
+    // Add a metapointer that references language index 0 (which doesn't exist)
+    PBMetaPointer badMetaPointer =
+        PBMetaPointer.newBuilder()
+            .setLiLanguage(1)
+            .setSiKey(1) // index into interned_strings ("dummy-key")
+            .build();
+    chunkBuilder.addInternedMetaPointers(badMetaPointer);
+
+    // Add a node referencing the bad metapointer as classifier
+    PBNode badNode =
+        PBNode.newBuilder()
+            .setSiId(1) // "dummy-key" as ID (not important for this test)
+            .setMpiClassifier(0) // index of the bad metapointer
+            .build();
+    chunkBuilder.addNodes(badNode);
+
+    PBChunk malformed = chunkBuilder.build();
+
+    ProtoBufSerialization protoBufSerialization =
+        SerializationProvider.getStandardProtoBufSerialization();
+    // This call should throw due to missing language for the metapointer
+    protoBufSerialization.deserializeToNodes(malformed);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void serializeNodesRejectsProxyNodes() {
+    // Ensure ProxyNode is rejected by serializeNodesToByteArray
+    io.lionweb.model.impl.ProxyNode proxy = new io.lionweb.model.impl.ProxyNode("proxy-id");
+    ProtoBufSerialization serialization = SerializationProvider.getStandardProtoBufSerialization();
+    // Casting to ClassifierInstance<?> could be implicit; using raw list to avoid generics issues
+    serialization.serializeNodesToByteArray(Collections.singletonList(proxy));
   }
 
   private void assertSerializedChunkContainsLanguage(

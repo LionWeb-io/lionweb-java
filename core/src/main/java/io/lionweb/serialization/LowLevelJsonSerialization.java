@@ -177,7 +177,7 @@ public class LowLevelJsonSerialization {
           .forEach(
               element -> {
                 try {
-                  UsedLanguage languageKeyVersion = new UsedLanguage();
+                  LanguageVersion languageKeyVersion;
                   if (element.isJsonObject()) {
                     JsonObject jsonObject = element.getAsJsonObject();
                     checkNoExtraKeys(jsonObject, Arrays.asList("key", "version"));
@@ -187,8 +187,10 @@ public class LowLevelJsonSerialization {
                     }
                     requireIsString(jsonObject.get("key"), "key");
                     requireIsString(jsonObject.get("version"), "key");
-                    languageKeyVersion.setKey(jsonObject.get("key").getAsString());
-                    languageKeyVersion.setVersion(jsonObject.get("version").getAsString());
+                    languageKeyVersion =
+                        LanguageVersion.of(
+                            jsonObject.get("key").getAsString(),
+                            jsonObject.get("version").getAsString());
                   } else {
                     throw new IllegalArgumentException(
                         "Language should be an object. Found: " + element);
@@ -237,7 +239,7 @@ public class LowLevelJsonSerialization {
     return jsonObject;
   }
 
-  private JsonElement serializeToJsonElement(UsedLanguage languageKeyVersion) {
+  private JsonElement serializeToJsonElement(LanguageVersion languageKeyVersion) {
     JsonObject jsonObject = new JsonObject();
     jsonObject.addProperty("key", languageKeyVersion.getKey());
     jsonObject.addProperty("version", languageKeyVersion.getVersion());

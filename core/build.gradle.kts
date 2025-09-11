@@ -30,22 +30,21 @@ dependencies {
     testImplementation(libs.junit)
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.apache.commons:commons-math3:3.6.1")
+    api(libs.commonsMath3)
 
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation("com.google.guava:guava:33.0.0-jre")
+    implementation(libs.guava)
 
     javadocConfig(emf.ecore)
 
     // Please note that this forces us to use Java 11 for the javadoc tasks
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
     // on Maven
-    javadocConfig("com.jetbrains:mps-openapi:2021.3.1")
-    javadocConfig("org.modelix:model-api:1.3.2")
+    javadocConfig(libs.mpsOpenApi)
+    javadocConfig(libs.modelApi)
     implementation(libs.gson)
-    implementation("com.networknt:json-schema-validator:1.0.77")
-    implementation("com.google.protobuf:protobuf-java:4.27.2")
-    implementation("com.google.flatbuffers:flatbuffers-java:24.3.25")
+    implementation(libs.jsonSchemaValidator)
+    implementation(libs.protobuf)
 }
 
 tasks.register<Javadoc>("myJavadoc") {
@@ -196,10 +195,11 @@ protobuf {
             val os = System.getProperty("os.name").lowercase()
             val classifier = if (os.contains("mac") && arch == "aarch64") "osx-aarch_64" else ""
 
+            val protocVersion = libs.versions.protobufVersion.get()
             artifact = if (classifier.isNotEmpty())
-                "com.google.protobuf:protoc:4.27.2:$classifier"
+                "com.google.protobuf:protoc:$protocVersion:$classifier"
             else
-                "com.google.protobuf:protoc:4.27.2"
+                "com.google.protobuf:protoc:$protocVersion"
         }
     }
     generateProtoTasks {

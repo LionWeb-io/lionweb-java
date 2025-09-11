@@ -10,14 +10,14 @@ public class PartitionChunkValidatorTest {
 
   private PartitionChunkValidator validator;
   private SerializationChunk chunk;
-  private UsedLanguage testLanguage;
+  private LanguageVersion testLanguage;
   private MetaPointer testMetaPointer;
 
   @Before
   public void setUp() {
     validator = new PartitionChunkValidator();
     chunk = new SerializationChunk();
-    testLanguage = new UsedLanguage("test-lang", "1.0");
+    testLanguage = LanguageVersion.of("test-lang", "1.0");
     testMetaPointer = MetaPointer.get("test-lang", "1.0", "TestContainment");
   }
 

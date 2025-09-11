@@ -81,27 +81,6 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("  unserialized in " + (pt2 - pt1) + "ms");
     assertInstancesAreEquals(tree, pUnserializedTree);
 
-    System.out.println("= Flatbuffers serialization =");
-    long ft0 = System.currentTimeMillis();
-    FlatBuffersSerialization flatBuffersSerialization =
-        SerializationProvider.getStandardFlatBuffersSerialization();
-    flatBuffersSerialization.enableDynamicNodes();
-    byte[] fbytes = flatBuffersSerialization.serialize(chunk);
-    long ft1 = System.currentTimeMillis();
-    System.out.println("  serialized in " + (ft1 - ft0) + "ms");
-    System.out.println("  size " + fbytes.length + " bytes");
-    // Note that this method include the transformation from SerializedChunk to node,
-    // which is common to all deserialization operations
-    FlatBuffersSerialization flatBuffersSerializationForDeserialization =
-        SerializationProvider.getStandardFlatBuffersSerialization();
-    flatBuffersSerializationForDeserialization.registerLanguage(SimpleLanguage.language);
-    flatBuffersSerializationForDeserialization.enableDynamicNodes();
-    Node fUnserializedTree =
-        flatBuffersSerializationForDeserialization.deserializeToNodes(fbytes).get(0);
-    long ft2 = System.currentTimeMillis();
-    System.out.println("  unserialized in " + (ft2 - ft1) + "ms");
-    assertInstancesAreEquals(tree, fUnserializedTree);
-
     System.out.println("= Comparison (protobuf against uncompressed JSON)=");
     {
       double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (jt1 - jt0);
@@ -119,30 +98,6 @@ public class SerializationAndDeserializationExperiment {
       double serializationTimeRatio = ((double) (pt1 - pt0) * 100) / (ct1 - ct0);
       double deserializationTimeRatio = ((double) (pt2 - pt1) * 100) / (ct2 - ct1);
       double sizeRatio = ((double) (bytes.length) * 100) / (compressed.length);
-      System.out.println(
-          "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-      System.out.println(
-          "  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
-      System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
-
-    System.out.println("= Comparison (flatbuffers against uncompressed JSON)=");
-    {
-      double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (jt1 - jt0);
-      double deserializationTimeRatio = ((double) (ft2 - ft1) * 100) / (jt2 - jt1);
-      double sizeRatio = ((double) (fbytes.length) * 100) / (json.getBytes().length);
-      System.out.println(
-          "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
-      System.out.println(
-          "  deserialization time: " + String.format("%.2f", deserializationTimeRatio) + "%");
-      System.out.println("  size: " + String.format("%.2f", sizeRatio) + "%");
-    }
-
-    System.out.println("= Comparison (flatbuffers against compressed JSON)=");
-    {
-      double serializationTimeRatio = ((double) (ft1 - ft0) * 100) / (ct1 - ct0);
-      double deserializationTimeRatio = ((double) (ft2 - ft1) * 100) / (ct2 - ct1);
-      double sizeRatio = ((double) (fbytes.length) * 100) / (compressed.length);
       System.out.println(
           "  serialization time: " + String.format("%.2f", serializationTimeRatio) + "%");
       System.out.println(

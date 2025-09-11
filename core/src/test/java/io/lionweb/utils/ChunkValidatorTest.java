@@ -12,14 +12,14 @@ public class ChunkValidatorTest {
 
   private ChunkValidator validator;
   private SerializationChunk chunk;
-  private UsedLanguage testLanguage;
+  private LanguageVersion testLanguage;
   private MetaPointer testMetaPointer;
 
   @Before
   public void setUp() {
     validator = new ChunkValidator();
     chunk = new SerializationChunk();
-    testLanguage = new UsedLanguage("test-lang", "1.0");
+    testLanguage = LanguageVersion.of("test-lang", "1.0");
     testMetaPointer = MetaPointer.get("test-lang", "1.0", "TestProperty");
   }
 
@@ -77,7 +77,7 @@ public class ChunkValidatorTest {
     SerializedClassifierInstance node = createValidNode("node1", null);
 
     // Add a different language to chunk than what's used by the node
-    UsedLanguage differentLanguage = new UsedLanguage("different-lang", "1.0");
+    LanguageVersion differentLanguage = LanguageVersion.of("different-lang", "1.0");
 
     chunk.addClassifierInstances(node);
     chunk.addLanguages(differentLanguage);
@@ -217,8 +217,8 @@ public class ChunkValidatorTest {
 
   @Test
   public void testNodeWithPropertiesAndReferences() {
-    UsedLanguage propLanguage = new UsedLanguage("prop-lang", "1.0");
-    UsedLanguage refLanguage = new UsedLanguage("ref-lang", "1.0");
+    LanguageVersion propLanguage = LanguageVersion.of("prop-lang", "1.0");
+    LanguageVersion refLanguage = LanguageVersion.of("ref-lang", "1.0");
 
     SerializedClassifierInstance node = createValidNode("node1", null);
 
@@ -249,7 +249,7 @@ public class ChunkValidatorTest {
     SerializedClassifierInstance duplicateNode2 = createValidNode("dup", null); // Duplicate ID
 
     chunk.addClassifierInstances(invalidNode1, duplicateNode1, duplicateNode2);
-    chunk.addLanguages(new UsedLanguage("wrong-lang", "1.0")); // Wrong language
+    chunk.addLanguages(LanguageVersion.of("wrong-lang", "1.0")); // Wrong language
 
     ValidationResult result = validator.validate(chunk);
 
