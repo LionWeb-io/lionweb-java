@@ -159,3 +159,5 @@ Introducing support for LionWeb 2024.1
 ### Version 1.1.0
 
 * Renamed SerializedChunk into SerializationChunk
+* Added support for improved protobuf serialization
+* Removed support for FlatBuffers serialization
