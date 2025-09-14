@@ -5,7 +5,7 @@ import io.lionweb.model.Node
 import io.lionweb.serialization.JsonSerialization
 import io.lionweb.serialization.LowLevelJsonSerialization
 import io.lionweb.serialization.SerializationProvider
-import io.lionweb.serialization.data.SerializedChunk
+import io.lionweb.serialization.data.SerializationChunk
 
 fun cleanId(id: String) =
     id
@@ -25,7 +25,7 @@ fun String.removeCharactersInvalidInLionWebIDs(): String =
             it in CharRange('A', 'Z')
     }
 
-fun Node.toChunk(): SerializedChunk {
+fun Node.toChunk(): SerializationChunk {
     val lwVersion: LionWebVersion = this.classifier.lionWebVersion
     return simpleSerializations
         .computeIfAbsent(lwVersion) {
@@ -33,6 +33,6 @@ fun Node.toChunk(): SerializedChunk {
         }.serializeTreeToSerializationChunk(this)
 }
 
-fun String.toChunk(): SerializedChunk = LowLevelJsonSerialization().deserializeSerializationBlock(this)
+fun String.toChunk(): SerializationChunk = LowLevelJsonSerialization().deserializeSerializationBlock(this)
 
 private val simpleSerializations = mutableMapOf<LionWebVersion, JsonSerialization>()

@@ -3,7 +3,7 @@ package io.lionweb.kotlin.serialization.chunk
 import io.lionweb.LionWebVersion
 import io.lionweb.language.Classifier
 import io.lionweb.serialization.data.MetaPointer
-import io.lionweb.serialization.data.SerializedChunk
+import io.lionweb.serialization.data.SerializationChunk
 import io.lionweb.serialization.data.SerializedClassifierInstance
 import io.lionweb.serialization.data.SerializedReferenceValue
 import java.lang.IllegalArgumentException
@@ -56,24 +56,24 @@ fun SerializedClassifierInstance.addReference(
 
 fun SerializedClassifierInstance.getChildren(
     metaPointer: MetaPointer,
-    chunk: SerializedChunk,
+    chunk: SerializationChunk,
 ): List<SerializedClassifierInstance> {
     val containment = this.containments.find { it.metaPointer == metaPointer } ?: return emptyList()
-    return containment.value.map { childId ->
+    return containment.childrenIds.map { childId ->
         chunk.classifierInstancesByID[childId]!!
     }
 }
 
 fun SerializedClassifierInstance.getChild(
     metaPointer: MetaPointer,
-    chunk: SerializedChunk,
+    chunk: SerializationChunk,
 ): SerializedClassifierInstance? {
     val children = getChildren(metaPointer, chunk)
     require(children.size <= 1)
     return children.firstOrNull()
 }
 
-fun SerializedClassifierInstance.subchunk(chunk: SerializedChunk): SerializedChunk {
+fun SerializedClassifierInstance.subchunk(chunk: SerializationChunk): SerializationChunk {
     val relevantNodes = mutableListOf<SerializedClassifierInstance>()
     chunk.classifierInstancesByID
 
@@ -85,5 +85,5 @@ fun SerializedClassifierInstance.subchunk(chunk: SerializedChunk): SerializedChu
     }
     grow(this)
     val lwVersion = LionWebVersion.fromValue(chunk.serializationFormatVersion)
-    return SerializedChunk.fromNodes(lwVersion, relevantNodes)
+    return SerializationChunk.fromNodes(lwVersion, relevantNodes)
 }

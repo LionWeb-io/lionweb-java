@@ -4,12 +4,12 @@ import io.lionweb.LionWebVersion
 import io.lionweb.kotlin.createConcept
 import io.lionweb.kotlin.createInterface
 import io.lionweb.kotlin.lwLanguage
+import io.lionweb.serialization.data.LanguageVersion
 import io.lionweb.serialization.data.MetaPointer
-import io.lionweb.serialization.data.SerializedChunk
+import io.lionweb.serialization.data.SerializationChunk
 import io.lionweb.serialization.data.SerializedClassifierInstance
 import io.lionweb.serialization.data.SerializedContainmentValue
 import io.lionweb.serialization.data.SerializedPropertyValue
-import io.lionweb.serialization.data.UsedLanguage
 import java.util.Arrays
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -42,10 +42,10 @@ class SerializationUtilsTest {
                 createInterface("MyInterface")
             }
         assertEquals(
-            SerializedChunk().apply {
+            SerializationChunk().apply {
                 serializationFormatVersion = LionWebVersion.currentVersion.versionString
-                addLanguage(UsedLanguage("LionCore-M3", "2024.1"))
-                addLanguage(UsedLanguage("LionCore-builtins", "2024.1"))
+                addLanguage(LanguageVersion.of("LionCore-M3", "2024.1"))
+                addLanguage(LanguageVersion.of("LionCore-builtins", "2024.1"))
                 val sc1 =
                     SerializedClassifierInstance().apply {
                         id = "language-mylanguage-id"
@@ -243,12 +243,12 @@ class SerializationUtilsTest {
               } ]
             }
             """.trimIndent()
-        val deserializedChunk = s.toChunk()
+        val deSerializationChunk = s.toChunk()
         assertEquals(
-            SerializedChunk().apply {
+            SerializationChunk().apply {
                 serializationFormatVersion = LionWebVersion.currentVersion.versionString
-                addLanguage(UsedLanguage("LionCore-M3", "2024.1"))
-                addLanguage(UsedLanguage("LionCore-builtins", "2024.1"))
+                addLanguage(LanguageVersion.of("LionCore-M3", "2024.1"))
+                addLanguage(LanguageVersion.of("LionCore-builtins", "2024.1"))
                 val sc1 =
                     SerializedClassifierInstance().apply {
                         id = "language-mylanguage-id"
@@ -320,7 +320,7 @@ class SerializationUtilsTest {
                     }
                 addClassifierInstance(sc3)
             },
-            deserializedChunk,
+            deSerializationChunk,
         )
     }
 }

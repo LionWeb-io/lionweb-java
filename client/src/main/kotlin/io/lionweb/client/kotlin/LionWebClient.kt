@@ -484,7 +484,7 @@ class LionWebClient(
 
     fun bulkImport(
         bulkImport: BulkImport,
-        transferFormat: TransferFormat = TransferFormat.FLATBUFFERS,
+        transferFormat: TransferFormat = TransferFormat.PROTOBUF,
         compress: Boolean = false,
     ) = jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
 
