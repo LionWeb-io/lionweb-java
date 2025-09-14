@@ -104,6 +104,10 @@ public class SerializationChunk {
     return Collections.unmodifiableList(languages);
   }
 
+  public void concat(List<SerializedClassifierInstance> instances) {
+    this.classifierInstances.addAll(instances);
+  }
+
   /**
    * Traverse the SerializedChunk, collecting all the metapointers and populating the used languages
    * accordingly.
