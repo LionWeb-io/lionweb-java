@@ -55,5 +55,4 @@ fun SerializationChunk.combineTree(
         val child = otherChunk.classifierInstancesByID[childId]!!
         combineTree(otherChunk, child)
     }
-    populateUsedLanguages()
 }
