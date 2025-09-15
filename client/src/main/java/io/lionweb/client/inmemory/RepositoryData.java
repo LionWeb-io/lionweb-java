@@ -84,6 +84,11 @@ class RepositoryData {
           removeNode(child);
         }
       }
+    for (String child : serializedClassifierInstance.getAnnotations()) {
+        if (!addedNodes.containsKey(child)) {
+            removeNode(child);
+        }
+    }
       nodesByID.remove(removeNodeId);
     }
   }
