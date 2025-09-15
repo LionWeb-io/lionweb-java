@@ -3,6 +3,7 @@ package io.lionweb.client.inmemory;
 import io.lionweb.client.api.*;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
+import io.lionweb.utils.ValidationResult;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -158,6 +159,16 @@ public class InMemoryServer {
       res.put(entry.getKey(), cr);
     }
     return res;
+  }
+
+  public ValidationResult checkConsistency() {
+    ValidationResult result = new ValidationResult();
+    for (RepositoryData repositoryData : repositories.values()) {
+      ValidationResult partial = repositoryData.checkConsistency();
+      result.getIssues().addAll(partial.getIssues());
+    }
+    ;
+    return result;
   }
 
   //
