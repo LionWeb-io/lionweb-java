@@ -92,7 +92,7 @@ interface MetamodelRegistry {
 
     fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization)
 
-    fun prepareJsonSerialization(serialization: AbstractSerialization)
+    fun prepareSerialization(serialization: AbstractSerialization)
 }
 
 class MetamodelRegistryImpl : MetamodelRegistry {
@@ -219,7 +219,7 @@ class MetamodelRegistryImpl : MetamodelRegistry {
         }
     }
 
-    override fun prepareJsonSerialization(serialization: AbstractSerialization) {
+    override fun prepareSerialization(serialization: AbstractSerialization) {
         prepareInstantiator(serialization.instantiator, serialization.lionWebVersion)
         preparePrimitiveValuesSerialization(serialization.primitiveValuesSerialization)
     }
