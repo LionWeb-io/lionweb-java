@@ -59,6 +59,15 @@ class RepositoryData {
       updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
         if (nodesByID.containsKey(updatedNode.getID())) {
+            SerializedClassifierInstance currNode = nodesByID.get(updatedNode.getID());
+            if (currNode.getParentNodeID() != null && !updatedNodesAsMap.containsKey(currNode.getParentNodeID())) {
+                // If the node currently has a parent, which has not been modified it can only means two things:
+                // - The node has changed parent, being removed from the old parent
+                // - The node stayed where it was: same parent, same position
+                if (!currNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
+                    removeContainedNode(currNode.getParentNodeID(), updatedNode.getID());
+                }
+            }
           calculateNodeListDifferences(
               updatedNodesAsMap,
               nodesByID.get(updatedNode.getID()).getChildren(),
@@ -93,7 +102,13 @@ class RepositoryData {
     }
   }
 
-  RepositoryData(@NotNull RepositoryConfiguration configuration) {
+    private void removeContainedNode(String containerId, String containedId) {
+      SerializedClassifierInstance container = nodesByID.get(containerId);
+      container.getContainments().forEach(containment -> containment.removeChild(containedId));
+      container.removeAnnotation(containedId);
+    }
+
+    RepositoryData(@NotNull RepositoryConfiguration configuration) {
     this.configuration = configuration;
   }
 
@@ -144,8 +159,19 @@ class RepositoryData {
     }
     retrieved.add(node);
     if (limit > 0) {
-      node.getChildren().forEach(c -> retrieve(c, limit - 1, retrieved));
-      node.getAnnotations().forEach(a -> retrieve(a, limit - 1, retrieved));
+      node.getChildren().forEach(c -> {try {
+          retrieve(c, limit - 1, retrieved);
+        } catch (Exception e){
+          throw new RuntimeException("Unable to retrieve child of " + node, e);
+        }});
+      node.getAnnotations().forEach(a -> {
+          try {
+              retrieve(a, limit - 1, retrieved);
+          } catch (Exception e) {
+              throw new RuntimeException("Unable to retrieve annotation of " + node, e);
+          }
+
+      });
     }
   }
 }
