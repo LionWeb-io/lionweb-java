@@ -257,11 +257,15 @@ class RepositoryData {
       if (node.getParentNodeID() != null) {
         SerializedClassifierInstance parent = nodesByID.get(node.getParentNodeID());
         if (parent != null && !parent.contains(node.getID())) {
-          result.addError(
-              node.getID()
-                  + " lists as parent "
-                  + node.getParentNodeID()
-                  + " but such parent does not contain it");
+            String msg = node.getID()
+                    + " lists as parent "
+                    + node.getParentNodeID()
+                    + " but such parent does not contain it. It contains these children: " + parent.getChildren().stream().collect(Collectors.joining(", "));
+            if (!node.getAnnotations().isEmpty()) {
+                msg += " and these annotations: " + node.getAnnotations().stream().collect(Collectors.joining(", "));
+            }
+          result.addError(msg);
+
         }
       }
     }
