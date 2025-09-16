@@ -161,13 +161,24 @@ public class InMemoryServer {
     return res;
   }
 
-  public ValidationResult checkConsistency() {
+  /**
+   * Checks the consistency of all repositories stored in the system and aggregates any validation
+   * issues found into a single {@link ValidationResult}.
+   *
+   * <p>The method iterates through all repository data, invokes their individual consistency
+   * checks, and collects any issues reported into the resulting validation result object.
+   *
+   * <p>This is intended for debugging purposes.
+   *
+   * @return a {@link ValidationResult} containing all identified issues, or an empty result if no
+   *     issues were found.
+   */
+  public @NotNull ValidationResult checkConsistency() {
     ValidationResult result = new ValidationResult();
     for (RepositoryData repositoryData : repositories.values()) {
       ValidationResult partial = repositoryData.checkConsistency();
       result.getIssues().addAll(partial.getIssues());
     }
-    ;
     return result;
   }
 

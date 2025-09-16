@@ -107,6 +107,14 @@ class RepositoryData {
     }
   }
 
+  /**
+   * Removes a contained node (a child or an annotation) from the specified container in the
+   * repository data.
+   *
+   * @param containerId the identifier of the container node from which the contained node should be
+   *     removed
+   * @param containedId the identifier of the contained node to be removed
+   */
   private void removeContainedNode(String containerId, String containedId) {
     SerializedClassifierInstance container = nodesByID.get(containerId);
     container.getContainments().forEach(containment -> containment.removeChild(containedId));
@@ -186,7 +194,7 @@ class RepositoryData {
   }
 
   /** This is intended for debugging purposes. It checks if the data is consistent. */
-  public ValidationResult checkConsistency() {
+  public @NotNull ValidationResult checkConsistency() {
     ValidationResult result = new ValidationResult();
 
     // Check for invalid node IDs
