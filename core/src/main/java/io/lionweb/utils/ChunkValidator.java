@@ -78,12 +78,12 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     // Ensuring that containments and annotations are the inverse of parent relationships
     Map<String, Set<String>> containedNodes = new HashMap<>();
     Set<String> idsInChunk = new HashSet<>();
-    Set<String> requiredIds = new HashSet<>();
+    Set<String> expectedBecauseContained = new HashSet<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       idsInChunk.add(node.getID());
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getChildrenIds()) {
-          requiredIds.add(childId);
+          expectedBecauseContained.add(childId);
           // Verifying nodes do not appear in multiple containments or annotations
           String newPlacement = node.getID() + " at " + containmentValue.getMetaPointer();
           if (containedNodes.containsKey(childId)) {
@@ -111,7 +111,7 @@ public class ChunkValidator extends Validator<SerializationChunk> {
         }
       }
       for (String annotationId : node.getAnnotations()) {
-        requiredIds.add(annotationId);
+        expectedBecauseContained.add(annotationId);
         // Verifying nodes do not appear in multiple containments or annotations
         String newPlacement = node.getID() + " among annotations";
         if (containedNodes.containsKey(annotationId)) {
@@ -150,7 +150,7 @@ public class ChunkValidator extends Validator<SerializationChunk> {
 
     // Verify all contained nodes are present
     Set<String> missingNodes = new HashSet<>();
-    for (String requiredId : requiredIds) {
+    for (String requiredId : expectedBecauseContained) {
       if (!idsInChunk.contains(requiredId)) {
         missingNodes.add(requiredId);
       }

@@ -55,9 +55,7 @@ public class InMemoryServerTest {
     Book newBook = new Book("book2", "New Book with Annotation", newWriter);
     newBook.setPages(200);
 
-    // Create an annotation (using GuideBookWriter as annotation example)
-    // GuideBookWriter guideAnnotation = new GuideBookWriter("guide1", "Best Practices Guide");
-    // guideAnnotation.setCompany("Publishing Co.");
+    // Create an annotation
     DynamicAnnotationInstance myAnnotationInstance =
         new DynamicAnnotationInstance("my-ann", LibraryLanguage.PRIZE);
 
@@ -106,8 +104,7 @@ public class InMemoryServerTest {
         client.retrieveAsChunk(Collections.singletonList("book2"));
 
     // Should include book2, and its annotation
-    assertTrue(
-        book2Subtree.size() == 2, "Book2 subtree should include at least the book, and annotation");
+    assertTrue(book2Subtree.size() == 2, "Book2 subtree should include the book and annotation");
 
     Set<String> subtreeIds =
         book2Subtree.stream()
