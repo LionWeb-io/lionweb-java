@@ -55,4 +55,8 @@ fun SerializationChunk.combineTree(
         val child = otherChunk.classifierInstancesByID[childId]!!
         combineTree(otherChunk, child)
     }
+    subtreeRoot.annotations.forEach { annotationId ->
+        val annotation = otherChunk.classifierInstancesByID[annotationId]!!
+        combineTree(otherChunk, annotation)
+    }
 }
