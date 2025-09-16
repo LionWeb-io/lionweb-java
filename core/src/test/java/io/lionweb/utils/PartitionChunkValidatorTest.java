@@ -100,7 +100,7 @@ public class PartitionChunkValidatorTest {
     ValidationResult result = validator.validate(chunk);
 
     assertFalse(result.isSuccessful());
-    assertEquals(5, result.getIssues().size()); // All 4 missing nodes should be reported
+    assertEquals(5, result.getIssues().size());
     assertTrue(
         result.getIssues().stream()
             .anyMatch(error -> error.getMessage().contains("Missing node: missingChild1")));
