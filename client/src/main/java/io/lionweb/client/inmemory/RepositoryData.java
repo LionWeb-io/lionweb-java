@@ -62,15 +62,15 @@ class RepositoryData {
       updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
         if (nodesByID.containsKey(updatedNode.getID())) {
-          SerializedClassifierInstance currNode = nodesByID.get(updatedNode.getID());
-          if (currNode.getParentNodeID() != null
-              && !updatedNodesAsMap.containsKey(currNode.getParentNodeID())) {
+          SerializedClassifierInstance currentNode = nodesByID.get(updatedNode.getID());
+          if (currentNode.getParentNodeID() != null
+              && !updatedNodesAsMap.containsKey(currentNode.getParentNodeID())) {
             // If the node currently has a parent, which has not been modified it can only means two
             // things:
             // - The node has changed parent, being removed from the old parent
             // - The node stayed where it was: same parent, same position
-            if (!currNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
-              removeContainedNode(currNode.getParentNodeID(), updatedNode.getID());
+            if (!currentNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
+              removeContainedNode(currentNode.getParentNodeID(), updatedNode.getID());
             }
           }
           calculateNodeListDifferences(
@@ -93,14 +93,14 @@ class RepositoryData {
 
     private void removeNode(String removeNodeId) {
       SerializedClassifierInstance serializedClassifierInstance = nodesByID.get(removeNodeId);
-      for (String child : serializedClassifierInstance.getChildren()) {
-        if (!addedNodes.containsKey(child)) {
-          removeNode(child);
+      for (String childId : serializedClassifierInstance.getChildren()) {
+        if (!addedNodes.containsKey(childId)) {
+          removeNode(childId);
         }
       }
-      for (String child : serializedClassifierInstance.getAnnotations()) {
-        if (!addedNodes.containsKey(child)) {
-          removeNode(child);
+      for (String annotationId : serializedClassifierInstance.getAnnotations()) {
+        if (!addedNodes.containsKey(annotationId)) {
+          removeNode(annotationId);
         }
       }
       nodesByID.remove(removeNodeId);
@@ -174,18 +174,18 @@ class RepositoryData {
     if (limit > 0) {
       node.getChildren()
           .forEach(
-              c -> {
+              childId -> {
                 try {
-                  retrieve(c, limit - 1, retrieved);
+                  retrieve(childId, limit - 1, retrieved);
                 } catch (Exception e) {
                   throw new RuntimeException("Unable to retrieve child of " + node, e);
                 }
               });
       node.getAnnotations()
           .forEach(
-              a -> {
+              annotationId -> {
                 try {
-                  retrieve(a, limit - 1, retrieved);
+                  retrieve(annotationId, limit - 1, retrieved);
                 } catch (Exception e) {
                   throw new RuntimeException("Unable to retrieve annotation of " + node, e);
                 }
@@ -231,8 +231,9 @@ class RepositoryData {
                 childId
                     + " is listed as child of "
                     + node.getID()
-                    + " but it has as parent "
-                    + child.getParentNodeID());
+                    + " but it has "
+                    + child.getParentNodeID()
+                    + " as parent");
           }
         }
       }
@@ -257,8 +258,9 @@ class RepositoryData {
               annotationId
                   + " is listed as an annotation of "
                   + node.getID()
-                  + " but it has as parent "
-                  + annotation.getParentNodeID());
+                  + " but it has "
+                  + annotation.getParentNodeID()
+                  + "as parent ");
         }
       }
 
