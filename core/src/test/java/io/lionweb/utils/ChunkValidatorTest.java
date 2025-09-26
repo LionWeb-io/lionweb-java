@@ -225,7 +225,7 @@ public class ChunkValidatorTest {
     // Add property with different language
     SerializedPropertyValue property =
         SerializedPropertyValue.get(MetaPointer.get("prop-lang", "1.0", "TestProp"), "test value");
-    node.addPropertyValue(property);
+    node.unsafeAddPropertyValue(property);
 
     // Add reference with different language
     SerializedReferenceValue reference =

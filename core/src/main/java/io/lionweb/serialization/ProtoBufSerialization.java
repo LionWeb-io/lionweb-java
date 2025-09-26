@@ -110,7 +110,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                             SerializedPropertyValue.get(
                                 metapointersArray[p.getMpiMetaPointer()],
                                 stringsArray[p.getSiValue()]);
-                        sci.addPropertyValue(spv);
+                        sci.unsafeAddPropertyValue(spv);
                       });
               n.getContainmentsList()
                   .forEach(
