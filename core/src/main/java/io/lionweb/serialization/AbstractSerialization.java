@@ -334,7 +334,7 @@ public abstract class AbstractSerialization {
                           property, ((LanguageEntity<?>) property.getContainer()).getLanguage()),
                       serializePropertyValue(
                           property.getType(), classifierInstance.getPropertyValue(property)));
-              serializedClassifierInstance.addPropertyValue(propertyValue);
+              serializedClassifierInstance.unsafeAddPropertyValue(propertyValue);
             });
   }
 

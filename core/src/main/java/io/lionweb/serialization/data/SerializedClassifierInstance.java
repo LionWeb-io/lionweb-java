@@ -86,7 +86,25 @@ public class SerializedClassifierInstance {
     return Collections.unmodifiableList(properties);
   }
 
-  public void addPropertyValue(SerializedPropertyValue propertyValue) {
+  /**
+   * WARNING: this will always add the property, even if one entry with the same metapointer already
+   * exists.
+   *
+   * <p>It is however slightly faster than the (safer) setPropertyValue.
+   */
+  public void unsafeAddPropertyValue(SerializedPropertyValue propertyValue) {
+    this.properties.add(propertyValue);
+  }
+
+  public void setPropertyValue(SerializedPropertyValue propertyValue) {
+    for (int i = 0; i < this.properties.size(); i++) {
+      SerializedPropertyValue property = this.properties.get(i);
+      if (property.getMetaPointer() != null
+          && property.getMetaPointer().equals(propertyValue.getValue())) {
+        this.properties.set(i, propertyValue);
+        return;
+      }
+    }
     this.properties.add(propertyValue);
   }
 

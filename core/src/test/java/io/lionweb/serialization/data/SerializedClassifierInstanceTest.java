@@ -81,7 +81,7 @@ public class SerializedClassifierInstanceTest {
     MetaPointer pA = simpleMetaPointer("propA");
     MetaPointer pB = simpleMetaPointer("propB");
 
-    sci.addPropertyValue(SerializedPropertyValue.get(pA, "VA"));
+    sci.unsafeAddPropertyValue(SerializedPropertyValue.get(pA, "VA"));
     sci.setPropertyValue(pB, "VB"); // via convenience
 
     assertEquals(2, sci.getProperties().size());
