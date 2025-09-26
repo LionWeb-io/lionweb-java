@@ -4,6 +4,7 @@ import io.lionweb.serialization.data.*;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.annotation.Nonnull;
 
 /**
@@ -11,6 +12,7 @@ import javax.annotation.Nonnull;
  * multiple partitions.
  */
 public class ChunkValidator extends Validator<SerializationChunk> {
+
   @Override
   public ValidationResult validate(@Nonnull SerializationChunk chunk) {
     Objects.requireNonNull(chunk, "chunk should not be null");
@@ -32,19 +34,28 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
     }
 
-    // Check languages
+    // Check languages and duplicate metapointers
     Set<LanguageVersion> usedLanguages = new HashSet<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       usedLanguages.add(node.getClassifier().getUsedLanguage());
-      for (SerializedPropertyValue propertyValue : node.getProperties()) {
-        usedLanguages.add(propertyValue.getMetaPointer().getUsedLanguage());
-      }
-      for (SerializedReferenceValue referenceValue : node.getReferences()) {
-        usedLanguages.add(referenceValue.getMetaPointer().getUsedLanguage());
-      }
-      for (SerializedContainmentValue containmentValue : node.getContainments()) {
-        usedLanguages.add(containmentValue.getMetaPointer().getUsedLanguage());
-      }
+
+      Set<MetaPointer> featureMetaPointers = new HashSet<>();
+      Stream<MetaPointer> metaPointers =
+          Stream.concat(
+              Stream.concat(
+                  node.getContainments().stream().map(SerializedContainmentValue::getMetaPointer),
+                  node.getReferences().stream().map(SerializedReferenceValue::getMetaPointer)),
+              node.getProperties().stream().map(SerializedPropertyValue::getMetaPointer));
+
+      metaPointers.forEach(
+          metaPointer -> {
+            usedLanguages.add(metaPointer.getUsedLanguage());
+            if (!featureMetaPointers.add(metaPointer)) {
+              validationResult.addError(
+                  "Node " + node.getID() + " has duplicate feature metapointer: " + metaPointer,
+                  node.getID());
+            }
+          });
     }
     if (!usedLanguages.equals(new HashSet<>(chunk.getLanguages()))) {
       Function<LanguageVersion, String> languageFormatter =
