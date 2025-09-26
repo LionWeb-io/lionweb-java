@@ -100,7 +100,7 @@ public class SerializedClassifierInstance {
     for (int i = 0; i < this.properties.size(); i++) {
       SerializedPropertyValue property = this.properties.get(i);
       if (property.getMetaPointer() != null
-          && property.getMetaPointer().equals(propertyValue.getValue())) {
+          && property.getMetaPointer().equals(propertyValue.getMetaPointer())) {
         this.properties.set(i, propertyValue);
         return;
       }
@@ -178,8 +178,8 @@ public class SerializedClassifierInstance {
     this.id = id;
   }
 
-  public void setPropertyValue(MetaPointer property, String serializedValue) {
-    this.properties.add(SerializedPropertyValue.get(property, serializedValue));
+  public void setPropertyValue(MetaPointer propertyMetaPointer, String serializedValue) {
+    setPropertyValue(SerializedPropertyValue.get(propertyMetaPointer, serializedValue));
   }
 
   public void addChildren(MetaPointer containment, List<String> childrenIds) {
