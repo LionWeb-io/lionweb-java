@@ -31,7 +31,7 @@ public class PartitionChunkValidatorTest {
     // Set up containment relationship
     SerializedContainmentValue containment =
         new SerializedContainmentValue(testMetaPointer, "child1", "child2");
-    root.addContainmentValue(containment);
+    root.unsafeAppendContainmentValue(containment);
 
     chunk.addClassifierInstances(root, child1, child2);
     chunk.addLanguages(testLanguage);
@@ -51,7 +51,7 @@ public class PartitionChunkValidatorTest {
     SerializedContainmentValue containment =
         new SerializedContainmentValue(
             testMetaPointer, "child1", "child2"); // child2 is missing from chunk
-    root.addContainmentValue(containment);
+    root.unsafeAppendContainmentValue(containment);
 
     chunk.addClassifierInstances(root, child1); // child2 is missing
     chunk.addLanguages(testLanguage);
@@ -89,7 +89,7 @@ public class PartitionChunkValidatorTest {
     // Root contains missing children and has missing annotations
     SerializedContainmentValue containment =
         new SerializedContainmentValue(testMetaPointer, "missingChild1", "missingChild2");
-    root.addContainmentValue(containment);
+    root.unsafeAppendContainmentValue(containment);
 
     root.addAnnotation("missingAnnotation1");
     root.addAnnotation("missingAnnotation2");
@@ -199,11 +199,11 @@ public class PartitionChunkValidatorTest {
     // Set up containment relationships
     SerializedContainmentValue rootContainment =
         new SerializedContainmentValue(testMetaPointer, "child1");
-    root.addContainmentValue(rootContainment);
+    root.unsafeAppendContainmentValue(rootContainment);
 
     SerializedContainmentValue childContainment =
         new SerializedContainmentValue(testMetaPointer, "grandchild1");
-    child1.addContainmentValue(childContainment);
+    child1.unsafeAppendContainmentValue(childContainment);
 
     chunk.addClassifierInstances(root, child1, grandchild1);
     chunk.addLanguages(testLanguage);
@@ -259,7 +259,7 @@ public class PartitionChunkValidatorTest {
     // Set up containment and annotation
     SerializedContainmentValue containment =
         new SerializedContainmentValue(testMetaPointer, "child");
-    root.addContainmentValue(containment);
+    root.unsafeAppendContainmentValue(containment);
 
     root.addAnnotation("annotation");
 

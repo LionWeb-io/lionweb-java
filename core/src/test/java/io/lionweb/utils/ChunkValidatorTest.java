@@ -32,7 +32,7 @@ public class ChunkValidatorTest {
     // Set up containment relationship
     SerializedContainmentValue containment =
         new SerializedContainmentValue(testMetaPointer, Arrays.asList("child1"));
-    parent.addContainmentValue(containment);
+    parent.unsafeAppendContainmentValue(containment);
 
     chunk.addClassifierInstances(parent, child);
     chunk.addLanguage(testLanguage);
@@ -100,8 +100,8 @@ public class ChunkValidatorTest {
     SerializedContainmentValue containment1 = createContainment("child1");
     SerializedContainmentValue containment2 = createContainment("child1");
 
-    parent1.addContainmentValue(containment1);
-    parent2.addContainmentValue(containment2);
+    parent1.unsafeAppendContainmentValue(containment1);
+    parent2.unsafeAppendContainmentValue(containment2);
 
     chunk.addClassifierInstances(parent1, parent2, child);
     chunk.addLanguages(testLanguage);
@@ -143,7 +143,7 @@ public class ChunkValidatorTest {
 
     // Parent contains child, but child's parent ID is different
     SerializedContainmentValue containment = createContainment("child1");
-    parent.addContainmentValue(containment);
+    parent.unsafeAppendContainmentValue(containment);
 
     chunk.addClassifierInstances(parent, child);
     chunk.addLanguages(testLanguage);
@@ -225,13 +225,13 @@ public class ChunkValidatorTest {
     // Add property with different language
     SerializedPropertyValue property =
         SerializedPropertyValue.get(MetaPointer.get("prop-lang", "1.0", "TestProp"), "test value");
-    node.unsafeAddPropertyValue(property);
+    node.unsafeAppendPropertyValue(property);
 
     // Add reference with different language
     SerializedReferenceValue reference =
         new SerializedReferenceValue(MetaPointer.get("ref-lang", "1.0", "TestRef"));
     reference.addValue(new SerializedReferenceValue.Entry("target1", "resolveInfo"));
-    node.addReferenceValue(reference);
+    node.unsafeAppendReferenceValue(reference);
 
     chunk.addClassifierInstances(node);
     chunk.addLanguages(testLanguage, propLanguage, refLanguage);
@@ -253,8 +253,8 @@ public class ChunkValidatorTest {
     SerializedContainmentValue containment2 =
         new SerializedContainmentValue(testMetaPointer, Arrays.asList("child2"));
 
-    parent.addContainmentValue(containment1);
-    parent.addContainmentValue(containment2);
+    parent.unsafeAppendContainmentValue(containment1);
+    parent.unsafeAppendContainmentValue(containment2);
 
     chunk.addClassifierInstances(parent, child1, child2);
     chunk.addLanguage(testLanguage);
@@ -280,8 +280,8 @@ public class ChunkValidatorTest {
     SerializedPropertyValue property1 = SerializedPropertyValue.get(testMetaPointer, "value1");
     SerializedPropertyValue property2 = SerializedPropertyValue.get(testMetaPointer, "value2");
 
-    node.unsafeAddPropertyValue(property1);
-    node.unsafeAddPropertyValue(property2);
+    node.unsafeAppendPropertyValue(property1);
+    node.unsafeAppendPropertyValue(property2);
 
     chunk.addClassifierInstances(node);
     chunk.addLanguage(testLanguage);
@@ -310,8 +310,8 @@ public class ChunkValidatorTest {
     SerializedReferenceValue reference2 = new SerializedReferenceValue(testMetaPointer);
     reference2.addValue(new SerializedReferenceValue.Entry("target2", "resolveInfo2"));
 
-    node.addReferenceValue(reference1);
-    node.addReferenceValue(reference2);
+    node.unsafeAppendReferenceValue(reference1);
+    node.unsafeAppendReferenceValue(reference2);
 
     chunk.addClassifierInstances(node);
     chunk.addLanguage(testLanguage);
@@ -338,8 +338,8 @@ public class ChunkValidatorTest {
     SerializedPropertyValue property1 = SerializedPropertyValue.get(duplicatePointer, "value1");
     SerializedPropertyValue property2 = SerializedPropertyValue.get(duplicatePointer, "value2");
 
-    node.unsafeAddPropertyValue(property1);
-    node.unsafeAddPropertyValue(property2);
+    node.unsafeAppendPropertyValue(property1);
+    node.unsafeAppendPropertyValue(property2);
 
     // Add duplicate references
     SerializedReferenceValue reference1 = new SerializedReferenceValue(duplicatePointer);
@@ -348,8 +348,8 @@ public class ChunkValidatorTest {
     SerializedReferenceValue reference2 = new SerializedReferenceValue(duplicatePointer);
     reference2.addValue(new SerializedReferenceValue.Entry("target2", "resolveInfo2"));
 
-    node.addReferenceValue(reference1);
-    node.addReferenceValue(reference2);
+    node.unsafeAppendReferenceValue(reference1);
+    node.unsafeAppendReferenceValue(reference2);
 
     chunk.addClassifierInstances(node);
     chunk.addLanguage(testLanguage);
@@ -387,8 +387,8 @@ public class ChunkValidatorTest {
     SerializedContainmentValue containment2 =
         new SerializedContainmentValue(containmentPointer2, Arrays.asList("child2"));
 
-    parent.addContainmentValue(containment1);
-    parent.addContainmentValue(containment2);
+    parent.unsafeAppendContainmentValue(containment1);
+    parent.unsafeAppendContainmentValue(containment2);
 
     // Add properties and references with different metapointers
     MetaPointer propertyPointer1 = MetaPointer.get("test-lang", "1.0", "Property1");
@@ -397,8 +397,8 @@ public class ChunkValidatorTest {
     SerializedPropertyValue property1 = SerializedPropertyValue.get(propertyPointer1, "value1");
     SerializedPropertyValue property2 = SerializedPropertyValue.get(propertyPointer2, "value2");
 
-    parent.unsafeAddPropertyValue(property1);
-    parent.unsafeAddPropertyValue(property2);
+    parent.unsafeAppendPropertyValue(property1);
+    parent.unsafeAppendPropertyValue(property2);
 
     MetaPointer referencePointer1 = MetaPointer.get("test-lang", "1.0", "Reference1");
     MetaPointer referencePointer2 = MetaPointer.get("test-lang", "1.0", "Reference2");
@@ -409,8 +409,8 @@ public class ChunkValidatorTest {
     SerializedReferenceValue reference2 = new SerializedReferenceValue(referencePointer2);
     reference2.addValue(new SerializedReferenceValue.Entry("target2", "resolveInfo2"));
 
-    parent.addReferenceValue(reference1);
-    parent.addReferenceValue(reference2);
+    parent.unsafeAppendReferenceValue(reference1);
+    parent.unsafeAppendReferenceValue(reference2);
 
     chunk.addClassifierInstances(parent, child1, child2);
     chunk.addLanguage(testLanguage);
@@ -431,8 +431,8 @@ public class ChunkValidatorTest {
     SerializedPropertyValue property1 = SerializedPropertyValue.get(testMetaPointer, "value1");
     SerializedPropertyValue property2 = SerializedPropertyValue.get(testMetaPointer, "value2");
 
-    node1.unsafeAddPropertyValue(property1);
-    node2.unsafeAddPropertyValue(property2);
+    node1.unsafeAppendPropertyValue(property1);
+    node2.unsafeAppendPropertyValue(property2);
 
     chunk.addClassifierInstances(node1, node2);
     chunk.addLanguage(testLanguage);

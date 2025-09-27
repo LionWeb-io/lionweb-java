@@ -289,7 +289,7 @@ public abstract class AbstractSerialization {
                         reference, ((LanguageEntity<?>) reference.getContainer()).getLanguage());
                 SerializedReferenceValue referenceValue =
                     new SerializedReferenceValue(metaPointer, entries);
-                serializedClassifierInstance.addReferenceValue(referenceValue);
+                serializedClassifierInstance.unsafeAppendReferenceValue(referenceValue);
               }
             });
   }
@@ -315,7 +315,7 @@ public abstract class AbstractSerialization {
                         ((LanguageEntity<?>) containment.getContainer()).getLanguage());
                 SerializedContainmentValue containmentValue =
                     new SerializedContainmentValue(metaPointer, value);
-                serializedClassifierInstance.addContainmentValue(containmentValue);
+                serializedClassifierInstance.unsafeAppendContainmentValue(containmentValue);
               }
             });
   }
@@ -334,7 +334,7 @@ public abstract class AbstractSerialization {
                           property, ((LanguageEntity<?>) property.getContainer()).getLanguage()),
                       serializePropertyValue(
                           property.getType(), classifierInstance.getPropertyValue(property)));
-              serializedClassifierInstance.unsafeAddPropertyValue(propertyValue);
+              serializedClassifierInstance.unsafeAppendPropertyValue(propertyValue);
             });
   }
 

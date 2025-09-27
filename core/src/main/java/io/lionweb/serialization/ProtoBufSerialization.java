@@ -110,7 +110,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                             SerializedPropertyValue.get(
                                 metapointersArray[p.getMpiMetaPointer()],
                                 stringsArray[p.getSiValue()]);
-                        sci.unsafeAddPropertyValue(spv);
+                        sci.unsafeAppendPropertyValue(spv);
                       });
               n.getContainmentsList()
                   .forEach(
@@ -127,7 +127,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                           SerializedContainmentValue scv =
                               new SerializedContainmentValue(
                                   metapointersArray[c.getMpiMetaPointer()], children);
-                          sci.addContainmentValue(scv);
+                          sci.unsafeAppendContainmentValue(scv);
                         }
                       });
               n.getReferencesList()
@@ -145,7 +145,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                                   srv.addValue(entry);
                                 });
                         if (!srv.getValue().isEmpty()) {
-                          sci.addReferenceValue(srv);
+                          sci.unsafeAppendReferenceValue(srv);
                         }
                       });
               n.getSiAnnotationsList().forEach(a -> sci.addAnnotation(stringsArray[a]));

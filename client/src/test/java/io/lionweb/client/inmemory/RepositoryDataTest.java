@@ -42,8 +42,10 @@ public class RepositoryDataTest {
         new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n4 =
         new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
-    n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
-    n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
+    n1.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
+    n2.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
@@ -67,8 +69,10 @@ public class RepositoryDataTest {
         new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n4 =
         new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
-    n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
-    n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
+    n1.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
+    n2.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
@@ -84,7 +88,8 @@ public class RepositoryDataTest {
         new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n5b =
         new SerializedClassifierInstance("n5", MetaPointer.get("l1", "1.0", "c1"));
-    n1b.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n5"));
+    n1b.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n5"));
     n3b.setParentNodeID("n1");
     n5b.setParentNodeID("n1");
     repositoryData.store(Arrays.asList(n1b, n3b, n5b));
@@ -126,8 +131,10 @@ public class RepositoryDataTest {
         new SerializedClassifierInstance("n3", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n4 =
         new SerializedClassifierInstance("n4", MetaPointer.get("l1", "1.0", "c1"));
-    n1.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
-    n2.addChildren(MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
+    n1.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Collections.singletonList("n2"));
+    n2.unsafeAppendChildren(
+        MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n4"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");

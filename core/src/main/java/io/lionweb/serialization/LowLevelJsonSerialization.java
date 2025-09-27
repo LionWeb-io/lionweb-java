@@ -269,7 +269,7 @@ public class LowLevelJsonSerialization {
       properties.forEach(
           property -> {
             JsonObject propertyJO = property.getAsJsonObject();
-            serializedClassifierInstance.unsafeAddPropertyValue(
+            serializedClassifierInstance.unsafeAppendPropertyValue(
                 SerializedPropertyValue.get(
                     SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
                     SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
@@ -288,7 +288,7 @@ public class LowLevelJsonSerialization {
       containments.forEach(
           containmentEntry -> {
             JsonObject containmentJO = containmentEntry.getAsJsonObject();
-            serializedClassifierInstance.addContainmentValue(
+            serializedClassifierInstance.unsafeAppendContainmentValue(
                 new SerializedContainmentValue(
                     SerializationUtils.tryToGetMetaPointerProperty(containmentJO, "containment"),
                     SerializationUtils.tryToGetArrayOfIDs(containmentJO, "children")));
@@ -298,7 +298,7 @@ public class LowLevelJsonSerialization {
       references.forEach(
           referenceEntry -> {
             JsonObject referenceJO = referenceEntry.getAsJsonObject();
-            serializedClassifierInstance.addReferenceValue(
+            serializedClassifierInstance.unsafeAppendReferenceValue(
                 new SerializedReferenceValue(
                     SerializationUtils.tryToGetMetaPointerProperty(referenceJO, "reference"),
                     SerializationUtils.tryToGetArrayOfReferencesProperty(referenceJO, "targets")));

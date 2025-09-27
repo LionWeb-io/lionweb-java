@@ -87,16 +87,27 @@ public class SerializedClassifierInstance {
   }
 
   /**
-   * WARNING: this will always add the property, even if one entry with the same metapointer already
-   * exists.
+   * WARNING: this will always append the property, even if one entry with the same metapointer
+   * already exists.
    *
    * <p>It is however slightly faster than the (safer) setPropertyValue.
+   *
+   * @param propertyValue the value should be non null to constitute a valid chunk, but a null value
+   *     would not cause an error
    */
-  public void unsafeAddPropertyValue(SerializedPropertyValue propertyValue) {
+  public void unsafeAppendPropertyValue(@Nullable SerializedPropertyValue propertyValue) {
     this.properties.add(propertyValue);
   }
 
-  public void setPropertyValue(SerializedPropertyValue propertyValue) {
+  /**
+   * Updates or adds a {@link SerializedPropertyValue} in the properties list. If a property with
+   * the same MetaPointer already exists, it is replaced. Otherwise, the property is appended to the
+   * list.
+   *
+   * @param propertyValue the serialized property value to set; must not be null
+   */
+  public void setPropertyValue(@Nonnull SerializedPropertyValue propertyValue) {
+    Objects.requireNonNull(propertyValue, "propertyValue must not be null");
     for (int i = 0; i < this.properties.size(); i++) {
       SerializedPropertyValue property = this.properties.get(i);
       if (property.getMetaPointer() != null
@@ -108,7 +119,13 @@ public class SerializedClassifierInstance {
     this.properties.add(propertyValue);
   }
 
-  public void addContainmentValue(SerializedContainmentValue containmentValue) {
+  /**
+   * WARNING: this will always append the containment, even if one entry with the same metapointer
+   * already exists.
+   *
+   * <p>It is however slightly faster than the (safer) addChild.
+   */
+  public void unsafeAppendContainmentValue(SerializedContainmentValue containmentValue) {
     initContainments();
     this.containments.add(containmentValue);
   }
@@ -134,15 +151,31 @@ public class SerializedClassifierInstance {
       newValue.add(childID);
       entry.get().setChildrenIds(newValue);
     } else {
-      addChildren(metaPointer, Arrays.asList(childID));
+      unsafeAppendChildren(metaPointer, Arrays.asList(childID));
     }
   }
-
-  public void addReferenceValue(SerializedReferenceValue referenceValue) {
+  /**
+   * WARNING: this will always append the containment, even if one entry with the same metapointer
+   * already exists.
+   *
+   * <p>It is however slightly faster than the (safer) addReferenceValue.
+   *
+   * @param referenceValue the value should be non null to constitute a valid chunk, but a null
+   *     value would not cause an error
+   */
+  public void unsafeAppendReferenceValue(@Nullable SerializedReferenceValue referenceValue) {
     initReferences();
     this.references.add(referenceValue);
   }
 
+  /**
+   * Adds a reference value associated with the specified MetaPointer. If a reference with the given
+   * MetaPointer already exists, the new reference value is added to the existing list of entries.
+   * Otherwise, a new reference entry is created.
+   *
+   * @param metaPointer the MetaPointer instance identifying the reference; must not be null
+   * @param referenceValue the reference value entry to be added; must not be null
+   */
   public void addReferenceValue(
       @Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
     Objects.requireNonNull(metaPointer);
@@ -157,7 +190,8 @@ public class SerializedClassifierInstance {
       newValue.add(referenceValue);
       entry.get().setValue(newValue);
     } else {
-      addReferenceValue(metaPointer, Arrays.asList(referenceValue));
+      unsafeAppendReferenceValue(
+          new SerializedReferenceValue(metaPointer, Arrays.asList(referenceValue)));
     }
   }
 
@@ -178,11 +212,32 @@ public class SerializedClassifierInstance {
     this.id = id;
   }
 
-  public void setPropertyValue(MetaPointer propertyMetaPointer, String serializedValue) {
+  /**
+   * Updates or adds a {@link SerializedPropertyValue} in the properties list. If a property with
+   * the same {@link MetaPointer} already exists, it is replaced. Otherwise, the property is
+   * appended to the list.
+   *
+   * @param propertyMetaPointer the metadata pointer identifying the property; may be null
+   * @param serializedValue the serialized value of the property; may be null
+   */
+  public void setPropertyValue(
+      @Nullable MetaPointer propertyMetaPointer, @Nullable String serializedValue) {
     setPropertyValue(SerializedPropertyValue.get(propertyMetaPointer, serializedValue));
   }
 
-  public void addChildren(MetaPointer containment, List<String> childrenIds) {
+  /**
+   * Appends a new containment entry to the current instance. The method adds a new {@link
+   * SerializedContainmentValue} constructed with the provided containment reference and list of
+   * child identifiers to the internal containments list. This operation always appends the entry,
+   * regardless of whether a similar containment already exists.
+   *
+   * @param containment the {@link MetaPointer} identifying the containment; may be null to indicate
+   *     no specific containment.
+   * @param childrenIds a non-null list of child identifiers to be associated with the new
+   *     containment value.
+   */
+  public void unsafeAppendChildren(
+      @Nullable MetaPointer containment, @Nonnull List<String> childrenIds) {
     initContainments();
     this.containments.add(new SerializedContainmentValue(containment, childrenIds));
   }
