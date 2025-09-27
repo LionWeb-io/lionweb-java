@@ -237,6 +237,28 @@ public class SerializedClassifierInstanceTest {
   }
 
   @Test
+  public void addReferenceValueCreatesNewEntryForNewReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer newReference = simpleMetaPointer("newRef");
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("RID-NEW", "RI-NEW");
+
+    // Initially, no references should exist
+    assertTrue(sci.getReferences().isEmpty());
+    assertTrue(sci.getReferenceValues(newReference).isEmpty());
+
+    // Add reference value for a completely new reference
+    sci.addReferenceValue(newReference, entry);
+
+    // Verify the reference was created with the entry
+    assertEquals(1, sci.getReferences().size());
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(newReference);
+    assertEquals(1, values.size());
+    assertEquals(entry, values.get(0));
+    assertEquals("RID-NEW", values.get(0).getReference());
+    assertEquals("RI-NEW", values.get(0).getResolveInfo());
+  }
+
+  @Test
   public void toStringContainsKeyInfo() {
     SerializedClassifierInstance sci =
         new SerializedClassifierInstance("idX", simpleMetaPointer("C"));
@@ -246,5 +268,39 @@ public class SerializedClassifierInstanceTest {
     assertTrue(s.contains("id"));
     assertTrue(s.contains("classifier"));
     assertTrue(s.contains("parentNodeID"));
+  }
+
+  @Test
+  public void setPropertyValueReplacesExistingValue() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer property = simpleMetaPointer("testProp");
+
+    // Set initial property value
+    sci.setPropertyValue(property, "originalValue");
+
+    // Verify initial value is set
+    assertEquals(1, sci.getProperties().size());
+    assertEquals("originalValue", sci.getPropertyValue(property));
+    assertEquals("originalValue", sci.getPropertyValue("testProp"));
+
+    // Replace the existing value
+    sci.setPropertyValue(property, "replacedValue");
+
+    // Verify the value was replaced, not appended
+    assertEquals(1, sci.getProperties().size()); // Still only one property entry
+    assertEquals("replacedValue", sci.getPropertyValue(property));
+    assertEquals("replacedValue", sci.getPropertyValue("testProp"));
+
+    // Replace again with null value
+    sci.setPropertyValue(property, null);
+    assertEquals(1, sci.getProperties().size()); // Entry still exists
+    assertNull(sci.getPropertyValue(property));
+    assertNull(sci.getPropertyValue("testProp"));
+
+    // Replace null with a new value
+    sci.setPropertyValue(property, "newValue");
+    assertEquals(1, sci.getProperties().size()); // Still only one entry
+    assertEquals("newValue", sci.getPropertyValue(property));
+    assertEquals("newValue", sci.getPropertyValue("testProp"));
   }
 }
