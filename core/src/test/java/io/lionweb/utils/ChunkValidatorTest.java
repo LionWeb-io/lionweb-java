@@ -32,7 +32,7 @@ public class ChunkValidatorTest {
     // Set up containment relationship
     SerializedContainmentValue containment =
         new SerializedContainmentValue(testMetaPointer, Arrays.asList("child1"));
-    parent.addContainmentValue(containment);
+    parent.unsafeAppendContainmentValue(containment);
 
     chunk.addClassifierInstances(parent, child);
     chunk.addLanguage(testLanguage);
@@ -100,8 +100,8 @@ public class ChunkValidatorTest {
     SerializedContainmentValue containment1 = createContainment("child1");
     SerializedContainmentValue containment2 = createContainment("child1");
 
-    parent1.addContainmentValue(containment1);
-    parent2.addContainmentValue(containment2);
+    parent1.unsafeAppendContainmentValue(containment1);
+    parent2.unsafeAppendContainmentValue(containment2);
 
     chunk.addClassifierInstances(parent1, parent2, child);
     chunk.addLanguages(testLanguage);
@@ -143,7 +143,7 @@ public class ChunkValidatorTest {
 
     // Parent contains child, but child's parent ID is different
     SerializedContainmentValue containment = createContainment("child1");
-    parent.addContainmentValue(containment);
+    parent.unsafeAppendContainmentValue(containment);
 
     chunk.addClassifierInstances(parent, child);
     chunk.addLanguages(testLanguage);
@@ -225,13 +225,13 @@ public class ChunkValidatorTest {
     // Add property with different language
     SerializedPropertyValue property =
         SerializedPropertyValue.get(MetaPointer.get("prop-lang", "1.0", "TestProp"), "test value");
-    node.addPropertyValue(property);
+    node.unsafeAppendPropertyValue(property);
 
     // Add reference with different language
     SerializedReferenceValue reference =
         new SerializedReferenceValue(MetaPointer.get("ref-lang", "1.0", "TestRef"));
     reference.addValue(new SerializedReferenceValue.Entry("target1", "resolveInfo"));
-    node.addReferenceValue(reference);
+    node.unsafeAppendReferenceValue(reference);
 
     chunk.addClassifierInstances(node);
     chunk.addLanguages(testLanguage, propLanguage, refLanguage);
@@ -239,6 +239,208 @@ public class ChunkValidatorTest {
     ValidationResult result = validator.validate(chunk);
 
     assertTrue(result.isSuccessful());
+  }
+
+  @Test
+  public void testDuplicateContainmentMetaPointers() {
+    SerializedClassifierInstance parent = createValidNode("parent1", null);
+    SerializedClassifierInstance child1 = createValidNode("child1", "parent1");
+    SerializedClassifierInstance child2 = createValidNode("child2", "parent1");
+
+    // Create two containments with the same metapointer
+    SerializedContainmentValue containment1 =
+        new SerializedContainmentValue(testMetaPointer, Arrays.asList("child1"));
+    SerializedContainmentValue containment2 =
+        new SerializedContainmentValue(testMetaPointer, Arrays.asList("child2"));
+
+    parent.unsafeAppendContainmentValue(containment1);
+    parent.unsafeAppendContainmentValue(containment2);
+
+    chunk.addClassifierInstances(parent, child1, child2);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        result.getIssues().stream()
+            .anyMatch(
+                error ->
+                    error
+                            .getMessage()
+                            .contains("has duplicate feature metapointer: " + testMetaPointer)
+                        && error.getMessage().contains("parent1")));
+  }
+
+  @Test
+  public void testDuplicatePropertyMetaPointers() {
+    SerializedClassifierInstance node = createValidNode("node1", null);
+
+    // Create two properties with the same metapointer
+    SerializedPropertyValue property1 = SerializedPropertyValue.get(testMetaPointer, "value1");
+    SerializedPropertyValue property2 = SerializedPropertyValue.get(testMetaPointer, "value2");
+
+    node.unsafeAppendPropertyValue(property1);
+    node.unsafeAppendPropertyValue(property2);
+
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        result.getIssues().stream()
+            .anyMatch(
+                error ->
+                    error
+                            .getMessage()
+                            .contains("has duplicate feature metapointer: " + testMetaPointer)
+                        && error.getMessage().contains("node1")));
+  }
+
+  @Test
+  public void testDuplicateReferenceMetaPointers() {
+    SerializedClassifierInstance node = createValidNode("node1", null);
+
+    // Create two references with the same metapointer
+    SerializedReferenceValue reference1 = new SerializedReferenceValue(testMetaPointer);
+    reference1.addValue(new SerializedReferenceValue.Entry("target1", "resolveInfo1"));
+
+    SerializedReferenceValue reference2 = new SerializedReferenceValue(testMetaPointer);
+    reference2.addValue(new SerializedReferenceValue.Entry("target2", "resolveInfo2"));
+
+    node.unsafeAppendReferenceValue(reference1);
+    node.unsafeAppendReferenceValue(reference2);
+
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        result.getIssues().stream()
+            .anyMatch(
+                error ->
+                    error
+                            .getMessage()
+                            .contains("has duplicate feature metapointer: " + testMetaPointer)
+                        && error.getMessage().contains("node1")));
+  }
+
+  @Test
+  public void testMultipleDuplicateMetaPointers() {
+    SerializedClassifierInstance node = createValidNode("node1", null);
+    MetaPointer duplicatePointer = MetaPointer.get("test-lang", "1.0", "DuplicateFeature");
+
+    // Add duplicate properties
+    SerializedPropertyValue property1 = SerializedPropertyValue.get(duplicatePointer, "value1");
+    SerializedPropertyValue property2 = SerializedPropertyValue.get(duplicatePointer, "value2");
+
+    node.unsafeAppendPropertyValue(property1);
+    node.unsafeAppendPropertyValue(property2);
+
+    // Add duplicate references
+    SerializedReferenceValue reference1 = new SerializedReferenceValue(duplicatePointer);
+    reference1.addValue(new SerializedReferenceValue.Entry("target1", "resolveInfo1"));
+
+    SerializedReferenceValue reference2 = new SerializedReferenceValue(duplicatePointer);
+    reference2.addValue(new SerializedReferenceValue.Entry("target2", "resolveInfo2"));
+
+    node.unsafeAppendReferenceValue(reference1);
+    node.unsafeAppendReferenceValue(reference2);
+
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    // Should detect both duplicate property and reference metapointers
+    long duplicateErrors =
+        result.getIssues().stream()
+            .filter(
+                error ->
+                    error
+                            .getMessage()
+                            .contains("has duplicate feature metapointer: " + duplicatePointer)
+                        && error.getMessage().contains("node1"))
+            .count();
+
+    // We expect 3 errors: one for properties, two for references
+    assertEquals(3, duplicateErrors);
+  }
+
+  @Test
+  public void testNoDuplicatesWhenDifferentMetaPointers() {
+    SerializedClassifierInstance parent = createValidNode("parent1", null);
+    SerializedClassifierInstance child1 = createValidNode("child1", "parent1");
+    SerializedClassifierInstance child2 = createValidNode("child2", "parent1");
+
+    // Create containments with different metapointers
+    MetaPointer containmentPointer1 = MetaPointer.get("test-lang", "1.0", "Containment1");
+    MetaPointer containmentPointer2 = MetaPointer.get("test-lang", "1.0", "Containment2");
+
+    SerializedContainmentValue containment1 =
+        new SerializedContainmentValue(containmentPointer1, Arrays.asList("child1"));
+    SerializedContainmentValue containment2 =
+        new SerializedContainmentValue(containmentPointer2, Arrays.asList("child2"));
+
+    parent.unsafeAppendContainmentValue(containment1);
+    parent.unsafeAppendContainmentValue(containment2);
+
+    // Add properties and references with different metapointers
+    MetaPointer propertyPointer1 = MetaPointer.get("test-lang", "1.0", "Property1");
+    MetaPointer propertyPointer2 = MetaPointer.get("test-lang", "1.0", "Property2");
+
+    SerializedPropertyValue property1 = SerializedPropertyValue.get(propertyPointer1, "value1");
+    SerializedPropertyValue property2 = SerializedPropertyValue.get(propertyPointer2, "value2");
+
+    parent.unsafeAppendPropertyValue(property1);
+    parent.unsafeAppendPropertyValue(property2);
+
+    MetaPointer referencePointer1 = MetaPointer.get("test-lang", "1.0", "Reference1");
+    MetaPointer referencePointer2 = MetaPointer.get("test-lang", "1.0", "Reference2");
+
+    SerializedReferenceValue reference1 = new SerializedReferenceValue(referencePointer1);
+    reference1.addValue(new SerializedReferenceValue.Entry("target1", "resolveInfo1"));
+
+    SerializedReferenceValue reference2 = new SerializedReferenceValue(referencePointer2);
+    reference2.addValue(new SerializedReferenceValue.Entry("target2", "resolveInfo2"));
+
+    parent.unsafeAppendReferenceValue(reference1);
+    parent.unsafeAppendReferenceValue(reference2);
+
+    chunk.addClassifierInstances(parent, child1, child2);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(result.isSuccessful());
+    assertTrue(result.getIssues().isEmpty());
+  }
+
+  @Test
+  public void testDuplicateMetaPointersAcrossDifferentNodes() {
+    // Test that the same metapointer can be used in different nodes (should be valid)
+    SerializedClassifierInstance node1 = createValidNode("node1", null);
+    SerializedClassifierInstance node2 = createValidNode("node2", null);
+
+    // Both nodes use the same metapointer for properties - this should be valid
+    SerializedPropertyValue property1 = SerializedPropertyValue.get(testMetaPointer, "value1");
+    SerializedPropertyValue property2 = SerializedPropertyValue.get(testMetaPointer, "value2");
+
+    node1.unsafeAppendPropertyValue(property1);
+    node2.unsafeAppendPropertyValue(property2);
+
+    chunk.addClassifierInstances(node1, node2);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(result.isSuccessful());
+    assertTrue(result.getIssues().isEmpty());
   }
 
   @Test
