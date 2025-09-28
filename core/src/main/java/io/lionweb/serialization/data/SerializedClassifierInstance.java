@@ -313,6 +313,11 @@ public class SerializedClassifierInstance {
     setReferenceValue(new SerializedReferenceValue(reference, referenceValues));
   }
 
+  public void setReferenceValue(
+      MetaPointer reference, SerializedReferenceValue.Entry... referenceValues) {
+    setReferenceValue(new SerializedReferenceValue(reference, Arrays.asList(referenceValues)));
+  }
+
   public void setReferenceValue(@Nonnull SerializedReferenceValue referenceValue) {
     Objects.requireNonNull(referenceValue);
     initReferences();
@@ -338,7 +343,8 @@ public class SerializedClassifierInstance {
     return Collections.unmodifiableList(this.annotations);
   }
 
-  public void setAnnotations(List<String> annotationIDs) {
+  public void setAnnotations(@Nonnull List<String> annotationIDs) {
+    Objects.requireNonNull(annotationIDs, "annotationIDs should not be null");
     if (this.annotations == null) {
       this.annotations = new ArrayList<>(annotationIDs.size());
     } else {

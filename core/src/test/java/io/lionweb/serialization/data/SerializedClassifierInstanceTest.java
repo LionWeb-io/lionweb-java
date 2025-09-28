@@ -303,4 +303,50 @@ public class SerializedClassifierInstanceTest {
     assertEquals("newValue", sci.getPropertyValue(property));
     assertEquals("newValue", sci.getPropertyValue("testProp"));
   }
+
+  @Test
+  public void setReferenceValueReplacesExistingValue() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer reference = simpleMetaPointer("testRef");
+
+    // Set initial reference value
+    sci.setReferenceValue(reference, new SerializedReferenceValue.Entry("a-id", "a-name"));
+
+    // Verify initial value is set
+    assertEquals(1, sci.getReferences().size());
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues(reference));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues("testRef"));
+
+    // Replace the existing value
+    sci.setReferenceValue(reference, new SerializedReferenceValue.Entry("b-id", "b-name"));
+
+    // Verify the value was replaced, not appended
+    assertEquals(1, sci.getReferences().size());
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues(reference));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues("testRef"));
+  }
+
+  @Test
+  public void setAnnotations() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+
+    assertEquals(Collections.emptyList(), sci.getAnnotations());
+
+    sci.setAnnotations(Arrays.asList("an1", "an2"));
+    assertEquals(Arrays.asList("an1", "an2"), sci.getAnnotations());
+
+    sci.setAnnotations(Arrays.asList("an3", "an4", "an5"));
+    assertEquals(Arrays.asList("an3", "an4", "an5"), sci.getAnnotations());
+
+    sci.setAnnotations(Collections.emptyList());
+    assertEquals(Collections.emptyList(), sci.getAnnotations());
+  }
 }
