@@ -334,28 +334,28 @@ public class SerializedClassifierInstanceTest {
         sci.getReferenceValues("testRef"));
 
     // set many references
-      MetaPointer otherRef1 = simpleMetaPointer("otherRef1");
-      MetaPointer otherRef2 = simpleMetaPointer("otherRef2");
-      sci.setReferenceValue(otherRef1, new SerializedReferenceValue.Entry("a-id", "a-name"));
-      sci.setReferenceValue(otherRef2, new SerializedReferenceValue.Entry("c-id", "c-name"));
-      assertEquals(
-              Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
-              sci.getReferenceValues(reference));
-      assertEquals(
-              Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
-              sci.getReferenceValues("testRef"));
-      assertEquals(
-              Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
-              sci.getReferenceValues(otherRef1));
-      assertEquals(
-              Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
-              sci.getReferenceValues("otherRef1"));
-      assertEquals(
-              Collections.singletonList(new SerializedReferenceValue.Entry("c-id", "c-name")),
-              sci.getReferenceValues(otherRef2));
-      assertEquals(
-              Collections.singletonList(new SerializedReferenceValue.Entry("c-id", "c-name")),
-              sci.getReferenceValues("otherRef2"));
+    MetaPointer otherRef1 = simpleMetaPointer("otherRef1");
+    MetaPointer otherRef2 = simpleMetaPointer("otherRef2");
+    sci.setReferenceValue(otherRef1, new SerializedReferenceValue.Entry("a-id", "a-name"));
+    sci.setReferenceValue(otherRef2, new SerializedReferenceValue.Entry("c-id", "c-name"));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues(reference));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues("testRef"));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues(otherRef1));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues("otherRef1"));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("c-id", "c-name")),
+        sci.getReferenceValues(otherRef2));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("c-id", "c-name")),
+        sci.getReferenceValues("otherRef2"));
   }
 
   @Test
@@ -374,36 +374,37 @@ public class SerializedClassifierInstanceTest {
     assertEquals(Collections.emptyList(), sci.getAnnotations());
   }
 
-    @Test
-    public void equality() {
-        SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
-        sci1.setID("id123");
-        SerializedClassifierInstance sci2 = new SerializedClassifierInstance();
-        sci2.setID("id123");
+  @Test
+  public void equality() {
+    SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
+    sci1.setID("id123");
+    SerializedClassifierInstance sci2 = new SerializedClassifierInstance();
+    sci2.setID("id123");
 
-        assertFalse(sci1.equals("a string"));
-        assertTrue(sci1.equals(sci2));
+    assertFalse(sci1.equals("a string"));
+    assertTrue(sci1.equals(sci2));
 
-        sci2.setID("id234");
-        assertFalse(sci1.equals(sci2));
+    sci2.setID("id234");
+    assertFalse(sci1.equals(sci2));
 
-        sci2.setID("id123");
-        assertTrue(sci1.equals(sci2));
+    sci2.setID("id123");
+    assertTrue(sci1.equals(sci2));
 
-        sci2.setParentNodeID("pY");
-        assertFalse(sci1.equals(sci2));
+    sci2.setParentNodeID("pY");
+    assertFalse(sci1.equals(sci2));
 
-        sci1.setParentNodeID("pY");
-        assertTrue(sci1.equals(sci2));
+    sci1.setParentNodeID("pY");
+    assertTrue(sci1.equals(sci2));
 
-        sci1.setClassifier(simpleMetaPointer("C1"));
-        sci2.setClassifier(simpleMetaPointer("C2"));
-        assertFalse(sci1.equals(sci2));
+    sci1.setClassifier(simpleMetaPointer("C1"));
+    sci2.setClassifier(simpleMetaPointer("C2"));
+    assertFalse(sci1.equals(sci2));
 
-        sci2.setClassifier(simpleMetaPointer("C1"));
-        assertTrue(sci1.equals(sci2));
+    sci2.setClassifier(simpleMetaPointer("C1"));
+    assertTrue(sci1.equals(sci2));
 
-        sci1.addReferenceValue(simpleMetaPointer("ref"), new SerializedReferenceValue.Entry("ref-id", "ref-name"));
-        assertFalse(sci1.equals(sci2));
-    }
+    sci1.addReferenceValue(
+        simpleMetaPointer("ref"), new SerializedReferenceValue.Entry("ref-id", "ref-name"));
+    assertFalse(sci1.equals(sci2));
+  }
 }
