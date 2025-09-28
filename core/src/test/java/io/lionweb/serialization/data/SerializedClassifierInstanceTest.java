@@ -407,4 +407,22 @@ public class SerializedClassifierInstanceTest {
         simpleMetaPointer("ref"), new SerializedReferenceValue.Entry("ref-id", "ref-name"));
     assertFalse(sci1.equals(sci2));
   }
+
+  @Test
+  public void removeChildFromEmpty() {
+    // Remove child from an empty node does not explode and return false
+    SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
+    sci1.setID("id123");
+    assertFalse(sci1.removeChild("c-1"));
+
+    assertFalse(sci1.removeContainmentValue(simpleMetaPointer("myContainment")));
+  }
+
+  @Test
+  public void removeAnnotationsFromEmpty() {
+    // Remove annotation from an empty node does not explode and return false
+    SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
+    sci1.setID("id123");
+    assertFalse(sci1.removeAnnotation("an-1"));
+  }
 }
