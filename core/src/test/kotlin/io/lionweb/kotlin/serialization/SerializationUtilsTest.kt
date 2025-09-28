@@ -50,19 +50,19 @@ class SerializationUtilsTest {
                     SerializedClassifierInstance().apply {
                         id = "language-mylanguage-id"
                         classifier = MetaPointer.get("LionCore-M3", "2024.1", "Language")
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Language-version"), "1"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "language-mylanguage-key"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                                 "MyLanguage",
                             ),
                         )
-                        addContainmentValue(
+                        unsafeAppendContainmentValue(
                             SerializedContainmentValue(
                                 MetaPointer.get(
                                     "LionCore-M3",
@@ -79,16 +79,16 @@ class SerializationUtilsTest {
                         id = "mylanguage-MyConcept-id"
                         classifier = MetaPointer.get("LionCore-M3", "2024.1", "Concept")
 
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Concept-abstract"), "false"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Concept-partition"), "false"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "mylanguage-MyConcept-key"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                                 "MyConcept",
@@ -101,13 +101,13 @@ class SerializationUtilsTest {
                     SerializedClassifierInstance().apply {
                         id = "mylanguage-MyInterface-id"
                         classifier = MetaPointer.get("LionCore-M3", "2024.1", "Interface")
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"),
                                 "mylanguage-MyInterface-key",
                             ),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                                 "MyInterface",
@@ -253,19 +253,19 @@ class SerializationUtilsTest {
                     SerializedClassifierInstance().apply {
                         id = "language-mylanguage-id"
                         classifier = MetaPointer.get("LionCore-M3", "2024.1", "Language")
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Language-version"), "1"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "language-mylanguage-key"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                                 "MyLanguage",
                             ),
                         )
-                        addContainmentValue(
+                        unsafeAppendContainmentValue(
                             SerializedContainmentValue(
                                 MetaPointer.get(
                                     "LionCore-M3",
@@ -282,16 +282,16 @@ class SerializationUtilsTest {
                         id = "mylanguage-MyConcept-id"
                         classifier = MetaPointer.get("LionCore-M3", "2024.1", "Concept")
 
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Concept-abstract"), "false"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Concept-partition"), "false"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "mylanguage-MyConcept-key"),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                                 "MyConcept",
@@ -304,13 +304,13 @@ class SerializationUtilsTest {
                     SerializedClassifierInstance().apply {
                         id = "mylanguage-MyInterface-id"
                         classifier = MetaPointer.get("LionCore-M3", "2024.1", "Interface")
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"),
                                 "mylanguage-MyInterface-key",
                             ),
                         )
-                        addPropertyValue(
+                        unsafeAppendPropertyValue(
                             SerializedPropertyValue.get(
                                 MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                                 "MyInterface",

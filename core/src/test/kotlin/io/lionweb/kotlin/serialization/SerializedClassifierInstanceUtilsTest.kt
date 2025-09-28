@@ -17,19 +17,19 @@ class SerializedClassifierInstanceUtilsTest {
             SerializedClassifierInstance().apply {
                 id = "language-mylanguage-id"
                 classifier = MetaPointer.get("LionCore-M3", "2024.1", "Language")
-                addPropertyValue(
+                unsafeAppendPropertyValue(
                     SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Language-version"), "1"),
                 )
-                addPropertyValue(
+                unsafeAppendPropertyValue(
                     SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "language-mylanguage-key"),
                 )
-                addPropertyValue(
+                unsafeAppendPropertyValue(
                     SerializedPropertyValue.get(
                         MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                         "MyLanguage",
                     ),
                 )
-                addContainmentValue(
+                unsafeAppendContainmentValue(
                     SerializedContainmentValue(
                         MetaPointer.get(
                             "LionCore-M3",
@@ -51,19 +51,19 @@ class SerializedClassifierInstanceUtilsTest {
             SerializedClassifierInstance().apply {
                 id = "language-mylanguage-id"
                 classifier = MetaPointer.get("LionCore-M3", "2024.1", "Language")
-                addPropertyValue(
+                unsafeAppendPropertyValue(
                     SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "Language-version"), "1"),
                 )
-                addPropertyValue(
+                unsafeAppendPropertyValue(
                     SerializedPropertyValue.get(MetaPointer.get("LionCore-M3", "2024.1", "IKeyed-key"), "language-mylanguage-key"),
                 )
-                addPropertyValue(
+                unsafeAppendPropertyValue(
                     SerializedPropertyValue.get(
                         MetaPointer.get("LionCore-builtins", "2024.1", "LionCore-builtins-INamed-name"),
                         "MyLanguage",
                     ),
                 )
-                addContainmentValue(
+                unsafeAppendContainmentValue(
                     SerializedContainmentValue(
                         MetaPointer.get(
                             "LionCore-M3",

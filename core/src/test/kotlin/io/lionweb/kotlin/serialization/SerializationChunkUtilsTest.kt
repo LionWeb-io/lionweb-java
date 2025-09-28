@@ -126,11 +126,13 @@ class SerializationChunkUtilsTest {
             SerializedClassifierInstance().apply {
                 id = "test-id"
                 classifier = MetaPointer.get("TestLanguage", "1.0", "TestConcept")
-                addReferenceValue(
-                    MetaPointer.from(concept.getReferenceByName("testReference")),
-                    listOf(
-                        SerializedReferenceValue.Entry("target1", "resolveInfo1"),
-                        SerializedReferenceValue.Entry("target2", "resolveInfo2"),
+                unsafeAppendReferenceValue(
+                    SerializedReferenceValue(
+                        MetaPointer.from(concept.getReferenceByName("testReference")),
+                        listOf(
+                            SerializedReferenceValue.Entry("target1", "resolveInfo1"),
+                            SerializedReferenceValue.Entry("target2", "resolveInfo2"),
+                        ),
                     ),
                 )
             }
@@ -151,12 +153,14 @@ class SerializationChunkUtilsTest {
             SerializedClassifierInstance().apply {
                 id = "test-id"
                 classifier = MetaPointer.get("TestLanguage", "1.0", "TestConcept")
-                addReferenceValue(
-                    MetaPointer.from(concept.getReferenceByName("testReference")),
-                    listOf(
-                        SerializedReferenceValue.Entry("target1", "resolveInfo1"),
-                        SerializedReferenceValue.Entry("target2", "resolveInfo2"),
-                        SerializedReferenceValue.Entry(null, "resolveInfo3"),
+                unsafeAppendReferenceValue(
+                    SerializedReferenceValue(
+                        MetaPointer.from(concept.getReferenceByName("testReference")),
+                        listOf(
+                            SerializedReferenceValue.Entry("target1", "resolveInfo1"),
+                            SerializedReferenceValue.Entry("target2", "resolveInfo2"),
+                            SerializedReferenceValue.Entry(null, "resolveInfo3"),
+                        ),
                     ),
                 )
             }
@@ -210,11 +214,13 @@ class SerializationChunkUtilsTest {
                         id = "root-id"
                         classifier = MetaPointer.get("TestLanguage", "1.0", "TestConcept")
                         parentNodeID = null
-                        addReferenceValue(
-                            MetaPointer.from(concept.getReferenceByName("testReference")),
-                            listOf(
-                                SerializedReferenceValue.Entry("target1", "resolveInfo1"),
-                                SerializedReferenceValue.Entry(null, "resolveInfo2"),
+                        unsafeAppendReferenceValue(
+                            SerializedReferenceValue(
+                                MetaPointer.from(concept.getReferenceByName("testReference")),
+                                listOf(
+                                    SerializedReferenceValue.Entry("target1", "resolveInfo1"),
+                                    SerializedReferenceValue.Entry(null, "resolveInfo2"),
+                                ),
                             ),
                         )
                     }
@@ -240,7 +246,7 @@ class SerializationChunkUtilsTest {
                     SerializedClassifierInstance().apply {
                         id = "subtree-root"
                         classifier = MetaPointer.get("TestLang", "1.0", "Concept")
-                        addContainmentValue(
+                        unsafeAppendContainmentValue(
                             SerializedContainmentValue(
                                 MetaPointer.get("TestLang", "1.0", "containment"),
                                 listOf("child1", "child2"),
@@ -255,7 +261,7 @@ class SerializationChunkUtilsTest {
                         id = "child1"
                         classifier = MetaPointer.get("TestLang", "1.0", "Concept")
                         parentNodeID = "subtree-root"
-                        addContainmentValue(
+                        unsafeAppendContainmentValue(
                             SerializedContainmentValue(
                                 MetaPointer.get("TestLang", "1.0", "containment"),
                                 listOf("grandchild1"),

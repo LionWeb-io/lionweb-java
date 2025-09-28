@@ -1,6 +1,8 @@
 package io.lionweb.kotlin.serialization.chunk
 
 import io.lionweb.language.Concept
+import io.lionweb.language.Language
+import io.lionweb.serialization.data.LanguageVersion
 import io.lionweb.serialization.data.MetaPointer
 import io.lionweb.serialization.data.SerializationChunk
 import io.lionweb.serialization.data.SerializedClassifierInstance
@@ -58,5 +60,16 @@ fun SerializationChunk.combineTree(
     subtreeRoot.annotations.forEach { annotationId ->
         val annotation = otherChunk.classifierInstancesByID[annotationId]!!
         combineTree(otherChunk, annotation)
+    }
+}
+
+fun SerializationChunk.ensureLanguageIsPresent(language: Language) {
+    ensureLanguageIsPresent(LanguageVersion.fromLanguage(language))
+}
+
+fun SerializationChunk.ensureLanguageIsPresent(languageVersion: LanguageVersion) {
+    val found = this.languages.find { it.key == languageVersion.key && it.version == languageVersion.version }
+    if (found == null) {
+        this.addLanguage(languageVersion)
     }
 }
