@@ -49,9 +49,7 @@ public class ClassifierInstanceUtilsTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> {
-              ClassifierInstanceUtils.setPropertyValueByName(node, "nonExistentProp", "value");
-            });
+            () -> ClassifierInstanceUtils.setPropertyValueByName(node, "nonExistentProp", "value"));
 
     assertTrue(
         exception.getMessage().contains("does not contained a property named nonExistentProp"));
@@ -61,9 +59,7 @@ public class ClassifierInstanceUtilsTest {
   public void setPropertyValueByNameNullInstance() {
     assertThrows(
         NullPointerException.class,
-        () -> {
-          ClassifierInstanceUtils.setPropertyValueByName(null, "prop", "value");
-        });
+        () -> ClassifierInstanceUtils.setPropertyValueByName(null, "prop", "value"));
   }
 
   @Test
@@ -77,9 +73,7 @@ public class ClassifierInstanceUtilsTest {
 
     assertThrows(
         NullPointerException.class,
-        () -> {
-          ClassifierInstanceUtils.setPropertyValueByName(node, null, "value");
-        });
+        () -> ClassifierInstanceUtils.setPropertyValueByName(node, null, "value"));
   }
 
   @Test
@@ -136,10 +130,7 @@ public class ClassifierInstanceUtilsTest {
     DynamicNode node = new DynamicNode("node1", testConcept);
 
     assertThrows(
-        NullPointerException.class,
-        () -> {
-          ClassifierInstanceUtils.getPropertyValueByID(node, null);
-        });
+        NullPointerException.class, () -> ClassifierInstanceUtils.getPropertyValueByID(node, null));
   }
 
   @Test
@@ -206,9 +197,7 @@ public class ClassifierInstanceUtilsTest {
     // Get only child - should throw IllegalStateException
     assertThrows(
         IllegalStateException.class,
-        () -> {
-          ClassifierInstanceUtils.getOnlyChildByContainmentName(parentNode, "children");
-        });
+        () -> ClassifierInstanceUtils.getOnlyChildByContainmentName(parentNode, "children"));
   }
 
   @Test
@@ -284,10 +273,9 @@ public class ClassifierInstanceUtilsTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> {
-              ClassifierInstanceUtils.setOnlyChildByContainmentName(
-                  parentNode, "children", childNode);
-            });
+            () ->
+                ClassifierInstanceUtils.setOnlyChildByContainmentName(
+                    parentNode, "children", childNode));
 
     assertTrue(
         exception.getMessage().contains("Cannot invoke this method with a multiple containment"));
