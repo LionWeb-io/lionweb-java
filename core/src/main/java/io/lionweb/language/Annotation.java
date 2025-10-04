@@ -91,12 +91,22 @@ public class Annotation extends Classifier<Annotation> {
     }
   }
 
-  public void setAnnotates(@Nullable Classifier<?> target) {
+  /**
+   * Sets the "annotates" reference of this Annotation to the specified target Classifier. If the
+   * target is null, the reference will also be set to null. Otherwise, it will be set to a new
+   * {@link ReferenceValue} containing the target and its name.
+   *
+   * @param target the Classifier to set as the target of the "annotates" reference, or null to
+   *     clear it
+   * @return this Annotation instance, allowing for method chaining
+   */
+  public Annotation setAnnotates(@Nullable Classifier<?> target) {
     if (target == null) {
       this.setReferenceSingleValue("annotates", null);
     } else {
       this.setReferenceSingleValue("annotates", new ReferenceValue(target, target.getName()));
     }
+    return this;
   }
 
   @Nonnull

@@ -129,6 +129,32 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return (T) this;
   }
 
+  /**
+   * Adds a containment feature to the classifier with the specified name, type, and multiplicity.
+   *
+   * @param name the name of the containment feature to add; must not be null
+   * @param type the type of the containment feature to add; must not be null
+   * @param multiplicity the multiplicity of the containment feature to add, determining whether it
+   *     is optional and/or allows multiple values; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   */
+  public T addContainment(
+      @Nonnull String name, @Nonnull Classifier<?> type, @Nonnull Multiplicity multiplicity) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(type, "type should not be null");
+    Objects.requireNonNull(multiplicity, "multiplicity should not be null");
+    Containment containment = new Containment(this.getLionWebVersion(), name);
+    containment.setType(type);
+    containment.setOptional(multiplicity.isOptional());
+    containment.setMultiple(multiplicity.isMultiple());
+    addFeature(containment);
+    return (T) this;
+  }
+
+  public T addContainment(@Nonnull String name, @Nonnull Classifier<?> type) {
+    return addContainment(name, type, Multiplicity.REQUIRED);
+  }
+
   public void removeFeature(@Nonnull Feature<?> feature) {
     Objects.requireNonNull(feature, "feature should not be null");
     if (!getFeatures().contains(feature)) {

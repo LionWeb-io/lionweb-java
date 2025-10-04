@@ -246,12 +246,32 @@ public class ClassifierInstanceUtils {
     }
   }
 
+  /**
+   * Adds a child node to the specified {@link ClassifierInstance} under a containment defined by
+   * the given containment name.
+   *
+   * @param _this the {@link ClassifierInstance} to which the child node will be added. Must not be
+   *     null.
+   * @param containmentName the name of the containment under which the child will be added. Must
+   *     not be null.
+   * @param child the {@link Node} instance to be added as a child. Must not be null.
+   * @throws NullPointerException if any of the parameters is null.
+   * @throws IllegalArgumentException if the specified containment name is not found in the
+   *     classifier.
+   */
   public static void addChild(
       @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName, @Nonnull Node child) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     Objects.requireNonNull(child, "child should not be null");
     Containment containment = _this.getClassifier().getContainmentByName(containmentName);
+    if (containment == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a containment named "
+              + containmentName);
+    }
     _this.addChild(containment, child);
   }
 

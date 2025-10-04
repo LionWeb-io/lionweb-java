@@ -360,7 +360,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       }
     } else {
       if (value instanceof HasSettableParent) {
-        ((HasSettableParent) value).setParent((Node) this);
+        ((HasSettableParent) value).setParent(this);
       }
       containmentValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
       if (partitionObserverCache != null) {
