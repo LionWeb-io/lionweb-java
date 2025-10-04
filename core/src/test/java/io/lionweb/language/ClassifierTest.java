@@ -97,4 +97,57 @@ public class ClassifierTest {
         LionCore.getLanguage().getContainmentByName("entities"),
         LionCore.getLanguage().getLinkByName("entities"));
   }
+
+  @Test
+  public void requirePropertyByNamePositiveCase() {
+    // Test with a property that exists directly on the classifier
+    Property nameProperty = LionCore.getLanguage().getPropertyByName("name");
+    assertEquals(nameProperty, LionCore.getLanguage().requirePropertyByName("name"));
+  }
+
+  @Test
+  public void requirePropertyByNameInheritedProperty() {
+    // Test with a property that is inherited from INamed interface
+    // Create a concept that implements INamed to test inheritance
+    Language testLanguage = new Language();
+    testLanguage.setName("TestLanguage");
+
+    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    testConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
+
+    // The "name" property should be inherited from INamed
+    Property nameProperty = testConcept.requirePropertyByName("name");
+    assertEquals("name", nameProperty.getName());
+    assertEquals(LionCoreBuiltins.getString(), nameProperty.getType());
+  }
+
+  @Test
+  public void requirePropertyByNameNegativeCase() {
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> {
+          LionCore.getLanguage().requirePropertyByName("NONEXISTENT_PROPERTY");
+        });
+  }
+
+  @Test
+  public void requirePropertyByNameNegativeCaseWithMessage() {
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> {
+              LionCore.getLanguage().requirePropertyByName("NONEXISTENT_PROPERTY");
+            });
+    assertEquals(
+        "Property NONEXISTENT_PROPERTY not found in Classifier Language", exception.getMessage());
+  }
+
+  @Test
+  public void requirePropertyByNameNullParameter() {
+    assertThrows(
+        NullPointerException.class,
+        () -> {
+          LionCore.getLanguage().requirePropertyByName(null);
+        });
+  }
 }

@@ -83,12 +83,13 @@ public class Annotation extends Classifier<Annotation> {
   }
 
   // TODO should we verify the Annotation does not extend itself, even indirectly?
-  public void setExtendedAnnotation(@Nullable Annotation extended) {
+  public Annotation setExtendedAnnotation(@Nullable Annotation extended) {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
       this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
     }
+    return this;
   }
 
   /**

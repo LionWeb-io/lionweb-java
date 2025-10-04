@@ -3,6 +3,8 @@ package io.lionweb.language;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import io.lionweb.language.assigners.CommonIDAssigners;
+import io.lionweb.language.assigners.CommonKeyAssigners;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.ReferenceValue;
@@ -132,5 +134,22 @@ public class AnnotationTest extends BaseTest {
     annotation.addFeature(Containment.createOptional("cont", myConcept, "cont", "cont-key"));
     assertNodeTreeIsValid(annotation);
     assertLanguageIsValid(language);
+  }
+
+  @Test
+  public void inheritedFeatures() {
+    Language language = new Language("LangFoo").setVersion("1");
+    Annotation ann1 = new Annotation(language, "Ann1");
+    ann1.addProperty("p1", LionCoreBuiltins.getString());
+    Annotation ann2 = new Annotation(language, "Ann2").setExtendedAnnotation(ann1);
+    ann2.addProperty("p2", LionCoreBuiltins.getInteger());
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(language);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(language);
+
+    assertEquals(1, ann1.getFeatures().size());
+    assertEquals(1, ann2.getFeatures().size());
+    assertEquals(1, ann1.allFeatures().size());
+    assertEquals(2, ann2.allFeatures().size());
   }
 }
