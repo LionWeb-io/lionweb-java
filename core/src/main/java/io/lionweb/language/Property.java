@@ -117,7 +117,7 @@ public class Property extends Feature<Property> {
     return getReferenceSingleValue("type");
   }
 
-  public Property setType(@Nullable DataType type) {
+  public Property setType(@Nullable DataType<?> type) {
     if (type == null) {
       setReferenceSingleValue("type", null);
     } else {
