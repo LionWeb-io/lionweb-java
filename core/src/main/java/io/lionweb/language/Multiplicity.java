@@ -25,6 +25,7 @@ public enum Multiplicity {
   REQUIRED(false, false),
   ZERO_OR_MORE(true, true),
   ONE_OR_MORE(false, true);
+
   private boolean optional;
   private boolean multiple;
 

@@ -1,7 +1,6 @@
 package io.lionweb.language;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.lioncore.LionCore;
@@ -122,22 +121,11 @@ public class ClassifierTest {
   }
 
   @Test
-  public void requirePropertyByNameNegativeCase() {
-    assertThrows(
-        IllegalArgumentException.class,
-        () -> {
-          LionCore.getLanguage().requirePropertyByName("NONEXISTENT_PROPERTY");
-        });
-  }
-
-  @Test
-  public void requirePropertyByNameNegativeCaseWithMessage() {
+  public void requirePropertyByNameNegative() {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> {
-              LionCore.getLanguage().requirePropertyByName("NONEXISTENT_PROPERTY");
-            });
+            () -> LionCore.getLanguage().requirePropertyByName("NONEXISTENT_PROPERTY"));
     assertEquals(
         "Property NONEXISTENT_PROPERTY not found in Classifier Language", exception.getMessage());
   }
@@ -145,10 +133,7 @@ public class ClassifierTest {
   @Test
   public void requirePropertyByNameNullParameter() {
     assertThrows(
-        NullPointerException.class,
-        () -> {
-          LionCore.getLanguage().requirePropertyByName(null);
-        });
+        NullPointerException.class, () -> LionCore.getLanguage().requirePropertyByName(null));
   }
 
   @Test
@@ -233,10 +218,9 @@ public class ClassifierTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> {
-              testConcept.addProperty(
-                  "testProperty", LionCoreBuiltins.getString(), Multiplicity.ZERO_OR_MORE);
-            });
+            () ->
+                testConcept.addProperty(
+                    "testProperty", LionCoreBuiltins.getString(), Multiplicity.ZERO_OR_MORE));
 
     assertEquals("Multiple values are not supported for properties", exception.getMessage());
 
@@ -257,10 +241,9 @@ public class ClassifierTest {
     IllegalArgumentException exception =
         assertThrows(
             IllegalArgumentException.class,
-            () -> {
-              testConcept.addProperty(
-                  "testProperty", LionCoreBuiltins.getString(), Multiplicity.ONE_OR_MORE);
-            });
+            () ->
+                testConcept.addProperty(
+                    "testProperty", LionCoreBuiltins.getString(), Multiplicity.ONE_OR_MORE));
 
     assertEquals("Multiple values are not supported for properties", exception.getMessage());
 
@@ -291,7 +274,7 @@ public class ClassifierTest {
     Property optionalProperty = testConcept.getPropertyByName("optionalProperty");
     assertEquals("optionalProperty", optionalProperty.getName());
     assertEquals(LionCoreBuiltins.getString(), optionalProperty.getType());
-    assertEquals(true, optionalProperty.isOptional());
+    assertTrue(optionalProperty.isOptional());
 
     // Verify both properties were added
     assertEquals(2, testConcept.getFeatures().size());
@@ -308,9 +291,7 @@ public class ClassifierTest {
     // Test that null multiplicity is rejected
     assertThrows(
         NullPointerException.class,
-        () -> {
-          testConcept.addProperty("testProperty", LionCoreBuiltins.getString(), null);
-        });
+        () -> testConcept.addProperty("testProperty", LionCoreBuiltins.getString(), null));
 
     // Verify no property was added
     assertEquals(0, testConcept.getFeatures().size());
