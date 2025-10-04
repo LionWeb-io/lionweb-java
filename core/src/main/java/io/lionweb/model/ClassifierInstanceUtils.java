@@ -65,6 +65,13 @@ public class ClassifierInstanceUtils {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(propertyID, "propertyID should not be null");
     Property property = _this.getClassifier().getPropertyByID(propertyID);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property with ID "
+              + propertyID);
+    }
     return _this.getPropertyValue(property);
   }
 
@@ -117,10 +124,12 @@ public class ClassifierInstanceUtils {
       throw new IllegalStateException(
           "The node should not have multiple children under containment " + containment);
     }
-    if (children.size() > 0) {
+    if (!children.isEmpty()) {
       _this.removeChild(children.get(0));
     }
-    _this.addChild(containment, child);
+    if (child != null) {
+      _this.addChild(containment, child);
+    }
   }
 
   // Public methods about references
@@ -163,6 +172,7 @@ public class ClassifierInstanceUtils {
       @Nonnull List<? extends ReferenceValue> values) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
+    Objects.requireNonNull(values, "values should not be null");
     Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
     _this.setReferenceValues(reference, values);
   }

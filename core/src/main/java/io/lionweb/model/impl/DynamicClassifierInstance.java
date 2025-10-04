@@ -102,8 +102,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
-    Objects.requireNonNull(containment);
-    Objects.requireNonNull(child);
+    Objects.requireNonNull(containment, "Containment should not be null");
+    Objects.requireNonNull(child, "Child should not be null");
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException();
     }
