@@ -82,7 +82,12 @@ public class Annotation extends Classifier<Annotation> {
     this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
   }
 
-  // TODO should we verify the Annotation does not extend itself, even indirectly?
+    /**
+     * Sets the "extends" reference of this Annotation to the specified extended Annotation. Note that we do not
+     * prevent circular references. This should be checked in LanguageValidator, at some point.
+     * @param extended the Annotation to set as the extended Annotation, or null to clear it
+     * @return this Annotation instance, allowing for method chaining
+     */
   public Annotation setExtendedAnnotation(@Nullable Annotation extended) {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
