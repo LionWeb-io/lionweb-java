@@ -129,6 +129,26 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return (T) this;
   }
 
+  public T addProperty(
+      @Nonnull String name, @Nonnull DataType<?> type, @Nonnull Multiplicity multiplicity) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(type, "type should not be null");
+    Objects.requireNonNull(multiplicity, "multiplicity should not be null");
+    if (multiplicity.isMultiple()) {
+      throw new IllegalArgumentException("Multiple values are not supported for properties");
+    }
+
+    Property property = new Property(this.getLionWebVersion(), name);
+    property.setType(type);
+    property.setOptional(multiplicity.isOptional());
+    addFeature(property);
+    return (T) this;
+  }
+
+  public T addProperty(@Nonnull String name, @Nonnull DataType<?> type) {
+    return addProperty(name, type, Multiplicity.REQUIRED);
+  }
+
   /**
    * Adds a containment feature to the classifier with the specified name, type, and multiplicity.
    *
