@@ -304,21 +304,22 @@ public class ClassifierInstanceUtils {
   public static boolean isBuiltinElement(@Nonnull Node _this) {
     if (_this instanceof LanguageEntity<?>) {
       return isBuiltinElement((LanguageEntity<?>) _this);
+    } else if (_this instanceof Language) {
+      String key = ((Language) _this).getKey();
+      return Objects.equals(key, "LionCore-M3") || Objects.equals(key, "LionCore-builtins");
     } else {
       return false;
     }
   }
 
   public static boolean isBuiltinElement(@Nonnull LanguageEntity<?> _this) {
-    if ("LionCore_M3".equals(_this.getLanguage().getName())
-        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return true;
-    } else if (_this.getLanguage() instanceof LionCoreBuiltins
-        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return true;
-    } else {
+    Language language = _this.getLanguage();
+    if (language == null) {
       return false;
     }
+    if ("LionCore-M3".equals(language.getKey())) {
+      return true;
+    } else return "LionCore-builtins".equals(language.getKey());
   }
 
   public static boolean shallowClassifierInstanceEquality(
