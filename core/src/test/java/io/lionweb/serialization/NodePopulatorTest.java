@@ -8,7 +8,7 @@ import io.lionweb.language.LionCoreBuiltins;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.Collections;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class NodePopulatorTest {
         new NodePopulator(
             serialization, serialization.getInstanceResolver(), deserializationStatus);
 
-    SerializedChunk chunk =
+    SerializationChunk chunk =
         new LowLevelJsonSerialization()
             .deserializeSerializationBlock(
                 "{\n"
@@ -86,7 +86,7 @@ public class NodePopulatorTest {
         new NodePopulator(
             serialization, serialization.getInstanceResolver(), deserializationStatus);
 
-    SerializedChunk chunk =
+    SerializationChunk chunk =
         new LowLevelJsonSerialization()
             .deserializeSerializationBlock(
                 "{\n"
@@ -150,7 +150,7 @@ public class NodePopulatorTest {
             deserializationStatus,
             LionWebVersion.v2024_1);
 
-    SerializedChunk chunk =
+    SerializationChunk chunk =
         new LowLevelJsonSerialization()
             .deserializeSerializationBlock(
                 "{\n"

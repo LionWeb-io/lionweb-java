@@ -21,10 +21,10 @@ public class SerializedContainmentValueTest {
 
     // Defensive copy in constructor
     input.add("c");
-    assertEquals(Arrays.asList("a", "b"), scv.getValue());
+    assertEquals(Arrays.asList("a", "b"), scv.getChildrenIds());
 
     // Unmodifiable view
-    assertThrows(UnsupportedOperationException.class, () -> scv.getValue().add("x"));
+    assertThrows(UnsupportedOperationException.class, () -> scv.getChildrenIds().add("x"));
   }
 
   @Test
@@ -33,7 +33,7 @@ public class SerializedContainmentValueTest {
     SerializedContainmentValue scv = new SerializedContainmentValue(c, Arrays.asList("n1", "n2"));
 
     assertSame(c, scv.getMetaPointer());
-    assertEquals(Arrays.asList("n1", "n2"), scv.getValue());
+    assertEquals(Arrays.asList("n1", "n2"), scv.getChildrenIds());
   }
 
   @Test
@@ -41,10 +41,10 @@ public class SerializedContainmentValueTest {
     SerializedContainmentValue scv =
         new SerializedContainmentValue(simpleMetaPointer("cont"), Arrays.asList("a", "b"));
 
-    scv.setValue(Arrays.asList("x", "y", "z"));
-    assertEquals(Arrays.asList("x", "y", "z"), scv.getValue());
+    scv.setChildrenIds(Arrays.asList("x", "y", "z"));
+    assertEquals(Arrays.asList("x", "y", "z"), scv.getChildrenIds());
 
-    assertThrows(UnsupportedOperationException.class, () -> scv.getValue().remove("x"));
+    assertThrows(UnsupportedOperationException.class, () -> scv.getChildrenIds().remove("x"));
   }
 
   @Test
@@ -54,10 +54,10 @@ public class SerializedContainmentValueTest {
             simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("a", "b", "c")));
 
     assertTrue(scv.removeChild("b"));
-    assertEquals(Arrays.asList("a", "c"), scv.getValue());
+    assertEquals(Arrays.asList("a", "c"), scv.getChildrenIds());
 
     assertFalse(scv.removeChild("missing"));
-    assertEquals(Arrays.asList("a", "c"), scv.getValue());
+    assertEquals(Arrays.asList("a", "c"), scv.getChildrenIds());
   }
 
   @Test
@@ -67,7 +67,7 @@ public class SerializedContainmentValueTest {
             simpleMetaPointer("cont"), new ArrayList<>(Arrays.asList("x", "y", "y")));
 
     assertTrue(scv.removeChild("y"));
-    assertEquals(Arrays.asList("x", "y"), scv.getValue());
+    assertEquals(Arrays.asList("x", "y"), scv.getChildrenIds());
   }
 
   @Test

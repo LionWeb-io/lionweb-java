@@ -23,15 +23,15 @@ public class LanguageSerializationTest extends SerializationTest {
   public void serializeEmptyLanguage() {
     Language myLanguage = new Language();
     JsonSerialization serialization = SerializationProvider.getStandardJsonSerialization();
-    SerializedChunk chunk = serialization.serializeTreeToSerializationChunk(myLanguage);
+    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(myLanguage);
     // Given Language extends INamed, and the properties are listed, LionCoreBuiltins appear as a
     // meta-pointer
     assertEquals(
         new HashSet(
             Arrays.asList(
-                new UsedLanguage(
+                LanguageVersion.of(
                     LionCore.getInstance().getKey(), LionCore.getInstance().getVersion()),
-                new UsedLanguage(
+                LanguageVersion.of(
                     LionCoreBuiltins.getInstance().getKey(),
                     LionCoreBuiltins.getInstance().getVersion()))),
         new HashSet(chunk.getLanguages()));

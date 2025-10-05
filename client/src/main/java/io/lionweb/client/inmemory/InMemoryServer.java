@@ -3,6 +3,7 @@ package io.lionweb.client.inmemory;
 import io.lionweb.client.api.*;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
+import io.lionweb.utils.ValidationResult;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -161,6 +162,27 @@ public class InMemoryServer {
       res.put(entry.getKey(), cr);
     }
     return res;
+  }
+
+  /**
+   * Checks the consistency of all repositories stored in the system and aggregates any validation
+   * issues found into a single {@link ValidationResult}.
+   *
+   * <p>The method iterates through all repository data, invokes their individual consistency
+   * checks, and collects any issues reported into the resulting validation result object.
+   *
+   * <p>This is intended for debugging purposes.
+   *
+   * @return a {@link ValidationResult} containing all identified issues, or an empty result if no
+   *     issues were found.
+   */
+  public @NotNull ValidationResult checkConsistency() {
+    ValidationResult result = new ValidationResult();
+    for (RepositoryData repositoryData : repositories.values()) {
+      ValidationResult partial = repositoryData.checkConsistency();
+      result.getIssues().addAll(partial.getIssues());
+    }
+    return result;
   }
 
   //

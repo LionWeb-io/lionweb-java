@@ -7,7 +7,7 @@ import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
 import java.util.List;
@@ -43,7 +43,8 @@ public class ClientForChunkLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(getLionWebVersion());
     String json =
-        serialization.serializeToJsonString(SerializedChunk.fromNodes(getLionWebVersion(), data));
+        serialization.serializeToJsonString(
+            SerializationChunk.fromNodes(getLionWebVersion(), data));
     return jsonLevelClient.rawCreatePartitions(json);
   }
 
@@ -60,7 +61,8 @@ public class ClientForChunkLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(getLionWebVersion());
     String json =
-        serialization.serializeToJsonString(SerializedChunk.fromNodes(getLionWebVersion(), nodes));
+        serialization.serializeToJsonString(
+            SerializationChunk.fromNodes(getLionWebVersion(), nodes));
     return jsonLevelClient.rawStore(json);
   }
 

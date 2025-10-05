@@ -81,7 +81,7 @@ public class SerializedClassifierInstanceTest {
     MetaPointer pA = simpleMetaPointer("propA");
     MetaPointer pB = simpleMetaPointer("propB");
 
-    sci.addPropertyValue(SerializedPropertyValue.get(pA, "VA"));
+    sci.unsafeAppendPropertyValue(SerializedPropertyValue.get(pA, "VA"));
     sci.setPropertyValue(pB, "VB"); // via convenience
 
     assertEquals(2, sci.getProperties().size());
@@ -100,8 +100,8 @@ public class SerializedClassifierInstanceTest {
     MetaPointer contA = simpleMetaPointer("contA");
     MetaPointer contB = simpleMetaPointer("contB");
 
-    sci.addChildren(contA, Arrays.asList("c1", "c2"));
-    sci.addChildren(contB, Collections.singletonList("c3"));
+    sci.unsafeAppendContainmentValue(contA, Arrays.asList("c1", "c2"));
+    sci.unsafeAppendContainmentValue(contB, Collections.singletonList("c3"));
 
     assertEquals(2, sci.getContainments().size());
     assertEquals(Arrays.asList("c1", "c2"), sci.getContainmentValues(contA));
@@ -133,7 +133,7 @@ public class SerializedClassifierInstanceTest {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
     MetaPointer cont = simpleMetaPointer("cont");
     MetaPointer other = simpleMetaPointer("other");
-    sci.addChildren(cont, Arrays.asList("a", "b"));
+    sci.unsafeAppendContainmentValue(cont, Arrays.asList("a", "b"));
 
     assertFalse(sci.removeContainmentValue(other));
     assertTrue(sci.removeContainmentValue(cont));
@@ -145,8 +145,8 @@ public class SerializedClassifierInstanceTest {
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
     MetaPointer c1 = simpleMetaPointer("c1");
     MetaPointer c2 = simpleMetaPointer("c2");
-    sci.addChildren(c1, Arrays.asList("a1", "a2"));
-    sci.addChildren(c2, Arrays.asList("b1", "b2"));
+    sci.unsafeAppendContainmentValue(c1, Arrays.asList("a1", "a2"));
+    sci.unsafeAppendContainmentValue(c2, Arrays.asList("b1", "b2"));
 
     assertTrue(sci.removeChild("a2"));
     assertEquals(Collections.singletonList("a1"), sci.getContainmentValues(c1));
@@ -166,11 +166,12 @@ public class SerializedClassifierInstanceTest {
     SerializedReferenceValue.Entry e21 = new SerializedReferenceValue.Entry("RID-3", "RI-3");
 
     // Add via value list
-    sci.addReferenceValue(r1, Arrays.asList(e11));
+    sci.setReferenceValue(r1, Arrays.asList(e11));
     // Add via entry (append)
     sci.addReferenceValue(r1, e12);
     // Add via object
-    sci.addReferenceValue(new SerializedReferenceValue(r2, Collections.singletonList(e21)));
+    sci.unsafeAppendReferenceValue(
+        new SerializedReferenceValue(r2, Collections.singletonList(e21)));
 
     List<SerializedReferenceValue.Entry> r1ValsByKey = sci.getReferenceValues("ref1");
     assertNotNull(r1ValsByKey);
@@ -215,16 +216,16 @@ public class SerializedClassifierInstanceTest {
     SerializedClassifierInstance a = new SerializedClassifierInstance("id", classifier);
     a.setParentNodeID("parent");
     a.setPropertyValue(p, "V");
-    a.addChildren(cont, Arrays.asList("c1", "c2"));
-    a.addReferenceValue(
+    a.unsafeAppendContainmentValue(cont, Arrays.asList("c1", "c2"));
+    a.setReferenceValue(
         ref, Collections.singletonList(new SerializedReferenceValue.Entry("RID", "RI")));
     a.setAnnotations(Arrays.asList("an1", "an2"));
 
     SerializedClassifierInstance b = new SerializedClassifierInstance("id", classifier);
     b.setParentNodeID("parent");
     b.setPropertyValue(p, "V");
-    b.addChildren(cont, Arrays.asList("c1", "c2"));
-    b.addReferenceValue(
+    b.unsafeAppendContainmentValue(cont, Arrays.asList("c1", "c2"));
+    b.setReferenceValue(
         ref, Collections.singletonList(new SerializedReferenceValue.Entry("RID", "RI")));
     b.setAnnotations(Arrays.asList("an1", "an2"));
 
@@ -233,6 +234,28 @@ public class SerializedClassifierInstanceTest {
 
     b.addAnnotation("diff");
     assertNotEquals(a, b);
+  }
+
+  @Test
+  public void addReferenceValueCreatesNewEntryForNewReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer newReference = simpleMetaPointer("newRef");
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("RID-NEW", "RI-NEW");
+
+    // Initially, no references should exist
+    assertTrue(sci.getReferences().isEmpty());
+    assertTrue(sci.getReferenceValues(newReference).isEmpty());
+
+    // Add reference value for a completely new reference
+    sci.addReferenceValue(newReference, entry);
+
+    // Verify the reference was created with the entry
+    assertEquals(1, sci.getReferences().size());
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(newReference);
+    assertEquals(1, values.size());
+    assertEquals(entry, values.get(0));
+    assertEquals("RID-NEW", values.get(0).getReference());
+    assertEquals("RI-NEW", values.get(0).getResolveInfo());
   }
 
   @Test
@@ -245,5 +268,161 @@ public class SerializedClassifierInstanceTest {
     assertTrue(s.contains("id"));
     assertTrue(s.contains("classifier"));
     assertTrue(s.contains("parentNodeID"));
+  }
+
+  @Test
+  public void setPropertyValueReplacesExistingValue() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer property = simpleMetaPointer("testProp");
+
+    // Set initial property value
+    sci.setPropertyValue(property, "originalValue");
+
+    // Verify initial value is set
+    assertEquals(1, sci.getProperties().size());
+    assertEquals("originalValue", sci.getPropertyValue(property));
+    assertEquals("originalValue", sci.getPropertyValue("testProp"));
+
+    // Replace the existing value
+    sci.setPropertyValue(property, "replacedValue");
+
+    // Verify the value was replaced, not appended
+    assertEquals(1, sci.getProperties().size()); // Still only one property entry
+    assertEquals("replacedValue", sci.getPropertyValue(property));
+    assertEquals("replacedValue", sci.getPropertyValue("testProp"));
+
+    // Replace again with null value
+    sci.setPropertyValue(property, null);
+    assertEquals(1, sci.getProperties().size()); // Entry still exists
+    assertNull(sci.getPropertyValue(property));
+    assertNull(sci.getPropertyValue("testProp"));
+
+    // Replace null with a new value
+    sci.setPropertyValue(property, "newValue");
+    assertEquals(1, sci.getProperties().size()); // Still only one entry
+    assertEquals("newValue", sci.getPropertyValue(property));
+    assertEquals("newValue", sci.getPropertyValue("testProp"));
+  }
+
+  @Test
+  public void setReferenceValueReplacesExistingValue() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer reference = simpleMetaPointer("testRef");
+
+    // Set initial reference value
+    sci.setReferenceValue(reference, new SerializedReferenceValue.Entry("a-id", "a-name"));
+
+    // Verify initial value is set
+    assertEquals(1, sci.getReferences().size());
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues(reference));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues("testRef"));
+
+    // Replace the existing value
+    sci.setReferenceValue(reference, new SerializedReferenceValue.Entry("b-id", "b-name"));
+
+    // Verify the value was replaced, not appended
+    assertEquals(1, sci.getReferences().size());
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues(reference));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues("testRef"));
+
+    // set many references
+    MetaPointer otherRef1 = simpleMetaPointer("otherRef1");
+    MetaPointer otherRef2 = simpleMetaPointer("otherRef2");
+    sci.setReferenceValue(otherRef1, new SerializedReferenceValue.Entry("a-id", "a-name"));
+    sci.setReferenceValue(otherRef2, new SerializedReferenceValue.Entry("c-id", "c-name"));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues(reference));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("b-id", "b-name")),
+        sci.getReferenceValues("testRef"));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues(otherRef1));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("a-id", "a-name")),
+        sci.getReferenceValues("otherRef1"));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("c-id", "c-name")),
+        sci.getReferenceValues(otherRef2));
+    assertEquals(
+        Collections.singletonList(new SerializedReferenceValue.Entry("c-id", "c-name")),
+        sci.getReferenceValues("otherRef2"));
+  }
+
+  @Test
+  public void setAnnotations() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+
+    assertEquals(Collections.emptyList(), sci.getAnnotations());
+
+    sci.setAnnotations(Arrays.asList("an1", "an2"));
+    assertEquals(Arrays.asList("an1", "an2"), sci.getAnnotations());
+
+    sci.setAnnotations(Arrays.asList("an3", "an4", "an5"));
+    assertEquals(Arrays.asList("an3", "an4", "an5"), sci.getAnnotations());
+
+    sci.setAnnotations(Collections.emptyList());
+    assertEquals(Collections.emptyList(), sci.getAnnotations());
+  }
+
+  @Test
+  public void equality() {
+    SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
+    sci1.setID("id123");
+    SerializedClassifierInstance sci2 = new SerializedClassifierInstance();
+    sci2.setID("id123");
+
+    assertFalse(sci1.equals("a string"));
+    assertTrue(sci1.equals(sci2));
+
+    sci2.setID("id234");
+    assertFalse(sci1.equals(sci2));
+
+    sci2.setID("id123");
+    assertTrue(sci1.equals(sci2));
+
+    sci2.setParentNodeID("pY");
+    assertFalse(sci1.equals(sci2));
+
+    sci1.setParentNodeID("pY");
+    assertTrue(sci1.equals(sci2));
+
+    sci1.setClassifier(simpleMetaPointer("C1"));
+    sci2.setClassifier(simpleMetaPointer("C2"));
+    assertFalse(sci1.equals(sci2));
+
+    sci2.setClassifier(simpleMetaPointer("C1"));
+    assertTrue(sci1.equals(sci2));
+
+    sci1.addReferenceValue(
+        simpleMetaPointer("ref"), new SerializedReferenceValue.Entry("ref-id", "ref-name"));
+    assertFalse(sci1.equals(sci2));
+  }
+
+  @Test
+  public void removeChildFromEmpty() {
+    // Remove child from an empty node does not explode and return false
+    SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
+    sci1.setID("id123");
+    assertFalse(sci1.removeChild("c-1"));
+
+    assertFalse(sci1.removeContainmentValue(simpleMetaPointer("myContainment")));
+  }
+
+  @Test
+  public void removeAnnotationsFromEmpty() {
+    // Remove annotation from an empty node does not explode and return false
+    SerializedClassifierInstance sci1 = new SerializedClassifierInstance();
+    sci1.setID("id123");
+    assertFalse(sci1.removeAnnotation("an-1"));
   }
 }

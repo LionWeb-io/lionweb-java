@@ -13,6 +13,9 @@ Take a look at the [Documentation](https://lionweb.io/lionweb-java).
 
 ## Status of the project
 
+While new features are being added, and the project is evolving, the core features are solidly implemented. 
+The library is mature and used in production.
+
 The project is actively maintained. Feel free to open issues to ask any question, help, 
 or support.
 
@@ -51,6 +54,14 @@ Some of LionCore's built-in elements have no direct representation in Ecore.
 This sub-project is an Eclipse project that defines an _EPackage_ `builtins` to host the equivalent elements in Ecore.
 The language's _nsURI_ is `http://lionweb.io/lionweb-java/emf/core/builtins/2023.1`.
 
+# Client
+Functionalities to connect to the [LionWeb Server](https://github.com/LionWeb-io/lionweb-server). It also
+includes an in-memory server, paired with a Client exposing the same interface as the interface for connecting to 
+the LionWeb Server.
+
+# Client-testing
+Facilities to write functional tests against the LionWeb Server.
+
 ## Changelog
 
 The Changelog is [here](CHANGELOG.md).
@@ -59,14 +70,6 @@ The Changelog is [here](CHANGELOG.md).
 
 To ensure proper testing coverage we configured Jacoco.
 You can run `./gradlew jacocoTestReport` and then find the report for each module, under `build/reports/jacoco`.
-
-## Update FlatBuffers generated classes
-
-Run from the root of the project:
-```
-flatc --java -o core/src/main/java core/src/main/flatbuffers/chunk.fbs
-flatc --java -o extensions/src/main/java extensions/src/main/flatbuffers/bulkimport.fbs
-```
 
 ## Contributors
 

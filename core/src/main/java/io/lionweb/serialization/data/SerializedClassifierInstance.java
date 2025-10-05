@@ -29,6 +29,20 @@ public class SerializedClassifierInstance {
 
   private String parentNodeID;
 
+  //
+  // Constructors
+  //
+  public SerializedClassifierInstance() {}
+
+  public SerializedClassifierInstance(String id, MetaPointer concept) {
+    setID(id);
+    setClassifier(concept);
+  }
+
+  //
+  // Methods about parent
+  //
+
   public String getParentNodeID() {
     return parentNodeID;
   }
@@ -37,20 +51,83 @@ public class SerializedClassifierInstance {
     this.parentNodeID = parentNodeID;
   }
 
-  public SerializedClassifierInstance() {}
+  //
+  // Methods about properties
+  //
 
-  public SerializedClassifierInstance(String id, MetaPointer concept) {
-    setID(id);
-    setClassifier(concept);
+  public List<SerializedPropertyValue> getProperties() {
+    return Collections.unmodifiableList(properties);
+  }
+
+  @Nullable
+  public String getPropertyValue(String propertyKey) {
+    for (SerializedPropertyValue pv : this.getProperties()) {
+      if (pv.getMetaPointer().getKey().equals(propertyKey)) {
+        return pv.getValue();
+      }
+    }
+    return null;
+  }
+
+  @Nullable
+  public String getPropertyValue(@Nonnull MetaPointer propertyMetaPointer) {
+    for (SerializedPropertyValue pv : this.getProperties()) {
+      if (propertyMetaPointer.equals(pv.getMetaPointer())) {
+        return pv.getValue();
+      }
+    }
+    return null;
   }
 
   /**
-   * Remove all containments. This is useful when we want to create a partition, as they cannot be
-   * created with children. Children can only be added in a second moment.
+   * WARNING: this will always append the property, even if one entry with the same metapointer
+   * already exists.
+   *
+   * <p>It is however slightly faster than the (safer) setPropertyValue.
+   *
+   * @param propertyValue the value should be non null to constitute a valid chunk, but a null value
+   *     would not cause an error
    */
-  public void clearContainments() {
-    containments = null;
+  public void unsafeAppendPropertyValue(@Nullable SerializedPropertyValue propertyValue) {
+    this.properties.add(propertyValue);
   }
+
+  /**
+   * Updates or adds a {@link SerializedPropertyValue} in the properties list. If a property with
+   * the same MetaPointer already exists, it is replaced. Otherwise, the property is appended to the
+   * list.
+   *
+   * @param propertyValue the serialized property value to set; must not be null
+   */
+  public void setPropertyValue(@Nonnull SerializedPropertyValue propertyValue) {
+    Objects.requireNonNull(propertyValue, "propertyValue must not be null");
+    for (int i = 0; i < this.properties.size(); i++) {
+      SerializedPropertyValue property = this.properties.get(i);
+      if (property.getMetaPointer() != null
+          && property.getMetaPointer().equals(propertyValue.getMetaPointer())) {
+        this.properties.set(i, propertyValue);
+        return;
+      }
+    }
+    this.properties.add(propertyValue);
+  }
+
+  /**
+   * Updates or adds a {@link SerializedPropertyValue} in the properties list. If a property with
+   * the same {@link MetaPointer} already exists, it is replaced. Otherwise, the property is
+   * appended to the list.
+   *
+   * @param propertyMetaPointer the metadata pointer identifying the property; may be null
+   * @param serializedValue the serialized value of the property; may be null
+   */
+  public void setPropertyValue(
+      @Nullable MetaPointer propertyMetaPointer, @Nullable String serializedValue) {
+    setPropertyValue(SerializedPropertyValue.get(propertyMetaPointer, serializedValue));
+  }
+
+  //
+  // Methods about containments
+  //
 
   public List<SerializedContainmentValue> getContainments() {
     if (containments == null) {
@@ -64,43 +141,46 @@ public class SerializedClassifierInstance {
       return Collections.emptyList();
     }
     List<String> children = new ArrayList<>();
-    this.containments.forEach(c -> children.addAll(c.getValue()));
+    this.containments.forEach(c -> children.addAll(c.getChildrenIds()));
     return Collections.unmodifiableList(children);
   }
 
-  public List<SerializedReferenceValue> getReferences() {
-    if (this.references == null) {
-      return Collections.emptyList();
+  @Nonnull
+  public List<String> getContainmentValues(@Nonnull MetaPointer containmentMetaPointer) {
+    for (SerializedContainmentValue cv : this.getContainments()) {
+      if (containmentMetaPointer.equals(cv.getMetaPointer())) {
+        return Collections.unmodifiableList(cv.getChildrenIds());
+      }
     }
-    return Collections.unmodifiableList(this.references);
+    return Collections.emptyList();
   }
 
-  public List<String> getAnnotations() {
-    if (this.annotations == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(this.annotations);
-  }
-
-  public List<SerializedPropertyValue> getProperties() {
-    return Collections.unmodifiableList(properties);
-  }
-
-  public void addPropertyValue(SerializedPropertyValue propertyValue) {
-    this.properties.add(propertyValue);
-  }
-
-  public void addContainmentValue(SerializedContainmentValue containmentValue) {
+  /**
+   * WARNING: this will always append the containment, even if one entry with the same metapointer
+   * already exists.
+   *
+   * <p>It is however slightly faster than the (safer) addChild.
+   */
+  public void unsafeAppendContainmentValue(SerializedContainmentValue containmentValue) {
     initContainments();
     this.containments.add(containmentValue);
   }
 
-  public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
-    Objects.requireNonNull(metaPointer);
-    if (this.containments == null) {
-      return false;
-    }
-    return this.containments.removeIf(c -> c.getMetaPointer().equals(metaPointer));
+  /**
+   * Appends a new containment entry to the current instance. The method adds a new {@link
+   * SerializedContainmentValue} constructed with the provided containment reference and list of
+   * child identifiers to the internal containments list. This operation always appends the entry,
+   * regardless of whether a similar containment already exists.
+   *
+   * @param containment the {@link MetaPointer} identifying the containment; may be null to indicate
+   *     no specific containment.
+   * @param childrenIds a non-null list of child identifiers to be associated with the new
+   *     containment value.
+   */
+  public void unsafeAppendContainmentValue(
+      @Nullable MetaPointer containment, @Nonnull List<String> childrenIds) {
+    initContainments();
+    this.containments.add(new SerializedContainmentValue(containment, childrenIds));
   }
 
   public void addChild(@Nonnull MetaPointer metaPointer, @Nonnull String childID) {
@@ -110,63 +190,22 @@ public class SerializedClassifierInstance {
     Optional<SerializedContainmentValue> entry =
         this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
     if (entry.isPresent()) {
-      List<String> currValue = entry.get().getValue();
+      List<String> currValue = entry.get().getChildrenIds();
       List<String> newValue = new ArrayList<>(currValue.size() + 1);
       newValue.addAll(currValue);
       newValue.add(childID);
-      entry.get().setValue(newValue);
+      entry.get().setChildrenIds(newValue);
     } else {
-      addChildren(metaPointer, Arrays.asList(childID));
+      unsafeAppendContainmentValue(metaPointer, Arrays.asList(childID));
     }
   }
 
-  public void addReferenceValue(SerializedReferenceValue referenceValue) {
-    initReferences();
-    this.references.add(referenceValue);
-  }
-
-  public void addReferenceValue(
-      @Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
+  public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
     Objects.requireNonNull(metaPointer);
-    Objects.requireNonNull(referenceValue);
-    initReferences();
-    Optional<SerializedReferenceValue> entry =
-        this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
-    if (entry.isPresent()) {
-      List<SerializedReferenceValue.Entry> currValue = entry.get().getValue();
-      List<SerializedReferenceValue.Entry> newValue = new ArrayList<>(currValue.size() + 1);
-      newValue.addAll(currValue);
-      newValue.add(referenceValue);
-      entry.get().setValue(newValue);
-    } else {
-      addReferenceValue(metaPointer, Arrays.asList(referenceValue));
+    if (this.containments == null) {
+      return false;
     }
-  }
-
-  public MetaPointer getClassifier() {
-    return classifier;
-  }
-
-  public void setClassifier(MetaPointer classifier) {
-    this.classifier = classifier;
-  }
-
-  @Nullable
-  public String getID() {
-    return id;
-  }
-
-  public void setID(String id) {
-    this.id = id;
-  }
-
-  public void setPropertyValue(MetaPointer property, String serializedValue) {
-    this.properties.add(SerializedPropertyValue.get(property, serializedValue));
-  }
-
-  public void addChildren(MetaPointer containment, List<String> childrenIds) {
-    initContainments();
-    this.containments.add(new SerializedContainmentValue(containment, childrenIds));
+    return this.containments.removeIf(c -> c.getMetaPointer().equals(metaPointer));
   }
 
   /**
@@ -188,32 +227,23 @@ public class SerializedClassifierInstance {
     return false;
   }
 
-  public void addReferenceValue(
-      MetaPointer reference, List<SerializedReferenceValue.Entry> referenceValues) {
+  /**
+   * Remove all containments. This is useful when we want to create a partition, as they cannot be
+   * created with children. Children can only be added in a second moment.
+   */
+  public void clearContainments() {
+    containments = null;
+  }
+
+  //
+  // Methods about references
+  //
+
+  public List<SerializedReferenceValue> getReferences() {
     if (this.references == null) {
-      this.references = new ArrayList<>(1);
+      return Collections.emptyList();
     }
-    this.references.add(new SerializedReferenceValue(reference, referenceValues));
-  }
-
-  @Nullable
-  public String getPropertyValue(String propertyKey) {
-    for (SerializedPropertyValue pv : this.getProperties()) {
-      if (pv.getMetaPointer().getKey().equals(propertyKey)) {
-        return pv.getValue();
-      }
-    }
-    return null;
-  }
-
-  @Nullable
-  public String getPropertyValue(@Nonnull MetaPointer propertyMetaPointer) {
-    for (SerializedPropertyValue pv : this.getProperties()) {
-      if (propertyMetaPointer.equals(pv.getMetaPointer())) {
-        return pv.getValue();
-      }
-    }
-    return null;
+    return Collections.unmodifiableList(this.references);
   }
 
   @Nullable
@@ -237,17 +267,84 @@ public class SerializedClassifierInstance {
     return Collections.emptyList();
   }
 
-  @Nonnull
-  public List<String> getContainmentValues(@Nonnull MetaPointer containmentMetaPointer) {
-    for (SerializedContainmentValue cv : this.getContainments()) {
-      if (containmentMetaPointer.equals(cv.getMetaPointer())) {
-        return Collections.unmodifiableList(cv.getValue());
-      }
-    }
-    return Collections.emptyList();
+  /**
+   * WARNING: this will always append the containment, even if one entry with the same metapointer
+   * already exists.
+   *
+   * <p>It is however slightly faster than the (safer) addReferenceValue.
+   *
+   * @param referenceValue the value should be non null to constitute a valid chunk, but a null
+   *     value would not cause an error
+   */
+  public void unsafeAppendReferenceValue(@Nullable SerializedReferenceValue referenceValue) {
+    initReferences();
+    this.references.add(referenceValue);
   }
 
-  public void setAnnotations(List<String> annotationIDs) {
+  /**
+   * Adds a reference value associated with the specified MetaPointer. If a reference with the given
+   * MetaPointer already exists, the new reference value is added to the existing list of entries.
+   * Otherwise, a new reference entry is created.
+   *
+   * @param metaPointer the MetaPointer instance identifying the reference; must not be null
+   * @param referenceValue the reference value entry to be added; must not be null
+   */
+  public void addReferenceValue(
+      @Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
+    Objects.requireNonNull(metaPointer);
+    Objects.requireNonNull(referenceValue);
+    initReferences();
+    Optional<SerializedReferenceValue> entry =
+        this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+    if (entry.isPresent()) {
+      List<SerializedReferenceValue.Entry> currValue = entry.get().getValue();
+      List<SerializedReferenceValue.Entry> newValue = new ArrayList<>(currValue.size() + 1);
+      newValue.addAll(currValue);
+      newValue.add(referenceValue);
+      entry.get().setValue(newValue);
+    } else {
+      unsafeAppendReferenceValue(
+          new SerializedReferenceValue(metaPointer, Arrays.asList(referenceValue)));
+    }
+  }
+
+  public void setReferenceValue(
+      MetaPointer reference, List<SerializedReferenceValue.Entry> referenceValues) {
+    setReferenceValue(new SerializedReferenceValue(reference, referenceValues));
+  }
+
+  public void setReferenceValue(
+      MetaPointer reference, SerializedReferenceValue.Entry... referenceValues) {
+    setReferenceValue(new SerializedReferenceValue(reference, Arrays.asList(referenceValues)));
+  }
+
+  public void setReferenceValue(@Nonnull SerializedReferenceValue referenceValue) {
+    Objects.requireNonNull(referenceValue);
+    initReferences();
+    for (int i = 0; i < this.references.size(); i++) {
+      SerializedReferenceValue entry = this.references.get(i);
+      if (entry.getMetaPointer() != null
+          && entry.getMetaPointer().equals(referenceValue.getMetaPointer())) {
+        this.references.set(i, referenceValue);
+        return;
+      }
+    }
+    unsafeAppendReferenceValue(referenceValue);
+  }
+
+  //
+  // Methods about annotations
+  //
+
+  public List<String> getAnnotations() {
+    if (this.annotations == null) {
+      return Collections.emptyList();
+    }
+    return Collections.unmodifiableList(this.annotations);
+  }
+
+  public void setAnnotations(@Nonnull List<String> annotationIDs) {
+    Objects.requireNonNull(annotationIDs, "annotationIDs should not be null");
     if (this.annotations == null) {
       this.annotations = new ArrayList<>(annotationIDs.size());
     } else {
@@ -275,6 +372,27 @@ public class SerializedClassifierInstance {
       return false;
     }
     return this.annotations.remove(annotationID);
+  }
+
+  //
+  // Other methods
+  //
+
+  public MetaPointer getClassifier() {
+    return classifier;
+  }
+
+  public void setClassifier(MetaPointer classifier) {
+    this.classifier = classifier;
+  }
+
+  @Nullable
+  public String getID() {
+    return id;
+  }
+
+  public void setID(String id) {
+    this.id = id;
   }
 
   @Override
@@ -324,6 +442,35 @@ public class SerializedClassifierInstance {
         + getAnnotations()
         + '}';
   }
+
+  /**
+   * Checks whether the specified identifier is contained in the list of containments or annotations
+   * associated with this instance.
+   *
+   * @param id the identifier to check for containment; must not be null
+   * @return true if the identifier is found in either the containments or annotations, false
+   *     otherwise
+   */
+  public boolean contains(@Nonnull String id) {
+    Objects.requireNonNull(id, "id must not be null");
+    if (this.containments != null) {
+      for (SerializedContainmentValue containmentValue : this.containments) {
+        for (String childId : containmentValue.getChildrenIds()) {
+          if (Objects.equals(childId, id)) {
+            return true;
+          }
+        }
+      }
+    }
+    if (this.annotations != null) {
+      return this.annotations.contains(id);
+    }
+    return false;
+  }
+
+  //
+  // Private methods
+  //
 
   private void initReferences() {
     if (this.references == null) {

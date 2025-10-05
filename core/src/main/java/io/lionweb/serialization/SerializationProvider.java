@@ -56,30 +56,6 @@ public class SerializationProvider {
     return new ProtoBufSerialization();
   }
 
-  /** This has specific support for LionCore or LionCoreBuiltins. */
-  public static FlatBuffersSerialization getStandardFlatBuffersSerialization() {
-    return getStandardFlatBuffersSerialization(LionWebVersion.currentVersion);
-  }
-
-  public static FlatBuffersSerialization getStandardFlatBuffersSerialization(
-      @Nonnull LionWebVersion lionWebVersion) {
-    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    FlatBuffersSerialization serialization = new FlatBuffersSerialization(lionWebVersion);
-    standardInitialization(serialization);
-    return serialization;
-  }
-
-  /** This has no specific support for LionCore or LionCoreBuiltins. */
-  public static FlatBuffersSerialization getBasicFlatBuffersSerialization() {
-    return new FlatBuffersSerialization();
-  }
-
-  /** This has no specific support for LionCore or LionCoreBuiltins. */
-  public static FlatBuffersSerialization getBasicFlatBuffersSerialization(
-      @Nonnull LionWebVersion lionWebVersion) {
-    return new FlatBuffersSerialization(lionWebVersion);
-  }
-
   protected static void standardInitialization(AbstractSerialization serialization) {
     serialization.classifierResolver.registerLanguage(
         LionCore.getInstance(serialization.getLionWebVersion()));

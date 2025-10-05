@@ -138,9 +138,6 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
           "There are not containments which are not multiple in LionCore, so this "
               + "is not supported at the moment");
     }
-    if (observer != null) {
-      observer.childAdded(this, containment, getChildren(containment).size() - 1, child);
-    }
   }
 
   @Override

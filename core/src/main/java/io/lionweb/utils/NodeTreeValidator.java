@@ -17,10 +17,10 @@ public class NodeTreeValidator extends Validator<Node> {
   private void validateNodeAndDescendants(Node node, ValidationResult validationResult) {
     if (node.getID() != null) {
       // It does not make sense to make the same ID as null and invalid
-      validationResult.checkForError(!CommonChecks.isValidID(node.getID()), "Invalid ID", node);
+      validationResult.addErrorIf(!CommonChecks.isValidID(node.getID()), "Invalid ID", node);
     }
     if (node.isRoot()) {
-      validationResult.checkForError(
+      validationResult.addErrorIf(
           !node.getClassifier().isPartition(),
           "A root node should be an instance of a Partition concept",
           node);
@@ -30,13 +30,13 @@ public class NodeTreeValidator extends Validator<Node> {
         .forEach(
             containment -> {
               int actualNChildren = node.getChildren(containment).size();
-              validationResult.checkForError(
+              validationResult.addErrorIf(
                   containment.isRequired() && actualNChildren == 0,
                   "Containment "
                       + containment.getName()
                       + " is required but no children are specified",
                   node);
-              validationResult.checkForError(
+              validationResult.addErrorIf(
                   containment.isSingle() && actualNChildren > 1,
                   "Containment "
                       + containment.getName()

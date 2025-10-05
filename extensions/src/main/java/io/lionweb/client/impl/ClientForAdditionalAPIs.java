@@ -18,7 +18,6 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
     implements AdditionalAPIClient {
 
   private static final MediaType PROTOBUF = MediaType.get("application/protobuf");
-  private static final MediaType FLATBUFFERS = MediaType.get("application/flatbuffers");
 
   public ClientForAdditionalAPIs(ClientConfiguration clientConfiguration) {
     super(clientConfiguration);
@@ -37,9 +36,6 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
         return;
       case PROTOBUF:
         bulkImportUsingProtobuf(bulkImport, compression);
-        return;
-      case FLATBUFFERS:
-        bulkImportUsingFlatbuffers(bulkImport, compression);
         return;
       default:
         throw new UnsupportedOperationException();
@@ -139,26 +135,6 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
     PBBulkImport pbBulkImport = pbSerialization.serializeBulkImport(bulkImport);
     byte[] bytes = pbBulkImport.toByteArray();
     RequestBody requestBody = RequestBody.create(PROTOBUF, bytes);
-    requestBody = considerCompression(requestBody, compression);
-    bulkImport(requestBody, compression);
-  }
-
-  private void bulkImportUsingFlatbuffers(BulkImport bulkImport, Compression compression)
-      throws IOException {
-    JsonSerialization jsonSerialization = conf.getJsonSerialization();
-
-    ExtraFlatBuffersSerialization fbSerialization = new ExtraFlatBuffersSerialization();
-    fbSerialization.setUnavailableChildrenPolicy(jsonSerialization.getUnavailableChildrenPolicy());
-    fbSerialization.setUnavailableParentPolicy(jsonSerialization.getUnavailableParentPolicy());
-    fbSerialization.setUnavailableReferenceTargetPolicy(
-        jsonSerialization.getUnavailableReferenceTargetPolicy());
-    fbSerialization.setClassifierResolver(jsonSerialization.getClassifierResolver());
-    fbSerialization.setInstanceResolver(jsonSerialization.getInstanceResolver());
-    fbSerialization.setInstantiator(jsonSerialization.getInstantiator());
-    fbSerialization.setPrimitiveValuesSerialization(
-        jsonSerialization.getPrimitiveValuesSerialization());
-    byte[] bytes = fbSerialization.serializeBulkImport(bulkImport);
-    RequestBody requestBody = RequestBody.create(FLATBUFFERS, bytes);
     requestBody = considerCompression(requestBody, compression);
     bulkImport(requestBody, compression);
   }

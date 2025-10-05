@@ -9,7 +9,7 @@ import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 import io.lionweb.serialization.AbstractSerialization;
 import io.lionweb.serialization.SerializationProvider;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
 import java.util.*;
@@ -79,14 +79,14 @@ public class ChunkLevelInMemoryServerClientTest {
     AbstractSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
 
-    SerializedChunk chunk = serialization.serializeTreeToSerializationChunk(l1);
+    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(l1);
     client.createPartitionsFromChunk(chunk.getClassifierInstances());
     assertEquals(Collections.singletonList("l-id"), client.listPartitionsIDs());
     List<SerializedClassifierInstance> retrievedSerializedNodes =
         client.retrieveAsChunk(Collections.singletonList("c1-id"));
-    SerializedChunk serializedChunk =
-        SerializedChunk.fromNodes(LionWebVersion.v2024_1, retrievedSerializedNodes);
-    SerializedChunk serializedC1 = serialization.serializeTreeToSerializationChunk(c1);
-    assertEquals(serializedC1, serializedChunk);
+    SerializationChunk serializationChunk =
+        SerializationChunk.fromNodes(LionWebVersion.v2024_1, retrievedSerializedNodes);
+    SerializationChunk serializedC1 = serialization.serializeTreeToSerializationChunk(c1);
+    assertEquals(serializedC1, serializationChunk);
   }
 }

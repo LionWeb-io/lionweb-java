@@ -7,7 +7,7 @@ import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.UnavailableNodePolicy;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
 import java.util.List;
@@ -120,7 +120,7 @@ public class NodesLevelInMemoryServerClient
 
   private List<? extends ClassifierInstance<?>> deserialize(
       List<SerializedClassifierInstance> serializedNodes) {
-    SerializedChunk chunk = new SerializedChunk();
+    SerializationChunk chunk = new SerializationChunk();
     chunk.setSerializationFormatVersion(getLionWebVersion().getVersionString());
     serializedNodes.forEach(chunk::addClassifierInstance);
     chunk.populateUsedLanguages();
