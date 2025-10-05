@@ -154,8 +154,8 @@ public class ClassifierTest {
     assertEquals(childConcept, containment.getType());
 
     // Verify that the default multiplicity is REQUIRED (not optional, not multiple)
-    assertEquals(false, containment.isOptional());
-    assertEquals(false, containment.isMultiple());
+    assertFalse(containment.isOptional());
+    assertFalse(containment.isMultiple());
   }
 
   @Test

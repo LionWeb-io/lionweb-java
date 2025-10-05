@@ -438,4 +438,43 @@ public class ClassifierInstanceUtilsTest {
         NullPointerException.class,
         () -> ClassifierInstanceUtils.setReferenceValuesByName(sourceNode, "targetRefs", null));
   }
+
+  @Test
+  public void getReferenceValueByNameNullClassifier() {
+    // Create a mock ClassifierInstance with null classifier
+    ClassifierInstance<?> mockInstance = new DynamicNode("mockNode", null);
+
+    // Try to get reference value with null classifier
+    IllegalStateException exception =
+        assertThrows(
+            IllegalStateException.class,
+            () -> ClassifierInstanceUtils.getReferenceValueByName(mockInstance, "refName"));
+
+    assertTrue(exception.getMessage().contains("Concept should not be null"));
+  }
+
+  @Test
+  public void getReferenceValueByNameNonExistentReferenceDetailedMessage() {
+    // Create language and concept without any references
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    // Create source node
+    DynamicNode sourceNode = new DynamicNode("source", sourceConcept);
+
+    // Try to get reference by non-existent name and verify the exact error message
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () -> ClassifierInstanceUtils.getReferenceValueByName(sourceNode, "nonExistentRef"));
+
+    // Verify the complete error message structure
+    String expectedMessage =
+        "Concept "
+            + sourceConcept.qualifiedName()
+            + " does not contain a property named nonExistentRef";
+    assertEquals(expectedMessage, exception.getMessage());
+  }
 }

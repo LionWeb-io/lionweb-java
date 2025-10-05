@@ -206,6 +206,42 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return addContainment(name, type, Multiplicity.REQUIRED);
   }
 
+  /**
+   * Adds a reference feature to the classifier with the specified name, type, and multiplicity.
+   *
+   * @param name the name of the reference to add; must not be null
+   * @param type the classifier defining the type of the reference; must not be null
+   * @param multiplicity the multiplicity of the reference, determining whether it is optional
+   *     and/or allows multiple values; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   * @throws NullPointerException if any of the provided parameters are null
+   */
+  public T addReference(
+      @Nonnull String name, @Nonnull Classifier<?> type, @Nonnull Multiplicity multiplicity) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(type, "type should not be null");
+    Objects.requireNonNull(multiplicity, "multiplicity should not be null");
+    Reference reference = new Reference(this.getLionWebVersion(), name);
+    reference.setType(type);
+    reference.setOptional(multiplicity.isOptional());
+    reference.setMultiple(multiplicity.isMultiple());
+    addFeature(reference);
+    return (T) this;
+  }
+
+  /**
+   * Adds a reference feature to the classifier with the specified name and type. The reference is
+   * added with a default multiplicity of {@code Multiplicity.REQUIRED}.
+   *
+   * @param name the name of the reference to add; must not be null
+   * @param type the classifier defining the type of the reference; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   * @throws NullPointerException if any of the provided parameters are null
+   */
+  public T addReference(@Nonnull String name, @Nonnull Classifier<?> type) {
+    return addReference(name, type, Multiplicity.REQUIRED);
+  }
+
   public void removeFeature(@Nonnull Feature<?> feature) {
     Objects.requireNonNull(feature, "feature should not be null");
     if (!getFeatures().contains(feature)) {
