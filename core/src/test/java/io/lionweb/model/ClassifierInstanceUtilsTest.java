@@ -2,9 +2,11 @@ package io.lionweb.model;
 
 import static org.junit.Assert.*;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.language.assigners.CommonIDAssigners;
 import io.lionweb.language.assigners.CommonKeyAssigners;
+import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.impl.DynamicNode;
 import java.util.Arrays;
 import java.util.Collections;
@@ -476,5 +478,76 @@ public class ClassifierInstanceUtilsTest {
             + sourceConcept.qualifiedName()
             + " does not contain a property named nonExistentRef";
     assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  @Test
+  public void isBuiltinElementWithTheRealDeal() {
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getInstance(LionWebVersion.v2023_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getClassifier(LionWebVersion.v2023_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getAnnotation(LionWebVersion.v2023_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getInterface(LionWebVersion.v2023_1)));
+
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getInstance(LionWebVersion.v2024_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getClassifier(LionWebVersion.v2024_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getAnnotation(LionWebVersion.v2024_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCore.getInterface(LionWebVersion.v2024_1)));
+
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(
+            LionCoreBuiltins.getInstance(LionWebVersion.v2023_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(
+            LionCoreBuiltins.getInteger(LionWebVersion.v2023_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCoreBuiltins.getNode(LionWebVersion.v2023_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(
+            LionCoreBuiltins.getINamed(LionWebVersion.v2023_1)));
+
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(
+            LionCoreBuiltins.getInstance(LionWebVersion.v2024_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(
+            LionCoreBuiltins.getInteger(LionWebVersion.v2024_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(LionCoreBuiltins.getNode(LionWebVersion.v2024_1)));
+    assertTrue(
+        ClassifierInstanceUtils.isBuiltinElement(
+            LionCoreBuiltins.getINamed(LionWebVersion.v2024_1)));
+  }
+
+  @Test
+  public void isBuiltinElementFalseCase() {
+    Language aLanguage = new Language("MyTestLanguage");
+    Concept aConcept = new Concept(aLanguage, "MyTestConcept");
+    assertFalse(ClassifierInstanceUtils.isBuiltinElement(aLanguage));
+    assertFalse(ClassifierInstanceUtils.isBuiltinElement(aConcept));
+  }
+
+  @Test
+  public void isBuiltinElementToNewConceptInLionCore() {
+    Language original = LionCore.getInstance(LionWebVersion.v2024_1);
+    Language lionCoreM3 =
+        new Language(original.getName(), "ID1", original.getKey(), original.getVersion());
+    Concept testConcept = new Concept(lionCoreM3, "TestConcept");
+    assertTrue(ClassifierInstanceUtils.isBuiltinElement(testConcept));
+  }
+
+  @Test
+  public void isBuiltinElementToNewConceptInLionCoreBuiltins() {
+    Language original = LionCoreBuiltins.getInstance(LionWebVersion.v2024_1);
+    Language lionCoreBuiltins =
+        new Language(original.getName(), "ID1", original.getKey(), original.getVersion());
+    Concept testConcept = new Concept(lionCoreBuiltins, "TestConcept");
+    assertTrue(ClassifierInstanceUtils.isBuiltinElement(testConcept));
   }
 }
