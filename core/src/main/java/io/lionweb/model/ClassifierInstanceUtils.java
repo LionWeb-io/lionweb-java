@@ -235,7 +235,7 @@ public class ClassifierInstanceUtils {
       throw new IllegalArgumentException(
           "Concept "
               + _this.getClassifier().qualifiedName()
-              + " does not contained a property named "
+              + " does not contain a property named "
               + referenceName);
     }
     return _this.getReferenceValues(reference);

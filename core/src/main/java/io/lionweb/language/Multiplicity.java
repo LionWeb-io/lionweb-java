@@ -26,8 +26,8 @@ public enum Multiplicity {
   ZERO_OR_MORE(true, true),
   ONE_OR_MORE(false, true);
 
-  private boolean optional;
-  private boolean multiple;
+  private final boolean optional;
+  private final boolean multiple;
 
   Multiplicity(boolean optional, boolean multiple) {
     this.optional = optional;
