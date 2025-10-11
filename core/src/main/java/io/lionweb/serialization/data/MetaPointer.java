@@ -5,6 +5,8 @@ import io.lionweb.language.IKeyed;
 import io.lionweb.language.Language;
 import io.lionweb.language.LanguageEntity;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -12,24 +14,47 @@ import javax.annotation.Nullable;
  * A MetaPointer is the combination of the pair Language and Version with a Key, which identify one
  * element within that language.
  *
- * <p>We should never have multiple instances with the same value, so equality and identity
- * coincides for this class.
+ * <p>We should never have multiple instances with the same value, so equality and identity coincide
+ * for this class.
  */
-public class MetaPointer {
-  private static final Map<String, Map<String, WeakHashMap<String, MetaPointer>>>
-      INSTANCES_BY_KEY_LANGUAGE_VERSION = new HashMap<>();
+public final class MetaPointer {
+  private static final String NULL = "\u0000"; // sentinel for null since CHM forbids null keys
 
-  /** Provide a MetaPointer with the given value, avoid allocations if unnecessary. */
-  public static MetaPointer get(String language, String version, String key) {
-    return INSTANCES_BY_KEY_LANGUAGE_VERSION
-        .computeIfAbsent(key, k -> new HashMap<>())
-        .computeIfAbsent(language, l -> new WeakHashMap<>())
-        .computeIfAbsent(version, v -> new MetaPointer(language, version, key));
+  private static String norm(@Nullable String s) {
+    return s == null ? NULL : s;
   }
 
-  // Note that theese tree values are nullable solely because of fault-tolerance. Semantically they
-  // should not be null,
-  // but when writing code we should expect these to be potentially null, in case we are
+  private static final ConcurrentMap<
+          String, // key
+          ConcurrentMap<
+              String, // language
+              ConcurrentMap<
+                  String, // version
+                  MetaPointer>>>
+      INSTANCES_BY_KEY_LANGUAGE_VERSION = new ConcurrentHashMap<>();
+
+  /** Provide a MetaPointer with the given value, avoid allocations if unnecessary. */
+  public static MetaPointer get(
+      @Nullable String language, @Nullable String version, @Nullable String key) {
+    final String kKey = norm(key);
+    final String kLang = norm(language);
+    final String kVer = norm(version);
+
+    // 1st level: by key
+    ConcurrentMap<String, ConcurrentMap<String, MetaPointer>> byLanguage =
+        INSTANCES_BY_KEY_LANGUAGE_VERSION.computeIfAbsent(kKey, __ -> new ConcurrentHashMap<>());
+
+    // 2nd level: by language
+    ConcurrentMap<String, MetaPointer> byVersion =
+        byLanguage.computeIfAbsent(kLang, __ -> new ConcurrentHashMap<>());
+
+    // 3rd level: by version → canonical MetaPointer
+    return byVersion.computeIfAbsent(kVer, __ -> new MetaPointer(language, version, key));
+  }
+
+  // Note that these three values are nullable solely because of fault-tolerance. Semantically they
+  // should not be null, but when writing code we should expect these to be potentially null, in
+  // case we are
   // representing an incorrect state
   private final @Nullable String key;
   private final @Nullable String version;
