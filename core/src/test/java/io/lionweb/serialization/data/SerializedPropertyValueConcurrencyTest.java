@@ -11,44 +11,36 @@ import org.junit.Test;
 public class SerializedPropertyValueConcurrencyTest {
   @Test
   public void smallValuesAreCanonicalPerMetaPointer_concurrent() throws Exception {
-    final int threads = Math.max(4, Runtime.getRuntime().availableProcessors() * 2);
+    ConcurrencyScenario concurrencyScenario = new ConcurrencyScenario();
+
     final int callsPerThread = 20_000;
 
     final MetaPointer mp = MetaPointer.get("L", "1.0", "K");
     final String smallValue = "1"; // < THRESHOLD, should be cached
     final SerializedPropertyValue ref = SerializedPropertyValue.get(mp, smallValue);
 
-    ExecutorService pool = Executors.newFixedThreadPool(threads);
-    CyclicBarrier start = new CyclicBarrier(threads);
-    CountDownLatch done = new CountDownLatch(threads);
-
     // track distinct identities we observed (must stay at 1)
     final Map<SerializedPropertyValue, Boolean> identities = new IdentityHashMap<>();
     final AtomicReference<Throwable> firstError = new AtomicReference<>(null);
 
-    for (int t = 0; t < threads; t++) {
-      pool.execute(
-          () -> {
-            try {
-              start.await();
-              for (int i = 0; i < callsPerThread; i++) {
-                SerializedPropertyValue spv = SerializedPropertyValue.get(mp, smallValue);
-                // identity must match the canonical instance
-                assertSame(ref, spv);
-                synchronized (identities) {
-                  identities.put(spv, Boolean.TRUE);
-                }
+    concurrencyScenario.run(
+        () -> {
+          try {
+            concurrencyScenario.getStart().await();
+            for (int i = 0; i < callsPerThread; i++) {
+              SerializedPropertyValue spv = SerializedPropertyValue.get(mp, smallValue);
+              // identity must match the canonical instance
+              assertSame(ref, spv);
+              synchronized (identities) {
+                identities.put(spv, Boolean.TRUE);
               }
-            } catch (Throwable e) {
-              firstError.compareAndSet(null, e);
-            } finally {
-              done.countDown();
             }
-          });
-    }
-
-    assertTrue("Workers did not finish in time", done.await(60, TimeUnit.SECONDS));
-    pool.shutdownNow();
+          } catch (Throwable e) {
+            firstError.compareAndSet(null, e);
+          } finally {
+            concurrencyScenario.getDone().countDown();
+          }
+        });
 
     if (firstError.get() != null) {
       throw new AssertionError("Worker failed", firstError.get());
@@ -61,48 +53,40 @@ public class SerializedPropertyValueConcurrencyTest {
 
   @Test
   public void largeValuesAreNotCanonical_evenConcurrently() throws Exception {
-    final int threads = Math.max(4, Runtime.getRuntime().availableProcessors());
+
     final int callsPerThread = 5_000;
 
     final MetaPointer mp = MetaPointer.get("L", "1.0", "K");
     // Build a value > THRESHOLD (128) so it bypasses caching.
     final String largeValue = new String(new char[1024]).replace('\0', 'X');
 
-    ExecutorService pool = Executors.newFixedThreadPool(threads);
-    CyclicBarrier start = new CyclicBarrier(threads);
-    CountDownLatch done = new CountDownLatch(threads);
-
+    ConcurrencyScenario concurrencyScenario = new ConcurrencyScenario();
     final Map<SerializedPropertyValue, Boolean> identities = new IdentityHashMap<>();
     final AtomicReference<Throwable> firstError = new AtomicReference<>(null);
 
-    for (int t = 0; t < threads; t++) {
-      pool.execute(
-          () -> {
-            try {
-              start.await();
-              SerializedPropertyValue prev = null;
-              for (int i = 0; i < callsPerThread; i++) {
-                SerializedPropertyValue spv = SerializedPropertyValue.get(mp, largeValue);
-                // equals() must be true (same meta + same value),
-                // but identity is NOT guaranteed (and should differ frequently).
-                if (prev != null) {
-                  assertEquals(prev, spv);
-                }
-                prev = spv;
-                synchronized (identities) {
-                  identities.put(spv, Boolean.TRUE);
-                }
+    concurrencyScenario.run(
+        () -> {
+          try {
+            concurrencyScenario.getStart().await();
+            SerializedPropertyValue prev = null;
+            for (int i = 0; i < callsPerThread; i++) {
+              SerializedPropertyValue spv = SerializedPropertyValue.get(mp, largeValue);
+              // equals() must be true (same meta + same value),
+              // but identity is NOT guaranteed (and should differ frequently).
+              if (prev != null) {
+                assertEquals(prev, spv);
               }
-            } catch (Throwable e) {
-              firstError.compareAndSet(null, e);
-            } finally {
-              done.countDown();
+              prev = spv;
+              synchronized (identities) {
+                identities.put(spv, Boolean.TRUE);
+              }
             }
-          });
-    }
-
-    assertTrue("Workers did not finish in time", done.await(60, TimeUnit.SECONDS));
-    pool.shutdownNow();
+          } catch (Throwable e) {
+            firstError.compareAndSet(null, e);
+          } finally {
+            concurrencyScenario.getDone().countDown();
+          }
+        });
 
     if (firstError.get() != null) {
       throw new AssertionError("Worker failed", firstError.get());
@@ -112,7 +96,7 @@ public class SerializedPropertyValueConcurrencyTest {
     // We don’t assert an exact number (to avoid being brittle) but > threads is a safe lower bound.
     assertTrue(
         "Expected multiple distinct instances for large values, got " + identities.size(),
-        identities.size() > threads);
+        identities.size() > concurrencyScenario.getThreads());
   }
 
   @Test
