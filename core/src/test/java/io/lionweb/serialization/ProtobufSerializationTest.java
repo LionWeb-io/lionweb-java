@@ -325,7 +325,7 @@ public class ProtobufSerializationTest extends SerializationTest {
         protoBufSerialization.serializeNodesToSerializationChunk(n1);
 
     assertEquals(1, serializationChunk.getLanguages().size());
-    assertSerializedChunkContainsLanguage(serializationChunk, l);
+    assertSerializationChunkContainsLanguage(serializationChunk, l);
   }
 
   @Test
@@ -352,9 +352,9 @@ public class ProtobufSerializationTest extends SerializationTest {
     SerializationChunk serializationChunk = serialization.serializeTreeToSerializationChunk(l);
 
     byte[] bytes = serialization.serializeToByteArray(serializationChunk);
-    SerializationChunk deserializedChunk = serialization.deserializeToChunk(bytes);
+    SerializationChunk deserializationChunk = serialization.deserializeToChunk(bytes);
 
-    assertEquals(serializationChunk, deserializedChunk);
+    assertEquals(serializationChunk, deserializationChunk);
   }
 
   @Test
@@ -586,7 +586,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     serialization.serializeNodesToByteArray(Collections.singletonList(proxy));
   }
 
-  private void assertSerializedChunkContainsLanguage(
+  private void assertSerializationChunkContainsLanguage(
       SerializationChunk serializationChunk, Language language) {
     assertTrue(
         serializationChunk.getLanguages().stream()

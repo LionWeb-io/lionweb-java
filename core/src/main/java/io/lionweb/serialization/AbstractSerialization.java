@@ -18,8 +18,8 @@ import javax.annotation.Nullable;
 
 /**
  * This is a common ancestor to all Serialization classes. It contains logic to move between the
- * actual Nodes and the intermediate format (SerializedChunk). The step between the SerializedChunk
- * and the actual physical formats is done in other classes.
+ * actual Nodes and the intermediate format (SerializationChunk). The step between the
+ * SerializationChunk and the actual physical formats is done in other classes.
  */
 public abstract class AbstractSerialization {
 

@@ -29,7 +29,7 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("  serialized in " + (jt1 - jt0) + "ms");
     System.out.println("  size " + json.getBytes().length + " bytes");
 
-    // Note that this method include the transformation from SerializedChunk to node,
+    // Note that this method include the transformation from SerializationChunk to node,
     // which is common to all deserialization operations
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     jsonSerialization.enableDynamicNodes();
@@ -47,7 +47,7 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("  serialized in " + (ct1 - ct0) + "ms");
     System.out.println("  size " + compressed.length + " bytes");
 
-    // Note that this method include the transformation from SerializedChunk to node,
+    // Note that this method include the transformation from SerializationChunk to node,
     // which is common to all deserialization operations
     JsonSerialization jsonSerializationCompress =
         SerializationProvider.getStandardJsonSerialization();
@@ -69,7 +69,7 @@ public class SerializationAndDeserializationExperiment {
     System.out.println("  serialized in " + (pt1 - pt0) + "ms");
     System.out.println("  size " + bytes.length + " bytes");
 
-    // Note that this method include the transformation from SerializedChunk to node,
+    // Note that this method include the transformation from SerializationChunk to node,
     // which is common to all deserialization operations
     ProtoBufSerialization protoBufSerializationForDeserialization =
         SerializationProvider.getStandardProtoBufSerialization();

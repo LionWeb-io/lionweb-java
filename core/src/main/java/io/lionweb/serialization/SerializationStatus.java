@@ -9,7 +9,7 @@ public class SerializationStatus {
   private final IdentityHashMap<String, List<Containment>> containments = new IdentityHashMap<>();
   private final IdentityHashMap<String, List<Reference>> references = new IdentityHashMap<>();
 
-  // This is a cache, reflecting the list of languages in serializedChunk,
+  // This is a cache, reflecting the list of languages in serializationChunk,
   // but as a set, for faster access
   private final Set<String> consideredLanguageIDs = new HashSet<>();
 

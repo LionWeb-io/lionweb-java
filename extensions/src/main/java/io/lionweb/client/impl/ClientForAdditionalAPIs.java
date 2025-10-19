@@ -103,12 +103,12 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
               jEl.add("containment", jContainment);
               bodyAttachPoints.add(jEl);
             });
-    JsonElement serializedChunkAsJson =
+    JsonElement serializationChunkAsJson =
         new LowLevelJsonSerialization()
             .serializeToJsonElement(
                 LowLevelJsonSerialization.groupNodesIntoSerializationBlock(
                     bulkImport.getNodes(), conf.getJsonSerialization().getLionWebVersion()));
-    JsonArray bodyNodes = serializedChunkAsJson.getAsJsonObject().get("nodes").getAsJsonArray();
+    JsonArray bodyNodes = serializationChunkAsJson.getAsJsonObject().get("nodes").getAsJsonArray();
     body.add("attachPoints", bodyAttachPoints);
     body.add("nodes", bodyNodes);
     String bodyJson = new Gson().toJson(body);

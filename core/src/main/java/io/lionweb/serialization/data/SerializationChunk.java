@@ -44,7 +44,7 @@ public class SerializationChunk {
   }
 
   /**
-   * Adds a single {@link SerializedClassifierInstance} to the current SerializedChunk.
+   * Adds a single {@link SerializedClassifierInstance} to the current SerializationChunk.
    *
    * @param instance the {@code SerializedClassifierInstance} to add; must not be null
    * @throws NullPointerException if {@code instance} is null
@@ -56,7 +56,7 @@ public class SerializationChunk {
   }
 
   /**
-   * Adds multiple classifier instances to the current SerializedChunk.
+   * Adds multiple classifier instances to the current SerializationChunk.
    *
    * @param instances an array of SerializedClassifierInstance objects to be added
    */
@@ -74,7 +74,7 @@ public class SerializationChunk {
   }
 
   /**
-   * Adds a language to the current SerializedChunk.
+   * Adds a language to the current SerializationChunk.
    *
    * @param language the {@code UsedLanguage} instance to add; must not be null
    * @throws NullPointerException if {@code language} is null
@@ -85,7 +85,7 @@ public class SerializationChunk {
   }
 
   /**
-   * Adds multiple {@link LanguageVersion} instances to the current SerializedChunk.
+   * Adds multiple {@link LanguageVersion} instances to the current SerializationChunk.
    *
    * @param languages an array of {@code UsedLanguage} instances to be added; must not be null
    * @throws NullPointerException if any element in {@code languages} is null
@@ -109,8 +109,8 @@ public class SerializationChunk {
   }
 
   /**
-   * Traverse the SerializedChunk, collecting all the metapointers and populating the used languages
-   * accordingly.
+   * Traverse the SerializationChunk, collecting all the metapointers and populating the used
+   * languages accordingly.
    */
   public void populateUsedLanguages() {
     for (SerializedClassifierInstance classifierInstance : classifierInstances) {

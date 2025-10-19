@@ -782,10 +782,10 @@ public class JsonSerializationTest extends SerializationTest {
     SerializationChunk serializationChunk = hjs.serializeNodesToSerializationChunk(n1);
 
     assertEquals(1, serializationChunk.getLanguages().size());
-    assertSerializedChunkContainsLanguage(serializationChunk, l);
+    assertSerializationChunkContainsLanguage(serializationChunk, l);
   }
 
-  private void assertSerializedChunkContainsLanguage(
+  private void assertSerializationChunkContainsLanguage(
       SerializationChunk serializationChunk, Language language) {
     assertTrue(
         serializationChunk.getLanguages().stream()
