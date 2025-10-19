@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
  * exist in the repository. Nodes in that subtree MAY have references to already existing nodes, and
  * already existing nodes MAY have references to nodes in that subtree.
  */
-public class AddAnnotation extends DeltaCommand {
-  public String parent;
-  public SerializationChunk newAnnotation;
-  public int index;
+public final class AddAnnotation extends DeltaCommand {
+  public final String parent;
+  public final SerializationChunk newAnnotation;
+  public final int index;
 
   public AddAnnotation(
       @NotNull String commandId, String parent, SerializationChunk newAnnotation, int index) {

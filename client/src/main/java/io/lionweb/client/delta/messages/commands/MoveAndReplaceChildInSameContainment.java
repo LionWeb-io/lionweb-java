@@ -7,10 +7,10 @@ import io.lionweb.client.delta.messages.DeltaCommand;
  * replacedChild inside the same containment at newIndex, and all its descendants (including
  * annotation instances). Does NOT change references to any of the deleted nodes
  */
-public class MoveAndReplaceChildInSameContainment extends DeltaCommand {
-  public int newIndex;
-  public String replacedChild;
-  public String movedChild;
+public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
+  public final int newIndex;
+  public final String replacedChild;
+  public final String movedChild;
 
   public MoveAndReplaceChildInSameContainment(
       String commandId, int newIndex, String replacedChild, String movedChild) {

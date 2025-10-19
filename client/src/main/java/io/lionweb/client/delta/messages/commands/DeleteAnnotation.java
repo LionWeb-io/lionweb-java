@@ -8,10 +8,10 @@ import org.jetbrains.annotations.NotNull;
  * descendants (including annotation instances). Does NOT change references to any of the deleted
  * nodes.
  */
-public class DeleteAnnotation extends DeltaCommand {
-  public String node;
-  public int index;
-  public String deletedAnnotation;
+public final class DeleteAnnotation extends DeltaCommand {
+  public final String node;
+  public final int index;
+  public final String deletedAnnotation;
 
   public DeleteAnnotation(
       @NotNull String commandId, String node, int index, String deletedAnnotation) {
