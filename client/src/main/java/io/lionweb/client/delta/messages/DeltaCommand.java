@@ -13,4 +13,16 @@ public class DeltaCommand {
     Objects.requireNonNull(commandId, "commandId should not be null");
     this.commandId = commandId;
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    DeltaCommand that = (DeltaCommand) o;
+    return Objects.equals(commandId, that.commandId);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hashCode(commandId);
+  }
 }
