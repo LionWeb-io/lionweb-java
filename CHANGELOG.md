@@ -1,5 +1,31 @@
 # Changelog
 
+### Version 1.1.4
+
+* Improved protobuf serialization and removed FlatBuffers support
+* Introduced concurrency tests and thread-safe caching
+* Extended Classifier and Annotation APIs with chaining and multiplicity validation
+* Enhanced validation in ChunkValidator and RepositoryData
+* Improved test coverage and documentation
+
+### Version 1.1.3
+
+* Added consistency checks in RepositoryData and InMemoryServer
+* Enhanced error reporting and node movement handling
+* Improved validation of annotations and parent relationships
+
+### Version 1.1.2
+
+* Refactored ChunkValidator for duplicate metapointer detection and streamlined checks
+* Introduced setPropertyValue and clarified unsafe serialization operations
+* Added tests for ChunkValidator and serialization logic
+
+### Version 1.1.1
+
+* Updated LionWeb Server dependency
+* Improved validation and consistency logic across repository components
+* Refined domain model handling for libraries and missing nodes
+
 ### Version 1.1.0
 
 * Renamed SerializedChunk into SerializationChunk
