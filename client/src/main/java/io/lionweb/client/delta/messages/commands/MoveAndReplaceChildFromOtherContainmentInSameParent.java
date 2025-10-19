@@ -10,11 +10,11 @@ import io.lionweb.serialization.data.MetaPointer;
  * descendants (including annotation instances). Does NOT change references to any of the deleted
  * nodes.
  */
-public class MoveAndReplaceChildFromOtherContainmentInSameParent extends DeltaCommand {
-  public MetaPointer newContainment;
-  public int newIndex;
-  public String replacedChild;
-  public String movedChild;
+public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends DeltaCommand {
+  public final MetaPointer newContainment;
+  public final int newIndex;
+  public final String replacedChild;
+  public final String movedChild;
 
   public MoveAndReplaceChildFromOtherContainmentInSameParent(
       String commandId,
