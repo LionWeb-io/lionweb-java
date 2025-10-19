@@ -8,12 +8,12 @@ import io.lionweb.serialization.data.MetaPointer;
  * replacedChild inside newParent's newContainment at newIndex, and all its descendants (including
  * annotation instances). Does NOT change references to any of the deleted nodes.
  */
-public class MoveAndReplaceChildFromOtherContainment extends DeltaCommand {
-  public String newParent;
-  public MetaPointer newContainment;
-  public int newIndex;
-  public String replacedChild;
-  public String movedChild;
+public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand {
+  public final String newParent;
+  public final MetaPointer newContainment;
+  public final int newIndex;
+  public final String replacedChild;
+  public final String movedChild;
 
   public MoveAndReplaceChildFromOtherContainment(
       String commandId,

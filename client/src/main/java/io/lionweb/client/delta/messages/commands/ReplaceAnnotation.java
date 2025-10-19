@@ -9,12 +9,12 @@ import org.jetbrains.annotations.NotNull;
  * Delete current node replacedAnnotation at parent's annotations at index, and all its descendants
  * (including annotation instances). Does NOT change references to any of the deleted nodes.
  */
-public class ReplaceAnnotation extends DeltaCommand {
-  public SerializationChunk newAnnotation;
-  public String parent;
-  public int index;
-  public MetaPointer containment;
-  public String replacedAnnotation;
+public final class ReplaceAnnotation extends DeltaCommand {
+  public final SerializationChunk newAnnotation;
+  public final String parent;
+  public final int index;
+  public final MetaPointer containment;
+  public final String replacedAnnotation;
 
   public ReplaceAnnotation(
       @NotNull String commandId,

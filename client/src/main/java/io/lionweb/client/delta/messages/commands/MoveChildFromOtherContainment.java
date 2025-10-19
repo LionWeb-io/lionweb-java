@@ -4,11 +4,11 @@ import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.serialization.data.MetaPointer;
 
 /** Move existing node movedChild inside newParent's newContainment at newIndex. */
-public class MoveChildFromOtherContainment extends DeltaCommand {
-  public String newParent;
-  public MetaPointer newContainment;
-  public int newIndex;
-  public String movedChild;
+public final class MoveChildFromOtherContainment extends DeltaCommand {
+  public final String newParent;
+  public final MetaPointer newContainment;
+  public final int newIndex;
+  public final String movedChild;
 
   public MoveChildFromOtherContainment(
       String commandId,

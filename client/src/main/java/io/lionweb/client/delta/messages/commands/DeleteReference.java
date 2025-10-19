@@ -6,12 +6,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /** Delete existing entry deletedTarget/deletedResolveInfo from parent's reference at index. */
-public class DeleteReference extends DeltaCommand {
-  public String parent;
-  public MetaPointer reference;
-  public int index;
-  public @Nullable String deletedTarget;
-  public @Nullable String deletedResolveInfo;
+public final class DeleteReference extends DeltaCommand {
+  public final String parent;
+  public final MetaPointer reference;
+  public final int index;
+  public final @Nullable String deletedTarget;
+  public final @Nullable String deletedResolveInfo;
 
   public DeleteReference(
       @NotNull String commandId,

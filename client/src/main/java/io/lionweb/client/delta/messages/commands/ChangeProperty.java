@@ -5,10 +5,10 @@ import io.lionweb.serialization.data.MetaPointer;
 import java.util.Objects;
 import org.jetbrains.annotations.Nullable;
 
-public class ChangeProperty extends DeltaCommand {
-  public String node;
-  public MetaPointer property;
-  public @Nullable String newValue;
+public final class ChangeProperty extends DeltaCommand {
+  public final String node;
+  public final MetaPointer property;
+  public final @Nullable String newValue;
 
   public ChangeProperty(
       String commandId, String node, MetaPointer property, @Nullable String newValue) {
