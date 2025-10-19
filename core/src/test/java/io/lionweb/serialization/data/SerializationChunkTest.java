@@ -8,7 +8,7 @@ import org.junit.Test;
 public class SerializationChunkTest {
 
   @Test
-  public void serializedChunkEquality() {
+  public void serializationChunkEquality() {
     SerializationChunk c1 = new SerializationChunk();
     SerializationChunk c2 = new SerializationChunk();
     assertEquals(c1, c2);
