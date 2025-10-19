@@ -24,7 +24,7 @@ public class PrimitiveValuesSerialization {
   // PrimitiveValuesSerialization because that is unique. In two versions of the language we may
   // have two PrimitiveTypes with the same key, that are different.
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
-  private final Map<String, StructuredDataType> strucuturesDataTypesByID = new HashMap<>();
+  private final Map<String, StructuredDataType> structuredDataTypesByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
 
   public void registerLanguage(Language language) {
@@ -33,7 +33,7 @@ public class PrimitiveValuesSerialization {
         .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
     language.getElements().stream()
         .filter(e -> e instanceof StructuredDataType)
-        .forEach(e -> strucuturesDataTypesByID.put(e.getID(), (StructuredDataType) e));
+        .forEach(e -> structuredDataTypesByID.put(e.getID(), (StructuredDataType) e));
   }
 
   public void enableDynamicNodes() {
@@ -88,7 +88,7 @@ public class PrimitiveValuesSerialization {
   }
 
   private StructuredDataTypeInstance deserializeSDT(String dataTypeID, JsonObject jo) {
-    StructuredDataType sdt = strucuturesDataTypesByID.get(dataTypeID);
+    StructuredDataType sdt = structuredDataTypesByID.get(dataTypeID);
     DynamicStructuredDataTypeInstance sdtInstance = new DynamicStructuredDataTypeInstance(sdt);
     for (Field field : sdt.getFields()) {
       if (jo.has(field.getKey())) {
@@ -190,7 +190,7 @@ public class PrimitiveValuesSerialization {
       } else {
         throw new RuntimeException("Invalid enumeration literal value: " + serializedValue);
       }
-    } else if (strucuturesDataTypesByID.containsKey(dataTypeID) && dynamicNodesEnabled) {
+    } else if (structuredDataTypesByID.containsKey(dataTypeID) && dynamicNodesEnabled) {
       if (serializedValue == null) {
         return null;
       }
@@ -297,7 +297,7 @@ public class PrimitiveValuesSerialization {
   }
 
   private boolean isStructuredDataType(String primitiveTypeID) {
-    return strucuturesDataTypesByID.containsKey(primitiveTypeID);
+    return structuredDataTypesByID.containsKey(primitiveTypeID);
   }
 
   public static <E extends Enum<E>> PrimitiveSerializer<E> serializerFor(
