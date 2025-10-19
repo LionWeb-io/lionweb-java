@@ -26,7 +26,7 @@ import org.junit.Test;
 public class SerializationOfLionCoreTest extends SerializationTest {
 
   @Test
-  public void serializeLionCoreToSerializedChunkV2023() {
+  public void serializeLionCoreToSerializationChunkV2023() {
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     SerializationChunk serializationChunk =
@@ -92,7 +92,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   }
 
   @Test
-  public void serializeLionCoreToSerializedChunkV2024() {
+  public void serializeLionCoreToSerializationChunkV2024() {
     JsonSerialization jsonSerialization = SerializationProvider.getStandardJsonSerialization();
     SerializationChunk serializationChunk =
         jsonSerialization.serializeTreeToSerializationChunk(LionCore.getInstance());
@@ -171,7 +171,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
   }
 
   @Test
-  public void deserializeLionCoreToSerializedChunk() {
+  public void deserializeLionCoreToSerializationChunk() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
     SerializationChunk serializationChunk =

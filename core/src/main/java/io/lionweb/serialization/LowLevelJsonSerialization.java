@@ -139,7 +139,7 @@ public class LowLevelJsonSerialization {
         .toJson(serializeToJsonElement(serializationChunk));
   }
 
-  /** Create a SerializedChunk containing the given nodes. */
+  /** Create a SerializationChunk containing the given nodes. */
   public static SerializationChunk groupNodesIntoSerializationBlock(
       Collection<SerializedClassifierInstance> serializedClassifierInstances,
       LionWebVersion lionWebVersion) {

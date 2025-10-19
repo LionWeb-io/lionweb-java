@@ -5,7 +5,7 @@ import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
-import io.lionweb.serialization.data.SerializedChunk;
+import io.lionweb.serialization.data.SerializationChunk;
 
 public class DeltaInMemorySynchronizer extends DeltaSynchronizer {
 
@@ -29,12 +29,12 @@ public class DeltaInMemorySynchronizer extends DeltaSynchronizer {
   protected void forceState(Node node) {
     if (node.getParent() == null) {
       if (!server.listPartitionIDs(repositoryName).contains(node.getID())) {
-        SerializedChunk chunk = jsonSerialization.serializeTreeToSerializationChunk(node);
+        SerializationChunk chunk = jsonSerialization.serializeTreeToSerializationChunk(node);
         server.createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
         return;
       }
     }
-    SerializedChunk chunk = jsonSerialization.serializeTreeToSerializationChunk(node);
+    SerializationChunk chunk = jsonSerialization.serializeTreeToSerializationChunk(node);
     server.store(repositoryName, chunk.getClassifierInstances());
   }
 }
