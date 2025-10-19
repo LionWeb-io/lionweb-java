@@ -138,7 +138,7 @@ Introducing support for LionWeb 2024.1
 
 ### Version 1.0.3
 
-* Fixed bug in SerializationChunk.equals
+* Fixed bug in SerializedChunk.equals
 
 ### Version 1.0.4
 
@@ -158,6 +158,6 @@ Introducing support for LionWeb 2024.1
 
 ### Version 1.1.0
 
-* Renamed SerializationChunk into SerializationChunk
+* Renamed SerializedChunk into SerializationChunk
 * Added support for improved protobuf serialization
 * Removed support for FlatBuffers serialization
