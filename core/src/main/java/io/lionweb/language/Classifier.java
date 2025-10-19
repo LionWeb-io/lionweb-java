@@ -129,6 +129,119 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     return (T) this;
   }
 
+  /**
+   * Adds a property to the classifier with the specified name, type, and multiplicity.
+   *
+   * <p>The method enforces that the multiplicity does not allow multiple values. If multiple values
+   * are specified, an {@link IllegalArgumentException} is thrown. The new property is created with
+   * the given parameters and added as a feature to the classifier.
+   *
+   * @param name the name of the property to add; must not be null
+   * @param type the data type of the property to add; must not be null
+   * @param multiplicity the multiplicity of the property, determining whether it is optional; must
+   *     not be null and must not allow multiple values
+   * @return the current instance of the classifier, allowing method chaining
+   * @throws NullPointerException if any of the provided parameters are null
+   * @throws IllegalArgumentException if the provided multiplicity allows multiple values
+   */
+  public T addProperty(
+      @Nonnull String name, @Nonnull DataType<?> type, @Nonnull Multiplicity multiplicity) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(type, "type should not be null");
+    Objects.requireNonNull(multiplicity, "multiplicity should not be null");
+    if (multiplicity.isMultiple()) {
+      throw new IllegalArgumentException("Multiple values are not supported for properties");
+    }
+
+    Property property = new Property(this.getLionWebVersion(), name);
+    property.setType(type);
+    property.setOptional(multiplicity.isOptional());
+    addFeature(property);
+    return (T) this;
+  }
+
+  /**
+   * Adds a property to the classifier with the specified name and type. The property is added with
+   * a default multiplicity of {@code Multiplicity.REQUIRED}.
+   *
+   * @param name the name of the property to add; must not be null
+   * @param type the data type of the property to add; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   */
+  public T addProperty(@Nonnull String name, @Nonnull DataType<?> type) {
+    return addProperty(name, type, Multiplicity.REQUIRED);
+  }
+
+  /**
+   * Adds a containment feature to the classifier with the specified name, type, and multiplicity.
+   *
+   * @param name the name of the containment feature to add; must not be null
+   * @param type the type of the containment feature to add; must not be null
+   * @param multiplicity the multiplicity of the containment feature to add, determining whether it
+   *     is optional and/or allows multiple values; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   */
+  public T addContainment(
+      @Nonnull String name, @Nonnull Classifier<?> type, @Nonnull Multiplicity multiplicity) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(type, "type should not be null");
+    Objects.requireNonNull(multiplicity, "multiplicity should not be null");
+    Containment containment = new Containment(this.getLionWebVersion(), name);
+    containment.setType(type);
+    containment.setOptional(multiplicity.isOptional());
+    containment.setMultiple(multiplicity.isMultiple());
+    addFeature(containment);
+    return (T) this;
+  }
+
+  /**
+   * Adds a containment feature to the classifier with the specified name and type. The containment
+   * feature is added with a default multiplicity of {@code Multiplicity.REQUIRED}.
+   *
+   * @param name the name of the containment feature to add; must not be null
+   * @param type the type of the containment feature to add; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   */
+  public T addContainment(@Nonnull String name, @Nonnull Classifier<?> type) {
+    return addContainment(name, type, Multiplicity.REQUIRED);
+  }
+
+  /**
+   * Adds a reference feature to the classifier with the specified name, type, and multiplicity.
+   *
+   * @param name the name of the reference to add; must not be null
+   * @param type the classifier defining the type of the reference; must not be null
+   * @param multiplicity the multiplicity of the reference, determining whether it is optional
+   *     and/or allows multiple values; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   * @throws NullPointerException if any of the provided parameters are null
+   */
+  public T addReference(
+      @Nonnull String name, @Nonnull Classifier<?> type, @Nonnull Multiplicity multiplicity) {
+    Objects.requireNonNull(name, "name should not be null");
+    Objects.requireNonNull(type, "type should not be null");
+    Objects.requireNonNull(multiplicity, "multiplicity should not be null");
+    Reference reference = new Reference(this.getLionWebVersion(), name);
+    reference.setType(type);
+    reference.setOptional(multiplicity.isOptional());
+    reference.setMultiple(multiplicity.isMultiple());
+    addFeature(reference);
+    return (T) this;
+  }
+
+  /**
+   * Adds a reference feature to the classifier with the specified name and type. The reference is
+   * added with a default multiplicity of {@code Multiplicity.REQUIRED}.
+   *
+   * @param name the name of the reference to add; must not be null
+   * @param type the classifier defining the type of the reference; must not be null
+   * @return the current instance of the classifier, allowing method chaining
+   * @throws NullPointerException if any of the provided parameters are null
+   */
+  public T addReference(@Nonnull String name, @Nonnull Classifier<?> type) {
+    return addReference(name, type, Multiplicity.REQUIRED);
+  }
+
   public void removeFeature(@Nonnull Feature<?> feature) {
     Objects.requireNonNull(feature, "feature should not be null");
     if (!getFeatures().contains(feature)) {

@@ -65,6 +65,13 @@ public class ClassifierInstanceUtils {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(propertyID, "propertyID should not be null");
     Property property = _this.getClassifier().getPropertyByID(propertyID);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property with ID "
+              + propertyID);
+    }
     return _this.getPropertyValue(property);
   }
 
@@ -117,10 +124,12 @@ public class ClassifierInstanceUtils {
       throw new IllegalStateException(
           "The node should not have multiple children under containment " + containment);
     }
-    if (children.size() > 0) {
+    if (!children.isEmpty()) {
       _this.removeChild(children.get(0));
     }
-    _this.addChild(containment, child);
+    if (child != null) {
+      _this.addChild(containment, child);
+    }
   }
 
   // Public methods about references
@@ -163,6 +172,7 @@ public class ClassifierInstanceUtils {
       @Nonnull List<? extends ReferenceValue> values) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
+    Objects.requireNonNull(values, "values should not be null");
     Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
     _this.setReferenceValues(reference, values);
   }
@@ -225,7 +235,7 @@ public class ClassifierInstanceUtils {
       throw new IllegalArgumentException(
           "Concept "
               + _this.getClassifier().qualifiedName()
-              + " does not contained a property named "
+              + " does not contain a property named "
               + referenceName);
     }
     return _this.getReferenceValues(reference);
@@ -246,12 +256,32 @@ public class ClassifierInstanceUtils {
     }
   }
 
+  /**
+   * Adds a child node to the specified {@link ClassifierInstance} under a containment defined by
+   * the given containment name.
+   *
+   * @param _this the {@link ClassifierInstance} to which the child node will be added. Must not be
+   *     null.
+   * @param containmentName the name of the containment under which the child will be added. Must
+   *     not be null.
+   * @param child the {@link Node} instance to be added as a child. Must not be null.
+   * @throws NullPointerException if any of the parameters is null.
+   * @throws IllegalArgumentException if the specified containment name is not found in the
+   *     classifier.
+   */
   public static void addChild(
       @Nonnull ClassifierInstance<?> _this, @Nonnull String containmentName, @Nonnull Node child) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(containmentName, "containmentName should not be null");
     Objects.requireNonNull(child, "child should not be null");
     Containment containment = _this.getClassifier().getContainmentByName(containmentName);
+    if (containment == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a containment named "
+              + containmentName);
+    }
     _this.addChild(containment, child);
   }
 
@@ -274,21 +304,22 @@ public class ClassifierInstanceUtils {
   public static boolean isBuiltinElement(@Nonnull Node _this) {
     if (_this instanceof LanguageEntity<?>) {
       return isBuiltinElement((LanguageEntity<?>) _this);
+    } else if (_this instanceof Language) {
+      String key = ((Language) _this).getKey();
+      return Objects.equals(key, "LionCore-M3") || Objects.equals(key, "LionCore-builtins");
     } else {
       return false;
     }
   }
 
   public static boolean isBuiltinElement(@Nonnull LanguageEntity<?> _this) {
-    if ("LionCore_M3".equals(_this.getLanguage().getName())
-        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return true;
-    } else if (_this.getLanguage() instanceof LionCoreBuiltins
-        && _this.getLionWebVersion() == LionWebVersion.v2024_1) {
-      return true;
-    } else {
+    Language language = _this.getLanguage();
+    if (language == null) {
       return false;
     }
+    if ("LionCore-M3".equals(language.getKey())) {
+      return true;
+    } else return "LionCore-builtins".equals(language.getKey());
   }
 
   public static boolean shallowClassifierInstanceEquality(

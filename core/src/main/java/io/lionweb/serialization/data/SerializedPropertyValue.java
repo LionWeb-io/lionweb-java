@@ -1,9 +1,7 @@
 package io.lionweb.serialization.data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.WeakHashMap;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * This represents the serialization of the value of a property in a Node. This class is immutable
@@ -12,8 +10,8 @@ import java.util.WeakHashMap;
  */
 public class SerializedPropertyValue {
   private static final int THRESHOLD = 128;
-  private static final Map<MetaPointer, WeakHashMap<String, SerializedPropertyValue>>
-      INSTANCES_BY_METAPOINTER = new HashMap<>();
+  private static final Map<MetaPointer, Map<String, SerializedPropertyValue>>
+      INSTANCES_BY_METAPOINTER = new ConcurrentHashMap<>();
 
   /** This will avoid most unnecessary duplicate instantiations, but this is not guaranteed. */
   public static SerializedPropertyValue get(MetaPointer metaPointer, String value) {
@@ -25,7 +23,8 @@ public class SerializedPropertyValue {
       return new SerializedPropertyValue(metaPointer, value);
     }
     Map<String, SerializedPropertyValue> valuesForMetaPointer =
-        INSTANCES_BY_METAPOINTER.computeIfAbsent(metaPointer, k -> new WeakHashMap<>());
+        INSTANCES_BY_METAPOINTER.computeIfAbsent(
+            metaPointer, k -> Collections.synchronizedMap(new WeakHashMap<>()));
     return valuesForMetaPointer.computeIfAbsent(
         value, v -> new SerializedPropertyValue(metaPointer, v));
   }

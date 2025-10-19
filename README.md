@@ -1,6 +1,6 @@
 # LionWeb Java
 
-![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.lionweb.lionweb-java/lionweb-java-2024.1-core/badge.png)
+![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb.lionweb-java/lionweb-java-2024.1-core)
 
 This projects requires Java 8, to maximize compatibility.
 
