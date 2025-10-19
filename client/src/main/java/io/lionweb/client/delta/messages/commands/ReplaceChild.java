@@ -6,27 +6,28 @@ import io.lionweb.serialization.data.SerializationChunk;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Add new node newChild to parent in containment at index. newChild might be a single node or an
- * arbitrary complex subtree. All nodes in that subtree MUST be new, i.e. their id MUST NOT exist in
- * the repository. Nodes in that subtree MAY have references to already existing nodes, and already
- * existing nodes MAY have references to nodes in that subtree.
+ * Delete current child replacedChild inside parent's containment at index, and all its descendants
+ * (including annotation instances). Does NOT change references to any of the deleted nodes
  */
-public class AddChild extends DeltaCommand {
-  public String parent;
+public class ReplaceChild extends DeltaCommand {
   public SerializationChunk newChild;
+  public String parent;
   public MetaPointer containment;
   public int index;
+  public String replacedChild;
 
-  public AddChild(
+  public ReplaceChild(
       @NotNull String commandId,
-      String parent,
       SerializationChunk newChild,
+      String parent,
       MetaPointer containment,
-      int index) {
+      int index,
+      String replacedChild) {
     super(commandId);
-    this.parent = parent;
     this.newChild = newChild;
+    this.parent = parent;
     this.containment = containment;
     this.index = index;
+    this.replacedChild = replacedChild;
   }
 }
