@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
  * node replacedAnnotation at newParent's annotations at newIndex, and all its descendants
  * (including annotation instances). Does NOT change references to any of the deleted nodes
  */
-public class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand {
-  public String newParent;
-  public int newIndex;
-  public String replacedAnnotation;
-  public String movedAnnotation;
+public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand {
+  public final String newParent;
+  public final int newIndex;
+  public final String replacedAnnotation;
+  public final String movedAnnotation;
 
   public MoveAndReplaceAnnotationFromOtherParent(
       @NotNull String commandId,
