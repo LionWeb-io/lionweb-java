@@ -62,15 +62,29 @@ public class PrimitiveValuesSerialization {
   private final Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
   public PrimitiveValuesSerialization registerDeserializer(
-      String dataTypeID, PrimitiveDeserializer<?> deserializer) {
+      @Nonnull String dataTypeID, @Nonnull PrimitiveDeserializer<?> deserializer) {
+    Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
+    Objects.requireNonNull(deserializer, "deserializer should not be null");
     this.primitiveDeserializers.put(dataTypeID, deserializer);
     return this;
   }
 
+  public PrimitiveValuesSerialization registerDeserializer(
+      @Nonnull DataType<?> dataType, @Nonnull PrimitiveDeserializer<?> deserializer) {
+    return registerDeserializer(dataType.getID(), deserializer);
+  }
+
   public PrimitiveValuesSerialization registerSerializer(
-      String dataTypeID, PrimitiveSerializer<?> serializer) {
+      @Nonnull String dataTypeID, @Nonnull PrimitiveSerializer<?> serializer) {
+    Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
+    Objects.requireNonNull(serializer, "serializer should not be null");
     this.primitiveSerializers.put(dataTypeID, serializer);
     return this;
+  }
+
+  public PrimitiveValuesSerialization registerSerializer(
+      @Nonnull DataType<?> dataType, @Nonnull PrimitiveSerializer<?> serializer) {
+    return registerSerializer(dataType.getID(), serializer);
   }
 
   private StructuredDataTypeInstance deserializeSDT(String dataTypeID, JsonObject jo) {
