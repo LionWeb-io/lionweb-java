@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
  * the repository. Nodes in that subtree MAY have references to already existing nodes, and already
  * existing nodes MAY have references to nodes in that subtree.
  */
-public class AddChild extends DeltaCommand {
-  public String parent;
-  public SerializationChunk newChild;
-  public MetaPointer containment;
-  public int index;
+public final class AddChild extends DeltaCommand {
+  public final String parent;
+  public final SerializationChunk newChild;
+  public final MetaPointer containment;
+  public final int index;
 
   public AddChild(
       @NotNull String commandId,
