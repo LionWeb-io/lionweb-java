@@ -4,6 +4,7 @@ import io.lionweb.model.ClassifierInstance;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -89,6 +90,20 @@ public class ValidationResult {
    */
   public ValidationResult addErrorIf(boolean check, @Nonnull String message) {
     return addErrorIf(check, message, (String) null);
+  }
+
+  public ValidationResult addErrorIf(
+      boolean check,
+      @Nonnull Supplier<String> messageSupplier,
+      @Nullable ClassifierInstance<?> subject) {
+    if (check) {
+      return addErrorIf(check, messageSupplier.get(), subject);
+    }
+    return this;
+  }
+
+  public ValidationResult addErrorIf(boolean check, @Nonnull Supplier<String> messageSupplier) {
+    return addErrorIf(check, messageSupplier, null);
   }
 
   @Override
