@@ -1,4 +1,4 @@
-package io.lionweb.client.delta.messages.queries;
+package io.lionweb.client.delta.messages.queries.subscriptions;
 
 import io.lionweb.client.delta.messages.DeltaQuery;
 
