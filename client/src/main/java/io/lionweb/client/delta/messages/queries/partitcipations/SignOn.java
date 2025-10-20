@@ -1,4 +1,4 @@
-package io.lionweb.client.delta.messages.queries;
+package io.lionweb.client.delta.messages.queries.partitcipations;
 
 import io.lionweb.client.delta.DeltaProtocolVersion;
 import io.lionweb.client.delta.messages.DeltaQuery;
