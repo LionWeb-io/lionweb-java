@@ -109,7 +109,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       oldValue = getPropertyValue(getClassifier().getPropertyByName(propertyName));
     }
     propertyValues.put(propertyName, value);
-    if (partitionObserverCache != null) {
+    if (partitionObserverCache != null && !Objects.equals(oldValue, value)) {
       partitionObserverCache.propertyChanged(
           this, getClassifier().getPropertyByName(propertyName), oldValue, value);
     }

@@ -5,6 +5,7 @@ import static io.lionweb.utils.Autoresolve.LIONCORE_AUTORESOLVE_PREFIX;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
+import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,6 +56,32 @@ public class ClassifierInstanceUtils {
               + _this.getClassifier().qualifiedName()
               + " does not contained a property named "
               + propertyName);
+    }
+    _this.setPropertyValue(property, value);
+  }
+
+  public static void setPropertyValueByMetaPointer(
+      @Nonnull ClassifierInstance<?> _this,
+      @Nonnull MetaPointer propertyMetaPointer,
+      @Nullable Object value) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(propertyMetaPointer, "propertyMetaPointer should not be null");
+    Classifier<?> classifier = _this.getClassifier();
+    if (classifier == null) {
+      throw new IllegalStateException(
+          "Classifier should not be null for "
+              + _this
+              + " (class "
+              + _this.getClass().getCanonicalName()
+              + ")");
+    }
+    Property property = classifier.getPropertyByMetaPointer(propertyMetaPointer);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property with MetaPointer "
+              + propertyMetaPointer);
     }
     _this.setPropertyValue(property, value);
   }
