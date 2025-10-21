@@ -1,9 +1,7 @@
 package io.lionweb.client.delta;
 
-import io.lionweb.client.delta.messages.DeltaCommand;
-import io.lionweb.client.delta.messages.DeltaCommandResponse;
-import io.lionweb.client.delta.messages.DeltaQuery;
-import io.lionweb.client.delta.messages.DeltaQueryResponse;
+import io.lionweb.client.delta.messages.*;
+import java.util.function.Function;
 
 /**
  * The DeltaChannel must be a specific link between a Client and the Server. Different clients
@@ -25,7 +23,9 @@ public interface DeltaChannel {
    * the command, or rejects a failed command.[5] However, the repository processes the command
    * asynchronously, and eventually broadcasts the effect(s) as event.
    */
-  DeltaCommandResponse sendCommand(DeltaCommand command);
+  DeltaCommandResponse sendCommand(Function<String, DeltaCommand> commandProducer);
+
+  void sendEvent(Function<Integer, DeltaEvent> eventProducer);
 
   void registerEventReceiver(DeltaEventReceiver deltaEventReceiver);
 
