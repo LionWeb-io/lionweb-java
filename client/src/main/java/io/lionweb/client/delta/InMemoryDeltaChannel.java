@@ -1,13 +1,17 @@
 package io.lionweb.client.delta;
 
 import io.lionweb.client.delta.messages.*;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
 
 public class InMemoryDeltaChannel implements DeltaChannel {
-  private final Set<DeltaEventReceiver> receivers = new HashSet<>();
-  private int nextCmdId = 1;
+  private final Set<DeltaEventReceiver> eventReceivers = new HashSet<>();
+  private @Nullable DeltaCommandReceiver commandReceiver;
+  private int nextEventId = 1;
+    private int nextCommandId = 1;
 
   @Override
   public DeltaQueryResponse sendQuery(DeltaQuery query) {
@@ -16,15 +20,16 @@ public class InMemoryDeltaChannel implements DeltaChannel {
 
   @Override
   public DeltaCommandResponse sendCommand(Function<String, DeltaCommand> commandProducer) {
-    //        String commandId = "cmd-" + nextCmdId++;
-    //        DeltaCommand command = commandProducer.apply(commandId);
-    //        receivers.forEach(receiver -> receiver.);
-    throw new UnsupportedOperationException("Not supported yet.");
+      if (commandReceiver != null) {
+          return commandReceiver.receiveCommand(commandProducer.apply("cmd-"+nextCommandId++));
+      } else {
+          return null;
+      }
   }
 
   @Override
   public void registerEventReceiver(DeltaEventReceiver deltaEventReceiver) {
-    receivers.add(deltaEventReceiver);
+    eventReceivers.add(deltaEventReceiver);
   }
 
   @Override
@@ -32,8 +37,18 @@ public class InMemoryDeltaChannel implements DeltaChannel {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  @Override
+    @Override
+    public void registerCommandReceiver(DeltaCommandReceiver commandReceiver) {
+        this.commandReceiver = commandReceiver;
+    }
+
+    @Override
+    public void unregisterCommandReceiver(DeltaCommandReceiver deltaCommandReceiver) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
   public void sendEvent(Function<Integer, DeltaEvent> eventProducer) {
-    receivers.forEach(receiver -> receiver.receiveEvent(eventProducer.apply(nextCmdId++)));
+    eventReceivers.forEach(receiver -> receiver.receiveEvent(eventProducer.apply(nextEventId++)));
   }
 }
