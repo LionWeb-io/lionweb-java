@@ -4,24 +4,17 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
 import io.lionweb.client.delta.DeltaChannel;
 import io.lionweb.client.delta.DeltaCommandReceiver;
-import io.lionweb.client.delta.DeltaEventReceiver;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.client.delta.messages.DeltaCommandResponse;
-import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
-import io.lionweb.serialization.JsonSerialization;
-import io.lionweb.serialization.LowLevelJsonSerialization;
-import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.ValidationResult;
-
-import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
@@ -99,16 +92,20 @@ public class InMemoryServer {
     return repositoryData.bumpVersion();
   }
 
-  public @NotNull RepositoryVersionToken createPartition( @NotNull String repositoryName, @NotNull Node partition, @NotNull AbstractSerialization serialization ) {
-      Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
-      Objects.requireNonNull(partition, "Partition should not be null");
-      Objects.requireNonNull(serialization, "Serialization should not be null");
-      if (partition.getParent() != null) {
-          throw new IllegalArgumentException("Partition should not have a parent");
-      }
+  public @NotNull RepositoryVersionToken createPartition(
+      @NotNull String repositoryName,
+      @NotNull Node partition,
+      @NotNull AbstractSerialization serialization) {
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    Objects.requireNonNull(partition, "Partition should not be null");
+    Objects.requireNonNull(serialization, "Serialization should not be null");
+    if (partition.getParent() != null) {
+      throw new IllegalArgumentException("Partition should not have a parent");
+    }
 
-      SerializationChunk serializationChunk = serialization.serializeNodesToSerializationChunk(partition);
-      return createPartitionFromChunk(repositoryName, serializationChunk.getClassifierInstances());
+    SerializationChunk serializationChunk =
+        serialization.serializeNodesToSerializationChunk(partition);
+    return createPartitionFromChunk(repositoryName, serializationChunk.getClassifierInstances());
   }
 
   public @NotNull RepositoryVersionToken deletePartitions(
@@ -129,17 +126,24 @@ public class InMemoryServer {
     return retrieved;
   }
 
-  public @Nullable ClassifierInstance<?> retrieveAsClassifierInstance(@NotNull String repositoryName, @NotNull String nodeId, @NotNull AbstractSerialization serialization) {
-      Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
-      Objects.requireNonNull(nodeId, "NodeId should not be null");
-      Objects.requireNonNull(serialization, "Serialization should not be null");
-      List<SerializedClassifierInstance> serializedNodes = retrieve(repositoryName, Arrays.asList(nodeId), 1);
-      if (serializedNodes.isEmpty()) {
-          return null;
-      }
-      LionWebVersion lionWebVersion = repositories.get(repositoryName).configuration.getLionWebVersion();
-      List<ClassifierInstance<?>> nodes = serialization.deserializeSerializationChunk(SerializationChunk.fromNodes(lionWebVersion, serializedNodes));
-      return nodes.stream().filter(n -> Objects.equals(n.getID(), nodeId)).findFirst().orElse(null);
+  public @Nullable ClassifierInstance<?> retrieveAsClassifierInstance(
+      @NotNull String repositoryName,
+      @NotNull String nodeId,
+      @NotNull AbstractSerialization serialization) {
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    Objects.requireNonNull(nodeId, "NodeId should not be null");
+    Objects.requireNonNull(serialization, "Serialization should not be null");
+    List<SerializedClassifierInstance> serializedNodes =
+        retrieve(repositoryName, Arrays.asList(nodeId), 1);
+    if (serializedNodes.isEmpty()) {
+      return null;
+    }
+    LionWebVersion lionWebVersion =
+        repositories.get(repositoryName).configuration.getLionWebVersion();
+    List<ClassifierInstance<?>> nodes =
+        serialization.deserializeSerializationChunk(
+            SerializationChunk.fromNodes(lionWebVersion, serializedNodes));
+    return nodes.stream().filter(n -> Objects.equals(n.getID(), nodeId)).findFirst().orElse(null);
   }
 
   public RepositoryVersionToken store(
@@ -226,65 +230,72 @@ public class InMemoryServer {
   }
 
   //
-   // Delta methods
-    //
+  // Delta methods
+  //
 
-    public void monitorDeltaChannel(String repositoryName, @NotNull DeltaChannel channel) {
-      Objects.requireNonNull(channel, "Channel should not be null");
-      channel.registerCommandReceiver(new DeltaCommandReceiverImpl(repositoryName, channel));
+  public void monitorDeltaChannel(String repositoryName, @NotNull DeltaChannel channel) {
+    Objects.requireNonNull(channel, "Channel should not be null");
+    channel.registerCommandReceiver(new DeltaCommandReceiverImpl(repositoryName, channel));
+  }
+
+  private class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
+    private String repositoryName;
+    private DeltaChannel channel;
+
+    private DeltaCommandReceiverImpl(String repositoryName, DeltaChannel channel) {
+      this.repositoryName = repositoryName;
+      this.channel = channel;
     }
 
-    private class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
-      private String repositoryName;
-      private DeltaChannel channel;
-      private DeltaCommandReceiverImpl(String repositoryName, DeltaChannel channel) {
-          this.repositoryName = repositoryName;
-          this.channel = channel;
+    @Override
+    public DeltaCommandResponse receiveCommand(DeltaCommand command) {
+      if (command instanceof ChangeProperty) {
+        ChangeProperty changeProperty = (ChangeProperty) command;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+        repositoryData.retrieve(changeProperty.node, 0, retrieved);
+        if (retrieved.isEmpty()) {
+          throw new UnsupportedOperationException(
+              "Node with id "
+                  + changeProperty.node
+                  + " cannot be found. We should return an error");
+        }
+        SerializedClassifierInstance node = retrieved.get(0);
+        String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
+        retrieved.get(0);
+        node.setPropertyValue(((ChangeProperty) command).property, changeProperty.newValue);
+        String newValue = node.getPropertyValue(((ChangeProperty) command).property);
+        channel.sendEvent(
+            sequenceNumber ->
+                new PropertyChanged(
+                    sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue));
+        return new DeltaCommandResponse();
       }
 
-        @Override
-        public DeltaCommandResponse receiveCommand(DeltaCommand command) {
-          if (command instanceof ChangeProperty) {
-              ChangeProperty changeProperty = (ChangeProperty) command;
-              RepositoryData repositoryData = getRepository(repositoryName);
-              List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-              repositoryData.retrieve(changeProperty.node, 0, retrieved);
-              if (retrieved.isEmpty()) {
-                  throw new UnsupportedOperationException("Node with id " + changeProperty.node + " cannot be found. We should return an error");
-              }
-              SerializedClassifierInstance node = retrieved.get(0);
-              String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
-              retrieved.get(0);
-              node.setPropertyValue(((ChangeProperty) command).property, changeProperty.newValue);
-              String newValue = node.getPropertyValue(((ChangeProperty) command).property);
-              channel.sendEvent(sequenceNumber -> new PropertyChanged(sequenceNumber, node.getID(), changeProperty.property,  newValue, oldValue));
-              return new DeltaCommandResponse();
-          }
+      throw new UnsupportedOperationException(
+          "Unsupported command type: " + command.getClass().getName());
 
-          throw new UnsupportedOperationException("Unsupported command type: " + command.getClass().getName());
-
-            // The server only cares about commands
-//            if (event instanceof PropertyChanged) {
-//                PropertyChanged propertyChanged = (PropertyChanged) event;
-//                event.
-//                for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-//                        nodes.get(propertyChanged.node)) {
-//                    ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-//                    if (classifierInstance != null) {
-//                        ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-//                                classifierInstance, propertyChanged.property, propertyChanged.newValue);
-//                    }
-//                }
-//            } else {
-//                throw new UnsupportedOperationException(
-//                        "Unsupported event type: " + event.getClass().getName());
-//            }
-        }
+      // The server only cares about commands
+      //            if (event instanceof PropertyChanged) {
+      //                PropertyChanged propertyChanged = (PropertyChanged) event;
+      //                event.
+      //                for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+      //                        nodes.get(propertyChanged.node)) {
+      //                    ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+      //                    if (classifierInstance != null) {
+      //                        ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+      //                                classifierInstance, propertyChanged.property,
+      // propertyChanged.newValue);
+      //                    }
+      //                }
+      //            } else {
+      //                throw new UnsupportedOperationException(
+      //                        "Unsupported event type: " + event.getClass().getName());
+      //            }
     }
+  }
 
-
-
-    //
+  //
   // Private methods
   //
 
@@ -296,5 +307,4 @@ public class InMemoryServer {
     }
     return repositoryData;
   }
-
 }
