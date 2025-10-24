@@ -1,7 +1,6 @@
 package io.lionweb.client.delta;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
@@ -17,14 +16,17 @@ public class DeltaClientAndServerTest {
 
   @Test
   public void simpleSynchronizationOfNodesInstances() {
-      InMemoryServer server = new InMemoryServer();
-        server.createRepository(new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+    InMemoryServer server = new InMemoryServer();
+    server.createRepository(
+        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
 
-      JsonSerialization serialization = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
-      Language language1 = new Language("Language A", "lang-a", "lang-a-key");
-      server.createPartition("MyRepo", language1, serialization);
+    JsonSerialization serialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+    Language language1 = new Language("Language A", "lang-a", "lang-a-key");
+    server.createPartition("MyRepo", language1, serialization);
 
-    Language language2 = (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
+    Language language2 =
+        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
     Assertions.assertNotNull(language2);
 
     assertEquals(language1, language2);
@@ -48,8 +50,8 @@ public class DeltaClientAndServerTest {
     assertEquals("Language C", language1.getName());
     assertEquals("Language C", language2.getName());
 
-      language1.setName("Language A");
-      assertEquals("Language A", language1.getName());
-      assertEquals("Language A", language2.getName());
+    language1.setName("Language A");
+    assertEquals("Language A", language1.getName());
+    assertEquals("Language A", language2.getName());
   }
 }
