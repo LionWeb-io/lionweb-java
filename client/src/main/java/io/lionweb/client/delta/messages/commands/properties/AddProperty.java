@@ -3,16 +3,22 @@ package io.lionweb.client.delta.messages.commands.properties;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public final class AddProperty extends DeltaCommand {
-  public final String node;
-  public final MetaPointer property;
+  public final @NotNull String node;
+  public final @NotNull MetaPointer property;
   public final @Nullable String newValue;
 
   public AddProperty(
-      String commandId, String node, MetaPointer property, @Nullable String newValue) {
+      @NotNull String commandId,
+      @NotNull String node,
+      @NotNull MetaPointer property,
+      @Nullable String newValue) {
     super(commandId);
+    Objects.requireNonNull(node, "node must not be null");
+    Objects.requireNonNull(property, "property must not be null");
     this.node = node;
     this.property = property;
     this.newValue = newValue;

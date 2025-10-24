@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.commands.children;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -12,9 +13,9 @@ import org.jetbrains.annotations.NotNull;
  * existing nodes MAY have references to nodes in that subtree.
  */
 public final class AddChild extends DeltaCommand {
-  public final String parent;
-  public final SerializationChunk newChild;
-  public final MetaPointer containment;
+  public final @NotNull String parent;
+  public final @NotNull SerializationChunk newChild;
+  public final @NotNull MetaPointer containment;
   public final int index;
 
   public AddChild(
@@ -24,6 +25,12 @@ public final class AddChild extends DeltaCommand {
       MetaPointer containment,
       int index) {
     super(commandId);
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(newChild, "newChild must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index must be non-negative");
+    }
     this.parent = parent;
     this.newChild = newChild;
     this.containment = containment;

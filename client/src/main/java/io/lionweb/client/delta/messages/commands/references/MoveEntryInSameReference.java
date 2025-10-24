@@ -2,6 +2,7 @@ package io.lionweb.client.delta.messages.commands.references;
 
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -10,8 +11,8 @@ import org.jetbrains.annotations.Nullable;
  * parent's reference at newIndex.
  */
 public final class MoveEntryInSameReference extends DeltaCommand {
-  public final String parent;
-  public final MetaPointer reference;
+  public final @Nullable String parent;
+  public final @NotNull MetaPointer reference;
   public final int oldIndex;
   public final int newIndex;
   public final @Nullable String movedTarget;
@@ -19,13 +20,20 @@ public final class MoveEntryInSameReference extends DeltaCommand {
 
   public MoveEntryInSameReference(
       @NotNull String commandId,
-      String parent,
-      MetaPointer reference,
+      @Nullable String parent,
+      @NotNull MetaPointer reference,
       int oldIndex,
       int newIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo) {
     super(commandId);
+    Objects.requireNonNull(reference, "reference must not be null");
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex must be non-negative");
+    }
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex must be non-negative");
+    }
     this.parent = parent;
     this.reference = reference;
     this.oldIndex = oldIndex;

@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.commands.children;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -10,20 +11,27 @@ import org.jetbrains.annotations.NotNull;
  * (including annotation instances). Does NOT change references to any of the deleted nodes
  */
 public final class ReplaceChild extends DeltaCommand {
-  public final SerializationChunk newChild;
-  public final String parent;
-  public final MetaPointer containment;
+  public final @NotNull SerializationChunk newChild;
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer containment;
   public final int index;
-  public final String replacedChild;
+  public final @NotNull String replacedChild;
 
   public ReplaceChild(
       @NotNull String commandId,
-      SerializationChunk newChild,
-      String parent,
-      MetaPointer containment,
+      @NotNull SerializationChunk newChild,
+      @NotNull String parent,
+      @NotNull MetaPointer containment,
       int index,
-      String replacedChild) {
+      @NotNull String replacedChild) {
     super(commandId);
+    Objects.requireNonNull(newChild, "newChild must not be null");
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index must be non-negative");
+    }
+    Objects.requireNonNull(replacedChild, "replacedChild must not be null");
     this.newChild = newChild;
     this.parent = parent;
     this.containment = containment;
