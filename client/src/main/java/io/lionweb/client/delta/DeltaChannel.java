@@ -31,7 +31,7 @@ public interface DeltaChannel {
 
   void unregisterEventReceiver(DeltaEventReceiver deltaEventReceiver);
 
-    void registerCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
+  void registerCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
 
-    void unregisterCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
+  void unregisterCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
 }
