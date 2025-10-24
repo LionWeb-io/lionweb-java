@@ -2,6 +2,7 @@ package io.lionweb.client.delta;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.delta.messages.DeltaEvent;
+import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
@@ -30,46 +31,49 @@ public class DeltaClient implements DeltaEventReceiver {
   public DeltaClient(LionWebVersion lionWebVersion, DeltaChannel channel) {
     this.lionWebVersion = lionWebVersion;
     this.channel = channel;
-    this.channel.registerEventReceiver(this);
+      this.channel.registerEventReceiver(this);
     this.primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(
         lionWebVersion);
   }
 
-  public void synchronize(@NotNull Node partition) {
+    /**
+     * It is responsibility of the caller to ensure that the partition is initially
+     * in sync with the server.
+     */
+  public void monitor(@NotNull Node partition) {
     Objects.requireNonNull(partition, "partition should not be null");
-    synchronized (partition) {
-      partition
-          .thisAndAllDescendants()
-          .forEach(
-              n ->
-                  nodes
-                      .computeIfAbsent(n.getID(), id -> new HashSet<>())
-                      .add(new WeakReference<>(n)));
-      partition.registerPartitionObserver(observer);
-    }
-  }
-
-  @Override
-  public void receiveEvent(DeltaEvent event) {
-    if (event instanceof PropertyChanged) {
-      PropertyChanged propertyChanged = (PropertyChanged) event;
-      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-          nodes.get(propertyChanged.node)) {
-        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-        if (classifierInstance != null) {
-          ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-              classifierInstance, propertyChanged.property, propertyChanged.newValue);
-        }
+      synchronized (partition) {
+          partition
+                  .thisAndAllDescendants()
+                  .forEach(
+                          n ->
+                                  nodes
+                                          .computeIfAbsent(n.getID(), id -> new HashSet<>())
+                                          .add(new WeakReference<>(n)));
+          partition.registerPartitionObserver(observer);
       }
-    } else {
-      throw new UnsupportedOperationException(
-          "Unsupported event type: " + event.getClass().getName());
-    }
   }
 
+    @Override
+    public void receiveEvent(DeltaEvent event) {
+        if (event instanceof PropertyChanged) {
+            PropertyChanged propertyChanged = (PropertyChanged) event;
+            for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+                    nodes.get(propertyChanged.node)) {
+                ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+                if (classifierInstance != null) {
+                    ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+                            classifierInstance, propertyChanged.property, propertyChanged.newValue);
+                }
+            }
+        } else {
+            throw new UnsupportedOperationException(
+                    "Unsupported event type: " + event.getClass().getName());
+        }
+    }
 
 
-  private class MonitoringObserver implements PartitionObserver {
+    private class MonitoringObserver implements PartitionObserver {
 
     @Override
     public void propertyChanged(
@@ -77,14 +81,13 @@ public class DeltaClient implements DeltaEventReceiver {
         Property property,
         Object oldValue,
         Object newValue) {
-      channel.sendEvent(
-          sequenceNumber ->
-              new PropertyChanged(
-                  sequenceNumber,
+      channel.sendCommand(
+          commandId ->
+              new ChangeProperty(
+                      commandId,
                   classifierInstance.getID(),
                   MetaPointer.from(property),
-                  primitiveValuesSerialization.serialize(property.getType().getID(), newValue),
-                  primitiveValuesSerialization.serialize(property.getType().getID(), oldValue)));
+                  primitiveValuesSerialization.serialize(property.getType().getID(), newValue)));
     }
 
     @Override
