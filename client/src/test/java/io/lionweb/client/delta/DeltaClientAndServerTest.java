@@ -1,6 +1,7 @@
 package io.lionweb.client.delta;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
@@ -53,5 +54,31 @@ public class DeltaClientAndServerTest {
     language1.setName("Language A");
     assertEquals("Language A", language1.getName());
     assertEquals("Language A", language2.getName());
+  }
+
+  @Test
+  public void changingUnexistingNodeCauseError() {
+    InMemoryServer server = new InMemoryServer();
+    server.createRepository(
+        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+
+    JsonSerialization serialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+    Language language1 = new Language("Language A", "lang-a", "lang-a-key");
+    // We do NOT create the partition on the repository
+
+    DeltaChannel channel = new InMemoryDeltaChannel();
+    DeltaClient client = new DeltaClient(channel);
+
+    server.monitorDeltaChannel("MyRepo", channel);
+
+    client.monitor(language1);
+    try {
+      language1.setName("Language B");
+    } catch (CommandRejectException e) {
+      assertEquals("Node with id lang-a not found", e.getMessage());
+      return;
+    }
+    fail("Expected exception not thrown");
   }
 }

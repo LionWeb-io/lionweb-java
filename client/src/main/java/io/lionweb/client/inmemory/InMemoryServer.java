@@ -253,12 +253,11 @@ public class InMemoryServer {
         ChangeProperty changeProperty = (ChangeProperty) command;
         RepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-        repositoryData.retrieve(changeProperty.node, 0, retrieved);
-        if (retrieved.isEmpty()) {
-          throw new UnsupportedOperationException(
-              "Node with id "
-                  + changeProperty.node
-                  + " cannot be found. We should return an error");
+        try {
+          repositoryData.retrieve(changeProperty.node, 0, retrieved);
+        } catch (IllegalArgumentException e) {
+          return DeltaCommandResponse.rejected(
+              "Node with id " + changeProperty.node + " not found");
         }
         SerializedClassifierInstance node = retrieved.get(0);
         String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
@@ -269,7 +268,7 @@ public class InMemoryServer {
             sequenceNumber ->
                 new PropertyChanged(
                     sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue));
-        return new DeltaCommandResponse();
+        return DeltaCommandResponse.accepted();
       }
 
       throw new UnsupportedOperationException(
