@@ -6,14 +6,16 @@ import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 
 import java.lang.ref.WeakReference;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-public class DeltaServer implements DeltaEventReceiver {
+public class DeltaInMemoryServer implements DeltaEventReceiver {
     private DeltaChannel channel;
+    private HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes = new HashMap<>();
 
-    public DeltaServer(DeltaChannel channel) {
+    public DeltaInMemoryServer(DeltaChannel channel) {
         this.channel = channel;
     }
 
