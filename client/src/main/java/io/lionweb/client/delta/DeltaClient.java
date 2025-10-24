@@ -67,16 +67,7 @@ public class DeltaClient implements DeltaEventReceiver {
     }
   }
 
-  public void cleanUp() {
-    // optional: call periodically to remove dead refs globally
-    Iterator<Map.Entry<String, Set<WeakReference<ClassifierInstance<?>>>>> it =
-        nodes.entrySet().iterator();
-    while (it.hasNext()) {
-      Map.Entry<String, Set<WeakReference<ClassifierInstance<?>>>> e = it.next();
-      e.getValue().removeIf(ref -> ref.get() == null);
-      if (e.getValue().isEmpty()) it.remove();
-    }
-  }
+
 
   private class MonitoringObserver implements PartitionObserver {
 
