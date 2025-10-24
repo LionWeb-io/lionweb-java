@@ -1,6 +1,7 @@
 package io.lionweb.client.delta.messages.commands.annotations;
 
 import io.lionweb.client.delta.messages.DeltaCommand;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,13 +10,21 @@ import org.jetbrains.annotations.NotNull;
  * nodes.
  */
 public final class DeleteAnnotation extends DeltaCommand {
-  public final String node;
+  public @NotNull final String node;
   public final int index;
-  public final String deletedAnnotation;
+  public @NotNull final String deletedAnnotation;
 
   public DeleteAnnotation(
-      @NotNull String commandId, String node, int index, String deletedAnnotation) {
+      @NotNull String commandId,
+      @NotNull String node,
+      int index,
+      @NotNull String deletedAnnotation) {
     super(commandId);
+    Objects.requireNonNull(node, "node must not be null");
+    Objects.requireNonNull(deletedAnnotation, "deletedAnnotation must not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index must be non-negative");
+    }
     this.node = node;
     this.index = index;
     this.deletedAnnotation = deletedAnnotation;

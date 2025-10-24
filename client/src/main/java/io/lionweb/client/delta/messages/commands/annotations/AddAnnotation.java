@@ -2,6 +2,7 @@ package io.lionweb.client.delta.messages.commands.annotations;
 
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.serialization.data.SerializationChunk;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -11,13 +12,21 @@ import org.jetbrains.annotations.NotNull;
  * already existing nodes MAY have references to nodes in that subtree.
  */
 public final class AddAnnotation extends DeltaCommand {
-  public final String parent;
-  public final SerializationChunk newAnnotation;
+  public final @NotNull String parent;
+  public final @NotNull SerializationChunk newAnnotation;
   public final int index;
 
   public AddAnnotation(
-      @NotNull String commandId, String parent, SerializationChunk newAnnotation, int index) {
+      @NotNull String commandId,
+      @NotNull String parent,
+      @NotNull SerializationChunk newAnnotation,
+      int index) {
     super(commandId);
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(newAnnotation, "newAnnotation must not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index must be non-negative");
+    }
     this.parent = parent;
     this.newAnnotation = newAnnotation;
     this.index = index;

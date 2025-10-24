@@ -1,6 +1,7 @@
 package io.lionweb.client.delta.messages.commands.annotations;
 
 import io.lionweb.client.delta.messages.DeltaCommand;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,18 +10,24 @@ import org.jetbrains.annotations.NotNull;
  * (including annotation instances). Does NOT change references to any of the deleted nodes
  */
 public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand {
-  public final String newParent;
+  public final @NotNull String newParent;
   public final int newIndex;
-  public final String replacedAnnotation;
-  public final String movedAnnotation;
+  public final @NotNull String replacedAnnotation;
+  public final @NotNull String movedAnnotation;
 
   public MoveAndReplaceAnnotationFromOtherParent(
       @NotNull String commandId,
-      String newParent,
+      @NotNull String newParent,
       int newIndex,
-      String replacedAnnotation,
-      String movedAnnotation) {
+      @NotNull String replacedAnnotation,
+      @NotNull String movedAnnotation) {
     super(commandId);
+    Objects.requireNonNull(newParent, "newParent must not be null");
+    Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
+    Objects.requireNonNull(movedAnnotation, "movedAnnotation must not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex must be non-negative");
+    }
     this.newParent = newParent;
     this.newIndex = newIndex;
     this.replacedAnnotation = replacedAnnotation;
