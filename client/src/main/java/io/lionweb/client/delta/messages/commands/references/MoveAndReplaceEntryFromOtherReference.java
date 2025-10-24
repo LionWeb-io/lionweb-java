@@ -1,0 +1,49 @@
+package io.lionweb.client.delta.messages.commands.references;
+
+import io.lionweb.client.delta.messages.DeltaCommand;
+import io.lionweb.serialization.data.MetaPointer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Move existing entry movedTarget/movedResolveInfo inside oldParent's oldReference at oldIndex to
+ * newParent's newReference at newIndex, replacing existing entry replacedTarget/replacedResolveInfo
+ * in newParent's newReference at newIndex.
+ */
+public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
+  public final String newParent;
+  public final MetaPointer newReference;
+  public final int newIndex;
+  public final @Nullable String replacedTarget;
+  public final @Nullable String replacedResolveInfo;
+  public final String oldParent;
+  public final MetaPointer oldReference;
+  public final int oldIndex;
+  public final @Nullable String movedTarget;
+  public final @Nullable String movedResolveInfo;
+
+  public MoveAndReplaceEntryFromOtherReference(
+      @NotNull String commandId,
+      String newParent,
+      MetaPointer newReference,
+      int newIndex,
+      @Nullable String replacedTarget,
+      @Nullable String replacedResolveInfo,
+      String oldParent,
+      MetaPointer oldReference,
+      int oldIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo) {
+    super(commandId);
+    this.newParent = newParent;
+    this.newReference = newReference;
+    this.newIndex = newIndex;
+    this.replacedTarget = replacedTarget;
+    this.replacedResolveInfo = replacedResolveInfo;
+    this.oldParent = oldParent;
+    this.oldReference = oldReference;
+    this.oldIndex = oldIndex;
+    this.movedTarget = movedTarget;
+    this.movedResolveInfo = movedResolveInfo;
+  }
+}
