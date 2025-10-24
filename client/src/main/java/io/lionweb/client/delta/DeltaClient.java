@@ -1,6 +1,7 @@
 package io.lionweb.client.delta;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.client.delta.messages.DeltaCommandResponse;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
@@ -80,13 +81,18 @@ public class DeltaClient implements DeltaEventReceiver {
         Property property,
         Object oldValue,
         Object newValue) {
-      channel.sendCommand(
-          commandId ->
-              new ChangeProperty(
-                  commandId,
-                  classifierInstance.getID(),
-                  MetaPointer.from(property),
-                  primitiveValuesSerialization.serialize(property.getType().getID(), newValue)));
+      DeltaCommandResponse response =
+          channel.sendCommand(
+              commandId ->
+                  new ChangeProperty(
+                      commandId,
+                      classifierInstance.getID(),
+                      MetaPointer.from(property),
+                      primitiveValuesSerialization.serialize(
+                          property.getType().getID(), newValue)));
+      if (!response.accepted) {
+        throw new CommandRejectException(response.errorMessage);
+      }
     }
 
     @Override
