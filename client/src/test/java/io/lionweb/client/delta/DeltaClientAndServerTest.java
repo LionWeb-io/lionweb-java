@@ -5,7 +5,7 @@ import static org.junit.Assert.assertEquals;
 import io.lionweb.language.Language;
 import org.junit.jupiter.api.Test;
 
-public class DeltaClientTest {
+public class DeltaClientAndServerTest {
 
   @Test
   public void simpleSynchronizationOfNodesInstances() {
@@ -14,6 +14,9 @@ public class DeltaClientTest {
 
     DeltaChannel channel = new InMemoryDeltaChannel();
     DeltaClient client = new DeltaClient(channel);
+    DeltaServer server = new DeltaServer(channel);
+
+    // TODO should we first create the nodes on the server and then check them out?
 
     client.synchronize(language1);
     client.synchronize(language2);
