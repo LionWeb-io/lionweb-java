@@ -273,24 +273,6 @@ public class InMemoryServer {
 
       throw new UnsupportedOperationException(
           "Unsupported command type: " + command.getClass().getName());
-
-      // The server only cares about commands
-      //            if (event instanceof PropertyChanged) {
-      //                PropertyChanged propertyChanged = (PropertyChanged) event;
-      //                event.
-      //                for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-      //                        nodes.get(propertyChanged.node)) {
-      //                    ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-      //                    if (classifierInstance != null) {
-      //                        ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-      //                                classifierInstance, propertyChanged.property,
-      // propertyChanged.newValue);
-      //                    }
-      //                }
-      //            } else {
-      //                throw new UnsupportedOperationException(
-      //                        "Unsupported event type: " + event.getClass().getName());
-      //            }
     }
   }
 
