@@ -31,49 +31,48 @@ public class DeltaClient implements DeltaEventReceiver {
   public DeltaClient(LionWebVersion lionWebVersion, DeltaChannel channel) {
     this.lionWebVersion = lionWebVersion;
     this.channel = channel;
-      this.channel.registerEventReceiver(this);
+    this.channel.registerEventReceiver(this);
     this.primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(
         lionWebVersion);
   }
 
-    /**
-     * It is responsibility of the caller to ensure that the partition is initially
-     * in sync with the server.
-     */
+  /**
+   * It is responsibility of the caller to ensure that the partition is initially in sync with the
+   * server.
+   */
   public void monitor(@NotNull Node partition) {
     Objects.requireNonNull(partition, "partition should not be null");
-      synchronized (partition) {
-          partition
-                  .thisAndAllDescendants()
-                  .forEach(
-                          n ->
-                                  nodes
-                                          .computeIfAbsent(n.getID(), id -> new HashSet<>())
-                                          .add(new WeakReference<>(n)));
-          partition.registerPartitionObserver(observer);
-      }
+    synchronized (partition) {
+      partition
+          .thisAndAllDescendants()
+          .forEach(
+              n ->
+                  nodes
+                      .computeIfAbsent(n.getID(), id -> new HashSet<>())
+                      .add(new WeakReference<>(n)));
+      partition.registerPartitionObserver(observer);
+    }
   }
 
-    @Override
-    public void receiveEvent(DeltaEvent event) {
-        if (event instanceof PropertyChanged) {
-            PropertyChanged propertyChanged = (PropertyChanged) event;
-            for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-                    nodes.get(propertyChanged.node)) {
-                ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-                if (classifierInstance != null) {
-                    ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-                            classifierInstance, propertyChanged.property, propertyChanged.newValue);
-                }
-            }
-        } else {
-            throw new UnsupportedOperationException(
-                    "Unsupported event type: " + event.getClass().getName());
+  @Override
+  public void receiveEvent(DeltaEvent event) {
+    if (event instanceof PropertyChanged) {
+      PropertyChanged propertyChanged = (PropertyChanged) event;
+      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+          nodes.get(propertyChanged.node)) {
+        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+        if (classifierInstance != null) {
+          ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+              classifierInstance, propertyChanged.property, propertyChanged.newValue);
         }
+      }
+    } else {
+      throw new UnsupportedOperationException(
+          "Unsupported event type: " + event.getClass().getName());
     }
+  }
 
-
-    private class MonitoringObserver implements PartitionObserver {
+  private class MonitoringObserver implements PartitionObserver {
 
     @Override
     public void propertyChanged(
@@ -84,7 +83,7 @@ public class DeltaClient implements DeltaEventReceiver {
       channel.sendCommand(
           commandId ->
               new ChangeProperty(
-                      commandId,
+                  commandId,
                   classifierInstance.getID(),
                   MetaPointer.from(property),
                   primitiveValuesSerialization.serialize(property.getType().getID(), newValue)));
