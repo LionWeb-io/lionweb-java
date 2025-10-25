@@ -1,7 +1,19 @@
 package io.lionweb.client.inmemory;
 
+import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
+import io.lionweb.client.delta.DeltaChannel;
+import io.lionweb.client.delta.DeltaCommandReceiver;
+import io.lionweb.client.delta.messages.DeltaCommand;
+import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.events.ErrorEvent;
+import io.lionweb.client.delta.messages.events.StandardErrorCode;
+import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
+import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.Node;
+import io.lionweb.serialization.AbstractSerialization;
 import io.lionweb.serialization.data.MetaPointer;
+import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
@@ -81,6 +93,22 @@ public class InMemoryServer {
     return repositoryData.bumpVersion();
   }
 
+  public @NotNull RepositoryVersionToken createPartition(
+      @NotNull String repositoryName,
+      @NotNull Node partition,
+      @NotNull AbstractSerialization serialization) {
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    Objects.requireNonNull(partition, "Partition should not be null");
+    Objects.requireNonNull(serialization, "Serialization should not be null");
+    if (partition.getParent() != null) {
+      throw new IllegalArgumentException("Partition should not have a parent");
+    }
+
+    SerializationChunk serializationChunk =
+        serialization.serializeNodesToSerializationChunk(partition);
+    return createPartitionFromChunk(repositoryName, serializationChunk.getClassifierInstances());
+  }
+
   public @NotNull RepositoryVersionToken deletePartitions(
       @NotNull String repositoryName, @NotNull List<String> partitionIds) {
     Objects.requireNonNull(partitionIds);
@@ -97,6 +125,26 @@ public class InMemoryServer {
     List<SerializedClassifierInstance> retrieved = new ArrayList<>();
     nodeIds.forEach(n -> repositoryData.retrieve(n, limit, retrieved));
     return retrieved;
+  }
+
+  public @Nullable ClassifierInstance<?> retrieveAsClassifierInstance(
+      @NotNull String repositoryName,
+      @NotNull String nodeId,
+      @NotNull AbstractSerialization serialization) {
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    Objects.requireNonNull(nodeId, "NodeId should not be null");
+    Objects.requireNonNull(serialization, "Serialization should not be null");
+    List<SerializedClassifierInstance> serializedNodes =
+        retrieve(repositoryName, Arrays.asList(nodeId), 1);
+    if (serializedNodes.isEmpty()) {
+      return null;
+    }
+    LionWebVersion lionWebVersion =
+        repositories.get(repositoryName).configuration.getLionWebVersion();
+    List<ClassifierInstance<?>> nodes =
+        serialization.deserializeSerializationChunk(
+            SerializationChunk.fromNodes(lionWebVersion, serializedNodes));
+    return nodes.stream().filter(n -> Objects.equals(n.getID(), nodeId)).findFirst().orElse(null);
   }
 
   public RepositoryVersionToken store(
@@ -180,6 +228,58 @@ public class InMemoryServer {
       result.getIssues().addAll(partial.getIssues());
     }
     return result;
+  }
+
+  //
+  // Delta methods
+  //
+
+  public void monitorDeltaChannel(String repositoryName, @NotNull DeltaChannel channel) {
+    Objects.requireNonNull(channel, "Channel should not be null");
+    channel.registerCommandReceiver(new DeltaCommandReceiverImpl(repositoryName, channel));
+  }
+
+  private class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
+    private String repositoryName;
+    private DeltaChannel channel;
+
+    private DeltaCommandReceiverImpl(String repositoryName, DeltaChannel channel) {
+      this.repositoryName = repositoryName;
+      this.channel = channel;
+    }
+
+    @Override
+    public void receiveCommand(DeltaCommand command) {
+      if (command instanceof ChangeProperty) {
+        ChangeProperty changeProperty = (ChangeProperty) command;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+        try {
+          repositoryData.retrieve(changeProperty.node, 0, retrieved);
+        } catch (IllegalArgumentException e) {
+          channel.sendEvent(
+              sequenceNumber ->
+                  new ErrorEvent(
+                      sequenceNumber,
+                      StandardErrorCode.UNKNOWN_NODE,
+                      "Node with id " + changeProperty.node + " not found"));
+          return;
+        }
+        SerializedClassifierInstance node = retrieved.get(0);
+        String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
+        retrieved.get(0);
+        node.setPropertyValue(((ChangeProperty) command).property, changeProperty.newValue);
+        String newValue = node.getPropertyValue(((ChangeProperty) command).property);
+        channel.sendEvent(
+            sequenceNumber ->
+                new PropertyChanged(
+                    sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue));
+        return;
+      }
+
+      throw new UnsupportedOperationException(
+          "Unsupported command type: " + command.getClass().getName());
+    }
   }
 
   //
