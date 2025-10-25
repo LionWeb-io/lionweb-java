@@ -1,9 +1,9 @@
 package io.lionweb.client.delta;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.delta.messages.DeltaCommandResponse;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
@@ -67,6 +67,9 @@ public class DeltaClient implements DeltaEventReceiver {
               classifierInstance, propertyChanged.property, propertyChanged.newValue);
         }
       }
+    } else if (event instanceof ErrorEvent) {
+      ErrorEvent errorEvent = (ErrorEvent) event;
+      throw new ErrorEventReceivedException(errorEvent.errorCode, errorEvent.message);
     } else {
       throw new UnsupportedOperationException(
           "Unsupported event type: " + event.getClass().getName());
@@ -81,18 +84,13 @@ public class DeltaClient implements DeltaEventReceiver {
         Property property,
         Object oldValue,
         Object newValue) {
-      DeltaCommandResponse response =
-          channel.sendCommand(
-              commandId ->
-                  new ChangeProperty(
-                      commandId,
-                      classifierInstance.getID(),
-                      MetaPointer.from(property),
-                      primitiveValuesSerialization.serialize(
-                          property.getType().getID(), newValue)));
-      if (!response.accepted) {
-        throw new CommandRejectException(response.errorMessage);
-      }
+      channel.sendCommand(
+          commandId ->
+              new ChangeProperty(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(property),
+                  primitiveValuesSerialization.serialize(property.getType().getID(), newValue)));
     }
 
     @Override

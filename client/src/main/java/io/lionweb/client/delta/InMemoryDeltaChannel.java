@@ -18,11 +18,9 @@ public class InMemoryDeltaChannel implements DeltaChannel {
   }
 
   @Override
-  public DeltaCommandResponse sendCommand(Function<String, DeltaCommand> commandProducer) {
+  public void sendCommand(Function<String, DeltaCommand> commandProducer) {
     if (commandReceiver != null) {
-      return commandReceiver.receiveCommand(commandProducer.apply("cmd-" + nextCommandId++));
-    } else {
-      return null;
+      commandReceiver.receiveCommand(commandProducer.apply("cmd-" + nextCommandId++));
     }
   }
 
