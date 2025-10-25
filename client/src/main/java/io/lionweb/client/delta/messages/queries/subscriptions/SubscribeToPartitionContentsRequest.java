@@ -1,15 +1,17 @@
 package io.lionweb.client.delta.messages.queries.subscriptions;
 
 import io.lionweb.client.delta.messages.DeltaQuery;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public class SubscribeToPartitionContents extends DeltaQuery {
+public class SubscribeToPartitionContentsRequest extends DeltaQuery {
 
   /** TargetNode Node id of the partition this client wants to receive events of. */
-  private String partition;
+  private @NotNull String partition;
 
-  public SubscribeToPartitionContents(@NotNull String queryId, String partition) {
+  public SubscribeToPartitionContentsRequest(@NotNull String queryId, @NotNull String partition) {
     super(queryId);
+    Objects.requireNonNull(partition, "partition must not be null");
     this.partition = partition;
   }
 }

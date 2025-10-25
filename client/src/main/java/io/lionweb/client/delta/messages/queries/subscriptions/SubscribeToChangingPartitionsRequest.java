@@ -3,7 +3,7 @@ package io.lionweb.client.delta.messages.queries.subscriptions;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import org.jetbrains.annotations.NotNull;
 
-public class SubscribeToChangingPartitions extends DeltaQuery {
+public class SubscribeToChangingPartitionsRequest extends DeltaQuery {
   /**
    * Whether this client wants to receive events on newly created partitions (true), or not (false)
    */
@@ -18,7 +18,7 @@ public class SubscribeToChangingPartitions extends DeltaQuery {
    */
   private boolean partitions;
 
-  public SubscribeToChangingPartitions(
+  public SubscribeToChangingPartitionsRequest(
       @NotNull String queryId, boolean creation, boolean deletion, boolean partitions) {
     super(queryId);
     this.creation = creation;
