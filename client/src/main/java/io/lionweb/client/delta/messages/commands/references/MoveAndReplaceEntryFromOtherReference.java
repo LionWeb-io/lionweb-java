@@ -25,12 +25,12 @@ public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
 
   public MoveAndReplaceEntryFromOtherReference(
       @NotNull String commandId,
-      @Nullable String newParent,
+      @NotNull String newParent,
       @NotNull MetaPointer newReference,
       int newIndex,
       @Nullable String replacedTarget,
       @Nullable String replacedResolveInfo,
-      @Nullable String oldParent,
+      @NotNull String oldParent,
       @NotNull MetaPointer oldReference,
       int oldIndex,
       @Nullable String movedTarget,
@@ -44,6 +44,8 @@ public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }
+    Objects.requireNonNull(newParent, "newParent must not be null");
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
     this.newParent = newParent;
     this.newReference = newReference;
     this.newIndex = newIndex;

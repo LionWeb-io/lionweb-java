@@ -25,13 +25,14 @@ public final class MoveEntryFromOtherReference extends DeltaCommand {
       @NotNull String newParent,
       @NotNull MetaPointer newReference,
       int newIndex,
-      @Nullable String oldParent,
+      @NotNull String oldParent,
       @NotNull MetaPointer oldReference,
       int oldIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo) {
     super(commandId);
     Objects.requireNonNull(newParent, "newParent must not be null");
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
     Objects.requireNonNull(newReference, "newReference must not be null");
     if (newIndex < 0) {
       throw new IllegalArgumentException("newIndex must be non-negative");

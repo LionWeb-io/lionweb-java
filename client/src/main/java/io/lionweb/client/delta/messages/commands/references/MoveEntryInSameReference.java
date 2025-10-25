@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
  * parent's reference at newIndex.
  */
 public final class MoveEntryInSameReference extends DeltaCommand {
-  public final @Nullable String parent;
+  public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
   public final int oldIndex;
   public final int newIndex;
@@ -27,6 +27,7 @@ public final class MoveEntryInSameReference extends DeltaCommand {
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo) {
     super(commandId);
+    Objects.requireNonNull(parent, "parent must not be null");
     Objects.requireNonNull(reference, "reference must not be null");
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
