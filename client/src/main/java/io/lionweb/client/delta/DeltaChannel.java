@@ -23,7 +23,7 @@ public interface DeltaChannel {
    * the command, or rejects a failed command.[5] However, the repository processes the command
    * asynchronously, and eventually broadcasts the effect(s) as event.
    */
-  DeltaCommandResponse sendCommand(Function<String, DeltaCommand> commandProducer);
+  void sendCommand(Function<String, DeltaCommand> commandProducer);
 
   void sendEvent(Function<Integer, DeltaEvent> eventProducer);
 

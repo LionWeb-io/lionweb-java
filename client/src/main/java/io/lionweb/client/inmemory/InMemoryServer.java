@@ -5,8 +5,9 @@ import io.lionweb.client.api.*;
 import io.lionweb.client.delta.DeltaChannel;
 import io.lionweb.client.delta.DeltaCommandReceiver;
 import io.lionweb.client.delta.messages.DeltaCommand;
-import io.lionweb.client.delta.messages.DeltaCommandResponse;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.events.ErrorEvent;
+import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
@@ -248,7 +249,7 @@ public class InMemoryServer {
     }
 
     @Override
-    public DeltaCommandResponse receiveCommand(DeltaCommand command) {
+    public void receiveCommand(DeltaCommand command) {
       if (command instanceof ChangeProperty) {
         ChangeProperty changeProperty = (ChangeProperty) command;
         RepositoryData repositoryData = getRepository(repositoryName);
@@ -256,8 +257,13 @@ public class InMemoryServer {
         try {
           repositoryData.retrieve(changeProperty.node, 0, retrieved);
         } catch (IllegalArgumentException e) {
-          return DeltaCommandResponse.rejected(
-              "Node with id " + changeProperty.node + " not found");
+          channel.sendEvent(
+              sequenceNumber ->
+                  new ErrorEvent(
+                      sequenceNumber,
+                      StandardErrorCode.UNKNOWN_NODE,
+                      "Node with id " + changeProperty.node + " not found"));
+          return;
         }
         SerializedClassifierInstance node = retrieved.get(0);
         String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
@@ -268,7 +274,7 @@ public class InMemoryServer {
             sequenceNumber ->
                 new PropertyChanged(
                     sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue));
-        return DeltaCommandResponse.accepted();
+        return;
       }
 
       throw new UnsupportedOperationException(
