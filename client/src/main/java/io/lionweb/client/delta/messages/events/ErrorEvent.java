@@ -11,4 +11,8 @@ public class ErrorEvent extends BaseDeltaEvent {
     this.errorCode = errorCode;
     this.message = message;
   }
+
+  public ErrorEvent(int sequenceNumber, StandardErrorCode standardErrorCode, String message) {
+    this(sequenceNumber, standardErrorCode.code, message);
+  }
 }
