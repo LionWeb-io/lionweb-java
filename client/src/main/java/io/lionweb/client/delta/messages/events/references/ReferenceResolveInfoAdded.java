@@ -1,13 +1,13 @@
 package io.lionweb.client.delta.messages.events.references;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
 /**
  * newResolveInfo has been added as ResolveInfo to existing entry inside parent's reference at index
  * with target.
  */
-public class ReferenceResolveInfoAdded extends CommonDeltaEvent {
+public class ReferenceResolveInfoAdded extends BaseDeltaEvent {
   public final String parent;
   public final MetaPointer reference;
   public final int index;

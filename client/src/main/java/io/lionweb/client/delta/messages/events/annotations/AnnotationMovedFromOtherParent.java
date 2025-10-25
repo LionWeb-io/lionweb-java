@@ -1,12 +1,12 @@
 package io.lionweb.client.delta.messages.events.annotations;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 
 /**
  * Existing node movedAnnotation (previously inside oldParent's annotations at oldIndex) has been
  * moved inside newParent's annotations at newIndex.
  */
-public class AnnotationMovedFromOtherParent extends CommonDeltaEvent {
+public class AnnotationMovedFromOtherParent extends BaseDeltaEvent {
   public final String newParent;
   public final int newIndex;
   public final String movedAnnotation;

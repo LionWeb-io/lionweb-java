@@ -1,8 +1,8 @@
 package io.lionweb.client.delta.messages.events;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 
-public class ErrorEvent extends CommonDeltaEvent {
+public class ErrorEvent extends BaseDeltaEvent {
   public String errorCode;
   public String message;
 

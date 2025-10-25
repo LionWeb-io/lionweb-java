@@ -1,9 +1,9 @@
 package io.lionweb.client.delta.messages.events.partitions;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.SerializationChunk;
 
-public class PartitionAdded extends CommonDeltaEvent {
+public class PartitionAdded extends BaseDeltaEvent {
 
   public final SerializationChunk newPartition;
 

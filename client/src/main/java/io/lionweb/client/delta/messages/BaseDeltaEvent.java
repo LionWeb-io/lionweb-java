@@ -4,11 +4,11 @@ import io.lionweb.client.delta.CommandSource;
 import java.util.LinkedList;
 import java.util.List;
 
-public class CommonDeltaEvent extends DeltaEvent {
+public abstract class BaseDeltaEvent extends DeltaEvent {
   public final int sequenceNumber;
   public final List<CommandSource> originCommands = new LinkedList<>();
 
-  public CommonDeltaEvent(int sequenceNumber) {
+  public BaseDeltaEvent(int sequenceNumber) {
     this.sequenceNumber = sequenceNumber;
   }
 

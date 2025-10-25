@@ -1,13 +1,13 @@
 package io.lionweb.client.delta.messages.events;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import java.util.List;
 
 public class CompositeEvent extends DeltaEvent {
-  public List<CommonDeltaEvent> parts;
+  public List<BaseDeltaEvent> parts;
 
-  public CompositeEvent(List<CommonDeltaEvent> parts) {
+  public CompositeEvent(List<BaseDeltaEvent> parts) {
     this.parts = parts;
   }
 }

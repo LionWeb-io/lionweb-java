@@ -1,6 +1,6 @@
 package io.lionweb.client.delta.messages.events.references;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import org.jetbrains.annotations.Nullable;
 
@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
  * Existing reference movedTarget/movedResolveInfo (previously inside oldParent's oldReference at
  * oldIndex) has been moved to newParent's newReference at newIndex.
  */
-public class EntryMovedFromOtherReference extends CommonDeltaEvent {
+public class EntryMovedFromOtherReference extends BaseDeltaEvent {
   public final String newParent;
   public final MetaPointer newReference;
   public final int newIndex;

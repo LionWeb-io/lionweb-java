@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public class DeltaCommand {
+public abstract class DeltaCommand {
   public final @NotNull String commandId;
   public final List<ProtocolMessage> protocolMessages = new LinkedList<>();
 

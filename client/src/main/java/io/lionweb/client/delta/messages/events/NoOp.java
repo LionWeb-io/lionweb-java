@@ -1,8 +1,8 @@
 package io.lionweb.client.delta.messages.events;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 
-public class NoOp extends CommonDeltaEvent {
+public class NoOp extends BaseDeltaEvent {
 
   public NoOp(int sequenceNumber) {
     super(sequenceNumber);

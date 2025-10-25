@@ -1,13 +1,13 @@
 package io.lionweb.client.delta.messages.events.references;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
 /**
  * newTarget has been added as target to existing entry inside parent's reference at index with
  * resolveInfo.
  */
-public class ReferenceTargetAdded extends CommonDeltaEvent {
+public class ReferenceTargetAdded extends BaseDeltaEvent {
   public final String parent;
   public final MetaPointer reference;
   public final int index;

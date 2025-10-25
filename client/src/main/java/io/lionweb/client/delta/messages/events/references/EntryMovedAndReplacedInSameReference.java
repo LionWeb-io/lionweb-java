@@ -1,6 +1,6 @@
 package io.lionweb.client.delta.messages.events.references;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import org.jetbrains.annotations.Nullable;
 
@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
  * oldIndex) has replaced existing replacedTarget/replacedResolveInfo at parent's reference at
  * newIndex.
  */
-public class EntryMovedAndReplacedInSameReference extends CommonDeltaEvent {
+public class EntryMovedAndReplacedInSameReference extends BaseDeltaEvent {
   public final String parent;
   public final MetaPointer reference;
   public final int newIndex;

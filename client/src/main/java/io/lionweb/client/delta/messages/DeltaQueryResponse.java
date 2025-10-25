@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.NotNull;
 
-public class DeltaQueryResponse {
+public abstract class DeltaQueryResponse {
   public final @NotNull String queryId;
   public final List<ProtocolMessage> protocolMessages = new LinkedList<>();
   public final Map<String, Object> values = new HashMap<>();

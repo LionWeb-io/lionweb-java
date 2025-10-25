@@ -1,10 +1,10 @@
 package io.lionweb.client.delta.messages.events.children;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.List;
 
-public final class ChildMovedAndReplacedFromOtherContainmentInSameParent extends CommonDeltaEvent {
+public final class ChildMovedAndReplacedFromOtherContainmentInSameParent extends BaseDeltaEvent {
   public final MetaPointer newContainment;
   public final int newIndex;
   public final String movedChild;

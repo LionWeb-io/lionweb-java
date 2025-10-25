@@ -1,13 +1,13 @@
 package io.lionweb.client.delta.messages.events.annotations;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.SerializationChunk;
 
 /**
  * Existing node replacedAnnotation, and all its replacedDescendants, inside parent's annotations at
  * index has been replaced with new node newAnnotation.
  */
-public class AnnotationReplaced extends CommonDeltaEvent {
+public class AnnotationReplaced extends BaseDeltaEvent {
   public final SerializationChunk newAnnotation;
   public final String replacedAnnotation;
   public final String[] replacedDescendants;

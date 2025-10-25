@@ -1,9 +1,9 @@
 package io.lionweb.client.delta.messages.events.properties;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
-public class PropertyAdded extends CommonDeltaEvent {
+public class PropertyAdded extends BaseDeltaEvent {
 
   public final String node;
   public final MetaPointer property;

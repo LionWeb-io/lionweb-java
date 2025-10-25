@@ -1,9 +1,9 @@
 package io.lionweb.client.delta.messages.events.partitions;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import java.util.List;
 
-public class PartitionDeleted extends CommonDeltaEvent {
+public class PartitionDeleted extends BaseDeltaEvent {
 
   public final String deletedPartition;
   public final List<String> deletedDescendants;

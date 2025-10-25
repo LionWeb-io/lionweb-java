@@ -1,9 +1,9 @@
 package io.lionweb.client.delta.messages.events;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
-public class ClassifierChanged extends CommonDeltaEvent {
+public class ClassifierChanged extends BaseDeltaEvent {
   public String node;
   public MetaPointer newClassifier;
   public MetaPointer oldClassifier;

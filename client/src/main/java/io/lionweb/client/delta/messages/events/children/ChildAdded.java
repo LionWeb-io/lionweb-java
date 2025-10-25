@@ -1,10 +1,10 @@
 package io.lionweb.client.delta.messages.events.children;
 
-import io.lionweb.client.delta.messages.CommonDeltaEvent;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 
-public final class ChildAdded extends CommonDeltaEvent {
+public final class ChildAdded extends BaseDeltaEvent {
   public final String parent;
   public final SerializationChunk newChild;
   public final MetaPointer containment;
