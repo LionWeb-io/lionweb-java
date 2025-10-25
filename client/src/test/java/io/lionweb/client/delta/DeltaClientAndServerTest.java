@@ -6,6 +6,7 @@ import static org.junit.Assert.fail;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
@@ -75,8 +76,9 @@ public class DeltaClientAndServerTest {
     client.monitor(language1);
     try {
       language1.setName("Language B");
-    } catch (CommandRejectException e) {
-      assertEquals("Node with id lang-a not found", e.getMessage());
+    } catch (ErrorEventReceivedException e) {
+      assertEquals(StandardErrorCode.UNKNOWN_NODE.code, e.getCode());
+      assertEquals("Node with id lang-a not found", e.getErrorMessage());
       return;
     }
     fail("Expected exception not thrown");
