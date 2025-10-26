@@ -5,9 +5,11 @@ import io.lionweb.client.api.*;
 import io.lionweb.client.delta.DeltaChannel;
 import io.lionweb.client.delta.DeltaCommandReceiver;
 import io.lionweb.client.delta.messages.DeltaCommand;
+import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
+import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
@@ -275,6 +277,28 @@ public class InMemoryServer {
                 new PropertyChanged(
                     sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue));
         return;
+      } else if (command instanceof AddChild) {
+          AddChild addChild = (AddChild) command;
+          RepositoryData repositoryData = getRepository(repositoryName);
+          List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+          try {
+              repositoryData.retrieve(addChild.parent, 0, retrieved);
+          } catch (IllegalArgumentException e) {
+              channel.sendEvent(
+                      sequenceNumber ->
+                              new ErrorEvent(
+                                      sequenceNumber,
+                                      StandardErrorCode.UNKNOWN_NODE,
+                                      "Node with id " + addChild.parent + " not found"));
+              return;
+          }
+          SerializedClassifierInstance node = retrieved.get(0);
+          repositoryData.store(addChild.newChild.getClassifierInstances());
+          String childId = addChild.newChild.getClassifierInstances().stream().filter(n -> n.getParentNodeID().equals(addChild.parent)).findFirst().get().getID();
+          node.addChild(addChild.containment, childId, addChild.index);
+          channel.sendEvent(sequenceNumber -> new ChildAdded(sequenceNumber,
+                  addChild.parent, addChild.newChild, addChild.containment, addChild.index));
+          return;
       }
 
       throw new UnsupportedOperationException(
