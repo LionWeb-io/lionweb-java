@@ -8,11 +8,14 @@ import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.inmemory.InMemoryServer;
+import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Collections;
 
 public class DeltaClientAndServerTest {
 
@@ -83,4 +86,38 @@ public class DeltaClientAndServerTest {
     }
     fail("Expected exception not thrown");
   }
+
+    @Test
+    public void addingChildren() {
+        InMemoryServer server = new InMemoryServer();
+        server.createRepository(
+                new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+
+        JsonSerialization serialization =
+                SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+        Language language1 = new Language("Language A", "lang-a", "lang-a-key");
+        server.createPartition("MyRepo", language1, serialization);
+
+        Language language2 =
+                (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
+        Assertions.assertNotNull(language2);
+
+        assertEquals(language1, language2);
+
+        DeltaChannel channel = new InMemoryDeltaChannel();
+        DeltaClient client = new DeltaClient(channel);
+
+        server.monitorDeltaChannel("MyRepo", channel);
+
+        client.monitor(language1);
+        client.monitor(language2);
+
+        assertEquals(Collections.emptyList(), language1.getElements());
+        assertEquals(Collections.emptyList(), language2.getElements());
+
+        Concept concept1 = new Concept(language1, "Concept A", "concept-a", "a");
+        language1.addElement(concept1);
+        assertEquals(Collections.singletonList(concept1), language1.getElements());
+        assertEquals(Collections.singletonList(concept1), language2.getElements());
+    }
 }
