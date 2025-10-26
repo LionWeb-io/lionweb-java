@@ -200,6 +200,26 @@ public class SerializedClassifierInstance {
     }
   }
 
+    public void addChild(@Nonnull MetaPointer metaPointer, @Nonnull String childID, int index) {
+        Objects.requireNonNull(metaPointer, "metaPointer should not be null");
+        Objects.requireNonNull(childID, "childId should not be null");
+        if (index < 0) {
+            throw new IllegalArgumentException("Index must be greater than or equal to zero");
+        }
+        initContainments();
+        Optional<SerializedContainmentValue> entry =
+                this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+        if (entry.isPresent()) {
+            List<String> currValue = entry.get().getChildrenIds();
+            List<String> newValue = new ArrayList<>(currValue.size() + 1);
+            newValue.addAll(currValue);
+            newValue.add(index, childID);
+            entry.get().setChildrenIds(newValue);
+        } else {
+            unsafeAppendContainmentValue(metaPointer, Arrays.asList(childID));
+        }
+    }
+
   public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
     Objects.requireNonNull(metaPointer);
     if (this.containments == null) {
