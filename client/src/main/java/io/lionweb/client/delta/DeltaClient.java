@@ -2,17 +2,21 @@ package io.lionweb.client.delta;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.delta.messages.DeltaEvent;
+import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
+import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.*;
-import io.lionweb.serialization.PrimitiveValuesSerialization;
+import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.MetaPointer;
 import java.lang.ref.WeakReference;
 import java.util.*;
+
+import io.lionweb.serialization.data.SerializationChunk;
 import org.jetbrains.annotations.NotNull;
 
 public class DeltaClient implements DeltaEventReceiver {
@@ -22,11 +26,10 @@ public class DeltaClient implements DeltaEventReceiver {
   private HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes = new HashMap<>();
   private PrimitiveValuesSerialization primitiveValuesSerialization =
       new PrimitiveValuesSerialization();
+  private AbstractSerialization serialization;
 
   public DeltaClient(DeltaChannel channel) {
     this(LionWebVersion.currentVersion, channel);
-    this.channel = channel;
-    this.channel.registerEventReceiver(this);
   }
 
   public DeltaClient(LionWebVersion lionWebVersion, DeltaChannel channel) {
@@ -35,6 +38,8 @@ public class DeltaClient implements DeltaEventReceiver {
     this.channel.registerEventReceiver(this);
     this.primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(
         lionWebVersion);
+    this.serialization  = SerializationProvider.getStandardJsonSerialization(lionWebVersion);
+    this.serialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
   }
 
   /**
@@ -58,15 +63,29 @@ public class DeltaClient implements DeltaEventReceiver {
   @Override
   public void receiveEvent(DeltaEvent event) {
     if (event instanceof PropertyChanged) {
-      PropertyChanged propertyChanged = (PropertyChanged) event;
-      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-          nodes.get(propertyChanged.node)) {
-        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-        if (classifierInstance != null) {
-          ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-              classifierInstance, propertyChanged.property, propertyChanged.newValue);
+        PropertyChanged propertyChanged = (PropertyChanged) event;
+        for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+                nodes.get(propertyChanged.node)) {
+            ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+            if (classifierInstance != null) {
+                ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+                        classifierInstance, propertyChanged.property, propertyChanged.newValue);
+            }
         }
-      }
+    } else if (event instanceof ChildAdded) {
+        ChildAdded childAdded = (ChildAdded) event;
+        for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+                nodes.get(childAdded.parent)) {
+            ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+            if (classifierInstance != null) {
+                Node child = (Node)serialization.deserializeSerializationChunk(childAdded.newChild).get(0);
+                Containment containment = classifierInstance.getClassifier().getContainmentByMetaPointer(childAdded.containment);
+                if (containment == null) {
+                    throw new IllegalStateException("Containment not found for " + classifierInstance + " using metapointer "+ childAdded.containment);
+                }
+                classifierInstance.addChild(containment, child, childAdded.index);
+            }
+        }
     } else if (event instanceof ErrorEvent) {
       ErrorEvent errorEvent = (ErrorEvent) event;
       throw new ErrorEventReceivedException(errorEvent.errorCode, errorEvent.message);
@@ -99,7 +118,15 @@ public class DeltaClient implements DeltaEventReceiver {
         Containment containment,
         int index,
         Node newChild) {
-      throw new UnsupportedOperationException("Not supported yet.");
+        SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
+        channel.sendCommand(
+                commandId ->
+                        new AddChild(
+                                commandId,
+                                classifierInstance.getID(),
+                                chunk,
+                                MetaPointer.from(containment),
+                                index));
     }
 
     @Override
