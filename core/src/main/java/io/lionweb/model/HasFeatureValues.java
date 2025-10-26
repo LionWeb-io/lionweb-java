@@ -35,6 +35,10 @@ public interface HasFeatureValues {
    */
   void addChild(@Nonnull Containment containment, @Nonnull Node child);
 
+    default void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
   /**
    * Add a child to the specified list of children associated with the given Containment relation,
    * at the given index. If the specified Containment does not allow for multiple values, and if a
