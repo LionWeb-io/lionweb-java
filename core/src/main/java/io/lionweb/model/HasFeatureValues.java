@@ -35,6 +35,10 @@ public interface HasFeatureValues {
    */
   void addChild(@Nonnull Containment containment, @Nonnull Node child);
 
+  default void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    throw new UnsupportedOperationException("Not supported yet.");
+  }
+
   /**
    * Remove the given child from the list of children associated with the Node, making it a dangling
    * Node. If the specified Node is not currently a child of this Node the exception
