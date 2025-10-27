@@ -4,7 +4,7 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 
-public final class ChildAdded extends BaseDeltaEvent {
+public final class ChildAdded extends BaseDeltaEvent<ChildAdded> {
   public final String parent;
   public final SerializationChunk newChild;
   public final MetaPointer containment;

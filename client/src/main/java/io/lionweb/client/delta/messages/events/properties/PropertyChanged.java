@@ -3,7 +3,7 @@ package io.lionweb.client.delta.messages.events.properties;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
-public class PropertyChanged extends BaseDeltaEvent {
+public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
 
   public final String node;
   public final MetaPointer property;

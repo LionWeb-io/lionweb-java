@@ -15,7 +15,7 @@ public interface DeltaChannel {
    * The repository might reply invalid queries with a failure message. We also use queries for
    * managing participations.
    */
-  DeltaQueryResponse sendQuery(DeltaQuery query);
+  DeltaQueryResponse sendQuery(Function<String, DeltaQuery> queryProducer);
 
   /**
    * Commands initiated/requested by the client, with synchronous response by the repository. A
@@ -23,7 +23,7 @@ public interface DeltaChannel {
    * the command, or rejects a failed command.[5] However, the repository processes the command
    * asynchronously, and eventually broadcasts the effect(s) as event.
    */
-  void sendCommand(Function<String, DeltaCommand> commandProducer);
+  void sendCommand(String participationId, Function<String, DeltaCommand> commandProducer);
 
   void sendEvent(Function<Integer, DeltaEvent> eventProducer);
 
@@ -34,4 +34,12 @@ public interface DeltaChannel {
   void registerCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
 
   void unregisterCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
+
+  void registerQueryReceiver(DeltaQueryReceiver deltaQueryReceiver);
+
+  void unregisterQueryReceiver(DeltaQueryReceiver deltaQueryReceiver);
+
+  void registerQueryResponseReceiver(DeltaQueryResponseReceiver deltaQueryResponseReceiver);
+
+  void unregisterQueryResponseReceiver(DeltaQueryResponseReceiver deltaQueryResponseReceiver);
 }

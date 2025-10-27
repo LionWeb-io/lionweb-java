@@ -140,24 +140,24 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     }
   }
 
-    @Override
-    public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
-        Objects.requireNonNull(containment, "containment should not be null");
-        Objects.requireNonNull(child, "child should not be null");
-        if (index < 0) {
-            throw new IllegalArgumentException("Index cannot be negative");
-        }
-        if (!getClassifier().allContainments().contains(containment)) {
-            throw new IllegalArgumentException("Containment not belonging to this concept");
-        }
-        if (containment.isMultiple()) {
-            addContainmentMultipleValue(containment.getName(), child, index);
-        } else {
-            throw new UnsupportedOperationException(
-                    "There are not containments which are not multiple in LionCore, so this "
-                            + "is not supported at the moment");
-        }
+  @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    Objects.requireNonNull(containment, "containment should not be null");
+    Objects.requireNonNull(child, "child should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("Index cannot be negative");
     }
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
+    if (containment.isMultiple()) {
+      addContainmentMultipleValue(containment.getName(), child, index);
+    } else {
+      throw new UnsupportedOperationException(
+          "There are not containments which are not multiple in LionCore, so this "
+              + "is not supported at the moment");
+    }
+  }
 
   @Override
   public void removeChild(@Nonnull Node child) {
@@ -414,33 +414,30 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     return true;
   }
 
-    /**
-     * Adding a null value or a value already contained, do not produce any change.
-     *
-     * @return return true if the addition produced a change
-     */
-    protected boolean addContainmentMultipleValue(@Nonnull String linkName, Node value, int index) {
-        if (value == null) {
-            return false;
-        }
-        if (getContainmentMultipleValue(linkName).stream().anyMatch(e -> e == value)) {
-            return false;
-        }
-        ((M3Node) value).setParent(this);
-        if (containmentValues.containsKey(linkName)) {
-            containmentValues.get(linkName).add(index, value);
-        } else {
-            containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
-        }
-        if (partitionObserverCache != null) {
-            partitionObserverCache.childAdded(
-                    this,
-                    getClassifier().getContainmentByName(linkName),
-                    index,
-                    value);
-        }
-        return true;
+  /**
+   * Adding a null value or a value already contained, do not produce any change.
+   *
+   * @return return true if the addition produced a change
+   */
+  protected boolean addContainmentMultipleValue(@Nonnull String linkName, Node value, int index) {
+    if (value == null) {
+      return false;
     }
+    if (getContainmentMultipleValue(linkName).stream().anyMatch(e -> e == value)) {
+      return false;
+    }
+    ((M3Node) value).setParent(this);
+    if (containmentValues.containsKey(linkName)) {
+      containmentValues.get(linkName).add(index, value);
+    } else {
+      containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+    }
+    if (partitionObserverCache != null) {
+      partitionObserverCache.childAdded(
+          this, getClassifier().getContainmentByName(linkName), index, value);
+    }
+    return true;
+  }
 
   protected int addReferenceMultipleValue(String linkName, ReferenceValue value) {
     if (value == null) {

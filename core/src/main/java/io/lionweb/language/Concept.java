@@ -46,16 +46,16 @@ public class Concept extends Classifier<Concept> {
   }
 
   public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
-      super(language == null ? LionWebVersion.currentVersion : language.getLionWebVersion());
+    super(language == null ? LionWebVersion.currentVersion : language.getLionWebVersion());
     setAbstract(false);
     setPartition(false);
     setID(id);
-      this.setName(name);
-      if (language != null) {
-        language.addElement(this);
-      } else {
-        this.setParent(null);
-      }
+    this.setName(name);
+    if (language != null) {
+      language.addElement(this);
+    } else {
+      this.setParent(null);
+    }
   }
 
   public Concept(

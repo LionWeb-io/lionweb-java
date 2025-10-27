@@ -4,7 +4,7 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.SerializationChunk;
 
 /** New node newAnnotation has been added to parent's annotations at index. */
-public class AnnotationAdded extends BaseDeltaEvent {
+public class AnnotationAdded extends BaseDeltaEvent<AnnotationAdded> {
   public final String parent;
   public final SerializationChunk newAnnotation;
   public final int index;

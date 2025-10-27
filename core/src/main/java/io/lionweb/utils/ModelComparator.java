@@ -151,6 +151,19 @@ public class ModelComparator {
     return comparisonResult.areEquivalent();
   }
 
+  public static <A extends ClassifierInstance<?>, B extends ClassifierInstance<?>>
+      boolean areEquivalent(List<A> as, List<B> bs) {
+    if (as.size() != bs.size()) {
+      return false;
+    }
+    for (int i = 0; i < as.size(); i++) {
+      if (!areEquivalent(as.get(i), bs.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public ComparisonResult compare(Node nodeA, Node nodeB) {
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
