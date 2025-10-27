@@ -4,5 +4,5 @@ import io.lionweb.client.delta.messages.DeltaCommand;
 
 public interface DeltaCommandReceiver {
 
-  void receiveCommand(DeltaCommand command);
+  void receiveCommand(String participationId, DeltaCommand command);
 }

@@ -2,15 +2,21 @@ package io.lionweb.client.inmemory;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
+import io.lionweb.client.delta.CommandSource;
 import io.lionweb.client.delta.DeltaChannel;
 import io.lionweb.client.delta.DeltaCommandReceiver;
+import io.lionweb.client.delta.DeltaQueryReceiver;
 import io.lionweb.client.delta.messages.DeltaCommand;
+import io.lionweb.client.delta.messages.DeltaQuery;
+import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
@@ -37,6 +43,8 @@ public class InMemoryServer {
 
   /** Internally we store the data separately for each repository. */
   private final Map<String, RepositoryData> repositories = new LinkedHashMap<>();
+
+  private int nextParticipationId = 1;
 
   public @NotNull RepositoryConfiguration getRepositoryConfiguration(
       @NotNull String repositoryName) {
@@ -239,6 +247,27 @@ public class InMemoryServer {
   public void monitorDeltaChannel(String repositoryName, @NotNull DeltaChannel channel) {
     Objects.requireNonNull(channel, "Channel should not be null");
     channel.registerCommandReceiver(new DeltaCommandReceiverImpl(repositoryName, channel));
+    channel.registerQueryReceiver(new DeltaQueryReceiverImpl(repositoryName, channel));
+  }
+
+  private class DeltaQueryReceiverImpl implements DeltaQueryReceiver {
+
+    private String repositoryName;
+    private DeltaChannel channel;
+
+    private DeltaQueryReceiverImpl(String repositoryName, DeltaChannel channel) {
+      this.repositoryName = repositoryName;
+      this.channel = channel;
+    }
+
+    @Override
+    public DeltaQueryResponse receiveQuery(DeltaQuery query) {
+      if (query instanceof SignOnRequest) {
+        SignOnRequest signOnRequest = (SignOnRequest) query;
+        return new SignOnResponse(signOnRequest.queryId, "participation-" + nextParticipationId++);
+      }
+      throw new UnsupportedOperationException("Not supported yet.");
+    }
   }
 
   private class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
@@ -251,7 +280,8 @@ public class InMemoryServer {
     }
 
     @Override
-    public void receiveCommand(DeltaCommand command) {
+    public void receiveCommand(String participationId, DeltaCommand command) {
+      CommandSource source = new CommandSource(participationId, command.commandId);
       if (command instanceof ChangeProperty) {
         ChangeProperty changeProperty = (ChangeProperty) command;
         RepositoryData repositoryData = getRepository(repositoryName);
@@ -275,30 +305,43 @@ public class InMemoryServer {
         channel.sendEvent(
             sequenceNumber ->
                 new PropertyChanged(
-                    sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue));
+                        sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue)
+                    .addSource(source));
         return;
       } else if (command instanceof AddChild) {
-          AddChild addChild = (AddChild) command;
-          RepositoryData repositoryData = getRepository(repositoryName);
-          List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-          try {
-              repositoryData.retrieve(addChild.parent, 0, retrieved);
-          } catch (IllegalArgumentException e) {
-              channel.sendEvent(
-                      sequenceNumber ->
-                              new ErrorEvent(
-                                      sequenceNumber,
-                                      StandardErrorCode.UNKNOWN_NODE,
-                                      "Node with id " + addChild.parent + " not found"));
-              return;
-          }
-          SerializedClassifierInstance node = retrieved.get(0);
-          repositoryData.store(addChild.newChild.getClassifierInstances());
-          String childId = addChild.newChild.getClassifierInstances().stream().filter(n -> n.getParentNodeID().equals(addChild.parent)).findFirst().get().getID();
-          node.addChild(addChild.containment, childId, addChild.index);
-          channel.sendEvent(sequenceNumber -> new ChildAdded(sequenceNumber,
-                  addChild.parent, addChild.newChild, addChild.containment, addChild.index));
+        AddChild addChild = (AddChild) command;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+        try {
+          repositoryData.retrieve(addChild.parent, 0, retrieved);
+        } catch (IllegalArgumentException e) {
+          channel.sendEvent(
+              sequenceNumber ->
+                  new ErrorEvent(
+                      sequenceNumber,
+                      StandardErrorCode.UNKNOWN_NODE,
+                      "Node with id " + addChild.parent + " not found"));
           return;
+        }
+        SerializedClassifierInstance node = retrieved.get(0);
+        repositoryData.store(addChild.newChild.getClassifierInstances());
+        String childId =
+            addChild.newChild.getClassifierInstances().stream()
+                .filter(n -> n.getParentNodeID().equals(addChild.parent))
+                .findFirst()
+                .get()
+                .getID();
+        node.addChild(addChild.containment, childId, addChild.index);
+        channel.sendEvent(
+            sequenceNumber ->
+                new ChildAdded(
+                        sequenceNumber,
+                        addChild.parent,
+                        addChild.newChild,
+                        addChild.containment,
+                        addChild.index)
+                    .addSource(source));
+        return;
       }
 
       throw new UnsupportedOperationException(
