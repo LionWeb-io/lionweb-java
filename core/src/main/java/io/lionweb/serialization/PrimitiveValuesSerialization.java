@@ -327,6 +327,9 @@ public class PrimitiveValuesSerialization {
   public static <E extends Enum<E>> PrimitiveDeserializer<E> deserializerFor(
       Class<E> enumClass, Enumeration enumeration) {
     return serializedValue -> {
+      if (serializedValue == null) {
+        return null;
+      }
       Optional<EnumerationLiteral> matchingEnumerationLiteral =
           enumeration.getLiterals().stream()
               .filter(l -> l.getKey().equals(serializedValue))
