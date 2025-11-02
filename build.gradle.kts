@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlinJvm) apply (false)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.dokka) apply (false)
+    alias(libs.plugins.versioncheck)
 }
 
 repositories {
