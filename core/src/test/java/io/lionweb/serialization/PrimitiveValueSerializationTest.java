@@ -225,6 +225,18 @@ public class PrimitiveValueSerializationTest {
   }
 
   @Test
+  public void testEnumerationDeserializationWithNullValue() {
+    serialization.registerLanguage(testLanguage);
+    serialization.enableDynamicNodes();
+
+    Object deserializedWhenNotRequired = serialization.deserialize(testEnumeration, null, false);
+    assertNull(deserializedWhenNotRequired);
+
+    Object deserializedWhenRequired = serialization.deserialize(testEnumeration, null, true);
+    assertNull(deserializedWhenRequired);
+  }
+
+  @Test
   public void testInvalidEnumerationLiteral() {
     serialization.registerLanguage(testLanguage);
     serialization.enableDynamicNodes();

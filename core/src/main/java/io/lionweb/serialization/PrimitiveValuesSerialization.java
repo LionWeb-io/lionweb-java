@@ -27,7 +27,8 @@ public class PrimitiveValuesSerialization {
   private final Map<String, StructuredDataType> structuredDataTypesByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
 
-  public void registerLanguage(Language language) {
+  public void registerLanguage(@Nonnull Language language) {
+    Objects.requireNonNull(language, "language should not be null");
     language.getElements().stream()
         .filter(e -> e instanceof Enumeration)
         .forEach(e -> enumerationsByID.put(e.getID(), (Enumeration) e));
@@ -41,13 +42,15 @@ public class PrimitiveValuesSerialization {
   }
 
   public interface PrimitiveSerializer<V> {
-    String serialize(V value);
+    @Nullable
+    String serialize(@Nullable V value);
   }
 
   public interface PrimitiveDeserializer<V> {
-    V deserialize(String serializedValue);
+    @Nullable
+    V deserialize(@Nullable String serializedValue);
 
-    default V deserialize(String serializedValue, boolean isRequired) {
+    default @Nullable V deserialize(@Nullable String serializedValue, boolean isRequired) {
       return deserialize(serializedValue);
     }
   }
@@ -61,7 +64,7 @@ public class PrimitiveValuesSerialization {
   /** Indexed by ID */
   private final Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
 
-  public PrimitiveValuesSerialization registerDeserializer(
+  public @Nonnull PrimitiveValuesSerialization registerDeserializer(
       @Nonnull String dataTypeID, @Nonnull PrimitiveDeserializer<?> deserializer) {
     Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
     Objects.requireNonNull(deserializer, "deserializer should not be null");
@@ -69,12 +72,12 @@ public class PrimitiveValuesSerialization {
     return this;
   }
 
-  public PrimitiveValuesSerialization registerDeserializer(
+  public @Nonnull PrimitiveValuesSerialization registerDeserializer(
       @Nonnull DataType<?> dataType, @Nonnull PrimitiveDeserializer<?> deserializer) {
     return registerDeserializer(dataType.getID(), deserializer);
   }
 
-  public PrimitiveValuesSerialization registerSerializer(
+  public @Nonnull PrimitiveValuesSerialization registerSerializer(
       @Nonnull String dataTypeID, @Nonnull PrimitiveSerializer<?> serializer) {
     Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
     Objects.requireNonNull(serializer, "serializer should not be null");
@@ -82,12 +85,17 @@ public class PrimitiveValuesSerialization {
     return this;
   }
 
-  public PrimitiveValuesSerialization registerSerializer(
+  public @Nonnull PrimitiveValuesSerialization registerSerializer(
       @Nonnull DataType<?> dataType, @Nonnull PrimitiveSerializer<?> serializer) {
     return registerSerializer(dataType.getID(), serializer);
   }
 
-  private StructuredDataTypeInstance deserializeSDT(String dataTypeID, JsonObject jo) {
+  private @Nullable StructuredDataTypeInstance deserializeSDT(
+      @Nonnull String dataTypeID, @Nullable JsonObject jo) {
+    Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
+    if (jo == null) {
+      return null;
+    }
     StructuredDataType sdt = structuredDataTypesByID.get(dataTypeID);
     DynamicStructuredDataTypeInstance sdtInstance = new DynamicStructuredDataTypeInstance(sdt);
     for (Field field : sdt.getFields()) {
@@ -202,7 +210,8 @@ public class PrimitiveValuesSerialization {
     }
   }
 
-  private JsonObject serializeSDT(@Nonnull StructuredDataTypeInstance structuredDataTypeInstance) {
+  private @Nonnull JsonObject serializeSDT(
+      @Nonnull StructuredDataTypeInstance structuredDataTypeInstance) {
     JsonObject jo = new JsonObject();
     for (Field field : structuredDataTypeInstance.getStructuredDataType().getFields()) {
       Objects.requireNonNull(field.getKey(), "Field " + field + " has a null key");
@@ -223,7 +232,7 @@ public class PrimitiveValuesSerialization {
     return jo;
   }
 
-  public String serialize(@Nonnull String primitiveTypeID, @Nullable Object value) {
+  public @Nullable String serialize(@Nonnull String primitiveTypeID, @Nullable Object value) {
     Objects.requireNonNull(primitiveTypeID, "The primitiveTypeID should not be null");
     if (primitiveSerializers.containsKey(primitiveTypeID)) {
       return ((PrimitiveSerializer<Object>) primitiveSerializers.get(primitiveTypeID))
@@ -287,21 +296,28 @@ public class PrimitiveValuesSerialization {
   }
 
   /** Please note that this will require support for reflection. */
-  public <E extends Enum<E>> void registerEnumClass(Class<E> enumClass, Enumeration enumeration) {
+  public <E extends Enum<E>> void registerEnumClass(
+      @Nonnull Class<E> enumClass, @Nonnull Enumeration enumeration) {
+    Objects.requireNonNull(enumClass, "enumClass should not be null");
+    Objects.requireNonNull(enumeration, "enumeration should not be null");
     primitiveSerializers.put(enumeration.getID(), serializerFor(enumClass, enumeration));
     primitiveDeserializers.put(enumeration.getID(), deserializerFor(enumClass, enumeration));
   }
 
-  private boolean isEnum(String primitiveTypeID) {
+  private boolean isEnum(@Nonnull String primitiveTypeID) {
+    Objects.requireNonNull(primitiveTypeID, "primitiveTypeID should not be null");
     return enumerationsByID.containsKey(primitiveTypeID);
   }
 
-  private boolean isStructuredDataType(String primitiveTypeID) {
+  private boolean isStructuredDataType(@Nonnull String primitiveTypeID) {
+    Objects.requireNonNull(primitiveTypeID, "primitiveTypeID should not be null");
     return structuredDataTypesByID.containsKey(primitiveTypeID);
   }
 
   public static <E extends Enum<E>> PrimitiveSerializer<E> serializerFor(
-      Class<E> enumClass, Enumeration enumeration) {
+      @Nonnull Class<E> enumClass, @Nonnull Enumeration enumeration) {
+    Objects.requireNonNull(enumClass, "enumClass should not be null");
+    Objects.requireNonNull(enumeration, "enumeration should not be null");
     return value -> {
       String enumerationLiteralName = value.name();
       Optional<EnumerationLiteral> enumerationLiteral =
@@ -325,7 +341,9 @@ public class PrimitiveValuesSerialization {
 
   /** Please note that this will require support for reflection. */
   public static <E extends Enum<E>> PrimitiveDeserializer<E> deserializerFor(
-      Class<E> enumClass, Enumeration enumeration) {
+      @Nonnull Class<E> enumClass, @Nonnull Enumeration enumeration) {
+    Objects.requireNonNull(enumClass, "enumClass should not be null");
+    Objects.requireNonNull(enumeration, "enumeration should not be null");
     return serializedValue -> {
       if (serializedValue == null) {
         return null;
