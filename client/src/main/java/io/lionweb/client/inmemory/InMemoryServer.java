@@ -10,10 +10,12 @@ import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
+import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
+import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
@@ -342,6 +344,32 @@ public class InMemoryServer {
                         addChild.index)
                     .addSource(source));
         return;
+      } else if (command instanceof DeleteChild) {
+          DeleteChild deleteChild = (DeleteChild) command;
+          RepositoryData repositoryData = getRepository(repositoryName);
+          List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+          try {
+              repositoryData.retrieve(deleteChild.parent, 0, retrieved);
+          } catch (IllegalArgumentException e) {
+              channel.sendEvent(
+                      sequenceNumber ->
+                              new ErrorEvent(
+                                      sequenceNumber,
+                                      StandardErrorCode.UNKNOWN_NODE,
+                                      "Node with id " + deleteChild.parent + " not found"));
+              return;
+          }
+          SerializedClassifierInstance node = retrieved.get(0);
+          channel.sendEvent(
+                  sequenceNumber ->
+                          new ChildDeleted(
+                                  sequenceNumber,
+                                  deleteChild.parent,
+                                  deleteChild.containment,
+                                  deleteChild.index,
+                                  deleteChild.deletedChild)
+                                  .addSource(source));
+          return;
       }
 
       throw new UnsupportedOperationException(

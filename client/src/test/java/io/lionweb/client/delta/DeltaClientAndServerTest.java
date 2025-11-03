@@ -12,6 +12,8 @@ import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.utils.ModelComparator;
+
+import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -130,4 +132,59 @@ public class DeltaClientAndServerTest {
         ModelComparator.areEquivalent(
             Collections.singletonList(concept1), language2.getElements()));
   }
+
+    @Test
+    public void removingChildren() {
+        InMemoryServer server = new InMemoryServer();
+        server.createRepository(
+                new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+
+        JsonSerialization serialization =
+                SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+        Language language1 = new Language("Language A", "lang-a", "lang-a-key");
+        server.createPartition("MyRepo", language1, serialization);
+
+        Language language2 =
+                (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
+        Assertions.assertNotNull(language2);
+
+        assertEquals(language1, language2);
+
+        DeltaChannel channel = new InMemoryDeltaChannel();
+        server.monitorDeltaChannel("MyRepo", channel);
+
+        DeltaClient client1 = new DeltaClient(channel, "my-client-1");
+        client1.sendSignOnRequest();
+
+        DeltaClient client2 = new DeltaClient(channel, "my-client-2");
+        client2.sendSignOnRequest();
+
+        client1.monitor(language1);
+        client2.monitor(language2);
+
+        Concept concept1 = new Concept(language1, "Concept A", "concept-a", "a");
+        language1.addElement(concept1);
+        Concept concept2 = new Concept(language1, "Concept B", "concept-b", "b");
+        language1.addElement(concept2);
+        Concept concept3 = new Concept(language1, "Concept C", "concept-c", "c");
+        language1.addElement(concept3);
+
+        assertEquals(Arrays.asList(concept1, concept2, concept3), language1.getElements());
+        assertEquals(Arrays.asList(concept1, concept2, concept3), language2.getElements());
+
+        language1.removeChild(concept2);
+
+        assertEquals(Arrays.asList(concept1, concept3), language1.getElements());
+        assertEquals(Arrays.asList(concept1, concept3), language2.getElements());
+
+        language1.removeChild(concept3);
+
+        assertEquals(Arrays.asList(concept1), language1.getElements());
+        assertEquals(Arrays.asList(concept1), language2.getElements());
+
+        language1.removeChild(concept1);
+
+        assertEquals(Arrays.asList(), language1.getElements());
+        assertEquals(Arrays.asList(), language2.getElements());
+    }
 }

@@ -5,9 +5,11 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
+import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
+import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
@@ -121,6 +123,26 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
           classifierInstance.addChild(containment, child, childAdded.index);
         }
       }
+    } else if (event instanceof ChildDeleted) {
+        ChildDeleted childDeleted = (ChildDeleted) event;
+        for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+                nodes.get(childDeleted.parent)) {
+            ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+            if (classifierInstance != null) {
+                Containment containment =
+                        classifierInstance
+                                .getClassifier()
+                                .getContainmentByMetaPointer(childDeleted.containment);
+                if (containment == null) {
+                    throw new IllegalStateException(
+                            "Containment not found for "
+                                    + classifierInstance
+                                    + " using metapointer "
+                                    + childDeleted.containment);
+                }
+                classifierInstance.removeChild(containment, childDeleted.index);
+            }
+        }
     } else if (event instanceof ErrorEvent) {
       ErrorEvent errorEvent = (ErrorEvent) event;
       observer.paused = false;
@@ -178,8 +200,20 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         ClassifierInstance<?> classifierInstance,
         Containment containment,
         int index,
-        Node removedChild) {
-      throw new UnsupportedOperationException("Not supported yet.");
+        @NotNull Node removedChild) {
+        if (paused) return;
+        Objects.requireNonNull(removedChild, "removedChild must not be null");
+        String removedChildId = removedChild.getID();
+        Objects.requireNonNull(removedChildId, "removedChildId must not be null");
+        channel.sendCommand(
+                participationId,
+                commandId ->
+                        new DeleteChild(
+                                commandId,
+                                classifierInstance.getID(),
+                                MetaPointer.from(containment),
+                                index,
+                                removedChildId));
     }
 
     @Override
