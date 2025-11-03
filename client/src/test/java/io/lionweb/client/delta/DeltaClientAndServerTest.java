@@ -359,68 +359,62 @@ public class DeltaClientAndServerTest {
     companyReference.setType(companyConcept);
     companyReference.setOptional(true);
     personConcept.addFeature(companyReference);
-    //
-    //        // 12. Move features between concepts
-    //        personConcept.removeFeature(emailProperty);
-    //        baseConcept.addFeature(emailProperty);
-    //
-    //        // 13. Modify feature properties
-    //        ageProperty.setOptional(true);
-    //        statusProperty.setOptional(false);
-    //        employeeCountProperty.setOptional(true);
-    //
-    //        // 14. Add more enumeration literals
-    //        EnumerationLiteral archivedStatus = new EnumerationLiteral(statusEnum, "Archived",
-    // "archived-literal", "archived");
-    //        statusEnum.addLiteral(archivedStatus);
-    //
-    //        // Remove and re-add enumeration literal
-    //        statusEnum.removeLiteral(pendingStatus);
-    //        EnumerationLiteral reviewingStatus = new EnumerationLiteral(statusEnum, "Reviewing",
-    // "reviewing-literal", "reviewing");
-    //        statusEnum.addLiteral(reviewingStatus);
-    //
-    //        // 15. Modify interface hierarchy
-    //        Interface versionedInterface = new Interface(language1, "Versioned",
-    // "versioned-interface", "versioned");
-    //        language1.addElement(versionedInterface);
-    //
-    //        Property versionProperty = new Property(versionedInterface, "version",
-    // "version-property", "version");
-    //        versionProperty.setType(PrimitiveType.INTEGER);
-    //        versionedInterface.addFeature(versionProperty);
-    //
-    //        auditableInterface.addExtendedInterface(versionedInterface);
-    //
-    //        // 16. Create abstract concepts
-    //        Concept documentConcept = new Concept(language1, "Document", "document-concept",
-    // "document");
-    //        documentConcept.setAbstract(true);
-    //        language1.addElement(documentConcept);
-    //
-    //        documentConcept.addImplementedInterface(namedInterface);
-    //        documentConcept.addImplementedInterface(versionedInterface);
-    //
-    //        Concept reportConcept = new Concept(language1, "Report", "report-concept", "report");
-    //        language1.addElement(reportConcept);
-    //        reportConcept.setExtendedConcept(documentConcept);
-    //
-    //        Concept contractConcept = new Concept(language1, "Contract", "contract-concept",
-    // "contract");
-    //        language1.addElement(contractConcept);
-    //        contractConcept.setExtendedConcept(documentConcept);
-    //
-    //        // 17. Add features with different cardinalities
-    //        Property tagsProperty = new Property(documentConcept, "tags", "tags-property",
-    // "tags");
-    //        tagsProperty.setType(PrimitiveType.STRING);
-    //        tagsProperty.setMultiple(true);
-    //        documentConcept.addFeature(tagsProperty);
-    //
-    //        Property priorityProperty = new Property(reportConcept, "priority",
-    // "priority-property", "priority");
-    //        priorityProperty.setType(priorityEnum);
-    //        reportConcept.addFeature(priorityProperty);
+
+    // 12. Move features between concepts
+    personConcept.removeFeature(emailProperty);
+    baseConcept.addFeature(emailProperty);
+
+    // 13. Modify feature properties
+    ageProperty.setOptional(true);
+    statusProperty.setOptional(false);
+    employeeCountProperty.setOptional(true);
+
+    // 14. Add more enumeration literals
+    EnumerationLiteral archivedStatus =
+        new EnumerationLiteral(statusEnum, "Archived", "archived-id");
+    statusEnum.addLiteral(archivedStatus);
+
+    // Remove and re-add enumeration literal
+    statusEnum.removeChild(pendingStatus);
+    EnumerationLiteral reviewingStatus =
+        new EnumerationLiteral(statusEnum, "Reviewing", "reviewing-id");
+    statusEnum.addLiteral(reviewingStatus);
+
+    // 15. Modify interface hierarchy
+    Interface versionedInterface =
+        new Interface(language1, "Versioned", "versioned-interface", "versioned");
+    language1.addElement(versionedInterface);
+
+    Property versionProperty = new Property("version", versionedInterface, "version-id");
+    versionProperty.setType(LionCoreBuiltins.getInteger());
+    versionedInterface.addFeature(versionProperty);
+
+    auditableInterface.addExtendedInterface(versionedInterface);
+
+    // 16. Create abstract concepts
+    Concept documentConcept = new Concept(language1, "Document", "document-concept", "document");
+    documentConcept.setAbstract(true);
+    language1.addElement(documentConcept);
+
+    documentConcept.addImplementedInterface(namedInterface);
+    documentConcept.addImplementedInterface(versionedInterface);
+
+    Concept reportConcept = new Concept(language1, "Report", "report-concept", "report");
+    language1.addElement(reportConcept);
+    reportConcept.setExtendedConcept(documentConcept);
+
+    Concept contractConcept = new Concept(language1, "Contract", "contract-concept", "contract");
+    language1.addElement(contractConcept);
+    contractConcept.setExtendedConcept(documentConcept);
+
+    // 17. Add features with different cardinalities
+    Property tagsProperty = new Property("tags", documentConcept, "tags-id");
+    tagsProperty.setType(LionCoreBuiltins.getString());
+    documentConcept.addFeature(tagsProperty);
+
+    Property priorityProperty = new Property("priority", reportConcept, "priority-id");
+    priorityProperty.setType(priorityEnum);
+    reportConcept.addFeature(priorityProperty);
     //
     //        // 18. Move features within the same concept (change order)
     //        personConcept.removeFeature(ageProperty);
