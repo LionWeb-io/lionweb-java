@@ -7,10 +7,7 @@ import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.inmemory.InMemoryServer;
-import io.lionweb.language.Concept;
-import io.lionweb.language.Enumeration;
-import io.lionweb.language.EnumerationLiteral;
-import io.lionweb.language.Language;
+import io.lionweb.language.*;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.utils.ModelComparator;
@@ -226,8 +223,7 @@ public class DeltaClientAndServerTest {
     language1.setName("Enterprise Modeling Language");
 
     // 2. Create enumerations
-    Enumeration statusEnum =
-        new Enumeration(language1, "Status", "status-enum").setKey("status");
+    Enumeration statusEnum = new Enumeration(language1, "Status", "status-enum").setKey("status");
     language1.addElement(statusEnum);
 
     EnumerationLiteral activeStatus =
@@ -255,45 +251,46 @@ public class DeltaClientAndServerTest {
         new EnumerationLiteral(priorityEnum, "Low", "low-literal").setKey("low");
     priorityEnum.addLiteral(lowPriority);
 
-    //        // 3. Create interfaces
-    //        Interface namedInterface = new Interface(language1, "Named", "named-interface",
-    // "named");
-    //        language1.addElement(namedInterface);
+    // 3. Create interfaces
+    Interface namedInterface = new Interface(language1, "Named", "named-interface", "named");
+    language1.addElement(namedInterface);
+
+    Interface identifiableInterface =
+        new Interface(language1, "Identifiable", "identifiable-interface", "identifiable");
+    language1.addElement(identifiableInterface);
+
+    Interface auditableInterface =
+        new Interface(language1, "Auditable", "auditable-interface", "auditable");
+    language1.addElement(auditableInterface);
+
+    Interface timestampedInterface =
+        new Interface(language1, "Timestamped", "timestamped-interface", "timestamped");
+    language1.addElement(timestampedInterface);
+
+    // 4. Make interfaces extend other interfaces
+    auditableInterface.addExtendedInterface(timestampedInterface);
+    namedInterface.addExtendedInterface(identifiableInterface);
+
+    //            // 5. Add features to interfaces
+    //            Property nameProperty = new Property(namedInterface, "name", "name-property",
+    // "name");
+    //            nameProperty.setType(PrimitiveType.STRING);
+    //            namedInterface.addFeature(nameProperty);
     //
-    //        Interface identifiableInterface = new Interface(language1, "Identifiable",
-    // "identifiable-interface", "identifiable");
-    //        language1.addElement(identifiableInterface);
+    //            Property idProperty = new Property(identifiableInterface, "id", "id-property",
+    // "id");
+    //            idProperty.setType(PrimitiveType.STRING);
+    //            identifiableInterface.addFeature(idProperty);
     //
-    //        Interface auditableInterface = new Interface(language1, "Auditable",
-    // "auditable-interface", "auditable");
-    //        language1.addElement(auditableInterface);
+    //            Property createdAtProperty = new Property(timestampedInterface, "createdAt",
+    //     "created-at-property", "createdAt");
+    //            createdAtProperty.setType(PrimitiveType.STRING);
+    //            timestampedInterface.addFeature(createdAtProperty);
     //
-    //        Interface timestampedInterface = new Interface(language1, "Timestamped",
-    // "timestamped-interface", "timestamped");
-    //        language1.addElement(timestampedInterface);
-    //
-    //        // 4. Make interfaces extend other interfaces
-    //        auditableInterface.addExtendedInterface(timestampedInterface);
-    //        namedInterface.addExtendedInterface(identifiableInterface);
-    //
-    //        // 5. Add features to interfaces
-    //        Property nameProperty = new Property(namedInterface, "name", "name-property", "name");
-    //        nameProperty.setType(PrimitiveType.STRING);
-    //        namedInterface.addFeature(nameProperty);
-    //
-    //        Property idProperty = new Property(identifiableInterface, "id", "id-property", "id");
-    //        idProperty.setType(PrimitiveType.STRING);
-    //        identifiableInterface.addFeature(idProperty);
-    //
-    //        Property createdAtProperty = new Property(timestampedInterface, "createdAt",
-    // "created-at-property", "createdAt");
-    //        createdAtProperty.setType(PrimitiveType.STRING);
-    //        timestampedInterface.addFeature(createdAtProperty);
-    //
-    //        Property modifiedAtProperty = new Property(timestampedInterface, "modifiedAt",
-    // "modified-at-property", "modifiedAt");
-    //        modifiedAtProperty.setType(PrimitiveType.STRING);
-    //        timestampedInterface.addFeature(modifiedAtProperty);
+    //            Property modifiedAtProperty = new Property(timestampedInterface, "modifiedAt",
+    //     "modified-at-property", "modifiedAt");
+    //            modifiedAtProperty.setType(PrimitiveType.STRING);
+    //            timestampedInterface.addFeature(modifiedAtProperty);
     //
     //        // 6. Create concepts
     //        Concept personConcept = new Concept(language1, "Person", "person-concept", "person");

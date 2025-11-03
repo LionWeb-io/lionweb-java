@@ -63,6 +63,12 @@ public class ProxyNode extends AbstractNode {
     throw cannotDoBecauseProxy();
   }
 
+  @Override
+  public int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode) {
+    throw cannotDoBecauseProxy();
+  }
+
   @Nonnull
   @Override
   public String getID() {
