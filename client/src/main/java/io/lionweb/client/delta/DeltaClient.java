@@ -7,16 +7,19 @@ import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.commands.references.AddReference;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
+import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.*;
+import io.lionweb.model.impl.ProxyNode;
 import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
@@ -147,6 +150,30 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       ErrorEvent errorEvent = (ErrorEvent) event;
       observer.paused = false;
       throw new ErrorEventReceivedException(errorEvent.errorCode, errorEvent.message);
+    } else if (event instanceof ReferenceAdded) {
+      ReferenceAdded referenceAdded = (ReferenceAdded) event;
+      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
+          nodes.get(referenceAdded.parent)) {
+        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
+        if (classifierInstance != null) {
+          Reference reference =
+              classifierInstance
+                  .getClassifier()
+                  .getReferenceByMetaPointer(referenceAdded.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for "
+                    + classifierInstance
+                    + " using metapointer "
+                    + referenceAdded.reference);
+          }
+          classifierInstance.addReferenceValue(
+              reference,
+              referenceAdded.index,
+              new ReferenceValue(
+                  new ProxyNode(referenceAdded.newTarget), referenceAdded.newResolveInfo));
+        }
+      }
     } else {
       observer.paused = false;
       throw new UnsupportedOperationException(
@@ -185,7 +212,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       if (paused) return;
       SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
       if (newChild.getID() == null) {
-          throw new IllegalStateException("Child id must not be null");
+        throw new IllegalStateException("Child id must not be null");
       }
       channel.sendCommand(
           participationId,
@@ -235,8 +262,19 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     public void referenceValueAdded(
         ClassifierInstance<?> classifierInstance,
         Reference reference,
+        int index,
         ReferenceValue referenceValue) {
-      throw new UnsupportedOperationException("Not supported yet.");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new AddReference(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(reference),
+                  index,
+                  referenceValue.getReferredID(),
+                  referenceValue.getResolveInfo()));
     }
 
     @Override
