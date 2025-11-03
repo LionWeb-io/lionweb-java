@@ -53,6 +53,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         lionWebVersion);
     this.serialization = SerializationProvider.getStandardJsonSerialization(lionWebVersion);
     this.serialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
+    this.serialization.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.PROXY_NODES);
   }
 
   /**
