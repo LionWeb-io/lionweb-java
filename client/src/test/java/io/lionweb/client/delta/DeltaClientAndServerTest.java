@@ -8,11 +8,12 @@ import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Concept;
+import io.lionweb.language.Enumeration;
+import io.lionweb.language.EnumerationLiteral;
 import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.utils.ModelComparator;
-
 import java.util.Arrays;
 import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
@@ -133,58 +134,364 @@ public class DeltaClientAndServerTest {
             Collections.singletonList(concept1), language2.getElements()));
   }
 
-    @Test
-    public void removingChildren() {
-        InMemoryServer server = new InMemoryServer();
-        server.createRepository(
-                new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+  @Test
+  public void removingChildren() {
+    InMemoryServer server = new InMemoryServer();
+    server.createRepository(
+        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
 
-        JsonSerialization serialization =
-                SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
-        Language language1 = new Language("Language A", "lang-a", "lang-a-key");
-        server.createPartition("MyRepo", language1, serialization);
+    JsonSerialization serialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+    Language language1 = new Language("Language A", "lang-a", "lang-a-key");
+    server.createPartition("MyRepo", language1, serialization);
 
-        Language language2 =
-                (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
-        Assertions.assertNotNull(language2);
+    Language language2 =
+        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
+    Assertions.assertNotNull(language2);
 
-        assertEquals(language1, language2);
+    assertEquals(language1, language2);
 
-        DeltaChannel channel = new InMemoryDeltaChannel();
-        server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = new InMemoryDeltaChannel();
+    server.monitorDeltaChannel("MyRepo", channel);
 
-        DeltaClient client1 = new DeltaClient(channel, "my-client-1");
-        client1.sendSignOnRequest();
+    DeltaClient client1 = new DeltaClient(channel, "my-client-1");
+    client1.sendSignOnRequest();
 
-        DeltaClient client2 = new DeltaClient(channel, "my-client-2");
-        client2.sendSignOnRequest();
+    DeltaClient client2 = new DeltaClient(channel, "my-client-2");
+    client2.sendSignOnRequest();
 
-        client1.monitor(language1);
-        client2.monitor(language2);
+    client1.monitor(language1);
+    client2.monitor(language2);
 
-        Concept concept1 = new Concept(language1, "Concept A", "concept-a", "a");
-        language1.addElement(concept1);
-        Concept concept2 = new Concept(language1, "Concept B", "concept-b", "b");
-        language1.addElement(concept2);
-        Concept concept3 = new Concept(language1, "Concept C", "concept-c", "c");
-        language1.addElement(concept3);
+    Concept concept1 = new Concept(language1, "Concept A", "concept-a", "a");
+    language1.addElement(concept1);
+    Concept concept2 = new Concept(language1, "Concept B", "concept-b", "b");
+    language1.addElement(concept2);
+    Concept concept3 = new Concept(language1, "Concept C", "concept-c", "c");
+    language1.addElement(concept3);
 
-        assertEquals(Arrays.asList(concept1, concept2, concept3), language1.getElements());
-        assertEquals(Arrays.asList(concept1, concept2, concept3), language2.getElements());
+    assertEquals(Arrays.asList(concept1, concept2, concept3), language1.getElements());
+    assertEquals(Arrays.asList(concept1, concept2, concept3), language2.getElements());
 
-        language1.removeChild(concept2);
+    language1.removeChild(concept2);
 
-        assertEquals(Arrays.asList(concept1, concept3), language1.getElements());
-        assertEquals(Arrays.asList(concept1, concept3), language2.getElements());
+    assertEquals(Arrays.asList(concept1, concept3), language1.getElements());
+    assertEquals(Arrays.asList(concept1, concept3), language2.getElements());
 
-        language1.removeChild(concept3);
+    language1.removeChild(concept3);
 
-        assertEquals(Arrays.asList(concept1), language1.getElements());
-        assertEquals(Arrays.asList(concept1), language2.getElements());
+    assertEquals(Arrays.asList(concept1), language1.getElements());
+    assertEquals(Arrays.asList(concept1), language2.getElements());
 
-        language1.removeChild(concept1);
+    language1.removeChild(concept1);
 
-        assertEquals(Arrays.asList(), language1.getElements());
-        assertEquals(Arrays.asList(), language2.getElements());
-    }
+    assertEquals(Arrays.asList(), language1.getElements());
+    assertEquals(Arrays.asList(), language2.getElements());
+  }
+
+  @Test
+  public void variousOperations() {
+    InMemoryServer server = new InMemoryServer();
+    server.createRepository(
+        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+
+    JsonSerialization serialization =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+    Language language1 = new Language("Language A", "lang-a", "lang-a-key");
+    server.createPartition("MyRepo", language1, serialization);
+
+    Language language2 =
+        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", serialization);
+    Assertions.assertNotNull(language2);
+
+    assertEquals(language1, language2);
+
+    DeltaChannel channel = new InMemoryDeltaChannel();
+    server.monitorDeltaChannel("MyRepo", channel);
+
+    DeltaClient client1 = new DeltaClient(channel, "my-client-1");
+    client1.sendSignOnRequest();
+
+    DeltaClient client2 = new DeltaClient(channel, "my-client-2");
+    client2.sendSignOnRequest();
+
+    client1.monitor(language1);
+    client2.monitor(language2);
+
+    // HERE DO A LOT OF OPERATIONS CREATING A LANGUAGE AND CHANGING IT
+
+    // 1. Change language name multiple times
+    language1.setName("Language Modified");
+    language1.setName("Business Domain Language");
+    language1.setName("Enterprise Modeling Language");
+
+    // 2. Create enumerations
+    Enumeration statusEnum =
+        new Enumeration(language1, "Status", "status-enum").setKey("status");
+    language1.addElement(statusEnum);
+
+    EnumerationLiteral activeStatus =
+        new EnumerationLiteral(statusEnum, "Active", "active-literal").setKey("active");
+    statusEnum.addLiteral(activeStatus);
+    EnumerationLiteral inactiveStatus =
+        new EnumerationLiteral(statusEnum, "Inactive", "inactive-literal").setKey("inactive");
+    statusEnum.addLiteral(inactiveStatus);
+    EnumerationLiteral pendingStatus =
+        new EnumerationLiteral(statusEnum, "Pending", "pending-literal").setKey("pending");
+    statusEnum.addLiteral(pendingStatus);
+
+    // Add another enumeration
+    Enumeration priorityEnum =
+        new Enumeration(language1, "Priority", "priority-enum").setKey("priority");
+    language1.addElement(priorityEnum);
+
+    EnumerationLiteral highPriority =
+        new EnumerationLiteral(priorityEnum, "High", "high-literal").setKey("high");
+    priorityEnum.addLiteral(highPriority);
+    EnumerationLiteral mediumPriority =
+        new EnumerationLiteral(priorityEnum, "Medium", "medium-literal").setKey("medium");
+    priorityEnum.addLiteral(mediumPriority);
+    EnumerationLiteral lowPriority =
+        new EnumerationLiteral(priorityEnum, "Low", "low-literal").setKey("low");
+    priorityEnum.addLiteral(lowPriority);
+
+    //        // 3. Create interfaces
+    //        Interface namedInterface = new Interface(language1, "Named", "named-interface",
+    // "named");
+    //        language1.addElement(namedInterface);
+    //
+    //        Interface identifiableInterface = new Interface(language1, "Identifiable",
+    // "identifiable-interface", "identifiable");
+    //        language1.addElement(identifiableInterface);
+    //
+    //        Interface auditableInterface = new Interface(language1, "Auditable",
+    // "auditable-interface", "auditable");
+    //        language1.addElement(auditableInterface);
+    //
+    //        Interface timestampedInterface = new Interface(language1, "Timestamped",
+    // "timestamped-interface", "timestamped");
+    //        language1.addElement(timestampedInterface);
+    //
+    //        // 4. Make interfaces extend other interfaces
+    //        auditableInterface.addExtendedInterface(timestampedInterface);
+    //        namedInterface.addExtendedInterface(identifiableInterface);
+    //
+    //        // 5. Add features to interfaces
+    //        Property nameProperty = new Property(namedInterface, "name", "name-property", "name");
+    //        nameProperty.setType(PrimitiveType.STRING);
+    //        namedInterface.addFeature(nameProperty);
+    //
+    //        Property idProperty = new Property(identifiableInterface, "id", "id-property", "id");
+    //        idProperty.setType(PrimitiveType.STRING);
+    //        identifiableInterface.addFeature(idProperty);
+    //
+    //        Property createdAtProperty = new Property(timestampedInterface, "createdAt",
+    // "created-at-property", "createdAt");
+    //        createdAtProperty.setType(PrimitiveType.STRING);
+    //        timestampedInterface.addFeature(createdAtProperty);
+    //
+    //        Property modifiedAtProperty = new Property(timestampedInterface, "modifiedAt",
+    // "modified-at-property", "modifiedAt");
+    //        modifiedAtProperty.setType(PrimitiveType.STRING);
+    //        timestampedInterface.addFeature(modifiedAtProperty);
+    //
+    //        // 6. Create concepts
+    //        Concept personConcept = new Concept(language1, "Person", "person-concept", "person");
+    //        language1.addElement(personConcept);
+    //
+    //        Concept companyConcept = new Concept(language1, "Company", "company-concept",
+    // "company");
+    //        language1.addElement(companyConcept);
+    //
+    //        Concept addressConcept = new Concept(language1, "Address", "address-concept",
+    // "address");
+    //        language1.addElement(addressConcept);
+    //
+    //        Concept baseConcept = new Concept(language1, "BaseEntity", "base-entity-concept",
+    // "baseEntity");
+    //        language1.addElement(baseConcept);
+    //
+    //        // 7. Make concepts implement interfaces
+    //        personConcept.addImplementedInterface(namedInterface);
+    //        personConcept.addImplementedInterface(auditableInterface);
+    //
+    //        companyConcept.addImplementedInterface(namedInterface);
+    //        companyConcept.addImplementedInterface(identifiableInterface);
+    //
+    //        addressConcept.addImplementedInterface(timestampedInterface);
+    //
+    //        baseConcept.addImplementedInterface(identifiableInterface);
+    //        baseConcept.addImplementedInterface(auditableInterface);
+    //
+    //        // 8. Set up concept inheritance
+    //        personConcept.setExtendedConcept(baseConcept);
+    //        companyConcept.setExtendedConcept(baseConcept);
+    //
+    //        // 9. Add features to concepts
+    //        Property ageProperty = new Property(personConcept, "age", "age-property", "age");
+    //        ageProperty.setType(PrimitiveType.INTEGER);
+    //        personConcept.addFeature(ageProperty);
+    //
+    //        Property emailProperty = new Property(personConcept, "email", "email-property",
+    // "email");
+    //        emailProperty.setType(PrimitiveType.STRING);
+    //        personConcept.addFeature(emailProperty);
+    //
+    //        Property statusProperty = new Property(personConcept, "status", "status-property",
+    // "status");
+    //        statusProperty.setType(statusEnum);
+    //        personConcept.addFeature(statusProperty);
+    //
+    //        Property employeeCountProperty = new Property(companyConcept, "employeeCount",
+    // "employee-count-property", "employeeCount");
+    //        employeeCountProperty.setType(PrimitiveType.INTEGER);
+    //        companyConcept.addFeature(employeeCountProperty);
+    //
+    //        Property streetProperty = new Property(addressConcept, "street", "street-property",
+    // "street");
+    //        streetProperty.setType(PrimitiveType.STRING);
+    //        addressConcept.addFeature(streetProperty);
+    //
+    //        Property cityProperty = new Property(addressConcept, "city", "city-property", "city");
+    //        cityProperty.setType(PrimitiveType.STRING);
+    //        addressConcept.addFeature(cityProperty);
+    //
+    //        // 10. Add containment references
+    //        Containment addressesContainment = new Containment(personConcept, "addresses",
+    // "addresses-containment", "addresses");
+    //        addressesContainment.setType(addressConcept);
+    //        addressesContainment.setMultiple(true);
+    //        personConcept.addFeature(addressesContainment);
+    //
+    //        Containment employeesContainment = new Containment(companyConcept, "employees",
+    // "employees-containment", "employees");
+    //        employeesContainment.setType(personConcept);
+    //        employeesContainment.setMultiple(true);
+    //        companyConcept.addFeature(employeesContainment);
+    //
+    //        // 11. Add regular references
+    //        Reference companyReference = new Reference(personConcept, "employer",
+    // "employer-reference", "employer");
+    //        companyReference.setType(companyConcept);
+    //        companyReference.setOptional(true);
+    //        personConcept.addFeature(companyReference);
+    //
+    //        // 12. Move features between concepts
+    //        personConcept.removeFeature(emailProperty);
+    //        baseConcept.addFeature(emailProperty);
+    //
+    //        // 13. Modify feature properties
+    //        ageProperty.setOptional(true);
+    //        statusProperty.setOptional(false);
+    //        employeeCountProperty.setOptional(true);
+    //
+    //        // 14. Add more enumeration literals
+    //        EnumerationLiteral archivedStatus = new EnumerationLiteral(statusEnum, "Archived",
+    // "archived-literal", "archived");
+    //        statusEnum.addLiteral(archivedStatus);
+    //
+    //        // Remove and re-add enumeration literal
+    //        statusEnum.removeLiteral(pendingStatus);
+    //        EnumerationLiteral reviewingStatus = new EnumerationLiteral(statusEnum, "Reviewing",
+    // "reviewing-literal", "reviewing");
+    //        statusEnum.addLiteral(reviewingStatus);
+    //
+    //        // 15. Modify interface hierarchy
+    //        Interface versionedInterface = new Interface(language1, "Versioned",
+    // "versioned-interface", "versioned");
+    //        language1.addElement(versionedInterface);
+    //
+    //        Property versionProperty = new Property(versionedInterface, "version",
+    // "version-property", "version");
+    //        versionProperty.setType(PrimitiveType.INTEGER);
+    //        versionedInterface.addFeature(versionProperty);
+    //
+    //        auditableInterface.addExtendedInterface(versionedInterface);
+    //
+    //        // 16. Create abstract concepts
+    //        Concept documentConcept = new Concept(language1, "Document", "document-concept",
+    // "document");
+    //        documentConcept.setAbstract(true);
+    //        language1.addElement(documentConcept);
+    //
+    //        documentConcept.addImplementedInterface(namedInterface);
+    //        documentConcept.addImplementedInterface(versionedInterface);
+    //
+    //        Concept reportConcept = new Concept(language1, "Report", "report-concept", "report");
+    //        language1.addElement(reportConcept);
+    //        reportConcept.setExtendedConcept(documentConcept);
+    //
+    //        Concept contractConcept = new Concept(language1, "Contract", "contract-concept",
+    // "contract");
+    //        language1.addElement(contractConcept);
+    //        contractConcept.setExtendedConcept(documentConcept);
+    //
+    //        // 17. Add features with different cardinalities
+    //        Property tagsProperty = new Property(documentConcept, "tags", "tags-property",
+    // "tags");
+    //        tagsProperty.setType(PrimitiveType.STRING);
+    //        tagsProperty.setMultiple(true);
+    //        documentConcept.addFeature(tagsProperty);
+    //
+    //        Property priorityProperty = new Property(reportConcept, "priority",
+    // "priority-property", "priority");
+    //        priorityProperty.setType(priorityEnum);
+    //        reportConcept.addFeature(priorityProperty);
+    //
+    //        // 18. Move features within the same concept (change order)
+    //        personConcept.removeFeature(ageProperty);
+    //        personConcept.removeFeature(statusProperty);
+    //        personConcept.addFeature(statusProperty);
+    //        personConcept.addFeature(ageProperty);
+    //
+    //        // 19. Create complex reference relationships
+    //        Reference authorReference = new Reference(documentConcept, "author",
+    // "author-reference", "author");
+    //        authorReference.setType(personConcept);
+    //        documentConcept.addFeature(authorReference);
+    //
+    //        Reference clientReference = new Reference(contractConcept, "client",
+    // "client-reference", "client");
+    //        clientReference.setType(companyConcept);
+    //        contractConcept.addFeature(clientReference);
+    //
+    //        // 20. Modify existing elements
+    //        statusEnum.setName("EntityStatus");
+    //        priorityEnum.setName("TaskPriority");
+    //
+    //        activeStatus.setName("ACTIVE");
+    //        inactiveStatus.setName("INACTIVE");
+    //
+    //        namedInterface.setName("NamedEntity");
+    //        identifiableInterface.setName("UniqueEntity");
+    //
+    //        // 21. Remove and re-add features with modifications
+    //        companyConcept.removeFeature(employeeCountProperty);
+    //        Property staffSizeProperty = new Property(companyConcept, "staffSize",
+    // "staff-size-property", "staffSize");
+    //        staffSizeProperty.setType(PrimitiveType.INTEGER);
+    //        staffSizeProperty.setOptional(false);
+    //        companyConcept.addFeature(staffSizeProperty);
+    //
+    //        // 22. Change concept inheritance
+    //        Concept organizationConcept = new Concept(language1, "Organization",
+    // "organization-concept", "organization");
+    //        language1.addElement(organizationConcept);
+    //        organizationConcept.setExtendedConcept(baseConcept);
+    //        organizationConcept.addImplementedInterface(namedInterface);
+    //
+    //        companyConcept.setExtendedConcept(organizationConcept);
+    //
+    //        // 23. Add final modifications
+    //        Property descriptionProperty = new Property(organizationConcept, "description",
+    // "description-property", "description");
+    //        descriptionProperty.setType(PrimitiveType.STRING);
+    //        descriptionProperty.setOptional(true);
+    //        organizationConcept.addFeature(descriptionProperty);
+    //
+    //        // 24. Final language name change
+    //        language1.setName("Complete Enterprise Domain Language");
+
+    assertEquals(language1, language2);
+  }
 }

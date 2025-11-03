@@ -345,31 +345,31 @@ public class InMemoryServer {
                     .addSource(source));
         return;
       } else if (command instanceof DeleteChild) {
-          DeleteChild deleteChild = (DeleteChild) command;
-          RepositoryData repositoryData = getRepository(repositoryName);
-          List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-          try {
-              repositoryData.retrieve(deleteChild.parent, 0, retrieved);
-          } catch (IllegalArgumentException e) {
-              channel.sendEvent(
-                      sequenceNumber ->
-                              new ErrorEvent(
-                                      sequenceNumber,
-                                      StandardErrorCode.UNKNOWN_NODE,
-                                      "Node with id " + deleteChild.parent + " not found"));
-              return;
-          }
-          SerializedClassifierInstance node = retrieved.get(0);
+        DeleteChild deleteChild = (DeleteChild) command;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+        try {
+          repositoryData.retrieve(deleteChild.parent, 0, retrieved);
+        } catch (IllegalArgumentException e) {
           channel.sendEvent(
-                  sequenceNumber ->
-                          new ChildDeleted(
-                                  sequenceNumber,
-                                  deleteChild.parent,
-                                  deleteChild.containment,
-                                  deleteChild.index,
-                                  deleteChild.deletedChild)
-                                  .addSource(source));
+              sequenceNumber ->
+                  new ErrorEvent(
+                      sequenceNumber,
+                      StandardErrorCode.UNKNOWN_NODE,
+                      "Node with id " + deleteChild.parent + " not found"));
           return;
+        }
+        SerializedClassifierInstance node = retrieved.get(0);
+        channel.sendEvent(
+            sequenceNumber ->
+                new ChildDeleted(
+                        sequenceNumber,
+                        deleteChild.parent,
+                        deleteChild.containment,
+                        deleteChild.index,
+                        deleteChild.deletedChild)
+                    .addSource(source));
+        return;
       }
 
       throw new UnsupportedOperationException(
