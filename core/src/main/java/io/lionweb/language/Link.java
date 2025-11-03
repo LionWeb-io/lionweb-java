@@ -44,6 +44,11 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     setMultiple(false);
   }
 
+    public Link(@Nullable String name, @Nullable Classifier container, @Nonnull String id) {
+        super(name, container, id);
+        setMultiple(false);
+    }
+
   public boolean isMultiple() {
     return getPropertyValue("multiple", Boolean.class, false);
   }
