@@ -271,103 +271,94 @@ public class DeltaClientAndServerTest {
     auditableInterface.addExtendedInterface(timestampedInterface);
     namedInterface.addExtendedInterface(identifiableInterface);
 
-                // 5. Add features to interfaces
-                Property nameProperty = new Property("name", namedInterface, "name-id");
-                nameProperty.setType(LionCoreBuiltins.getString());
-                namedInterface.addFeature(nameProperty);
+    // 5. Add features to interfaces
+    Property nameProperty = new Property("name", namedInterface, "name-id");
+    nameProperty.setType(LionCoreBuiltins.getString());
+    namedInterface.addFeature(nameProperty);
 
-                Property idProperty = new Property("id", identifiableInterface,
-     "id0d");
-                idProperty.setType(LionCoreBuiltins.getString());
-                identifiableInterface.addFeature(idProperty);
+    Property idProperty = new Property("id", identifiableInterface, "id0d");
+    idProperty.setType(LionCoreBuiltins.getString());
+    identifiableInterface.addFeature(idProperty);
 
-                Property createdAtProperty = new Property("createdAt", timestampedInterface,
-         "createdAt-id");
-                createdAtProperty.setType(LionCoreBuiltins.getString());
-                timestampedInterface.addFeature(createdAtProperty);
+    Property createdAtProperty = new Property("createdAt", timestampedInterface, "createdAt-id");
+    createdAtProperty.setType(LionCoreBuiltins.getString());
+    timestampedInterface.addFeature(createdAtProperty);
 
-                Property modifiedAtProperty = new Property("modifiedAt", timestampedInterface,
-         "modifiedAt-id");
-                modifiedAtProperty.setType(LionCoreBuiltins.getString());
-                timestampedInterface.addFeature(modifiedAtProperty);
+    Property modifiedAtProperty = new Property("modifiedAt", timestampedInterface, "modifiedAt-id");
+    modifiedAtProperty.setType(LionCoreBuiltins.getString());
+    timestampedInterface.addFeature(modifiedAtProperty);
 
-            // 6. Create concepts
-            Concept personConcept = new Concept(language1, "Person", "person-concept", "person");
-            language1.addElement(personConcept);
+    // 6. Create concepts
+    Concept personConcept = new Concept(language1, "Person", "person-concept", "person");
+    language1.addElement(personConcept);
 
-            Concept companyConcept = new Concept(language1, "Company", "company-concept",
-     "company");
-            language1.addElement(companyConcept);
+    Concept companyConcept = new Concept(language1, "Company", "company-concept", "company");
+    language1.addElement(companyConcept);
 
-            Concept addressConcept = new Concept(language1, "Address", "address-concept",
-     "address");
-            language1.addElement(addressConcept);
+    Concept addressConcept = new Concept(language1, "Address", "address-concept", "address");
+    language1.addElement(addressConcept);
 
-            Concept baseConcept = new Concept(language1, "BaseEntity", "base-entity-concept",
-     "baseEntity");
-            language1.addElement(baseConcept);
+    Concept baseConcept = new Concept(language1, "BaseEntity", "base-entity-concept", "baseEntity");
+    language1.addElement(baseConcept);
 
-            // 7. Make concepts implement interfaces
-            personConcept.addImplementedInterface(namedInterface);
-            personConcept.addImplementedInterface(auditableInterface);
+    // 7. Make concepts implement interfaces
+    personConcept.addImplementedInterface(namedInterface);
+    personConcept.addImplementedInterface(auditableInterface);
 
-            companyConcept.addImplementedInterface(namedInterface);
-            companyConcept.addImplementedInterface(identifiableInterface);
+    companyConcept.addImplementedInterface(namedInterface);
+    companyConcept.addImplementedInterface(identifiableInterface);
 
-            addressConcept.addImplementedInterface(timestampedInterface);
+    addressConcept.addImplementedInterface(timestampedInterface);
 
-            baseConcept.addImplementedInterface(identifiableInterface);
-            baseConcept.addImplementedInterface(auditableInterface);
+    baseConcept.addImplementedInterface(identifiableInterface);
+    baseConcept.addImplementedInterface(auditableInterface);
 
-            // 8. Set up concept inheritance
-            personConcept.setExtendedConcept(baseConcept);
-            companyConcept.setExtendedConcept(baseConcept);
+    // 8. Set up concept inheritance
+    personConcept.setExtendedConcept(baseConcept);
+    companyConcept.setExtendedConcept(baseConcept);
 
-            // 9. Add features to concepts
-            Property ageProperty = new Property( "age", personConcept, "age-id");
-            ageProperty.setType(LionCoreBuiltins.getInteger());
-            personConcept.addFeature(ageProperty);
+    // 9. Add features to concepts
+    Property ageProperty = new Property("age", personConcept, "age-id");
+    ageProperty.setType(LionCoreBuiltins.getInteger());
+    personConcept.addFeature(ageProperty);
 
-            Property emailProperty = new Property( "email", personConcept, "email-id");
-            emailProperty.setType(LionCoreBuiltins.getString());
-            personConcept.addFeature(emailProperty);
+    Property emailProperty = new Property("email", personConcept, "email-id");
+    emailProperty.setType(LionCoreBuiltins.getString());
+    personConcept.addFeature(emailProperty);
 
-            Property statusProperty = new Property( "status", personConcept, "status-id");
-            statusProperty.setType(statusEnum);
-            personConcept.addFeature(statusProperty);
+    Property statusProperty = new Property("status", personConcept, "status-id");
+    statusProperty.setType(statusEnum);
+    personConcept.addFeature(statusProperty);
 
-            Property employeeCountProperty = new Property( "employeeCount", companyConcept,
-     "employeeCount-id");
-            employeeCountProperty.setType(LionCoreBuiltins.getInteger());
-            companyConcept.addFeature(employeeCountProperty);
+    Property employeeCountProperty =
+        new Property("employeeCount", companyConcept, "employeeCount-id");
+    employeeCountProperty.setType(LionCoreBuiltins.getInteger());
+    companyConcept.addFeature(employeeCountProperty);
 
-            Property streetProperty = new Property( "street", addressConcept, "street-id");
-            streetProperty.setType(LionCoreBuiltins.getString());
-            addressConcept.addFeature(streetProperty);
+    Property streetProperty = new Property("street", addressConcept, "street-id");
+    streetProperty.setType(LionCoreBuiltins.getString());
+    addressConcept.addFeature(streetProperty);
 
-            Property cityProperty = new Property( "city", addressConcept, "city-id");
-            cityProperty.setType(LionCoreBuiltins.getString());
-            addressConcept.addFeature(cityProperty);
+    Property cityProperty = new Property("city", addressConcept, "city-id");
+    cityProperty.setType(LionCoreBuiltins.getString());
+    addressConcept.addFeature(cityProperty);
 
-            // 10. Add containment references
-            Containment addressesContainment = new Containment( "addresses", personConcept,
-     "addresses-id");
-            addressesContainment.setType(addressConcept);
-            addressesContainment.setMultiple(true);
-            personConcept.addFeature(addressesContainment);
+    // 10. Add containment references
+    Containment addressesContainment = new Containment("addresses", personConcept, "addresses-id");
+    addressesContainment.setType(addressConcept);
+    addressesContainment.setMultiple(true);
+    personConcept.addFeature(addressesContainment);
 
-            Containment employeesContainment = new Containment("employees", companyConcept,
-     "employees-id");
-            employeesContainment.setType(personConcept);
-            employeesContainment.setMultiple(true);
-            companyConcept.addFeature(employeesContainment);
-    //
-    //        // 11. Add regular references
-    //        Reference companyReference = new Reference(personConcept, "employer",
-    // "employer-reference", "employer");
-    //        companyReference.setType(companyConcept);
-    //        companyReference.setOptional(true);
-    //        personConcept.addFeature(companyReference);
+    Containment employeesContainment = new Containment("employees", companyConcept, "employees-id");
+    employeesContainment.setType(personConcept);
+    employeesContainment.setMultiple(true);
+    companyConcept.addFeature(employeesContainment);
+
+    // 11. Add regular references
+    Reference companyReference = new Reference("employer", personConcept, "employer-id");
+    companyReference.setType(companyConcept);
+    companyReference.setOptional(true);
+    personConcept.addFeature(companyReference);
     //
     //        // 12. Move features between concepts
     //        personConcept.removeFeature(emailProperty);
