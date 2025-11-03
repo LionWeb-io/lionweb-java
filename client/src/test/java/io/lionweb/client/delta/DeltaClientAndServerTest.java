@@ -271,26 +271,25 @@ public class DeltaClientAndServerTest {
     auditableInterface.addExtendedInterface(timestampedInterface);
     namedInterface.addExtendedInterface(identifiableInterface);
 
-    //            // 5. Add features to interfaces
-    //            Property nameProperty = new Property(namedInterface, "name", "name-property",
-    // "name");
-    //            nameProperty.setType(PrimitiveType.STRING);
-    //            namedInterface.addFeature(nameProperty);
-    //
-    //            Property idProperty = new Property(identifiableInterface, "id", "id-property",
-    // "id");
-    //            idProperty.setType(PrimitiveType.STRING);
-    //            identifiableInterface.addFeature(idProperty);
-    //
-    //            Property createdAtProperty = new Property(timestampedInterface, "createdAt",
-    //     "created-at-property", "createdAt");
-    //            createdAtProperty.setType(PrimitiveType.STRING);
-    //            timestampedInterface.addFeature(createdAtProperty);
-    //
-    //            Property modifiedAtProperty = new Property(timestampedInterface, "modifiedAt",
-    //     "modified-at-property", "modifiedAt");
-    //            modifiedAtProperty.setType(PrimitiveType.STRING);
-    //            timestampedInterface.addFeature(modifiedAtProperty);
+                // 5. Add features to interfaces
+                Property nameProperty = new Property("name", namedInterface, "name-id");
+                nameProperty.setType(LionCoreBuiltins.getString());
+                namedInterface.addFeature(nameProperty);
+
+                Property idProperty = new Property("id", identifiableInterface,
+     "id0d");
+                idProperty.setType(LionCoreBuiltins.getString());
+                identifiableInterface.addFeature(idProperty);
+
+                Property createdAtProperty = new Property("createdAt", timestampedInterface,
+         "createdAt-id");
+                createdAtProperty.setType(LionCoreBuiltins.getString());
+                timestampedInterface.addFeature(createdAtProperty);
+
+                Property modifiedAtProperty = new Property("modifiedAt", timestampedInterface,
+         "modifiedAt-id");
+                modifiedAtProperty.setType(LionCoreBuiltins.getString());
+                timestampedInterface.addFeature(modifiedAtProperty);
     //
     //        // 6. Create concepts
     //        Concept personConcept = new Concept(language1, "Person", "person-concept", "person");
