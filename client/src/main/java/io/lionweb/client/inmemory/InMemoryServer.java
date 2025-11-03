@@ -12,11 +12,13 @@ import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.commands.references.AddReference;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
+import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
 import io.lionweb.model.ClassifierInstance;
@@ -25,6 +27,7 @@ import io.lionweb.serialization.AbstractSerialization;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
+import io.lionweb.serialization.data.SerializedReferenceValue;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -368,6 +371,38 @@ public class InMemoryServer {
                         deleteChild.containment,
                         deleteChild.index,
                         deleteChild.deletedChild)
+                    .addSource(source));
+        return;
+      } else if (command instanceof AddReference) {
+        AddReference addReference = (AddReference) command;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+        try {
+          repositoryData.retrieve(addReference.parent, 0, retrieved);
+        } catch (IllegalArgumentException e) {
+          channel.sendEvent(
+              sequenceNumber ->
+                  new ErrorEvent(
+                      sequenceNumber,
+                      StandardErrorCode.UNKNOWN_NODE,
+                      "Node with id " + addReference.parent + " not found"));
+          return;
+        }
+        SerializedClassifierInstance node = retrieved.get(0);
+        node.addReferenceValue(
+            addReference.reference,
+            addReference.index,
+            new SerializedReferenceValue.Entry(
+                addReference.newTarget, addReference.newResolveInfo));
+        channel.sendEvent(
+            sequenceNumber ->
+                new ReferenceAdded(
+                        sequenceNumber,
+                        addReference.parent,
+                        addReference.reference,
+                        addReference.index,
+                        addReference.newTarget,
+                        addReference.newResolveInfo)
                     .addSource(source));
         return;
       }

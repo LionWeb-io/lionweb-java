@@ -83,6 +83,9 @@ public interface HasFeatureValues {
    */
   int addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
 
+  int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode);
+
   /**
    * Add the Node to the list of Nodes referred to from this Node under the given Reference, at the
    * given index.
