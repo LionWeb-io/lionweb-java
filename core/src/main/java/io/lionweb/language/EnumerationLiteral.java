@@ -33,6 +33,14 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
     enumeration.addLiteral(this);
   }
 
+    public EnumerationLiteral(@Nonnull Enumeration enumeration, @Nullable String name, @Nonnull String id) {
+        this(enumeration.getLionWebVersion());
+        setID(id);
+        enumeration.addLiteral(this);
+        setParent(enumeration);
+        setName(name);
+    }
+
   @Override
   public @Nullable String getName() {
     return getPropertyValue("name", String.class);
