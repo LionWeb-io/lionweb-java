@@ -415,60 +415,57 @@ public class DeltaClientAndServerTest {
     Property priorityProperty = new Property("priority", reportConcept, "priority-id");
     priorityProperty.setType(priorityEnum);
     reportConcept.addFeature(priorityProperty);
-    //
-    //        // 18. Move features within the same concept (change order)
-    //        personConcept.removeFeature(ageProperty);
-    //        personConcept.removeFeature(statusProperty);
-    //        personConcept.addFeature(statusProperty);
-    //        personConcept.addFeature(ageProperty);
-    //
-    //        // 19. Create complex reference relationships
-    //        Reference authorReference = new Reference(documentConcept, "author",
-    // "author-reference", "author");
-    //        authorReference.setType(personConcept);
-    //        documentConcept.addFeature(authorReference);
-    //
-    //        Reference clientReference = new Reference(contractConcept, "client",
-    // "client-reference", "client");
-    //        clientReference.setType(companyConcept);
-    //        contractConcept.addFeature(clientReference);
-    //
-    //        // 20. Modify existing elements
-    //        statusEnum.setName("EntityStatus");
-    //        priorityEnum.setName("TaskPriority");
-    //
-    //        activeStatus.setName("ACTIVE");
-    //        inactiveStatus.setName("INACTIVE");
-    //
-    //        namedInterface.setName("NamedEntity");
-    //        identifiableInterface.setName("UniqueEntity");
-    //
-    //        // 21. Remove and re-add features with modifications
-    //        companyConcept.removeFeature(employeeCountProperty);
-    //        Property staffSizeProperty = new Property(companyConcept, "staffSize",
-    // "staff-size-property", "staffSize");
-    //        staffSizeProperty.setType(PrimitiveType.INTEGER);
-    //        staffSizeProperty.setOptional(false);
-    //        companyConcept.addFeature(staffSizeProperty);
-    //
-    //        // 22. Change concept inheritance
-    //        Concept organizationConcept = new Concept(language1, "Organization",
-    // "organization-concept", "organization");
-    //        language1.addElement(organizationConcept);
-    //        organizationConcept.setExtendedConcept(baseConcept);
-    //        organizationConcept.addImplementedInterface(namedInterface);
-    //
-    //        companyConcept.setExtendedConcept(organizationConcept);
-    //
-    //        // 23. Add final modifications
-    //        Property descriptionProperty = new Property(organizationConcept, "description",
-    // "description-property", "description");
-    //        descriptionProperty.setType(PrimitiveType.STRING);
-    //        descriptionProperty.setOptional(true);
-    //        organizationConcept.addFeature(descriptionProperty);
-    //
-    //        // 24. Final language name change
-    //        language1.setName("Complete Enterprise Domain Language");
+
+    // 18. Move features within the same concept (change order)
+    personConcept.removeFeature(ageProperty);
+    personConcept.removeFeature(statusProperty);
+    personConcept.addFeature(statusProperty);
+    personConcept.addFeature(ageProperty);
+
+    // 19. Create complex reference relationships
+    Reference authorReference = new Reference("author", documentConcept, "author-id");
+    authorReference.setType(personConcept);
+    documentConcept.addFeature(authorReference);
+
+    Reference clientReference = new Reference("client", contractConcept, "client-id");
+    clientReference.setType(companyConcept);
+    contractConcept.addFeature(clientReference);
+
+    // 20. Modify existing elements
+    statusEnum.setName("EntityStatus");
+    priorityEnum.setName("TaskPriority");
+
+    activeStatus.setName("ACTIVE");
+    inactiveStatus.setName("INACTIVE");
+
+    namedInterface.setName("NamedEntity");
+    identifiableInterface.setName("UniqueEntity");
+
+    // 21. Remove and re-add features with modifications
+    companyConcept.removeFeature(employeeCountProperty);
+    Property staffSizeProperty = new Property("staffSize", companyConcept, "staffSize-id");
+    staffSizeProperty.setType(LionCoreBuiltins.getInteger());
+    staffSizeProperty.setOptional(false);
+    companyConcept.addFeature(staffSizeProperty);
+
+    // 22. Change concept inheritance
+    Concept organizationConcept =
+        new Concept(language1, "Organization", "organization-concept", "organization");
+    language1.addElement(organizationConcept);
+    organizationConcept.setExtendedConcept(baseConcept);
+    organizationConcept.addImplementedInterface(namedInterface);
+
+    companyConcept.setExtendedConcept(organizationConcept);
+
+    // 23. Add final modifications
+    Property descriptionProperty =
+        new Property("description", organizationConcept, "description-id");
+    descriptionProperty.setType(LionCoreBuiltins.getString());
+    descriptionProperty.setOptional(true);
+    organizationConcept.addFeature(descriptionProperty);
+
+    // 24. Final language name change
+    language1.setName("Complete Enterprise Domain Language");
 
     assertEquals(language1, language2);
   }
