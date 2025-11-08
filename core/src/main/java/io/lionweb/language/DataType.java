@@ -38,8 +38,4 @@ public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
   public DataType(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
-
-  public DataType(@Nullable Language language, @Nullable String name, @Nonnull String id) {
-    super(language, name, id);
-  }
 }

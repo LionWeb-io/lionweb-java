@@ -30,7 +30,6 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
   public LanguageEntity(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     this(language == null ? LionWebVersion.currentVersion : language.getLionWebVersion());
     this.setID(id);
-
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {
