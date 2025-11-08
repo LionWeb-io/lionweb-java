@@ -26,7 +26,7 @@ public interface HasFeatureValues {
   List<? extends Node> getChildren(@Nonnull Containment containment);
 
   /**
-   * Add a child to the specified list of children associated with the given Containment relation.
+   * Add a child to the end of the specified list of children associated with the given Containment relation.
    * If the specified Containment does not allow for multiple values, and if a value is already set
    * than the exception IllegalStateException will be thrown.
    *
@@ -34,6 +34,16 @@ public interface HasFeatureValues {
    * IllegalArgumentException will be thrown.
    */
   void addChild(@Nonnull Containment containment, @Nonnull Node child);
+
+    /**
+     * Add a child to the specified list of children associated with the given Containment relation, at the given index.
+     * If the specified Containment does not allow for multiple values, and if a value is already set
+     * than the exception IllegalStateException will be thrown.
+     *
+     * <p>If the child has not a Concept compatible with the target of the Containement, the exception
+     * IllegalArgumentException will be thrown.
+     */
+  void addChild(@Nonnull Containment containment, @Nonnull Node child, int index);
 
   /**
    * Remove the given child from the list of children associated with the Node, making it a dangling
@@ -53,7 +63,7 @@ public interface HasFeatureValues {
   List<ReferenceValue> getReferenceValues(@Nonnull Reference reference);
 
   /**
-   * Add the Node to the list of Nodes referred to from this Node under the given Reference.
+   * Add the Node at the end of the list of Nodes referred to from this Node under the given Reference.
    *
    * <p>If the Reference is not multiple, any previous value will be replaced.
    *
@@ -67,6 +77,23 @@ public interface HasFeatureValues {
    *     (typically because it is null)
    */
   int addReferenceValue(@Nonnull Reference reference, @Nullable ReferenceValue referredNode);
+
+    /**
+     * Add the Node to the list of Nodes referred to from this Node under the given Reference, at the given index.
+     *
+     * <p>If the Reference is not multiple, any previous value will be replaced.
+     *
+     * <p>The Node specified should be either part of this Node's Model or of Models imported by this
+     * Node's Model. If that is not the case the exception IllegalArgumentException will be thrown.
+     *
+     * <p>If the referredNode has not a Concept compatible with the target of the Reference, the
+     * exception IllegalArgumentException will be thrown.
+     *
+     * @return the index of the added ReferenceValue or -1 if the ReferenceValue is not added
+     *     (typically because it is null)
+     */
+  int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode);
 
   /**
    * Remove the first reference value that is equal to the given referenceValue. Node. If there is
