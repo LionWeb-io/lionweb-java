@@ -18,7 +18,7 @@ public class SimpleLanguageLanguageTest {
   @Test
   public void emptyConceptDefinition() {
     Language language = new Language("SimpleLanguage").setID("myM3ID");
-    Concept expression = new Concept(language, "Expression");
+    Concept expression = new Concept(language, "Expression", "my-id");
     assertEquals("Expression", expression.getName());
     assertSame(language, expression.getContainer());
     assertSame(language, expression.getLanguage());
@@ -33,7 +33,7 @@ public class SimpleLanguageLanguageTest {
   @Test
   public void emptyInterfaceDefinition() {
     Language language = new Language("SimpleLanguage").setID("myM3ID");
-    Interface deprecated = new Interface(language, "Deprecated");
+    Interface deprecated = new Interface(language, "Deprecated", "my-id");
     assertEquals("Deprecated", deprecated.getName());
     assertSame(language, deprecated.getContainer());
     assertSame(language, deprecated.getLanguage());

@@ -122,23 +122,26 @@ public class Containment extends Link<Containment> {
     super(lionWebVersion);
   }
 
-  public Containment(String name, @Nullable Classifier container) {
-    super(name, container);
+  public Containment(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
+    super(name, container, id);
   }
 
-  public Containment(@Nonnull LionWebVersion lionWebVersion, String name) {
-    super(lionWebVersion, name, (Classifier) null);
+  public Containment(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    this(lionWebVersion);
+    setName(name);
   }
 
-  public Containment(String name) {
-    super(name, (Classifier) null);
+  public Containment(@Nullable String name) {
+    this();
+    setName(name);
   }
 
-  public Containment(@Nonnull LionWebVersion lionWebVersion, String name, @Nonnull String id) {
+  public Containment(
+      @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
     super(lionWebVersion, name, id);
   }
 
-  public Containment(String name, @Nonnull String id) {
+  public Containment(@Nullable String name, @Nonnull String id) {
     super(name, id);
   }
 

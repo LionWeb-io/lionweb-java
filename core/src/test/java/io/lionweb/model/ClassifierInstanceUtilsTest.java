@@ -19,7 +19,7 @@ public class ClassifierInstanceUtilsTest {
   public void setPropertyValueByNamePositive() {
     // Create a language and concept with a property
     Language testLanguage = new Language("MyTestLanguage");
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
     testConcept.addProperty("testProp", LionCoreBuiltins.getString());
 
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
@@ -39,7 +39,7 @@ public class ClassifierInstanceUtilsTest {
   public void setPropertyValueByNameNonExistentProperty() {
     // Create a language and concept
     Language testLanguage = new Language("MyTestLanguage");
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
 
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -67,7 +67,7 @@ public class ClassifierInstanceUtilsTest {
   @Test
   public void setPropertyValueByNameNullPropertyName() {
     Language testLanguage = new Language("MyTestLanguage");
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
 
@@ -82,7 +82,7 @@ public class ClassifierInstanceUtilsTest {
   public void getPropertyValueByIDPositive() {
     // Create a language and concept with a property
     Language testLanguage = new Language("MyTestLanguage");
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
     Property prop = Property.createRequired("testProp", LionCoreBuiltins.getString());
     prop.setID("test-prop-id");
     testConcept.addFeature(prop);
@@ -101,7 +101,7 @@ public class ClassifierInstanceUtilsTest {
   @Test
   public void getPropertyValueByIDNonExistentProperty() {
     Language testLanguage = new Language("MyTestLanguage");
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
 
@@ -125,7 +125,7 @@ public class ClassifierInstanceUtilsTest {
   @Test
   public void getPropertyValueByIDNullPropertyID() {
     Language testLanguage = new Language("MyTestLanguage");
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
 
@@ -139,8 +139,8 @@ public class ClassifierInstanceUtilsTest {
   public void getOnlyChildByContainmentNameWithSingleChild() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("child", childConcept, Multiplicity.OPTIONAL);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -162,8 +162,8 @@ public class ClassifierInstanceUtilsTest {
   public void getOnlyChildByContainmentNameWithNoChild() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("child", childConcept, Multiplicity.OPTIONAL);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -181,8 +181,8 @@ public class ClassifierInstanceUtilsTest {
   public void getOnlyChildByContainmentNameWithMultipleChildren() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("children", childConcept, Multiplicity.ZERO_OR_MORE);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -206,8 +206,8 @@ public class ClassifierInstanceUtilsTest {
   public void setOnlyChildByContainmentNameAddNew() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("child", childConcept, Multiplicity.OPTIONAL);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -229,8 +229,8 @@ public class ClassifierInstanceUtilsTest {
   public void setOnlyChildByContainmentNameReplaceExisting() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("child", childConcept, Multiplicity.OPTIONAL);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -261,8 +261,8 @@ public class ClassifierInstanceUtilsTest {
   public void setOnlyChildByContainmentNameWithMultipleContainment() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("children", childConcept, Multiplicity.ZERO_OR_MORE);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -287,8 +287,8 @@ public class ClassifierInstanceUtilsTest {
   public void setOnlyChildByContainmentNameSetNull() {
     // Create language and concepts
     Language testLanguage = new Language("MyTestLanguage");
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
     parentConcept.addContainment("child", childConcept, Multiplicity.OPTIONAL);
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
@@ -309,8 +309,8 @@ public class ClassifierInstanceUtilsTest {
   public void setOnlyReferenceValuePositive() {
     // Create language and concepts with reference
     Language testLanguage = new Language("MyTestLanguage");
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
     Reference ref = new Reference();
     ref.setName("targetRef");
     ref.setType(targetConcept);
@@ -337,8 +337,8 @@ public class ClassifierInstanceUtilsTest {
   public void setOnlyReferenceValueByNamePositive() {
     // Create language and concepts with reference
     Language testLanguage = new Language("MyTestLanguage");
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
     Reference ref = new Reference();
     ref.setName("targetRef");
     ref.setType(targetConcept);
@@ -365,8 +365,8 @@ public class ClassifierInstanceUtilsTest {
   public void setReferenceValuesByNamePositive() {
     // Create language and concepts with multiple reference
     Language testLanguage = new Language("MyTestLanguage");
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
     Reference ref = new Reference();
     ref.setName("targetRefs");
     ref.setType(targetConcept);
@@ -396,8 +396,8 @@ public class ClassifierInstanceUtilsTest {
   public void setReferenceValuesByNameEmptyList() {
     // Create language and concepts with multiple reference
     Language testLanguage = new Language("MyTestLanguage");
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
     Reference ref = new Reference();
     ref.setName("targetRefs");
     ref.setType(targetConcept);
@@ -422,8 +422,8 @@ public class ClassifierInstanceUtilsTest {
   public void setReferenceValuesByNameNullList() {
     // Create language and concepts with multiple reference
     Language testLanguage = new Language("MyTestLanguage");
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
     Reference ref = new Reference();
     ref.setName("targetRefs");
     ref.setType(targetConcept);
@@ -459,7 +459,7 @@ public class ClassifierInstanceUtilsTest {
   public void getReferenceValueByNameNonExistentReferenceDetailedMessage() {
     // Create language and concept without any references
     Language testLanguage = new Language("MyTestLanguage");
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
     CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
 
@@ -528,7 +528,7 @@ public class ClassifierInstanceUtilsTest {
   @Test
   public void isBuiltinElementFalseCase() {
     Language aLanguage = new Language("MyTestLanguage");
-    Concept aConcept = new Concept(aLanguage, "MyTestConcept");
+    Concept aConcept = new Concept(aLanguage, "MyTestConcept", "my-id1");
     assertFalse(ClassifierInstanceUtils.isBuiltinElement(aLanguage));
     assertFalse(ClassifierInstanceUtils.isBuiltinElement(aConcept));
   }
@@ -538,7 +538,7 @@ public class ClassifierInstanceUtilsTest {
     Language original = LionCore.getInstance(LionWebVersion.v2024_1);
     Language lionCoreM3 =
         new Language(original.getName(), "ID1", original.getKey(), original.getVersion());
-    Concept testConcept = new Concept(lionCoreM3, "TestConcept");
+    Concept testConcept = new Concept(lionCoreM3, "TestConcept", "my-id1");
     assertTrue(ClassifierInstanceUtils.isBuiltinElement(testConcept));
   }
 
@@ -547,7 +547,7 @@ public class ClassifierInstanceUtilsTest {
     Language original = LionCoreBuiltins.getInstance(LionWebVersion.v2024_1);
     Language lionCoreBuiltins =
         new Language(original.getName(), "ID1", original.getKey(), original.getVersion());
-    Concept testConcept = new Concept(lionCoreBuiltins, "TestConcept");
+    Concept testConcept = new Concept(lionCoreBuiltins, "TestConcept", "my-id1");
     assertTrue(ClassifierInstanceUtils.isBuiltinElement(testConcept));
   }
 }

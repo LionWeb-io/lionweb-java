@@ -27,44 +27,13 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
     this(LionWebVersion.currentVersion);
   }
 
-  public LanguageEntity(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable Language language,
-      @Nullable String name,
-      @Nonnull String id) {
-    this(lionWebVersion, language, name);
-    if (language != null && lionWebVersion != language.getLionWebVersion()) {
-      throw new IllegalArgumentException(
-          "The specified lionWebVersion is not the same as the LionWebVersion of the language");
-    }
-    this.setID(id);
-  }
-
   public LanguageEntity(@Nullable Language language, @Nullable String name, @Nonnull String id) {
-    this(language, name);
-    this.setID(id);
-  }
-
-  public LanguageEntity(@Nullable Language language, @Nullable String name) {
     this(language == null ? LionWebVersion.currentVersion : language.getLionWebVersion());
+    this.setID(id);
     // TODO enforce uniqueness of the name within the Language
     this.setName(name);
     if (language != null) {
       language.addElement(this);
-    } else {
-      this.setParent(null);
-    }
-  }
-
-  public LanguageEntity(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
-    this(lionWebVersion);
-    // TODO enforce uniqueness of the name within the Language
-    this.setName(name);
-    if (language != null) {
-      language.addElement(this);
-    } else {
-      this.setParent(null);
     }
   }
 

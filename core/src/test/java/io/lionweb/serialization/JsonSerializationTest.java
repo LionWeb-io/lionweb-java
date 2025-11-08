@@ -374,13 +374,12 @@ public class JsonSerializationTest extends SerializationTest {
     Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
-        new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
-    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1").setID("el1_id").setKey("el1_key");
-    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2").setID("el2_id").setKey("el2_key");
+        new Enumeration(mm, "my.enumeration", "enumeration_id").setKey("enumeration_key");
+    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1", "el1_id").setKey("el1_key");
+    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2", "el2_id").setKey("el2_key");
 
-    Concept c = new Concept(mm, "my.concept").setID("concept_id").setKey("concept_key");
-    Property p =
-        Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
+    Concept c = new Concept(mm, "my.concept", "concept_id").setKey("concept_key");
+    Property p = Property.createRequired("my.property", e, "property_id").setKey("property_key");
     c.addFeature(p);
     DynamicNode n1 = new DynamicNode("node1", c);
     n1.setPropertyValue(p, new EnumerationValueImpl(el1));
@@ -449,16 +448,15 @@ public class JsonSerializationTest extends SerializationTest {
   @Test
   public void serializationOfEnumLiteralUsingEnumInstances() {
 
-    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.language", "mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
-        new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
-    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1").setID("el1_id").setKey("el1_key");
-    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2").setID("el2_id").setKey("el2_key");
+        new Enumeration(mm, "my.enumeration", "enumeration_id").setKey("enumeration_key");
+    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1", "el1_id").setKey("el1_key");
+    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2", "el2_id").setKey("el2_key");
 
-    Concept c = new Concept(mm, "my.concept").setID("concept_id").setKey("concept_key");
-    Property p =
-        Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
+    Concept c = new Concept(mm, "my.concept", "concept_id").setKey("concept_key");
+    Property p = Property.createRequired("my.property", e, "property_id").setKey("property_key");
     c.addFeature(p);
     DynamicNode n1 = new DynamicNode("node1", c);
     n1.setPropertyValue(p, MyEnum.el1);
@@ -567,16 +565,15 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }]\n"
                 + "}");
-    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.language", "mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
-        new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
-    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1").setID("el1_id").setKey("el1_key");
-    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2").setID("el2_id").setKey("el2_key");
+        new Enumeration(mm, "my.enumeration", "enumeration_id").setKey("enumeration_key");
+    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1", "el1_id").setKey("el1_key");
+    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2", "el2_id").setKey("el2_key");
 
-    Concept c = new Concept(mm, "my.concept").setID("concept_id").setKey("concept_key");
-    Property p =
-        Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
+    Concept c = new Concept(mm, "my.concept", "concept_id").setKey("concept_key");
+    Property p = Property.createRequired("my.property", e, "property_id").setKey("property_key");
     c.addFeature(p);
     DynamicNode n1 = new DynamicNode("node1", c);
     n1.setPropertyValue(p, new EnumerationValueImpl(el1));
@@ -641,16 +638,15 @@ public class JsonSerializationTest extends SerializationTest {
                 + "        \"parent\": null\n"
                 + "    }]\n"
                 + "}");
-    Language mm = new Language("my.language").setID("mm_id").setKey("mm_key").setVersion("1");
+    Language mm = new Language("my.language", "mm_id").setKey("mm_key").setVersion("1");
 
     Enumeration e =
-        new Enumeration(mm, "my.enumeration").setID("enumeration_id").setKey("enumeration_key");
-    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1").setID("el1_id").setKey("el1_key");
-    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2").setID("el2_id").setKey("el2_key");
+        new Enumeration(mm, "my.enumeration", "enumeration_id").setKey("enumeration_key");
+    EnumerationLiteral el1 = new EnumerationLiteral(e, "el1", "el1_id").setKey("el1_key");
+    EnumerationLiteral el2 = new EnumerationLiteral(e, "el2", "el2_id").setKey("el2_key");
 
-    Concept c = new Concept(mm, "my.concept").setID("concept_id").setKey("concept_key");
-    Property p =
-        Property.createRequired("my.property", e).setID("property_id").setKey("property_key");
+    Concept c = new Concept(mm, "my.concept", "concept_id").setKey("concept_key");
+    Property p = Property.createRequired("my.property", e, "property_id").setKey("property_key");
     c.addFeature(p);
     DynamicNode n1 = new DynamicNode("node1", c);
     n1.setPropertyValue(p, MyEnum.el1);
@@ -772,8 +768,7 @@ public class JsonSerializationTest extends SerializationTest {
   public void serializationIncludeBuiltinsWhenUsedInProperties() {
     Language l = new Language("l", "l", "l", "1");
     Concept c = new Concept(l, "c", "c", "c");
-    c.addFeature(
-        Property.createRequired("foo", LionCoreBuiltins.getString()).setID("foo").setKey("foo"));
+    c.addFeature(Property.createRequired("foo", LionCoreBuiltins.getString(), "foo").setKey("foo"));
 
     DynamicNode n1 = new DynamicNode("n1", c);
     ClassifierInstanceUtils.setPropertyValueByName(n1, "foo", "abc");

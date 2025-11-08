@@ -2,9 +2,8 @@ package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.utils.IdUtils;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 
 public class LionCoreBuiltins extends Language {
@@ -24,35 +23,39 @@ public class LionCoreBuiltins extends Language {
     setID("LionCore-builtins" + versionIDSuffix);
     setKey("LionCore-builtins");
     setVersion(lionWebVersion.getVersionString());
-    PrimitiveType string = new PrimitiveType(lionWebVersion, this, "String");
-    new PrimitiveType(lionWebVersion, this, "Boolean");
-    new PrimitiveType(lionWebVersion, this, "Integer");
+    List<PrimitiveType> primitiveTypes = new ArrayList<>();
+    PrimitiveType string = new PrimitiveType(lionWebVersion).setName("String");
+    primitiveTypes.add(string);
+    primitiveTypes.add(new PrimitiveType(lionWebVersion).setName("Boolean"));
+    primitiveTypes.add(new PrimitiveType(lionWebVersion).setName("Integer"));
     if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
-      new PrimitiveType(lionWebVersion, this, "JSON");
+      primitiveTypes.add(new PrimitiveType(lionWebVersion).setName("JSON"));
     }
+    Consumer<LanguageEntity<?>> idAndKeySetter =
+        (e) -> {
+          if (e.getID() == null) {
+            e.setID("LionCore-builtins-" + e.getName() + versionIDSuffix);
+          }
+          if (e.getKey() == null) {
+            e.setKey("LionCore-builtins-" + e.getName());
+          }
+        };
+    primitiveTypes.forEach(
+        e -> {
+          idAndKeySetter.accept(e);
+          this.addElement(e);
+        });
 
-    Concept node =
-        new Concept(lionWebVersion, this, "Node").setID("LionCore-builtins-Node" + versionIDSuffix);
+    Concept node = new Concept(this, "Node", "LionCore-builtins-Node" + versionIDSuffix);
     node.setAbstract(true);
 
-    Interface iNamed =
-        new Interface(lionWebVersion, this, "INamed")
-            .setID("LionCore-builtins-INamed" + versionIDSuffix);
+    Interface iNamed = new Interface(this, "INamed", "LionCore-builtins-INamed" + versionIDSuffix);
     iNamed.addFeature(
         Property.createRequired(lionWebVersion, "name", string)
             .setID("LionCore-builtins-INamed-name" + versionIDSuffix)
             .setKey("LionCore-builtins-INamed-name"));
 
-    this.getElements()
-        .forEach(
-            e -> {
-              if (e.getID() == null) {
-                e.setID("LionCore-builtins-" + e.getName() + versionIDSuffix);
-              }
-              if (e.getKey() == null) {
-                e.setKey("LionCore-builtins-" + e.getName());
-              }
-            });
+    this.getElements().forEach(idAndKeySetter::accept);
   }
 
   public static LionCoreBuiltins getInstance() {

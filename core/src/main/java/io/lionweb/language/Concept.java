@@ -46,32 +46,28 @@ public class Concept extends Classifier<Concept> {
   }
 
   public Concept(@Nullable Language language, @Nullable String name, @Nonnull String id) {
-    super(language, name, id);
+    super(language == null ? LionWebVersion.currentVersion : language.getLionWebVersion());
     setAbstract(false);
     setPartition(false);
-  }
-
-  public Concept(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
-    super(lionWebVersion, language, name);
-    setAbstract(false);
-    setPartition(false);
-  }
-
-  public Concept(@Nullable Language language, @Nullable String name) {
-    super(language, name);
-    setAbstract(false);
-    setPartition(false);
+    setID(id);
+    this.setName(name);
+    if (language != null) {
+      language.addElement(this);
+    } else {
+      this.setParent(null);
+    }
   }
 
   public Concept(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
-    super(lionWebVersion, null, name);
+    super(lionWebVersion);
+    setName(name);
     setAbstract(false);
     setPartition(false);
   }
 
   public Concept(@Nullable String name) {
-    super(null, name);
+    super();
+    setName(name);
     setAbstract(false);
     setPartition(false);
   }

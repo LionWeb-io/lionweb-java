@@ -50,6 +50,6 @@ public class LibraryLanguage {
                 Objects.requireNonNull(
                     f.getKey(),
                     "Feature " + f + " in " + f.getContainer() + " should not have a null key"));
-    PRIZE = new Annotation(LIBRARY_LANGUAGE, "ann-Prize");
+    PRIZE = new Annotation(LIBRARY_LANGUAGE, "ann-Prize", "prize-id");
   }
 }

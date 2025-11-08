@@ -111,7 +111,7 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
     testConcept.addImplementedInterface(LionCoreBuiltins.getINamed());
 
     // The "name" property should be inherited from INamed
@@ -142,8 +142,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
 
     // Test the addContainment method without multiplicity parameter
     parentConcept.addContainment("children", childConcept);
@@ -164,8 +164,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept = new Concept(testLanguage, "ChildConcept");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept = new Concept(testLanguage, "ChildConcept", "my-id2");
 
     // Initially the parent concept should have no features
     assertEquals(0, parentConcept.getFeatures().size());
@@ -185,9 +185,9 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept parentConcept = new Concept(testLanguage, "ParentConcept");
-    Concept childConcept1 = new Concept(testLanguage, "ChildConcept1");
-    Concept childConcept2 = new Concept(testLanguage, "ChildConcept2");
+    Concept parentConcept = new Concept(testLanguage, "ParentConcept", "my-id1");
+    Concept childConcept1 = new Concept(testLanguage, "ChildConcept1", "my-id2");
+    Concept childConcept2 = new Concept(testLanguage, "ChildConcept2", "my-id3");
 
     // Test method chaining - addContainment should return the same concept
     Concept result =
@@ -212,7 +212,7 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
 
     // Test that ZERO_OR_MORE multiplicity is rejected for properties
     IllegalArgumentException exception =
@@ -235,7 +235,7 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
 
     // Test that ONE_OR_MORE multiplicity is rejected for properties
     IllegalArgumentException exception =
@@ -258,7 +258,7 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
 
     // Test that REQUIRED multiplicity works
     testConcept.addProperty(
@@ -286,8 +286,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Test adding reference with REQUIRED multiplicity
     sourceConcept.addReference("requiredRef", targetConcept, Multiplicity.REQUIRED);
@@ -332,8 +332,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Test the addReference method without multiplicity parameter
     sourceConcept.addReference("defaultRef", targetConcept);
@@ -356,9 +356,9 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept1 = new Concept(testLanguage, "TargetConcept1");
-    Concept targetConcept2 = new Concept(testLanguage, "TargetConcept2");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept1 = new Concept(testLanguage, "TargetConcept1", "my-id2");
+    Concept targetConcept2 = new Concept(testLanguage, "TargetConcept2", "my-id3");
 
     // Test method chaining - addReference should return the same concept
     Concept result =
@@ -383,9 +383,9 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept1 = new Concept(testLanguage, "TargetConcept1");
-    Concept targetConcept2 = new Concept(testLanguage, "TargetConcept2");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept1 = new Concept(testLanguage, "TargetConcept1", "my-id2");
+    Concept targetConcept2 = new Concept(testLanguage, "TargetConcept2", "my-id3");
 
     // Test method chaining with no-multiplicity version
     Concept result =
@@ -414,8 +414,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Test null name with multiplicity
     assertThrows(
@@ -434,7 +434,7 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
 
     // Test null type with multiplicity
     assertThrows(
@@ -453,8 +453,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Test null multiplicity
     assertThrows(
@@ -470,8 +470,8 @@ public class ClassifierTest {
     Language testLanguage = new Language(LionWebVersion.v2024_1);
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Add reference and verify LionWebVersion is set correctly
     sourceConcept.addReference("testRef", targetConcept, Multiplicity.REQUIRED);
@@ -485,8 +485,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Add reference and verify parent is set correctly through addFeature
     sourceConcept.addReference("testRef", targetConcept);
@@ -500,8 +500,8 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept sourceConcept = new Concept(testLanguage, "SourceConcept");
-    Concept targetConcept = new Concept(testLanguage, "TargetConcept");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "my-id1");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "my-id2");
 
     // Initially no references
     assertEquals(0, sourceConcept.allReferences().size());
@@ -528,7 +528,7 @@ public class ClassifierTest {
     Language testLanguage = new Language();
     testLanguage.setName("TestLanguage");
 
-    Concept testConcept = new Concept(testLanguage, "TestConcept");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
 
     // Test that null multiplicity is rejected
     assertThrows(

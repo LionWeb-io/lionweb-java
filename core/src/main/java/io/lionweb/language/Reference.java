@@ -157,16 +157,18 @@ public class Reference extends Link<Reference> {
     super(lionWebVersion);
   }
 
-  public Reference(@Nullable String name, @Nullable Classifier container) {
-    super(name, container);
+  public Reference(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
+    super(name, container, id);
   }
 
   public Reference(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
-    super(lionWebVersion, name, (Classifier) null);
+    super(lionWebVersion);
+    setName(name);
   }
 
   public Reference(@Nullable String name) {
-    super(name, (Classifier) null);
+    super();
+    setName(name);
   }
 
   public Reference(

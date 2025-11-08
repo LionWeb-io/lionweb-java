@@ -49,7 +49,7 @@ public class ChunkLevelInMemoryServerClientTest {
             .setID("l-id")
             .setKey("l-key")
             .setVersion("1.0");
-    Concept c1 = new Concept(l1, "MyConcept").setID("c1-id").setKey("c1-key");
+    Concept c1 = new Concept(l1, "MyConcept", "c1-id").setKey("c1-key");
 
     AbstractSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
@@ -74,7 +74,7 @@ public class ChunkLevelInMemoryServerClientTest {
             .setID("l-id")
             .setKey("l-key")
             .setVersion("1.0");
-    Concept c1 = new Concept(l1, "MyConcept").setID("c1-id").setKey("c1-key");
+    Concept c1 = new Concept(l1, "MyConcept", "c1-id").setKey("c1-key");
 
     AbstractSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);

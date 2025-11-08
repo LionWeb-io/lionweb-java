@@ -47,12 +47,12 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       if (eClassifier.eClass().getName().equals(EcorePackage.Literals.ECLASS.getName())) {
         EClass eClass = (EClass) eClassifier;
         if (eClass.isInterface()) {
-          Interface iface = new Interface(metamodel, eClass.getName());
+          Interface iface = new Interface(getLionWebVersion(), eClass.getName());
           setIDAndKey(iface, ePackage.getName() + "-" + iface.getName());
           metamodel.addElement(iface);
           entitiesToEElementsMapping.registerMapping(iface, eClass);
         } else {
-          Concept concept = new Concept(metamodel, eClass.getName());
+          Concept concept = new Concept(getLionWebVersion(), eClass.getName());
           setIDAndKey(concept, ePackage.getName() + "-" + concept.getName());
           concept.setAbstract(eClass.isAbstract());
           metamodel.addElement(concept);
@@ -60,13 +60,14 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
-        Enumeration enumeration = new Enumeration(metamodel, eEnum.getName());
+        Enumeration enumeration = new Enumeration(getLionWebVersion(), eEnum.getName());
         setIDAndKey(enumeration, ePackage.getName() + "-" + eEnum.getName());
         metamodel.addElement(enumeration);
         entitiesToEElementsMapping.registerMapping(enumeration, eEnum);
       } else if (eClassifier instanceof EDataType) {
         EDataType eDataType = (EDataType) eClassifier;
-        PrimitiveType primitiveType = new PrimitiveType(metamodel, eDataType.getName());
+        PrimitiveType primitiveType = new PrimitiveType(getLionWebVersion());
+        primitiveType.setName(eDataType.getName());
         setIDAndKey(primitiveType, ePackage.getName() + "-" + eDataType.getName());
         metamodel.addElement(primitiveType);
         entitiesToEElementsMapping.registerMapping(primitiveType, eDataType);
@@ -122,8 +123,9 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         Enumeration enumeration = entitiesToEElementsMapping.getCorrespondingEnumeration(eEnum);
         for (EEnumLiteral enumLiteral : eEnum.getELiterals()) {
           EnumerationLiteral enumerationLiteral =
-              new EnumerationLiteral(enumeration, enumLiteral.getName());
+              new EnumerationLiteral(getLionWebVersion(), enumLiteral.getName());
           setIDAndKey(enumerationLiteral, enumeration.getID() + "-" + enumLiteral.getName());
+          enumeration.addLiteral(enumerationLiteral);
         }
       } else if (eClassifier instanceof EDataType) {
         // Nothing to do here
@@ -163,7 +165,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         addLanguageDependency(classifier.getLanguage(), propertyType);
 
         if (!eAttribute.isMany()) {
-          Property property = new Property(eFeature.getName(), classifier);
+          Property property = new Property(getLionWebVersion(), eFeature.getName());
           setIDAndKey(
               property, ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
           classifier.addFeature(property);
@@ -175,11 +177,12 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         else {
           String featureName =
               eFeature.getName().substring(0, 1).toUpperCase() + eFeature.getName().substring(1);
-          Concept holderConcept = new Concept(classifier.getLanguage(), featureName + "Container");
+          Concept holderConcept = new Concept(getLionWebVersion(), featureName + "Container");
+          classifier.getLanguage().addElement(holderConcept);
           setIDAndKey(holderConcept, ePackage.getName() + "-" + holderConcept.getName());
           holderConcept.setAbstract(false);
 
-          Property property = new Property("content", holderConcept);
+          Property property = new Property(getLionWebVersion(), "content");
           setIDAndKey(
               property,
               ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
@@ -187,7 +190,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           property.setOptional(false);
           property.setType(propertyType);
 
-          Containment containment = new Containment(eFeature.getName(), classifier);
+          Containment containment = new Containment(getLionWebVersion(), eFeature.getName());
           setIDAndKey(
               containment,
               ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
@@ -199,7 +202,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
       } else if (eFeature.eClass().getName().equals(EcorePackage.Literals.EREFERENCE.getName())) {
         EReference eReference = (EReference) eFeature;
         if (eReference.isContainment()) {
-          Containment containment = new Containment(eFeature.getName(), classifier);
+          Containment containment = new Containment(getLionWebVersion(), eFeature.getName());
           setIDAndKey(
               containment,
               ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());
@@ -208,7 +211,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           classifier.addFeature(containment);
           containment.setType(convertEClassifierToClassifier(eReference.getEType()));
         } else {
-          Reference reference = new Reference(eFeature.getName(), classifier);
+          Reference reference = new Reference(getLionWebVersion(), eFeature.getName());
           setIDAndKey(
               reference,
               ePackage.getName() + "-" + classifier.getName() + "-" + eFeature.getName());

@@ -35,24 +35,22 @@ public class PrimitiveValueSerializationTest {
     testLanguage.setVersion("1");
 
     // Create test enumeration
-    testEnumeration = new Enumeration(testLanguage, "TestEnum");
-    testEnumeration.setID("test-enum-id");
+    testEnumeration = new Enumeration(testLanguage, "TestEnum", "test-enum-id");
     testEnumeration.setKey("test-enum-key");
 
-    EnumerationLiteral literal1 = new EnumerationLiteral(testEnumeration, "OPTION_ONE");
-    literal1.setID("literal1-id");
+    EnumerationLiteral literal1 =
+        new EnumerationLiteral(testEnumeration, "OPTION_ONE", "literal1-id");
     literal1.setKey("option_one");
 
-    EnumerationLiteral literal2 = new EnumerationLiteral(testEnumeration, "OPTION_TWO");
-    literal2.setID("literal2-id");
+    EnumerationLiteral literal2 =
+        new EnumerationLiteral(testEnumeration, "OPTION_TWO", "literal2-id");
     literal2.setKey("option_two");
 
     testEnumeration.addLiteral(literal1);
     testEnumeration.addLiteral(literal2);
 
     // Create test structured data type
-    testStructuredDataType = new StructuredDataType(testLanguage, "TestSDT");
-    testStructuredDataType.setID("test-sdt-id");
+    testStructuredDataType = new StructuredDataType(testLanguage, "TestSDT", "test-sdt-id");
     testStructuredDataType.setKey("test-sdt-key");
 
     stringType = LionCoreBuiltins.getString(LionWebVersion.v2024_1);
@@ -458,8 +456,8 @@ public class PrimitiveValueSerializationTest {
 
   @Test
   public void testEnumSerializationWithNullKey() {
-    EnumerationLiteral literalWithNullKey = new EnumerationLiteral(testEnumeration, "NULL_KEY");
-    literalWithNullKey.setID("null-key-literal-id");
+    EnumerationLiteral literalWithNullKey =
+        new EnumerationLiteral(testEnumeration, "NULL_KEY", "null-key-literal-id");
     literalWithNullKey.setKey(null);
 
     EnumerationValue enumValue = new EnumerationValueImpl(literalWithNullKey);

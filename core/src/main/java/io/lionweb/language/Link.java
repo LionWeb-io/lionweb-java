@@ -39,16 +39,8 @@ public abstract class Link<T extends M3Node> extends Feature<T> {
     setMultiple(false);
   }
 
-  public Link(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier container) {
-    super(lionWebVersion, name, container);
-    setMultiple(false);
-  }
-
-  public Link(@Nullable String name, @Nullable Classifier container) {
-    super(name, container);
+  public Link(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
+    super(name, container, id);
     setMultiple(false);
   }
 

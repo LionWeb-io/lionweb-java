@@ -26,19 +26,16 @@ public abstract class DataType<T extends M3Node> extends LanguageEntity<T> {
   }
 
   public DataType(@Nonnull LionWebVersion lionWebVersion, @Nonnull String id) {
-    super(lionWebVersion, null, null, id);
+    super(lionWebVersion);
+    setID(id);
   }
 
   public DataType(@Nonnull String id) {
-    super(LionWebVersion.currentVersion, null, null, id);
+    super();
+    setID(id);
   }
 
-  public DataType(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
-    super(lionWebVersion, language, name);
-  }
-
-  public DataType(@Nullable Language language, @Nullable String name) {
-    super(language, name);
+  public DataType(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
   }
 }
