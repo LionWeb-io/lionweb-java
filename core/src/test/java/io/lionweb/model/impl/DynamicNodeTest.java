@@ -8,6 +8,7 @@ import io.lionweb.model.*;
 import io.lionweb.serialization.*;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import org.junit.Test;
 
 public class DynamicNodeTest {
@@ -1029,5 +1030,454 @@ public class DynamicNodeTest {
     node2.addChild(containment, child2);
 
     assertNotEquals(node1, node2);
+  }
+
+  @Test
+  public void testAddReferenceMultipleValueWithReferenceAndIndex() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer);
+
+    DynamicNode target1 = new DynamicNode("target1", MyNodeWithReferences.CONCEPT);
+    DynamicNode target2 = new DynamicNode("target2", MyNodeWithReferences.CONCEPT);
+
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+    ReferenceValue refValue1 = new ReferenceValue(target1, "target1");
+    ReferenceValue refValue2 = new ReferenceValue(target2, "target2");
+
+    // Test adding at index 0 to empty reference
+    int result1 = n1.addReferenceValue(r2, 0, refValue1);
+    assertEquals(0, result1);
+    assertEquals(Arrays.asList(refValue1), n1.getReferenceValues(r2));
+
+    // Test adding at index 0 (beginning) when list has elements
+    int result2 = n1.addReferenceValue(r2, 0, refValue2);
+    assertEquals(1, result2);
+    List<ReferenceValue> refs = n1.getReferenceValues(r2);
+    assertEquals(2, refs.size());
+    assertEquals(refValue2, refs.get(0)); // inserted at beginning
+    assertEquals(refValue1, refs.get(1));
+
+    // Test adding at end
+    ReferenceValue refValue3 = new ReferenceValue(null, "target3");
+    int result3 = n1.addReferenceValue(r2, 2, refValue3);
+    assertEquals(2, result3);
+    refs = n1.getReferenceValues(r2);
+    assertEquals(3, refs.size());
+    assertEquals(refValue3, refs.get(2));
+
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testAddReferenceMultipleValueWithInvalidIndex() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+    ReferenceValue refValue = new ReferenceValue(null, "test");
+
+    // Test negative index
+    assertThrows(IllegalArgumentException.class, () -> n1.addReferenceValue(r2, -1, refValue));
+
+    // Test index greater than size on empty list
+    assertThrows(IllegalArgumentException.class, () -> n1.addReferenceValue(r2, 1, refValue));
+
+    // Add one element first
+    n1.addReferenceValue(r2, refValue);
+
+    // Test index greater than size
+    assertThrows(IllegalArgumentException.class, () -> n1.addReferenceValue(r2, 2, refValue));
+  }
+
+  @Test
+  public void testAddReferenceMultipleValueWithNullValue() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+
+    // Test adding null value without index
+    int result1 = n1.addReferenceValue(r2, null);
+    assertEquals(-1, result1);
+
+    // Test adding null value with index
+    int result2 = n1.addReferenceValue(r2, 0, null);
+    assertEquals(-1, result2);
+
+    // Verify no values were added
+    assertEquals(0, n1.getReferenceValues(r2).size());
+  }
+
+  @Test
+  public void testAddContainmentWithIndex() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createMultiple("children", concept);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    parent.registerPartitionObserver(observer);
+
+    DynamicNode child1 = new DynamicNode("child1", concept);
+    DynamicNode child2 = new DynamicNode("child2", concept);
+    DynamicNode child3 = new DynamicNode("child3", concept);
+
+    // Test adding at index 0 to empty list
+    parent.addChild(containment, child1, 0);
+    assertEquals(Arrays.asList(child1), parent.getChildren(containment));
+    assertEquals(parent, child1.getParent());
+
+    // Test adding at index 1
+    parent.addChild(containment, child2, 1);
+    assertEquals(Arrays.asList(child1, child2), parent.getChildren(containment));
+
+    // Test inserting at index 1 (middle)
+    parent.addChild(containment, child3, 1);
+    List<Node> children = parent.getChildren(containment);
+    assertEquals(3, children.size());
+    assertEquals(child1, children.get(0));
+    assertEquals(child3, children.get(1)); // inserted in middle
+    assertEquals(child2, children.get(2)); // moved to end
+
+    // Verify observer notifications
+    assertTrue(observer.getRecords().size() >= 3);
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testAddChildWithIndexValidation() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createMultiple("children", concept);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+
+    // Test negative index
+    assertThrows(IllegalArgumentException.class, () -> parent.addChild(containment, child, -1));
+
+    // Test index greater than size on empty list
+    assertThrows(IllegalArgumentException.class, () -> parent.addChild(containment, child, 1));
+
+    // Add one child first
+    parent.addChild(containment, child, 0);
+
+    // Test index greater than size with one element
+    DynamicNode child2 = new DynamicNode("child2", concept);
+    assertThrows(IllegalArgumentException.class, () -> parent.addChild(containment, child2, 2));
+  }
+
+  @Test
+  public void testSetContainmentSingleValue() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createOptional("singleChild", concept);
+    containment.setKey("single-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    parent.registerPartitionObserver(observer);
+
+    DynamicNode child1 = new DynamicNode("child1", concept);
+    DynamicNode child2 = new DynamicNode("child2", concept);
+
+    // Test setting initial single value
+    parent.addChild(containment, child1);
+    assertEquals(Arrays.asList(child1), parent.getChildren(containment));
+    assertEquals(parent, child1.getParent());
+
+    // Test replacing single value
+    parent.addChild(containment, child2);
+    assertEquals(Arrays.asList(child2), parent.getChildren(containment));
+    assertEquals(parent, child2.getParent());
+    assertNull(child1.getParent()); // Previous child should be unparented
+
+    // Test setting to null by removing
+    parent.removeChild(child2);
+    assertEquals(Arrays.asList(), parent.getChildren(containment));
+    assertNull(child2.getParent());
+
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testSetReferenceValues() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer);
+
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+
+    DynamicNode target1 = new DynamicNode("target1", MyNodeWithReferences.CONCEPT);
+    DynamicNode target2 = new DynamicNode("target2", MyNodeWithReferences.CONCEPT);
+    DynamicNode target3 = new DynamicNode("target3", MyNodeWithReferences.CONCEPT);
+
+    // Add some initial reference values
+    n1.addReferenceValue(r2, new ReferenceValue(target1, "target1"));
+    n1.addReferenceValue(r2, new ReferenceValue(target2, "target2"));
+    assertEquals(2, n1.getReferenceValues(r2).size());
+
+    observer.clearRecords();
+
+    // Replace all reference values with new list
+    List<ReferenceValue> newValues =
+        Arrays.asList(
+            new ReferenceValue(target3, "target3"), new ReferenceValue(null, "nullTarget"));
+
+    n1.setReferenceValues(r2, newValues);
+
+    List<ReferenceValue> refs = n1.getReferenceValues(r2);
+    assertEquals(2, refs.size());
+    assertEquals("target3", refs.get(0).getReferredID());
+    assertEquals("target3", refs.get(0).getResolveInfo());
+    assertNull(refs.get(1).getReferredID());
+    assertEquals("nullTarget", refs.get(1).getResolveInfo());
+
+    // Verify observer notifications (should have removals and additions)
+    assertTrue(observer.getRecords().size() >= 4); // 2 removals + 2 additions
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testRemoveChildByIndex() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createMultiple("children", concept);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    parent.registerPartitionObserver(observer);
+
+    DynamicNode child1 = new DynamicNode("child1", concept);
+    DynamicNode child2 = new DynamicNode("child2", concept);
+    DynamicNode child3 = new DynamicNode("child3", concept);
+
+    // Add children
+    parent.addChild(containment, child1);
+    parent.addChild(containment, child2);
+    parent.addChild(containment, child3);
+    assertEquals(3, parent.getChildren(containment).size());
+
+    observer.clearRecords();
+
+    // Remove middle child (index 1)
+    parent.removeChild(containment, 1);
+    List<Node> children = parent.getChildren(containment);
+    assertEquals(2, children.size());
+    assertEquals(child1, children.get(0));
+    assertEquals(child3, children.get(1)); // child3 moved to index 1
+
+    // Remove first child (index 0)
+    parent.removeChild(containment, 0);
+    children = parent.getChildren(containment);
+    assertEquals(1, children.size());
+    assertEquals(child3, children.get(0));
+
+    // Remove last child (index 0)
+    parent.removeChild(containment, 0);
+    assertEquals(0, parent.getChildren(containment).size());
+
+    // Verify observer notifications
+    assertEquals(3, observer.getRecords().size());
+    assertTrue(
+        observer.getRecords().stream()
+            .allMatch(r -> r instanceof MockPartitionObserver.ChildRemovedRecord));
+
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testRemoveChildByIndexInvalidCases() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createMultiple("children", concept);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+
+    // Test invalid index on empty containment
+    assertThrows(IllegalArgumentException.class, () -> parent.removeChild(containment, 0));
+
+    // Add a child
+    DynamicNode child = new DynamicNode("child", concept);
+    parent.addChild(containment, child);
+
+    // Test index out of bounds
+    assertThrows(IllegalArgumentException.class, () -> parent.removeChild(containment, 1));
+
+    // Test negative index - should not throw here as it's handled by List.remove()
+    assertThrows(IndexOutOfBoundsException.class, () -> parent.removeChild(containment, -1));
+  }
+
+  @Test
+  public void testAddReferenceValueWithReferenceParameter() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer);
+
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+    DynamicNode target = new DynamicNode("target", MyNodeWithReferences.CONCEPT);
+    ReferenceValue refValue = new ReferenceValue(target, "target");
+
+    // Test addReferenceValue with Reference parameter
+    int result = n1.addReferenceValue(r2, refValue);
+    assertEquals(0, result);
+
+    List<ReferenceValue> refs = n1.getReferenceValues(r2);
+    assertEquals(1, refs.size());
+    assertEquals(refValue, refs.get(0));
+
+    // Test adding another value
+    ReferenceValue refValue2 = new ReferenceValue(null, "nullTarget");
+    int result2 = n1.addReferenceValue(r2, refValue2);
+    assertEquals(1, result2);
+
+    refs = n1.getReferenceValues(r2);
+    assertEquals(2, refs.size());
+    assertEquals(refValue, refs.get(0));
+    assertEquals(refValue2, refs.get(1));
+
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testRemoveReferenceValueWithObserver() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer);
+
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+    DynamicNode target1 = new DynamicNode("target1", MyNodeWithReferences.CONCEPT);
+    DynamicNode target2 = new DynamicNode("target2", MyNodeWithReferences.CONCEPT);
+
+    ReferenceValue refValue1 = new ReferenceValue(target1, "target1");
+    ReferenceValue refValue2 = new ReferenceValue(target2, "target2");
+    ReferenceValue nullRefValue = new ReferenceValue(null, "nullTarget");
+
+    // Add reference values
+    n1.addReferenceValue(r2, refValue1);
+    n1.addReferenceValue(r2, refValue2);
+    n1.addReferenceValue(r2, nullRefValue);
+
+    observer.clearRecords();
+
+    // Test removing by value
+    n1.removeReferenceValue(r2, refValue1);
+    List<ReferenceValue> refs = n1.getReferenceValues(r2);
+    assertEquals(2, refs.size());
+    assertFalse(refs.contains(refValue1));
+
+    // Test removing null reference value
+    n1.removeReferenceValue(r2, nullRefValue);
+    refs = n1.getReferenceValues(r2);
+    assertEquals(1, refs.size());
+    assertEquals(refValue2, refs.get(0));
+
+    // Verify observer notifications
+    assertEquals(2, observer.getRecords().size());
+    assertTrue(
+        observer.getRecords().stream()
+            .allMatch(r -> r instanceof MockPartitionObserver.ReferenceRemovedRecord));
+
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testRemoveReferenceValueNotFound() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+
+    DynamicNode target = new DynamicNode("target", MyNodeWithReferences.CONCEPT);
+    ReferenceValue existing = new ReferenceValue(target, "existing");
+    ReferenceValue nonExisting = new ReferenceValue(target, "nonExisting");
+
+    // Add one reference value
+    n1.addReferenceValue(r2, existing);
+
+    // Try to remove a non-existing reference value
+    assertThrows(IllegalArgumentException.class, () -> n1.removeReferenceValue(r2, nonExisting));
+  }
+
+  @Test
+  public void testSetReferenceSingleValue() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    MockPartitionObserver observer = new MockPartitionObserver();
+    n1.registerPartitionObserver(observer);
+
+    Reference r1 = n1.getClassifier().getReferenceByName("r1"); // Single reference
+    DynamicNode target1 = new DynamicNode("target1", MyNodeWithReferences.CONCEPT);
+    DynamicNode target2 = new DynamicNode("target2", MyNodeWithReferences.CONCEPT);
+
+    ReferenceValue refValue1 = new ReferenceValue(target1, "target1");
+    ReferenceValue refValue2 = new ReferenceValue(target2, "target2");
+
+    // Test setting single reference value
+    int result1 = n1.addReferenceValue(r1, refValue1);
+    assertEquals(0, result1);
+    assertEquals(Arrays.asList(refValue1), n1.getReferenceValues(r1));
+
+    // Test replacing single reference value
+    int result2 = n1.addReferenceValue(r1, refValue2);
+    assertEquals(0, result2);
+    assertEquals(Arrays.asList(refValue2), n1.getReferenceValues(r1));
+
+    // Test setting to null
+    int result3 = n1.addReferenceValue(r1, null);
+    assertEquals(0, result3);
+    assertEquals(Arrays.asList(), n1.getReferenceValues(r1));
+
+    observer.clearRecords();
+  }
+
+  @Test
+  public void testAddChildWithSingleContainmentAtNonZeroIndex() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createOptional("singleChild", concept);
+    containment.setKey("single-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+
+    // Test adding at non-zero index for single containment
+    assertThrows(IllegalArgumentException.class, () -> parent.addChild(containment, child, 1));
+  }
+
+  @Test
+  public void testAddReferenceValueSingleReferenceWithNonZeroIndex() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    Reference r1 = n1.getClassifier().getReferenceByName("r1"); // Single reference
+    ReferenceValue refValue = new ReferenceValue(null, "test");
+
+    // Test adding at non-zero index for single reference
+    assertThrows(IllegalArgumentException.class, () -> n1.addReferenceValue(r1, 1, refValue));
+  }
+
+  @Test
+  public void testAddContainmentWithIndexOnEmptyList() {
+    Concept concept = new Concept();
+    Containment containment = Containment.createMultiple("children", concept);
+    containment.setKey("children-key");
+    concept.addFeature(containment);
+
+    DynamicNode parent = new DynamicNode("parent", concept);
+    DynamicNode child = new DynamicNode("child", concept);
+
+    // Test adding at index 0 when containmentValues is null (not initialized)
+    parent.addChild(containment, child, 0);
+    assertEquals(Arrays.asList(child), parent.getChildren(containment));
+    assertEquals(parent, child.getParent());
+  }
+
+  @Test
+  public void testAddReferenceMultipleValueOnEmptyReference() {
+    DynamicNode n1 = new DynamicNode("n1", MyNodeWithReferences.CONCEPT);
+    Reference r2 = n1.getClassifier().getReferenceByName("r2");
+    ReferenceValue refValue = new ReferenceValue(null, "test");
+
+    // Test adding when referenceValues is null (not initialized)
+    int result = n1.addReferenceValue(r2, refValue);
+    assertEquals(0, result);
+    assertEquals(Arrays.asList(refValue), n1.getReferenceValues(r2));
   }
 }
