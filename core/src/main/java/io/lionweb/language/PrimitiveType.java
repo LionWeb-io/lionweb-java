@@ -35,7 +35,7 @@ public class PrimitiveType extends DataType<PrimitiveType> {
     super(id);
   }
 
-  public PrimitiveType(@Nullable Language language, @Nullable String name, String id) {
+  public PrimitiveType(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 

@@ -24,12 +24,16 @@ public class StructuredDataType extends DataType<StructuredDataType> implements 
     super(id);
   }
 
-  public StructuredDataType(@Nullable Language language, @Nullable String name, String id) {
+  public StructuredDataType(
+      @Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }
 
   public StructuredDataType(
-      @Nullable Language language, @Nullable String name, String id, String key) {
+      @Nullable Language language,
+      @Nullable String name,
+      @Nonnull String id,
+      @Nullable String key) {
     super(language, name, id);
     setKey(key);
   }
