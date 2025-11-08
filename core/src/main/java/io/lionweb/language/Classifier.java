@@ -36,15 +36,6 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     super(language, name, id);
   }
 
-  public Classifier(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
-    super(lionWebVersion, language, name);
-  }
-
-  public Classifier(@Nullable Language language, @Nullable String name) {
-    super(language, name);
-  }
-
   public @Nullable Feature getFeatureByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     return allFeatures().stream()

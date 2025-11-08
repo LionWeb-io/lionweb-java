@@ -16,7 +16,7 @@ public class AnnotationTest extends BaseTest {
   @Test
   public void getPropertyValueName() {
     Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
+    Annotation annotation = new Annotation(language, "MyAnnotation", "my-id");
     assertEquals(
         "MyAnnotation",
         annotation.getPropertyValue(LionCore.getAnnotation().getPropertyByName("name")));
@@ -25,7 +25,7 @@ public class AnnotationTest extends BaseTest {
   @Test
   public void setPropertyValueName() {
     Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
+    Annotation annotation = new Annotation(language, "MyAnnotation", "my-id");
     annotation.setPropertyValue(
         LionCore.getAnnotation().getPropertyByName("name"), "MyAmazingAnnotation");
     assertEquals("MyAmazingAnnotation", annotation.getName());
@@ -34,13 +34,13 @@ public class AnnotationTest extends BaseTest {
   @Test
   public void getReferenceValueTarget() {
     Language language = new Language("mymm");
-    Annotation annotation = new Annotation(language, "MyAnnotation");
+    Annotation annotation = new Annotation(language, "MyAnnotation", "my-id");
     assertEquals(
         Arrays.asList(),
         ClassifierInstanceUtils.getReferredNodes(
             annotation, LionCore.getAnnotation().getReferenceByName("annotates")));
 
-    Concept myConcept = new Concept(language, "myc");
+    Concept myConcept = new Concept(language, "myc", "my-id2");
     annotation.setAnnotates(myConcept);
     assertEquals(
         Arrays.asList(myConcept),
@@ -51,7 +51,7 @@ public class AnnotationTest extends BaseTest {
   @Test
   public void setReferenceValueTarget() {
     Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
+    Annotation annotation = new Annotation(language, "MyAnnotation", "my-id");
 
     Concept myConcept = new Concept();
     annotation.addReferenceValue(
@@ -63,7 +63,7 @@ public class AnnotationTest extends BaseTest {
   @Test
   public void getPropertyValueFeatures() {
     Language language = new Language();
-    Annotation annotation = new Annotation(language, "MyAnnotation");
+    Annotation annotation = new Annotation(language, "MyAnnotation", "my-id");
     assertEquals(
         Arrays.asList(),
         annotation.getChildren(LionCore.getAnnotation().getContainmentByName("features")));
@@ -139,9 +139,9 @@ public class AnnotationTest extends BaseTest {
   @Test
   public void inheritedFeatures() {
     Language language = new Language("LangFoo").setVersion("1");
-    Annotation ann1 = new Annotation(language, "Ann1");
+    Annotation ann1 = new Annotation(language, "Ann1", "my-id1");
     ann1.addProperty("p1", LionCoreBuiltins.getString());
-    Annotation ann2 = new Annotation(language, "Ann2").setExtendedAnnotation(ann1);
+    Annotation ann2 = new Annotation(language, "Ann2", "my-id2").setExtendedAnnotation(ann1);
     ann2.addProperty("p2", LionCoreBuiltins.getInteger());
 
     CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(language);

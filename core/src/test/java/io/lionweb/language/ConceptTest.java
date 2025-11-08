@@ -60,8 +60,6 @@ public class ConceptTest {
     Language l = new Language("MyLanguage", "l-id", "l-key", "123");
     Concept a = new Concept(l, "A", "a-id", "a-key");
     Property p1 = new Property("p1", a, "p1-id");
-    assertEquals(0, a.getFeatures().size());
-    a.addFeature(p1);
     assertEquals(1, a.getFeatures().size());
     assertEquals(a, p1.getParent());
     assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());
@@ -100,8 +98,6 @@ public class ConceptTest {
     Property p1 = new Property("p1", a, "p1-id");
     Concept b = new Concept(l, "B", "b-id", "b-key");
     b.setExtendedConcept(a);
-    assertEquals(0, a.getFeatures().size());
-    a.addFeature(p1);
     assertEquals(1, a.getFeatures().size());
     assertEquals(a, p1.getParent());
     assertEquals(LionCore.getClassifier().getFeatureByName("features"), p1.getContainmentFeature());

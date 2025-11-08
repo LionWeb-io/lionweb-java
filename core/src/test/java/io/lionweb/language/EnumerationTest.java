@@ -10,7 +10,7 @@ public class EnumerationTest {
     Enumeration enm = new Enumeration();
     enm.setName("MyEnum");
 
-    EnumerationLiteral lit = new EnumerationLiteral(enm, "Lit1");
+    EnumerationLiteral lit = new EnumerationLiteral(enm, "Lit1", "my-id");
 
     assertSame(enm, lit.getParent());
     assertSame(enm, lit.getEnumeration());

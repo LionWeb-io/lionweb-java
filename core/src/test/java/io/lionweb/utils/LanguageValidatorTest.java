@@ -40,7 +40,7 @@ public class LanguageValidatorTest {
   public void anAnnotationMustSpecifyAnnotated() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
     Annotation annotation =
-        new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
+        new Annotation(language, "MyAnnotation", "annotation-id").setKey("annotation-key");
     language.addElement(annotation);
 
     assertFalse(new LanguageValidator().validate(language).isSuccessful());
@@ -52,7 +52,7 @@ public class LanguageValidatorTest {
   public void anAnnotationCanBeValid() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
     Annotation annotation =
-        new Annotation(language, "MyAnnotation").setKey("annotation-key").setID("annotation-id");
+        new Annotation(language, "MyAnnotation", "annotation-id").setKey("annotation-key");
     language.addElement(annotation);
     Concept c = new Concept(language, "C", "c-id", "c-key");
     annotation.setAnnotates(c);
@@ -86,7 +86,7 @@ public class LanguageValidatorTest {
   public void aPrimitiveTypeCanBeValid() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
     PrimitiveType primitiveType =
-        new PrimitiveType(language, "PrimitiveType").setKey("pt-key").setID("pt-id");
+        new PrimitiveType(language, "PrimitiveType", "pt-id").setKey("pt-key");
     language.addElement(primitiveType);
 
     assertTrue(new LanguageValidator().validate(language).isSuccessful());
@@ -97,7 +97,7 @@ public class LanguageValidatorTest {
   @Test
   public void simpleSelfInheritanceIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
+    Concept a = new Concept(language, "a", "id-a").setKey("key-a");
     a.setExtendedConcept(a);
     language.addElement(a);
 
@@ -109,8 +109,8 @@ public class LanguageValidatorTest {
   @Test
   public void indirectSelfInheritanceOfConceptsIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
-    Concept b = new Concept(language, "b").setKey("key-b").setID("id-b");
+    Concept a = new Concept(language, "a", "id-a").setKey("key-a");
+    Concept b = new Concept(language, "b", "id-b").setKey("key-b");
     a.setExtendedConcept(b);
     b.setExtendedConcept(a);
     language.addElement(a);
@@ -127,7 +127,7 @@ public class LanguageValidatorTest {
   @Test
   public void directSelfInheritanceOfInterfacesIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Interface a = new Interface(language, "a").setKey("a-key").setID("a-id");
+    Interface a = new Interface(language, "a", "a-id").setKey("a-key");
     a.addExtendedInterface(a);
 
     assertEquals(
@@ -143,8 +143,8 @@ public class LanguageValidatorTest {
   @Test
   public void indirectSelfInheritanceOfInterfacesIsCaught() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Interface a = new Interface(language, "a").setKey("a-key").setID("a-id");
-    Interface b = new Interface(language, "b").setKey("b-key").setID("b-id");
+    Interface a = new Interface(language, "a", "a-id").setKey("a-key");
+    Interface b = new Interface(language, "b", "b-id").setKey("b-key");
     a.addExtendedInterface(b);
     b.addExtendedInterface(a);
     language.addElement(a);
@@ -165,8 +165,8 @@ public class LanguageValidatorTest {
   @Test
   public void multipleDirectImplementationsOfTheSameInterfaceAreNotAllowed() {
     Language language = new Language("MyLanguage").setKey("mm-key").setID("mm-id");
-    Concept a = new Concept(language, "a").setKey("key-a").setID("id-a");
-    Interface i = new Interface(language, "I").setKey("key-i").setID("id-i");
+    Concept a = new Concept(language, "a", "id-a").setKey("key-a");
+    Interface i = new Interface(language, "I", "id-i").setKey("key-i");
 
     a.addImplementedInterface(i);
     a.addImplementedInterface(i);
@@ -187,9 +187,9 @@ public class LanguageValidatorTest {
   @Test
   public void multipleIndirectImplementationsOfTheSameInterfaceAreAllowed() {
     Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
-    Concept a = new Concept(language, "A").setKey("a-key").setID("a-id");
-    Concept b = new Concept(language, "B").setKey("b-key").setID("b-id");
-    Interface i = new Interface(language, "I").setKey("i-key").setID("i-id");
+    Concept a = new Concept(language, "A", "a-id").setKey("a-key");
+    Concept b = new Concept(language, "B", "b-id").setKey("b-key");
+    Interface i = new Interface(language, "I", "i-id").setKey("i-key");
 
     a.setExtendedConcept(b);
     a.addImplementedInterface(i);
@@ -454,9 +454,9 @@ public class LanguageValidatorTest {
     ValidationResult r1 = new LanguageValidator().validate(l1);
     assertTrue(r1.isSuccessful());
 
-    Language l2 = new Language("MyLanguag2e", "my_language2_id", "my_language2_key");
-    Concept c2 = new Concept(l2, "MyConcept2").setID("c2-d").setKey("c2-key");
-    Concept c1 = new Concept(l1, "MyConcept1").setID("c1-d").setKey("c1-key");
+    Language l2 = new Language("MyLanguage2", "my_language2_id", "my_language2_key");
+    Concept c2 = new Concept(l2, "MyConcept2", "c2-d").setKey("c2-key");
+    Concept c1 = new Concept(l1, "MyConcept1", "c1-d").setKey("c1-key");
 
     ValidationResult r2 = new LanguageValidator().validate(l1);
     assertTrue(r2.isSuccessful());

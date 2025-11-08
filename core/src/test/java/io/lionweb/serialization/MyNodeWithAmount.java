@@ -29,8 +29,7 @@ public class MyNodeWithAmount extends DynamicNode {
           .addField(
               new Field("frac", LionCoreBuiltins.getInteger()).setID("frac-id").setKey("frac-key"));
   public static final Enumeration CURRENCY =
-      new Enumeration(LANGUAGE, "Currency")
-          .setID("currency-id")
+      new Enumeration(LANGUAGE, "Currency", "currency-id")
           .setKey("currency-key")
           .addLiteral(new EnumerationLiteral("EURO").setKey("euro"))
           .addLiteral(new EnumerationLiteral("YEN").setKey("yen"));

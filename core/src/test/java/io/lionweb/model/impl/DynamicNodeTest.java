@@ -123,9 +123,9 @@ public class DynamicNodeTest {
   @Test
   public void addAnnotations() {
     Language l = new Language("l");
-    Annotation a1 = new Annotation(l, "a1");
-    Annotation a2 = new Annotation(l, "a2");
-    Concept c = new Concept(l, "c");
+    Annotation a1 = new Annotation(l, "a1", "my-id1");
+    Annotation a2 = new Annotation(l, "a2", "my-id2");
+    Concept c = new Concept(l, "c", "my-id3");
 
     DynamicNode n1 = new DynamicNode("n1", c);
     assertEquals(Arrays.asList(), n1.getAnnotations());
@@ -571,7 +571,7 @@ public class DynamicNodeTest {
   public void equalityConsideringAnnotations() {
     DynamicNode node1 = new DynamicNode("id1", MyNodeWithAmount.CONCEPT);
     DynamicNode node2 = new DynamicNode("id1", MyNodeWithAmount.CONCEPT);
-    Annotation annotation = new Annotation(new Language("lang"), "annotation");
+    Annotation annotation = new Annotation(new Language("lang"), "annotation", "my-id1");
 
     // Case: both nodes have the same annotations
     node1.addAnnotation(new DynamicAnnotationInstance("a1", annotation, node1));

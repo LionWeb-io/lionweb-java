@@ -29,10 +29,10 @@ public class LanguageTest {
     Language l1 = new Language("l1");
 
     Language l2 = new Language("l2");
-    Annotation a1inM2 = new Annotation(l2, "A1");
+    Annotation a1inM2 = new Annotation(l2, "A1", "my-id1");
 
     Language l3 = new Language("l3");
-    Annotation a2inM3 = new Annotation(l3, "A2");
+    Annotation a2inM3 = new Annotation(l3, "A2", "my-id2");
 
     assertNull(l1.getAnnotationByName("A1"));
     assertNull(l1.getAnnotationByName("A2"));

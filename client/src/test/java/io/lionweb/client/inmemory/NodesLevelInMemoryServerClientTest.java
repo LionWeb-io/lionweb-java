@@ -43,7 +43,7 @@ public class NodesLevelInMemoryServerClientTest {
             .setID("l-id")
             .setKey("l-key")
             .setVersion("1.0");
-    Concept c1 = new Concept(l1, "MyConcept").setID("c1-id").setKey("c1-key");
+    Concept c1 = new Concept(l1, "MyConcept", "c1-id").setKey("c1-key");
 
     client.createPartitions(Collections.singletonList(l1));
     assertEquals(Collections.singletonList(l1), client.listPartitions());
@@ -63,7 +63,7 @@ public class NodesLevelInMemoryServerClientTest {
             .setID("l-id")
             .setKey("l-key")
             .setVersion("1.0");
-    Concept c1 = new Concept(l1, "MyConcept").setID("c1-id").setKey("c1-key");
+    Concept c1 = new Concept(l1, "MyConcept", "c1-id").setKey("c1-key");
 
     client.createPartitions(Collections.singletonList(l1));
     assertEquals(Collections.singletonList(l1), client.listPartitions());

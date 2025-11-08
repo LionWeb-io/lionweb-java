@@ -12,12 +12,17 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
     super(lionWebVersion);
   }
 
+  public Enumeration(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion);
+    this.setName(name);
+  }
+
   public Enumeration() {
     super();
   }
 
-  public Enumeration(@Nullable Language language, @Nullable String name) {
-    super(language, name);
+  public Enumeration(@Nullable Language language, @Nullable String name, @Nonnull String id) {
+    super(language, name, id);
   }
 
   public @Nonnull List<EnumerationLiteral> getLiterals() {

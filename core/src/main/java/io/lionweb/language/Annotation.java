@@ -35,10 +35,6 @@ public class Annotation extends Classifier<Annotation> {
     super();
   }
 
-  public Annotation(@Nullable Language language, @Nullable String name) {
-    super(language, name);
-  }
-
   public Annotation(@Nullable Language language, @Nullable String name, @Nonnull String id) {
     super(language, name, id);
   }

@@ -28,12 +28,12 @@ public class DynamicAnnotationTest {
   @Test
   public void annotationDescendants() {
     Language language = new Language("ALanguage");
-    Concept c1 = new Concept(language, "C1");
-    Concept c2 = new Concept(language, "C2");
-    Concept c3 = new Concept(language, "C3");
+    Concept c1 = new Concept(language, "C1", "my-id1");
+    Concept c2 = new Concept(language, "C2", "my-id2");
+    Concept c3 = new Concept(language, "C3", "my-id3");
     c2.addContainment("mySubC2", c2, Multiplicity.OPTIONAL);
     Annotation a1 =
-        new Annotation(language, "A1")
+        new Annotation(language, "A1", "my-id4")
             .setAnnotates(c1)
             .addContainment("myC2", c2, Multiplicity.ZERO_OR_MORE)
             .addContainment("myC3", c3, Multiplicity.OPTIONAL);

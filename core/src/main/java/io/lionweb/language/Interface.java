@@ -44,21 +44,14 @@ public class Interface extends Classifier<Interface> {
     setKey(key);
   }
 
-  public Interface(@Nullable Language language, @Nullable String name) {
-    super(language, name);
-  }
-
-  public Interface(
-      @Nonnull LionWebVersion lionWebVersion, @Nullable Language language, @Nullable String name) {
-    super(lionWebVersion, language, name);
-  }
-
   public Interface(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
-    super(lionWebVersion, null, name);
+    super(lionWebVersion);
+    setName(name);
   }
 
   public Interface(@Nullable String name) {
-    super(null, name);
+    super();
+    setName(name);
   }
 
   public Interface(@Nullable String name, @Nonnull String id) {

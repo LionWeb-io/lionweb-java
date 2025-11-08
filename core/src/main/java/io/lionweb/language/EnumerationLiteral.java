@@ -14,17 +14,23 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
     super(lionWebVersion);
   }
 
+  public EnumerationLiteral(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
+    super(lionWebVersion);
+    this.setName(name);
+  }
+
   public EnumerationLiteral() {}
 
   public EnumerationLiteral(@Nullable String name) {
     setName(name);
   }
 
-  public EnumerationLiteral(@Nonnull Enumeration enumeration, @Nullable String name) {
+  public EnumerationLiteral(
+      @Nonnull Enumeration enumeration, @Nullable String name, @Nonnull String id) {
     this(enumeration.getLionWebVersion());
-    enumeration.addLiteral(this);
-    setParent(enumeration);
+    setID(id);
     setName(name);
+    enumeration.addLiteral(this);
   }
 
   @Override

@@ -15,7 +15,7 @@ public class ConceptReflectionTest {
   @Test
   public void getPropertyValuename() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
+    Concept concept = new Concept(language, "MyConcept", "my-id");
     assertEquals(
         "MyConcept", concept.getPropertyValue(LionCore.getConcept().getPropertyByName("name")));
   }
@@ -23,7 +23,7 @@ public class ConceptReflectionTest {
   @Test
   public void setPropertyValuename() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
+    Concept concept = new Concept(language, "MyConcept", "my-id");
     concept.setPropertyValue(LionCore.getConcept().getPropertyByName("name"), "MyAmazingConcept");
     assertEquals("MyAmazingConcept", concept.getName());
   }
@@ -31,7 +31,7 @@ public class ConceptReflectionTest {
   @Test
   public void getPropertyValueAbstract() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
+    Concept concept = new Concept(language, "MyConcept", "my-id");
     Property property = LionCore.getConcept().getPropertyByName("abstract");
     concept.setAbstract(true);
     assertEquals(true, concept.getPropertyValue(property));
@@ -42,7 +42,7 @@ public class ConceptReflectionTest {
   @Test
   public void setPropertyValueAbstract() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
+    Concept concept = new Concept(language, "MyConcept", "my-id");
     Property property = LionCore.getConcept().getPropertyByName("abstract");
     concept.setPropertyValue(property, true);
     assertEquals(true, concept.isAbstract());
@@ -53,8 +53,8 @@ public class ConceptReflectionTest {
   @Test
   public void getReferenceExtended() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
-    Concept otherConcept = new Concept(language, "OtherConcept");
+    Concept concept = new Concept(language, "MyConcept", "my-id");
+    Concept otherConcept = new Concept(language, "OtherConcept", "my-id");
     Reference reference = LionCore.getConcept().getReferenceByName("extends");
     concept.setExtendedConcept(null);
     assertEquals(
@@ -67,8 +67,8 @@ public class ConceptReflectionTest {
   @Test
   public void setReferenceExtended() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
-    Concept otherConcept = new Concept(language, "OtherConcept");
+    Concept concept = new Concept(language, "MyConcept", "my-id");
+    Concept otherConcept = new Concept(language, "OtherConcept", "my-id");
     Reference reference = LionCore.getConcept().getReferenceByName("extends");
     concept.addReferenceValue(reference, null);
     assertNull(concept.getExtendedConcept());
@@ -79,9 +79,9 @@ public class ConceptReflectionTest {
   @Test
   public void getReferenceImplemented() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
-    Interface i1 = new Interface(language, "I1");
-    Interface i2 = new Interface(language, "I2");
+    Concept concept = new Concept(language, "MyConcept", "my-id1");
+    Interface i1 = new Interface(language, "I1", "my-id2");
+    Interface i2 = new Interface(language, "I2", "my-id3");
     Reference reference = LionCore.getConcept().getReferenceByName("implements");
     assertEquals(
         Collections.emptyList(), ClassifierInstanceUtils.getReferredNodes(concept, reference));
@@ -95,9 +95,9 @@ public class ConceptReflectionTest {
   @Test
   public void setReferenceImplemented() {
     Language language = new Language();
-    Concept concept = new Concept(language, "MyConcept");
-    Interface i1 = new Interface(language, "I1");
-    Interface i2 = new Interface(language, "I2");
+    Concept concept = new Concept(language, "MyConcept", "my-id1");
+    Interface i1 = new Interface(language, "I1", "my-id2");
+    Interface i2 = new Interface(language, "I2", "my-id3");
     Reference reference = LionCore.getConcept().getReferenceByName("implements");
     assertEquals(Collections.emptyList(), concept.getImplemented());
     concept.addReferenceValue(reference, new ReferenceValue(i1, null));

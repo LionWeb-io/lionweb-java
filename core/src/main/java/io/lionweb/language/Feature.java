@@ -45,7 +45,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   public Feature(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
-      @Nullable Classifier container,
+      @Nullable Classifier<?> container,
       @Nonnull String id) {
     super(lionWebVersion);
     setOptional(false);
@@ -53,7 +53,9 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     this.setID(id);
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
-    setParent(container);
+    if (container != null) {
+      container.addFeature(this);
+    }
   }
 
   public Feature(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {
@@ -66,29 +68,9 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     this.setID(id);
     // TODO enforce uniqueness of the name within the FeauturesContainer
     setName(name);
-    setParent(container);
-  }
-
-  public Feature(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier container) {
-    super(lionWebVersion);
-    setOptional(false);
-    // TODO enforce uniqueness of the name within the FeauturesContainer
-    setName(name);
-    setParent(container);
-  }
-
-  public Feature(@Nullable String name, @Nullable Classifier container) {
-    super(
-        (container != null && container.getLionWebVersion() != null)
-            ? container.getLionWebVersion()
-            : LionWebVersion.currentVersion);
-    setOptional(false);
-    // TODO enforce uniqueness of the name within the FeauturesContainer
-    setName(name);
-    setParent(container);
+    if (container != null) {
+      container.addFeature(this);
+    }
   }
 
   public boolean isOptional() {

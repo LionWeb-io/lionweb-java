@@ -32,7 +32,9 @@ public class Property extends Feature<Property> {
   }
 
   public static Property createOptional(@Nullable String name, @Nullable DataType<?> type) {
-    Property property = new Property(name, null);
+    Property property = new Property();
+    property.setName(name);
+    property.setType(type);
     property.setOptional(true);
     property.setType(type);
     return property;
@@ -48,14 +50,15 @@ public class Property extends Feature<Property> {
   }
 
   public static Property createRequired(@Nullable String name, @Nullable DataType<?> type) {
-    Property property = new Property(name, null);
+    Property property = new Property();
+    property.setName(name);
     property.setOptional(false);
     property.setType(type);
     return property;
   }
 
   public static Property createOptional(
-      @Nullable String name, @Nullable DataType type, @Nonnull String id) {
+      @Nullable String name, @Nullable DataType<?> type, @Nonnull String id) {
     Objects.requireNonNull(id, "id should not be null");
     Property property = new Property(name, null, id);
     property.setOptional(true);
@@ -106,14 +109,11 @@ public class Property extends Feature<Property> {
   }
 
   public Property(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
-    super(lionWebVersion, name, (Classifier<?>) null);
+    super(lionWebVersion);
+    setName(name);
   }
 
-  public Property(@Nullable String name, @Nullable Classifier<?> container) {
-    super(name, container);
-  }
-
-  public @Nullable DataType getType() {
+  public @Nullable DataType<?> getType() {
     return getReferenceSingleValue("type");
   }
 
