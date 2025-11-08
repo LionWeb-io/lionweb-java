@@ -1,7 +1,8 @@
 package io.lionweb.language;
 
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.*;
 
+import io.lionweb.LionWebVersion;
 import org.junit.Test;
 
 public class EnumerationTest {
@@ -38,5 +39,28 @@ public class EnumerationTest {
 
     assertSame(enm, lit.getParent());
     assertSame(enm, lit.getEnumeration());
+  }
+
+  @Test
+  public void testConstructorWithLionWebVersionAndName() {
+    Enumeration enumeration = new Enumeration(LionWebVersion.v2024_1, "Status");
+
+    assertEquals("Status", enumeration.getName());
+    assertEquals(LionWebVersion.v2024_1, enumeration.getLionWebVersion());
+  }
+
+  @Test
+  public void testConstructorWithLionWebVersion() {
+    Enumeration enumeration = new Enumeration(LionWebVersion.v2023_1);
+
+    assertNull(enumeration.getName());
+    assertEquals(LionWebVersion.v2023_1, enumeration.getLionWebVersion());
+  }
+
+  @Test
+  public void testNamespaceQualifierThrowsUnsupportedOperation() {
+    Enumeration enumeration = new Enumeration("TestEnum");
+
+    assertThrows(UnsupportedOperationException.class, () -> enumeration.namespaceQualifier());
   }
 }
