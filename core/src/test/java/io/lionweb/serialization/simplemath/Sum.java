@@ -71,4 +71,15 @@ public class Sum extends SimpleNode {
       super.addChild(containment, child);
     }
   }
+
+  @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    if (containment.getName().equals("left")) {
+      this.left = (IntLiteral) child;
+    } else if (containment.getName().equals("right")) {
+      this.right = (IntLiteral) child;
+    } else {
+      super.addChild(containment, child, index);
+    }
+  }
 }

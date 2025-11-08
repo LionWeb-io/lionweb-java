@@ -141,6 +141,25 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
   }
 
   @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    Objects.requireNonNull(containment, "containment should not be null");
+    Objects.requireNonNull(child, "child should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("Index cannot be negative");
+    }
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
+    if (containment.isMultiple()) {
+      addContainmentMultipleValue(containment.getName(), child, index);
+    } else {
+      throw new UnsupportedOperationException(
+          "There are not containments which are not multiple in LionCore, so this "
+              + "is not supported at the moment");
+    }
+  }
+
+  @Override
   public void removeChild(@Nonnull Node child) {
     Objects.requireNonNull(child, "child should not be null");
     if (child.getParent() != this) {
@@ -212,6 +231,24 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
   }
 
   @Override
+  public int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referenceValue) {
+    Objects.requireNonNull(reference, "reference should not be null");
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept: " + reference);
+    }
+    if (reference.isMultiple()) {
+      return addReferenceMultipleValue(reference.getName(), index, referenceValue);
+    } else {
+      if (index != 0) {
+        throw new IllegalArgumentException("Index must be 0 for single references");
+      }
+      setReferenceSingleValue(reference.getName(), referenceValue);
+      return 0;
+    }
+  }
+
+  @Override
   public void setReferenceValues(
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
     Objects.requireNonNull(reference, "reference should not be null");
@@ -227,8 +264,10 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     }
     referenceValues.put(reference.getName(), (List<ReferenceValue>) values);
     if (partitionObserverCache != null) {
+      int i = 0;
       for (ReferenceValue value : values) {
-        partitionObserverCache.referenceValueAdded(this, reference, value);
+        partitionObserverCache.referenceValueAdded(this, reference, i, value);
+        i++;
       }
     }
   }
@@ -362,7 +401,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
       if (partitionObserverCache != null) {
         partitionObserverCache.referenceValueAdded(
-            this, getClassifier().getReferenceByName(linkName), value);
+            this, getClassifier().getReferenceByName(linkName), 0, value);
       }
     }
   }
@@ -395,6 +434,31 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     return true;
   }
 
+  /**
+   * Adding a null value or a value already contained, do not produce any change.
+   *
+   * @return return true if the addition produced a change
+   */
+  protected boolean addContainmentMultipleValue(@Nonnull String linkName, Node value, int index) {
+    if (value == null) {
+      return false;
+    }
+    if (getContainmentMultipleValue(linkName).stream().anyMatch(e -> e == value)) {
+      return false;
+    }
+    ((M3Node) value).setParent(this);
+    if (containmentValues.containsKey(linkName)) {
+      containmentValues.get(linkName).add(index, value);
+    } else {
+      containmentValues.put(linkName, new ArrayList(Arrays.asList(value)));
+    }
+    if (partitionObserverCache != null) {
+      partitionObserverCache.childAdded(
+          this, getClassifier().getContainmentByName(linkName), index, value);
+    }
+    return true;
+  }
+
   protected int addReferenceMultipleValue(String linkName, ReferenceValue value) {
     if (value == null) {
       return -1;
@@ -410,7 +474,36 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     }
     if (partitionObserverCache != null) {
       Reference reference = getClassifier().getReferenceByName(linkName);
-      partitionObserverCache.referenceValueAdded(this, reference, value);
+      partitionObserverCache.referenceValueAdded(this, reference, index, value);
+    }
+    return index;
+  }
+
+  protected int addReferenceMultipleValue(String linkName, int index, ReferenceValue value) {
+    if (value == null) {
+      return -1;
+    }
+    if (index < 0) {
+      throw new IllegalArgumentException("Index cannot be negative");
+    }
+    if (referenceValues.containsKey(linkName)) {
+      List<ReferenceValue> values = referenceValues.get(linkName);
+      if (index > values.size()) {
+        throw new IllegalArgumentException(
+            "Index cannot be greater than the number of elements in the reference");
+      }
+      values.add(index, value);
+      index = values.size() - 1;
+    } else {
+      if (index > 0) {
+        throw new IllegalArgumentException(
+            "Index cannot be greater than the number of elements in the reference");
+      }
+      referenceValues.put(linkName, new ArrayList(Arrays.asList(value)));
+    }
+    if (partitionObserverCache != null) {
+      Reference reference = getClassifier().getReferenceByName(linkName);
+      partitionObserverCache.referenceValueAdded(this, reference, index, value);
     }
     return index;
   }

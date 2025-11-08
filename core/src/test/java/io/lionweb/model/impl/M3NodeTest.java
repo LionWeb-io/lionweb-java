@@ -125,9 +125,9 @@ public class M3NodeTest {
     assertEquals(
         Arrays.asList(
             new MockPartitionObserver.ReferenceAddedRecord(
-                language, languageDependsOn, new ReferenceValue(language2, "L2")),
+                language, languageDependsOn, 0, new ReferenceValue(language2, "L2")),
             new MockPartitionObserver.ReferenceAddedRecord(
-                language, languageDependsOn, new ReferenceValue(language3, "L3"))),
+                language, languageDependsOn, 1, new ReferenceValue(language3, "L3"))),
         observer.getRecords());
     observer.clearRecords();
 

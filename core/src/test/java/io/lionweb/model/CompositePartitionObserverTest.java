@@ -140,13 +140,13 @@ public class CompositePartitionObserverTest {
     Reference reference = new Reference();
     ReferenceValue refValue = new ReferenceValue(node, "resolve");
 
-    composite.referenceValueAdded(node, reference, refValue);
+    composite.referenceValueAdded(node, reference, 0, refValue);
 
     assertEquals(
-        Arrays.asList(new MockPartitionObserver.ReferenceAddedRecord(node, reference, refValue)),
+        Arrays.asList(new MockPartitionObserver.ReferenceAddedRecord(node, reference, 0, refValue)),
         obs1.getRecords());
     assertEquals(
-        Arrays.asList(new MockPartitionObserver.ReferenceAddedRecord(node, reference, refValue)),
+        Arrays.asList(new MockPartitionObserver.ReferenceAddedRecord(node, reference, 0, refValue)),
         obs2.getRecords());
   }
 

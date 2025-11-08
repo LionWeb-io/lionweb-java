@@ -668,7 +668,7 @@ public class DynamicNodeTest {
     assertEquals(
         Arrays.asList(
             new MockPartitionObserver.ReferenceAddedRecord(
-                book, author, new ReferenceValue(writer1, "Dante Alighieri")),
+                book, author, 0, new ReferenceValue(writer1, "Dante Alighieri")),
             new MockPartitionObserver.ReferenceChangedRecord(
                 book, author, 0, "writer1", "Dante Alighieri", "writer2", "Fernando Pessoa")),
         observer.getRecords());

@@ -100,8 +100,10 @@ public class CompositePartitionObserver implements PartitionObserver {
   public void referenceValueAdded(
       @Nonnull ClassifierInstance<?> classifierInstance,
       @Nonnull Reference reference,
+      int index,
       @Nonnull ReferenceValue referenceValue) {
-    elements.forEach(e -> e.referenceValueAdded(classifierInstance, reference, referenceValue));
+    elements.forEach(
+        e -> e.referenceValueAdded(classifierInstance, reference, index, referenceValue));
   }
 
   @Override
