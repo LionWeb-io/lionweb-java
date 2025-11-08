@@ -80,6 +80,11 @@ public abstract class SimpleNode extends AbstractNode {
   }
 
   @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    throw new UnsupportedOperationException();
+  }
+
+  @Override
   public void removeChild(Node node) {
     throw new UnsupportedOperationException();
   }
@@ -106,8 +111,22 @@ public abstract class SimpleNode extends AbstractNode {
     return concreteAddReferenceValue(reference, referredNode);
   }
 
+  @Override
+  public int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode) {
+    if (!getClassifier().allReferences().contains(reference)) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+    return concreteAddReferenceValue(reference, index, referredNode);
+  }
+
   public int concreteAddReferenceValue(
       @Nonnull Reference reference, @Nullable ReferenceValue referredNode) {
+    throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
+  }
+
+  public int concreteAddReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode) {
     throw new UnsupportedOperationException("Reference " + reference + " not yet supported");
   }
 

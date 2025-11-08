@@ -181,14 +181,17 @@ public class MockPartitionObserver implements PartitionObserver {
 
   public static class ReferenceAddedRecord extends Record {
     public final @Nonnull Reference reference;
+    public final int index;
     public final @Nonnull ReferenceValue referenceValue;
 
     public ReferenceAddedRecord(
         @Nonnull ClassifierInstance<?> node,
         @Nonnull Reference reference,
+        int index,
         @Nonnull ReferenceValue referenceValue) {
       super(node);
       this.reference = reference;
+      this.index = index;
       this.referenceValue = referenceValue;
     }
 
@@ -362,8 +365,9 @@ public class MockPartitionObserver implements PartitionObserver {
   public void referenceValueAdded(
       @Nonnull ClassifierInstance<?> node,
       @Nonnull Reference reference,
+      int index,
       @Nonnull ReferenceValue referenceValue) {
-    records.add(new ReferenceAddedRecord(node, reference, referenceValue));
+    records.add(new ReferenceAddedRecord(node, reference, index, referenceValue));
   }
 
   @Override

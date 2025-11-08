@@ -115,6 +115,26 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    if (index < 0) {
+      throw new IllegalArgumentException("Index must be non-negative");
+    }
+    Objects.requireNonNull(containment, "Containment should not be null");
+    Objects.requireNonNull(child, "Child should not be null");
+    if (!getClassifier().allContainments().contains(containment)) {
+      throw new IllegalArgumentException();
+    }
+    if (containment.isMultiple()) {
+      addContainment(containment, child, index);
+    } else {
+      if (index != 0) {
+        throw new IllegalArgumentException("Index 0 was expected, while we got " + index);
+      }
+      setContainmentSingleValue(containment, child);
+    }
+  }
+
+  @Override
   public void removeChild(Node node) {
     if (containmentValues != null) {
       for (Map.Entry<String, List<Node>> entry : containmentValues.entrySet()) {
@@ -187,6 +207,25 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
         return -1;
       }
     } else {
+      setReferenceSingleValue(reference, value);
+      return 0;
+    }
+  }
+
+  @Override
+  public int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue value) {
+    Objects.requireNonNull(reference, "Reference should not be null");
+    if (reference.isMultiple()) {
+      if (value != null) {
+        return addReferenceMultipleValue(reference, index, value);
+      } else {
+        return -1;
+      }
+    } else {
+      if (index != 0) {
+        throw new IllegalArgumentException("Index 0 was expected, while we got " + index);
+      }
       setReferenceSingleValue(reference, value);
       return 0;
     }
@@ -267,7 +306,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     referenceValues.put(reference.getKey(), (List<ReferenceValue>) values);
     if (partitionObserverCache != null) {
       for (int i = 0; i < values.size(); i++) {
-        partitionObserverCache.referenceValueAdded(this, reference, values.get(i));
+        partitionObserverCache.referenceValueAdded(this, reference, i, values.get(i));
       }
     }
   }
@@ -341,6 +380,29 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
   }
 
+  private void addContainment(Containment link, Node value, int index) {
+    assert link.isMultiple();
+    if (value instanceof HasSettableParent) {
+      ((HasSettableParent) value).setParent(this);
+    }
+    initContainments();
+    if (containmentValues.containsKey(link.getKey())) {
+      List<Node> children = containmentValues.get(link.getKey());
+      if (index > children.size()) {
+        throw new IllegalArgumentException("Index must be less than or equal to size");
+      }
+      children.add(index, value);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childAdded(this, link, children.size() - 1, value);
+      }
+    } else {
+      containmentValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
+      if (partitionObserverCache != null) {
+        partitionObserverCache.childAdded(this, link, 0, value);
+      }
+    }
+  }
+
   private void setContainmentSingleValue(Containment link, Node value) {
     initContainments();
     List<Node> prevValue = containmentValues.get(link.getKey());
@@ -402,7 +464,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
               value.getReferredID(),
               value.getResolveInfo());
         } else {
-          partitionObserverCache.referenceValueAdded(this, link, value);
+          partitionObserverCache.referenceValueAdded(this, link, 0, value);
         }
       }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
@@ -415,7 +477,11 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       return -1;
     }
     if (partitionObserverCache != null) {
-      partitionObserverCache.referenceValueAdded(this, link, referenceValue);
+      int index =
+          referenceValues.containsKey(link.getKey())
+              ? referenceValues.get(link.getKey()).size()
+              : 0;
+      partitionObserverCache.referenceValueAdded(this, link, index, referenceValue);
     }
     if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(link.getKey());
@@ -423,6 +489,38 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       return referenceValuesOfInterest.size() - 1;
     } else {
       initReferences();
+      referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(referenceValue)));
+      return 0;
+    }
+  }
+
+  private int addReferenceMultipleValue(Reference link, int index, ReferenceValue referenceValue) {
+    assert link.isMultiple();
+    if (referenceValue == null) {
+      return -1;
+    }
+    if (index < 0) {
+      throw new IllegalArgumentException("Index must be non-negative");
+    }
+
+    if (referenceValues != null && referenceValues.containsKey(link.getKey())) {
+      List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(link.getKey());
+      if (index > referenceValuesOfInterest.size()) {
+        throw new IllegalArgumentException("Index must be less than or equal to size");
+      }
+      if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueAdded(this, link, index, referenceValue);
+      }
+      referenceValuesOfInterest.add(index, referenceValue);
+      return referenceValuesOfInterest.size() - 1;
+    } else {
+      initReferences();
+      if (index > 0) {
+        throw new IllegalArgumentException("Index must be less than or equal to size");
+      }
+      if (partitionObserverCache != null) {
+        partitionObserverCache.referenceValueAdded(this, link, index, referenceValue);
+      }
       referenceValues.put(link.getKey(), new ArrayList(Arrays.asList(referenceValue)));
       return 0;
     }

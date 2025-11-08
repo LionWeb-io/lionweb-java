@@ -169,4 +169,15 @@ public class ProxyNode extends AbstractNode {
   public void partitionObserverRegistered(@Nonnull PartitionObserver observer) {
     // We will ignore this
   }
+
+  @Override
+  public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode) {
+    throw cannotDoBecauseProxy();
+  }
 }

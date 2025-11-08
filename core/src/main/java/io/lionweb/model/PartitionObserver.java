@@ -99,6 +99,7 @@ public interface PartitionObserver {
   void referenceValueAdded(
       @Nonnull ClassifierInstance<?> classifierInstance,
       @Nonnull Reference reference,
+      int index,
       @Nonnull ReferenceValue referenceValue);
 
   /**
