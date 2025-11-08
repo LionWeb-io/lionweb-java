@@ -60,9 +60,7 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
         }
       } else if (eClassifier.eClass().getName().equals(EcorePackage.Literals.EENUM.getName())) {
         EEnum eEnum = (EEnum) eClassifier;
-        Enumeration enumeration =
-            new Enumeration(
-                getLionWebVersion(), eEnum.getName(), ePackage.getName() + "-" + eEnum.getName());
+        Enumeration enumeration = new Enumeration(getLionWebVersion(), eEnum.getName());
         setIDAndKey(enumeration, ePackage.getName() + "-" + eEnum.getName());
         metamodel.addElement(enumeration);
         entitiesToEElementsMapping.registerMapping(enumeration, eEnum);
