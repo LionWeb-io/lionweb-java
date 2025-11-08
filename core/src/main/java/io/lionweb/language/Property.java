@@ -34,7 +34,6 @@ public class Property extends Feature<Property> {
   public static Property createOptional(@Nullable String name, @Nullable DataType<?> type) {
     Property property = new Property();
     property.setName(name);
-    property.setType(type);
     property.setOptional(true);
     property.setType(type);
     return property;
