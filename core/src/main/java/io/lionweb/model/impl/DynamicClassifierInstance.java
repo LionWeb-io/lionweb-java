@@ -396,6 +396,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
         partitionObserverCache.childAdded(this, link, children.size() - 1, value);
       }
     } else {
+      if (index != 0) {
+        throw new IllegalArgumentException("Index 0 was expected, while we got " + index);
+      }
       containmentValues.put(link.getKey(), new ArrayList(Arrays.asList(value)));
       if (partitionObserverCache != null) {
         partitionObserverCache.childAdded(this, link, 0, value);
@@ -476,6 +479,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (referenceValue == null) {
       return -1;
     }
+    initReferences();
     if (partitionObserverCache != null) {
       int index =
           referenceValues.containsKey(link.getKey())
