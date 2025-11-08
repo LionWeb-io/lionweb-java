@@ -12,6 +12,11 @@ public class Enumeration extends DataType<Enumeration> implements NamespaceProvi
     super(lionWebVersion);
   }
 
+  public Enumeration(@Nullable String name) {
+    super();
+    this.setName(name);
+  }
+
   public Enumeration(@Nonnull LionWebVersion lionWebVersion, @Nullable String name) {
     super(lionWebVersion);
     this.setName(name);
