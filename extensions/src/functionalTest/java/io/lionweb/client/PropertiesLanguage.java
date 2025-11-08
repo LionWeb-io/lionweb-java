@@ -28,8 +28,7 @@ public class PropertiesLanguage {
     // Register concept features
     propertiesPartition.setPartition(true);
     addContainment(propertiesPartition, "files", propertiesFile, Multiplicity.ZERO_TO_MANY);
-    Property filePath = new Property("path", propertiesFile);
-    filePath.setID(propertiesFile.getID() + "-path");
+    Property filePath = new Property("path", propertiesFile, propertiesFile.getID() + "-path");
     filePath.setKey(propertiesFile.getKey() + "-path");
     filePath.setType(LionCoreBuiltins.getString(lionWebVersionUsed));
     propertiesFile.addFeature(filePath);
@@ -39,9 +38,11 @@ public class PropertiesLanguage {
   }
 
   private static Concept createConcept(Language language, String name) {
-    Concept concept = new Concept(lionWebVersionUsed, language, name);
-    concept.setID(
-        language.getID().replace("language-", "").replace("-id", "") + "-" + name + "-id");
+    Concept concept =
+        new Concept(
+            language,
+            name,
+            language.getID().replace("language-", "").replace("-id", "") + "-" + name + "-id");
     concept.setKey(
         language.getKey().replace("language-", "").replace("-key", "") + "-" + name + "-key");
     language.addElement(concept);
