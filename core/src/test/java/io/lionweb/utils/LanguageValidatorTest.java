@@ -455,8 +455,8 @@ public class LanguageValidatorTest {
     assertTrue(r1.isSuccessful());
 
     Language l2 = new Language("MyLanguage2", "my_language2_id", "my_language2_key");
-    Concept c2 = new Concept(l2, "MyConcept2", "c2-d").setKey("c2-key");
-    Concept c1 = new Concept(l1, "MyConcept1", "c1-d").setKey("c1-key");
+    Concept c2 = new Concept(l2, "MyConcept2", "c2-id").setKey("c2-key");
+    Concept c1 = new Concept(l1, "MyConcept1", "c1-id").setKey("c1-key");
 
     ValidationResult r2 = new LanguageValidator().validate(l1);
     assertTrue(r2.isSuccessful());
