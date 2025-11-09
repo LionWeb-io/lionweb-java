@@ -9,9 +9,13 @@ import io.lionweb.serialization.extensions.TransferFormat;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import java.util.zip.ZipOutputStream;
 
 public class LionWebArchive {
 
@@ -55,11 +59,11 @@ public class LionWebArchive {
                         throw new UnsupportedOperationException("Unsupported serialization format: " + format);
                     }
                     zipIn.closeEntry();
-                    entry = zipIn.getNextEntry();
                     chunkConsumer.accept(chunk);
                 } catch (Exception e) {
                     throw new RuntimeException("Failed to deserialize chunk from " + entry.getName(), e);
                 }
+                entry = zipIn.getNextEntry();
             }
         }
     }
@@ -67,13 +71,80 @@ public class LionWebArchive {
     public static void load(File file, InMemoryServer server, String repositoryName,
                             LionWebVersion lionWebVersion,
                             TransferFormat format) throws IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        load(file, lionWebVersion, format, chunk -> {
+            server.createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
+        });
     }
+
+    private static final int FOUR_MIB = 4 << 20;
 
     public static void store(File file, InMemoryServer server, String repositoryName,
                              LionWebVersion lionWebVersion,
                              TransferFormat format) throws IOException {
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Ensure parent directory exists
+        File parent = file.getParentFile();
+        if (parent != null) {
+            // mkdirs() returns false if it already exists; that's fine
+            parent.mkdirs();
+        }
+
+        // Gather partitions
+        List<String> partitionIds = server.listPartitionIDs(repositoryName);
+        final int nPartitions = partitionIds.size();
+
+        // Serialize partitions in parallel
+        ExecutorService pool = Executors.newFixedThreadPool(
+                Math.max(1, Runtime.getRuntime().availableProcessors()));
+        if (format == TransferFormat.JSON) {
+            throw new UnsupportedOperationException("JSON serialization not yet implemented");
+        } else if (format == TransferFormat.PROTOBUF) {
+            List<Future<Map.Entry<String, byte[]>>> futures = new ArrayList<>(nPartitions);
+            ProtoBufSerialization serialization = new ProtoBufSerialization();
+
+            for (int i = 0; i < nPartitions; i++) {
+                final String partitionId = partitionIds.get(i);
+                futures.add(pool.submit(() -> {
+                    SerializationChunk chunk = SerializationChunk.fromNodes(lionWebVersion, server.retrieve(repositoryName, Collections.singletonList(partitionId), Integer.MAX_VALUE));
+                    byte[] bytes = serialization.serializeToByteArray(chunk);
+                    return new AbstractMap.SimpleEntry<>(partitionId, bytes);
+                }));
+            }
+
+            // Collect serialized partitions
+            List<Map.Entry<String, byte[]>> serializedPartitions = new ArrayList<>(nPartitions);
+            for (Future<Map.Entry<String, byte[]>> f : futures) {
+                try {
+                    serializedPartitions.add(f.get());
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            pool.shutdown();
+
+            // Write zip sequentially
+            try (OutputStream os = new BufferedOutputStream(
+                    Files.newOutputStream(file.toPath(),
+                            StandardOpenOption.CREATE,
+                            StandardOpenOption.TRUNCATE_EXISTING),
+                    FOUR_MIB);
+                 ZipOutputStream zipOut = new ZipOutputStream(os)) {
+
+                zipOut.setLevel(1);
+
+                for (Map.Entry<String, byte[]> e : serializedPartitions) {
+                    String partitionId = e.getKey();
+                    byte[] bytes = e.getValue();
+
+                    ZipEntry entry = new ZipEntry(partitionId + ".binpb");
+                    zipOut.putNextEntry(entry);
+                    zipOut.write(bytes);
+                    zipOut.closeEntry();
+                }
+            }
+        } else {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
     private static byte[] readAllBytes(InputStream in) throws IOException {

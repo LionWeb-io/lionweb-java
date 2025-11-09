@@ -327,6 +327,27 @@ public class ClassifierInstanceUtils {
     _this.addChild(containment, child);
   }
 
+    public static <T extends Node, INamed> void addReferenceByName(@Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName, @Nonnull T target) {
+        Objects.requireNonNull(_this, "_this should not be null");
+        Objects.requireNonNull(referenceName, "referenceName should not be null");
+        Reference reference = _this.getClassifier().requireReferenceByName(referenceName);
+        _this.addReferenceValue(reference, referenceTo(target));
+    }
+
+    public static ReferenceValue referenceTo(@Nonnull Node _this) {
+        if (_this instanceof INamed) {
+            return new ReferenceValue(_this, ((INamed)_this).getName());
+        } else {
+            Property nameProperty = _this.getClassifier().getPropertyByName("name");
+            if (nameProperty == null) {
+                return new ReferenceValue(_this, null);
+            } else {
+                return new ReferenceValue(_this, (String)_this.getPropertyValue(nameProperty));
+            }
+
+        }
+    }
+
   public static ReferenceValue referenceTo(@Nonnull LanguageEntity<?> _this) {
     // Unfortunately we cannot refer to LionCore and LionCoreBuiltins as this method get called
     // during their initialization
@@ -416,4 +437,6 @@ public class ClassifierInstanceUtils {
                   }
                 });
   }
+
+
 }
