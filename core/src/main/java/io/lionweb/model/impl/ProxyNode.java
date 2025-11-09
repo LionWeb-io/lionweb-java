@@ -63,12 +63,6 @@ public class ProxyNode extends AbstractNode {
     throw cannotDoBecauseProxy();
   }
 
-  @Override
-  public int addReferenceValue(
-      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode) {
-    throw cannotDoBecauseProxy();
-  }
-
   @Nonnull
   @Override
   public String getID() {
@@ -178,6 +172,12 @@ public class ProxyNode extends AbstractNode {
 
   @Override
   public void addChild(@Nonnull Containment containment, @Nonnull Node child, int index) {
+    throw cannotDoBecauseProxy();
+  }
+
+  @Override
+  public int addReferenceValue(
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referredNode) {
     throw cannotDoBecauseProxy();
   }
 }
