@@ -145,24 +145,91 @@ public class ModelComparator {
     }
   }
 
+  /**
+   * Determines if two {@link ClassifierInstance} objects are equivalent by comparing their models.
+   *
+   * @param a the first {@link ClassifierInstance} object to compare
+   * @param b the second {@link ClassifierInstance} object to compare
+   * @return {@code true} if the two {@link ClassifierInstance} objects are equivalent, {@code
+   *     false} otherwise
+   */
   public static boolean areEquivalent(ClassifierInstance<?> a, ClassifierInstance<?> b) {
     ModelComparator modelComparator = new ModelComparator();
     ModelComparator.ComparisonResult comparisonResult = modelComparator.compare(a, b);
     return comparisonResult.areEquivalent();
   }
 
+  /**
+   * Compares two lists of {@link ClassifierInstance} objects to determine if they are equivalent.
+   * Two lists are considered equivalent if they have the same size and all corresponding elements
+   * in the lists are equivalent, based on the {@code areEquivalent} method for individual {@link
+   * ClassifierInstance} objects.
+   *
+   * @param as the first list of {@link ClassifierInstance} objects to compare
+   * @param bs the second list of {@link ClassifierInstance} objects to compare
+   * @return {@code true} if the two lists are equivalent, {@code false} otherwise
+   */
+  public static <A extends ClassifierInstance<?>, B extends ClassifierInstance<?>>
+      boolean areEquivalent(List<A> as, List<B> bs) {
+    if (as.size() != bs.size()) {
+      return false;
+    }
+    for (int i = 0; i < as.size(); i++) {
+      if (!areEquivalent(as.get(i), bs.get(i))) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Compares two nodes and determines their differences.
+   *
+   * <p>This method compares the properties, structure, and key attributes of two nodes and returns
+   * a {@link ComparisonResult} object, which contains details about any discrepancies found between
+   * the nodes.
+   *
+   * @param nodeA the first node to compare
+   * @param nodeB the second node to compare
+   * @return a {@link ComparisonResult} object containing the results of the comparison
+   */
   public ComparisonResult compare(Node nodeA, Node nodeB) {
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
     return comparisonResult;
   }
 
+  /**
+   * Compares two {@link AnnotationInstance} objects and determines their differences.
+   *
+   * <p>This method analyzes the properties and attributes of two {@link AnnotationInstance} objects
+   * and generates a {@link ComparisonResult} that contains details about discrepancies identified
+   * during the comparison.
+   *
+   * @param nodeA the first {@link AnnotationInstance} object to compare
+   * @param nodeB the second {@link AnnotationInstance} object to compare
+   * @return a {@link ComparisonResult} object that encapsulates the results of the comparison
+   */
   public ComparisonResult compare(AnnotationInstance nodeA, AnnotationInstance nodeB) {
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
     return comparisonResult;
   }
 
+  /**
+   * Compares two {@link ClassifierInstance} objects and determines their differences based on their
+   * specific types and attributes.
+   *
+   * <p>If both objects are instances of {@link Node}, they are compared using the node-specific
+   * comparison. If both objects are instances of {@link AnnotationInstance}, they are compared
+   * using the annotation-specific comparison. If the objects are of incompatible types, the result
+   * is marked as incompatible.
+   *
+   * @param nodeA the first {@link ClassifierInstance} object to compare
+   * @param nodeB the second {@link ClassifierInstance} object to compare
+   * @return a {@link ComparisonResult} object containing the results of the comparison, or marked
+   *     as incompatible if the two objects cannot be compared.
+   */
   public ComparisonResult compare(ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB) {
     if (nodeA instanceof Node && nodeB instanceof Node) {
       return compare((Node) nodeA, (Node) nodeB);

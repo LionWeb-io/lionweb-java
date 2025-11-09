@@ -425,4 +425,432 @@ public class SerializedClassifierInstanceTest {
     sci1.setID("id123");
     assertFalse(sci1.removeAnnotation("an-1"));
   }
+
+  @Test
+  public void addChildWithIndexToExistingContainment() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // First add some children normally
+    sci.addChild(cont, "child1");
+    sci.addChild(cont, "child3");
+
+    // Insert child at index 1
+    sci.addChild(cont, "child2", 1);
+
+    // Verify order is correct
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Arrays.asList("child1", "child2", "child3"), children);
+  }
+
+  @Test
+  public void addChildWithIndexToNewContainment() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("newCont");
+
+    // Add child to non-existent containment - should create new containment
+    sci.addChild(cont, "firstChild", 0);
+
+    // Verify containment was created with the child
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Collections.singletonList("firstChild"), children);
+    assertEquals(1, sci.getContainments().size());
+  }
+
+  @Test
+  public void addChildWithIndexAtBeginning() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // Add initial children
+    sci.addChild(cont, "second");
+    sci.addChild(cont, "third");
+
+    // Insert at beginning (index 0)
+    sci.addChild(cont, "first", 0);
+
+    // Verify order
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Arrays.asList("first", "second", "third"), children);
+  }
+
+  @Test
+  public void addChildWithIndexAtEnd() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // Add initial children
+    sci.addChild(cont, "first");
+    sci.addChild(cont, "second");
+
+    // Insert at end (index = size)
+    sci.addChild(cont, "third", 2);
+
+    // Verify order
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Arrays.asList("first", "second", "third"), children);
+  }
+
+  @Test
+  public void addChildWithIndexNullMetaPointer() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+
+    // Try to add child with null MetaPointer
+    NullPointerException exception =
+        assertThrows(NullPointerException.class, () -> sci.addChild(null, "childId", 0));
+
+    assertEquals("metaPointer should not be null", exception.getMessage());
+  }
+
+  @Test
+  public void addChildWithIndexNullChildId() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // Try to add null child ID
+    NullPointerException exception =
+        assertThrows(NullPointerException.class, () -> sci.addChild(cont, null, 0));
+
+    assertEquals("childId should not be null", exception.getMessage());
+  }
+
+  @Test
+  public void addChildWithNegativeIndex() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // Try to add child with negative index
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> sci.addChild(cont, "childId", -1));
+
+    assertEquals("Index must be greater than or equal to zero", exception.getMessage());
+  }
+
+  @Test
+  public void addChildWithIndexZeroToEmptyContainment() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("emptyCont");
+
+    // Add child at index 0 to empty containment
+    sci.addChild(cont, "onlyChild", 0);
+
+    // Verify child was added
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Collections.singletonList("onlyChild"), children);
+  }
+
+  @Test
+  public void addChildWithIndexToMiddleOfList() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // Add initial children to create a list
+    sci.addChild(cont, "child1");
+    sci.addChild(cont, "child2");
+    sci.addChild(cont, "child4");
+    sci.addChild(cont, "child5");
+
+    // Insert in the middle at index 2
+    sci.addChild(cont, "child3", 2);
+
+    // Verify the insertion worked correctly
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Arrays.asList("child1", "child2", "child3", "child4", "child5"), children);
+  }
+
+  @Test
+  public void addChildWithIndexPreservesOtherContainments() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont1 = simpleMetaPointer("cont1");
+    MetaPointer cont2 = simpleMetaPointer("cont2");
+
+    // Add children to first containment
+    sci.addChild(cont1, "c1-1");
+    sci.addChild(cont1, "c1-2");
+
+    // Add children to second containment
+    sci.addChild(cont2, "c2-1");
+    sci.addChild(cont2, "c2-2");
+
+    // Insert child at index 1 in first containment
+    sci.addChild(cont1, "c1-new", 1);
+
+    // Verify first containment was modified
+    assertEquals(Arrays.asList("c1-1", "c1-new", "c1-2"), sci.getContainmentValues(cont1));
+
+    // Verify second containment was not affected
+    assertEquals(Arrays.asList("c2-1", "c2-2"), sci.getContainmentValues(cont2));
+  }
+
+  @Test
+  public void addChildWithIndexMultipleInsertsAtSameIndex() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer cont = simpleMetaPointer("cont");
+
+    // Add initial child
+    sci.addChild(cont, "original");
+
+    // Insert multiple children at index 0 (each pushes the previous ones to the right)
+    sci.addChild(cont, "second", 0);
+    sci.addChild(cont, "first", 0);
+
+    // Verify the order reflects the insertions
+    List<String> children = sci.getContainmentValues(cont);
+    assertEquals(Arrays.asList("first", "second", "original"), children);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexToExistingReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Add initial reference values
+    SerializedReferenceValue.Entry entry1 = new SerializedReferenceValue.Entry("id1", "info1");
+    SerializedReferenceValue.Entry entry3 = new SerializedReferenceValue.Entry("id3", "info3");
+    sci.addReferenceValue(ref, entry1);
+    sci.addReferenceValue(ref, entry3);
+
+    // Insert reference value at index 1
+    SerializedReferenceValue.Entry entry2 = new SerializedReferenceValue.Entry("id2", "info2");
+    sci.addReferenceValue(ref, 1, entry2);
+
+    // Verify order is correct
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(ref);
+    assertEquals(Arrays.asList(entry1, entry2, entry3), values);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexToNewReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer newRef = simpleMetaPointer("newRef");
+
+    // Add reference value to non-existent reference - should create new reference
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("newId", "newInfo");
+    sci.addReferenceValue(newRef, 0, entry);
+
+    // Verify reference was created with the value
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(newRef);
+    assertEquals(Collections.singletonList(entry), values);
+    assertEquals(1, sci.getReferences().size());
+  }
+
+  @Test
+  public void addReferenceValueWithIndexAtBeginning() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Add initial reference values
+    SerializedReferenceValue.Entry entry2 = new SerializedReferenceValue.Entry("id2", "info2");
+    SerializedReferenceValue.Entry entry3 = new SerializedReferenceValue.Entry("id3", "info3");
+    sci.addReferenceValue(ref, entry2);
+    sci.addReferenceValue(ref, entry3);
+
+    // Insert at beginning (index 0)
+    SerializedReferenceValue.Entry entry1 = new SerializedReferenceValue.Entry("id1", "info1");
+    sci.addReferenceValue(ref, 0, entry1);
+
+    // Verify order
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(ref);
+    assertEquals(Arrays.asList(entry1, entry2, entry3), values);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexAtEnd() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Add initial reference values
+    SerializedReferenceValue.Entry entry1 = new SerializedReferenceValue.Entry("id1", "info1");
+    SerializedReferenceValue.Entry entry2 = new SerializedReferenceValue.Entry("id2", "info2");
+    sci.addReferenceValue(ref, entry1);
+    sci.addReferenceValue(ref, entry2);
+
+    // Insert at end (index = size)
+    SerializedReferenceValue.Entry entry3 = new SerializedReferenceValue.Entry("id3", "info3");
+    sci.addReferenceValue(ref, 2, entry3);
+
+    // Verify order
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(ref);
+    assertEquals(Arrays.asList(entry1, entry2, entry3), values);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexNullMetaPointer() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("id", "info");
+
+    // Try to add reference value with null MetaPointer
+    assertThrows(NullPointerException.class, () -> sci.addReferenceValue(null, 0, entry));
+  }
+
+  @Test
+  public void addReferenceValueWithIndexNullReferenceValue() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Try to add null reference value
+    assertThrows(NullPointerException.class, () -> sci.addReferenceValue(ref, 0, null));
+  }
+
+  @Test
+  public void addReferenceValueWithNegativeIndex() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("id", "info");
+
+    // Try to add reference value with negative index
+    IllegalArgumentException exception =
+        assertThrows(IllegalArgumentException.class, () -> sci.addReferenceValue(ref, -1, entry));
+
+    assertEquals("Index must be greater than or equal to zero", exception.getMessage());
+  }
+
+  @Test
+  public void addReferenceValueWithIndexTooLargeForExistingReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Add one reference value to create existing reference
+    SerializedReferenceValue.Entry entry1 = new SerializedReferenceValue.Entry("id1", "info1");
+    sci.addReferenceValue(ref, entry1);
+
+    // Try to add at index 2 when only index 0 and 1 are valid
+    SerializedReferenceValue.Entry entry2 = new SerializedReferenceValue.Entry("id2", "info2");
+    IllegalStateException exception =
+        assertThrows(IllegalStateException.class, () -> sci.addReferenceValue(ref, 2, entry2));
+
+    assertEquals("Index 0..1 expected, but got 2", exception.getMessage());
+  }
+
+  @Test
+  public void addReferenceValueWithIndexTooLargeForNewReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer newRef = simpleMetaPointer("newRef");
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("id", "info");
+
+    // Try to add at index 1 to new reference (only index 0 is valid)
+    IllegalStateException exception =
+        assertThrows(IllegalStateException.class, () -> sci.addReferenceValue(newRef, 1, entry));
+
+    assertEquals("Index 0..0 expected, but got 1", exception.getMessage());
+  }
+
+  @Test
+  public void addReferenceValueWithIndexZeroToEmptyReference() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("emptyRef");
+
+    // Add reference value at index 0 to empty reference
+    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry("onlyId", "onlyInfo");
+    sci.addReferenceValue(ref, 0, entry);
+
+    // Verify reference value was added
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(ref);
+    assertEquals(Collections.singletonList(entry), values);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexToMiddleOfList() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Add initial reference values to create a list
+    SerializedReferenceValue.Entry entry1 = new SerializedReferenceValue.Entry("id1", "info1");
+    SerializedReferenceValue.Entry entry2 = new SerializedReferenceValue.Entry("id2", "info2");
+    SerializedReferenceValue.Entry entry4 = new SerializedReferenceValue.Entry("id4", "info4");
+    SerializedReferenceValue.Entry entry5 = new SerializedReferenceValue.Entry("id5", "info5");
+    sci.addReferenceValue(ref, entry1);
+    sci.addReferenceValue(ref, entry2);
+    sci.addReferenceValue(ref, entry4);
+    sci.addReferenceValue(ref, entry5);
+
+    // Insert in the middle at index 2
+    SerializedReferenceValue.Entry entry3 = new SerializedReferenceValue.Entry("id3", "info3");
+    sci.addReferenceValue(ref, 2, entry3);
+
+    // Verify the insertion worked correctly
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(ref);
+    assertEquals(Arrays.asList(entry1, entry2, entry3, entry4, entry5), values);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexPreservesOtherReferences() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref1 = simpleMetaPointer("ref1");
+    MetaPointer ref2 = simpleMetaPointer("ref2");
+
+    // Add reference values to first reference
+    SerializedReferenceValue.Entry r1e1 = new SerializedReferenceValue.Entry("r1-id1", "r1-info1");
+    SerializedReferenceValue.Entry r1e2 = new SerializedReferenceValue.Entry("r1-id2", "r1-info2");
+    sci.addReferenceValue(ref1, r1e1);
+    sci.addReferenceValue(ref1, r1e2);
+
+    // Add reference values to second reference
+    SerializedReferenceValue.Entry r2e1 = new SerializedReferenceValue.Entry("r2-id1", "r2-info1");
+    SerializedReferenceValue.Entry r2e2 = new SerializedReferenceValue.Entry("r2-id2", "r2-info2");
+    sci.addReferenceValue(ref2, r2e1);
+    sci.addReferenceValue(ref2, r2e2);
+
+    // Insert reference value at index 1 in first reference
+    SerializedReferenceValue.Entry r1new =
+        new SerializedReferenceValue.Entry("r1-new", "r1-new-info");
+    sci.addReferenceValue(ref1, 1, r1new);
+
+    // Verify first reference was modified
+    assertEquals(Arrays.asList(r1e1, r1new, r1e2), sci.getReferenceValues(ref1));
+
+    // Verify second reference was not affected
+    assertEquals(Arrays.asList(r2e1, r2e2), sci.getReferenceValues(ref2));
+  }
+
+  @Test
+  public void addReferenceValueWithIndexMultipleInsertsAtSameIndex() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("ref");
+
+    // Add initial reference value
+    SerializedReferenceValue.Entry original =
+        new SerializedReferenceValue.Entry("original", "original-info");
+    sci.addReferenceValue(ref, original);
+
+    // Insert multiple reference values at index 0 (each pushes the previous ones to the right)
+    SerializedReferenceValue.Entry second =
+        new SerializedReferenceValue.Entry("second", "second-info");
+    SerializedReferenceValue.Entry first =
+        new SerializedReferenceValue.Entry("first", "first-info");
+    sci.addReferenceValue(ref, 0, second);
+    sci.addReferenceValue(ref, 0, first);
+
+    // Verify the order reflects the insertions
+    List<SerializedReferenceValue.Entry> values = sci.getReferenceValues(ref);
+    assertEquals(Arrays.asList(first, second, original), values);
+  }
+
+  @Test
+  public void addReferenceValueWithIndexBoundaryConditions() {
+    SerializedClassifierInstance sci = new SerializedClassifierInstance();
+    MetaPointer ref = simpleMetaPointer("boundaryRef");
+
+    // Add initial reference values
+    SerializedReferenceValue.Entry entry1 = new SerializedReferenceValue.Entry("id1", "info1");
+    SerializedReferenceValue.Entry entry2 = new SerializedReferenceValue.Entry("id2", "info2");
+    SerializedReferenceValue.Entry entry3 = new SerializedReferenceValue.Entry("id3", "info3");
+    sci.addReferenceValue(ref, entry1);
+    sci.addReferenceValue(ref, entry2);
+    sci.addReferenceValue(ref, entry3);
+
+    // Test valid boundary: index = size (should work)
+    SerializedReferenceValue.Entry entryEnd = new SerializedReferenceValue.Entry("end", "end-info");
+    sci.addReferenceValue(ref, 3, entryEnd);
+    assertEquals(4, sci.getReferenceValues(ref).size());
+
+    // Test invalid boundary: index > size (should fail)
+    SerializedReferenceValue.Entry entryInvalid =
+        new SerializedReferenceValue.Entry("invalid", "invalid-info");
+    IllegalStateException exception =
+        assertThrows(
+            IllegalStateException.class, () -> sci.addReferenceValue(ref, 5, entryInvalid));
+
+    assertTrue(exception.getMessage().contains("Index 0..4 expected, but got 5"));
+  }
 }

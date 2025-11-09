@@ -5,6 +5,7 @@ import static io.lionweb.utils.Autoresolve.LIONCORE_AUTORESOLVE_PREFIX;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
+import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -55,6 +56,47 @@ public class ClassifierInstanceUtils {
               + _this.getClassifier().qualifiedName()
               + " does not contained a property named "
               + propertyName);
+    }
+    _this.setPropertyValue(property, value);
+  }
+
+  /**
+   * Sets the value of a property in the given {@link ClassifierInstance} using a {@link
+   * MetaPointer}. Resolves the property from the classifier associated with the instance, and
+   * updates its value.
+   *
+   * @param _this the {@link ClassifierInstance} whose property is to be updated. Must not be null.
+   * @param propertyMetaPointer the {@link MetaPointer} identifying the property to be set. Must not
+   *     be null.
+   * @param value the value to set for the specified property. Can be null if the property allows
+   *     null values.
+   * @throws NullPointerException if _this or propertyMetaPointer is null.
+   * @throws IllegalStateException if the classifier associated with the instance is null.
+   * @throws IllegalArgumentException if the property cannot be resolved for the specified {@link
+   *     MetaPointer}.
+   */
+  public static void setPropertyValueByMetaPointer(
+      @Nonnull ClassifierInstance<?> _this,
+      @Nonnull MetaPointer propertyMetaPointer,
+      @Nullable Object value) {
+    Objects.requireNonNull(_this, "_this should not be null");
+    Objects.requireNonNull(propertyMetaPointer, "propertyMetaPointer should not be null");
+    Classifier<?> classifier = _this.getClassifier();
+    if (classifier == null) {
+      throw new IllegalStateException(
+          "Classifier should not be null for "
+              + _this
+              + " (class "
+              + _this.getClass().getCanonicalName()
+              + ")");
+    }
+    Property property = classifier.getPropertyByMetaPointer(propertyMetaPointer);
+    if (property == null) {
+      throw new IllegalArgumentException(
+          "Concept "
+              + _this.getClassifier().qualifiedName()
+              + " does not contained a property with MetaPointer "
+              + propertyMetaPointer);
     }
     _this.setPropertyValue(property, value);
   }
