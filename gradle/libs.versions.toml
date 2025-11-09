@@ -1,6 +1,6 @@
 [versions]
 kotlinVersion="2.0.21"
-lwJavaVersion="1.1.5"
+lwJavaVersion="1.1.6"
 kotestVersion="5.9.1"
 testcontainersVersion="1.21.3"
 
@@ -28,4 +28,4 @@ kotest-property = { module="io.kotest:kotest-property", version.ref = "kotestVer
 testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainersVersion" }
 testcontainers-junit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainersVersion" }
 testcontainers-pg = { module="org.testcontainers:postgresql", version.ref = "testcontainersVersion" }
-protobuf = { module="com.google.protobuf:protobuf-java", version = "4.30.2" }
+protobuf = { module="com.google.protobuf:protobuf-java", version = "4.33.0" }

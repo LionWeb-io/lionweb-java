@@ -361,8 +361,7 @@ fun String.lwIDCleanedVersion(): String = IdUtils.cleanString(this)
 
 fun Enumeration.addLiteral(literalName: String): EnumerationLiteral {
     val enumerationLiteral =
-        EnumerationLiteral(this, literalName).apply {
-            this.setID("${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id")
+        EnumerationLiteral(this, literalName, "${this@addLiteral.id!!.removeSuffix("-id")}-${literalName.lwIDCleanedVersion()}-id").apply {
             this.key = "${this@addLiteral.id!!.removeSuffix("-key")}-${literalName.lwIDCleanedVersion()}-key"
         }
     this.addLiteral(enumerationLiteral)
