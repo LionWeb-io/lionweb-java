@@ -8,6 +8,7 @@ import io.lionweb.language.assigners.CommonIDAssigners;
 import io.lionweb.language.assigners.CommonKeyAssigners;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.impl.DynamicNode;
+import io.lionweb.serialization.data.MetaPointer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -549,5 +550,180 @@ public class ClassifierInstanceUtilsTest {
         new Language(original.getName(), "ID1", original.getKey(), original.getVersion());
     Concept testConcept = new Concept(lionCoreBuiltins, "TestConcept", "my-id1");
     assertTrue(ClassifierInstanceUtils.isBuiltinElement(testConcept));
+  }
+
+  public void setPropertyValueByMetaPointerPositive() {
+    // Create a language and concept with a property
+    Language testLanguage = new Language("MyTestLanguage");
+    testLanguage.setKey("test-language-key");
+    testLanguage.setVersion("1.0");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
+    Property prop = Property.createRequired("testProp", LionCoreBuiltins.getString());
+    prop.setKey("test-prop-key");
+    testConcept.addFeature(prop);
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    // Create a node instance
+    DynamicNode node = new DynamicNode("node1", testConcept);
+
+    // Create MetaPointer
+    MetaPointer metaPointer = MetaPointer.get("test-language-key", "1.0", "test-prop-key");
+
+    // Set property value by MetaPointer
+    ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, metaPointer, "test value");
+
+    // Verify the value was set
+    assertEquals("test value", node.getPropertyValue(prop));
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerNullInstance() {
+    MetaPointer metaPointer = MetaPointer.get("test-language", "1.0", "test-prop");
+    assertThrows(
+        NullPointerException.class,
+        () -> ClassifierInstanceUtils.setPropertyValueByMetaPointer(null, metaPointer, "value"));
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerNullMetaPointer() {
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
+    DynamicNode node = new DynamicNode("node1", testConcept);
+
+    assertThrows(
+        NullPointerException.class,
+        () -> ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, null, "value"));
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerNullClassifier() {
+    // Create a node instance with null classifier
+    DynamicNode node = new DynamicNode("node1", null);
+    MetaPointer metaPointer = MetaPointer.get("test-language", "1.0", "test-prop");
+
+    // Try to set property with null classifier - should throw IllegalStateException
+    IllegalStateException exception =
+        assertThrows(
+            IllegalStateException.class,
+            () ->
+                ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, metaPointer, "value"));
+
+    assertTrue(exception.getMessage().contains("Classifier should not be null"));
+    assertTrue(exception.getMessage().contains("node1"));
+    assertTrue(exception.getMessage().contains("class"));
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerNonExistentProperty() {
+    // Create a language and concept without the property we're looking for
+    Language testLanguage = new Language("MyTestLanguage");
+    testLanguage.setKey("test-language-key");
+    testLanguage.setVersion("1.0");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    DynamicNode node = new DynamicNode("node1", testConcept);
+
+    // Create MetaPointer for a non-existent property
+    MetaPointer metaPointer = MetaPointer.get("test-language-key", "1.0", "non-existent-prop-key");
+
+    // Try to set property that doesn't exist
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, metaPointer, "value"));
+
+    assertTrue(exception.getMessage().contains("does not contained a property with MetaPointer"));
+    assertTrue(exception.getMessage().contains(metaPointer.toString()));
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerWithNullValue() {
+    // Create a language and concept with an optional property
+    Language testLanguage = new Language("MyTestLanguage");
+    testLanguage.setKey("test-language-key");
+    testLanguage.setVersion("1.0");
+    Concept testConcept = new Concept(testLanguage, "TestConcept", "my-id1");
+    Property prop = Property.createOptional("optionalProp", LionCoreBuiltins.getString());
+    prop.setKey("optional-prop-key");
+    testConcept.addFeature(prop);
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    // Create a node instance
+    DynamicNode node = new DynamicNode("node1", testConcept);
+
+    // Create MetaPointer
+    MetaPointer metaPointer = MetaPointer.get("test-language-key", "1.0", "optional-prop-key");
+
+    // Set property value to null
+    ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, metaPointer, null);
+
+    // Verify the value was set to null
+    assertNull(node.getPropertyValue(prop));
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerCompleteErrorMessage() {
+    // Create a language and concept for detailed error message testing
+    Language testLanguage = new Language("MyTestLanguage");
+    testLanguage.setKey("detailed-test-language");
+    testLanguage.setVersion("2.0");
+    Concept testConcept = new Concept(testLanguage, "DetailedTestConcept", "detailed-id");
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    DynamicNode node = new DynamicNode("detailedNode", testConcept);
+    MetaPointer metaPointer = MetaPointer.get("detailed-test-language", "2.0", "missing-prop-key");
+
+    // Try to set property and verify complete error message
+    IllegalArgumentException exception =
+        assertThrows(
+            IllegalArgumentException.class,
+            () ->
+                ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, metaPointer, "value"));
+
+    String expectedMessage =
+        "Concept "
+            + testConcept.qualifiedName()
+            + " does not contained a property with MetaPointer "
+            + metaPointer;
+    assertEquals(expectedMessage, exception.getMessage());
+  }
+
+  @Test
+  public void setPropertyValueByMetaPointerOverwriteExistingValue() {
+    // Create a language and concept with a property
+    Language testLanguage = new Language("MyTestLanguage");
+    testLanguage.setKey("overwrite-test-language");
+    testLanguage.setVersion("1.0");
+    Concept testConcept = new Concept(testLanguage, "OverwriteTestConcept", "overwrite-id");
+    Property prop = Property.createRequired("overwriteProp", LionCoreBuiltins.getString());
+    prop.setKey("overwrite-prop-key");
+    testConcept.addFeature(prop);
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    // Create a node instance and set initial value
+    DynamicNode node = new DynamicNode("overwriteNode", testConcept);
+    node.setPropertyValue(prop, "initial value");
+
+    // Create MetaPointer
+    MetaPointer metaPointer =
+        MetaPointer.get("overwrite-test-language", "1.0", "overwrite-prop-key");
+
+    // Overwrite with new value using MetaPointer
+    ClassifierInstanceUtils.setPropertyValueByMetaPointer(node, metaPointer, "new value");
+
+    // Verify the value was overwritten
+    assertEquals("new value", node.getPropertyValue(prop));
   }
 }

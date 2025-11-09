@@ -200,6 +200,39 @@ public class SerializedClassifierInstance {
     }
   }
 
+  /**
+   * Adds a child identifier to the containment list associated with the specified {@link
+   * MetaPointer}. If a containment entry for the given {@code metaPointer} already exists, the
+   * {@code childID} is inserted at the specified {@code index} in the list of children. If no such
+   * entry exists, a new containment entry is created and appended.
+   *
+   * @param metaPointer the {@link MetaPointer} representing the containment reference; must not be
+   *     null
+   * @param childID the identifier of the child to be added; must not be null
+   * @param index the position where the childID should be inserted; must be a non-negative integer
+   * @throws NullPointerException if {@code metaPointer} or {@code childID} is null
+   * @throws IllegalArgumentException if {@code index} is less than zero
+   */
+  public void addChild(@Nonnull MetaPointer metaPointer, @Nonnull String childID, int index) {
+    Objects.requireNonNull(metaPointer, "metaPointer should not be null");
+    Objects.requireNonNull(childID, "childId should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("Index must be greater than or equal to zero");
+    }
+    initContainments();
+    Optional<SerializedContainmentValue> entry =
+        this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+    if (entry.isPresent()) {
+      List<String> currValue = entry.get().getChildrenIds();
+      List<String> newValue = new ArrayList<>(currValue.size() + 1);
+      newValue.addAll(currValue);
+      newValue.add(index, childID);
+      entry.get().setChildrenIds(newValue);
+    } else {
+      unsafeAppendContainmentValue(metaPointer, Arrays.asList(childID));
+    }
+  }
+
   public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
     Objects.requireNonNull(metaPointer);
     if (this.containments == null) {
@@ -303,6 +336,53 @@ public class SerializedClassifierInstance {
       newValue.add(referenceValue);
       entry.get().setValue(newValue);
     } else {
+      unsafeAppendReferenceValue(
+          new SerializedReferenceValue(metaPointer, Arrays.asList(referenceValue)));
+    }
+  }
+
+  /**
+   * Adds a reference value to the collection of serialized reference values at the specified index
+   * for the given meta pointer. If a serialized reference value associated with the provided meta
+   * pointer already exists, the new reference value is inserted into the current list of reference
+   * values at the specified index. If no such entry exists, a new entry is created and the
+   * reference value is appended.
+   *
+   * @param metaPointer The non-null meta pointer associated with the reference value to be added.
+   * @param index The position in the current list of reference values where the new reference value
+   *     should be inserted. Must be greater than or equal to zero.
+   * @param referenceValue The non-null reference value to be added.
+   * @throws IllegalArgumentException if the index is less than zero.
+   * @throws IllegalStateException if the index is greater than the allowed range for current
+   *     values.
+   * @throws NullPointerException if metaPointer or referenceValue is null.
+   */
+  public void addReferenceValue(
+      @Nonnull MetaPointer metaPointer,
+      int index,
+      @Nonnull SerializedReferenceValue.Entry referenceValue) {
+    if (index < 0) {
+      throw new IllegalArgumentException("Index must be greater than or equal to zero");
+    }
+    Objects.requireNonNull(metaPointer);
+    Objects.requireNonNull(referenceValue);
+    initReferences();
+    Optional<SerializedReferenceValue> entry =
+        this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
+    if (entry.isPresent()) {
+      List<SerializedReferenceValue.Entry> currValue = entry.get().getValue();
+      List<SerializedReferenceValue.Entry> newValue = new ArrayList<>(currValue.size() + 1);
+      newValue.addAll(currValue);
+      if (index > newValue.size()) {
+        throw new IllegalStateException(
+            "Index 0.." + newValue.size() + " expected, but got " + index);
+      }
+      newValue.add(index, referenceValue);
+      entry.get().setValue(newValue);
+    } else {
+      if (index > 0) {
+        throw new IllegalStateException("Index 0..0 expected, but got " + index);
+      }
       unsafeAppendReferenceValue(
           new SerializedReferenceValue(metaPointer, Arrays.asList(referenceValue)));
     }
