@@ -6,6 +6,10 @@ import io.lionweb.model.impl.DynamicNode;
 
 public class Role extends DynamicNode implements INamed  {
 
+    public Role(String id) {
+        super(id, CompanyLanguage.getRole());
+    }
+
     public Role(String id, String name) {
         super(id, CompanyLanguage.getRole());
         ClassifierInstanceUtils.setPropertyValueByName(this, "name", name);

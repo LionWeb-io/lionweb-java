@@ -12,6 +12,10 @@ public class Employee extends DynamicNode {
         ClassifierInstanceUtils.setPropertyValueByName(this, "last name", lastName);
     }
 
+    public Employee(String id) {
+        super(id, CompanyLanguage.getEmployee());
+    }
+
     public void setSalary(int salary) {
         ClassifierInstanceUtils.setPropertyValueByName(this, "salary", salary);
     }

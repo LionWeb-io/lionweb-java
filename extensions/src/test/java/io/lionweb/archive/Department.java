@@ -11,6 +11,10 @@ public class Department extends DynamicNode implements INamed {
         ClassifierInstanceUtils.setPropertyValueByName(this, "name", name);
     }
 
+    public Department(String id) {
+        super(id, CompanyLanguage.getDepartment());
+    }
+
     @Override
     public String getName() {
         return (String) ClassifierInstanceUtils.getPropertyValueByName(this, "name");
