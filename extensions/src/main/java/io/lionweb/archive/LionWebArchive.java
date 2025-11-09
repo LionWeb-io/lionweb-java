@@ -2,6 +2,7 @@ package io.lionweb.archive;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.inmemory.InMemoryServer;
+import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.extensions.TransferFormat;
@@ -28,7 +29,7 @@ public class LionWebArchive {
             throw new IllegalArgumentException("The given file is a directory");
         }
         AbstractSerialization serialization;
-        LowLevelJsonSerialization lowLevelJsonSerialization;
+        LowLevelJsonSerialization lowLevelJsonSerialization = null;
         if (format == TransferFormat.JSON) {
             serialization = SerializationProvider.getStandardJsonSerialization(lionWebVersion);
             lowLevelJsonSerialization = new LowLevelJsonSerialization();
@@ -51,7 +52,7 @@ public class LionWebArchive {
                     SerializationChunk chunk;
                     if (format == TransferFormat.JSON) {
                         String json = readZipEntryAsString(zipIn, entry);
-                        chunk = (new LowLevelJsonSerialization()).deserializeSerializationBlock(json);
+                        chunk = lowLevelJsonSerialization.deserializeSerializationBlock(json);
                     } else if (format == TransferFormat.PROTOBUF) {
                         byte[] bytes = readAllBytes(zipIn);
                         chunk = ((ProtoBufSerialization) serialization).deserializeToChunk(bytes);
@@ -74,6 +75,25 @@ public class LionWebArchive {
         load(file, lionWebVersion, format, chunk -> {
             server.createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
         });
+    }
+
+    public static void load(File file, JsonSerialization jsonSerialization) throws IOException {
+        load(file, jsonSerialization.getLionWebVersion(), TransferFormat.JSON, chunk -> {
+            throw new UnsupportedOperationException();
+        });
+    }
+
+    public static void load(File file, ProtoBufSerialization protoBufSerialization, Consumer<Node> nodeConsumer) throws IOException {
+        load(file, protoBufSerialization.getLionWebVersion(), TransferFormat.PROTOBUF, chunk -> {
+            Node root = (Node)protoBufSerialization.deserializeSerializationChunk(chunk).get(0);
+            nodeConsumer.accept(root);
+        });
+    }
+
+    public static List<Node> load(File file, ProtoBufSerialization protoBufSerialization) throws IOException {
+        List<Node> nodes = new ArrayList<>();
+        load(file, protoBufSerialization, nodes::add);
+        return nodes;
     }
 
     private static final int FOUR_MIB = 4 << 20;

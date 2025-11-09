@@ -6,6 +6,10 @@ import io.lionweb.model.impl.DynamicNode;
 
 public class Company extends DynamicNode implements INamed {
 
+    public Company(String id) {
+        super(id, CompanyLanguage.getCompany());
+    }
+
     public Company(String id, String name) {
         super(id, CompanyLanguage.getCompany());
         ClassifierInstanceUtils.setPropertyValueByName(this, "name", name);
