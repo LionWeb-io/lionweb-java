@@ -1,17 +1,20 @@
 package io.lionweb.archive;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Language;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -27,15 +30,15 @@ import java.util.zip.ZipOutputStream;
  * <p>The archive follows a predefined directory structure containing the following directories:
  *
  * <ul>
- *   <li><b>Partitions/</b> — Contains a collection of LionWeb partitions.
- *   <li><b>Languages/</b> — Contains the language definitions required to load and interpret the
+ *   <li><b>partitions/</b> — Contains a collection of LionWeb partitions.
+ *   <li><b>languages/</b> — Contains the language definitions required to load and interpret the
  *       partitions.
- *   <li><b>Metadata/</b> — Contains metadata files describing the archive. This directory always
+ *   <li><b>metadata/</b> — Contains metadata files describing the archive. This directory always
  *       includes a file named <code>Metadata.properties</code>, which defines the archive’s
  *       properties.
  * </ul>
  *
- * <p>One of the properties defined in <code>Metadata.properties</code> is <code>LionWebVersion
+ * <p>One of the properties defined in <code>metadata.properties</code> is <code>LionWeb-Version
  * </code>, which indicates the version of the LionWeb format used.
  *
  * <p>All files contained in the LionWeb Archive are serialized using the <b>Protocol Buffers
@@ -43,8 +46,31 @@ import java.util.zip.ZipOutputStream;
  */
 public class LionWebArchive {
 
+    interface Loader {
+        void setLwVersion(LionWebVersion lionWebVersion);
+        void addLanguageChunk(SerializationChunk chunk);
+        void languagesLoaded();
+        void addPartitionChunk(SerializationChunk chunk);
+        void partitionsLoaded();
+    }
+
+    /**
+     * Loads a LionWeb archive from the specified file. This method extracts metadata,
+     * language chunks, and partition chunks from the archive and processes them using
+     * the provided consumer functions.
+     *
+     * The archive is expected to contain a metadata file ("metadata/metadata.properties"),
+     * language data under the "languages/" path, and partition data under the "partitions/" path.
+     *
+     * @param file the LionWeb archive file to be loaded. Must not be null, a directory, or non-existent.
+     * @param loader the consumer function to be called for each language and partition chunk.
+     * @throws IOException if an error occurs reading the file or processing its contents.
+     * @throws IllegalArgumentException if the file does not exist, is a directory,
+     *         or the archive does not meet the required structural assumptions.
+     * @throws RuntimeException if an error occurs during chunk deserialization.
+     */
   public static void load(
-      File file, LionWebVersion lionWebVersion, Consumer<SerializationChunk> chunkConsumer)
+      File file, Loader loader)
       throws IOException {
     if (!file.exists()) {
       throw new IllegalArgumentException("The given file does not exist");
@@ -52,10 +78,65 @@ public class LionWebArchive {
     if (file.isDirectory()) {
       throw new IllegalArgumentException("The given file is a directory");
     }
-    ProtoBufSerialization serialization =
-        SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
 
     final int BUF_4MiB = 4 << 20;
+      Properties metadata = null;
+      String metadataPath = "metadata/metadata.properties";
+
+      // First pass: read Metadata/Metadata.properties
+      try (InputStream fileIn =
+                   new BufferedInputStream(Files.newInputStream(file.toPath()), BUF_4MiB);
+           ZipInputStream zipIn = new ZipInputStream(fileIn)) {
+
+          ZipEntry entry;
+          while ((entry = zipIn.getNextEntry()) != null) {
+              if (!entry.isDirectory() && entry.getName().equalsIgnoreCase(metadataPath)) {
+                  metadata = new Properties();
+                  metadata.load(zipIn);
+                  zipIn.closeEntry();
+                  break; // stop after reading metadata
+              }
+              zipIn.closeEntry();
+          }
+      }
+
+      if (metadata == null) {
+          throw new IllegalArgumentException("No Metadata.properties file found in archive");
+      }
+      if (!metadata.containsKey("LionWeb-Version")) {
+          throw new IllegalArgumentException("No LionWeb-Version property found in Metadata.properties");
+      }
+      LionWebVersion lionWebVersion = LionWebVersion.fromValue(metadata.getProperty("LionWeb-Version"));
+      loader.setLwVersion(lionWebVersion);
+      ProtoBufSerialization serialization =
+              SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+
+      // Languages
+      try (InputStream fileIn =
+                   new BufferedInputStream(Files.newInputStream(file.toPath()), BUF_4MiB);
+           ZipInputStream zipIn = new ZipInputStream(fileIn)) {
+          ZipEntry entry = zipIn.getNextEntry();
+          while (entry != null) {
+              if (entry.isDirectory()) {
+                  throw new IllegalArgumentException("Entry is a directory: " + entry.getName());
+              }
+              if (entry.getName().startsWith("languages/")) {
+                  try {
+                      SerializationChunk chunk;
+                      byte[] bytes = readAllBytes(zipIn);
+                      chunk = serialization.deserializeToChunk(bytes);
+                      zipIn.closeEntry();
+                      loader.addLanguageChunk(chunk);
+                  } catch (Exception e) {
+                      throw new RuntimeException("Failed to deserialize chunk from " + entry.getName(), e);
+                  }
+              }
+              entry = zipIn.getNextEntry();
+          }
+      }
+      loader.languagesLoaded();
+
+    // Partitions
     try (InputStream fileIn =
             new BufferedInputStream(Files.newInputStream(file.toPath()), BUF_4MiB);
         ZipInputStream zipIn = new ZipInputStream(fileIn)) {
@@ -64,151 +145,134 @@ public class LionWebArchive {
         if (entry.isDirectory()) {
           throw new IllegalArgumentException("Entry is a directory: " + entry.getName());
         }
-
-        try {
-          SerializationChunk chunk;
-          byte[] bytes = readAllBytes(zipIn);
-          chunk = serialization.deserializeToChunk(bytes);
-          zipIn.closeEntry();
-          chunkConsumer.accept(chunk);
-        } catch (Exception e) {
-          throw new RuntimeException("Failed to deserialize chunk from " + entry.getName(), e);
-        }
+          if (entry.getName().startsWith("partitions/")) {
+              try {
+                  SerializationChunk chunk;
+                  byte[] bytes = readAllBytes(zipIn);
+                  chunk = serialization.deserializeToChunk(bytes);
+                  zipIn.closeEntry();
+                  loader.addPartitionChunk(chunk);
+              } catch (Exception e) {
+                  throw new RuntimeException("Failed to deserialize chunk from " + entry.getName(), e);
+              }
+          }
         entry = zipIn.getNextEntry();
       }
     }
+    loader.partitionsLoaded();
   }
 
-  public static void load(
-      File file, InMemoryServer server, String repositoryName, LionWebVersion lionWebVersion)
-      throws IOException {
-    load(
-        file,
-        lionWebVersion,
-        chunk -> {
-          server.createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
-        });
-  }
 
   public static void loadNodes(
-      File file, ProtoBufSerialization protoBufSerialization, Consumer<Node> nodeConsumer)
-      throws IOException {
+      File file, ProtoBufSerialization protoBufSerialization, Consumer<Node> partitionConsumer) throws IOException {
+
+
+      class MyLoader implements Loader {
+          List<SerializationChunk> languageChunks = new ArrayList<>();
+          TopologicalSorter topologicalSorter = null;
+
+          public void setLwVersion(LionWebVersion lionWebVersion) {
+              topologicalSorter = new TopologicalSorter(lionWebVersion);
+          }
+
+          public void addLanguageChunk(SerializationChunk chunk) {
+              languageChunks.add(chunk);
+          }
+
+          @Override
+          public void languagesLoaded() {
+              languageChunks = topologicalSorter.topologicalSort(languageChunks);
+              languageChunks.forEach(
+                      languageChunk -> {
+                          Language language =
+                                  (Language) protoBufSerialization.deserializeSerializationChunk(languageChunk).get(0);
+                          protoBufSerialization.registerLanguage(language);
+                      });
+
+          }
+
+          public void addPartitionChunk(SerializationChunk chunk) {
+              partitionConsumer.accept((Node) protoBufSerialization.deserializeSerializationChunk(chunk).get(0));
+          }
+
+          @Override
+          public void partitionsLoaded() {
+
+          }
+      }
+
     load(
         file,
-        protoBufSerialization.getLionWebVersion(),
-        chunk -> {
-          Node root = (Node) protoBufSerialization.deserializeSerializationChunk(chunk).get(0);
-          nodeConsumer.accept(root);
-        });
+            new MyLoader());
+
   }
 
-  public static List<Node> load(File file, ProtoBufSerialization protoBufSerialization)
-      throws IOException {
-    List<Node> nodes = new ArrayList<>();
-    loadNodes(file, protoBufSerialization, nodes::add);
-    return nodes;
-  }
+    private static final int FOUR_MIB = 4 << 20;
 
-  public static List<Node> loadSelfLoadingLanguages(
-      File file, ProtoBufSerialization protoBufSerialization) throws IOException {
-    List<SerializationChunk> chunks = new ArrayList<>();
-    load(
-        file,
-        protoBufSerialization.getLionWebVersion(),
-        (Consumer<SerializationChunk>)
-            serializationChunk -> {
-              chunks.add(serializationChunk);
+    public static void store(
+            File file, LionWebVersion lionWebVersion,
+            Stream<SerializationChunk> languageChunks,
+            Stream<SerializationChunk> partitionChunks)
+            throws IOException {
+        // Ensure parent directory exists
+        File parent = file.getParentFile();
+        if (parent != null) {
+            // mkdirs() returns false if it already exists; that's fine
+            parent.mkdirs();
+        }
+
+        // Store metadata
+        Properties metadata = new Properties();
+        metadata.setProperty("version", lionWebVersion.getVersionString());
+
+        ProtoBufSerialization protoBufSerialization = SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+
+        // Write zip sequentially
+        try (OutputStream os =
+                     new BufferedOutputStream(
+                             Files.newOutputStream(
+                                     file.toPath(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING),
+                             FOUR_MIB);
+             ZipOutputStream zipOut = new ZipOutputStream(os)) {
+
+            zipOut.setLevel(1);
+
+            ZipEntry entry = new ZipEntry("metadata/metadata.properties");
+            zipOut.putNextEntry(entry);
+            zipOut.write(metadata.toString().getBytes(StandardCharsets.UTF_8));
+            zipOut.closeEntry();
+
+
+            languageChunks.forEach(chunk -> {
+                String partitionId = chunk.getClassifierInstances().stream().filter(n -> n.getParentNodeID() == null).map(n -> n.getID()).findFirst().get();
+                ZipEntry e = new ZipEntry("languages/"+ partitionId + ".binpb");
+
+                try {
+                    zipOut.putNextEntry(e);
+                    zipOut.write(protoBufSerialization.serializeToByteArray(chunk));
+                    zipOut.closeEntry();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             });
-    TopologicalSorter topologicalSorter =
-        new TopologicalSorter(protoBufSerialization.getLionWebVersion());
-    List<SerializationChunk> languageChunks = topologicalSorter.topologicalSort(chunks);
-    languageChunks.forEach(
-        languageChunk -> {
-          Language language =
-              (Language) protoBufSerialization.deserializeSerializationChunk(languageChunk).get(0);
-          protoBufSerialization.registerLanguage(language);
-        });
-    List<Node> nodes = new ArrayList<>();
-    chunks.forEach(
-        serializationChunk -> {
-          nodes.add(
-              (Node)
-                  protoBufSerialization.deserializeSerializationChunk(serializationChunk).get(0));
-        });
-    return nodes;
-  }
 
-  private static final int FOUR_MIB = 4 << 20;
+            partitionChunks.forEach(chunk -> {
+                String partitionId = chunk.getClassifierInstances().stream().filter(n -> n.getParentNodeID() == null).map(n -> n.getID()).findFirst().get();
+                ZipEntry e = new ZipEntry("partitions/"+ partitionId + ".binpb");
 
-  public static void store(
-      File file, InMemoryServer server, String repositoryName, LionWebVersion lionWebVersion)
-      throws IOException {
-    // Ensure parent directory exists
-    File parent = file.getParentFile();
-    if (parent != null) {
-      // mkdirs() returns false if it already exists; that's fine
-      parent.mkdirs();
+                try {
+                    zipOut.putNextEntry(e);
+                    zipOut.write(protoBufSerialization.serializeToByteArray(chunk));
+                    zipOut.closeEntry();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+            });
+        }
     }
 
-    // Gather partitions
-    List<String> partitionIds = server.listPartitionIDs(repositoryName);
-    final int nPartitions = partitionIds.size();
-
-    // Serialize partitions in parallel
-    ExecutorService pool =
-        Executors.newFixedThreadPool(Math.max(1, Runtime.getRuntime().availableProcessors()));
-    List<Future<Map.Entry<String, byte[]>>> futures = new ArrayList<>(nPartitions);
-    ProtoBufSerialization serialization = new ProtoBufSerialization();
-
-    for (int i = 0; i < nPartitions; i++) {
-      final String partitionId = partitionIds.get(i);
-      futures.add(
-          pool.submit(
-              () -> {
-                SerializationChunk chunk =
-                    SerializationChunk.fromNodes(
-                        lionWebVersion,
-                        server.retrieve(
-                            repositoryName,
-                            Collections.singletonList(partitionId),
-                            Integer.MAX_VALUE));
-                byte[] bytes = serialization.serializeToByteArray(chunk);
-                return new AbstractMap.SimpleEntry<>(partitionId, bytes);
-              }));
-    }
-
-    // Collect serialized partitions
-    List<Map.Entry<String, byte[]>> serializedPartitions = new ArrayList<>(nPartitions);
-    for (Future<Map.Entry<String, byte[]>> f : futures) {
-      try {
-        serializedPartitions.add(f.get());
-      } catch (InterruptedException | ExecutionException e) {
-        throw new RuntimeException(e);
-      }
-    }
-    pool.shutdown();
-
-    // Write zip sequentially
-    try (OutputStream os =
-            new BufferedOutputStream(
-                Files.newOutputStream(
-                    file.toPath(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING),
-                FOUR_MIB);
-        ZipOutputStream zipOut = new ZipOutputStream(os)) {
-
-      zipOut.setLevel(1);
-
-      for (Map.Entry<String, byte[]> e : serializedPartitions) {
-        String partitionId = e.getKey();
-        byte[] bytes = e.getValue();
-
-        ZipEntry entry = new ZipEntry(partitionId + ".binpb");
-        zipOut.putNextEntry(entry);
-        zipOut.write(bytes);
-        zipOut.closeEntry();
-      }
-    }
-  }
 
   private static byte[] readAllBytes(InputStream in) throws IOException {
     ByteArrayOutputStream out = new ByteArrayOutputStream(64 * 1024);
