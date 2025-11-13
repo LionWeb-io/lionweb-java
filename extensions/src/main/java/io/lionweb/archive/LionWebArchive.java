@@ -5,6 +5,8 @@ import io.lionweb.language.Language;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.SerializationChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
+
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -215,16 +217,24 @@ public class LionWebArchive {
 
   private static final int FOUR_MIB = 4 << 20;
 
+  /**
+   * Store a LionWeb archive.
+   *
+   * <p>This implementation pre-serializes all language and partition chunks in parallel using a
+   * thread pool, then writes the resulting byte arrays sequentially into the ZIP. This makes
+   * store() significantly faster on multi-core machines, while preserving archive structure
+   * and behavior.
+   */
   public static void store(
       File file,
       LionWebVersion lionWebVersion,
       Iterable<SerializationChunk> languageChunks,
       Iterable<SerializationChunk> partitionChunks)
       throws IOException {
+
     // Ensure parent directory exists
     File parent = file.getParentFile();
     if (parent != null) {
-      // mkdirs() returns false if it already exists; that's fine
       parent.mkdirs();
     }
 
@@ -232,8 +242,11 @@ public class LionWebArchive {
     Properties metadata = new Properties();
     metadata.setProperty(LW_VERION_KEY, lionWebVersion.getVersionString());
 
-    ProtoBufSerialization protoBufSerialization =
-        SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+    // Pre-serialize chunks in parallel
+    List<ZipChunk> languageEntries =
+        serializeChunksToZipEntries(lionWebVersion, languageChunks, "languages");
+    List<ZipChunk> partitionEntries =
+        serializeChunksToZipEntries(lionWebVersion, partitionChunks, "partitions");
 
     // Write zip sequentially
     try (OutputStream os =
@@ -243,51 +256,141 @@ public class LionWebArchive {
                 FOUR_MIB);
         ZipOutputStream zipOut = new ZipOutputStream(os)) {
 
-      zipOut.setLevel(1);
+      // Favour speed; size is usually secondary for this use case
+      zipOut.setLevel(0);
 
       ZipEntry entry = new ZipEntry("metadata/metadata.properties");
       zipOut.putNextEntry(entry);
       metadata.store(zipOut, null);
       zipOut.closeEntry();
 
-      languageChunks.forEach(
-          chunk -> {
-            String partitionId =
-                chunk.getClassifierInstances().stream()
-                    .filter(n -> n.getParentNodeID() == null)
-                    .map(n -> n.getID())
-                    .findFirst()
-                    .get();
-            ZipEntry e = new ZipEntry("languages/" + partitionId + ".binpb");
+      for (ZipChunk zc : languageEntries) {
+        ZipEntry e = new ZipEntry(zc.entryName);
+        zipOut.putNextEntry(e);
+        zipOut.write(zc.bytes);
+        zipOut.closeEntry();
+      }
 
-            try {
-              zipOut.putNextEntry(e);
-              zipOut.write(protoBufSerialization.serializeToByteArray(chunk));
-              zipOut.closeEntry();
-            } catch (IOException ex) {
-              throw new RuntimeException(ex);
-            }
-          });
-
-      partitionChunks.forEach(
-          chunk -> {
-            String partitionId =
-                chunk.getClassifierInstances().stream()
-                    .filter(n -> n.getParentNodeID() == null)
-                    .map(n -> n.getID())
-                    .findFirst()
-                    .get();
-            ZipEntry e = new ZipEntry("partitions/" + partitionId + ".binpb");
-
-            try {
-              zipOut.putNextEntry(e);
-              zipOut.write(protoBufSerialization.serializeToByteArray(chunk));
-              zipOut.closeEntry();
-            } catch (IOException ex) {
-              throw new RuntimeException(ex);
-            }
-          });
+      for (ZipChunk zc : partitionEntries) {
+        ZipEntry e = new ZipEntry(zc.entryName);
+        zipOut.putNextEntry(e);
+        zipOut.write(zc.bytes);
+        zipOut.closeEntry();
+      }
     }
+  }
+
+  /**
+   * Simple holder for a prepared ZIP entry.
+   */
+  private static final class ZipChunk {
+    final String entryName;
+    final byte[] bytes;
+
+    ZipChunk(String entryName, byte[] bytes) {
+      this.entryName = entryName;
+      this.bytes = bytes;
+    }
+  }
+
+  /**
+   * Serialize all chunks into byte[] in parallel and prepare their ZIP entry names.
+   *
+   * <p>Order of the returned list matches the iteration order of the input iterable.
+   */
+  private static List<ZipChunk> serializeChunksToZipEntries(
+      final LionWebVersion lionWebVersion,
+      Iterable<SerializationChunk> chunks,
+      final String dirPrefix) {
+
+    // Materialize iterable to a list so we can parallelize deterministically.
+    final List<SerializationChunk> list = new ArrayList<SerializationChunk>();
+    for (SerializationChunk c : chunks) {
+      list.add(c);
+    }
+    final int size = list.size();
+    if (size == 0) {
+      return Collections.emptyList();
+    }
+
+    // For a single chunk, avoid thread pool overhead.
+    if (size == 1) {
+      SerializationChunk chunk = list.get(0);
+      String partitionId = getPartitionId(chunk);
+      String entryName = dirPrefix + "/" + partitionId + ".binpb";
+      ProtoBufSerialization ser =
+          SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+      try {
+        byte[] data = ser.serializeToByteArray(chunk);
+        List<ZipChunk> result = new ArrayList<ZipChunk>(1);
+        result.add(new ZipChunk(entryName, data));
+        return result;
+      } catch (Exception e) {
+        throw new RuntimeException("Failed to serialize chunk for " + entryName, e);
+      }
+    }
+
+    int availableProcessors = Runtime.getRuntime().availableProcessors();
+    int threads = Math.max(1, Math.min(availableProcessors, size));
+
+    ExecutorService executor = Executors.newFixedThreadPool(threads);
+    try {
+      List<Future<ZipChunk>> futures = new ArrayList<Future<ZipChunk>>(size);
+
+      for (int i = 0; i < size; i++) {
+        final SerializationChunk chunk = list.get(i);
+        final String partitionId = getPartitionId(chunk);
+        final String entryName = dirPrefix + "/" + partitionId + ".binpb";
+
+        futures.add(
+            executor.submit(
+                new Callable<ZipChunk>() {
+                  @Override
+                  public ZipChunk call() {
+                    ProtoBufSerialization ser =
+                        SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+                    try {
+                      byte[] data = ser.serializeToByteArray(chunk);
+                      return new ZipChunk(entryName, data);
+                    } catch (Exception e) {
+                      throw new RuntimeException(
+                          "Failed to serialize chunk for " + entryName, e);
+                    }
+                  }
+                }));
+      }
+
+      List<ZipChunk> result = new ArrayList<ZipChunk>(size);
+      for (Future<ZipChunk> f : futures) {
+        try {
+          result.add(f.get());
+        } catch (InterruptedException e) {
+          Thread.currentThread().interrupt();
+          throw new RuntimeException("Interrupted during chunk serialization", e);
+        } catch (ExecutionException e) {
+          Throwable cause = e.getCause();
+          if (cause instanceof RuntimeException) {
+            throw (RuntimeException) cause;
+          }
+          throw new RuntimeException("Failed during chunk serialization", cause);
+        }
+      }
+      return result;
+    } finally {
+      executor.shutdown();
+    }
+  }
+
+  /**
+   * Extracts the root partition id from a chunk (the classifier instance with no parent).
+   */
+  private static String getPartitionId(SerializationChunk chunk) {
+    for (SerializedClassifierInstance n : chunk.getClassifierInstances()) {
+      if (n.getParentNodeID() == null) {
+        return n.getID();
+      }
+    }
+    throw new IllegalStateException("No root classifier instance found in chunk");
   }
 
   private static byte[] readAllBytes(InputStream in) throws IOException {
