@@ -44,6 +44,8 @@ public class LionWebArchive {
 
   public static final String LW_VERION_KEY = "LionWeb-Version";
 
+  private LionWebArchive() {}
+
   interface Loader {
     void setLwVersion(LionWebVersion lionWebVersion);
 
