@@ -242,7 +242,7 @@ public class LionWebArchive {
     Properties metadata = new Properties();
     metadata.setProperty(LW_VERION_KEY, lionWebVersion.getVersionString());
 
-    // Pre-serialize chunks in parallel
+    // Pre-serialize chunks in parallel (now with per-thread ProtoBufSerialization)
     List<ZipChunk> languageEntries =
         serializeChunksToZipEntries(lionWebVersion, languageChunks, "languages");
     List<ZipChunk> partitionEntries =
@@ -256,7 +256,7 @@ public class LionWebArchive {
                 FOUR_MIB);
         ZipOutputStream zipOut = new ZipOutputStream(os)) {
 
-      // Favour speed; size is usually secondary for this use case
+      // Favor speed (no compression work).
       zipOut.setLevel(0);
 
       ZipEntry entry = new ZipEntry("metadata/metadata.properties");
@@ -333,6 +333,15 @@ public class LionWebArchive {
     int availableProcessors = Runtime.getRuntime().availableProcessors();
     int threads = Math.max(1, Math.min(availableProcessors, size));
 
+    // One ProtoBufSerialization per worker thread, reused for all its tasks.
+    final ThreadLocal<ProtoBufSerialization> threadLocalSerialization =
+        new ThreadLocal<ProtoBufSerialization>() {
+          @Override
+          protected ProtoBufSerialization initialValue() {
+            return SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+          }
+        };
+
     ExecutorService executor = Executors.newFixedThreadPool(threads);
     try {
       List<Future<ZipChunk>> futures = new ArrayList<Future<ZipChunk>>(size);
@@ -347,8 +356,7 @@ public class LionWebArchive {
                 new Callable<ZipChunk>() {
                   @Override
                   public ZipChunk call() {
-                    ProtoBufSerialization ser =
-                        SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
+                    ProtoBufSerialization ser = threadLocalSerialization.get();
                     try {
                       byte[] data = ser.serializeToByteArray(chunk);
                       return new ZipChunk(entryName, data);
