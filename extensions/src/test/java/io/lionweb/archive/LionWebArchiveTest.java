@@ -14,7 +14,6 @@ import io.lionweb.serialization.Instantiator;
 import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.SerializationChunk;
-import io.lionweb.serialization.extensions.TransferFormat;
 import io.lionweb.utils.ModelComparator;
 import java.io.File;
 import java.io.IOException;
@@ -69,18 +68,12 @@ public class LionWebArchiveTest {
     server.createPartitionFromChunk("CompaniesRepo", chunk.getClassifierInstances());
 
     File archiveFile = Files.createTempFile("lionweb-archive", ".zip").toFile();
-    LionWebArchive.store(
-        archiveFile, server, "CompaniesRepo", LionWebVersion.v2023_1, TransferFormat.PROTOBUF);
+    RepositoryStorage.store(archiveFile, server, "CompaniesRepo");
 
     server.createRepository(
         new RepositoryConfiguration(
             "ReplicatedCompaniesRepo", LionWebVersion.v2023_1, HistorySupport.DISABLED));
-    LionWebArchive.load(
-        archiveFile,
-        server,
-        "ReplicatedCompaniesRepo",
-        LionWebVersion.v2023_1,
-        TransferFormat.PROTOBUF);
+    RepositoryStorage.load(archiveFile, server, "ReplicatedCompaniesRepo", true);
   }
 
   @Test
@@ -98,8 +91,7 @@ public class LionWebArchiveTest {
     server.createPartitionFromChunk("CompaniesRepo", chunk.getClassifierInstances());
 
     File archiveFile = Files.createTempFile("lionweb-archive", ".zip").toFile();
-    LionWebArchive.store(
-        archiveFile, server, "CompaniesRepo", LionWebVersion.v2023_1, TransferFormat.PROTOBUF);
+    RepositoryStorage.store(archiveFile, server, "CompaniesRepo");
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
@@ -141,10 +133,39 @@ public class LionWebArchiveTest {
                     propertiesValues) -> new Employee(serializedClassifierInstance.getID()));
     protoBufSerialization.registerLanguage(CompanyLanguage.getLanguage());
 
-    List<Node> nodes = LionWebArchive.load(archiveFile, protoBufSerialization);
+    List<Node> nodes = LionWebArchive.loadNodes(archiveFile, protoBufSerialization);
     assertEquals(1, nodes.size());
     assertTrue(nodes.get(0) instanceof Company);
     assertTrue(ModelComparator.areEquivalent(acmeOriginal, (Company) nodes.get(0)));
+  }
+
+  @Test
+  public void loadArchiveAsNodesWithPreLoadingLanguages() throws IOException {
+    InMemoryServer server = new InMemoryServer();
+    server.createRepository(
+        new RepositoryConfiguration(
+            "CompaniesRepo", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+
+    ProtoBufSerialization serialization =
+        SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
+    serialization.registerLanguage(CompanyLanguage.getLanguage());
+    Company acmeOriginal = createAcmeCompany();
+    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(acmeOriginal);
+    server.createPartitionFromChunk("CompaniesRepo", chunk.getClassifierInstances());
+
+    File archiveFile = Files.createTempFile("lionweb-archive", ".zip").toFile();
+    RepositoryStorage.store(archiveFile, server, "CompaniesRepo");
+
+    ProtoBufSerialization protoBufSerialization =
+        SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
+    protoBufSerialization.enableDynamicNodes();
+    protoBufSerialization.registerLanguage(CompanyLanguage.getLanguage());
+
+    List<Node> nodes = LionWebArchive.loadNodes(archiveFile, protoBufSerialization);
+    assertEquals(1, nodes.size());
+    Node loadedCompany = nodes.stream().filter(n -> !(n instanceof Language)).findFirst().get();
+    assertTrue(loadedCompany instanceof DynamicNode);
+    assertTrue(ModelComparator.areEquivalent(acmeOriginal, loadedCompany));
   }
 
   @Test
@@ -165,15 +186,14 @@ public class LionWebArchiveTest {
     server.createPartitionFromChunk("CompaniesRepo", languageChunk.getClassifierInstances());
 
     File archiveFile = Files.createTempFile("lionweb-archive", ".zip").toFile();
-    LionWebArchive.store(
-        archiveFile, server, "CompaniesRepo", LionWebVersion.v2023_1, TransferFormat.PROTOBUF);
+    RepositoryStorage.store(archiveFile, server, "CompaniesRepo");
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization(LionWebVersion.v2023_1);
     protoBufSerialization.enableDynamicNodes();
 
-    List<Node> nodes = LionWebArchive.loadSelfLoadingLanguages(archiveFile, protoBufSerialization);
-    assertEquals(2, nodes.size());
+    List<Node> nodes = LionWebArchive.loadNodes(archiveFile, protoBufSerialization);
+    assertEquals(1, nodes.size());
     Node loadedCompany = nodes.stream().filter(n -> !(n instanceof Language)).findFirst().get();
     assertTrue(loadedCompany instanceof DynamicNode);
     assertTrue(ModelComparator.areEquivalent(acmeOriginal, loadedCompany));
