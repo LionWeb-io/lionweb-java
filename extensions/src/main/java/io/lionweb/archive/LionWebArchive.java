@@ -6,13 +6,11 @@ import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
-import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -43,6 +41,8 @@ import java.util.zip.ZipOutputStream;
  * (Protobuf)</b> format.
  */
 public class LionWebArchive {
+
+  public static final String LW_VERION_KEY = "LionWeb-Version";
 
   interface Loader {
     void setLwVersion(LionWebVersion lionWebVersion);
@@ -104,12 +104,11 @@ public class LionWebArchive {
     if (metadata == null) {
       throw new IllegalArgumentException("No Metadata.properties file found in archive");
     }
-    if (!metadata.containsKey("LionWeb-Version")) {
+    if (!metadata.containsKey(LW_VERION_KEY)) {
       throw new IllegalArgumentException(
-          "No LionWeb-Version property found in Metadata.properties");
+          "No " + LW_VERION_KEY + " property found in metadata.properties");
     }
-    LionWebVersion lionWebVersion =
-        LionWebVersion.fromValue(metadata.getProperty("LionWeb-Version"));
+    LionWebVersion lionWebVersion = LionWebVersion.fromValue(metadata.getProperty(LW_VERION_KEY));
     loader.setLwVersion(lionWebVersion);
     ProtoBufSerialization serialization =
         SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
@@ -205,13 +204,20 @@ public class LionWebArchive {
     load(file, new MyLoader());
   }
 
+  public static List<Node> loadNodes(File file, ProtoBufSerialization protoBufSerialization)
+      throws IOException {
+    List<Node> nodes = new ArrayList<>();
+    loadNodes(file, protoBufSerialization, nodes::add);
+    return nodes;
+  }
+
   private static final int FOUR_MIB = 4 << 20;
 
   public static void store(
       File file,
       LionWebVersion lionWebVersion,
-      Stream<SerializationChunk> languageChunks,
-      Stream<SerializationChunk> partitionChunks)
+      Iterable<SerializationChunk> languageChunks,
+      Iterable<SerializationChunk> partitionChunks)
       throws IOException {
     // Ensure parent directory exists
     File parent = file.getParentFile();
@@ -222,7 +228,7 @@ public class LionWebArchive {
 
     // Store metadata
     Properties metadata = new Properties();
-    metadata.setProperty("version", lionWebVersion.getVersionString());
+    metadata.setProperty(LW_VERION_KEY, lionWebVersion.getVersionString());
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization(lionWebVersion);
@@ -239,7 +245,7 @@ public class LionWebArchive {
 
       ZipEntry entry = new ZipEntry("metadata/metadata.properties");
       zipOut.putNextEntry(entry);
-      zipOut.write(metadata.toString().getBytes(StandardCharsets.UTF_8));
+      metadata.store(zipOut, null);
       zipOut.closeEntry();
 
       languageChunks.forEach(

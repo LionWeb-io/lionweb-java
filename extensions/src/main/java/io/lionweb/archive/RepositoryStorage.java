@@ -4,10 +4,15 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
+import io.lionweb.lioncore.LionCore;
+import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class RepositoryStorage {
 
@@ -40,7 +45,7 @@ public class RepositoryStorage {
 
           @Override
           public void addPartitionChunk(SerializationChunk chunk) {
-            server.store(repositoryName, chunk.getClassifierInstances());
+            server.createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
           }
 
           @Override
@@ -50,6 +55,12 @@ public class RepositoryStorage {
 
   public static void store(File file, InMemoryServer server, String repositoryName)
       throws IOException {
+    store(file, server, repositoryName, true);
+  }
+
+  public static void store(
+      File file, InMemoryServer server, String repositoryName, boolean languagesOutOfBound)
+      throws IOException {
     // Store metadata
     RepositoryConfiguration repositoryConfiguration =
         server.listRepositories().stream()
@@ -57,18 +68,73 @@ public class RepositoryStorage {
             .findFirst()
             .get();
     LionWebVersion lionWebVersion = repositoryConfiguration.getLionWebVersion();
-    LionWebArchive.store(
-        file,
-        lionWebVersion,
-        Collections.<SerializationChunk>emptyList().stream(),
-        server.listPartitionIDs(repositoryName).stream()
-            .map(
-                partitionId ->
-                    SerializationChunk.fromNodes(
-                        lionWebVersion,
-                        server.retrieve(
-                            repositoryName,
-                            Collections.singletonList(partitionId),
-                            Integer.MAX_VALUE))));
+    SerializationChunk END_MARKER = new SerializationChunk();
+    final BlockingQueue<SerializationChunk> queueLanguages = new LinkedBlockingQueue<>();
+    final BlockingQueue<SerializationChunk> queuePartitions = new LinkedBlockingQueue<>();
+    Iterable<SerializationChunk> iterableLanguages =
+        () ->
+            new Iterator<SerializationChunk>() {
+              SerializationChunk next;
+
+              public boolean hasNext() {
+                try {
+                  next = queueLanguages.take();
+                } catch (InterruptedException e) {
+                  return false;
+                }
+                return next != END_MARKER;
+              }
+
+              public SerializationChunk next() {
+                if (next == END_MARKER) throw new NoSuchElementException();
+                return next;
+              }
+            };
+    Iterable<SerializationChunk> iterablePartitions =
+        () ->
+            new Iterator<SerializationChunk>() {
+              SerializationChunk next;
+
+              public boolean hasNext() {
+                try {
+                  next = queuePartitions.take();
+                } catch (InterruptedException e) {
+                  return false;
+                }
+                return next != END_MARKER;
+              }
+
+              public SerializationChunk next() {
+                return next;
+              }
+            };
+    server.listPartitionIDs(repositoryName).stream()
+        .forEach(
+            partitionId -> {
+              List<SerializedClassifierInstance> serializedNodes =
+                  server.retrieve(
+                      repositoryName, Collections.singletonList(partitionId), Integer.MAX_VALUE);
+              boolean outOfBound = false;
+              if (languagesOutOfBound) {
+                SerializedClassifierInstance root =
+                    serializedNodes.stream()
+                        .filter(n -> n.getParentNodeID() == null)
+                        .findFirst()
+                        .get();
+                if (root.getClassifier()
+                    .equals(MetaPointer.from(LionCore.getLanguage(lionWebVersion)))) {
+                  outOfBound = true;
+                }
+              }
+              if (outOfBound) {
+                queueLanguages.add(SerializationChunk.fromNodes(lionWebVersion, serializedNodes));
+              } else {
+                queuePartitions.add(SerializationChunk.fromNodes(lionWebVersion, serializedNodes));
+              }
+            });
+    queueLanguages.add(END_MARKER);
+    queuePartitions.add(END_MARKER);
+
+    LionWebArchive.store(file, lionWebVersion, iterableLanguages, iterablePartitions);
   }
 }
