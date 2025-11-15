@@ -327,7 +327,21 @@ public class ClassifierInstanceUtils {
     _this.addChild(containment, child);
   }
 
-  public static <T extends Node, INamed> void addReferenceByName(
+  /**
+   * Adds a reference to a target {@link Node} in the specified {@link ClassifierInstance} by
+   * resolving the reference using its name.
+   *
+   * @param _this the {@link ClassifierInstance} to which the reference is to be added. Must not be
+   *     null.
+   * @param referenceName the name of the reference to resolve in the classifier associated with the
+   *     specified {@link ClassifierInstance}. Must not be null.
+   * @param target the target {@link Node} that the reference will point to. Must not be null.
+   * @param <T> the type of the target node, which must extend {@link Node}.
+   * @throws NullPointerException if any of the parameters is null.
+   * @throws IllegalArgumentException if the reference name cannot be resolved within the classifier
+   *     associated with the specified {@link ClassifierInstance}.
+   */
+  public static <T extends Node> void addReferenceByName(
       @Nonnull ClassifierInstance<?> _this, @Nonnull String referenceName, @Nonnull T target) {
     Objects.requireNonNull(_this, "_this should not be null");
     Objects.requireNonNull(referenceName, "referenceName should not be null");
@@ -335,6 +349,18 @@ public class ClassifierInstanceUtils {
     _this.addReferenceValue(reference, referenceTo(target));
   }
 
+  /**
+   * Creates a {@link ReferenceValue} instance for the given {@link Node}. If the {@link Node}
+   * implements {@link INamed}, the reference will include its name. Otherwise, it attempts to
+   * retrieve the "name" property from the {@link Node}'s classifier and use its value in the
+   * reference.
+   *
+   * @param _this the {@link Node} for which the {@link ReferenceValue} is to be created. Must not
+   *     be null.
+   * @return a {@link ReferenceValue} representing the given {@link Node}. The name in the reference
+   *     will be null if the {@link Node} does not implement {@link INamed} and no "name" property
+   *     is found.
+   */
   public static ReferenceValue referenceTo(@Nonnull Node _this) {
     if (_this instanceof INamed) {
       return new ReferenceValue(_this, ((INamed) _this).getName());

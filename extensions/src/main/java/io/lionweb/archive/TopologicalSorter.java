@@ -10,29 +10,19 @@ import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedReferenceValue;
 import java.util.*;
+import javax.annotation.Nonnull;
 
-public class TopologicalSorter {
+class TopologicalSorter {
 
   private LionWebVersion lionWebVersion;
 
-  public TopologicalSorter(LionWebVersion lionWebVersion) {
+  public TopologicalSorter(@Nonnull LionWebVersion lionWebVersion) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
   }
 
-  private Set<String> deps(SerializedClassifierInstance languageNode) {
-    Concept languageConcept = LionCore.getLanguage(lionWebVersion);
-    MetaPointer dependsOnPtr = MetaPointer.from(languageConcept.getReferenceByName("dependsOn"));
-    List<SerializedReferenceValue.Entry> usedLanguages =
-        languageNode.getReferenceValues(dependsOnPtr);
-
-    Set<String> result = new LinkedHashSet<>();
-    for (SerializedReferenceValue.Entry rv : usedLanguages) {
-      result.add(String.valueOf(rv.getReference()));
-    }
-    return result;
-  }
-
-  public List<SerializationChunk> topologicalSort(Collection<SerializationChunk> chunks) {
+  public @Nonnull List<SerializationChunk> topologicalSort(
+      @Nonnull Collection<SerializationChunk> chunks) {
     List<SerializationChunk> result = new ArrayList<>();
     Set<String> visited = new HashSet<>();
     Set<String> visiting = new HashSet<>();
@@ -50,6 +40,19 @@ public class TopologicalSorter {
       visit(chunk, visited, visiting, result, chunkMap);
     }
 
+    return result;
+  }
+
+  private Set<String> deps(SerializedClassifierInstance languageNode) {
+    Concept languageConcept = LionCore.getLanguage(lionWebVersion);
+    MetaPointer dependsOnPtr = MetaPointer.from(languageConcept.getReferenceByName("dependsOn"));
+    List<SerializedReferenceValue.Entry> usedLanguages =
+        languageNode.getReferenceValues(dependsOnPtr);
+
+    Set<String> result = new LinkedHashSet<>();
+    for (SerializedReferenceValue.Entry rv : usedLanguages) {
+      result.add(String.valueOf(rv.getReference()));
+    }
     return result;
   }
 
