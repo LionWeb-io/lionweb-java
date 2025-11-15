@@ -39,6 +39,8 @@ public class LanguageJavaCodeGenerator {
                 .addStatement("this.setVersion($S)", language.getVersion())
                 .addStatement("this.setID($S)", language.getID())
                 .addStatement("this.setKey($S)", language.getKey());
+        // TODO consider dependsOn
+        // TODO consider LionWeb Version
 
         // public static LibraryLanguage getInstance() {
         //     if (INSTANCE == null) {
@@ -78,11 +80,12 @@ public class LanguageJavaCodeGenerator {
             //        libraryConcept.setName("Library");
             //        libraryConcept.setKey("Library");
             //        libraryConcept.setAbstract(false);
+            //        libraryConcept.setPartition(false);
             //        this.addElement(libraryConcept);
             //    }
             ClassName conceptClass = ClassName.get(Concept.class);
 
-            MethodSpec initMethod = MethodSpec.methodBuilder("init" + capitalize(concept.getName()))
+            MethodSpec.Builder initMethod = MethodSpec.methodBuilder("init" + capitalize(concept.getName()))
                     .addModifiers(Modifier.PRIVATE)
                     .returns(void.class)
                     .addStatement("$T concept = new $T()", conceptClass, conceptClass)
@@ -90,9 +93,13 @@ public class LanguageJavaCodeGenerator {
                     .addStatement("concept.setName($S)", concept.getName())
                     .addStatement("concept.setKey($S)", concept.getKey())
                     .addStatement("concept.setAbstract($L)", concept.isAbstract())
-                    .addStatement("this.addElement(concept)")
-                    .build();
-            languageClass.addMethod(initMethod);
+                    .addStatement("concept.setPartition($L)", concept.isPartition())
+                    .addStatement("this.addElement(concept)");
+            // TODO set extended
+            // TODO set implemented
+            // TODO set feature
+            // TODO split into declaration and population of concepts, so that we have references across them
+            languageClass.addMethod(initMethod.build());
 
             constructor.addStatement("init$L()", capitalize(concept.getName()));
         });
