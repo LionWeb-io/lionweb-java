@@ -1,6 +1,7 @@
 package io.lionweb.gradleplugin;
 
 import com.palantir.javapoet.*;
+import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 
 import javax.lang.model.element.Modifier;
@@ -17,7 +18,7 @@ public class LanguageJavaCodeGenerator {
     public void generate(Language language, String packageName) throws IOException {
         String className = capitalize(language.getName()) + "Language";
 
-        ClassName lwLanguageClass = ClassName.get("io.lionweb.language", "Language");
+        ClassName lwLanguageClass = ClassName.get(Language.class);
 
         // private static LibraryLanguage INSTANCE;
         FieldSpec instanceField = FieldSpec.builder(
@@ -32,13 +33,12 @@ public class LanguageJavaCodeGenerator {
         //     this.setID("library-id");
         //     this.setKey("library");
         // }
-        MethodSpec constructor = MethodSpec.constructorBuilder()
+        MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PRIVATE)
                 .addStatement("this.setName($S)", language.getName())
                 .addStatement("this.setVersion($S)", language.getVersion())
                 .addStatement("this.setID($S)", language.getID())
-                .addStatement("this.setKey($S)", language.getKey())
-                .build();
+                .addStatement("this.setKey($S)", language.getKey());
 
         // public static LibraryLanguage getInstance() {
         //     if (INSTANCE == null) {
@@ -55,15 +55,50 @@ public class LanguageJavaCodeGenerator {
                 .addStatement("return $N", instanceField)
                 .build();
 
-        TypeSpec languageClass = TypeSpec.classBuilder(className)
+        TypeSpec.Builder languageClass = TypeSpec.classBuilder(className)
                 .superclass(lwLanguageClass)
                 .addField(instanceField)
-                .addMethod(constructor)
                 .addMethod(getInstance)
-                .addModifiers(Modifier.PUBLIC)
-                .build();
+                .addModifiers(Modifier.PUBLIC);
 
-        JavaFile javaFile = JavaFile.builder(packageName, languageClass)
+        language.getConcepts().forEach(concept -> {
+            //    public Concept getLibrary() {
+            //        return this.requireConceptByName("Library");
+            //    }
+            MethodSpec conceptAccessor = MethodSpec.methodBuilder("get" + capitalize(concept.getName()))
+                    .returns(ClassName.get(Concept.class))
+                    .addModifiers(Modifier.PUBLIC)
+                    .addStatement("return this.requireConceptByName($S)", concept.getName())
+                    .build();
+            languageClass.addMethod(conceptAccessor);
+
+            // private void initLibrary() {
+            //        Concept libraryConcept = new Concept("Library");
+            //        libraryConcept.setID("Library-id");
+            //        libraryConcept.setName("Library");
+            //        libraryConcept.setKey("Library");
+            //        libraryConcept.setAbstract(false);
+            //        this.addElement(libraryConcept);
+            //    }
+            ClassName conceptClass = ClassName.get(Concept.class);
+
+            MethodSpec initMethod = MethodSpec.methodBuilder("init" + capitalize(concept.getName()))
+                    .addModifiers(Modifier.PRIVATE)
+                    .returns(void.class)
+                    .addStatement("$T concept = new $T()", conceptClass, conceptClass)
+                    .addStatement("concept.setID($S)", concept.getID())
+                    .addStatement("concept.setName($S)", concept.getName())
+                    .addStatement("concept.setKey($S)", concept.getKey())
+                    .addStatement("concept.setAbstract($L)", concept.isAbstract())
+                    .addStatement("this.addElement(concept)")
+                    .build();
+            languageClass.addMethod(initMethod);
+
+            constructor.addStatement("init$L()", capitalize(concept.getName()));
+        });
+
+        languageClass.addMethod(constructor.build());
+        JavaFile javaFile = JavaFile.builder(packageName, languageClass.build())
                 .build();
 
         javaFile.writeTo(destinationDir.toPath());
