@@ -47,7 +47,7 @@ public class PluginFunctionalTest {
     assertTrue(result.getOutput().contains("LionWeb Language loaded: library"));
     assertEquals(SUCCESS, result.task(":generateLWLanguages").getOutcome());
 
-      Path javaFile = Files.walk(testProjectDir.toPath()).filter(f -> "build/generated-lionweb/io/lionweb/test/libraryLanguage.java".equals(testProjectDir.toPath().relativize(f).toString())).findFirst().get();
+      Path javaFile = Files.walk(testProjectDir.toPath()).filter(f -> "build/generated-lionweb/io/lionweb/test/LibraryLanguage.java".equals(testProjectDir.toPath().relativize(f).toString())).findFirst().get();
       String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
       System.out.println(javaCode);
   }
