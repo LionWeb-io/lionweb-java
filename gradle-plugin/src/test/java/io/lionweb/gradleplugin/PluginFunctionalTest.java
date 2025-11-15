@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
@@ -31,7 +34,8 @@ public class PluginFunctionalTest {
     String buildFileContent =
         "plugins {\n" +
                 "            id(\"io.lionweb\")\n" +
-                "        }";
+                "        }\n"+
+            "lionweb { packageName.set(\"io.lionweb.test\") }";
     writeFile(buildFile, buildFileContent);
     File libraryLanguage = new File(testProjectDir, "src/main/lionweb/library.json");
     writeFile(libraryLanguage, readResource("/library-language.json"));
@@ -42,6 +46,10 @@ public class PluginFunctionalTest {
     System.out.println(result.getOutput());
     assertTrue(result.getOutput().contains("LionWeb Language loaded: library"));
     assertEquals(SUCCESS, result.task(":generateLWLanguages").getOutcome());
+
+      Path javaFile = Files.walk(testProjectDir.toPath()).filter(f -> "build/generated-lionweb/io/lionweb/test/libraryLanguage.java".equals(testProjectDir.toPath().relativize(f).toString())).findFirst().get();
+      String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+      System.out.println(javaCode);
   }
 
   private String readResource(String path) throws IOException {

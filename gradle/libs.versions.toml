@@ -27,3 +27,5 @@ commonsMath3 = { module = "org.apache.commons:commons-math3", version.ref = "com
 jsonSchemaValidator = { module = "com.networknt:json-schema-validator", version.ref = "jsonSchemaValidatorVersion" }
 mpsOpenApi = { module = "com.jetbrains:mps-openapi", version.ref = "mpsOpenApiVersion" }
 modelApi = { module = "org.modelix:model-api", version.ref = "modelApiVersion" }
+javapoet = { module = "com.palantir.javapoet:javapoet", version ="0.8.0" }
+
