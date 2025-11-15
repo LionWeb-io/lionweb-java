@@ -1,60 +1,72 @@
 package io.lionweb.gradleplugin;
 
+import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-
-import static org.gradle.testkit.runner.TaskOutcome.SUCCESS;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 public class PluginFunctionalTest {
 
-    @TempDir File testProjectDir;
-    private File settingsFile;
-    private File buildFile;
+  @TempDir File testProjectDir;
+  private File settingsFile;
+  private File buildFile;
 
-    @BeforeEach
-    public void setup() {
-        settingsFile = new File(testProjectDir, "settings.gradle.kts");
-        buildFile = new File(testProjectDir, "build.gradle.kts");
-    }
+  @BeforeEach
+  public void setup() {
+    settingsFile = new File(testProjectDir, "settings.gradle.kts");
+    buildFile = new File(testProjectDir, "build.gradle.kts");
+  }
 
-    @Test
-    public void testHelloWorldTask() throws IOException {
-        writeFile(settingsFile, "rootProject.name = 'hello-world'");
-        String buildFileContent = "task helloWorld {" +
-                "    doLast {" +
-                "        println 'Hello world!'" +
-                "    }" +
-                "}";
-        writeFile(buildFile, buildFileContent);
+  @Test
+  public void testGenerateLWLanguagesTask() throws IOException {
+    writeFile(settingsFile, "rootProject.name = \"my-project-1\"");
+    String buildFileContent =
+        "plugins {\n" +
+                "            id(\"io.lionweb\")\n" +
+                "        }";
+    writeFile(buildFile, buildFileContent);
+    File libraryLanguage = new File(testProjectDir, "src/main/lionweb/library.json");
+    writeFile(libraryLanguage, readResource("/library-language.json"));
 
-        BuildResult result = GradleRunner.create()
-                .withProjectDir(testProjectDir)
-                .withArguments("helloWorld")
-                .build();
+    BuildResult result =
+        GradleRunner.create().withProjectDir(testProjectDir).withPluginClasspath().withArguments("generateLWLanguages", "--info").build();
 
-        assertTrue(result.getOutput().contains("Hello world!"));
-        assertEquals(SUCCESS, result.task(":helloWorld").getOutcome());
-    }
+    System.out.println(result.getOutput());
+    assertTrue(result.getOutput().contains("LionWeb Language loaded: library"));
+    assertEquals(SUCCESS, result.task(":generateLWLanguages").getOutcome());
+  }
 
-    private void writeFile(File destination, String content) throws IOException {
-        BufferedWriter output = null;
-        try {
-            output = new BufferedWriter(new FileWriter(destination));
-            output.write(content);
-        } finally {
-            if (output != null) {
-                output.close();
+  private String readResource(String path) throws IOException {
+        String text;
+        try (InputStream in = getClass().getResourceAsStream(path)) {
+            if (in == null) {
+                throw new IllegalArgumentException("Resource not found");
             }
+            text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
         }
+        return text;
     }
+
+  private void writeFile(File destination, String content) throws IOException {
+      if (!destination.getParentFile().exists()) {
+          destination.getParentFile().mkdirs();
+      }
+    BufferedWriter output = null;
+    try {
+      output = new BufferedWriter(new FileWriter(destination));
+      output.write(content);
+    } finally {
+      if (output != null) {
+        output.close();
+      }
+    }
+  }
 }
