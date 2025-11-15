@@ -15,6 +15,8 @@ import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Represents an LionWeb Archive.
@@ -47,14 +49,19 @@ public class LionWebArchive {
 
   private LionWebArchive() {}
 
-  interface Loader {
-    void setLwVersion(LionWebVersion lionWebVersion);
+  /**
+   * The Loader interface defines methods for loading and processing language and partition
+   * serialization chunks, as well as setting the LionWeb version. It acts as a bridge between
+   * deserialization and data handling for LionWeb archives.
+   */
+  public interface Loader {
+    void setLwVersion(@Nonnull LionWebVersion lionWebVersion);
 
-    void addLanguageChunk(SerializationChunk chunk);
+    void addLanguageChunk(@Nonnull SerializationChunk chunk);
 
     void languagesLoaded();
 
-    void addPartitionChunk(SerializationChunk chunk);
+    void addPartitionChunk(@Nonnull SerializationChunk chunk);
 
     void partitionsLoaded();
   }
@@ -75,7 +82,9 @@ public class LionWebArchive {
    *     does not meet the required structural assumptions.
    * @throws RuntimeException if an error occurs during chunk deserialization.
    */
-  public static void load(File file, Loader loader) throws IOException {
+  public static void load(@Nonnull File file, @Nonnull Loader loader) throws IOException {
+    Objects.requireNonNull(file, "file should not be null");
+    Objects.requireNonNull(loader, "loader should not be null");
     if (!file.exists()) {
       throw new IllegalArgumentException("The given file does not exist");
     }
@@ -167,19 +176,39 @@ public class LionWebArchive {
     loader.partitionsLoaded();
   }
 
+  /**
+   * Loads nodes from a LionWeb archive file. This method processes language chunks and partition
+   * chunks contained in the archive and uses the provided consumer to handle deserialized nodes
+   * from partition chunks.
+   *
+   * @param file the LionWeb archive file to be loaded. Must not be null, a directory, or
+   *     non-existent.
+   * @param protoBufSerialization the ProtoBufSerialization instance used for deserializing chunks.
+   * @param partitionConsumer the consumer function to be called with each partition node
+   *     deserialized from the archive.
+   * @throws IOException if an error occurs while reading the file or processing its contents.
+   * @throws IllegalArgumentException if the file does not exist, is a directory, or the archive
+   *     does not meet the required structural assumptions.
+   * @throws RuntimeException if an error occurs during chunk deserialization or if data is invalid.
+   */
   public static void loadNodes(
-      File file, ProtoBufSerialization protoBufSerialization, Consumer<Node> partitionConsumer)
+      @Nonnull File file,
+      @Nonnull ProtoBufSerialization protoBufSerialization,
+      @Nonnull Consumer<Node> partitionConsumer)
       throws IOException {
+    Objects.requireNonNull(file, "file should not be null");
+    Objects.requireNonNull(protoBufSerialization, "protoBufSerialization should not be null");
+    Objects.requireNonNull(partitionConsumer, "partitionConsumer should not be null");
 
     class MyLoader implements Loader {
       List<SerializationChunk> languageChunks = new ArrayList<>();
       TopologicalSorter topologicalSorter = null;
 
-      public void setLwVersion(LionWebVersion lionWebVersion) {
+      public void setLwVersion(@Nonnull LionWebVersion lionWebVersion) {
         topologicalSorter = new TopologicalSorter(lionWebVersion);
       }
 
-      public void addLanguageChunk(SerializationChunk chunk) {
+      public void addLanguageChunk(@Nonnull SerializationChunk chunk) {
         languageChunks.add(chunk);
       }
 
@@ -195,7 +224,7 @@ public class LionWebArchive {
             });
       }
 
-      public void addPartitionChunk(SerializationChunk chunk) {
+      public void addPartitionChunk(@Nonnull SerializationChunk chunk) {
         partitionConsumer.accept(
             (Node) protoBufSerialization.deserializeSerializationChunk(chunk).get(0));
       }
@@ -207,14 +236,25 @@ public class LionWebArchive {
     load(file, new MyLoader());
   }
 
-  public static List<Node> loadNodes(File file, ProtoBufSerialization protoBufSerialization)
-      throws IOException {
+  /**
+   * Loads nodes from the given LionWeb archive file using the specified ProtoBufSerialization
+   * instance. This method processes the archive and retrieves deserialized nodes from its contents.
+   *
+   * @param file the LionWeb archive file to be loaded; must not be null, a directory, or
+   *     non-existent
+   * @param protoBufSerialization the instance of ProtoBufSerialization used to deserialize the
+   *     archive's content
+   * @return a list of deserialized Node objects
+   * @throws IOException if an error occurs while reading the file or processing its contents
+   */
+  public static List<Node> loadNodes(
+      @Nonnull File file, @Nonnull ProtoBufSerialization protoBufSerialization) throws IOException {
+    Objects.requireNonNull(file, "file should not be null");
+    Objects.requireNonNull(protoBufSerialization, "protoBufSerialization should not be null");
     List<Node> nodes = new ArrayList<>();
     loadNodes(file, protoBufSerialization, nodes::add);
     return nodes;
   }
-
-  private static final int FOUR_MIB = 4 << 20;
 
   /**
    * Store a LionWeb archive.
@@ -225,11 +265,13 @@ public class LionWebArchive {
    * behavior.
    */
   public static void store(
-      File file,
-      LionWebVersion lionWebVersion,
-      Iterable<SerializationChunk> languageChunks,
-      Iterable<SerializationChunk> partitionChunks)
+      @Nonnull File file,
+      @Nonnull LionWebVersion lionWebVersion,
+      @Nullable Iterable<SerializationChunk> languageChunks,
+      @Nullable Iterable<SerializationChunk> partitionChunks)
       throws IOException {
+    Objects.requireNonNull(file, "file should not be null");
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
 
     // Ensure parent directory exists
     File parent = file.getParentFile();
@@ -243,9 +285,13 @@ public class LionWebArchive {
 
     // Pre-serialize chunks in parallel (now with per-thread ProtoBufSerialization)
     List<ZipChunk> languageEntries =
-        serializeChunksToZipEntries(lionWebVersion, languageChunks, "languages");
+        languageChunks == null
+            ? Collections.emptyList()
+            : serializeChunksToZipEntries(lionWebVersion, languageChunks, "languages");
     List<ZipChunk> partitionEntries =
-        serializeChunksToZipEntries(lionWebVersion, partitionChunks, "partitions");
+        partitionChunks == null
+            ? Collections.emptyList()
+            : serializeChunksToZipEntries(lionWebVersion, partitionChunks, "partitions");
 
     // Write zip sequentially
     try (OutputStream os =
@@ -289,6 +335,8 @@ public class LionWebArchive {
       this.bytes = bytes;
     }
   }
+
+  private static final int FOUR_MIB = 4 << 20;
 
   /**
    * Serialize all chunks into byte[] in parallel and prepare their ZIP entry names.
