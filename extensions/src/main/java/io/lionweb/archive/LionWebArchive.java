@@ -6,7 +6,6 @@ import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -222,8 +221,8 @@ public class LionWebArchive {
    *
    * <p>This implementation pre-serializes all language and partition chunks in parallel using a
    * thread pool, then writes the resulting byte arrays sequentially into the ZIP. This makes
-   * store() significantly faster on multi-core machines, while preserving archive structure
-   * and behavior.
+   * store() significantly faster on multi-core machines, while preserving archive structure and
+   * behavior.
    */
   public static void store(
       File file,
@@ -280,9 +279,7 @@ public class LionWebArchive {
     }
   }
 
-  /**
-   * Simple holder for a prepared ZIP entry.
-   */
+  /** Simple holder for a prepared ZIP entry. */
   private static final class ZipChunk {
     final String entryName;
     final byte[] bytes;
@@ -361,8 +358,7 @@ public class LionWebArchive {
                       byte[] data = ser.serializeToByteArray(chunk);
                       return new ZipChunk(entryName, data);
                     } catch (Exception e) {
-                      throw new RuntimeException(
-                          "Failed to serialize chunk for " + entryName, e);
+                      throw new RuntimeException("Failed to serialize chunk for " + entryName, e);
                     }
                   }
                 }));
@@ -389,9 +385,7 @@ public class LionWebArchive {
     }
   }
 
-  /**
-   * Extracts the root partition id from a chunk (the classifier instance with no parent).
-   */
+  /** Extracts the root partition id from a chunk (the classifier instance with no parent). */
   private static String getPartitionId(SerializationChunk chunk) {
     for (SerializedClassifierInstance n : chunk.getClassifierInstances()) {
       if (n.getParentNodeID() == null) {

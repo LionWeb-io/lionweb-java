@@ -17,7 +17,7 @@ public class ArchivePerformanceTest {
   private static int nextId = 1;
 
   public static Company createCompany(Random rnd) {
-    return createCompany(rnd, rnd.nextInt(10, 100), rnd.nextInt(5, 30), rnd.nextInt(1000, 5000));
+    return createCompany(rnd, rnd.nextInt(90) + 10, rnd.nextInt(25) + 5, rnd.nextInt(4000) + 1000);
   }
 
   public static List<Company> createCompanies(Random rnd, int numCompanies) {
