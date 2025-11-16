@@ -120,6 +120,8 @@ public class LanguageJavaCodeGeneratorTest {
               "ast.language.v2.json", "codebase.language.v1.json",
               "codebase.language.v2.json", "comments.language.v1.json",
               "migration.language.v1.json", "pipeline.language.v1.json");
+      // TODO load languages together, in topological order
+      // TODO generate for all the languages at once
       paths.forEach(path -> {
           try {
               Language language =
