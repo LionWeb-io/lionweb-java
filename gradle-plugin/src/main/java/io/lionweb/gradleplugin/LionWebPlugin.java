@@ -3,6 +3,30 @@ package io.lionweb.gradleplugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
+/**
+ * The `LionWebPlugin` is a custom Gradle plugin for projects that utilize LionWeb for language
+ * engineering. It provides configurations, sensible defaults, and tasks for working with LionWeb
+ * language definitions and generating Java code representations of them.
+ *
+ * <p>The plugin performs the following responsibilities:
+ *
+ * <p>1. **Extension Registration**: - Registers an extension named `lionweb`. - Allows users to
+ * customize configurations such as: - Directory for LionWeb language definitions
+ * (`languagesDirectory`). - Directory for generated Java files (`generationDirectory`). - Target
+ * package name for generated Java classes (`packageName`). - Provides defaults if configurations
+ * are not explicitly defined: - `languagesDirectory` defaults to `src/main/lionweb` inside the
+ * project directory. - `generationDirectory` defaults to `build/generated-lionweb` inside the build
+ * directory.
+ *
+ * <p>2. **Task Registration**: - Adds a Gradle task named `generateLWLanguages`. - The task
+ * leverages the `GenerateLanguageTask` for processing LionWeb language files. - Configures the task
+ * with lazy connections from extension properties (`languagesDirectory`, `generationDirectory`, and
+ * `packageName`) to task inputs. - This task can generate Java code for LionWeb language
+ * definitions, streamlining the language engineering process.
+ *
+ * <p>The `LionWebPlugin` organizes the setup and execution of the LionWeb-based language
+ * engineering pipeline, making it easier to integrate with Gradle build systems.
+ */
 public class LionWebPlugin implements Plugin<Project> {
   @Override
   public void apply(Project project) {
