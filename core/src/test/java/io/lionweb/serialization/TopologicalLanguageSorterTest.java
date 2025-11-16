@@ -73,7 +73,6 @@ public class TopologicalLanguageSorterTest {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader r =
                      new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-
             char[] buf = new char[2048];
             int n;
             while ((n = r.read(buf)) != -1) {
