@@ -38,7 +38,7 @@ public class TopologicalLanguageSorter {
       if (languageNode != null) {
         String id = requireNonNull(languageNode.getID(), "languageNode.id is null");
         if (chunkMap.containsKey(id)) {
-            throw new IllegalStateException("Duplicate language ID found: " + id);
+          throw new IllegalStateException("Duplicate language ID found: " + id);
         }
         chunkMap.put(id, chunk);
       }
