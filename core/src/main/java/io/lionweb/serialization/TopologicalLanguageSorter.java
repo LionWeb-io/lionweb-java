@@ -37,6 +37,9 @@ public class TopologicalLanguageSorter {
       SerializedClassifierInstance languageNode = extractLanguageNode(chunk);
       if (languageNode != null) {
         String id = requireNonNull(languageNode.getID(), "languageNode.id is null");
+        if (chunkMap.containsKey(id)) {
+            throw new IllegalStateException("Duplicate language ID found: " + id);
+        }
         chunkMap.put(id, chunk);
       }
     }
