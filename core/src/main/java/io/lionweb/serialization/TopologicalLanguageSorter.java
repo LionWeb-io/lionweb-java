@@ -1,4 +1,4 @@
-package io.lionweb.archive;
+package io.lionweb.serialization;
 
 import static java.util.Objects.requireNonNull;
 
@@ -12,11 +12,16 @@ import io.lionweb.serialization.data.SerializedReferenceValue;
 import java.util.*;
 import javax.annotation.Nonnull;
 
-class TopologicalSorter {
+/**
+ * This knows how to sort a list of languages based on the same LionWeb Version according to their
+ * dependencies, so that a language A depending on a language B is always specified after B.
+ * Circular dependencies are not allowed and cause errors.
+ */
+public class TopologicalLanguageSorter {
 
-  private LionWebVersion lionWebVersion;
+  private final @Nonnull LionWebVersion lionWebVersion;
 
-  public TopologicalSorter(@Nonnull LionWebVersion lionWebVersion) {
+  public TopologicalLanguageSorter(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
   }

@@ -202,10 +202,10 @@ public class LionWebArchive {
 
     class MyLoader implements Loader {
       List<SerializationChunk> languageChunks = new ArrayList<>();
-      TopologicalSorter topologicalSorter = null;
+      TopologicalLanguageSorter topologicalSorter = null;
 
       public void setLwVersion(@Nonnull LionWebVersion lionWebVersion) {
-        topologicalSorter = new TopologicalSorter(lionWebVersion);
+        topologicalSorter = new TopologicalLanguageSorter(lionWebVersion);
       }
 
       public void addLanguageChunk(@Nonnull SerializationChunk chunk) {
