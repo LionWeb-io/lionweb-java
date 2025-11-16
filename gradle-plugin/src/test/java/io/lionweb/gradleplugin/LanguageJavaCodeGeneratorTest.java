@@ -10,6 +10,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class LanguageJavaCodeGeneratorTest {
@@ -106,4 +109,27 @@ public class LanguageJavaCodeGeneratorTest {
     String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
     System.out.println(javaCode);
   }
+
+  @Test
+  public void testStarlasuSpecsGeneration() throws IOException {
+      File destination = Files.createTempDirectory("gen").toFile();
+      LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
+
+
+      List<String> paths = Arrays.asList("ast.language.v1.json",
+              "ast.language.v2.json", "codebase.language.v1.json",
+              "codebase.language.v2.json", "comments.language.v1.json",
+              "migration.language.v1.json", "pipeline.language.v1.json");
+      paths.forEach(path -> {
+          try {
+              Language language =
+                      SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
+                              .loadLanguage(this.getClass().getResourceAsStream("/" + path));
+              generator.generate(language, "my.pack");
+          } catch (IOException e) {
+              throw new RuntimeException(e);
+          }
+      });
+  }
+
 }
