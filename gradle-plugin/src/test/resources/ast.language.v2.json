@@ -12,7 +12,190 @@
   ],
   "nodes": [
     {
-      "id": "com-strumenta-Starlasu_IssueSeverity-WARNING-2",
+      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "ParsingResult"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ParsingResult-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "com-strumenta-Starlasu-v2-ParsingResult-2-issues-2-id",
+            "com-strumenta-Starlasu-v2-ParsingResult-2-root-2-id",
+            "com-strumenta-Starlasu-v2-ParsingResult-2-code-2-id",
+            "com-strumenta-Starlasu-v2-ParsingResult-2-tokens-2-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-EntityDeclaration-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Interface"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "EntityDeclaration"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-EntityDeclaration-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Interface-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "CommonElement",
+              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-EntityGroupDeclaration-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Interface"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "EntityGroupDeclaration"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-EntityGroupDeclaration-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Interface-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "CommonElement",
+              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-MissingASTTransformation-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -25,7 +208,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "WARNING"
+          "value": "MissingASTTransformation"
         },
         {
           "property": {
@@ -33,7 +216,37 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "IssueSeverity-WARNING"
+          "value": "com-strumenta-Starlasu-PlaceholderNode-PlaceholderNodeType-id-MissingASTTransformation-key"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu_IssueSeverity-INFO-2",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "EnumerationLiteral"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "INFO"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "IssueSeverity-INFO"
         }
       ],
       "containments": [],
@@ -42,97 +255,7 @@
       "parent": "com-strumenta-Starlasu_IssueSeverity-2"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-root-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Containment"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "root"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-multiple"
-          },
-          "value": "false"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ParsingResult-root-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "ASTNode",
-              "reference": "com-strumenta-Starlasu-v2-ASTNode-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Point-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "PrimitiveType"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "Point"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Point-key"
-        }
-      ],
-      "containments": [],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-message-2-id",
+      "id": "com-strumenta-Starlasu-v2-Issue-2-severity-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -141,11 +264,19 @@
       "properties": [
         {
           "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
             "language": "LionCore-builtins",
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "message"
+          "value": "severity"
         },
         {
           "property": {
@@ -153,15 +284,7 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com_strumenta_starlasu-PlaceholderNode-message-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "false"
+          "value": "com_strumenta_starlasu-Issue-severity-key"
         }
       ],
       "containments": [],
@@ -174,17 +297,17 @@
           },
           "targets": [
             {
-              "resolveInfo": "String",
-              "reference": "LionCore-builtins-String"
+              "resolveInfo": "IssueSeverity",
+              "reference": "com-strumenta-Starlasu_IssueSeverity-2"
             }
           ]
         }
       ],
       "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-id"
+      "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-Statement-2-id",
+      "id": "com-strumenta-Starlasu-v2-BehaviorDeclaration-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -197,7 +320,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "Statement"
+          "value": "BehaviorDeclaration"
         },
         {
           "property": {
@@ -205,7 +328,7 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com_strumenta_starlasu-Statement-key"
+          "value": "com_strumenta_starlasu-BehaviorDeclaration-key"
         }
       ],
       "containments": [
@@ -237,7 +360,37 @@
       "parent": "com-strumenta-Starlasu-v2"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-PlaceholderElement-2-id",
+      "id": "com-strumenta-Starlasu_IssueType-SYNTACTIC",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "EnumerationLiteral"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "SYNTACTIC"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "IssueType-SYNTACTIC"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu_IssueType-2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-Expression-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -250,7 +403,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "PlaceholderElement"
+          "value": "Expression"
         },
         {
           "property": {
@@ -258,7 +411,7 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com_strumenta_starlasu-PlaceholderElement-key"
+          "value": "com_strumenta_starlasu-Expression-key"
         }
       ],
       "containments": [
@@ -286,6 +439,201 @@
           ]
         }
       ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu_IssueSeverity-ERROR-2",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "EnumerationLiteral"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "ERROR"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "IssueSeverity-ERROR"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu_IssueSeverity-2"
+    },
+    {
+      "id": "com-strumenta-Starlasu_IssueType-SEMANTIC",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "EnumerationLiteral"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "SEMANTIC"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "IssueType-SEMANTIC"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu_IssueType-2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-Documentation-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Interface"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Documentation"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-Documentation-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Interface-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "CommonElement",
+              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-ASTNode-2-position-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "position"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ASTNode-position-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Position",
+              "reference": "com-strumenta-Starlasu-v2-Position-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-ASTNode-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-Char-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "PrimitiveType"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Char"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-Char-key"
+        }
+      ],
+      "containments": [],
+      "references": [],
       "annotations": [],
       "parent": "com-strumenta-Starlasu-v2"
     },
@@ -368,51 +716,7 @@
       "parent": null
     },
     {
-      "id": "com-strumenta-Starlasu_IssueType-2",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Enumeration"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "IssueType"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "IssueType"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Enumeration-literals"
-          },
-          "children": [
-            "com-strumenta-Starlasu_IssueType-LEXICAL",
-            "com-strumenta-Starlasu_IssueType-SYNTACTIC",
-            "com-strumenta-Starlasu_IssueType-SEMANTIC",
-            "com-strumenta-Starlasu_IssueType-TRANSLATION"
-          ]
-        }
-      ],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-type-2-id",
+      "id": "com-strumenta-Starlasu-v2-Issue-2-message-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -421,11 +725,19 @@
       "properties": [
         {
           "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
             "language": "LionCore-builtins",
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "type"
+          "value": "message"
         },
         {
           "property": {
@@ -433,15 +745,7 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com_strumenta_starlasu-PlaceholderNode-type-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "false"
+          "value": "com_strumenta_starlasu-Issue-message-key"
         }
       ],
       "containments": [],
@@ -454,21 +758,21 @@
           },
           "targets": [
             {
-              "resolveInfo": "PlaceholderNodeType",
-              "reference": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id"
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
             }
           ]
         }
       ],
       "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-id"
+      "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-ASTNode-2-originalNode-2-id",
+      "id": "com-strumenta-Starlasu_IssueSeverity-2",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
-        "key": "Reference"
+        "key": "Enumeration"
       },
       "properties": [
         {
@@ -477,15 +781,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "originalNode"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-multiple"
-          },
-          "value": "false"
+          "value": "IssueSeverity"
         },
         {
           "property": {
@@ -493,8 +789,35 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com_strumenta_starlasu-ASTNode-originalNode-key"
-        },
+          "value": "IssueSeverity"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Enumeration-literals"
+          },
+          "children": [
+            "com-strumenta-Starlasu_IssueSeverity-ERROR-2",
+            "com-strumenta-Starlasu_IssueSeverity-WARNING-2",
+            "com-strumenta-Starlasu_IssueSeverity-INFO-2"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-ASTNode-2-transpiledNodes-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Reference"
+      },
+      "properties": [
         {
           "property": {
             "language": "LionCore-M3",
@@ -502,6 +825,30 @@
             "key": "Feature-optional"
           },
           "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "transpiledNodes"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ASTNode-transpiledNodes-key"
         }
       ],
       "containments": [],
@@ -524,7 +871,59 @@
       "parent": "com-strumenta-Starlasu-v2-ASTNode-2-id"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-Parameter-2-id",
+      "id": "com-strumenta-Starlasu-v2-Issue-2-type-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "type"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-Issue-type-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "IssueType",
+              "reference": "com-strumenta-Starlasu_IssueType-2"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-PlaceholderElement-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -537,7 +936,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "Parameter"
+          "value": "PlaceholderElement"
         },
         {
           "property": {
@@ -545,7 +944,7 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com_strumenta_starlasu-Parameter-key"
+          "value": "com_strumenta_starlasu-PlaceholderElement-key"
         }
       ],
       "containments": [
@@ -573,6 +972,100 @@
           ]
         }
       ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-tokens-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "tokens"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ParsingResult-tokens-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "TokensList",
+              "reference": "com-strumenta-Starlasu-v2-TokensList-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Enumeration"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "PlaceholderNodeType"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-PlaceholderNode-PlaceholderNodeType-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Enumeration-literals"
+          },
+          "children": [
+            "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-MissingASTTransformation-2-id",
+            "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-FailingASTTransformation-2-id"
+          ]
+        }
+      ],
+      "references": [],
       "annotations": [],
       "parent": "com-strumenta-Starlasu-v2"
     },
@@ -630,7 +1123,7 @@
       "parent": "com-strumenta-Starlasu-v2"
     },
     {
-      "id": "com-strumenta-Starlasu_IssueSeverity-ERROR-2",
+      "id": "com-strumenta-Starlasu_IssueSeverity-WARNING-2",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -643,7 +1136,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "ERROR"
+          "value": "WARNING"
         },
         {
           "property": {
@@ -651,423 +1144,13 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "IssueSeverity-ERROR"
+          "value": "IssueSeverity-WARNING"
         }
       ],
       "containments": [],
       "references": [],
       "annotations": [],
       "parent": "com-strumenta-Starlasu_IssueSeverity-2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Char-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "PrimitiveType"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "Char"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Char-key"
-        }
-      ],
-      "containments": [],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu_IssueSeverity-2",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Enumeration"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "IssueSeverity"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "IssueSeverity"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Enumeration-literals"
-          },
-          "children": [
-            "com-strumenta-Starlasu_IssueSeverity-ERROR-2",
-            "com-strumenta-Starlasu_IssueSeverity-WARNING-2",
-            "com-strumenta-Starlasu_IssueSeverity-INFO-2"
-          ]
-        }
-      ],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Documentation-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Interface"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "Documentation"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Documentation-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": []
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Interface-extends"
-          },
-          "targets": [
-            {
-              "resolveInfo": "CommonElement",
-              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Enumeration"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "PlaceholderNodeType"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-PlaceholderNode-PlaceholderNodeType-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Enumeration-literals"
-          },
-          "children": [
-            "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-MissingASTTransformation-2-id",
-            "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-FailingASTTransformation-2-id"
-          ]
-        }
-      ],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Issue-2-type-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Property"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "type"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Issue-type-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "false"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Property-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "IssueType",
-              "reference": "com-strumenta-Starlasu_IssueType-2"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-EntityGroupDeclaration-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Interface"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "EntityGroupDeclaration"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-EntityGroupDeclaration-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": []
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Interface-extends"
-          },
-          "targets": [
-            {
-              "resolveInfo": "CommonElement",
-              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Concept"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Concept-abstract"
-          },
-          "value": "false"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Concept-partition"
-          },
-          "value": "false"
-        },
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "ParsingResult"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ParsingResult-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": [
-            "com-strumenta-Starlasu-v2-ParsingResult-2-issues-2-id",
-            "com-strumenta-Starlasu-v2-ParsingResult-2-root-2-id",
-            "com-strumenta-Starlasu-v2-ParsingResult-2-code-2-id",
-            "com-strumenta-Starlasu-v2-ParsingResult-2-tokens-2-id"
-          ]
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Concept-extends"
-          },
-          "targets": []
-        },
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Concept-implements"
-          },
-          "targets": []
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu_IssueType-LEXICAL",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "EnumerationLiteral"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "LEXICAL"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "IssueType-LEXICAL"
-        }
-      ],
-      "containments": [],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu_IssueType-2"
-    },
-    {
-      "id": "com-strumenta-Starlasu_IssueType-SYNTACTIC",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "EnumerationLiteral"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "SYNTACTIC"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "IssueType-SYNTACTIC"
-        }
-      ],
-      "containments": [],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu_IssueType-2"
     },
     {
       "id": "com-strumenta-Starlasu-v2-Issue-2-id",
@@ -1147,20 +1230,28 @@
       "parent": "com-strumenta-Starlasu-v2"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-FailingASTTransformation-2-id",
+      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-message-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
-        "key": "EnumerationLiteral"
+        "key": "Property"
       },
       "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
         {
           "property": {
             "language": "LionCore-builtins",
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "FailingASTTransformation"
+          "value": "message"
         },
         {
           "property": {
@@ -1168,29 +1259,51 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com-strumenta-Starlasu-PlaceholderNode-PlaceholderNodeType-id-FailingASTTransformation-key"
+          "value": "com_strumenta_starlasu-PlaceholderNode-message-key"
         }
       ],
       "containments": [],
-      "references": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
       "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id"
+      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-id"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-MissingASTTransformation-2-id",
+      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-code-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
-        "key": "EnumerationLiteral"
+        "key": "Property"
       },
       "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
         {
           "property": {
             "language": "LionCore-builtins",
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "MissingASTTransformation"
+          "value": "code"
         },
         {
           "property": {
@@ -1198,16 +1311,90 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "com-strumenta-Starlasu-PlaceholderNode-PlaceholderNodeType-id-MissingASTTransformation-key"
+          "value": "com_strumenta_starlasu-ParsingResult-code-key"
         }
       ],
       "containments": [],
-      "references": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
       "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id"
+      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
     },
     {
-      "id": "com-strumenta-Starlasu_IssueType-SEMANTIC",
+      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-issues-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "issues"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ParsingResult-issues-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Issue",
+              "reference": "com-strumenta-Starlasu-v2-Issue-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu_IssueType-TRANSLATION",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -1220,7 +1407,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "SEMANTIC"
+          "value": "TRANSLATION"
         },
         {
           "property": {
@@ -1228,13 +1415,227 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "IssueType-SEMANTIC"
+          "value": "IssueType-TRANSLATION"
         }
       ],
       "containments": [],
       "references": [],
       "annotations": [],
       "parent": "com-strumenta-Starlasu_IssueType-2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-Statement-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Interface"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Statement"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-Statement-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Interface-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "CommonElement",
+              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-CommonElement-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Interface"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "CommonElement"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-CommonElement-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Interface-extends"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-Parameter-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Interface"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Parameter"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-Parameter-key"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Interface-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "CommonElement",
+              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-ASTNode-2-originalNode-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Reference"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "originalNode"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ASTNode-originalNode-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "ASTNode",
+              "reference": "com-strumenta-Starlasu-v2-ASTNode-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-ASTNode-2-id"
     },
     {
       "id": "com-strumenta-Starlasu-v2-Issue-2-position-2-id",
@@ -1244,6 +1645,14 @@
         "key": "Property"
       },
       "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
         {
           "property": {
             "language": "LionCore-builtins",
@@ -1259,14 +1668,6 @@
             "key": "IKeyed-key"
           },
           "value": "com_strumenta_starlasu-Issue-position-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
         }
       ],
       "containments": [],
@@ -1287,6 +1688,222 @@
       ],
       "annotations": [],
       "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-type-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "type"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-PlaceholderNode-type-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "PlaceholderNodeType",
+              "reference": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu_IssueType-2",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Enumeration"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "IssueType"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "IssueType"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Enumeration-literals"
+          },
+          "children": [
+            "com-strumenta-Starlasu_IssueType-LEXICAL",
+            "com-strumenta-Starlasu_IssueType-SYNTACTIC",
+            "com-strumenta-Starlasu_IssueType-SEMANTIC",
+            "com-strumenta-Starlasu_IssueType-TRANSLATION"
+          ]
+        }
+      ],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-root-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "root"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-ParsingResult-root-key"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "ASTNode",
+              "reference": "com-strumenta-Starlasu-v2-ASTNode-2-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
+    },
+    {
+      "id": "com-strumenta-Starlasu_IssueType-LEXICAL",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "EnumerationLiteral"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "LEXICAL"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "IssueType-LEXICAL"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu_IssueType-2"
+    },
+    {
+      "id": "com-strumenta-Starlasu-v2-Point-2-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "PrimitiveType"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "Point"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "com_strumenta_starlasu-Point-key"
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "com-strumenta-Starlasu-v2"
     },
     {
       "id": "com-strumenta-Starlasu-v2-ASTNode-2-id",
@@ -1339,178 +1956,6 @@
       ],
       "annotations": [],
       "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Issue-2-message-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Property"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "message"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Issue-message-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "false"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Property-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "String",
-              "reference": "LionCore-builtins-String"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-issues-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Containment"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "issues"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-multiple"
-          },
-          "value": "true"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ParsingResult-issues-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "Issue",
-              "reference": "com-strumenta-Starlasu-v2-Issue-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-ASTNode-2-transpiledNodes-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Reference"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "transpiledNodes"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-multiple"
-          },
-          "value": "true"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ASTNode-transpiledNodes-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Link-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "ASTNode",
-              "reference": "com-strumenta-Starlasu-v2-ASTNode-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-ASTNode-2-id"
     },
     {
       "id": "com-strumenta-Starlasu-v2-Position-2-id",
@@ -1616,111 +2061,6 @@
       "parent": "com-strumenta-Starlasu-v2"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-EntityDeclaration-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Interface"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "EntityDeclaration"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-EntityDeclaration-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": []
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Interface-extends"
-          },
-          "targets": [
-            {
-              "resolveInfo": "CommonElement",
-              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-ASTNode-2-position-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Property"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "position"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ASTNode-position-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Property-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "Position",
-              "reference": "com-strumenta-Starlasu-v2-Position-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-ASTNode-2-id"
-    },
-    {
       "id": "com-strumenta-Starlasu-v2-PlaceholderNode-originalNode-2-id",
       "classifier": {
         "language": "LionCore-M3",
@@ -1728,6 +2068,14 @@
         "key": "Reference"
       },
       "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
         {
           "property": {
             "language": "LionCore-builtins",
@@ -1751,14 +2099,6 @@
             "key": "IKeyed-key"
           },
           "value": "com_strumenta_starlasu-PlaceholderNode-originalNode-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
         }
       ],
       "containments": [],
@@ -1779,159 +2119,6 @@
       ],
       "annotations": [],
       "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-CommonElement-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Interface"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "CommonElement"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-CommonElement-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": []
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Interface-extends"
-          },
-          "targets": []
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Expression-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Interface"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "Expression"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Expression-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": []
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Interface-extends"
-          },
-          "targets": [
-            {
-              "resolveInfo": "CommonElement",
-              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-Issue-2-severity-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Property"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "severity"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-Issue-severity-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "false"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Property-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "IssueSeverity",
-              "reference": "com-strumenta-Starlasu_IssueSeverity-2"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-Issue-2-id"
     },
     {
       "id": "com-strumenta-Starlasu-v2-TokensList-2-id",
@@ -1964,111 +2151,7 @@
       "parent": "com-strumenta-Starlasu-v2"
     },
     {
-      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-code-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Property"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "code"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ParsingResult-code-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Property-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "String",
-              "reference": "LionCore-builtins-String"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-ParsingResult-2-tokens-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Property"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "tokens"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-ParsingResult-tokens-key"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Feature-optional"
-          },
-          "value": "true"
-        }
-      ],
-      "containments": [],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Property-type"
-          },
-          "targets": [
-            {
-              "resolveInfo": "TokensList",
-              "reference": "com-strumenta-Starlasu-v2-TokensList-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2-ParsingResult-2-id"
-    },
-    {
-      "id": "com-strumenta-Starlasu_IssueType-TRANSLATION",
+      "id": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-FailingASTTransformation-2-id",
       "classifier": {
         "language": "LionCore-M3",
         "version": "2023.1",
@@ -2081,7 +2164,7 @@
             "version": "2023.1",
             "key": "LionCore-builtins-INamed-name"
           },
-          "value": "TRANSLATION"
+          "value": "FailingASTTransformation"
         },
         {
           "property": {
@@ -2089,96 +2172,13 @@
             "version": "2023.1",
             "key": "IKeyed-key"
           },
-          "value": "IssueType-TRANSLATION"
+          "value": "com-strumenta-Starlasu-PlaceholderNode-PlaceholderNodeType-id-FailingASTTransformation-key"
         }
       ],
       "containments": [],
       "references": [],
       "annotations": [],
-      "parent": "com-strumenta-Starlasu_IssueType-2"
-    },
-    {
-      "id": "com-strumenta-Starlasu-v2-BehaviorDeclaration-2-id",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "Interface"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "BehaviorDeclaration"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "com_strumenta_starlasu-BehaviorDeclaration-key"
-        }
-      ],
-      "containments": [
-        {
-          "containment": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Classifier-features"
-          },
-          "children": []
-        }
-      ],
-      "references": [
-        {
-          "reference": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "Interface-extends"
-          },
-          "targets": [
-            {
-              "resolveInfo": "CommonElement",
-              "reference": "com-strumenta-Starlasu-v2-CommonElement-2-id"
-            }
-          ]
-        }
-      ],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu-v2"
-    },
-    {
-      "id": "com-strumenta-Starlasu_IssueSeverity-INFO-2",
-      "classifier": {
-        "language": "LionCore-M3",
-        "version": "2023.1",
-        "key": "EnumerationLiteral"
-      },
-      "properties": [
-        {
-          "property": {
-            "language": "LionCore-builtins",
-            "version": "2023.1",
-            "key": "LionCore-builtins-INamed-name"
-          },
-          "value": "INFO"
-        },
-        {
-          "property": {
-            "language": "LionCore-M3",
-            "version": "2023.1",
-            "key": "IKeyed-key"
-          },
-          "value": "IssueSeverity-INFO"
-        }
-      ],
-      "containments": [],
-      "references": [],
-      "annotations": [],
-      "parent": "com-strumenta-Starlasu_IssueSeverity-2"
+      "parent": "com-strumenta-Starlasu-v2-PlaceholderNode-PlaceholderNodeType-2-id"
     }
   ]
 }
