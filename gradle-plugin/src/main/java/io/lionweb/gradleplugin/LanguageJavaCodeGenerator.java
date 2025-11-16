@@ -5,19 +5,24 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 
+import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
-import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
+import java.util.Enumeration;
+import java.util.Objects;
 
 public class LanguageJavaCodeGenerator {
-    private File destinationDir;
+    private final @Nonnull File destinationDir;
 
-    public LanguageJavaCodeGenerator(File destinationDir) {
+    public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
+        Objects.requireNonNull(destinationDir, "destinationDir should not be null");
         this.destinationDir = destinationDir;
     }
 
-    public void generate(Language language, String packageName) throws IOException {
+    public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
+        Objects.requireNonNull(language, "language should not be null");
+        Objects.requireNonNull(packageName, "packageName should not be null");
         String className = capitalize(language.getName()) + "Language";
 
         ClassName lwLanguageClass = ClassName.get(Language.class);
@@ -29,27 +34,18 @@ public class LanguageJavaCodeGenerator {
                         Modifier.PRIVATE, Modifier.STATIC)
                 .build();
 
-        // private LibraryLanguage() {
-        //     this.setName("Library");
-        //     this.setVersion("1.0.0");
-        //     this.setID("library-id");
-        //     this.setKey("library");
-        // }
         MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
                 .addModifiers(Modifier.PRIVATE)
+                .addStatement("super($T.$L)", lionWebVersion, language.getLionWebVersion().name())
                 .addStatement("this.setName($S)", language.getName())
                 .addStatement("this.setVersion($S)", language.getVersion())
                 .addStatement("this.setID($S)", language.getID())
                 .addStatement("this.setKey($S)", language.getKey());
-        // TODO consider dependsOn
-        // TODO consider LionWeb Version
 
-        // public static LibraryLanguage getInstance() {
-        //     if (INSTANCE == null) {
-        //         INSTANCE = new LibraryLanguage();
-        //     }
-        //     return INSTANCE;
-        // }
+        language.dependsOn().forEach(dependency -> {
+            throw new UnsupportedOperationException("Not yet implemented");
+        });
+
         MethodSpec getInstance = MethodSpec.methodBuilder("getInstance")
                 .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
                 .returns(ClassName.get(packageName, className))
@@ -136,8 +132,19 @@ public class LanguageJavaCodeGenerator {
             createElements.addStatement("new $T(this, $S, $S, $S);", interfaceClass, interf.getName(), interf.getID(), interf.getKey());
         });
 
-        // TODO data types
-        // TODO annotations
+        language.getStructuredDataTypes().forEach(dataType -> {
+            throw new UnsupportedOperationException("Not yet implemented");
+        });
+
+        language.getElements().forEach(element -> {
+            if (element instanceof Enumeration<?>) {
+                throw new UnsupportedOperationException("Not yet implemented");
+            } else if (element instanceof Annotation) {
+                throw new UnsupportedOperationException("Not yet implemented");
+            } else if (element instanceof PrimitiveType) {
+                throw new UnsupportedOperationException("Not yet implemented");
+            }
+        });
 
         languageClass.addMethod(constructor.build());
         languageClass.addMethod(createElements.build());
