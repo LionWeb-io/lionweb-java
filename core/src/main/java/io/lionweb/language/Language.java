@@ -115,6 +115,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
+    public @Nullable Classifier<?> getClassifierByName(String name) {
+        return getElements().stream()
+                .filter(element -> element instanceof Classifier<?>)
+                .map(element -> (Classifier<?>) element)
+                .filter(element -> element.getName().equals(name))
+                .findFirst()
+                .orElse(null);
+    }
+
   public @Nullable Enumeration getEnumerationByName(String name) {
     return getElements().stream()
         .filter(element -> element instanceof Enumeration)
@@ -132,6 +141,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
       return concept;
     }
   }
+
+    public Classifier<?> requireClassifierByName(String name) {
+        Classifier<?> classifier = getClassifierByName(name);
+        if (classifier == null) {
+            throw new IllegalArgumentException("Classifier named " + name + " was not found");
+        } else {
+            return classifier;
+        }
+    }
 
   public @Nullable Interface getInterfaceByName(String name) {
     return getElements().stream()
