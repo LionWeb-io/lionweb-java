@@ -28,3 +28,9 @@ dependencies {
 tasks.named<Test>("test") {
     useJUnitPlatform()
 }
+
+// In order to use JavaPoet, we cannot stick to Java 8
+java {
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
+}
