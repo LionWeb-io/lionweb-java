@@ -726,4 +726,122 @@ public class ClassifierInstanceUtilsTest {
     // Verify the value was overwritten
     assertEquals("new value", node.getPropertyValue(prop));
   }
+
+  @Test
+  public void addReferenceByNamePositive() {
+    // Create language and concepts with a single reference
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "src-id");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "tgt-id");
+
+    Reference ref = new Reference();
+    ref.setName("targetRef");
+    ref.setType(targetConcept);
+    ref.setMultiple(false);
+    sourceConcept.addFeature(ref);
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    // Create nodes
+    DynamicNode sourceNode = new DynamicNode("source", sourceConcept);
+    DynamicNode targetNode = new DynamicNode("target", targetConcept);
+
+    // Use addReferenceByName, which internally uses referenceTo(Node)
+    ClassifierInstanceUtils.addReferenceByName(sourceNode, "targetRef", targetNode);
+
+    // Verify referenced node
+    List<? extends Node> referredNodes = ClassifierInstanceUtils.getReferredNodes(sourceNode, ref);
+    assertEquals(1, referredNodes.size());
+    assertEquals(targetNode, referredNodes.get(0));
+  }
+
+  @Test
+  public void addReferenceByNameNonExistingReferenceThrows() {
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "src-id");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "tgt-id");
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    DynamicNode sourceNode = new DynamicNode("source", sourceConcept);
+    DynamicNode targetNode = new DynamicNode("target", targetConcept);
+
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> ClassifierInstanceUtils.addReferenceByName(sourceNode, "missingRef", targetNode));
+  }
+
+  @Test
+  public void addReferenceByNameNullInstanceThrows() {
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "tgt-id");
+    DynamicNode targetNode = new DynamicNode("target", targetConcept);
+
+    assertThrows(
+        NullPointerException.class,
+        () -> ClassifierInstanceUtils.addReferenceByName(null, "someRef", targetNode));
+  }
+
+  @Test
+  public void addReferenceByNameNullReferenceNameThrows() {
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept sourceConcept = new Concept(testLanguage, "SourceConcept", "src-id");
+    Concept targetConcept = new Concept(testLanguage, "TargetConcept", "tgt-id");
+
+    CommonKeyAssigners.qualifiedKeyAssigner.assignKeys(testLanguage);
+    CommonIDAssigners.qualifiedIDAssigner.assignIDs(testLanguage);
+
+    DynamicNode sourceNode = new DynamicNode("source", sourceConcept);
+    DynamicNode targetNode = new DynamicNode("target", targetConcept);
+
+    assertThrows(
+        NullPointerException.class,
+        () -> ClassifierInstanceUtils.addReferenceByName(sourceNode, null, targetNode));
+  }
+
+  @Test
+  public void referenceToNodeReturnsNonNull() {
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept concept = new Concept(testLanguage, "SomeConcept", "c-id");
+    DynamicNode node = new DynamicNode("theNode", concept);
+
+    ReferenceValue refValue = ClassifierInstanceUtils.referenceTo(node);
+    assertNotNull(refValue);
+  }
+
+  @Test
+  public void referenceToLanguageEntityReturnsNonNullForRegularLanguage() {
+    Language testLanguage = new Language("MyTestLanguage");
+    Concept concept = new Concept(testLanguage, "SomeConcept", "c-id");
+
+    ReferenceValue refValue = ClassifierInstanceUtils.referenceTo(concept);
+    assertNotNull(refValue);
+  }
+
+  @Test
+  public void referenceToLanguageEntityUsesSpecialHandlingForLionCoreM3() {
+    // Language whose name matches the LionCore_M3 special case
+    Language lionCoreLikeLanguage =
+        new Language(LionWebVersion.v2024_1, "LionCore_M3")
+            .setID("LCM3-ID")
+            .setKey("lioncore-m3-key");
+    Concept concept = new Concept(lionCoreLikeLanguage, "SomeConcept", "c-id");
+
+    ReferenceValue refValue = ClassifierInstanceUtils.referenceTo(concept);
+    assertNotNull(refValue);
+  }
+
+  @Test
+  public void referenceToLanguageEntityUsesSpecialHandlingForLionCoreBuiltinsLikeLanguage() {
+    // Create a language that structurally behaves like LionCoreBuiltins for the special case
+    Language original = LionCoreBuiltins.getInstance(LionWebVersion.v2024_1);
+    Language lionCoreBuiltinsLike =
+        new Language(original.getName(), "LCB-ID", original.getKey(), original.getVersion());
+    Concept concept = new Concept(lionCoreBuiltinsLike, "SomeConcept", "c-id");
+
+    ReferenceValue refValue = ClassifierInstanceUtils.referenceTo(concept);
+    assertNotNull(refValue);
+  }
 }
