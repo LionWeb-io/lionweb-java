@@ -115,14 +115,14 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
-    public @Nullable Classifier<?> getClassifierByName(String name) {
-        return getElements().stream()
-                .filter(element -> element instanceof Classifier<?>)
-                .map(element -> (Classifier<?>) element)
-                .filter(element -> element.getName().equals(name))
-                .findFirst()
-                .orElse(null);
-    }
+  public @Nullable Classifier<?> getClassifierByName(String name) {
+    return getElements().stream()
+        .filter(element -> element instanceof Classifier<?>)
+        .map(element -> (Classifier<?>) element)
+        .filter(element -> element.getName().equals(name))
+        .findFirst()
+        .orElse(null);
+  }
 
   public @Nullable Enumeration getEnumerationByName(String name) {
     return getElements().stream()
@@ -142,14 +142,23 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-    public Classifier<?> requireClassifierByName(String name) {
-        Classifier<?> classifier = getClassifierByName(name);
-        if (classifier == null) {
-            throw new IllegalArgumentException("Classifier named " + name + " was not found");
-        } else {
-            return classifier;
-        }
+  public Classifier<?> requireClassifierByName(String name) {
+    Classifier<?> classifier = getClassifierByName(name);
+    if (classifier == null) {
+      throw new IllegalArgumentException("Classifier named " + name + " was not found");
+    } else {
+      return classifier;
     }
+  }
+
+  public Interface requireInterfaceByName(String name) {
+    Interface interf = getInterfaceByName(name);
+    if (interf == null) {
+      throw new IllegalArgumentException("Interface named " + name + " was not found");
+    } else {
+      return interf;
+    }
+  }
 
   public @Nullable Interface getInterfaceByName(String name) {
     return getElements().stream()
