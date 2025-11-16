@@ -33,30 +33,15 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
 
   public Feature(
       @Nonnull LionWebVersion lionWebVersion, @Nullable String name, @Nonnull String id) {
-    this(lionWebVersion, name, null, id);
+    this(lionWebVersion);
+    setName(name);
+    setID(id);
     setOptional(false);
   }
 
   public Feature(@Nullable String name, @Nonnull String id) {
     this(name, null, id);
     setOptional(false);
-  }
-
-  @Deprecated
-  public Feature(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?> container,
-      @Nonnull String id) {
-    super(lionWebVersion);
-    setOptional(false);
-    Objects.requireNonNull(id, "id should not be null");
-    this.setID(id);
-    // TODO enforce uniqueness of the name within the FeauturesContainer
-    setName(name);
-    if (container != null) {
-      container.addFeature(this);
-    }
   }
 
   public Feature(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {

@@ -72,7 +72,9 @@ public class Property extends Feature<Property> {
       @Nonnull String id) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     Objects.requireNonNull(id, "id should not be null");
-    Property property = new Property(lionWebVersion, name, null, id);
+    Property property = new Property(lionWebVersion);
+    property.setName(name);
+    property.setID(id);
     property.setOptional(false);
     property.setType(type);
     return property;
@@ -89,15 +91,6 @@ public class Property extends Feature<Property> {
 
   public Property() {
     super();
-  }
-
-  @Deprecated
-  public Property(
-      @Nonnull LionWebVersion lionWebVersion,
-      @Nullable String name,
-      @Nullable Classifier<?> container,
-      @Nonnull String id) {
-    super(lionWebVersion, name, container, id);
   }
 
   public Property(@Nullable String name, @Nullable Classifier<?> container, @Nonnull String id) {

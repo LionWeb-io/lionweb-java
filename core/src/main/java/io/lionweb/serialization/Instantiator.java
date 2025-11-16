@@ -92,7 +92,7 @@ public class Instantiator {
     customDeserializers.put(
         LionCore.getProperty(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
-            new Property(lionWebVersion, null, null, serializedNode.getID()));
+            new Property(lionWebVersion).setID(serializedNode.getID()));
     customDeserializers.put(
         LionCore.getReference(lionWebVersion).getID(),
         (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
