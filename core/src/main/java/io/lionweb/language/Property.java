@@ -91,6 +91,7 @@ public class Property extends Feature<Property> {
     super();
   }
 
+  @Deprecated
   public Property(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,

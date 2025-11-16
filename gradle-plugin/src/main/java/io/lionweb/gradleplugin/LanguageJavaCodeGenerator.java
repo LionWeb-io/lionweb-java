@@ -1,10 +1,11 @@
 package io.lionweb.gradleplugin;
 
 import com.palantir.javapoet.*;
-import io.lionweb.language.Concept;
-import io.lionweb.language.Language;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.*;
 
 import javax.lang.model.element.Modifier;
+import javax.xml.crypto.Data;
 import java.io.File;
 import java.io.IOException;
 
@@ -57,6 +58,10 @@ public class LanguageJavaCodeGenerator {
                 .addStatement("return $N", instanceField)
                 .build();
 
+        MethodSpec.Builder createElements = MethodSpec.methodBuilder("createElements")
+                .addModifiers(Modifier.PRIVATE);
+        constructor.addStatement("createElements()");
+
         TypeSpec.Builder languageClass = TypeSpec.classBuilder(className)
                 .superclass(lwLanguageClass)
                 .addField(instanceField)
@@ -88,27 +93,91 @@ public class LanguageJavaCodeGenerator {
             MethodSpec.Builder initMethod = MethodSpec.methodBuilder("init" + capitalize(concept.getName()))
                     .addModifiers(Modifier.PRIVATE)
                     .returns(void.class)
-                    .addStatement("$T concept = new $T()", conceptClass, conceptClass)
-                    .addStatement("concept.setID($S)", concept.getID())
-                    .addStatement("concept.setName($S)", concept.getName())
-                    .addStatement("concept.setKey($S)", concept.getKey())
+                    .addStatement("$T concept = this.requireConceptByName($S)", conceptClass, concept.getName())
                     .addStatement("concept.setAbstract($L)", concept.isAbstract())
-                    .addStatement("concept.setPartition($L)", concept.isPartition())
-                    .addStatement("this.addElement(concept)");
-            // TODO set extended
-            // TODO set implemented
-            // TODO set feature
-            // TODO split into declaration and population of concepts, so that we have references across them
+                    .addStatement("concept.setPartition($L)", concept.isPartition());
+            if (concept.getExtendedConcept() != null) {
+                initMethod.addStatement("concept.setExtendedConcept($L)", toConceptExpr(language, concept.getExtendedConcept()));
+            }
+            concept.getImplemented().forEach(implemented -> {
+                initMethod.addStatement("concept.addImplementedInterface($L)", toClassifierExpr(language, implemented));
+            });
+            concept.getFeatures().forEach(feature -> {
+                if (feature instanceof Property) {
+                    initMethod.addStatement("$T $L = new Property($S, concept, $S)", ClassName.get(Property.class), feature.getName(), feature.getName(), feature.getID());
+                    initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
+                    initMethod.addStatement("$L.setType($L)", feature.getName(), toDataTypeExpr(((Property) feature).getType()));
+                    initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
+                } else if (feature instanceof Containment) {
+                    initMethod.addStatement("$T $L = new Containment($S, concept, $S)", ClassName.get(Containment.class), feature.getName(), feature.getName(), feature.getID());
+                    initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
+                    initMethod.addStatement("$L.setType($L)", feature.getName(), toClassifierExpr(language, ((Containment) feature).getType()));
+                    initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
+                    initMethod.addStatement("$L.setMultiple($L)", feature.getName(), ((Containment) feature).isMultiple());
+                } else if (feature instanceof Reference) {
+                    initMethod.addStatement("$T $L = new Reference($S, concept, $S)", ClassName.get(Reference.class), feature.getName(), feature.getName(), feature.getID());
+                    initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
+                    initMethod.addStatement("$L.setType($L)", feature.getName(), toClassifierExpr(language, ((Reference) feature).getType()));
+                    initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
+                    initMethod.addStatement("$L.setMultiple($L)", feature.getName(), ((Reference) feature).isMultiple());
+                } else {
+                    throw new UnsupportedOperationException("Unknown feature type: " + feature.getClass());
+                }
+            });
             languageClass.addMethod(initMethod.build());
 
             constructor.addStatement("init$L()", capitalize(concept.getName()));
+
+            createElements.addStatement("new Concept(this, $S, $S, $S);", concept.getName(), concept.getID(), concept.getKey());
         });
 
+        // TODO interfaces
+        // TODO data types
+        // TODO annotations
+
         languageClass.addMethod(constructor.build());
+        languageClass.addMethod(createElements.build());
         JavaFile javaFile = JavaFile.builder(packageName, languageClass.build())
                 .build();
 
         javaFile.writeTo(destinationDir.toPath());
+    }
+
+    private static ClassName lionCoreBuiltins = ClassName.get(LionCoreBuiltins.class);
+    private static ClassName lionWebVersion  = ClassName.get(LionWebVersion.class);
+
+    private CodeBlock toDataTypeExpr(DataType<?> dataType) {
+        if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2023_1))) {
+            return CodeBlock.of(
+                    "$T.getString($T.v2023_1)",
+                    lionCoreBuiltins,
+                    lionWebVersion
+            );
+        } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2023_1))) {
+            return CodeBlock.of(
+                    "$T.getInteger($T.v2023_1)",
+                    lionCoreBuiltins,
+                    lionWebVersion
+            );
+        } else {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+    }
+
+    private CodeBlock toClassifierExpr(Language language, Classifier<?> classifierType) {
+        if (language.equals(classifierType.getLanguage())) {
+            return CodeBlock.of("this.requireClassifierByName($S)", classifierType.getName());
+        } else {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+    }
+
+    private CodeBlock toConceptExpr(Language language, Classifier<?> classifierType) {
+        if (language.equals(classifierType.getLanguage())) {
+            return CodeBlock.of("this.requireConceptByName($S)", classifierType.getName());
+        } else {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
     }
 
     private static String capitalize(String s) {
