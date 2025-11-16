@@ -27,8 +27,8 @@ release {
                   ":client-testing:publishAllPublicationsToMavenCentralRepository",
                   ":emf:publishAllPublicationsToMavenCentralRepository",
                   ":emf-builtins:publishAllPublicationsToMavenCentralRepository",
-                  ":gradle-plugin::publishAllPublicationsToMavenCentralRepository",
-                  ":gradle-plugin::publishPlugins"]
+                  ":gradle-plugin:publishAllPublicationsToMavenCentralRepository",
+                  ":gradle-plugin:publishPlugins"]
     versionPropertyFile = './gradle.properties'
     git {
         requireBranch.set('main')
