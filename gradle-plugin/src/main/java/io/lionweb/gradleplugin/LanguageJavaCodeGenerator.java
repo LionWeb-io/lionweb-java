@@ -6,25 +6,82 @@ import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.*;
 import java.util.Enumeration;
-import java.util.List;
-import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
 
 public class LanguageJavaCodeGenerator {
   private final @Nonnull File destinationDir;
 
+  private class LanguageContext {
+    public String generationPackage;
+    public List<Language> generatedLanguages;
+
+    public LanguageContext() {
+      generatedLanguages = new LinkedList<>();
+    }
+
+    public LanguageContext(String generationPackage, List<Language> generatedLanguages) {
+      this.generationPackage = generationPackage;
+      this.generatedLanguages = generatedLanguages;
+    }
+
+    public CodeBlock resolveLanguage(Language language) {
+      if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
+        return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
+      } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {
+        return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
+      } else if (language.equals(LionCore.getInstance(LionWebVersion.v2023_1))) {
+        return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCore, lionWebVersion);
+      } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
+        return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCore, lionWebVersion);
+      } else {
+        if (generatedLanguages.contains(language)) {
+          return CodeBlock.of(
+              "$T.getInstance()", ClassName.get(generationPackage, toLanguageClassName(language)));
+        }
+        throw new RuntimeException("Language not found: " + language.getName());
+      }
+    }
+  }
+
   public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
   }
 
+  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
+      throws IOException {
+    LanguageContext languageContext = new LanguageContext(packageName, languages);
+    languages.forEach(
+        language -> {
+          try {
+            generate(language, packageName, languageContext);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
+
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
+    generate(language, packageName, new LanguageContext());
+  }
+
+  private static String toLanguageClassName(Language language) {
+    String s = capitalize(language.getName()) + "Language";
+    s = s.replaceAll(" ", "");
+    return s;
+  }
+
+  public void generate(
+      @Nonnull Language language,
+      @Nonnull String packageName,
+      @Nonnull LanguageContext languageContext)
+      throws IOException {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(packageName, "packageName should not be null");
-    String className = capitalize(language.getName()) + "Language";
+    String className = toLanguageClassName(language);
 
     ClassName lwLanguageClass = ClassName.get(Language.class);
 
@@ -49,7 +106,8 @@ public class LanguageJavaCodeGenerator {
         .dependsOn()
         .forEach(
             dependency -> {
-              throw new UnsupportedOperationException("Not yet implemented");
+              constructor.addStatement(
+                  "this.addDependency($L)", languageContext.resolveLanguage(dependency));
             });
 
     MethodSpec getInstance =
@@ -110,7 +168,7 @@ public class LanguageJavaCodeGenerator {
               if (concept.getExtendedConcept() != null) {
                 initMethod.addStatement(
                     "concept.setExtendedConcept($L)",
-                    toConceptExpr(language, concept.getExtendedConcept()));
+                    toConceptExpr(language, concept.getExtendedConcept(), languageContext));
               }
               concept
                   .getImplemented()
@@ -118,13 +176,13 @@ public class LanguageJavaCodeGenerator {
                       implemented -> {
                         initMethod.addStatement(
                             "concept.addImplementedInterface($L)",
-                            toInterfaceExpr(language, implemented));
+                            toInterfaceExpr(language, implemented, languageContext));
                       });
               concept
                   .getFeatures()
                   .forEach(
                       feature -> {
-                        initFeature(initMethod, language, feature, "concept");
+                        initFeature(initMethod, language, feature, "concept", languageContext);
                       });
               languageClass.addMethod(initMethod.build());
 
@@ -164,13 +222,13 @@ public class LanguageJavaCodeGenerator {
                       implemented -> {
                         initMethod.addStatement(
                             "interf.addExtendedInterface($L)",
-                            toInterfaceExpr(language, implemented));
+                            toInterfaceExpr(language, implemented, languageContext));
                       });
               interf
                   .getFeatures()
                   .forEach(
                       feature -> {
-                        initFeature(initMethod, language, feature, "interf");
+                        initFeature(initMethod, language, feature, "interf", languageContext);
                       });
               languageClass.addMethod(initMethod.build());
 
@@ -185,6 +243,60 @@ public class LanguageJavaCodeGenerator {
             });
 
     language
+        .getAnnotationDefinitions()
+        .forEach(
+            annotationDef -> {
+              MethodSpec getter =
+                  MethodSpec.methodBuilder("get" + capitalize(annotationDef.getName()))
+                      .returns(interfaceClass)
+                      .addModifiers(Modifier.PUBLIC)
+                      .addStatement(
+                          "return this.requireAnnotationByName($S)", annotationDef.getName())
+                      .build();
+              languageClass.addMethod(getter);
+
+              MethodSpec.Builder initMethod =
+                  MethodSpec.methodBuilder("init" + capitalize(annotationDef.getName()))
+                      .addModifiers(Modifier.PRIVATE)
+                      .returns(void.class)
+                      .addStatement(
+                          "$T annotationDef = this.requireAnnotationByName($S)",
+                          interfaceClass,
+                          annotationDef.getName());
+              if (annotationDef.getExtendedAnnotation() != null) {
+                initMethod.addStatement(
+                    "annotationDef.setExtendedAnnotation($L)",
+                    toAnnotationExpr(
+                        language, annotationDef.getExtendedAnnotation(), languageContext));
+              }
+              annotationDef
+                  .getImplemented()
+                  .forEach(
+                      interf -> {
+                        initMethod.addStatement(
+                            "annotationDef.addImplementedInterface($L)",
+                            toInterfaceExpr(language, interf, languageContext));
+                      });
+              annotationDef
+                  .getFeatures()
+                  .forEach(
+                      feature -> {
+                        initFeature(
+                            initMethod, language, feature, "annotationDef", languageContext);
+                      });
+              languageClass.addMethod(initMethod.build());
+
+              constructor.addStatement("init$L()", capitalize(annotationDef.getName()));
+
+              createElements.addStatement(
+                  "new $T(this, $S, $S, $S);",
+                  interfaceClass,
+                  annotationDef.getName(),
+                  annotationDef.getID(),
+                  annotationDef.getKey());
+            });
+
+    language
         .getStructuredDataTypes()
         .forEach(
             dataType -> {
@@ -196,8 +308,6 @@ public class LanguageJavaCodeGenerator {
         .forEach(
             element -> {
               if (element instanceof Enumeration<?>) {
-                throw new UnsupportedOperationException("Not yet implemented");
-              } else if (element instanceof Annotation) {
                 throw new UnsupportedOperationException("Not yet implemented");
               } else if (element instanceof PrimitiveType) {
                 createElements.addStatement(
@@ -281,7 +391,11 @@ public class LanguageJavaCodeGenerator {
   }
 
   private void initFeature(
-      MethodSpec.Builder initMethod, Language language, Feature<?> feature, String container) {
+      MethodSpec.Builder initMethod,
+      Language language,
+      Feature<?> feature,
+      String container,
+      LanguageContext languageContext) {
     String variableName = toVariableName(feature.getName());
     if (feature instanceof Property) {
       initMethod.addStatement(
@@ -293,7 +407,9 @@ public class LanguageJavaCodeGenerator {
           feature.getID());
       initMethod.addStatement("$L.setKey($S)", variableName, feature.getKey());
       initMethod.addStatement(
-          "$L.setType($L)", variableName, toDataTypeExpr(((Property) feature).getType()));
+          "$L.setType($L)",
+          variableName,
+          toDataTypeExpr(((Property) feature).getType(), languageContext));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
     } else if (feature instanceof Containment) {
       initMethod.addStatement(
@@ -307,7 +423,7 @@ public class LanguageJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toClassifierExpr(language, ((Containment) feature).getType()));
+          toClassifierExpr(language, ((Containment) feature).getType(), languageContext));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
       initMethod.addStatement(
           "$L.setMultiple($L)", variableName, ((Containment) feature).isMultiple());
@@ -323,7 +439,7 @@ public class LanguageJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toClassifierExpr(language, ((Reference) feature).getType()));
+          toClassifierExpr(language, ((Reference) feature).getType(), languageContext));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
       initMethod.addStatement(
           "$L.setMultiple($L)", variableName, ((Reference) feature).isMultiple());
@@ -339,84 +455,59 @@ public class LanguageJavaCodeGenerator {
   private static ClassName interfaceClass = ClassName.get(Interface.class);
   private static ClassName primitiveType = ClassName.get(PrimitiveType.class);
 
-  private CodeBlock toDataTypeExpr(DataType<?> dataType) {
-    if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2023_1))) {
-      return CodeBlock.of("$T.getString($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
-    } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2023_1))) {
-      return CodeBlock.of("$T.getInteger($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
-    } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2023_1))) {
-      return CodeBlock.of("$T.getBoolean($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
-    } else if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2024_1))) {
-      return CodeBlock.of("$T.getString($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
-    } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2024_1))) {
-      return CodeBlock.of("$T.getInteger($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
-    } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2024_1))) {
-      return CodeBlock.of("$T.getBoolean($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
-    } else {
-      throw new UnsupportedOperationException("Not yet implemented");
-    }
+  private CodeBlock toDataTypeExpr(DataType<?> dataType, LanguageContext languageContext) {
+    return CodeBlock.of(
+        "$L.requireDataTypeByName($S)",
+        languageContext.resolveLanguage(dataType.getLanguage()),
+        dataType.getName());
+    //
+    //    if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2023_1))) {
+    //      return CodeBlock.of("$T.getString($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
+    //    } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2023_1))) {
+    //      return CodeBlock.of("$T.getInteger($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
+    //    } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2023_1))) {
+    //      return CodeBlock.of("$T.getBoolean($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
+    //    } else if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2024_1))) {
+    //      return CodeBlock.of("$T.getString($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
+    //    } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2024_1))) {
+    //      return CodeBlock.of("$T.getInteger($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
+    //    } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2024_1))) {
+    //      return CodeBlock.of("$T.getBoolean($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
+    //    } else {
+    //      throw new UnsupportedOperationException("Not yet implemented");
+    //    }
   }
 
-  private CodeBlock toClassifierExpr(Language language, Classifier<?> classifierType) {
-    if (language.equals(classifierType.getLanguage())) {
-      return CodeBlock.of("this.requireClassifierByName($S)", classifierType.getName());
-    } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
-      throw new UnsupportedOperationException("Not yet implemented");
-    } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {
-      throw new UnsupportedOperationException("Not yet implemented");
-    } else if (language.equals(LionCore.getInstance(LionWebVersion.v2023_1))) {
-      return CodeBlock.of(
-          "$T.getInstance(LionWebVersion.v2023_1).requireClassifierByName($S)",
-          lionCore,
-          classifierType.getName());
-    } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
-      return CodeBlock.of(
-          "$T.getInstance(LionWebVersion.v2024_1).requireClassifierByName($S)",
-          lionCore,
-          classifierType.getName());
-    } else {
-      throw new UnsupportedOperationException("Not yet implemented");
-    }
+  private CodeBlock toClassifierExpr(
+      Language language, Classifier<?> classifierType, LanguageContext languageContext) {
+    return CodeBlock.of(
+        "$L.requireClassifierByName($L)",
+        languageContext.resolveLanguage(classifierType.getLanguage()),
+        classifierType.getName());
   }
 
-  private CodeBlock toConceptExpr(Language language, Classifier<?> classifierType) {
-    if (language.equals(classifierType.getLanguage())) {
-      return CodeBlock.of("this.requireConceptByName($S)", classifierType.getName());
-    } else {
-      throw new UnsupportedOperationException("Not yet implemented");
-    }
+  private CodeBlock toConceptExpr(
+      Language language, Classifier<?> classifierType, LanguageContext languageContext) {
+    return CodeBlock.of(
+        "$L.requireConceptByName($L)",
+        languageContext.resolveLanguage(classifierType.getLanguage()),
+        classifierType.getName());
   }
 
-  private CodeBlock toInterfaceExpr(Language language, Classifier<?> classifierType) {
-    if (language.equals(classifierType.getLanguage())) {
-      return CodeBlock.of("this.requireInterfaceByName($S)", classifierType.getName());
-    } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
-      return CodeBlock.of(
-          "$T.getInstance($T.v2023_1).requireInterfaceByName($S)",
-          lionCoreBuiltins,
-          lionWebVersion,
-          classifierType.getName());
-    } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {
-      return CodeBlock.of(
-          "$T.getInstance($T.v2024_1).requireInterfaceByName($S)",
-          lionCoreBuiltins,
-          lionWebVersion,
-          classifierType.getName());
-    } else if (language.equals(LionCore.getInstance(LionWebVersion.v2023_1))) {
-      return CodeBlock.of(
-          "$T.getInstance($T.v2023_1).requireInterfaceByName($S)",
-          lionCore,
-          lionWebVersion,
-          classifierType.getName());
-    } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
-      return CodeBlock.of(
-          "$T.getInstance($T.v2024_1).requireInterfaceByName($S)",
-          lionCore,
-          lionWebVersion,
-          classifierType.getName());
-    } else {
-      throw new UnsupportedOperationException("Not yet implemented");
-    }
+  private CodeBlock toAnnotationExpr(
+      Language language, Annotation annotation, LanguageContext languageContext) {
+    return CodeBlock.of(
+        "$L.requireAnnotationByName($L)",
+        languageContext.resolveLanguage(annotation.getLanguage()),
+        annotation.getName());
+  }
+
+  private CodeBlock toInterfaceExpr(
+      Language language, Classifier<?> classifierType, LanguageContext languageContext) {
+    return CodeBlock.of(
+        "$L.requireInterfaceByName($L)",
+        languageContext.resolveLanguage(classifierType.getLanguage()),
+        classifierType.getName());
   }
 
   private static String capitalize(String s) {
