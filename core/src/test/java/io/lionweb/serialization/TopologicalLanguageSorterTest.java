@@ -49,7 +49,7 @@ public class TopologicalLanguageSorterTest {
         }).collect(Collectors.toList());
         assertEquals(7, ids.size());
         int indexOfStarlasuV1 = ids.indexOf("com-strumenta-StarLasu");
-        int indexOfStarlasuV2 = ids.indexOf("com-strumenta-StarLasu-v2");
+        int indexOfStarlasuV2 = ids.indexOf("com-strumenta-Starlasu-v2");
         int indexOfCodebaseV1 = ids.indexOf("strumenta-codebase");
         int indexOfCodebaseV2 = ids.indexOf("strumenta-codebase-v2");
         int indexOfCommentsV1 = ids.indexOf("com-strumenta-starlasu-comments");
