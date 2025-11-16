@@ -3,6 +3,7 @@ package io.lionweb.gradleplugin;
 import com.palantir.javapoet.*;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
+import io.lionweb.lioncore.LionCore;
 
 import javax.lang.model.element.Modifier;
 import javax.xml.crypto.Data;
@@ -88,8 +89,6 @@ public class LanguageJavaCodeGenerator {
             //        libraryConcept.setPartition(false);
             //        this.addElement(libraryConcept);
             //    }
-            ClassName conceptClass = ClassName.get(Concept.class);
-
             MethodSpec.Builder initMethod = MethodSpec.methodBuilder("init" + capitalize(concept.getName()))
                     .addModifiers(Modifier.PRIVATE)
                     .returns(void.class)
@@ -103,35 +102,40 @@ public class LanguageJavaCodeGenerator {
                 initMethod.addStatement("concept.addImplementedInterface($L)", toClassifierExpr(language, implemented));
             });
             concept.getFeatures().forEach(feature -> {
-                if (feature instanceof Property) {
-                    initMethod.addStatement("$T $L = new Property($S, concept, $S)", ClassName.get(Property.class), feature.getName(), feature.getName(), feature.getID());
-                    initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
-                    initMethod.addStatement("$L.setType($L)", feature.getName(), toDataTypeExpr(((Property) feature).getType()));
-                    initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
-                } else if (feature instanceof Containment) {
-                    initMethod.addStatement("$T $L = new Containment($S, concept, $S)", ClassName.get(Containment.class), feature.getName(), feature.getName(), feature.getID());
-                    initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
-                    initMethod.addStatement("$L.setType($L)", feature.getName(), toClassifierExpr(language, ((Containment) feature).getType()));
-                    initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
-                    initMethod.addStatement("$L.setMultiple($L)", feature.getName(), ((Containment) feature).isMultiple());
-                } else if (feature instanceof Reference) {
-                    initMethod.addStatement("$T $L = new Reference($S, concept, $S)", ClassName.get(Reference.class), feature.getName(), feature.getName(), feature.getID());
-                    initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
-                    initMethod.addStatement("$L.setType($L)", feature.getName(), toClassifierExpr(language, ((Reference) feature).getType()));
-                    initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
-                    initMethod.addStatement("$L.setMultiple($L)", feature.getName(), ((Reference) feature).isMultiple());
-                } else {
-                    throw new UnsupportedOperationException("Unknown feature type: " + feature.getClass());
-                }
+                initFeature(initMethod, language, feature);
             });
             languageClass.addMethod(initMethod.build());
 
             constructor.addStatement("init$L()", capitalize(concept.getName()));
 
-            createElements.addStatement("new Concept(this, $S, $S, $S);", concept.getName(), concept.getID(), concept.getKey());
+            createElements.addStatement("new $T(this, $S, $S, $S);", conceptClass, concept.getName(), concept.getID(), concept.getKey());
         });
 
-        // TODO interfaces
+        language.getInterfaces().forEach(interf -> {
+            MethodSpec getter = MethodSpec.methodBuilder("get" + capitalize(interf.getName()))
+                    .returns(interfaceClass)
+                    .addModifiers(Modifier.PUBLIC)
+                    .addStatement("return this.requireInterfaceByName($S)", interf.getName())
+                    .build();
+            languageClass.addMethod(getter);
+
+            MethodSpec.Builder initMethod = MethodSpec.methodBuilder("init" + capitalize(interf.getName()))
+                    .addModifiers(Modifier.PRIVATE)
+                    .returns(void.class)
+                    .addStatement("$T interf = this.requireInterfaceByName($S)", interfaceClass, interf.getName());
+            interf.getExtendedInterfaces().forEach(implemented -> {
+                initMethod.addStatement("interf.addImplementedInterface($L)", toClassifierExpr(language, implemented));
+            });
+            interf.getFeatures().forEach(feature -> {
+                initFeature(initMethod, language, feature);
+            });
+            languageClass.addMethod(initMethod.build());
+
+            constructor.addStatement("init$L()", capitalize(interf.getName()));
+
+            createElements.addStatement("new $T(this, $S, $S, $S);", interfaceClass, interf.getName(), interf.getID(), interf.getKey());
+        });
+
         // TODO data types
         // TODO annotations
 
@@ -143,8 +147,34 @@ public class LanguageJavaCodeGenerator {
         javaFile.writeTo(destinationDir.toPath());
     }
 
+    private void initFeature(MethodSpec.Builder initMethod, Language language, Feature<?> feature) {
+        if (feature instanceof Property) {
+            initMethod.addStatement("$T $L = new Property($S, concept, $S)", ClassName.get(Property.class), feature.getName(), feature.getName(), feature.getID());
+            initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
+            initMethod.addStatement("$L.setType($L)", feature.getName(), toDataTypeExpr(((Property) feature).getType()));
+            initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
+        } else if (feature instanceof Containment) {
+            initMethod.addStatement("$T $L = new Containment($S, concept, $S)", ClassName.get(Containment.class), feature.getName(), feature.getName(), feature.getID());
+            initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
+            initMethod.addStatement("$L.setType($L)", feature.getName(), toClassifierExpr(language, ((Containment) feature).getType()));
+            initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
+            initMethod.addStatement("$L.setMultiple($L)", feature.getName(), ((Containment) feature).isMultiple());
+        } else if (feature instanceof Reference) {
+            initMethod.addStatement("$T $L = new Reference($S, concept, $S)", ClassName.get(Reference.class), feature.getName(), feature.getName(), feature.getID());
+            initMethod.addStatement("$L.setKey($S)", feature.getName(), feature.getKey());
+            initMethod.addStatement("$L.setType($L)", feature.getName(), toClassifierExpr(language, ((Reference) feature).getType()));
+            initMethod.addStatement("$L.setOptional($L)", feature.getName(), feature.isOptional());
+            initMethod.addStatement("$L.setMultiple($L)", feature.getName(), ((Reference) feature).isMultiple());
+        } else {
+            throw new UnsupportedOperationException("Unknown feature type: " + feature.getClass());
+        }
+    }
+
+    private static ClassName lionCore = ClassName.get(LionCore.class);
     private static ClassName lionCoreBuiltins = ClassName.get(LionCoreBuiltins.class);
     private static ClassName lionWebVersion  = ClassName.get(LionWebVersion.class);
+    private static ClassName conceptClass = ClassName.get(Concept.class);
+    private static ClassName interfaceClass = ClassName.get(Interface.class);
 
     private CodeBlock toDataTypeExpr(DataType<?> dataType) {
         if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2023_1))) {
@@ -159,6 +189,30 @@ public class LanguageJavaCodeGenerator {
                     lionCoreBuiltins,
                     lionWebVersion
             );
+        } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2023_1))) {
+            return CodeBlock.of(
+                    "$T.getBoolean($T.v2023_1)",
+                    lionCoreBuiltins,
+                    lionWebVersion
+            );
+        } else if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2024_1))) {
+            return CodeBlock.of(
+                    "$T.getString($T.v2024_1)",
+                    lionCoreBuiltins,
+                    lionWebVersion
+            );
+        } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2024_1))) {
+            return CodeBlock.of(
+                    "$T.getInteger($T.v2024_1)",
+                    lionCoreBuiltins,
+                    lionWebVersion
+            );
+        } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2024_1))) {
+            return CodeBlock.of(
+                    "$T.getBoolean($T.v2024_1)",
+                    lionCoreBuiltins,
+                    lionWebVersion
+            );
         } else {
             throw new UnsupportedOperationException("Not yet implemented");
         }
@@ -167,6 +221,14 @@ public class LanguageJavaCodeGenerator {
     private CodeBlock toClassifierExpr(Language language, Classifier<?> classifierType) {
         if (language.equals(classifierType.getLanguage())) {
             return CodeBlock.of("this.requireClassifierByName($S)", classifierType.getName());
+        } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {
+            throw new UnsupportedOperationException("Not yet implemented");
+        } else if (language.equals(LionCore.getInstance(LionWebVersion.v2023_1))) {
+            return CodeBlock.of("$T.getInstance(LionWebVersion.v2023_1).requireClassifierByName($S)", lionCore, classifierType.getName());
+        } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
+            return CodeBlock.of("$T.getInstance(LionWebVersion.v2024_1).requireClassifierByName($S)", lionCore, classifierType.getName());
         } else {
             throw new UnsupportedOperationException("Not yet implemented");
         }
