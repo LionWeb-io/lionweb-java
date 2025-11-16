@@ -1,5 +1,11 @@
 # Changelog
 
+### Version 1.2.0
+
+* Preliminary work to support delta protocol
+* Added Gradle Plugin
+* Added support for LionWeb Archive
+
 ### Version 1.1.4
 
 * Improved protobuf serialization and removed FlatBuffers support
@@ -175,7 +181,7 @@ Introducing support for LionWeb 2024.1
 ### Version 0.2.2
 
 * Convergence of Serialized{Annotation&Node}Instance into SerializedClassifierInstance
-* 
+
 ### Version 0.2.1
 
 * The JSON serialization is changed so that the meta-pointer under `"classifier"` appears directly after the `"id"` key-value pair.
