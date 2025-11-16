@@ -42,6 +42,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
     setOptional(false);
   }
 
+    @Deprecated
   public Feature(
       @Nonnull LionWebVersion lionWebVersion,
       @Nullable String name,
