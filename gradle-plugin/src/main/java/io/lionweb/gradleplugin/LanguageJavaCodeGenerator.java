@@ -11,16 +11,17 @@ import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
 
+/**
+ * The LanguageJavaCodeGenerator class is responsible for generating Java code representations of
+ * language definitions and their associated components.
+ */
 public class LanguageJavaCodeGenerator {
   private final @Nonnull File destinationDir;
 
+  /** It handles finding Language instances in the generated code. */
   private class LanguageContext {
     public String generationPackage;
     public List<Language> generatedLanguages;
-
-    public LanguageContext() {
-      generatedLanguages = new LinkedList<>();
-    }
 
     public LanguageContext(String generationPackage, List<Language> generatedLanguages) {
       this.generationPackage = generationPackage;
@@ -46,13 +47,32 @@ public class LanguageJavaCodeGenerator {
     }
   }
 
+  /**
+   * Constructs a LanguageJavaCodeGenerator with a specified destination directory.
+   *
+   * @param destinationDir the directory where the generated code will be stored; must not be null
+   * @throws NullPointerException if the destinationDir is null
+   */
   public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
   }
 
+  /**
+   * Generates code for the specified languages and package name.
+   *
+   * @param languages a list of languages for which the code will be generated; must not be null
+   * @param packageName the base package name under which the code will be generated; must not be
+   *     null
+   * @throws IOException if an I/O error occurs during code generation
+   */
   public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
       throws IOException {
+    Objects.requireNonNull(languages, "languages should not be null");
+    Objects.requireNonNull(packageName, "packageName should not be null");
+    if (languages.isEmpty()) {
+      return;
+    }
     LanguageContext languageContext = new LanguageContext(packageName, languages);
     languages.forEach(
         language -> {
@@ -64,6 +84,14 @@ public class LanguageJavaCodeGenerator {
         });
   }
 
+  /**
+   * Generates Java code files for a specified language and package name.
+   *
+   * @param language the language for which the code will be generated; must not be null
+   * @param packageName the base package name under which the code will be generated; must not be
+   *     null
+   * @throws IOException if an I/O error occurs during code generation
+   */
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
     generate(
         language,
@@ -72,18 +100,21 @@ public class LanguageJavaCodeGenerator {
   }
 
   private static String toLanguageClassName(Language language) {
+    Objects.requireNonNull(language, "language should not be null");
+    Objects.requireNonNull(language.getName(), "language.getName() should not be null");
     String s = capitalize(language.getName()) + "Language";
     s = s.replaceAll(" ", "");
     return s;
   }
 
-  public void generate(
+  private void generate(
       @Nonnull Language language,
       @Nonnull String packageName,
       @Nonnull LanguageContext languageContext)
       throws IOException {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(packageName, "packageName should not be null");
+    Objects.requireNonNull(languageContext, "languageContext should not be null");
     String className = toLanguageClassName(language);
 
     ClassName lwLanguageClass = ClassName.get(Language.class);
@@ -171,7 +202,7 @@ public class LanguageJavaCodeGenerator {
               if (concept.getExtendedConcept() != null) {
                 initMethod.addStatement(
                     "concept.setExtendedConcept($L)",
-                    toConceptExpr(language, concept.getExtendedConcept(), languageContext));
+                    toConceptExpr(concept.getExtendedConcept(), languageContext));
               }
               concept
                   .getImplemented()
@@ -179,7 +210,7 @@ public class LanguageJavaCodeGenerator {
                       implemented -> {
                         initMethod.addStatement(
                             "concept.addImplementedInterface($L)",
-                            toInterfaceExpr(language, implemented, languageContext));
+                            toInterfaceExpr(implemented, languageContext));
                       });
               concept
                   .getFeatures()
@@ -225,7 +256,7 @@ public class LanguageJavaCodeGenerator {
                       implemented -> {
                         initMethod.addStatement(
                             "interf.addExtendedInterface($L)",
-                            toInterfaceExpr(language, implemented, languageContext));
+                            toInterfaceExpr(implemented, languageContext));
                       });
               interf
                   .getFeatures()
@@ -269,8 +300,7 @@ public class LanguageJavaCodeGenerator {
               if (annotationDef.getExtendedAnnotation() != null) {
                 initMethod.addStatement(
                     "annotationDef.setExtendedAnnotation($L)",
-                    toAnnotationExpr(
-                        language, annotationDef.getExtendedAnnotation(), languageContext));
+                    toAnnotationExpr(annotationDef.getExtendedAnnotation(), languageContext));
               }
               annotationDef
                   .getImplemented()
@@ -278,7 +308,7 @@ public class LanguageJavaCodeGenerator {
                       interf -> {
                         initMethod.addStatement(
                             "annotationDef.addImplementedInterface($L)",
-                            toInterfaceExpr(language, interf, languageContext));
+                            toInterfaceExpr(interf, languageContext));
                       });
               annotationDef
                   .getFeatures()
@@ -331,7 +361,7 @@ public class LanguageJavaCodeGenerator {
     javaFile.writeTo(destinationDir.toPath());
   }
 
-  private static final List<String> KEYWORDS =
+  private static final List<String> JAVA_KEYWORDS =
       Arrays.asList(
           "abstract",
           "assert",
@@ -386,7 +416,7 @@ public class LanguageJavaCodeGenerator {
 
   private String toVariableName(String name) {
     String res = name.replaceAll("[^a-zA-Z0-9]", "_");
-    if (KEYWORDS.contains(res)) {
+    if (JAVA_KEYWORDS.contains(res)) {
       return "_" + res;
     } else {
       return res;
@@ -426,7 +456,7 @@ public class LanguageJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toClassifierExpr(language, ((Containment) feature).getType(), languageContext));
+          toClassifierExpr(((Containment) feature).getType(), languageContext));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
       initMethod.addStatement(
           "$L.setMultiple($L)", variableName, ((Containment) feature).isMultiple());
@@ -442,7 +472,7 @@ public class LanguageJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toClassifierExpr(language, ((Reference) feature).getType(), languageContext));
+          toClassifierExpr(((Reference) feature).getType(), languageContext));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
       initMethod.addStatement(
           "$L.setMultiple($L)", variableName, ((Reference) feature).isMultiple());
@@ -451,62 +481,43 @@ public class LanguageJavaCodeGenerator {
     }
   }
 
-  private static ClassName lionCore = ClassName.get(LionCore.class);
-  private static ClassName lionCoreBuiltins = ClassName.get(LionCoreBuiltins.class);
-  private static ClassName lionWebVersion = ClassName.get(LionWebVersion.class);
-  private static ClassName conceptClass = ClassName.get(Concept.class);
-  private static ClassName interfaceClass = ClassName.get(Interface.class);
-  private static ClassName primitiveType = ClassName.get(PrimitiveType.class);
+  private static final ClassName lionCore = ClassName.get(LionCore.class);
+  private static final ClassName lionCoreBuiltins = ClassName.get(LionCoreBuiltins.class);
+  private static final ClassName lionWebVersion = ClassName.get(LionWebVersion.class);
+  private static final ClassName conceptClass = ClassName.get(Concept.class);
+  private static final ClassName interfaceClass = ClassName.get(Interface.class);
+  private static final ClassName primitiveType = ClassName.get(PrimitiveType.class);
 
   private CodeBlock toDataTypeExpr(DataType<?> dataType, LanguageContext languageContext) {
     return CodeBlock.of(
         "$L.requireDataTypeByName($S)",
         languageContext.resolveLanguage(dataType.getLanguage()),
         dataType.getName());
-    //
-    //    if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2023_1))) {
-    //      return CodeBlock.of("$T.getString($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
-    //    } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2023_1))) {
-    //      return CodeBlock.of("$T.getInteger($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
-    //    } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2023_1))) {
-    //      return CodeBlock.of("$T.getBoolean($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
-    //    } else if (dataType.equals(LionCoreBuiltins.getString(LionWebVersion.v2024_1))) {
-    //      return CodeBlock.of("$T.getString($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
-    //    } else if (dataType.equals(LionCoreBuiltins.getInteger(LionWebVersion.v2024_1))) {
-    //      return CodeBlock.of("$T.getInteger($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
-    //    } else if (dataType.equals(LionCoreBuiltins.getBoolean(LionWebVersion.v2024_1))) {
-    //      return CodeBlock.of("$T.getBoolean($T.v2024_1)", lionCoreBuiltins, lionWebVersion);
-    //    } else {
-    //      throw new UnsupportedOperationException("Not yet implemented");
-    //    }
   }
 
   private CodeBlock toClassifierExpr(
-      Language language, Classifier<?> classifierType, LanguageContext languageContext) {
+      Classifier<?> classifierType, LanguageContext languageContext) {
     return CodeBlock.of(
         "$L.requireClassifierByName($L)",
         languageContext.resolveLanguage(classifierType.getLanguage()),
         classifierType.getName());
   }
 
-  private CodeBlock toConceptExpr(
-      Language language, Classifier<?> classifierType, LanguageContext languageContext) {
+  private CodeBlock toConceptExpr(Classifier<?> classifierType, LanguageContext languageContext) {
     return CodeBlock.of(
         "$L.requireConceptByName($L)",
         languageContext.resolveLanguage(classifierType.getLanguage()),
         classifierType.getName());
   }
 
-  private CodeBlock toAnnotationExpr(
-      Language language, Annotation annotation, LanguageContext languageContext) {
+  private CodeBlock toAnnotationExpr(Annotation annotation, LanguageContext languageContext) {
     return CodeBlock.of(
         "$L.requireAnnotationByName($L)",
         languageContext.resolveLanguage(annotation.getLanguage()),
         annotation.getName());
   }
 
-  private CodeBlock toInterfaceExpr(
-      Language language, Classifier<?> classifierType, LanguageContext languageContext) {
+  private CodeBlock toInterfaceExpr(Classifier<?> classifierType, LanguageContext languageContext) {
     return CodeBlock.of(
         "$L.requireInterfaceByName($L)",
         languageContext.resolveLanguage(classifierType.getLanguage()),
