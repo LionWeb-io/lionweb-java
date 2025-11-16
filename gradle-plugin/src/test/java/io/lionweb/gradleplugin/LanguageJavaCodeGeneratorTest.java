@@ -5,71 +5,105 @@ import io.lionweb.language.Language;
 import io.lionweb.language.LionCoreBuiltins;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.serialization.SerializationProvider;
-import org.junit.jupiter.api.Test;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.junit.jupiter.api.Test;
 
 public class LanguageJavaCodeGeneratorTest {
 
-    @Test
-    public void testLibraryGeneration() throws IOException {
-        Language library = SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
-                .loadLanguage(this.getClass().getResourceAsStream("/library-language.json"));
-        File destination = Files.createTempDirectory("gen").toFile();
-        LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
-        generator.generate(library, "my.pack");
+  @Test
+  public void testLibraryGeneration() throws IOException {
+    Language library =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1)
+            .loadLanguage(this.getClass().getResourceAsStream("/library-language.json"));
+    File destination = Files.createTempDirectory("gen").toFile();
+    LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
+    generator.generate(library, "my.pack");
 
-        Path javaFile = Files.walk(destination.toPath()).filter(f -> "my/pack/LibraryLanguage.java".equals(destination.toPath().relativize(f).toString())).findFirst().get();
-        String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
-        System.out.println(javaCode);
-    }
+    Path javaFile =
+        Files.walk(destination.toPath())
+            .filter(
+                f ->
+                    "my/pack/LibraryLanguage.java"
+                        .equals(destination.toPath().relativize(f).toString()))
+            .findFirst()
+            .get();
+    String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+    System.out.println(javaCode);
+  }
 
-    @Test
-    public void testLionCore2023Generation() throws IOException {
-        File destination = Files.createTempDirectory("gen").toFile();
-        LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
-        generator.generate(LionCore.getInstance(LionWebVersion.v2023_1), "my.pack");
+  @Test
+  public void testLionCore2023Generation() throws IOException {
+    File destination = Files.createTempDirectory("gen").toFile();
+    LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
+    generator.generate(LionCore.getInstance(LionWebVersion.v2023_1), "my.pack");
 
-        Path javaFile = Files.walk(destination.toPath()).filter(f -> "my/pack/LionCore_M3Language.java".equals(destination.toPath().relativize(f).toString())).findFirst().get();
-        String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
-        System.out.println(javaCode);
-    }
+    Path javaFile =
+        Files.walk(destination.toPath())
+            .filter(
+                f ->
+                    "my/pack/LionCore_M3Language.java"
+                        .equals(destination.toPath().relativize(f).toString()))
+            .findFirst()
+            .get();
+    String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+    System.out.println(javaCode);
+  }
 
-    @Test
-    public void testLionCore2024Generation() throws IOException {
-        File destination = Files.createTempDirectory("gen").toFile();
-        LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
-        generator.generate(LionCore.getInstance(LionWebVersion.v2024_1), "my.pack");
+  @Test
+  public void testLionCore2024Generation() throws IOException {
+    File destination = Files.createTempDirectory("gen").toFile();
+    LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
+    generator.generate(LionCore.getInstance(LionWebVersion.v2024_1), "my.pack");
 
-        Path javaFile = Files.walk(destination.toPath()).filter(f -> "my/pack/LionCore_M3Language.java".equals(destination.toPath().relativize(f).toString())).findFirst().get();
-        String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
-        System.out.println(javaCode);
-    }
+    Path javaFile =
+        Files.walk(destination.toPath())
+            .filter(
+                f ->
+                    "my/pack/LionCore_M3Language.java"
+                        .equals(destination.toPath().relativize(f).toString()))
+            .findFirst()
+            .get();
+    String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+    System.out.println(javaCode);
+  }
 
-    @Test
-    public void testLionCoreBuiltins2023Generation() throws IOException {
-        File destination = Files.createTempDirectory("gen").toFile();
-        LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
-        generator.generate(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1), "my.pack");
+  @Test
+  public void testLionCoreBuiltins2023Generation() throws IOException {
+    File destination = Files.createTempDirectory("gen").toFile();
+    LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
+    generator.generate(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1), "my.pack");
 
-        Path javaFile = Files.walk(destination.toPath()).filter(f -> "my/pack/LionCore_builtinsLanguage.java".equals(destination.toPath().relativize(f).toString())).findFirst().get();
-        String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
-        System.out.println(javaCode);
-    }
+    Path javaFile =
+        Files.walk(destination.toPath())
+            .filter(
+                f ->
+                    "my/pack/LionCore_builtinsLanguage.java"
+                        .equals(destination.toPath().relativize(f).toString()))
+            .findFirst()
+            .get();
+    String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+    System.out.println(javaCode);
+  }
 
-    @Test
-    public void testLionCoreBuiltins2024Generation() throws IOException {
-        File destination = Files.createTempDirectory("gen").toFile();
-        LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
-        generator.generate(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1), "my.pack");
+  @Test
+  public void testLionCoreBuiltins2024Generation() throws IOException {
+    File destination = Files.createTempDirectory("gen").toFile();
+    LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
+    generator.generate(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1), "my.pack");
 
-        Path javaFile = Files.walk(destination.toPath()).filter(f -> "my/pack/LionCore_builtinsLanguage.java".equals(destination.toPath().relativize(f).toString())).findFirst().get();
-        String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
-        System.out.println(javaCode);
-    }
-
+    Path javaFile =
+        Files.walk(destination.toPath())
+            .filter(
+                f ->
+                    "my/pack/LionCore_builtinsLanguage.java"
+                        .equals(destination.toPath().relativize(f).toString()))
+            .findFirst()
+            .get();
+    String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+    System.out.println(javaCode);
+  }
 }

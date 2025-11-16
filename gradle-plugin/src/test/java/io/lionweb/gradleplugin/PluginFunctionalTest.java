@@ -8,8 +8,6 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.stream.Stream;
-
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.GradleRunner;
 import org.junit.jupiter.api.BeforeEach;
@@ -32,41 +30,52 @@ public class PluginFunctionalTest {
   public void testGenerateLWLanguagesTask() throws IOException {
     writeFile(settingsFile, "rootProject.name = \"my-project-1\"");
     String buildFileContent =
-        "plugins {\n" +
-                "            id(\"io.lionweb\")\n" +
-                "        }\n"+
-            "lionweb { packageName.set(\"io.lionweb.test\") }";
+        "plugins {\n"
+            + "            id(\"io.lionweb\")\n"
+            + "        }\n"
+            + "lionweb { packageName.set(\"io.lionweb.test\") }";
     writeFile(buildFile, buildFileContent);
     File libraryLanguage = new File(testProjectDir, "src/main/lionweb/library.json");
     writeFile(libraryLanguage, readResource("/library-language.json"));
 
     BuildResult result =
-        GradleRunner.create().withProjectDir(testProjectDir).withPluginClasspath().withArguments("generateLWLanguages", "--info").build();
+        GradleRunner.create()
+            .withProjectDir(testProjectDir)
+            .withPluginClasspath()
+            .withArguments("generateLWLanguages", "--info")
+            .build();
 
     System.out.println(result.getOutput());
     assertTrue(result.getOutput().contains("LionWeb Language loaded: library"));
     assertEquals(SUCCESS, result.task(":generateLWLanguages").getOutcome());
 
-      Path javaFile = Files.walk(testProjectDir.toPath()).filter(f -> "build/generated-lionweb/io/lionweb/test/LibraryLanguage.java".equals(testProjectDir.toPath().relativize(f).toString())).findFirst().get();
-      String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
-      System.out.println(javaCode);
+    Path javaFile =
+        Files.walk(testProjectDir.toPath())
+            .filter(
+                f ->
+                    "build/generated-lionweb/io/lionweb/test/LibraryLanguage.java"
+                        .equals(testProjectDir.toPath().relativize(f).toString()))
+            .findFirst()
+            .get();
+    String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
+    System.out.println(javaCode);
   }
 
   private String readResource(String path) throws IOException {
-        String text;
-        try (InputStream in = getClass().getResourceAsStream(path)) {
-            if (in == null) {
-                throw new IllegalArgumentException("Resource not found");
-            }
-            text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-        }
-        return text;
+    String text;
+    try (InputStream in = getClass().getResourceAsStream(path)) {
+      if (in == null) {
+        throw new IllegalArgumentException("Resource not found");
+      }
+      text = new String(in.readAllBytes(), StandardCharsets.UTF_8);
     }
+    return text;
+  }
 
   private void writeFile(File destination, String content) throws IOException {
-      if (!destination.getParentFile().exists()) {
-          destination.getParentFile().mkdirs();
-      }
+    if (!destination.getParentFile().exists()) {
+      destination.getParentFile().mkdirs();
+    }
     BufferedWriter output = null;
     try {
       output = new BufferedWriter(new FileWriter(destination));
