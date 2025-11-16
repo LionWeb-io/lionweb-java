@@ -3,6 +3,8 @@ plugins {
     id("com.gradle.plugin-publish") version "1.2.0"
 }
 
+project.group = "io.lionweb"
+
 gradlePlugin {
     website.set("https://github.com/lionweb/lionweb-java")
     vcsUrl.set("https://github.com/lionweb/lionweb-java.git")
