@@ -65,7 +65,10 @@ public class LanguageJavaCodeGenerator {
   }
 
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
-    generate(language, packageName, new LanguageContext());
+    generate(
+        language,
+        packageName,
+        new LanguageContext(packageName, Collections.singletonList(language)));
   }
 
   private static String toLanguageClassName(Language language) {
