@@ -106,7 +106,17 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return element;
   }
 
-  public @Nullable Concept getConceptByName(String name) {
+  /**
+   * Finds and returns a {@link Concept} by its name from the list of elements in the current
+   * language.
+   *
+   * @param name the name of the desired {@link Concept}; may be null or empty, in which case null
+   *     is returned
+   * @return the {@link Concept} with the specified name if found, or null if no {@link Concept}
+   *     with that name exists
+   */
+  public @Nullable Concept getConceptByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     return getElements().stream()
         .filter(element -> element instanceof Concept)
         .map(element -> (Concept) element)
@@ -115,7 +125,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
-  public @Nullable Classifier<?> getClassifierByName(String name) {
+  /**
+   * Retrieves a {@link Classifier} object from the list of elements by its name.
+   *
+   * @param name the name of the desired {@link Classifier}; must not be null
+   * @return the {@link Classifier} with the specified name if found, or null if no {@link
+   *     Classifier} with that name exists
+   */
+  public @Nullable Classifier<?> getClassifierByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     return getElements().stream()
         .filter(element -> element instanceof Classifier<?>)
         .map(element -> (Classifier<?>) element)
@@ -142,7 +160,17 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-  public Classifier<?> requireClassifierByName(String name) {
+  /**
+   * Ensures the retrieval of a {@link Classifier} by its name. If no classifier with the specified
+   * name exists, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link Classifier}; must not be null
+   * @return the {@link Classifier} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no classifier with the specified name is found
+   */
+  public Classifier<?> requireClassifierByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     Classifier<?> classifier = getClassifierByName(name);
     if (classifier == null) {
       throw new IllegalArgumentException("Classifier named " + name + " was not found");
@@ -151,12 +179,60 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-  public Interface requireInterfaceByName(String name) {
+  /**
+   * Ensures the retrieval of an {@link Interface} by its name. If no interface with the specified
+   * name exists, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link Interface}; must not be null
+   * @return the {@link Interface} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no interface with the specified name is found
+   */
+  public Interface requireInterfaceByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     Interface interf = getInterfaceByName(name);
     if (interf == null) {
       throw new IllegalArgumentException("Interface named " + name + " was not found");
     } else {
       return interf;
+    }
+  }
+
+  /**
+   * Ensures the retrieval of an {@link Annotation} by its name. If no annotation with the specified
+   * name exists, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link Annotation}; must not be null
+   * @return the {@link Annotation} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no annotation with the specified name is found
+   */
+  public Annotation requireAnnotationByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
+    Annotation annotation = getAnnotationByName(name);
+    if (annotation == null) {
+      throw new IllegalArgumentException("Annotation named " + name + " was not found");
+    } else {
+      return annotation;
+    }
+  }
+
+  /**
+   * Ensures the retrieval of a {@link PrimitiveType} by its name. If no primitive type with the
+   * specified name exists, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link PrimitiveType}; must not be null
+   * @return the {@link PrimitiveType} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no
+   */
+  public PrimitiveType requirePrimitiveTypeByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
+    PrimitiveType primitiveType = getPrimitiveTypeByName(name);
+    if (primitiveType == null) {
+      throw new IllegalArgumentException("PrimitiveType named " + name + " was not found");
+    } else {
+      return primitiveType;
     }
   }
 
@@ -169,7 +245,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
-  public @Nullable Annotation getAnnotationByName(String name) {
+  /**
+   * Retrieves an {@link Annotation} object from the list of elements by its name.
+   *
+   * @param name the name of the desired {@link Annotation}; must not be null
+   * @return the {@link Annotation} with the specified name if found, or null if no {@link
+   *     Annotation} with that name exists
+   */
+  public @Nullable Annotation getAnnotationByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     return getElements().stream()
         .filter(element -> element instanceof Annotation)
         .map(element -> (Annotation) element)
@@ -199,6 +283,20 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
+  /**
+   * Retrieves a {@link PrimitiveType} by its name from the list of elements.
+   *
+   * <p>If an element with the specified name exists and is an instance of {@link PrimitiveType}, it
+   * is returned. Otherwise, a {@link RuntimeException} is thrown if the element exists but is not a
+   * {@link PrimitiveType}. If no element with the specified name exists, null is returned.
+   *
+   * @param name the name of the desired {@link PrimitiveType}; must not be null
+   * @return the {@link PrimitiveType} with the specified name if found and valid, or null if no
+   *     such element exists
+   * @throws NullPointerException if the name is null
+   * @throws RuntimeException if an element with the specified name exists but is not a {@link
+   *     PrimitiveType}
+   */
   public @Nullable PrimitiveType getPrimitiveTypeByName(@Nonnull String name) {
     Objects.requireNonNull(name);
     LanguageEntity<?> element = this.getElementByName(name);
