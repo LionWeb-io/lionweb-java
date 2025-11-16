@@ -1,11 +1,17 @@
 plugins {
     `java-gradle-plugin`
+    id("com.gradle.plugin-publish") version "1.2.0"
 }
 
 gradlePlugin {
+    website.set("https://github.com/lionweb/lionweb-java")
+    vcsUrl.set("https://github.com/lionweb/lionweb-java.git")
     plugins {
         create("lwGradlePlugin") {
             id = "io.lionweb"
+            displayName = "LionWeb Gradle Plugin"
+            description = "LionWeb Gradle Plugin"
+            tags.set(listOf("lionweb", "language engineering", "MDE"))
             implementationClass = "io.lionweb.gradleplugin.LionWebPlugin"
         }
     }
@@ -34,3 +40,4 @@ java {
     sourceCompatibility = JavaVersion.toVersion("17")
     targetCompatibility = JavaVersion.toVersion("17")
 }
+
