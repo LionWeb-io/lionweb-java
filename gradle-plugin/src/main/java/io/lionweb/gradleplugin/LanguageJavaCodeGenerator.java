@@ -283,7 +283,7 @@ public class LanguageJavaCodeGenerator {
             annotationDef -> {
               MethodSpec getter =
                   MethodSpec.methodBuilder("get" + capitalize(annotationDef.getName()))
-                      .returns(interfaceClass)
+                      .returns(annotationDefClass)
                       .addModifiers(Modifier.PUBLIC)
                       .addStatement(
                           "return this.requireAnnotationByName($S)", annotationDef.getName())
@@ -296,7 +296,7 @@ public class LanguageJavaCodeGenerator {
                       .returns(void.class)
                       .addStatement(
                           "$T annotationDef = this.requireAnnotationByName($S)",
-                          interfaceClass,
+                          annotationDefClass,
                           annotationDef.getName());
               if (annotationDef.getExtendedAnnotation() != null) {
                 initMethod.addStatement(
@@ -488,6 +488,7 @@ public class LanguageJavaCodeGenerator {
   private static final ClassName conceptClass = ClassName.get(Concept.class);
   private static final ClassName interfaceClass = ClassName.get(Interface.class);
   private static final ClassName primitiveType = ClassName.get(PrimitiveType.class);
+  private static final ClassName annotationDefClass = ClassName.get(Annotation.class);
 
   private CodeBlock toDataTypeExpr(DataType<?> dataType, LanguageContext languageContext) {
     return CodeBlock.of(
