@@ -324,7 +324,7 @@ public class LanguageJavaCodeGenerator {
 
               createElements.addStatement(
                   "new $T(this, $S, $S, $S);",
-                  interfaceClass,
+                  annotationDefClass,
                   annotationDef.getName(),
                   annotationDef.getID(),
                   annotationDef.getKey());
@@ -507,14 +507,14 @@ public class LanguageJavaCodeGenerator {
 
   private CodeBlock toConceptExpr(Classifier<?> classifierType, LanguageContext languageContext) {
     return CodeBlock.of(
-        "$L.requireConceptByName($L)",
+        "$L.requireConceptByName($S)",
         languageContext.resolveLanguage(classifierType.getLanguage()),
         classifierType.getName());
   }
 
   private CodeBlock toAnnotationExpr(Annotation annotation, LanguageContext languageContext) {
     return CodeBlock.of(
-        "$L.requireAnnotationByName($L)",
+        "$L.requireAnnotationByName($S)",
         languageContext.resolveLanguage(annotation.getLanguage()),
         annotation.getName());
   }
