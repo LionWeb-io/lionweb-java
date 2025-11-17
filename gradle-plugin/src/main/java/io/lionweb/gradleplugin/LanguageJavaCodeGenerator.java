@@ -102,7 +102,8 @@ public class LanguageJavaCodeGenerator {
   private static String toLanguageClassName(Language language) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(language.getName(), "language.getName() should not be null");
-    String s = capitalize(language.getName()) + "Language";
+    String[] parts = language.getName().split("\\.");
+    String s = capitalize(parts[parts.length - 1]) + "Language";
     s = s.replaceAll(" ", "");
     return s;
   }
@@ -498,7 +499,7 @@ public class LanguageJavaCodeGenerator {
   private CodeBlock toClassifierExpr(
       Classifier<?> classifierType, LanguageContext languageContext) {
     return CodeBlock.of(
-        "$L.requireClassifierByName($L)",
+        "$L.requireClassifierByName($S)",
         languageContext.resolveLanguage(classifierType.getLanguage()),
         classifierType.getName());
   }
@@ -519,7 +520,7 @@ public class LanguageJavaCodeGenerator {
 
   private CodeBlock toInterfaceExpr(Classifier<?> classifierType, LanguageContext languageContext) {
     return CodeBlock.of(
-        "$L.requireInterfaceByName($L)",
+        "$L.requireInterfaceByName($S)",
         languageContext.resolveLanguage(classifierType.getLanguage()),
         classifierType.getName());
   }
