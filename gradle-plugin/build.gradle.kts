@@ -6,13 +6,13 @@ plugins {
 project.group = "io.lionweb"
 
 gradlePlugin {
-    website.set("https://github.com/lionweb/lionweb-java")
-    vcsUrl.set("https://github.com/lionweb/lionweb-java.git")
+    website.set("https://github.com/LionWeb-io/LionWeb-java")
+    vcsUrl.set("https://github.com/LionWeb-io/lionweb-java.git")
     plugins {
         create("lwGradlePlugin") {
             id = "io.lionweb"
             displayName = "LionWeb Gradle Plugin"
-            description = "LionWeb Gradle Plugin"
+            description = "Generate Java classes for a given LionWeb Language definition"
             tags.set(listOf("lionweb", "language engineering", "MDE"))
             implementationClass = "io.lionweb.gradleplugin.LionWebPlugin"
         }
