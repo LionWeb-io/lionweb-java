@@ -110,7 +110,7 @@ public abstract class GenerateLanguageTask extends DefaultTask {
             .map(
                 chunk -> {
                   Language language =
-                      (Language) serialization.deserializeSerializationChunk(chunk).get(0);
+                      (Language) serialization.deserializeSerializationChunk(chunk).stream().filter(n -> n.getParent() == null).findFirst().get();
                   getLogger().info("LionWeb Language loaded: " + language.getName());
                   serialization.registerLanguage(language);
                   return language;
