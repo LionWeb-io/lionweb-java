@@ -4,11 +4,15 @@ import com.palantir.javapoet.*;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
+import org.gradle.internal.impldep.org.apache.commons.codec.language.bm.Lang;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.Enumeration;
+import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -28,6 +32,13 @@ public class LanguageJavaCodeGenerator {
       this.generatedLanguages = generatedLanguages;
     }
 
+    public Set<Language> ambiguousLanguages() {
+        Map<Language, String> languageToNames = new HashMap<>();
+        this.generatedLanguages.forEach(language -> languageToNames.put(language, toLanguageClassName(language, null).toLowerCase()));
+        Map<String, Long> nameCount = languageToNames.values().stream().collect(Collectors.groupingBy(name -> name, Collectors.counting()));
+        return generatedLanguages.stream().filter(language -> nameCount.get(languageToNames.get(language)) > 1).collect(Collectors.toSet());
+    }
+
     public CodeBlock resolveLanguage(Language language) {
       if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
         return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
@@ -40,7 +51,7 @@ public class LanguageJavaCodeGenerator {
       } else {
         if (generatedLanguages.contains(language)) {
           return CodeBlock.of(
-              "$T.getInstance()", ClassName.get(generationPackage, toLanguageClassName(language)));
+              "$T.getInstance()", ClassName.get(generationPackage, toLanguageClassName(language, this)));
         }
         throw new RuntimeException("Language not found: " + language.getName());
       }
@@ -99,12 +110,16 @@ public class LanguageJavaCodeGenerator {
         new LanguageContext(packageName, Collections.singletonList(language)));
   }
 
-  private static String toLanguageClassName(Language language) {
+  private static String toLanguageClassName(Language language, @Nullable LanguageContext languageContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(language.getName(), "language.getName() should not be null");
     String[] parts = language.getName().split("\\.");
     String s = capitalize(parts[parts.length - 1]) + "Language";
+      if (languageContext != null && languageContext.ambiguousLanguages().contains(language)) {
+          s = s + "V" + language.getVersion();
+      }
     s = s.replaceAll(" ", "");
+      s = s.replaceAll("\\.", "_");
     return s;
   }
 
@@ -116,7 +131,7 @@ public class LanguageJavaCodeGenerator {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(packageName, "packageName should not be null");
     Objects.requireNonNull(languageContext, "languageContext should not be null");
-    String className = toLanguageClassName(language);
+    String className = toLanguageClassName(language, languageContext);
 
     ClassName lwLanguageClass = ClassName.get(Language.class);
 
