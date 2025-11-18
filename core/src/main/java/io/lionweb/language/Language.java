@@ -236,15 +236,15 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-    public DataType<?> requireDataTypeByName(@Nonnull String name) {
-        Objects.requireNonNull(name, "name should not be null");
-        DataType<?> dataType = getDataTypeByName(name);
-        if (dataType == null) {
-            throw new IllegalArgumentException("DataType named " + name + " was not found");
-        } else {
-            return dataType;
-        }
+  public DataType<?> requireDataTypeByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
+    DataType<?> dataType = getDataTypeByName(name);
+    if (dataType == null) {
+      throw new IllegalArgumentException("DataType named " + name + " was not found");
+    } else {
+      return dataType;
     }
+  }
 
   public @Nullable Interface getInterfaceByName(String name) {
     return getElements().stream()
@@ -320,18 +320,18 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-    public @Nullable DataType<?> getDataTypeByName(@Nonnull String name) {
-        Objects.requireNonNull(name);
-        LanguageEntity<?> element = this.getElementByName(name);
-        if (element == null) {
-            return null;
-        }
-        if (element instanceof DataType) {
-            return (DataType) element;
-        } else {
-            throw new RuntimeException("Element " + name + " is not a DataType");
-        }
+  public @Nullable DataType<?> getDataTypeByName(@Nonnull String name) {
+    Objects.requireNonNull(name);
+    LanguageEntity<?> element = this.getElementByName(name);
+    if (element == null) {
+      return null;
     }
+    if (element instanceof DataType) {
+      return (DataType) element;
+    } else {
+      throw new RuntimeException("Element " + name + " is not a DataType");
+    }
+  }
 
   @Override
   public Concept getClassifier() {

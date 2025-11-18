@@ -1,5 +1,7 @@
 package io.lionweb.gradleplugin;
 
+import io.lionweb.gradleplugin.tasks.GenerateLanguageTask;
+import io.lionweb.gradleplugin.tasks.GenerateNodeClassesTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
@@ -57,6 +59,18 @@ public class LionWebPlugin implements Plugin<Project> {
               task.getGenerationDirectory().set(ext.getGenerationDirectory());
               task.setGroup("lionweb");
               task.setDescription("Generates LionWeb languages");
+            });
+    project
+        .getTasks()
+        .register(
+            "generateLWNodeClasses",
+            GenerateNodeClassesTask.class,
+            task -> {
+              task.getPackageName().set(ext.getPackageName());
+              task.getLanguagesDirectory().set(ext.getLanguagesDirectory());
+              task.getGenerationDirectory().set(ext.getGenerationDirectory());
+              task.setGroup("lionweb");
+              task.setDescription("Generates LionWeb node classes");
             });
   }
 }

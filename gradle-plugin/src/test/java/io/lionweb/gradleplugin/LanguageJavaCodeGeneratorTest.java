@@ -1,6 +1,7 @@
 package io.lionweb.gradleplugin;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.gradleplugin.generators.LanguageJavaCodeGenerator;
 import io.lionweb.language.Language;
 import io.lionweb.language.LionCoreBuiltins;
 import io.lionweb.lioncore.LionCore;
