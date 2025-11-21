@@ -32,7 +32,21 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @Nonnull String packageName,
       @Nonnull LanguageContext languageContext)
       throws IOException {
-    throw new UnsupportedOperationException("Not yet implemented");
+      Objects.requireNonNull(language, "language should not be null");
+      Objects.requireNonNull(packageName, "packageName should not be null");
+      Objects.requireNonNull(languageContext, "languageContext should not be null");
+      language.getConcepts().forEach(concept -> {
+          throw new UnsupportedOperationException();
+      });
+      language.getInterfaces().forEach(interf -> {
+          throw new UnsupportedOperationException();
+      });
+      language.getEnumerations().forEach(enumeration -> {
+          throw new UnsupportedOperationException();
+      });
+      language.getStructuredDataTypes().forEach(sdt -> {
+          throw new UnsupportedOperationException();
+      });
   }
 
   public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
