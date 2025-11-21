@@ -1,5 +1,8 @@
 package io.lionweb.gradleplugin.generators;
 
+import com.palantir.javapoet.*;
+import io.lionweb.language.Concept;
+import io.lionweb.language.Interface;
 import io.lionweb.language.Language;
 import java.io.File;
 import java.io.IOException;
@@ -7,7 +10,15 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.lang.model.element.Modifier;
+
+import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.HasSettableParent;
+import io.lionweb.model.Node;
+import io.lionweb.model.impl.AbstractNode;
+import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   /**
@@ -36,18 +47,119 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       Objects.requireNonNull(packageName, "packageName should not be null");
       Objects.requireNonNull(languageContext, "languageContext should not be null");
       language.getConcepts().forEach(concept -> {
-          throw new UnsupportedOperationException();
+          generateConcept(concept, packageName, languageContext);
       });
       language.getInterfaces().forEach(interf -> {
-          throw new UnsupportedOperationException();
-      });
-      language.getEnumerations().forEach(enumeration -> {
-          throw new UnsupportedOperationException();
+          generateInterface(interf, packageName, languageContext);
       });
       language.getStructuredDataTypes().forEach(sdt -> {
           throw new UnsupportedOperationException();
       });
   }
+
+  private void generateConcept(@Nonnull Concept concept, @Nonnull String packageName,
+                                @Nonnull LanguageContext languageContext) {
+      String className = concept.getName();
+
+      TypeName classifierInstanceOfUnknown = ParameterizedTypeName.get(
+              ClassName.get(ClassifierInstance.class),
+              WildcardTypeName.subtypeOf(Object.class)   // "?"
+      );
+
+      TypeSpec.Builder conceptClass =
+              TypeSpec.classBuilder(className)
+                      .superclass(ClassName.get(AbstractNode.class))
+                      .addSuperinterface(ClassName.get(HasSettableParent.class))
+                      .addModifiers(Modifier.PUBLIC);
+      conceptClass.addField(
+              FieldSpec.builder(ClassName.get(String.class), "id")
+                      .addAnnotation(NotNull.class)
+                      .addModifiers(Modifier.PRIVATE)
+                      .build()
+              );
+      conceptClass.addField(
+              FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(ClassifierInstance.class), WildcardTypeName.subtypeOf(Object.class)), "parent")
+                      .addAnnotation(Nullable.class)
+                      .addModifiers(Modifier.PRIVATE)
+                      .build()
+      );
+      conceptClass.addMethod(
+                      MethodSpec.constructorBuilder()
+                              .addParameter(
+                                      ParameterSpec.builder(ClassName.get(String.class), "id")
+                                              .addAnnotation(NotNull.class)
+                                              .build()
+                              )
+                              .addStatement("$T.requireNonNull(id, $S)", Objects.class,  "id must not be null")
+                              .addStatement("this.id = id")
+                              .addModifiers(Modifier.PUBLIC)
+                              .build()
+              );
+        conceptClass.addMethod(
+                      MethodSpec.methodBuilder("getID")
+                              .returns(TypeName.get(String.class))
+                              .addAnnotation(NotNull.class)
+                              .addModifiers(Modifier.PUBLIC)
+                              .addStatement("return this.id").build()
+              );
+        conceptClass.addMethod(
+                MethodSpec.methodBuilder("getParent")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(
+                                classifierInstanceOfUnknown
+                        )
+                        .addStatement("return this.parent")
+                        .build()
+        );
+        conceptClass.addMethod(
+                MethodSpec.methodBuilder("setParent")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(ClassName.get(ClassifierInstance.class))
+                        .addParameter(
+                                ParameterSpec.builder(
+                                                classifierInstanceOfUnknown,
+                                                "parent"
+                                        )
+                                        .addAnnotation(ClassName.get(Nullable.class))
+                                        .build()
+                        )
+                        .addStatement("this.parent = parent")
+                        .addStatement("return this")
+                        .build()
+        );
+        conceptClass.addMethod(
+                MethodSpec.methodBuilder("getClassifier")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PUBLIC)
+                        .returns(ClassName.get(Concept.class))
+                        .addStatement("return $L.getCodebase()",
+                                languageContext.resolveLanguage(concept.getLanguage()))
+                        .build()
+        );
+      JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
+      try {
+          javaFile.writeTo(destinationDir.toPath());
+      } catch (IOException e) {
+          throw new RuntimeException(e);
+      }
+  }
+
+    private void generateInterface(@Nonnull Interface interf, @Nonnull String packageName,
+                                   @Nonnull LanguageContext languageContext) {
+        String interfName = interf.getName();
+        TypeSpec.Builder conceptClass =
+                TypeSpec.interfaceBuilder(interfName)
+                        .addSuperinterface(ClassName.get(Node.class))
+                        .addModifiers(Modifier.PUBLIC);
+        JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
+        try {
+            javaFile.writeTo(destinationDir.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
   public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
       throws IOException {
