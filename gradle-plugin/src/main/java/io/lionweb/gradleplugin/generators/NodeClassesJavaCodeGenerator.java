@@ -3,6 +3,7 @@ package io.lionweb.gradleplugin.generators;
 import com.palantir.javapoet.*;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
+import io.lionweb.language.Enumeration;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.HasSettableParent;
 import io.lionweb.model.Node;
@@ -10,10 +11,7 @@ import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.AbstractNode;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
 import org.jetbrains.annotations.NotNull;
@@ -193,8 +191,11 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addParameter(ClassName.get(Property.class), "property")
             .addParameter(ClassName.get(Object.class), "value");
 
-    concept
-        .getFeatures()
+    List<Feature<?>> features = new LinkedList<>();
+    features.addAll(concept.getFeatures());
+    concept.getImplemented().forEach(i -> i.getFeatures().forEach(features::add));
+
+      features
         .forEach(
             feature -> {
               if (feature instanceof Property) {
@@ -234,6 +235,18 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                     .addStatement("$L = ($T) value", feature.getName(), fieldType)
                     .addStatement("return")
                     .endControlFlow();
+                MethodSpec getter = MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
+                        .returns(languageContext.typeFor(property.getType()))
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement("return $L", feature.getName())
+                        .build();
+                conceptClass.addMethod(getter);
+                  MethodSpec setter = MethodSpec.methodBuilder("set" + capitalize(feature.getName()))
+                          .addModifiers(Modifier.PUBLIC)
+                          .addParameter(ParameterSpec.builder(languageContext.typeFor(property.getType()), "value").build())
+                          .addStatement("this.$L = value", feature.getName())
+                          .build();
+                  conceptClass.addMethod(setter);
               } else if (feature instanceof Containment) {
                 // throw new UnsupportedOperationException("Containments are not yet implemented");
               } else if (feature instanceof Reference) {
