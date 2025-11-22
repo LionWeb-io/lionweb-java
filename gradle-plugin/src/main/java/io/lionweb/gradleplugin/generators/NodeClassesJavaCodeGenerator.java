@@ -64,7 +64,30 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             sdt -> {
               throw new UnsupportedOperationException();
             });
+    language.getEnumerations().forEach(enumeration -> {
+        generateEnumeration(enumeration, packageName, languageContext);
+    });
   }
+    private void generateEnumeration(
+            @Nonnull Enumeration enumeration,
+            @Nonnull String packageName,
+            @Nonnull LanguageContext languageContext) {
+        LionWebVersion lionWebVersion = enumeration.getLanguage().getLionWebVersion();
+        String className = languageContext.getGeneratedName(enumeration);
+
+        TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
+
+        enumeration.getLiterals().forEach(literal -> {
+            enumClass.addEnumConstant(literal.getName());
+        });
+
+        JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
+        try {
+            javaFile.writeTo(destinationDir.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
   private void generateConcept(
       @Nonnull Concept concept,
@@ -153,7 +176,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(ClassName.get(Concept.class))
             .addStatement(
-                "return $L.getCodebase()", languageContext.resolveLanguage(concept.getLanguage()))
+                "return $L.$L()", languageContext.resolveLanguage(concept.getLanguage()), "get" + languageContext.getGeneratedName(concept, false))
             .build());
     MethodSpec.Builder getPropertyValue =
         MethodSpec.methodBuilder("getPropertyValue")
