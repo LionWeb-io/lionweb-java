@@ -1,9 +1,9 @@
 package io.lionweb.gradleplugin.generators;
 
 import com.palantir.javapoet.*;
-import io.lionweb.language.Concept;
-import io.lionweb.language.Interface;
-import io.lionweb.language.Language;
+import io.lionweb.LionWebVersion;
+import io.lionweb.language.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -59,6 +59,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void generateConcept(@Nonnull Concept concept, @Nonnull String packageName,
                                 @Nonnull LanguageContext languageContext) {
+      LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
       String className = concept.getName();
 
       TypeName classifierInstanceOfUnknown = ParameterizedTypeName.get(
@@ -138,6 +139,27 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                                 languageContext.resolveLanguage(concept.getLanguage()))
                         .build()
         );
+        concept.getFeatures().forEach(feature -> {
+            if (feature instanceof Property) {
+                Property property = (Property) feature;
+                TypeName fieldType;
+                if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
+                    fieldType = ClassName.get(String.class);
+                } else if (property.getType().equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
+                    fieldType = ClassName.get(int.class);
+                } else {
+                    throw new UnsupportedOperationException("Unknown property type: " + property.getType());
+                }
+                conceptClass.addField(FieldSpec.builder(fieldType, feature.getName(), Modifier.PRIVATE)
+                        .build());
+            } else if (feature instanceof Containment) {
+                throw new UnsupportedOperationException("Containments are not yet implemented");
+            } else if (feature instanceof Reference) {
+                throw new UnsupportedOperationException("References are not yet implemented");
+            } else {
+                throw new IllegalStateException("Unknown feature type: " + feature.getClass());
+            }
+        });
       JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
       try {
           javaFile.writeTo(destinationDir.toPath());
