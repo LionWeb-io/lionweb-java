@@ -140,6 +140,21 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                                 languageContext.resolveLanguage(concept.getLanguage()))
                         .build()
         );
+      MethodSpec.Builder getPropertyValue =
+              MethodSpec.methodBuilder("getPropertyValue")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PUBLIC)
+                      .returns(Object.class)
+                      .addParameter(ClassName.get(Property.class), "property");
+
+      MethodSpec.Builder setPropertyValue =
+              MethodSpec.methodBuilder("setPropertyValue")
+                      .addAnnotation(Override.class)
+                      .addModifiers(Modifier.PUBLIC)
+                      .returns(void.class)
+                      .addParameter(ClassName.get(Property.class), "property")
+                      .addParameter(ClassName.get(Object.class), "value");
+
         concept.getFeatures().forEach(feature -> {
             if (feature instanceof Property) {
                 Property property = (Property) feature;
@@ -161,6 +176,21 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 }
                 conceptClass.addField(FieldSpec.builder(fieldType, feature.getName(), Modifier.PRIVATE)
                         .build());
+                getPropertyValue.beginControlFlow(
+                        "if ($T.equals(property.getID(), $S))",
+                        ClassName.get(Objects.class),
+                        property.getID()
+                )
+                        .addStatement("return $L", feature.getName())
+                        .endControlFlow();
+                setPropertyValue.beginControlFlow(
+                                "if ($T.equals(property.getID(), $S))",
+                                ClassName.get(Objects.class),
+                                property.getID()
+                        )
+                        .addStatement("$L = ($T) value", feature.getName(), fieldType)
+                        .addStatement("return")
+                        .endControlFlow();
             } else if (feature instanceof Containment) {
                 //throw new UnsupportedOperationException("Containments are not yet implemented");
             } else if (feature instanceof Reference) {
@@ -169,6 +199,16 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 throw new IllegalStateException("Unknown feature type: " + feature.getClass());
             }
         });
+        conceptClass.addMethod(getPropertyValue.addStatement(
+              "throw new $T($S + property + $S)",
+              IllegalStateException.class,
+              "Property ", " not found."
+      ).build());
+      conceptClass.addMethod(setPropertyValue.addStatement(
+              "throw new $T($S + property + $S)",
+              IllegalStateException.class,
+              "Property ", " not found."
+      ).build());
       JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
       try {
           javaFile.writeTo(destinationDir.toPath());
