@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
@@ -27,8 +28,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  public NodeClassesJavaCodeGenerator(@NotNull File destinationDir) {
-    super(destinationDir);
+  public NodeClassesJavaCodeGenerator(@NotNull File destinationDir, Map<String, String> primitiveTypes) {
+    super(destinationDir, primitiveTypes);
   }
 
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
@@ -143,19 +144,27 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             if (feature instanceof Property) {
                 Property property = (Property) feature;
                 TypeName fieldType;
-                if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
+                String mappedQName = this.primitiveTypeQName(property.getType().getID());
+                int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
+                String _packageName = index == -1 ? null : mappedQName.substring(0, index);
+                String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
+                if (mappedQName != null) {
+                    fieldType = ClassName.get(_packageName, _simpleName);
+                } else if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
                     fieldType = ClassName.get(String.class);
                 } else if (property.getType().equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
                     fieldType = ClassName.get(int.class);
+                } else if (property.getType() instanceof Enumeration) {
+                    fieldType = languageContext.getEnumerationTypeName((Enumeration)property.getType());
                 } else {
                     throw new UnsupportedOperationException("Unknown property type: " + property.getType());
                 }
                 conceptClass.addField(FieldSpec.builder(fieldType, feature.getName(), Modifier.PRIVATE)
                         .build());
             } else if (feature instanceof Containment) {
-                throw new UnsupportedOperationException("Containments are not yet implemented");
+                //throw new UnsupportedOperationException("Containments are not yet implemented");
             } else if (feature instanceof Reference) {
-                throw new UnsupportedOperationException("References are not yet implemented");
+                //throw new UnsupportedOperationException("References are not yet implemented");
             } else {
                 throw new IllegalStateException("Unknown feature type: " + feature.getClass());
             }

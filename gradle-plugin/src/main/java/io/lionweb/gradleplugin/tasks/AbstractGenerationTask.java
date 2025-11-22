@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputDirectory;
@@ -25,6 +26,9 @@ public abstract class AbstractGenerationTask extends DefaultTask {
 
   @Input
   public abstract Property<String> getPackageName();
+
+  @Input
+    public abstract MapProperty<String, String> getPrimitiveTypes();
 
   protected List<SerializationChunk> loadChunks(File languagesDirectory) throws IOException {
     try (Stream<Path> stream = Files.walk(languagesDirectory.toPath())) {
@@ -60,4 +64,6 @@ public abstract class AbstractGenerationTask extends DefaultTask {
       return chunks;
     }
   }
+
+
 }

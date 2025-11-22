@@ -2,8 +2,10 @@ package io.lionweb.gradleplugin.generators;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
+import com.palantir.javapoet.TypeName;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
+import io.lionweb.language.Enumeration;
 import io.lionweb.lioncore.LionCore;
 import java.io.File;
 import java.util.*;
@@ -55,7 +57,21 @@ public abstract class AbstractJavaCodeGenerator {
         throw new RuntimeException("Language not found: " + language.getName());
       }
     }
+
+      public TypeName getEnumerationTypeName(Enumeration enumeration) {
+        if (generatedLanguages.contains(enumeration.getLanguage())) {
+            String name = capitalize(enumeration.getName());
+            if (ambiguousLanguages().contains(enumeration.getLanguage())) {
+                name += "V" + enumeration.getLanguage().getVersion();
+            }
+            return ClassName.get(generationPackage, name);
+        } else {
+            throw new UnsupportedOperationException("Not yet implemented");
+        }
+      }
   }
+
+    protected  Map<String, String> primitiveTypes;
 
   /**
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
@@ -63,9 +79,10 @@ public abstract class AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  protected AbstractJavaCodeGenerator(@Nonnull File destinationDir) {
+  protected AbstractJavaCodeGenerator(@Nonnull File destinationDir, Map<String, String> primitiveTypes) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
+    this.primitiveTypes = primitiveTypes;
   }
 
   protected static final List<String> JAVA_KEYWORDS =
@@ -155,4 +172,8 @@ public abstract class AbstractJavaCodeGenerator {
   protected static String capitalize(String s) {
     return s.substring(0, 1).toUpperCase() + s.substring(1);
   }
+
+    protected String primitiveTypeQName(String primitiveTypeID) {
+        return primitiveTypes.getOrDefault(primitiveTypeID, null);
+    }
 }

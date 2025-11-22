@@ -69,6 +69,7 @@ public class LionWebPlugin implements Plugin<Project> {
               task.getPackageName().set(ext.getPackageName());
               task.getLanguagesDirectory().set(ext.getLanguagesDirectory());
               task.getGenerationDirectory().set(ext.getGenerationDirectory());
+              task.getPrimitiveTypes().set(ext.getPrimitiveTypes());
               task.setGroup("lionweb");
               task.setDescription("Generates LionWeb node classes");
             });

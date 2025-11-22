@@ -21,8 +21,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
-    super(destinationDir);
+  public LanguageJavaCodeGenerator(@Nonnull File destinationDir, Map<String, String> primitiveTypes) {
+    super(destinationDir, primitiveTypes);
   }
 
   /**
