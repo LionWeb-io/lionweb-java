@@ -26,6 +26,10 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     super(destinationDir, primitiveTypes);
   }
 
+  public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
+    super(destinationDir, Collections.emptyMap());
+  }
+
   /**
    * Generates code for the specified languages and package name.
    *
