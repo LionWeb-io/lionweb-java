@@ -379,6 +379,32 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         interf.getExtendedInterfaces().forEach(ii -> {
             interfClass.addSuperinterface(languageContext.getInterfaceType(ii));
         });
+
+        interf.getFeatures().forEach(feature -> {
+           if (feature instanceof Property) {
+               // Getter
+               interfClass.addMethod(
+                       MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
+                               .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                               .returns(languageContext.typeFor(((Property) feature).getType()))
+                               .build()
+               );
+               // Setter
+               interfClass.addMethod(
+                       MethodSpec.methodBuilder("set" + capitalize(feature.getName()))
+                               .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                               .addParameter(ParameterSpec.builder(languageContext.typeFor(((Property) feature).getType()), "value").build())
+                               .build()
+               );
+           } else if (feature instanceof Containment) {
+
+           } else if (feature instanceof Reference) {
+
+           } else {
+               throw new IllegalStateException("Unknown feature type: " + feature.getClass());
+           }
+        });
+
         JavaFile javaFile = JavaFile.builder(packageName, interfClass.build()).build();
         try {
             javaFile.writeTo(destinationDir.toPath());
@@ -404,4 +430,5 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           }
         });
   }
+
 }

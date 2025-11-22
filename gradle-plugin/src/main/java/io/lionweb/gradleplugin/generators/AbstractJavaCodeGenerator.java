@@ -103,6 +103,30 @@ public abstract class AbstractJavaCodeGenerator {
               throw new UnsupportedOperationException("Implemented interfaces are not yet implemented");
           }
       }
+
+      public TypeName typeFor(DataType<?> dataType) {
+          TypeName fieldType;
+          String mappedQName = this.primitiveTypeQName(dataType.getID());
+          int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
+          String _packageName = index == -1 ? null : mappedQName.substring(0, index);
+          String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
+          if (mappedQName != null) {
+              fieldType = ClassName.get(_packageName, _simpleName);
+          } else if (dataType.equals(LionCoreBuiltins.getString(dataType.getLionWebVersion()))) {
+              fieldType = ClassName.get(String.class);
+          } else if (dataType.equals(LionCoreBuiltins.getInteger(dataType.getLionWebVersion()))) {
+              fieldType = ClassName.get(int.class);
+          } else if (dataType instanceof Enumeration) {
+              fieldType = getEnumerationTypeName((Enumeration)dataType);
+          } else {
+              throw new UnsupportedOperationException("Unknown data type: " + dataType);
+          }
+          return fieldType;
+      }
+
+      protected String primitiveTypeQName(String primitiveTypeID) {
+          return primitiveTypes.getOrDefault(primitiveTypeID, null);
+      }
   }
 
     protected  Map<String, String> primitiveTypes;
