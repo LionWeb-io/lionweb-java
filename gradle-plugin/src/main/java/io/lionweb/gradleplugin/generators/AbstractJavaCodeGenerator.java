@@ -58,78 +58,78 @@ public abstract class AbstractJavaCodeGenerator {
       }
     }
 
-      public TypeName getEnumerationTypeName(Enumeration enumeration) {
-        if (generatedLanguages.contains(enumeration.getLanguage())) {
-            String name = capitalize(enumeration.getName());
-            if (ambiguousLanguages().contains(enumeration.getLanguage())) {
-                name += "V" + enumeration.getLanguage().getVersion();
-            }
-            return ClassName.get(generationPackage, name);
-        } else {
-            throw new UnsupportedOperationException("Not yet implemented");
+    public TypeName getEnumerationTypeName(Enumeration enumeration) {
+      if (generatedLanguages.contains(enumeration.getLanguage())) {
+        String name = capitalize(enumeration.getName());
+        if (ambiguousLanguages().contains(enumeration.getLanguage())) {
+          name += "V" + enumeration.getLanguage().getVersion();
         }
+        return ClassName.get(generationPackage, name);
+      } else {
+        throw new UnsupportedOperationException("Not yet implemented");
       }
+    }
 
-      public String getGeneratedName(Interface interf) {
-          if (generatedLanguages.contains(interf.getLanguage())) {
-              String interfName = capitalize(interf.getName());
-              if (ambiguousLanguages().contains(interf.getLanguage())) {
-                  interfName += "V" + interf.getLanguage().getVersion();
-              }
-              return interfName;
-          } else {
-              throw new IllegalArgumentException("Interface not found: " + interf.getName());
-          }
+    public String getGeneratedName(Interface interf) {
+      if (generatedLanguages.contains(interf.getLanguage())) {
+        String interfName = capitalize(interf.getName());
+        if (ambiguousLanguages().contains(interf.getLanguage())) {
+          interfName += "V" + interf.getLanguage().getVersion();
+        }
+        return interfName;
+      } else {
+        throw new IllegalArgumentException("Interface not found: " + interf.getName());
       }
+    }
 
-      public String getGeneratedName(Concept concept) {
-          if (generatedLanguages.contains(concept.getLanguage())) {
-              String interfName = capitalize(concept.getName());
-              if (ambiguousLanguages().contains(concept.getLanguage())) {
-                  interfName += "V" + concept.getLanguage().getVersion();
-              }
-              return interfName;
-          } else {
-              throw new IllegalArgumentException("Concept not found: " + concept.getName());
-          }
+    public String getGeneratedName(Concept concept) {
+      if (generatedLanguages.contains(concept.getLanguage())) {
+        String interfName = capitalize(concept.getName());
+        if (ambiguousLanguages().contains(concept.getLanguage())) {
+          interfName += "V" + concept.getLanguage().getVersion();
+        }
+        return interfName;
+      } else {
+        throw new IllegalArgumentException("Concept not found: " + concept.getName());
       }
+    }
 
-      public TypeName getInterfaceType(Interface interf) {
-          if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
-              return ClassName.get(INamed.class);
-          } else if (generatedLanguages.contains(interf.getLanguage())) {
-              return ClassName.get(generationPackage, getGeneratedName(interf));
-          } else {
-              throw new UnsupportedOperationException("Implemented interfaces are not yet implemented");
-          }
+    public TypeName getInterfaceType(Interface interf) {
+      if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
+        return ClassName.get(INamed.class);
+      } else if (generatedLanguages.contains(interf.getLanguage())) {
+        return ClassName.get(generationPackage, getGeneratedName(interf));
+      } else {
+        throw new UnsupportedOperationException("Implemented interfaces are not yet implemented");
       }
+    }
 
-      public TypeName typeFor(DataType<?> dataType) {
-          TypeName fieldType;
-          String mappedQName = this.primitiveTypeQName(dataType.getID());
-          int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
-          String _packageName = index == -1 ? null : mappedQName.substring(0, index);
-          String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
-          if (mappedQName != null) {
-              fieldType = ClassName.get(_packageName, _simpleName);
-          } else if (dataType.equals(LionCoreBuiltins.getString(dataType.getLionWebVersion()))) {
-              fieldType = ClassName.get(String.class);
-          } else if (dataType.equals(LionCoreBuiltins.getInteger(dataType.getLionWebVersion()))) {
-              fieldType = ClassName.get(int.class);
-          } else if (dataType instanceof Enumeration) {
-              fieldType = getEnumerationTypeName((Enumeration)dataType);
-          } else {
-              throw new UnsupportedOperationException("Unknown data type: " + dataType);
-          }
-          return fieldType;
+    public TypeName typeFor(DataType<?> dataType) {
+      TypeName fieldType;
+      String mappedQName = this.primitiveTypeQName(dataType.getID());
+      int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
+      String _packageName = index == -1 ? null : mappedQName.substring(0, index);
+      String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
+      if (mappedQName != null) {
+        fieldType = ClassName.get(_packageName, _simpleName);
+      } else if (dataType.equals(LionCoreBuiltins.getString(dataType.getLionWebVersion()))) {
+        fieldType = ClassName.get(String.class);
+      } else if (dataType.equals(LionCoreBuiltins.getInteger(dataType.getLionWebVersion()))) {
+        fieldType = ClassName.get(int.class);
+      } else if (dataType instanceof Enumeration) {
+        fieldType = getEnumerationTypeName((Enumeration) dataType);
+      } else {
+        throw new UnsupportedOperationException("Unknown data type: " + dataType);
       }
+      return fieldType;
+    }
 
-      protected String primitiveTypeQName(String primitiveTypeID) {
-          return primitiveTypes.getOrDefault(primitiveTypeID, null);
-      }
+    protected String primitiveTypeQName(String primitiveTypeID) {
+      return primitiveTypes.getOrDefault(primitiveTypeID, null);
+    }
   }
 
-    protected  Map<String, String> primitiveTypes;
+  protected Map<String, String> primitiveTypes;
 
   /**
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
@@ -137,7 +137,8 @@ public abstract class AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  protected AbstractJavaCodeGenerator(@Nonnull File destinationDir, Map<String, String> primitiveTypes) {
+  protected AbstractJavaCodeGenerator(
+      @Nonnull File destinationDir, Map<String, String> primitiveTypes) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
     this.primitiveTypes = primitiveTypes;
@@ -231,7 +232,7 @@ public abstract class AbstractJavaCodeGenerator {
     return s.substring(0, 1).toUpperCase() + s.substring(1);
   }
 
-    protected String primitiveTypeQName(String primitiveTypeID) {
-        return primitiveTypes.getOrDefault(primitiveTypeID, null);
-    }
+  protected String primitiveTypeQName(String primitiveTypeID) {
+    return primitiveTypes.getOrDefault(primitiveTypeID, null);
+  }
 }

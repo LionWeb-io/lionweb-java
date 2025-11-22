@@ -28,7 +28,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
   public abstract Property<String> getPackageName();
 
   @Input
-    public abstract MapProperty<String, String> getPrimitiveTypes();
+  public abstract MapProperty<String, String> getPrimitiveTypes();
 
   protected List<SerializationChunk> loadChunks(File languagesDirectory) throws IOException {
     try (Stream<Path> stream = Files.walk(languagesDirectory.toPath())) {
@@ -64,6 +64,4 @@ public abstract class AbstractGenerationTask extends DefaultTask {
       return chunks;
     }
   }
-
-
 }

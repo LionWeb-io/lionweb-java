@@ -386,10 +386,10 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .collect(Collectors.toList());
   }
 
-    public @Nonnull List<Enumeration> getEnumerations() {
-        return getElements().stream()
-                .filter(e -> e instanceof Enumeration)
-                .map(e -> (Enumeration) e)
-                .collect(Collectors.toList());
-    }
+  public @Nonnull List<Enumeration> getEnumerations() {
+    return getElements().stream()
+        .filter(e -> e instanceof Enumeration)
+        .map(e -> (Enumeration) e)
+        .collect(Collectors.toList());
+  }
 }
