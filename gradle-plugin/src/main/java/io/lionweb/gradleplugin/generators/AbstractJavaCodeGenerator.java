@@ -71,21 +71,45 @@ public abstract class AbstractJavaCodeGenerator {
     }
 
     public String getGeneratedName(Interface interf) {
-      if (generatedLanguages.contains(interf.getLanguage())) {
-        String interfName = capitalize(interf.getName());
-        if (ambiguousLanguages().contains(interf.getLanguage())) {
-          interfName += "V" + interf.getLanguage().getVersion();
-        }
-        return interfName;
-      } else {
-        throw new IllegalArgumentException("Interface not found: " + interf.getName());
-      }
+      return getGeneratedName(interf, true);
     }
 
-    public String getGeneratedName(Concept concept) {
+      public String getGeneratedName(Interface interf, boolean versionedIfNecessary) {
+          if (generatedLanguages.contains(interf.getLanguage())) {
+              String interfName = capitalize(interf.getName());
+              if (versionedIfNecessary && ambiguousLanguages().contains(interf.getLanguage())) {
+                  interfName += "V" + interf.getLanguage().getVersion();
+              }
+              return interfName;
+          } else {
+              throw new IllegalArgumentException("Interface not found: " + interf.getName());
+          }
+      }
+
+      public String getGeneratedName(Concept concept) {
+        return getGeneratedName(concept, true);
+      }
+
+      public String getGeneratedName(Enumeration enumeration) {
+          return getGeneratedName(enumeration, true);
+      }
+
+      public String getGeneratedName(Enumeration enumeration, boolean versionedIfNecessary) {
+          if (generatedLanguages.contains(enumeration.getLanguage())) {
+              String interfName = capitalize(enumeration.getName());
+              if (versionedIfNecessary && ambiguousLanguages().contains(enumeration.getLanguage())) {
+                  interfName += "V" + enumeration.getLanguage().getVersion();
+              }
+              return interfName;
+          } else {
+              throw new IllegalArgumentException("Enumeration not found: " + enumeration.getName());
+          }
+      }
+
+    public String getGeneratedName(Concept concept, boolean versionedIfNecessary) {
       if (generatedLanguages.contains(concept.getLanguage())) {
         String interfName = capitalize(concept.getName());
-        if (ambiguousLanguages().contains(concept.getLanguage())) {
+        if (versionedIfNecessary && ambiguousLanguages().contains(concept.getLanguage())) {
           interfName += "V" + concept.getLanguage().getVersion();
         }
         return interfName;
