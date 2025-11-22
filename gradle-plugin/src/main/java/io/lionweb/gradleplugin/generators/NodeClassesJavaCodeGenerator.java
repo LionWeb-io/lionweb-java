@@ -3,7 +3,11 @@ package io.lionweb.gradleplugin.generators;
 import com.palantir.javapoet.*;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
-
+import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.HasSettableParent;
+import io.lionweb.model.Node;
+import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.impl.AbstractNode;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -12,13 +16,6 @@ import java.util.Map;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
-
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.HasSettableParent;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
-import io.lionweb.model.impl.AbstractNode;
-import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,7 +26,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  public NodeClassesJavaCodeGenerator(@NotNull File destinationDir, Map<String, String> primitiveTypes) {
+  public NodeClassesJavaCodeGenerator(
+      @NotNull File destinationDir, Map<String, String> primitiveTypes) {
     super(destinationDir, primitiveTypes);
   }
 
@@ -45,132 +43,138 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @Nonnull String packageName,
       @Nonnull LanguageContext languageContext)
       throws IOException {
-      Objects.requireNonNull(language, "language should not be null");
-      Objects.requireNonNull(packageName, "packageName should not be null");
-      Objects.requireNonNull(languageContext, "languageContext should not be null");
-      language.getConcepts().forEach(concept -> {
-          generateConcept(concept, packageName, languageContext);
-      });
-      language.getInterfaces().forEach(interf -> {
-          generateInterface(interf, packageName, languageContext);
-      });
-      language.getStructuredDataTypes().forEach(sdt -> {
-          throw new UnsupportedOperationException();
-      });
+    Objects.requireNonNull(language, "language should not be null");
+    Objects.requireNonNull(packageName, "packageName should not be null");
+    Objects.requireNonNull(languageContext, "languageContext should not be null");
+    language
+        .getConcepts()
+        .forEach(
+            concept -> {
+              generateConcept(concept, packageName, languageContext);
+            });
+    language
+        .getInterfaces()
+        .forEach(
+            interf -> {
+              generateInterface(interf, packageName, languageContext);
+            });
+    language
+        .getStructuredDataTypes()
+        .forEach(
+            sdt -> {
+              throw new UnsupportedOperationException();
+            });
   }
 
-  private void generateConcept(@Nonnull Concept concept, @Nonnull String packageName,
-                                @Nonnull LanguageContext languageContext) {
-      LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
-      String className = languageContext.getGeneratedName(concept);
+  private void generateConcept(
+      @Nonnull Concept concept,
+      @Nonnull String packageName,
+      @Nonnull LanguageContext languageContext) {
+    LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
+    String className = languageContext.getGeneratedName(concept);
 
-      TypeName classifierInstanceOfUnknown = ParameterizedTypeName.get(
-              ClassName.get(ClassifierInstance.class),
-              WildcardTypeName.subtypeOf(Object.class)   // "?"
-      );
+    TypeName classifierInstanceOfUnknown =
+        ParameterizedTypeName.get(
+            ClassName.get(ClassifierInstance.class), WildcardTypeName.subtypeOf(Object.class) // "?"
+            );
 
-      TypeSpec.Builder conceptClass =
-              TypeSpec.classBuilder(className)
-                    .addModifiers(Modifier.PUBLIC);
+    TypeSpec.Builder conceptClass = TypeSpec.classBuilder(className).addModifiers(Modifier.PUBLIC);
 
-      if (concept.getExtendedConcept() == null) {
-          conceptClass.superclass(ClassName.get(AbstractNode.class))
-                  .addSuperinterface(ClassName.get(HasSettableParent.class));
-      } else {
-          throw new UnsupportedOperationException("Extended concepts are not yet implemented");
-      }
-      concept.getImplemented().forEach(ii -> {
-          conceptClass.addSuperinterface(languageContext.getInterfaceType(ii));
-      });
-      if (concept.isAbstract()) {
-          conceptClass.addModifiers(Modifier.ABSTRACT);
-      }
+    if (concept.getExtendedConcept() == null) {
+      conceptClass
+          .superclass(ClassName.get(AbstractNode.class))
+          .addSuperinterface(ClassName.get(HasSettableParent.class));
+    } else {
+      throw new UnsupportedOperationException("Extended concepts are not yet implemented");
+    }
+    concept
+        .getImplemented()
+        .forEach(
+            ii -> {
+              conceptClass.addSuperinterface(languageContext.getInterfaceType(ii));
+            });
+    if (concept.isAbstract()) {
+      conceptClass.addModifiers(Modifier.ABSTRACT);
+    }
 
+    conceptClass.addField(
+        FieldSpec.builder(ClassName.get(String.class), "id")
+            .addAnnotation(NotNull.class)
+            .addModifiers(Modifier.PRIVATE)
+            .build());
+    conceptClass.addField(
+        FieldSpec.builder(
+                ParameterizedTypeName.get(
+                    ClassName.get(ClassifierInstance.class),
+                    WildcardTypeName.subtypeOf(Object.class)),
+                "parent")
+            .addAnnotation(Nullable.class)
+            .addModifiers(Modifier.PRIVATE)
+            .build());
+    conceptClass.addMethod(
+        MethodSpec.constructorBuilder()
+            .addParameter(
+                ParameterSpec.builder(ClassName.get(String.class), "id")
+                    .addAnnotation(NotNull.class)
+                    .build())
+            .addStatement("$T.requireNonNull(id, $S)", Objects.class, "id must not be null")
+            .addStatement("this.id = id")
+            .addModifiers(Modifier.PUBLIC)
+            .build());
+    conceptClass.addMethod(
+        MethodSpec.methodBuilder("getID")
+            .returns(TypeName.get(String.class))
+            .addAnnotation(NotNull.class)
+            .addModifiers(Modifier.PUBLIC)
+            .addStatement("return this.id")
+            .build());
+    conceptClass.addMethod(
+        MethodSpec.methodBuilder("getParent")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(classifierInstanceOfUnknown)
+            .addStatement("return this.parent")
+            .build());
+    conceptClass.addMethod(
+        MethodSpec.methodBuilder("setParent")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(ClassName.get(ClassifierInstance.class))
+            .addParameter(
+                ParameterSpec.builder(classifierInstanceOfUnknown, "parent")
+                    .addAnnotation(ClassName.get(Nullable.class))
+                    .build())
+            .addStatement("this.parent = parent")
+            .addStatement("return this")
+            .build());
+    conceptClass.addMethod(
+        MethodSpec.methodBuilder("getClassifier")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(ClassName.get(Concept.class))
+            .addStatement(
+                "return $L.getCodebase()", languageContext.resolveLanguage(concept.getLanguage()))
+            .build());
+    MethodSpec.Builder getPropertyValue =
+        MethodSpec.methodBuilder("getPropertyValue")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(Object.class)
+            .addParameter(ClassName.get(Property.class), "property");
 
-      conceptClass.addField(
-              FieldSpec.builder(ClassName.get(String.class), "id")
-                      .addAnnotation(NotNull.class)
-                      .addModifiers(Modifier.PRIVATE)
-                      .build()
-              );
-      conceptClass.addField(
-              FieldSpec.builder(ParameterizedTypeName.get(ClassName.get(ClassifierInstance.class), WildcardTypeName.subtypeOf(Object.class)), "parent")
-                      .addAnnotation(Nullable.class)
-                      .addModifiers(Modifier.PRIVATE)
-                      .build()
-      );
-      conceptClass.addMethod(
-                      MethodSpec.constructorBuilder()
-                              .addParameter(
-                                      ParameterSpec.builder(ClassName.get(String.class), "id")
-                                              .addAnnotation(NotNull.class)
-                                              .build()
-                              )
-                              .addStatement("$T.requireNonNull(id, $S)", Objects.class,  "id must not be null")
-                              .addStatement("this.id = id")
-                              .addModifiers(Modifier.PUBLIC)
-                              .build()
-              );
-        conceptClass.addMethod(
-                      MethodSpec.methodBuilder("getID")
-                              .returns(TypeName.get(String.class))
-                              .addAnnotation(NotNull.class)
-                              .addModifiers(Modifier.PUBLIC)
-                              .addStatement("return this.id").build()
-              );
-        conceptClass.addMethod(
-                MethodSpec.methodBuilder("getParent")
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(
-                                classifierInstanceOfUnknown
-                        )
-                        .addStatement("return this.parent")
-                        .build()
-        );
-        conceptClass.addMethod(
-                MethodSpec.methodBuilder("setParent")
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(ClassName.get(ClassifierInstance.class))
-                        .addParameter(
-                                ParameterSpec.builder(
-                                                classifierInstanceOfUnknown,
-                                                "parent"
-                                        )
-                                        .addAnnotation(ClassName.get(Nullable.class))
-                                        .build()
-                        )
-                        .addStatement("this.parent = parent")
-                        .addStatement("return this")
-                        .build()
-        );
-        conceptClass.addMethod(
-                MethodSpec.methodBuilder("getClassifier")
-                        .addAnnotation(Override.class)
-                        .addModifiers(Modifier.PUBLIC)
-                        .returns(ClassName.get(Concept.class))
-                        .addStatement("return $L.getCodebase()",
-                                languageContext.resolveLanguage(concept.getLanguage()))
-                        .build()
-        );
-      MethodSpec.Builder getPropertyValue =
-              MethodSpec.methodBuilder("getPropertyValue")
-                      .addAnnotation(Override.class)
-                      .addModifiers(Modifier.PUBLIC)
-                      .returns(Object.class)
-                      .addParameter(ClassName.get(Property.class), "property");
+    MethodSpec.Builder setPropertyValue =
+        MethodSpec.methodBuilder("setPropertyValue")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(ClassName.get(Property.class), "property")
+            .addParameter(ClassName.get(Object.class), "value");
 
-      MethodSpec.Builder setPropertyValue =
-              MethodSpec.methodBuilder("setPropertyValue")
-                      .addAnnotation(Override.class)
-                      .addModifiers(Modifier.PUBLIC)
-                      .returns(void.class)
-                      .addParameter(ClassName.get(Property.class), "property")
-                      .addParameter(ClassName.get(Object.class), "value");
-
-        concept.getFeatures().forEach(feature -> {
-            if (feature instanceof Property) {
+    concept
+        .getFeatures()
+        .forEach(
+            feature -> {
+              if (feature instanceof Property) {
                 Property property = (Property) feature;
                 TypeName fieldType;
                 String mappedQName = this.primitiveTypeQName(property.getType().getID());
@@ -178,240 +182,263 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 String _packageName = index == -1 ? null : mappedQName.substring(0, index);
                 String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
                 if (mappedQName != null) {
-                    fieldType = ClassName.get(_packageName, _simpleName);
+                  fieldType = ClassName.get(_packageName, _simpleName);
                 } else if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
-                    fieldType = ClassName.get(String.class);
+                  fieldType = ClassName.get(String.class);
                 } else if (property.getType().equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
-                    fieldType = ClassName.get(int.class);
+                  fieldType = ClassName.get(int.class);
                 } else if (property.getType() instanceof Enumeration) {
-                    fieldType = languageContext.getEnumerationTypeName((Enumeration)property.getType());
+                  fieldType =
+                      languageContext.getEnumerationTypeName((Enumeration) property.getType());
                 } else {
-                    throw new UnsupportedOperationException("Unknown property type: " + property.getType());
+                  throw new UnsupportedOperationException(
+                      "Unknown property type: " + property.getType());
                 }
-                conceptClass.addField(FieldSpec.builder(fieldType, feature.getName(), Modifier.PRIVATE)
-                        .build());
-                getPropertyValue.beginControlFlow(
+                conceptClass.addField(
+                    FieldSpec.builder(fieldType, feature.getName(), Modifier.PRIVATE).build());
+                getPropertyValue
+                    .beginControlFlow(
                         "if ($T.equals(property.getID(), $S))",
                         ClassName.get(Objects.class),
-                        property.getID()
-                )
-                        .addStatement("return $L", feature.getName())
-                        .endControlFlow();
-                setPropertyValue.beginControlFlow(
-                                "if ($T.equals(property.getID(), $S))",
-                                ClassName.get(Objects.class),
-                                property.getID()
-                        )
-                        .addStatement("$L = ($T) value", feature.getName(), fieldType)
-                        .addStatement("return")
-                        .endControlFlow();
-            } else if (feature instanceof Containment) {
-                //throw new UnsupportedOperationException("Containments are not yet implemented");
-            } else if (feature instanceof Reference) {
-                //throw new UnsupportedOperationException("References are not yet implemented");
-            } else {
+                        property.getID())
+                    .addStatement("return $L", feature.getName())
+                    .endControlFlow();
+                setPropertyValue
+                    .beginControlFlow(
+                        "if ($T.equals(property.getID(), $S))",
+                        ClassName.get(Objects.class),
+                        property.getID())
+                    .addStatement("$L = ($T) value", feature.getName(), fieldType)
+                    .addStatement("return")
+                    .endControlFlow();
+              } else if (feature instanceof Containment) {
+                // throw new UnsupportedOperationException("Containments are not yet implemented");
+              } else if (feature instanceof Reference) {
+                // throw new UnsupportedOperationException("References are not yet implemented");
+              } else {
                 throw new IllegalStateException("Unknown feature type: " + feature.getClass());
-            }
-        });
-        conceptClass.addMethod(getPropertyValue.addStatement(
-              "throw new $T($S + property + $S)",
-              IllegalStateException.class,
-              "Property ", " not found."
-      ).build());
-      conceptClass.addMethod(setPropertyValue.addStatement(
-              "throw new $T($S + property + $S)",
-              IllegalStateException.class,
-              "Property ", " not found."
-      ).build());
+              }
+            });
+    conceptClass.addMethod(
+        getPropertyValue
+            .addStatement(
+                "throw new $T($S + property + $S)",
+                IllegalStateException.class,
+                "Property ",
+                " not found.")
+            .build());
+    conceptClass.addMethod(
+        setPropertyValue
+            .addStatement(
+                "throw new $T($S + property + $S)",
+                IllegalStateException.class,
+                "Property ",
+                " not found.")
+            .build());
 
-      ClassName CONTAINMENT = ClassName.get(Containment.class);
-      ClassName NODE = ClassName.get(Node.class);
-      ClassName REFERENCE = ClassName.get(Reference.class);
-      ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
+    ClassName CONTAINMENT = ClassName.get(Containment.class);
+    ClassName NODE = ClassName.get(Node.class);
+    ClassName REFERENCE = ClassName.get(Reference.class);
+    ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
 
-// List<? extends Node>
-      TypeName LIST_OF_WILDCARD_NODE = ParameterizedTypeName.get(
-              ClassName.get(List.class),
-              WildcardTypeName.subtypeOf(NODE)
-      );
+    // List<? extends Node>
+    TypeName LIST_OF_WILDCARD_NODE =
+        ParameterizedTypeName.get(ClassName.get(List.class), WildcardTypeName.subtypeOf(NODE));
 
-// List<? extends ReferenceValue>
-      TypeName LIST_OF_WILDCARD_REF_VALUE = ParameterizedTypeName.get(
-              ClassName.get(List.class),
-              WildcardTypeName.subtypeOf(REFERENCE_VALUE)
-      );
+    // List<? extends ReferenceValue>
+    TypeName LIST_OF_WILDCARD_REF_VALUE =
+        ParameterizedTypeName.get(
+            ClassName.get(List.class), WildcardTypeName.subtypeOf(REFERENCE_VALUE));
 
-// Common body for all methods
-      CodeBlock unsupportedOpBody = CodeBlock.builder()
-              .addStatement("throw new $T($S)",
-                      UnsupportedOperationException.class,
-                      "Not supported yet.")
-              .build();
+    // Common body for all methods
+    CodeBlock unsupportedOpBody =
+        CodeBlock.builder()
+            .addStatement(
+                "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+            .build();
 
     // @Override
     // public List<? extends Node> getChildren(Containment containment) { ... }
-      MethodSpec getChildren = MethodSpec.methodBuilder("getChildren")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(LIST_OF_WILDCARD_NODE)
-              .addParameter(CONTAINMENT, "containment")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(getChildren);
+    MethodSpec getChildren =
+        MethodSpec.methodBuilder("getChildren")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(LIST_OF_WILDCARD_NODE)
+            .addParameter(CONTAINMENT, "containment")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(getChildren);
 
     // @Override
     // public void addChild(Containment containment, Node child) { ... }
-      MethodSpec addChild1 = MethodSpec.methodBuilder("addChild")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(CONTAINMENT, "containment")
-              .addParameter(NODE, "child")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addChild1);
+    MethodSpec addChild1 =
+        MethodSpec.methodBuilder("addChild")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(CONTAINMENT, "containment")
+            .addParameter(NODE, "child")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(addChild1);
 
-// @Override
-// public void addChild(Containment containment, Node child, int index) { ... }
-      MethodSpec addChild2 = MethodSpec.methodBuilder("addChild")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(CONTAINMENT, "containment")
-              .addParameter(NODE, "child")
-              .addParameter(int.class, "index")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addChild2);
+    // @Override
+    // public void addChild(Containment containment, Node child, int index) { ... }
+    MethodSpec addChild2 =
+        MethodSpec.methodBuilder("addChild")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(CONTAINMENT, "containment")
+            .addParameter(NODE, "child")
+            .addParameter(int.class, "index")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(addChild2);
 
     // @Override
     // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
-      MethodSpec getReferenceValues = MethodSpec.methodBuilder("getReferenceValues")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(ParameterizedTypeName.get(
-                      ClassName.get(List.class),
-                      REFERENCE_VALUE
-              ))
-              .addParameter(REFERENCE, "reference")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(getReferenceValues);
+    MethodSpec getReferenceValues =
+        MethodSpec.methodBuilder("getReferenceValues")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(ParameterizedTypeName.get(ClassName.get(List.class), REFERENCE_VALUE))
+            .addParameter(REFERENCE, "reference")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(getReferenceValues);
 
     // @Override
     // public int addReferenceValue(Reference reference, ReferenceValue referredNode) { ... }
-      MethodSpec addReferenceValue1 = MethodSpec.methodBuilder("addReferenceValue")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(int.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(REFERENCE_VALUE, "referredNode")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addReferenceValue1);
+    MethodSpec addReferenceValue1 =
+        MethodSpec.methodBuilder("addReferenceValue")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(int.class)
+            .addParameter(REFERENCE, "reference")
+            .addParameter(REFERENCE_VALUE, "referredNode")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(addReferenceValue1);
 
     // @Override
-    // public int addReferenceValue(Reference reference, int index, ReferenceValue referredNode) { ... }
-      MethodSpec addReferenceValue2 = MethodSpec.methodBuilder("addReferenceValue")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(int.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(int.class, "index")
-              .addParameter(REFERENCE_VALUE, "referredNode")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addReferenceValue2);
+    // public int addReferenceValue(Reference reference, int index, ReferenceValue referredNode) {
+    // ... }
+    MethodSpec addReferenceValue2 =
+        MethodSpec.methodBuilder("addReferenceValue")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(int.class)
+            .addParameter(REFERENCE, "reference")
+            .addParameter(int.class, "index")
+            .addParameter(REFERENCE_VALUE, "referredNode")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(addReferenceValue2);
 
     // @Override
-    // public void setReferenceValues(Reference reference, List<? extends ReferenceValue> values) { ... }
-      MethodSpec setReferenceValues = MethodSpec.methodBuilder("setReferenceValues")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(LIST_OF_WILDCARD_REF_VALUE, "values")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(setReferenceValues);
+    // public void setReferenceValues(Reference reference, List<? extends ReferenceValue> values) {
+    // ... }
+    MethodSpec setReferenceValues =
+        MethodSpec.methodBuilder("setReferenceValues")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(REFERENCE, "reference")
+            .addParameter(LIST_OF_WILDCARD_REF_VALUE, "values")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(setReferenceValues);
 
     // @Override
     // public void setReferred(Reference reference, int index, Node referredNode) { ... }
-      MethodSpec setReferred = MethodSpec.methodBuilder("setReferred")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(int.class, "index")
-              .addParameter(NODE, "referredNode")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(setReferred);
+    MethodSpec setReferred =
+        MethodSpec.methodBuilder("setReferred")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(REFERENCE, "reference")
+            .addParameter(int.class, "index")
+            .addParameter(NODE, "referredNode")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(setReferred);
 
-        // @Override
-        // public void setResolveInfo(Reference reference, int index, String resolveInfo) { ... }
-      MethodSpec setResolveInfo = MethodSpec.methodBuilder("setResolveInfo")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(int.class, "index")
-              .addParameter(String.class, "resolveInfo")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(setResolveInfo);
+    // @Override
+    // public void setResolveInfo(Reference reference, int index, String resolveInfo) { ... }
+    MethodSpec setResolveInfo =
+        MethodSpec.methodBuilder("setResolveInfo")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(REFERENCE, "reference")
+            .addParameter(int.class, "index")
+            .addParameter(String.class, "resolveInfo")
+            .addCode(unsupportedOpBody)
+            .build();
+    conceptClass.addMethod(setResolveInfo);
 
-      JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
-      try {
-          javaFile.writeTo(destinationDir.toPath());
-      } catch (IOException e) {
-          throw new RuntimeException(e);
-      }
+    JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
+    try {
+      javaFile.writeTo(destinationDir.toPath());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
+    }
   }
 
-    private void generateInterface(@Nonnull Interface interf, @Nonnull String packageName,
-                                   @Nonnull LanguageContext languageContext) {
-        String interfName =languageContext.getGeneratedName(interf);
-        TypeSpec.Builder interfClass =
-                TypeSpec.interfaceBuilder(interfName)
-                        .addSuperinterface(ClassName.get(Node.class))
-                        .addModifiers(Modifier.PUBLIC);
-        interf.getExtendedInterfaces().forEach(ii -> {
-            interfClass.addSuperinterface(languageContext.getInterfaceType(ii));
-        });
+  private void generateInterface(
+      @Nonnull Interface interf,
+      @Nonnull String packageName,
+      @Nonnull LanguageContext languageContext) {
+    String interfName = languageContext.getGeneratedName(interf);
+    TypeSpec.Builder interfClass =
+        TypeSpec.interfaceBuilder(interfName)
+            .addSuperinterface(ClassName.get(Node.class))
+            .addModifiers(Modifier.PUBLIC);
+    interf
+        .getExtendedInterfaces()
+        .forEach(
+            ii -> {
+              interfClass.addSuperinterface(languageContext.getInterfaceType(ii));
+            });
 
-        interf.getFeatures().forEach(feature -> {
-           if (feature instanceof Property) {
-               // Getter
-               interfClass.addMethod(
-                       MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
-                               .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                               .returns(languageContext.typeFor(((Property) feature).getType()))
-                               .build()
-               );
-               // Setter
-               interfClass.addMethod(
-                       MethodSpec.methodBuilder("set" + capitalize(feature.getName()))
-                               .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                               .addParameter(ParameterSpec.builder(languageContext.typeFor(((Property) feature).getType()), "value").build())
-                               .build()
-               );
-           } else if (feature instanceof Containment) {
+    interf
+        .getFeatures()
+        .forEach(
+            feature -> {
+              if (feature instanceof Property) {
+                // Getter
+                interfClass.addMethod(
+                    MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
+                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                        .returns(languageContext.typeFor(((Property) feature).getType()))
+                        .build());
+                // Setter
+                interfClass.addMethod(
+                    MethodSpec.methodBuilder("set" + capitalize(feature.getName()))
+                        .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                        .addParameter(
+                            ParameterSpec.builder(
+                                    languageContext.typeFor(((Property) feature).getType()),
+                                    "value")
+                                .build())
+                        .build());
+              } else if (feature instanceof Containment) {
 
-           } else if (feature instanceof Reference) {
+              } else if (feature instanceof Reference) {
 
-           } else {
-               throw new IllegalStateException("Unknown feature type: " + feature.getClass());
-           }
-        });
+              } else {
+                throw new IllegalStateException("Unknown feature type: " + feature.getClass());
+              }
+            });
 
-        JavaFile javaFile = JavaFile.builder(packageName, interfClass.build()).build();
-        try {
-            javaFile.writeTo(destinationDir.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    JavaFile javaFile = JavaFile.builder(packageName, interfClass.build()).build();
+    try {
+      javaFile.writeTo(destinationDir.toPath());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
   public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
       throws IOException {
@@ -430,5 +457,4 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           }
         });
   }
-
 }
