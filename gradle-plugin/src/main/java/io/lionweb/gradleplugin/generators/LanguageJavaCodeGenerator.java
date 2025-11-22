@@ -22,12 +22,12 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @throws NullPointerException if the destinationDir is null
    */
   public LanguageJavaCodeGenerator(
-      @Nonnull File destinationDir, Map<String, String> primitiveTypes) {
-    super(destinationDir, primitiveTypes);
+      @Nonnull File destinationDir, Map<String, String> primitiveTypes, Map<String, String> specificPackages) {
+    super(destinationDir, primitiveTypes, specificPackages);
   }
 
-  public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
-    super(destinationDir, Collections.emptyMap());
+  public LanguageJavaCodeGenerator(@Nonnull File destinationDir, Map<String, String> specificPackages) {
+    super(destinationDir, Collections.emptyMap(), specificPackages);
   }
 
   /**
@@ -45,7 +45,12 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     if (languages.isEmpty()) {
       return;
     }
-    LanguageContext languageContext = new LanguageContext(packageName, languages);
+    Map<Language, String> languageSpecificPackages = new HashMap<>();
+    specificPackages.entrySet().forEach(entry ->{
+       Language language = languages.stream().filter(l -> l.getID().equals(entry.getKey())).findFirst().get();
+       languageSpecificPackages.put(language, entry.getValue());
+    });
+    LanguageContext languageContext = new LanguageContext(packageName, languages, languageSpecificPackages);
     languages.forEach(
         language -> {
           try {
@@ -65,10 +70,16 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @throws IOException if an I/O error occurs during code generation
    */
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
+      Map<Language, String> languageSpecificPackages = new HashMap<>();
+      specificPackages.entrySet().forEach(entry ->{
+          if (entry.getKey().equals(language.getID())) {
+              languageSpecificPackages.put(language, entry.getValue());
+          }
+      });
     generate(
         language,
         packageName,
-        new LanguageContext(packageName, Collections.singletonList(language)));
+        new LanguageContext(packageName, Collections.singletonList(language), languageSpecificPackages));
   }
 
   private void generate(

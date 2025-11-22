@@ -20,10 +20,12 @@ public abstract class AbstractJavaCodeGenerator {
   protected class LanguageContext {
     public String generationPackage;
     public List<Language> generatedLanguages;
+    public Map<Language, String> specificPackages = new HashMap<>();
 
-    public LanguageContext(String generationPackage, List<Language> generatedLanguages) {
+    public LanguageContext(String generationPackage, List<Language> generatedLanguages, Map<Language, String> specificPackages) {
       this.generationPackage = generationPackage;
       this.generatedLanguages = generatedLanguages;
+      this.specificPackages = specificPackages;
     }
 
     public Set<Language> ambiguousLanguages() {
@@ -154,6 +156,7 @@ public abstract class AbstractJavaCodeGenerator {
   }
 
   protected Map<String, String> primitiveTypes;
+    protected Map<String, String> specificPackages;
 
   /**
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
@@ -162,10 +165,11 @@ public abstract class AbstractJavaCodeGenerator {
    * @throws NullPointerException if the destinationDir is null
    */
   protected AbstractJavaCodeGenerator(
-      @Nonnull File destinationDir, Map<String, String> primitiveTypes) {
+      @Nonnull File destinationDir, Map<String, String> primitiveTypes, Map<String, String> specificPackages) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
     this.primitiveTypes = primitiveTypes;
+    this.specificPackages = specificPackages;
   }
 
   protected static final List<String> JAVA_KEYWORDS =

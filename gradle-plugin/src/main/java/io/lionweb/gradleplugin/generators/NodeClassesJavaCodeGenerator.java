@@ -25,15 +25,21 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @throws NullPointerException if the destinationDir is null
    */
   public NodeClassesJavaCodeGenerator(
-      @NotNull File destinationDir, Map<String, String> primitiveTypes) {
-    super(destinationDir, primitiveTypes);
+      @NotNull File destinationDir, Map<String, String> primitiveTypes, Map<String, String> specificPackages) {
+    super(destinationDir, primitiveTypes, specificPackages);
   }
 
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
+      Map<Language, String> languageSpecificPackages = new HashMap<>();
+      specificPackages.entrySet().forEach(entry ->{
+          if (entry.getKey().equals(language.getID())) {
+              languageSpecificPackages.put(language, entry.getValue());
+          }
+      });
     generate(
         language,
         packageName,
-        new LanguageContext(packageName, Collections.singletonList(language)));
+        new LanguageContext(packageName, Collections.singletonList(language), languageSpecificPackages));
   }
 
   private void generate(
@@ -483,7 +489,12 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     if (languages.isEmpty()) {
       return;
     }
-    LanguageContext languageContext = new LanguageContext(packageName, languages);
+      Map<Language, String> languageSpecificPackages = new HashMap<>();
+      specificPackages.entrySet().forEach(entry ->{
+          Language language = languages.stream().filter(l -> l.getID().equals(entry.getKey())).findFirst().get();
+          languageSpecificPackages.put(language, entry.getValue());
+      });
+    LanguageContext languageContext = new LanguageContext(packageName, languages, languageSpecificPackages);
     languages.forEach(
         language -> {
           try {
