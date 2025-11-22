@@ -16,6 +16,7 @@ import javax.lang.model.element.Modifier;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.HasSettableParent;
 import io.lionweb.model.Node;
+import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.AbstractNode;
 import org.codehaus.groovy.ast.stmt.ReturnStatement;
 import org.jetbrains.annotations.NotNull;
@@ -209,6 +210,144 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               IllegalStateException.class,
               "Property ", " not found."
       ).build());
+
+      ClassName CONTAINMENT = ClassName.get(Containment.class);
+      ClassName NODE = ClassName.get(Node.class);
+      ClassName REFERENCE = ClassName.get(Reference.class);
+      ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
+
+// List<? extends Node>
+      TypeName LIST_OF_WILDCARD_NODE = ParameterizedTypeName.get(
+              ClassName.get(List.class),
+              WildcardTypeName.subtypeOf(NODE)
+      );
+
+// List<? extends ReferenceValue>
+      TypeName LIST_OF_WILDCARD_REF_VALUE = ParameterizedTypeName.get(
+              ClassName.get(List.class),
+              WildcardTypeName.subtypeOf(REFERENCE_VALUE)
+      );
+
+// Common body for all methods
+      CodeBlock unsupportedOpBody = CodeBlock.builder()
+              .addStatement("throw new $T($S)",
+                      UnsupportedOperationException.class,
+                      "Not supported yet.")
+              .build();
+
+    // @Override
+    // public List<? extends Node> getChildren(Containment containment) { ... }
+      MethodSpec getChildren = MethodSpec.methodBuilder("getChildren")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(LIST_OF_WILDCARD_NODE)
+              .addParameter(CONTAINMENT, "containment")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(getChildren);
+
+    // @Override
+    // public void addChild(Containment containment, Node child) { ... }
+      MethodSpec addChild1 = MethodSpec.methodBuilder("addChild")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(void.class)
+              .addParameter(CONTAINMENT, "containment")
+              .addParameter(NODE, "child")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(addChild1);
+
+// @Override
+// public void addChild(Containment containment, Node child, int index) { ... }
+      MethodSpec addChild2 = MethodSpec.methodBuilder("addChild")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(void.class)
+              .addParameter(CONTAINMENT, "containment")
+              .addParameter(NODE, "child")
+              .addParameter(int.class, "index")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(addChild2);
+
+    // @Override
+    // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
+      MethodSpec getReferenceValues = MethodSpec.methodBuilder("getReferenceValues")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(ParameterizedTypeName.get(
+                      ClassName.get(List.class),
+                      REFERENCE_VALUE
+              ))
+              .addParameter(REFERENCE, "reference")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(getReferenceValues);
+
+    // @Override
+    // public int addReferenceValue(Reference reference, ReferenceValue referredNode) { ... }
+      MethodSpec addReferenceValue1 = MethodSpec.methodBuilder("addReferenceValue")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(int.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(REFERENCE_VALUE, "referredNode")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(addReferenceValue1);
+
+    // @Override
+    // public int addReferenceValue(Reference reference, int index, ReferenceValue referredNode) { ... }
+      MethodSpec addReferenceValue2 = MethodSpec.methodBuilder("addReferenceValue")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(int.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(int.class, "index")
+              .addParameter(REFERENCE_VALUE, "referredNode")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(addReferenceValue2);
+
+    // @Override
+    // public void setReferenceValues(Reference reference, List<? extends ReferenceValue> values) { ... }
+      MethodSpec setReferenceValues = MethodSpec.methodBuilder("setReferenceValues")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(void.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(LIST_OF_WILDCARD_REF_VALUE, "values")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(setReferenceValues);
+
+    // @Override
+    // public void setReferred(Reference reference, int index, Node referredNode) { ... }
+      MethodSpec setReferred = MethodSpec.methodBuilder("setReferred")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(void.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(int.class, "index")
+              .addParameter(NODE, "referredNode")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(setReferred);
+
+        // @Override
+        // public void setResolveInfo(Reference reference, int index, String resolveInfo) { ... }
+      MethodSpec setResolveInfo = MethodSpec.methodBuilder("setResolveInfo")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(void.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(int.class, "index")
+              .addParameter(String.class, "resolveInfo")
+              .addCode(unsupportedOpBody)
+              .build();
+      conceptClass.addMethod(setResolveInfo);
+
       JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
       try {
           javaFile.writeTo(destinationDir.toPath());
