@@ -62,7 +62,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   private void generateConcept(@Nonnull Concept concept, @Nonnull String packageName,
                                 @Nonnull LanguageContext languageContext) {
       LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
-      String className = concept.getName();
+      String className = languageContext.getGeneratedName(concept);
 
       TypeName classifierInstanceOfUnknown = ParameterizedTypeName.get(
               ClassName.get(ClassifierInstance.class),
@@ -71,9 +71,22 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
       TypeSpec.Builder conceptClass =
               TypeSpec.classBuilder(className)
-                      .superclass(ClassName.get(AbstractNode.class))
-                      .addSuperinterface(ClassName.get(HasSettableParent.class))
-                      .addModifiers(Modifier.PUBLIC);
+                    .addModifiers(Modifier.PUBLIC);
+
+      if (concept.getExtendedConcept() == null) {
+          conceptClass.superclass(ClassName.get(AbstractNode.class))
+                  .addSuperinterface(ClassName.get(HasSettableParent.class));
+      } else {
+          throw new UnsupportedOperationException("Extended concepts are not yet implemented");
+      }
+      concept.getImplemented().forEach(ii -> {
+          conceptClass.addSuperinterface(languageContext.getInterfaceType(ii));
+      });
+      if (concept.isAbstract()) {
+          conceptClass.addModifiers(Modifier.ABSTRACT);
+      }
+
+
       conceptClass.addField(
               FieldSpec.builder(ClassName.get(String.class), "id")
                       .addAnnotation(NotNull.class)
@@ -358,12 +371,15 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
     private void generateInterface(@Nonnull Interface interf, @Nonnull String packageName,
                                    @Nonnull LanguageContext languageContext) {
-        String interfName = interf.getName();
-        TypeSpec.Builder conceptClass =
+        String interfName =languageContext.getGeneratedName(interf);
+        TypeSpec.Builder interfClass =
                 TypeSpec.interfaceBuilder(interfName)
                         .addSuperinterface(ClassName.get(Node.class))
                         .addModifiers(Modifier.PUBLIC);
-        JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
+        interf.getExtendedInterfaces().forEach(ii -> {
+            interfClass.addSuperinterface(languageContext.getInterfaceType(ii));
+        });
+        JavaFile javaFile = JavaFile.builder(packageName, interfClass.build()).build();
         try {
             javaFile.writeTo(destinationDir.toPath());
         } catch (IOException e) {
