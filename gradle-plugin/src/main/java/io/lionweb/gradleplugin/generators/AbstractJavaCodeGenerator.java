@@ -69,6 +69,40 @@ public abstract class AbstractJavaCodeGenerator {
             throw new UnsupportedOperationException("Not yet implemented");
         }
       }
+
+      public String getGeneratedName(Interface interf) {
+          if (generatedLanguages.contains(interf.getLanguage())) {
+              String interfName = capitalize(interf.getName());
+              if (ambiguousLanguages().contains(interf.getLanguage())) {
+                  interfName += "V" + interf.getLanguage().getVersion();
+              }
+              return interfName;
+          } else {
+              throw new IllegalArgumentException("Interface not found: " + interf.getName());
+          }
+      }
+
+      public String getGeneratedName(Concept concept) {
+          if (generatedLanguages.contains(concept.getLanguage())) {
+              String interfName = capitalize(concept.getName());
+              if (ambiguousLanguages().contains(concept.getLanguage())) {
+                  interfName += "V" + concept.getLanguage().getVersion();
+              }
+              return interfName;
+          } else {
+              throw new IllegalArgumentException("Concept not found: " + concept.getName());
+          }
+      }
+
+      public TypeName getInterfaceType(Interface interf) {
+          if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
+              return ClassName.get(INamed.class);
+          } else if (generatedLanguages.contains(interf.getLanguage())) {
+              return ClassName.get(generationPackage, getGeneratedName(interf));
+          } else {
+              throw new UnsupportedOperationException("Implemented interfaces are not yet implemented");
+          }
+      }
   }
 
     protected  Map<String, String> primitiveTypes;
