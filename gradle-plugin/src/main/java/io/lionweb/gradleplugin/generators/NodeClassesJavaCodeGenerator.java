@@ -267,7 +267,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             considerConceptContainment(
                 (Containment) feature, generationContext, conceptClass, getChildren, addChild1);
           } else if (feature instanceof Reference) {
-            // throw new UnsupportedOperationException("References are not yet implemented");
+            considerConceptReference((Reference) feature, generationContext, conceptClass);
           } else {
             throw new IllegalStateException("Unknown feature type: " + feature.getClass());
           }
@@ -610,6 +610,22 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     //                        .addStatement("this.$L = value", fieldName)
     //                        .build();
     //        conceptClass.addMethod(setter);
+  }
+
+  private static void considerConceptReference(
+      @Nonnull Reference reference,
+      @NotNull GenerationContext generationContext,
+      TypeSpec.Builder conceptClass) {
+    LionWebVersion lionWebVersion = reference.getLionWebVersion();
+    String fieldName = camelCase(reference.getName());
+    String getterName = "get" + pascalCase(reference.getName());
+    String setterName = "set" + pascalCase(reference.getName());
+    TypeName baseFieldType = ClassName.get(ReferenceValue.class);
+    TypeName fieldType = baseFieldType;
+    if (reference.isMultiple()) {
+      fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
+    }
+    conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
   }
 
   private void generateInterface(
