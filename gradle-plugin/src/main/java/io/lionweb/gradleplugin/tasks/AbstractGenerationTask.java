@@ -27,7 +27,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
 
   @Input
   @Optional
-  public abstract Property<String> getPackageName();
+  public abstract Property<String> getDefaultPackageName();
 
   @Input
   public abstract MapProperty<String, String> getPrimitiveTypes();

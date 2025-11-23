@@ -80,7 +80,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                 })
             .collect(Collectors.toList());
     try {
-      nodeClassesJavaCodeGenerator.generate(languages, getPackageName().get());
+      nodeClassesJavaCodeGenerator.generate(languages, getDefaultPackageName().get());
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }

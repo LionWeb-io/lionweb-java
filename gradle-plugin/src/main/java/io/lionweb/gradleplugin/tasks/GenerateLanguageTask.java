@@ -10,6 +10,7 @@ import io.lionweb.serialization.data.SerializationChunk;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.gradle.api.GradleException;
@@ -106,7 +107,21 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                 })
             .collect(Collectors.toList());
     try {
-      languageJavaCodeGenerator.generate(languages, getPackageName().get());
+      if (languages.isEmpty()) {
+        getLogger()
+            .info("LionWeb Version " + lionWebVersion + " - No LionWeb Languages to generate");
+      } else {
+        getLogger()
+            .info(
+                "LionWeb Version "
+                    + lionWebVersion
+                    + " - Generation of LionWeb Languages: "
+                    + languages.stream().map(Language::getName).collect(Collectors.joining(", ")));
+        languageJavaCodeGenerator.generate(
+            languages,
+            getDefaultPackageName().getOrNull(),
+            getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()));
+      }
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
