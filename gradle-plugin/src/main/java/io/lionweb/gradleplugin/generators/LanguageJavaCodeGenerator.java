@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.Enumeration;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
 
 /**
@@ -33,62 +34,91 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * Generates code for the specified languages and package name.
    *
    * @param languages a list of languages for which the code will be generated; must not be null
-   * @param packageName the base package name under which the code will be generated; must not be
-   *     null
+   * @param defaultPackageName the base package name under which the code will be generated; must
+   *     not be null
    * @throws IOException if an I/O error occurs during code generation
    */
-  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
+  public void generate(
+      @Nonnull List<Language> languages,
+      @Nullable String defaultPackageName,
+      @Nonnull Map<String, String> specificPackages)
       throws IOException {
     Objects.requireNonNull(languages, "languages should not be null");
-    Objects.requireNonNull(packageName, "packageName should not be null");
+    Objects.requireNonNull(defaultPackageName, "defaultPackageName should not be null");
     if (languages.isEmpty()) {
       return;
     }
-    Map<Language, String> languageSpecificPackages = new HashMap<>();
-    //    specificPackages.entrySet().forEach(entry ->{
-    //       Language language = languages.stream().filter(l ->
-    // l.getID().equals(entry.getKey())).findFirst().get();
-    //       languageSpecificPackages.put(language, entry.getValue());
-    //    });
-    //    LanguageContext languageContext = new LanguageContext(packageName, languages,
-    // languageSpecificPackages);
-    //    languages.forEach(
-    //        language -> {
-    //          try {
-    //            generate(language, packageName, languageContext);
-    //          } catch (IOException e) {
-    //            throw new RuntimeException(e);
-    //          }
-    //        });
+    Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
+    for (Language language : languages) {
+      String specificPackage = specificPackages.get(language.getID());
+      if (specificPackage != null) {
+        languageConfs.add(
+            new GenerationContext.LanguageGenerationConfiguration(language, specificPackage));
+      } else if (defaultPackageName != null) {
+        languageConfs.add(
+            new GenerationContext.LanguageGenerationConfiguration(language, defaultPackageName));
+      } else {
+        throw new IllegalArgumentException(
+            "No default package name and no specific package name for language "
+                + language.getID());
+      }
+    }
+    GenerationContext languageContext = new GenerationContext(languageConfs);
+    languages.forEach(
+        language -> {
+          try {
+            generate(language, languageContext);
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
+
+  public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
+    GenerationContext generationContext =
+        new GenerationContext(
+            new HashSet<>(
+                Arrays.asList(
+                    new GenerationContext.LanguageGenerationConfiguration(language, packageName))));
+    generate(language, generationContext);
+  }
+
+  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
+      throws IOException {
+    Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
+    languages.forEach(
+        language -> {
+          languageConfs.add(
+              new GenerationContext.LanguageGenerationConfiguration(language, packageName));
+        });
+
+    languages.forEach(
+        language -> {
+          try {
+            generate(language, new GenerationContext(languageConfs));
+          } catch (IOException e) {
+            throw new RuntimeException(e);
+          }
+        });
   }
 
   /**
    * Generates Java code files for a specified language and package name.
    *
    * @param language the language for which the code will be generated; must not be null
-   * @param packageName the base package name under which the code will be generated; must not be
-   *     null
    * @throws IOException if an I/O error occurs during code generation
    */
-  public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
-    generate(language, packageName, new GenerationContext(language, packageName));
-  }
-
-  private void generate(
-      @Nonnull Language language,
-      @Nonnull String packageName,
-      @Nonnull GenerationContext generationContext)
+  public void generate(@Nonnull Language language, @Nonnull GenerationContext generationContext)
       throws IOException {
     Objects.requireNonNull(language, "language should not be null");
-    Objects.requireNonNull(packageName, "packageName should not be null");
-    Objects.requireNonNull(generationContext, "languageContext should not be null");
+    Objects.requireNonNull(generationContext, "generationContext should not be null");
     String className = toLanguageClassName(language, generationContext);
 
     ClassName lwLanguageClass = ClassName.get(Language.class);
 
     FieldSpec instanceField =
         FieldSpec.builder(
-                ClassName.get(packageName, className),
+                ClassName.get(generationContext.generationPackage(language), className),
                 "INSTANCE",
                 Modifier.PRIVATE,
                 Modifier.STATIC)
@@ -114,9 +144,12 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     MethodSpec getInstance =
         MethodSpec.methodBuilder("getInstance")
             .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
-            .returns(ClassName.get(packageName, className))
+            .returns(ClassName.get(generationContext.generationPackage(language), className))
             .beginControlFlow("if ($N == null)", instanceField)
-            .addStatement("$N = new $T()", instanceField, ClassName.get(packageName, className))
+            .addStatement(
+                "$N = new $T()",
+                instanceField,
+                ClassName.get(generationContext.generationPackage(language), className))
             .endControlFlow()
             .addStatement("return $N", instanceField)
             .build();
@@ -323,7 +356,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
     languageClass.addMethod(constructor.build());
     languageClass.addMethod(createElements.build());
-    JavaFile javaFile = JavaFile.builder(packageName, languageClass.build()).build();
+    JavaFile javaFile =
+        JavaFile.builder(generationContext.generationPackage(language), languageClass.build())
+            .build();
 
     javaFile.writeTo(destinationDir.toPath());
   }

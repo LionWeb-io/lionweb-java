@@ -33,7 +33,7 @@ public class PluginFunctionalTest {
         "plugins {\n"
             + "            id(\"io.lionweb\")\n"
             + "        }\n"
-            + "lionweb { packageName.set(\"io.lionweb.test\") }";
+            + "lionweb { defaultPackageName.set(\"io.lionweb.test\") }";
     writeFile(buildFile, buildFileContent);
     File libraryLanguage = new File(testProjectDir, "src/main/lionweb/library.json");
     writeFile(libraryLanguage, readResource("/library-language.json"));

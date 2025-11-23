@@ -7,7 +7,7 @@ import org.gradle.api.provider.Property;
 // TODO add possibility to override Class names for languages
 public abstract class LionWebPluginExtension {
 
-  public abstract Property<String> getPackageName();
+  public abstract Property<String> getDefaultPackageName();
 
   public abstract DirectoryProperty getLanguagesDirectory();
 
