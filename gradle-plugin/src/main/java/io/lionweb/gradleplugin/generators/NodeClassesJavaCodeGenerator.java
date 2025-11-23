@@ -508,9 +508,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     String fieldName = camelCase(containment.getName());
     String getterName = "get" + pascalCase(containment.getName());
     String setterName = "set" + pascalCase(containment.getName());
-    TypeName fieldType = generationContext.typeFor(containment.getType());
+    TypeName baseFieldType = generationContext.typeFor(containment.getType());
+    TypeName fieldType = baseFieldType;
     if (containment.isMultiple()) {
-      fieldType = ParameterizedTypeName.get(ClassName.get(List.class), fieldType);
+      fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
     }
     conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
     if (containment.isMultiple()) {
@@ -542,7 +543,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
               .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
               .endControlFlow()
-              .addStatement("$L.add($N)", fieldName, "child")
+              .addStatement("$L.add(($T)$N)", fieldName, baseFieldType, "child")
               .beginControlFlow("if ($N != null)", "partitionObserverCache")
               .addStatement(
                   "$N.childAdded(this, this.getClassifier().requireContainmentByName($S), $L.size() - 1, $N)",

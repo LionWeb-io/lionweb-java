@@ -1,8 +1,7 @@
 package io.lionweb.gradleplugin.generators;
 
 import static io.lionweb.gradleplugin.generators.CommonClassNames.*;
-import static io.lionweb.gradleplugin.generators.NamingUtils.capitalize;
-import static io.lionweb.gradleplugin.generators.NamingUtils.toLanguageClassName;
+import static io.lionweb.gradleplugin.generators.NamingUtils.*;
 
 import com.palantir.javapoet.ClassName;
 import com.palantir.javapoet.CodeBlock;
@@ -198,8 +197,7 @@ class GenerationContext {
   TypeName typeFor(Classifier<?> classifier) {
     if (isGeneratedLanguage(classifier.getLanguage())) {
       return ClassName.get(
-          generationPackage(classifier.getLanguage()),
-          toLanguageClassName(classifier.getLanguage(), this));
+          generationPackage(classifier.getLanguage()), pascalCase(classifier.getName()));
     } else if (classifier.equals(LionCoreBuiltins.getNode(classifier.getLionWebVersion()))) {
       return TypeName.get(Node.class);
     } else {
