@@ -224,6 +224,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addStatement("Objects.requireNonNull(property, \"Property should not be null\");")
             .addStatement(
                 "Objects.requireNonNull(property.getKey(), \"Cannot assign a property with no Key specified\");");
+    MethodSpec.Builder getChildren =
+        MethodSpec.methodBuilder("getChildren")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(
+                ParameterizedTypeName.get(
+                    ClassName.get(List.class), WildcardTypeName.subtypeOf(Node.class)))
+            .addParameter(Containment.class, "containment");
 
     List<Feature<?>> features = new LinkedList<>();
     features.addAll(concept.getFeatures());
@@ -239,11 +247,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 getPropertyValue,
                 setPropertyValue);
           } else if (feature instanceof Containment) {
-              considerConceptContainment(
-                      (Containment) feature,
-                      generationContext,
-                      conceptClass
-              );
+            considerConceptContainment(
+                (Containment) feature, generationContext, conceptClass, getChildren);
           } else if (feature instanceof Reference) {
             // throw new UnsupportedOperationException("References are not yet implemented");
           } else {
@@ -264,6 +269,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 "throw new $T($S + property + $S)",
                 IllegalStateException.class,
                 "Property ",
+                " not found.")
+            .build());
+    conceptClass.addMethod(
+        getChildren
+            .addStatement(
+                "throw new $T($S + containment + $S)",
+                IllegalStateException.class,
+                "Containment ",
                 " not found.")
             .build());
 
@@ -287,18 +300,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addStatement(
                 "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
             .build();
-
-    // @Override
-    // public List<? extends Node> getChildren(Containment containment) { ... }
-    MethodSpec getChildren =
-        MethodSpec.methodBuilder("getChildren")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .returns(LIST_OF_WILDCARD_NODE)
-            .addParameter(CONTAINMENT, "containment")
-            .addCode(unsupportedOpBody)
-            .build();
-    conceptClass.addMethod(getChildren);
 
     // @Override
     // public void addChild(Containment containment, Node child) { ... }
@@ -485,58 +486,61 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     conceptClass.addMethod(setter);
   }
 
-    private static void considerConceptContainment(
-            @Nonnull Containment containment,
-            @NotNull GenerationContext generationContext,
-            TypeSpec.Builder conceptClass) {
-        LionWebVersion lionWebVersion = containment.getLionWebVersion();
-        String fieldName = camelCase(containment.getName());
-        String getterName = "get" + pascalCase(containment.getName());
-        String setterName = "set" + pascalCase(containment.getName());
-        TypeName fieldType = generationContext.typeFor(containment.getType());
-        if (containment.isMultiple()) {
-            fieldType = ParameterizedTypeName.get(ClassName.get(List.class), fieldType);
-        }
-        conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
-//        getPropertyValue
-//                .beginControlFlow(
-//                        "if ($T.equals(property.getKey(), $S))",
-//                        ClassName.get(Objects.class),
-//                        property.getKey())
-//                .addStatement("return $L", fieldName)
-//                .endControlFlow();
-//        setPropertyValue
-//                .beginControlFlow(
-//                        "if ($T.equals(property.getKey(), $S))",
-//                        ClassName.get(Objects.class),
-//                        property.getKey())
-//                .addStatement("$L(($T) value)", setterName, fieldType)
-//                .addStatement("return")
-//                .endControlFlow();
-//        MethodSpec getter =
-//                MethodSpec.methodBuilder(getterName)
-//                        .returns(generationContext.typeFor(property.getType()))
-//                        .addModifiers(Modifier.PUBLIC)
-//                        .addStatement("return $L", camelCase(property.getName()))
-//                        .build();
-//        conceptClass.addMethod(getter);
-//        MethodSpec setter =
-//                MethodSpec.methodBuilder(setterName)
-//                        .addModifiers(Modifier.PUBLIC)
-//                        .addParameter(
-//                                ParameterSpec.builder(generationContext.typeFor(property.getType()), "value")
-//                                        .build())
-//                        .addCode(
-//                                "if (partitionObserverCache != null) {\n"
-//                                        + "      partitionObserverCache.propertyChanged(\n"
-//                                        + "          this, this.getClassifier().requirePropertyByName($S), $L(), value);\n"
-//                                        + "    }\n",
-//                                property.getName(),
-//                                getterName)
-//                        .addStatement("this.$L = value", fieldName)
-//                        .build();
-//        conceptClass.addMethod(setter);
+  private static void considerConceptContainment(
+      @Nonnull Containment containment,
+      @NotNull GenerationContext generationContext,
+      TypeSpec.Builder conceptClass,
+      MethodSpec.Builder getChildren) {
+    LionWebVersion lionWebVersion = containment.getLionWebVersion();
+    String fieldName = camelCase(containment.getName());
+    String getterName = "get" + pascalCase(containment.getName());
+    String setterName = "set" + pascalCase(containment.getName());
+    TypeName fieldType = generationContext.typeFor(containment.getType());
+    if (containment.isMultiple()) {
+      fieldType = ParameterizedTypeName.get(ClassName.get(List.class), fieldType);
     }
+    conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
+    getChildren
+        .beginControlFlow(
+            "if ($T.equals(containment.getKey(), $S))",
+            ClassName.get(Objects.class),
+            containment.getKey())
+        .addStatement("return $L", fieldName)
+        .endControlFlow();
+    //        setPropertyValue
+    //                .beginControlFlow(
+    //                        "if ($T.equals(property.getKey(), $S))",
+    //                        ClassName.get(Objects.class),
+    //                        property.getKey())
+    //                .addStatement("$L(($T) value)", setterName, fieldType)
+    //                .addStatement("return")
+    //                .endControlFlow();
+    //        MethodSpec getter =
+    //                MethodSpec.methodBuilder(getterName)
+    //                        .returns(generationContext.typeFor(property.getType()))
+    //                        .addModifiers(Modifier.PUBLIC)
+    //                        .addStatement("return $L", camelCase(property.getName()))
+    //                        .build();
+    //        conceptClass.addMethod(getter);
+    //        MethodSpec setter =
+    //                MethodSpec.methodBuilder(setterName)
+    //                        .addModifiers(Modifier.PUBLIC)
+    //                        .addParameter(
+    //
+    // ParameterSpec.builder(generationContext.typeFor(property.getType()), "value")
+    //                                        .build())
+    //                        .addCode(
+    //                                "if (partitionObserverCache != null) {\n"
+    //                                        + "      partitionObserverCache.propertyChanged(\n"
+    //                                        + "          this,
+    // this.getClassifier().requirePropertyByName($S), $L(), value);\n"
+    //                                        + "    }\n",
+    //                                property.getName(),
+    //                                getterName)
+    //                        .addStatement("this.$L = value", fieldName)
+    //                        .build();
+    //        conceptClass.addMethod(setter);
+  }
 
   private void generateInterface(
       @Nonnull Interface interf, @Nonnull GenerationContext generationContext) {

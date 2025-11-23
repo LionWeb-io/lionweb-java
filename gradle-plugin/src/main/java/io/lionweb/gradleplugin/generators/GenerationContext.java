@@ -12,7 +12,6 @@ import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.Node;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -196,15 +195,17 @@ class GenerationContext {
     return fieldType;
   }
 
-    TypeName typeFor(Classifier<?> classifier) {
-      if (isGeneratedLanguage(classifier.getLanguage())) {
-          return ClassName.get(generationPackage(classifier.getLanguage()), toLanguageClassName(classifier.getLanguage(), this));
-      } else if (classifier.equals(LionCoreBuiltins.getNode(classifier.getLionWebVersion()))) {
-          return TypeName.get(Node.class);
-      } else {
-          throw new UnsupportedOperationException("Not yet implemented: " + classifier.getName());
-      }
+  TypeName typeFor(Classifier<?> classifier) {
+    if (isGeneratedLanguage(classifier.getLanguage())) {
+      return ClassName.get(
+          generationPackage(classifier.getLanguage()),
+          toLanguageClassName(classifier.getLanguage(), this));
+    } else if (classifier.equals(LionCoreBuiltins.getNode(classifier.getLionWebVersion()))) {
+      return TypeName.get(Node.class);
+    } else {
+      throw new UnsupportedOperationException("Not yet implemented: " + classifier.getName());
     }
+  }
 
   String primitiveTypeQName(String primitiveTypeID) {
     return primitiveTypes.getOrDefault(primitiveTypeID, null);
