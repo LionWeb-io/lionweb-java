@@ -16,30 +16,49 @@ import javax.annotation.Nullable;
 public abstract class AbstractJavaCodeGenerator {
   protected final @Nonnull File destinationDir;
 
+  protected class LanguageGenerationConfiguration {
+      public Language language;
+    public String generationPackage;
+
+      public LanguageGenerationConfiguration(Language language, String generationPackage) {
+          this.language = language;
+          this.generationPackage = generationPackage;
+      }
+  }
+
   /** It handles finding Language instances in the generated code. */
   protected class LanguageContext {
-    public String generationPackage;
-    public List<Language> generatedLanguages;
-    public Map<Language, String> specificPackages = new HashMap<>();
+    public Set<LanguageGenerationConfiguration> languageConfs;
 
-    public LanguageContext(String generationPackage, List<Language> generatedLanguages, Map<Language, String> specificPackages) {
-      this.generationPackage = generationPackage;
-      this.generatedLanguages = generatedLanguages;
-      this.specificPackages = specificPackages;
+      public LanguageContext(Language language, String generationPackage) {
+          this(new HashSet<>(Arrays.asList(new LanguageGenerationConfiguration(language, generationPackage))));
+      }
+
+    public LanguageContext(Set<LanguageGenerationConfiguration> languageConfs) {
+      this.languageConfs = languageConfs;
     }
 
     public Set<Language> ambiguousLanguages() {
       Map<Language, String> languageToNames = new HashMap<>();
-      this.generatedLanguages.forEach(
-          language ->
-              languageToNames.put(language, toLanguageClassName(language, null).toLowerCase()));
+      this.languageConfs.forEach(
+          languageConf ->
+              languageToNames.put(languageConf.language, languageConf.generationPackage + "." + toLanguageClassName(languageConf.language, null).toLowerCase()));
       Map<String, Long> nameCount =
           languageToNames.values().stream()
               .collect(Collectors.groupingBy(name -> name, Collectors.counting()));
-      return generatedLanguages.stream()
+      return languageConfs.stream()
+              .map(languageConf -> languageConf.language)
           .filter(language -> nameCount.get(languageToNames.get(language)) > 1)
           .collect(Collectors.toSet());
     }
+
+    private boolean isGeneratedLanguage(Language language) {
+      return languageConfs.stream().map(entry -> entry.language).anyMatch(l -> l.equals(language));
+    }
+
+    String generationPackage(Language language) {
+        return languageConfs.stream().filter(entry -> entry.language.equals(language)).findFirst().get().generationPackage;
+    };
 
     public CodeBlock resolveLanguage(Language language) {
       if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
@@ -51,22 +70,22 @@ public abstract class AbstractJavaCodeGenerator {
       } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
         return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCore, lionWebVersion);
       } else {
-        if (generatedLanguages.contains(language)) {
+        if (isGeneratedLanguage(language)) {
           return CodeBlock.of(
               "$T.getInstance()",
-              ClassName.get(generationPackage, toLanguageClassName(language, this)));
+              ClassName.get(generationPackage(language), toLanguageClassName(language, this)));
         }
         throw new RuntimeException("Language not found: " + language.getName());
       }
     }
 
     public TypeName getEnumerationTypeName(Enumeration enumeration) {
-      if (generatedLanguages.contains(enumeration.getLanguage())) {
+      if (isGeneratedLanguage(enumeration.getLanguage())) {
         String name = capitalize(enumeration.getName());
         if (ambiguousLanguages().contains(enumeration.getLanguage())) {
           name += "V" + enumeration.getLanguage().getVersion();
         }
-        return ClassName.get(generationPackage, name);
+        return ClassName.get(generationPackage(enumeration.getLanguage()), name);
       } else {
         throw new UnsupportedOperationException("Not yet implemented");
       }
@@ -77,7 +96,7 @@ public abstract class AbstractJavaCodeGenerator {
     }
 
       public String getGeneratedName(Interface interf, boolean versionedIfNecessary) {
-          if (generatedLanguages.contains(interf.getLanguage())) {
+          if (isGeneratedLanguage(interf.getLanguage())) {
               String interfName = capitalize(interf.getName());
               if (versionedIfNecessary && ambiguousLanguages().contains(interf.getLanguage())) {
                   interfName += "V" + interf.getLanguage().getVersion();
@@ -97,7 +116,7 @@ public abstract class AbstractJavaCodeGenerator {
       }
 
       public String getGeneratedName(Enumeration enumeration, boolean versionedIfNecessary) {
-          if (generatedLanguages.contains(enumeration.getLanguage())) {
+          if (isGeneratedLanguage(enumeration.getLanguage())) {
               String interfName = capitalize(enumeration.getName());
               if (versionedIfNecessary && ambiguousLanguages().contains(enumeration.getLanguage())) {
                   interfName += "V" + enumeration.getLanguage().getVersion();
@@ -109,7 +128,7 @@ public abstract class AbstractJavaCodeGenerator {
       }
 
     public String getGeneratedName(Concept concept, boolean versionedIfNecessary) {
-      if (generatedLanguages.contains(concept.getLanguage())) {
+      if (isGeneratedLanguage(concept.getLanguage())) {
         String interfName = capitalize(concept.getName());
         if (versionedIfNecessary && ambiguousLanguages().contains(concept.getLanguage())) {
           interfName += "V" + concept.getLanguage().getVersion();
@@ -123,8 +142,8 @@ public abstract class AbstractJavaCodeGenerator {
     public TypeName getInterfaceType(Interface interf) {
       if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
         return ClassName.get(INamed.class);
-      } else if (generatedLanguages.contains(interf.getLanguage())) {
-        return ClassName.get(generationPackage, getGeneratedName(interf));
+      } else if (isGeneratedLanguage(interf.getLanguage())) {
+        return ClassName.get(generationPackage(interf.getLanguage()), getGeneratedName(interf));
       } else {
         throw new UnsupportedOperationException("Implemented interfaces are not yet implemented");
       }
@@ -141,7 +160,7 @@ public abstract class AbstractJavaCodeGenerator {
       } else if (dataType.equals(LionCoreBuiltins.getString(dataType.getLionWebVersion()))) {
         fieldType = ClassName.get(String.class);
       } else if (dataType.equals(LionCoreBuiltins.getInteger(dataType.getLionWebVersion()))) {
-        fieldType = ClassName.get(int.class);
+        fieldType = TypeName.INT;
       } else if (dataType instanceof Enumeration) {
         fieldType = getEnumerationTypeName((Enumeration) dataType);
       } else {
@@ -156,7 +175,6 @@ public abstract class AbstractJavaCodeGenerator {
   }
 
   protected Map<String, String> primitiveTypes;
-    protected Map<String, String> specificPackages;
 
   /**
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
@@ -165,11 +183,10 @@ public abstract class AbstractJavaCodeGenerator {
    * @throws NullPointerException if the destinationDir is null
    */
   protected AbstractJavaCodeGenerator(
-      @Nonnull File destinationDir, Map<String, String> primitiveTypes, Map<String, String> specificPackages) {
+      @Nonnull File destinationDir, Map<String, String> primitiveTypes) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
     this.primitiveTypes = primitiveTypes;
-    this.specificPackages = specificPackages;
   }
 
   protected static final List<String> JAVA_KEYWORDS =
@@ -263,4 +280,31 @@ public abstract class AbstractJavaCodeGenerator {
   protected String primitiveTypeQName(String primitiveTypeID) {
     return primitiveTypes.getOrDefault(primitiveTypeID, null);
   }
+
+  protected static String camelCase(String s) {
+      if (s == null || s.isEmpty()) {
+          return s;
+      }
+
+      String[] parts = s.trim().split("[^A-Za-z0-9]+");
+      if (parts.length == 0) {
+          return "";
+      }
+
+      StringBuilder sb = new StringBuilder(parts[0].toLowerCase());
+
+      for (int i = 1; i < parts.length; i++) {
+          if (parts[i].isEmpty()) continue;
+          sb.append(parts[i].substring(0, 1).toUpperCase());
+          if (parts[i].length() > 1) {
+              sb.append(parts[i].substring(1).toLowerCase());
+          }
+      }
+
+      return sb.toString();
+  }
+
+    protected static String pascalCase(String s) {
+        return capitalize(camelCase(s));
+    }
 }
