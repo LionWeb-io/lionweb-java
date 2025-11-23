@@ -17,6 +17,8 @@ import javax.lang.model.element.Modifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import static io.lionweb.gradleplugin.generators.NamingUtils.*;
+
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   /**
    * Constructs a NodeClassesJavaCodeGenerator with a specified destination directory.
@@ -24,38 +26,33 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  public NodeClassesJavaCodeGenerator(
-      @NotNull File destinationDir, Map<String, String> primitiveTypes) {
-    super(destinationDir, primitiveTypes);
-  }
-
     public NodeClassesJavaCodeGenerator(
             @NotNull File destinationDir) {
-        super(destinationDir, Collections.emptyMap());
+        super(destinationDir);
     }
 
   public void generate(@Nonnull Language language, @Nonnull String packageName) {
     generate(
         language,
-        new LanguageContext(language, packageName));
+        new GenerationContext(language, packageName));
   }
 
   private void generate(
       @Nonnull Language language,
-      @Nonnull LanguageContext languageContext) {
+      @Nonnull GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
-    Objects.requireNonNull(languageContext, "languageContext should not be null");
+    Objects.requireNonNull(generationContext, "languageContext should not be null");
     language
         .getConcepts()
         .forEach(
             concept -> {
-              generateConcept(concept, languageContext);
+              generateConcept(concept, generationContext);
             });
     language
         .getInterfaces()
         .forEach(
             interf -> {
-              generateInterface(interf, languageContext);
+              generateInterface(interf, generationContext);
             });
     language
         .getStructuredDataTypes()
@@ -64,14 +61,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               throw new UnsupportedOperationException();
             });
     language.getEnumerations().forEach(enumeration -> {
-        generateEnumeration(enumeration, languageContext);
+        generateEnumeration(enumeration, generationContext);
     });
   }
     private void generateEnumeration(
             @Nonnull Enumeration enumeration,
-            @Nonnull LanguageContext languageContext) {
+            @Nonnull GenerationContext generationContext) {
         LionWebVersion lionWebVersion = enumeration.getLanguage().getLionWebVersion();
-        String className = languageContext.getGeneratedName(enumeration);
+        String className = generationContext.getGeneratedName(enumeration);
 
         TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
 
@@ -79,7 +76,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             enumClass.addEnumConstant(literal.getName());
         });
 
-        String packageName = languageContext.generationPackage(enumeration.getLanguage());
+        String packageName = generationContext.generationPackage(enumeration.getLanguage());
         JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
         try {
             javaFile.writeTo(destinationDir.toPath());
@@ -90,9 +87,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void generateConcept(
       @Nonnull Concept concept,
-      @Nonnull LanguageContext languageContext) {
+      @Nonnull GenerationContext generationContext) {
     LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
-    String className = languageContext.getGeneratedName(concept);
+    String className = generationContext.getGeneratedName(concept);
 
     TypeName classifierInstanceOfUnknown =
         ParameterizedTypeName.get(
@@ -112,7 +109,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .getImplemented()
         .forEach(
             ii -> {
-              conceptClass.addSuperinterface(languageContext.getInterfaceType(ii));
+              conceptClass.addSuperinterface(generationContext.getInterfaceType(ii));
             });
     if (concept.isAbstract()) {
       conceptClass.addModifiers(Modifier.ABSTRACT);
@@ -174,7 +171,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(ClassName.get(Concept.class))
             .addStatement(
-                "return $L.$L()", languageContext.resolveLanguage(concept.getLanguage()), "get" + languageContext.getGeneratedName(concept, false))
+                "return $L.$L()", generationContext.resolveLanguage(concept.getLanguage()), "get" + generationContext.getGeneratedName(concept, false))
             .build());
     MethodSpec.Builder getPropertyValue =
         MethodSpec.methodBuilder("getPropertyValue")
@@ -201,7 +198,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               if (feature instanceof Property) {
                 Property property = (Property) feature;
                 TypeName fieldType;
-                String mappedQName = this.primitiveTypeQName(property.getType().getID());
+                String mappedQName = generationContext.primitiveTypeQName(property.getType().getID());
                 int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
                 String _packageName = index == -1 ? null : mappedQName.substring(0, index);
                 String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
@@ -213,7 +210,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   fieldType = TypeName.INT;
                 } else if (property.getType() instanceof Enumeration) {
                   fieldType =
-                      languageContext.getEnumerationTypeName((Enumeration) property.getType());
+                      generationContext.getEnumerationTypeName((Enumeration) property.getType());
                 } else {
                   throw new UnsupportedOperationException(
                       "Unknown property type: " + property.getType());
@@ -236,14 +233,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                     .addStatement("return")
                     .endControlFlow();
                 MethodSpec getter = MethodSpec.methodBuilder("get" + pascalCase(feature.getName()))
-                        .returns(languageContext.typeFor(property.getType()))
+                        .returns(generationContext.typeFor(property.getType()))
                         .addModifiers(Modifier.PUBLIC)
                         .addStatement("return $L", camelCase(feature.getName()))
                         .build();
                 conceptClass.addMethod(getter);
                   MethodSpec setter = MethodSpec.methodBuilder("set" + pascalCase(feature.getName()))
                           .addModifiers(Modifier.PUBLIC)
-                          .addParameter(ParameterSpec.builder(languageContext.typeFor(property.getType()), "value").build())
+                          .addParameter(ParameterSpec.builder(generationContext.typeFor(property.getType()), "value").build())
                           .addStatement("this.$L = value", camelCase(feature.getName()))
                           .build();
                   conceptClass.addMethod(setter);
@@ -414,7 +411,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .build();
     conceptClass.addMethod(setResolveInfo);
 
-      String packageName = languageContext.generationPackage(concept.getLanguage());
+      String packageName = generationContext.generationPackage(concept.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
     try {
       javaFile.writeTo(destinationDir.toPath());
@@ -425,8 +422,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void generateInterface(
       @Nonnull Interface interf,
-      @Nonnull LanguageContext languageContext) {
-    String interfName = languageContext.getGeneratedName(interf);
+      @Nonnull GenerationContext generationContext) {
+    String interfName = generationContext.getGeneratedName(interf);
     TypeSpec.Builder interfClass =
         TypeSpec.interfaceBuilder(interfName)
             .addSuperinterface(ClassName.get(Node.class))
@@ -435,7 +432,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .getExtendedInterfaces()
         .forEach(
             ii -> {
-              interfClass.addSuperinterface(languageContext.getInterfaceType(ii));
+              interfClass.addSuperinterface(generationContext.getInterfaceType(ii));
             });
 
     interf
@@ -447,7 +444,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 interfClass.addMethod(
                     MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                        .returns(languageContext.typeFor(((Property) feature).getType()))
+                        .returns(generationContext.typeFor(((Property) feature).getType()))
                         .build());
                 // Setter
                 interfClass.addMethod(
@@ -455,7 +452,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                         .addParameter(
                             ParameterSpec.builder(
-                                    languageContext.typeFor(((Property) feature).getType()),
+                                    generationContext.typeFor(((Property) feature).getType()),
                                     "value")
                                 .build())
                         .build());
@@ -468,7 +465,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               }
             });
 
-      String packageName = languageContext.generationPackage(interf.getLanguage());
+      String packageName = generationContext.generationPackage(interf.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, interfClass.build()).build();
     try {
       javaFile.writeTo(destinationDir.toPath());
