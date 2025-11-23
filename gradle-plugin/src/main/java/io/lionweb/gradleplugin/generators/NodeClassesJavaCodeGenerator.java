@@ -34,6 +34,38 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     generate(language, new GenerationContext(language, packageName));
   }
 
+  public void generate(
+      @Nonnull List<Language> languages,
+      @Nullable String defaultPackageName,
+      @Nonnull Map<String, String> specificPackages,
+      @Nonnull Map<String, String> primitiveTypes) {
+    Objects.requireNonNull(languages, "languages should not be null");
+    Objects.requireNonNull(specificPackages, "specificPackages should not be null");
+    if (languages.isEmpty()) {
+      return;
+    }
+    Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
+    for (Language language : languages) {
+      String specificPackage = specificPackages.get(language.getID());
+      if (specificPackage != null) {
+        languageConfs.add(
+            new GenerationContext.LanguageGenerationConfiguration(language, specificPackage));
+      } else if (defaultPackageName != null) {
+        languageConfs.add(
+            new GenerationContext.LanguageGenerationConfiguration(language, defaultPackageName));
+      } else {
+        throw new IllegalArgumentException(
+            "No default package name and no specific package name for language "
+                + language.getID());
+      }
+    }
+    GenerationContext languageContext = new GenerationContext(languageConfs, primitiveTypes);
+    languages.forEach(
+        language -> {
+          generate(language, languageContext);
+        });
+  }
+
   private void generate(@Nonnull Language language, @Nonnull GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(generationContext, "languageContext should not be null");
@@ -478,37 +510,5 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
-  }
-
-  public void generate(
-      @Nonnull List<Language> languages,
-      @Nullable String defaultPackageName,
-      @Nonnull Map<String, String> specificPackages,
-      @Nonnull Map<String, String> primitiveTypes) {
-    Objects.requireNonNull(languages, "languages should not be null");
-    Objects.requireNonNull(specificPackages, "specificPackages should not be null");
-    if (languages.isEmpty()) {
-      return;
-    }
-    Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
-    for (Language language : languages) {
-      String specificPackage = specificPackages.get(language.getID());
-      if (specificPackage != null) {
-        languageConfs.add(
-            new GenerationContext.LanguageGenerationConfiguration(language, specificPackage));
-      } else if (defaultPackageName != null) {
-        languageConfs.add(
-            new GenerationContext.LanguageGenerationConfiguration(language, defaultPackageName));
-      } else {
-        throw new IllegalArgumentException(
-            "No default package name and no specific package name for language "
-                + language.getID());
-      }
-    }
-    GenerationContext languageContext = new GenerationContext(languageConfs, primitiveTypes);
-    languages.forEach(
-        language -> {
-          generate(language, languageContext);
-        });
   }
 }
