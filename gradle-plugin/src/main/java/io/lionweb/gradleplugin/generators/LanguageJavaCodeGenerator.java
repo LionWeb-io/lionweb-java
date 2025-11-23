@@ -213,9 +213,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
               concept
                   .getFeatures()
                   .forEach(
-                      feature -> {
-                        initFeature(initMethod, language, feature, "concept", generationContext);
-                      });
+                      feature -> initFeature(initMethod, feature, "concept", generationContext));
               languageClass.addMethod(initMethod.build());
 
               constructor.addStatement("init$L()", capitalize(concept.getName()));
@@ -260,7 +258,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   .getFeatures()
                   .forEach(
                       feature -> {
-                        initFeature(initMethod, language, feature, "interf", generationContext);
+                        initFeature(initMethod, feature, "interf", generationContext);
                       });
               languageClass.addMethod(initMethod.build());
 
@@ -303,18 +301,15 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
               annotationDef
                   .getImplemented()
                   .forEach(
-                      interf -> {
-                        initMethod.addStatement(
-                            "annotationDef.addImplementedInterface($L)",
-                            toInterfaceExpr(interf, generationContext));
-                      });
+                      interf ->
+                          initMethod.addStatement(
+                              "annotationDef.addImplementedInterface($L)",
+                              toInterfaceExpr(interf, generationContext)));
               annotationDef
                   .getFeatures()
                   .forEach(
-                      feature -> {
-                        initFeature(
-                            initMethod, language, feature, "annotationDef", generationContext);
-                      });
+                      feature ->
+                          initFeature(initMethod, feature, "annotationDef", generationContext));
               languageClass.addMethod(initMethod.build());
 
               constructor.addStatement("init$L()", capitalize(annotationDef.getName()));
@@ -363,7 +358,6 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void initFeature(
       MethodSpec.Builder initMethod,
-      Language language,
       Feature<?> feature,
       String container,
       GenerationContext generationContext) {

@@ -239,7 +239,11 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 getPropertyValue,
                 setPropertyValue);
           } else if (feature instanceof Containment) {
-            // throw new UnsupportedOperationException("Containments are not yet implemented");
+              considerConceptContainment(
+                      (Containment) feature,
+                      generationContext,
+                      conceptClass
+              );
           } else if (feature instanceof Reference) {
             // throw new UnsupportedOperationException("References are not yet implemented");
           } else {
@@ -480,6 +484,59 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .build();
     conceptClass.addMethod(setter);
   }
+
+    private static void considerConceptContainment(
+            @Nonnull Containment containment,
+            @NotNull GenerationContext generationContext,
+            TypeSpec.Builder conceptClass) {
+        LionWebVersion lionWebVersion = containment.getLionWebVersion();
+        String fieldName = camelCase(containment.getName());
+        String getterName = "get" + pascalCase(containment.getName());
+        String setterName = "set" + pascalCase(containment.getName());
+        TypeName fieldType = generationContext.typeFor(containment.getType());
+        if (containment.isMultiple()) {
+            fieldType = ParameterizedTypeName.get(ClassName.get(List.class), fieldType);
+        }
+        conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
+//        getPropertyValue
+//                .beginControlFlow(
+//                        "if ($T.equals(property.getKey(), $S))",
+//                        ClassName.get(Objects.class),
+//                        property.getKey())
+//                .addStatement("return $L", fieldName)
+//                .endControlFlow();
+//        setPropertyValue
+//                .beginControlFlow(
+//                        "if ($T.equals(property.getKey(), $S))",
+//                        ClassName.get(Objects.class),
+//                        property.getKey())
+//                .addStatement("$L(($T) value)", setterName, fieldType)
+//                .addStatement("return")
+//                .endControlFlow();
+//        MethodSpec getter =
+//                MethodSpec.methodBuilder(getterName)
+//                        .returns(generationContext.typeFor(property.getType()))
+//                        .addModifiers(Modifier.PUBLIC)
+//                        .addStatement("return $L", camelCase(property.getName()))
+//                        .build();
+//        conceptClass.addMethod(getter);
+//        MethodSpec setter =
+//                MethodSpec.methodBuilder(setterName)
+//                        .addModifiers(Modifier.PUBLIC)
+//                        .addParameter(
+//                                ParameterSpec.builder(generationContext.typeFor(property.getType()), "value")
+//                                        .build())
+//                        .addCode(
+//                                "if (partitionObserverCache != null) {\n"
+//                                        + "      partitionObserverCache.propertyChanged(\n"
+//                                        + "          this, this.getClassifier().requirePropertyByName($S), $L(), value);\n"
+//                                        + "    }\n",
+//                                property.getName(),
+//                                getterName)
+//                        .addStatement("this.$L = value", fieldName)
+//                        .build();
+//        conceptClass.addMethod(setter);
+    }
 
   private void generateInterface(
       @Nonnull Interface interf, @Nonnull GenerationContext generationContext) {
