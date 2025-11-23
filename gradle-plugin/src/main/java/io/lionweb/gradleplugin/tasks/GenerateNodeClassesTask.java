@@ -9,8 +9,7 @@ import io.lionweb.serialization.TopologicalLanguageSorter;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
@@ -79,10 +78,9 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                   return language;
                 })
             .collect(Collectors.toList());
-    try {
-      nodeClassesJavaCodeGenerator.generate(languages, getDefaultPackageName().get());
-    } catch (IOException ex) {
-      throw new RuntimeException(ex);
-    }
+
+      nodeClassesJavaCodeGenerator.generate(languages, getDefaultPackageName().getOrNull(),
+              getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
+              getPrimitiveTypes().getOrElse(Collections.emptyMap()));
   }
 }
