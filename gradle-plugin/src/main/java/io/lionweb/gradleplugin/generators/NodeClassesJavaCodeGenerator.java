@@ -513,13 +513,27 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), fieldType);
     }
     conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
-    getChildren
-        .beginControlFlow(
-            "if ($T.equals(containment.getKey(), $S))",
-            ClassName.get(Objects.class),
-            containment.getKey())
-        .addStatement("return $L", fieldName)
-        .endControlFlow();
+    if (containment.isMultiple()) {
+      getChildren
+          .beginControlFlow(
+              "if ($T.equals(containment.getKey(), $S))",
+              ClassName.get(Objects.class),
+              containment.getKey())
+          .addStatement("return $L", fieldName)
+          .endControlFlow();
+    } else {
+      getChildren
+          .beginControlFlow(
+              "if ($T.equals(containment.getKey(), $S))",
+              ClassName.get(Objects.class),
+              containment.getKey())
+          .beginControlFlow("if ($L == null)", fieldName)
+          .addStatement("return $T.emptyList()", ClassName.get(Collections.class))
+          .nextControlFlow("else")
+          .addStatement("return $T.singletonList($L)", ClassName.get(Collections.class), fieldName)
+          .endControlFlow()
+          .endControlFlow();
+    }
 
     if (containment.isMultiple()) {
       addChild1.addCode(
@@ -544,9 +558,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       addChild1
           .addStatement("$T removed = null", Node.class)
           .beginControlFlow("if ($N != null)", fieldName)
-          .addStatement("removed = this.removeChild($N)", fieldName)
+          .addStatement("this.removeChild($N)", fieldName)
           .addStatement(
-              "partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), 0, removed)",
+              "partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), 0, child)",
               containment.getName())
           .endControlFlow()
           .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
