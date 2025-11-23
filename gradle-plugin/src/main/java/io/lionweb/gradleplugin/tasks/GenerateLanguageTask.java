@@ -61,7 +61,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
     }
     File generationDirectory = getGenerationDirectory().getAsFile().get();
     LanguageJavaCodeGenerator languageJavaCodeGenerator =
-        new LanguageJavaCodeGenerator(generationDirectory, getPrimitiveTypes().get()/*, getLanguagesSpecificPackages().get()*/);
+        new LanguageJavaCodeGenerator(generationDirectory);
     try {
       List<SerializationChunk> chunks = loadChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
