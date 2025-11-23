@@ -1,6 +1,8 @@
 package io.lionweb.gradleplugin.generators;
 
 import io.lionweb.language.Language;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
@@ -15,18 +17,29 @@ class NamingUtils {
       return s;
     }
 
-    String[] parts = s.trim().split("[^A-Za-z0-9]+");
-    if (parts.length == 0) {
+    String[] rawParts = s.trim().split("[^A-Za-z0-9]+");
+    List<String> parts = new ArrayList<>();
+
+    // Further split each raw part by uppercase boundaries
+    for (String p : rawParts) {
+      if (p.isEmpty()) continue;
+      String[] sub = p.split("(?=[A-Z])");
+      for (String x : sub) {
+        if (!x.isEmpty()) parts.add(x);
+      }
+    }
+
+    if (parts.isEmpty()) {
       return "";
     }
 
-    StringBuilder sb = new StringBuilder(parts[0].toLowerCase());
+    StringBuilder sb = new StringBuilder(parts.get(0).toLowerCase());
 
-    for (int i = 1; i < parts.length; i++) {
-      if (parts[i].isEmpty()) continue;
-      sb.append(parts[i].substring(0, 1).toUpperCase());
-      if (parts[i].length() > 1) {
-        sb.append(parts[i].substring(1).toLowerCase());
+    for (int i = 1; i < parts.size(); i++) {
+      String part = parts.get(i).toLowerCase();
+      sb.append(Character.toUpperCase(part.charAt(0)));
+      if (part.length() > 1) {
+        sb.append(part.substring(1));
       }
     }
 
