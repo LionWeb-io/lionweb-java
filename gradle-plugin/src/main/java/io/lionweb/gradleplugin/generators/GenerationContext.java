@@ -13,15 +13,22 @@ import io.lionweb.language.Enumeration;
 import io.lionweb.lioncore.LionCore;
 import java.util.*;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
-/** It handles finding Language instances in the generated code. */
+/**
+ * Provides a context for language generation, containing configurations for language generation and
+ * primitive type mappings. This context is used to manage and resolve language-related information,
+ * and to generate names and types for elements such as enumerations, concepts, and interfaces.
+ */
 class GenerationContext {
 
-  protected static class LanguageGenerationConfiguration {
-    public Language language;
-    public String generationPackage;
+  static class LanguageGenerationConfiguration {
+    final @Nonnull Language language;
+    final @Nonnull String generationPackage;
 
-    public LanguageGenerationConfiguration(Language language, String generationPackage) {
+    LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage) {
+      Objects.requireNonNull(language, "language should not be null");
+      Objects.requireNonNull(generationPackage, "generationPackage should not be null");
       this.language = language;
       this.generationPackage = generationPackage;
     }
@@ -30,31 +37,36 @@ class GenerationContext {
   private final Set<LanguageGenerationConfiguration> languageConfs;
   private final Map<String, String> primitiveTypes;
 
-  public GenerationContext(Language language, String generationPackage) {
+  GenerationContext(@Nonnull Language language, @Nonnull String generationPackage) {
     this(
         new HashSet<>(
             Arrays.asList(new LanguageGenerationConfiguration(language, generationPackage))));
   }
 
-  public GenerationContext(Set<LanguageGenerationConfiguration> languageConfs) {
+  GenerationContext(@Nonnull Set<LanguageGenerationConfiguration> languageConfs) {
     this(languageConfs, Collections.emptyMap());
   }
 
-  public GenerationContext(
-      Language language, String generationPackage, Map<String, String> primitiveTypes) {
+  GenerationContext(
+      @Nonnull Language language,
+      @Nonnull String generationPackage,
+      @Nonnull Map<String, String> primitiveTypes) {
     this(
         new HashSet<>(
             Arrays.asList(new LanguageGenerationConfiguration(language, generationPackage))),
         primitiveTypes);
   }
 
-  public GenerationContext(
-      Set<LanguageGenerationConfiguration> languageConfs, Map<String, String> primitiveTypes) {
+  GenerationContext(
+      @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
+      @Nonnull Map<String, String> primitiveTypes) {
+    Objects.requireNonNull(languageConfs, "languageConfs should not be null");
+    Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
     this.languageConfs = languageConfs;
     this.primitiveTypes = primitiveTypes;
   }
 
-  public Set<Language> ambiguousLanguages() {
+  Set<Language> ambiguousLanguages() {
     Map<Language, String> languageToNames = new HashMap<>();
     this.languageConfs.forEach(
         languageConf ->
@@ -72,19 +84,7 @@ class GenerationContext {
         .collect(Collectors.toSet());
   }
 
-  private boolean isGeneratedLanguage(Language language) {
-    return languageConfs.stream().map(entry -> entry.language).anyMatch(l -> l.equals(language));
-  }
-
-  String generationPackage(Language language) {
-    return languageConfs.stream()
-        .filter(entry -> entry.language.equals(language))
-        .findFirst()
-        .get()
-        .generationPackage;
-  };
-
-  public CodeBlock resolveLanguage(Language language) {
+  CodeBlock resolveLanguage(Language language) {
     if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
       return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
     } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {
@@ -103,7 +103,7 @@ class GenerationContext {
     }
   }
 
-  public TypeName getEnumerationTypeName(io.lionweb.language.Enumeration enumeration) {
+  TypeName getEnumerationTypeName(io.lionweb.language.Enumeration enumeration) {
     if (isGeneratedLanguage(enumeration.getLanguage())) {
       String name = capitalize(enumeration.getName());
       if (ambiguousLanguages().contains(enumeration.getLanguage())) {
@@ -115,11 +115,11 @@ class GenerationContext {
     }
   }
 
-  public String getGeneratedName(Interface interf) {
+  String getGeneratedName(Interface interf) {
     return getGeneratedName(interf, true);
   }
 
-  public String getGeneratedName(Interface interf, boolean versionedIfNecessary) {
+  String getGeneratedName(Interface interf, boolean versionedIfNecessary) {
     if (isGeneratedLanguage(interf.getLanguage())) {
       String interfName = capitalize(interf.getName());
       if (versionedIfNecessary && ambiguousLanguages().contains(interf.getLanguage())) {
@@ -131,15 +131,15 @@ class GenerationContext {
     }
   }
 
-  public String getGeneratedName(Concept concept) {
+  String getGeneratedName(Concept concept) {
     return getGeneratedName(concept, true);
   }
 
-  public String getGeneratedName(io.lionweb.language.Enumeration enumeration) {
+  String getGeneratedName(io.lionweb.language.Enumeration enumeration) {
     return getGeneratedName(enumeration, true);
   }
 
-  public String getGeneratedName(
+  String getGeneratedName(
       io.lionweb.language.Enumeration enumeration, boolean versionedIfNecessary) {
     if (isGeneratedLanguage(enumeration.getLanguage())) {
       String interfName = capitalize(enumeration.getName());
@@ -152,7 +152,7 @@ class GenerationContext {
     }
   }
 
-  public String getGeneratedName(Concept concept, boolean versionedIfNecessary) {
+  String getGeneratedName(Concept concept, boolean versionedIfNecessary) {
     if (isGeneratedLanguage(concept.getLanguage())) {
       String interfName = capitalize(concept.getName());
       if (versionedIfNecessary && ambiguousLanguages().contains(concept.getLanguage())) {
@@ -164,7 +164,7 @@ class GenerationContext {
     }
   }
 
-  public TypeName getInterfaceType(Interface interf) {
+  TypeName getInterfaceType(Interface interf) {
     if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
       return ClassName.get(INamed.class);
     } else if (isGeneratedLanguage(interf.getLanguage())) {
@@ -174,7 +174,7 @@ class GenerationContext {
     }
   }
 
-  public TypeName typeFor(DataType<?> dataType) {
+  TypeName typeFor(DataType<?> dataType) {
     TypeName fieldType;
     String mappedQName = this.primitiveTypeQName(dataType.getID());
     int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
@@ -194,7 +194,19 @@ class GenerationContext {
     return fieldType;
   }
 
-  protected String primitiveTypeQName(String primitiveTypeID) {
+  String primitiveTypeQName(String primitiveTypeID) {
     return primitiveTypes.getOrDefault(primitiveTypeID, null);
+  }
+
+  String generationPackage(Language language) {
+    return languageConfs.stream()
+        .filter(entry -> entry.language.equals(language))
+        .findFirst()
+        .get()
+        .generationPackage;
+  }
+
+  private boolean isGeneratedLanguage(Language language) {
+    return languageConfs.stream().map(entry -> entry.language).anyMatch(l -> l.equals(language));
   }
 }

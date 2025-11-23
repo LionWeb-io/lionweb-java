@@ -5,12 +5,18 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 
-public class CommonClassNames {
-  protected static final ClassName lionCore = ClassName.get(LionCore.class);
-  protected static final ClassName lionCoreBuiltins = ClassName.get(LionCoreBuiltins.class);
-  protected static final ClassName lionWebVersion = ClassName.get(LionWebVersion.class);
-  protected static final ClassName conceptClass = ClassName.get(Concept.class);
-  protected static final ClassName interfaceClass = ClassName.get(Interface.class);
-  protected static final ClassName primitiveType = ClassName.get(PrimitiveType.class);
-  protected static final ClassName annotationDefClass = ClassName.get(Annotation.class);
+/**
+ * A utility class providing static references to commonly used class names. This class contains
+ * predefined instances of {@code ClassName} for specific classes. It simplifies access to
+ * frequently referenced classes in the application, ensuring they are consistently used across the
+ * codebase.
+ */
+class CommonClassNames {
+  static final ClassName lionCore = ClassName.get(LionCore.class);
+  static final ClassName lionCoreBuiltins = ClassName.get(LionCoreBuiltins.class);
+  static final ClassName lionWebVersion = ClassName.get(LionWebVersion.class);
+  static final ClassName conceptClass = ClassName.get(Concept.class);
+  static final ClassName interfaceClass = ClassName.get(Interface.class);
+  static final ClassName primitiveType = ClassName.get(PrimitiveType.class);
+  static final ClassName annotationDefClass = ClassName.get(Annotation.class);
 }

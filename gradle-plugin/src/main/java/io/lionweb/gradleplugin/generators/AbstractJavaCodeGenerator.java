@@ -7,6 +7,11 @@ import java.io.File;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/**
+ * Represents an abstract generator for Java code. This class provides foundational utilities for
+ * creating Java source files, managing destination directories, and ensuring proper naming
+ * conventions to avoid conflicts with reserved Java keywords.
+ */
 public abstract class AbstractJavaCodeGenerator {
   protected final @Nonnull File destinationDir;
 
