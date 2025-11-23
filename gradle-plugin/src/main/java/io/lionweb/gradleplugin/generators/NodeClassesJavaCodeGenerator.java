@@ -232,6 +232,23 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 ParameterizedTypeName.get(
                     ClassName.get(List.class), WildcardTypeName.subtypeOf(Node.class)))
             .addParameter(Containment.class, "containment");
+    MethodSpec.Builder addChild1 =
+        MethodSpec.methodBuilder("addChild")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(
+                ParameterSpec.builder(Containment.class, "containment")
+                    .addAnnotation(NotNull.class)
+                    .build())
+            .addParameter(
+                ParameterSpec.builder(Node.class, "child").addAnnotation(NotNull.class).build())
+            .addStatement(
+                "$T.requireNonNull(containment, $S)",
+                Objects.class,
+                "Containment should not be null")
+            .addStatement(
+                "$T.requireNonNull(child, $S)", Objects.class, "Child should not be null");
 
     List<Feature<?>> features = new LinkedList<>();
     features.addAll(concept.getFeatures());
@@ -248,7 +265,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 setPropertyValue);
           } else if (feature instanceof Containment) {
             considerConceptContainment(
-                (Containment) feature, generationContext, conceptClass, getChildren);
+                (Containment) feature, generationContext, conceptClass, getChildren, addChild1);
           } else if (feature instanceof Reference) {
             // throw new UnsupportedOperationException("References are not yet implemented");
           } else {
@@ -279,6 +296,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 "Containment ",
                 " not found.")
             .build());
+    conceptClass.addMethod(
+        addChild1
+            .addStatement(
+                "throw new $T($S + containment + $S)",
+                IllegalStateException.class,
+                "Containment ",
+                " not found.")
+            .build());
 
     ClassName CONTAINMENT = ClassName.get(Containment.class);
     ClassName NODE = ClassName.get(Node.class);
@@ -300,19 +325,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addStatement(
                 "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
             .build();
-
-    // @Override
-    // public void addChild(Containment containment, Node child) { ... }
-    MethodSpec addChild1 =
-        MethodSpec.methodBuilder("addChild")
-            .addAnnotation(Override.class)
-            .addModifiers(Modifier.PUBLIC)
-            .returns(void.class)
-            .addParameter(CONTAINMENT, "containment")
-            .addParameter(NODE, "child")
-            .addCode(unsupportedOpBody)
-            .build();
-    conceptClass.addMethod(addChild1);
 
     // @Override
     // public void addChild(Containment containment, Node child, int index) { ... }
@@ -490,7 +502,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @Nonnull Containment containment,
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass,
-      MethodSpec.Builder getChildren) {
+      MethodSpec.Builder getChildren,
+      MethodSpec.Builder addChild1) {
     LionWebVersion lionWebVersion = containment.getLionWebVersion();
     String fieldName = camelCase(containment.getName());
     String getterName = "get" + pascalCase(containment.getName());
@@ -507,6 +520,48 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             containment.getKey())
         .addStatement("return $L", fieldName)
         .endControlFlow();
+
+    if (containment.isMultiple()) {
+      addChild1.addCode(
+          CodeBlock.builder()
+              .beginControlFlow("if (containment.getKey().equals($S))", containment.getKey())
+              .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
+              .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
+              .endControlFlow()
+              .addStatement("$L.add($N)", fieldName, "child")
+              .beginControlFlow("if ($N != null)", "partitionObserverCache")
+              .addStatement(
+                  "$N.childAdded(this, this.getClassifier().requireContainmentByName($S), $L.size() - 1, $N)",
+                  "partitionObserverCache",
+                  containment.getName(),
+                  fieldName,
+                  "child")
+              .endControlFlow()
+              .addStatement("return")
+              .endControlFlow()
+              .build());
+    } else {
+      addChild1
+          .addStatement("$T removed = null", Node.class)
+          .beginControlFlow("if ($N != null)", fieldName)
+          .addStatement("removed = this.removeChild($N)", fieldName)
+          .addStatement(
+              "partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), 0, removed)",
+              containment.getName())
+          .endControlFlow()
+          .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
+          .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
+          .endControlFlow()
+          .addStatement("this.$N = $N", fieldName, "child")
+          .beginControlFlow("if (partitionObserverCache != null)")
+          .addStatement(
+              "partitionObserverCache.childAdded(this, this.getClassifier().requireContainmentByName($S), 0, $N)",
+              containment.getName(),
+              "child")
+          .addStatement("return")
+          .endControlFlow();
+    }
+
     //        setPropertyValue
     //                .beginControlFlow(
     //                        "if ($T.equals(property.getKey(), $S))",
