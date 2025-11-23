@@ -1,26 +1,14 @@
 package io.lionweb.gradleplugin.generators;
 
-import com.palantir.javapoet.ClassName;
-import com.palantir.javapoet.CodeBlock;
-import com.palantir.javapoet.TypeName;
-import io.lionweb.LionWebVersion;
+import static io.lionweb.gradleplugin.generators.NamingUtils.camelCase;
+
 import io.lionweb.language.*;
-import io.lionweb.language.Enumeration;
-import io.lionweb.lioncore.LionCore;
 import java.io.File;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 public abstract class AbstractJavaCodeGenerator {
   protected final @Nonnull File destinationDir;
-
-
-
-
-
-
 
   /**
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
@@ -28,8 +16,7 @@ public abstract class AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  protected AbstractJavaCodeGenerator(
-      @Nonnull File destinationDir) {
+  protected AbstractJavaCodeGenerator(@Nonnull File destinationDir) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
     this.destinationDir = destinationDir;
   }
@@ -88,16 +75,11 @@ public abstract class AbstractJavaCodeGenerator {
           "while");
 
   protected String toVariableName(String name) {
-    String res = name.replaceAll("[^a-zA-Z0-9]", "_");
+    String res = camelCase(name);
     if (JAVA_KEYWORDS.contains(res)) {
       return "_" + res;
     } else {
       return res;
     }
   }
-
-
-
-
-
 }

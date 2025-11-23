@@ -1,5 +1,9 @@
 package io.lionweb.gradleplugin.generators;
 
+import static io.lionweb.gradleplugin.generators.CommonClassNames.*;
+import static io.lionweb.gradleplugin.generators.NamingUtils.capitalize;
+import static io.lionweb.gradleplugin.generators.NamingUtils.toLanguageClassName;
+
 import com.palantir.javapoet.*;
 import io.lionweb.language.*;
 import java.io.File;
@@ -8,10 +12,6 @@ import java.util.*;
 import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
-
-import static io.lionweb.gradleplugin.generators.CommonClassNames.*;
-import static io.lionweb.gradleplugin.generators.NamingUtils.capitalize;
-import static io.lionweb.gradleplugin.generators.NamingUtils.toLanguageClassName;
 
 /**
  * The LanguageJavaCodeGenerator class is responsible for generating Java code representations of
@@ -25,11 +25,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  public LanguageJavaCodeGenerator(
-      @Nonnull File destinationDir) {
+  public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
     super(destinationDir);
   }
-
 
   /**
    * Generates code for the specified languages and package name.
@@ -47,20 +45,21 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       return;
     }
     Map<Language, String> languageSpecificPackages = new HashMap<>();
-    throw new UnsupportedOperationException("Not yet implemented");
-//    specificPackages.entrySet().forEach(entry ->{
-//       Language language = languages.stream().filter(l -> l.getID().equals(entry.getKey())).findFirst().get();
-//       languageSpecificPackages.put(language, entry.getValue());
-//    });
-//    LanguageContext languageContext = new LanguageContext(packageName, languages, languageSpecificPackages);
-//    languages.forEach(
-//        language -> {
-//          try {
-//            generate(language, packageName, languageContext);
-//          } catch (IOException e) {
-//            throw new RuntimeException(e);
-//          }
-//        });
+    //    specificPackages.entrySet().forEach(entry ->{
+    //       Language language = languages.stream().filter(l ->
+    // l.getID().equals(entry.getKey())).findFirst().get();
+    //       languageSpecificPackages.put(language, entry.getValue());
+    //    });
+    //    LanguageContext languageContext = new LanguageContext(packageName, languages,
+    // languageSpecificPackages);
+    //    languages.forEach(
+    //        language -> {
+    //          try {
+    //            generate(language, packageName, languageContext);
+    //          } catch (IOException e) {
+    //            throw new RuntimeException(e);
+    //          }
+    //        });
   }
 
   /**
@@ -72,10 +71,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @throws IOException if an I/O error occurs during code generation
    */
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
-    generate(
-        language,
-        packageName,
-        new GenerationContext(language, packageName));
+    generate(language, packageName, new GenerationContext(language, packageName));
   }
 
   private void generate(
@@ -405,7 +401,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         classifierType.getName());
   }
 
-  private CodeBlock toConceptExpr(Classifier<?> classifierType, GenerationContext generationContext) {
+  private CodeBlock toConceptExpr(
+      Classifier<?> classifierType, GenerationContext generationContext) {
     return CodeBlock.of(
         "$L.requireConceptByName($S)",
         generationContext.resolveLanguage(classifierType.getLanguage()),
@@ -419,7 +416,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         annotation.getName());
   }
 
-  private CodeBlock toInterfaceExpr(Classifier<?> classifierType, GenerationContext generationContext) {
+  private CodeBlock toInterfaceExpr(
+      Classifier<?> classifierType, GenerationContext generationContext) {
     return CodeBlock.of(
         "$L.requireInterfaceByName($S)",
         generationContext.resolveLanguage(classifierType.getLanguage()),

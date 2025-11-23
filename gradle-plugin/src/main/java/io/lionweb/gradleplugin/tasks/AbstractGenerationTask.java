@@ -32,8 +32,8 @@ public abstract class AbstractGenerationTask extends DefaultTask {
   @Input
   public abstract MapProperty<String, String> getPrimitiveTypes();
 
-    @Input
-    public abstract MapProperty<String, String> getLanguagesSpecificPackages();
+  @Input
+  public abstract MapProperty<String, String> getLanguagesSpecificPackages();
 
   protected List<SerializationChunk> loadChunks(File languagesDirectory) throws IOException {
     try (Stream<Path> stream = Files.walk(languagesDirectory.toPath())) {

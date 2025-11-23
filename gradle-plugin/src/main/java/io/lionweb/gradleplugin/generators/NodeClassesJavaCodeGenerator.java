@@ -1,5 +1,7 @@
 package io.lionweb.gradleplugin.generators;
 
+import static io.lionweb.gradleplugin.generators.NamingUtils.*;
+
 import com.palantir.javapoet.*;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
@@ -17,8 +19,6 @@ import javax.lang.model.element.Modifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import static io.lionweb.gradleplugin.generators.NamingUtils.*;
-
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   /**
    * Constructs a NodeClassesJavaCodeGenerator with a specified destination directory.
@@ -26,20 +26,15 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-    public NodeClassesJavaCodeGenerator(
-            @NotNull File destinationDir) {
-        super(destinationDir);
-    }
-
-  public void generate(@Nonnull Language language, @Nonnull String packageName) {
-    generate(
-        language,
-        new GenerationContext(language, packageName));
+  public NodeClassesJavaCodeGenerator(@NotNull File destinationDir) {
+    super(destinationDir);
   }
 
-  private void generate(
-      @Nonnull Language language,
-      @Nonnull GenerationContext generationContext) {
+  public void generate(@Nonnull Language language, @Nonnull String packageName) {
+    generate(language, new GenerationContext(language, packageName));
+  }
+
+  private void generate(@Nonnull Language language, @Nonnull GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(generationContext, "languageContext should not be null");
     language
@@ -60,34 +55,39 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             sdt -> {
               throw new UnsupportedOperationException();
             });
-    language.getEnumerations().forEach(enumeration -> {
-        generateEnumeration(enumeration, generationContext);
-    });
+    language
+        .getEnumerations()
+        .forEach(
+            enumeration -> {
+              generateEnumeration(enumeration, generationContext);
+            });
   }
-    private void generateEnumeration(
-            @Nonnull Enumeration enumeration,
-            @Nonnull GenerationContext generationContext) {
-        LionWebVersion lionWebVersion = enumeration.getLanguage().getLionWebVersion();
-        String className = generationContext.getGeneratedName(enumeration);
 
-        TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
+  private void generateEnumeration(
+      @Nonnull Enumeration enumeration, @Nonnull GenerationContext generationContext) {
+    LionWebVersion lionWebVersion = enumeration.getLanguage().getLionWebVersion();
+    String className = generationContext.getGeneratedName(enumeration);
 
-        enumeration.getLiterals().forEach(literal -> {
-            enumClass.addEnumConstant(literal.getName());
-        });
+    TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
 
-        String packageName = generationContext.generationPackage(enumeration.getLanguage());
-        JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
-        try {
-            javaFile.writeTo(destinationDir.toPath());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    enumeration
+        .getLiterals()
+        .forEach(
+            literal -> {
+              enumClass.addEnumConstant(literal.getName());
+            });
+
+    String packageName = generationContext.generationPackage(enumeration.getLanguage());
+    JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
+    try {
+      javaFile.writeTo(destinationDir.toPath());
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
 
   private void generateConcept(
-      @Nonnull Concept concept,
-      @Nonnull GenerationContext generationContext) {
+      @Nonnull Concept concept, @Nonnull GenerationContext generationContext) {
     LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
     String className = generationContext.getGeneratedName(concept);
 
@@ -171,7 +171,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addModifiers(Modifier.PUBLIC)
             .returns(ClassName.get(Concept.class))
             .addStatement(
-                "return $L.$L()", generationContext.resolveLanguage(concept.getLanguage()), "get" + generationContext.getGeneratedName(concept, false))
+                "return $L.$L()",
+                generationContext.resolveLanguage(concept.getLanguage()),
+                "get" + generationContext.getGeneratedName(concept, false))
             .build());
     MethodSpec.Builder getPropertyValue =
         MethodSpec.methodBuilder("getPropertyValue")
@@ -192,66 +194,71 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     features.addAll(concept.getFeatures());
     concept.getImplemented().forEach(i -> i.getFeatures().forEach(features::add));
 
-      features
-        .forEach(
-            feature -> {
-              if (feature instanceof Property) {
-                Property property = (Property) feature;
-                TypeName fieldType;
-                String mappedQName = generationContext.primitiveTypeQName(property.getType().getID());
-                int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
-                String _packageName = index == -1 ? null : mappedQName.substring(0, index);
-                String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
-                if (mappedQName != null) {
-                  fieldType = ClassName.get(_packageName, _simpleName);
-                } else if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
-                  fieldType = ClassName.get(String.class);
-                } else if (property.getType().equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
-                  fieldType = TypeName.INT;
-                } else if (property.getType() instanceof Enumeration) {
-                  fieldType =
-                      generationContext.getEnumerationTypeName((Enumeration) property.getType());
-                } else {
-                  throw new UnsupportedOperationException(
-                      "Unknown property type: " + property.getType());
-                }
-                conceptClass.addField(
-                    FieldSpec.builder(fieldType, camelCase(feature.getName()), Modifier.PRIVATE).build());
-                getPropertyValue
-                    .beginControlFlow(
-                        "if ($T.equals(property.getID(), $S))",
-                        ClassName.get(Objects.class),
-                        property.getID())
+    features.forEach(
+        feature -> {
+          if (feature instanceof Property) {
+            Property property = (Property) feature;
+            TypeName fieldType;
+            String mappedQName = generationContext.primitiveTypeQName(property.getType().getID());
+            int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
+            String _packageName = index == -1 ? null : mappedQName.substring(0, index);
+            String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
+            if (mappedQName != null) {
+              fieldType = ClassName.get(_packageName, _simpleName);
+            } else if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
+              fieldType = ClassName.get(String.class);
+            } else if (property.getType().equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
+              fieldType = TypeName.INT;
+            } else if (property.getType() instanceof Enumeration) {
+              fieldType =
+                  generationContext.getEnumerationTypeName((Enumeration) property.getType());
+            } else {
+              throw new UnsupportedOperationException(
+                  "Unknown property type: " + property.getType());
+            }
+            conceptClass.addField(
+                FieldSpec.builder(fieldType, camelCase(feature.getName()), Modifier.PRIVATE)
+                    .build());
+            getPropertyValue
+                .beginControlFlow(
+                    "if ($T.equals(property.getID(), $S))",
+                    ClassName.get(Objects.class),
+                    property.getID())
+                .addStatement("return $L", camelCase(feature.getName()))
+                .endControlFlow();
+            setPropertyValue
+                .beginControlFlow(
+                    "if ($T.equals(property.getID(), $S))",
+                    ClassName.get(Objects.class),
+                    property.getID())
+                .addStatement("$L = ($T) value", camelCase(feature.getName()), fieldType)
+                .addStatement("return")
+                .endControlFlow();
+            MethodSpec getter =
+                MethodSpec.methodBuilder("get" + pascalCase(feature.getName()))
+                    .returns(generationContext.typeFor(property.getType()))
+                    .addModifiers(Modifier.PUBLIC)
                     .addStatement("return $L", camelCase(feature.getName()))
-                    .endControlFlow();
-                setPropertyValue
-                    .beginControlFlow(
-                        "if ($T.equals(property.getID(), $S))",
-                        ClassName.get(Objects.class),
-                        property.getID())
-                    .addStatement("$L = ($T) value", camelCase(feature.getName()), fieldType)
-                    .addStatement("return")
-                    .endControlFlow();
-                MethodSpec getter = MethodSpec.methodBuilder("get" + pascalCase(feature.getName()))
-                        .returns(generationContext.typeFor(property.getType()))
-                        .addModifiers(Modifier.PUBLIC)
-                        .addStatement("return $L", camelCase(feature.getName()))
-                        .build();
-                conceptClass.addMethod(getter);
-                  MethodSpec setter = MethodSpec.methodBuilder("set" + pascalCase(feature.getName()))
-                          .addModifiers(Modifier.PUBLIC)
-                          .addParameter(ParameterSpec.builder(generationContext.typeFor(property.getType()), "value").build())
-                          .addStatement("this.$L = value", camelCase(feature.getName()))
-                          .build();
-                  conceptClass.addMethod(setter);
-              } else if (feature instanceof Containment) {
-                // throw new UnsupportedOperationException("Containments are not yet implemented");
-              } else if (feature instanceof Reference) {
-                // throw new UnsupportedOperationException("References are not yet implemented");
-              } else {
-                throw new IllegalStateException("Unknown feature type: " + feature.getClass());
-              }
-            });
+                    .build();
+            conceptClass.addMethod(getter);
+            MethodSpec setter =
+                MethodSpec.methodBuilder("set" + pascalCase(feature.getName()))
+                    .addModifiers(Modifier.PUBLIC)
+                    .addParameter(
+                        ParameterSpec.builder(
+                                generationContext.typeFor(property.getType()), "value")
+                            .build())
+                    .addStatement("this.$L = value", camelCase(feature.getName()))
+                    .build();
+            conceptClass.addMethod(setter);
+          } else if (feature instanceof Containment) {
+            // throw new UnsupportedOperationException("Containments are not yet implemented");
+          } else if (feature instanceof Reference) {
+            // throw new UnsupportedOperationException("References are not yet implemented");
+          } else {
+            throw new IllegalStateException("Unknown feature type: " + feature.getClass());
+          }
+        });
     conceptClass.addMethod(
         getPropertyValue
             .addStatement(
@@ -411,7 +418,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .build();
     conceptClass.addMethod(setResolveInfo);
 
-      String packageName = generationContext.generationPackage(concept.getLanguage());
+    String packageName = generationContext.generationPackage(concept.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, conceptClass.build()).build();
     try {
       javaFile.writeTo(destinationDir.toPath());
@@ -421,8 +428,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   }
 
   private void generateInterface(
-      @Nonnull Interface interf,
-      @Nonnull GenerationContext generationContext) {
+      @Nonnull Interface interf, @Nonnull GenerationContext generationContext) {
     String interfName = generationContext.getGeneratedName(interf);
     TypeSpec.Builder interfClass =
         TypeSpec.interfaceBuilder(interfName)
@@ -465,7 +471,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               }
             });
 
-      String packageName = generationContext.generationPackage(interf.getLanguage());
+    String packageName = generationContext.generationPackage(interf.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, interfClass.build()).build();
     try {
       javaFile.writeTo(destinationDir.toPath());
@@ -481,20 +487,22 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     if (languages.isEmpty()) {
       return;
     }
-      Map<Language, String> languageSpecificPackages = new HashMap<>();
-      throw new UnsupportedOperationException("Not yet implemented");
-//      specificPackages.entrySet().forEach(entry ->{
-//          Language language = languages.stream().filter(l -> l.getID().equals(entry.getKey())).findFirst().get();
-//          languageSpecificPackages.put(language, entry.getValue());
-//      });
-//    LanguageContext languageContext = new LanguageContext(packageName, languages, languageSpecificPackages);
-//    languages.forEach(
-//        language -> {
-//          try {
-//            generate(language, packageName, languageContext);
-//          } catch (IOException e) {
-//            throw new RuntimeException(e);
-//          }
-//        });
+    Map<Language, String> languageSpecificPackages = new HashMap<>();
+    throw new UnsupportedOperationException("Not yet implemented");
+    //      specificPackages.entrySet().forEach(entry ->{
+    //          Language language = languages.stream().filter(l ->
+    // l.getID().equals(entry.getKey())).findFirst().get();
+    //          languageSpecificPackages.put(language, entry.getValue());
+    //      });
+    //    LanguageContext languageContext = new LanguageContext(packageName, languages,
+    // languageSpecificPackages);
+    //    languages.forEach(
+    //        language -> {
+    //          try {
+    //            generate(language, packageName, languageContext);
+    //          } catch (IOException e) {
+    //            throw new RuntimeException(e);
+    //          }
+    //        });
   }
 }
