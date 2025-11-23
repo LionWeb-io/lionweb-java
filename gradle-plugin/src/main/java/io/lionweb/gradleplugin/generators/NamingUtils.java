@@ -4,13 +4,13 @@ import io.lionweb.language.Language;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
-public class NamingUtils {
+class NamingUtils {
 
-  protected static String capitalize(String s) {
+  static String capitalize(String s) {
     return s.substring(0, 1).toUpperCase() + s.substring(1);
   }
 
-  protected static String camelCase(String s) {
+  static String camelCase(String s) {
     if (s == null || s.isEmpty()) {
       return s;
     }
@@ -33,11 +33,11 @@ public class NamingUtils {
     return sb.toString();
   }
 
-  protected static String pascalCase(String s) {
+  static String pascalCase(String s) {
     return capitalize(camelCase(s));
   }
 
-  protected static String toLanguageClassName(
+  static String toLanguageClassName(
       Language language, @Nullable GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(language.getName(), "language.getName() should not be null");
