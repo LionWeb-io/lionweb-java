@@ -79,8 +79,10 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                 })
             .collect(Collectors.toList());
 
-      nodeClassesJavaCodeGenerator.generate(languages, getDefaultPackageName().getOrNull(),
-              getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
-              getPrimitiveTypes().getOrElse(Collections.emptyMap()));
+    nodeClassesJavaCodeGenerator.generate(
+        languages,
+        getDefaultPackageName().getOrNull(),
+        getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
+        getPrimitiveTypes().getOrElse(Collections.emptyMap()));
   }
 }
