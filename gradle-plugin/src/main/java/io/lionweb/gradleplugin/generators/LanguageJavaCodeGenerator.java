@@ -22,12 +22,12 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @throws NullPointerException if the destinationDir is null
    */
   public LanguageJavaCodeGenerator(
-      @Nonnull File destinationDir, Map<String, String> primitiveTypes, Map<String, String> specificPackages) {
-    super(destinationDir, primitiveTypes, specificPackages);
+      @Nonnull File destinationDir, Map<String, String> primitiveTypes) {
+    super(destinationDir, primitiveTypes);
   }
 
-  public LanguageJavaCodeGenerator(@Nonnull File destinationDir, Map<String, String> specificPackages) {
-    super(destinationDir, Collections.emptyMap(), specificPackages);
+  public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
+    super(destinationDir, Collections.emptyMap());
   }
 
   /**
@@ -46,19 +46,20 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       return;
     }
     Map<Language, String> languageSpecificPackages = new HashMap<>();
-    specificPackages.entrySet().forEach(entry ->{
-       Language language = languages.stream().filter(l -> l.getID().equals(entry.getKey())).findFirst().get();
-       languageSpecificPackages.put(language, entry.getValue());
-    });
-    LanguageContext languageContext = new LanguageContext(packageName, languages, languageSpecificPackages);
-    languages.forEach(
-        language -> {
-          try {
-            generate(language, packageName, languageContext);
-          } catch (IOException e) {
-            throw new RuntimeException(e);
-          }
-        });
+    throw new UnsupportedOperationException("Not yet implemented");
+//    specificPackages.entrySet().forEach(entry ->{
+//       Language language = languages.stream().filter(l -> l.getID().equals(entry.getKey())).findFirst().get();
+//       languageSpecificPackages.put(language, entry.getValue());
+//    });
+//    LanguageContext languageContext = new LanguageContext(packageName, languages, languageSpecificPackages);
+//    languages.forEach(
+//        language -> {
+//          try {
+//            generate(language, packageName, languageContext);
+//          } catch (IOException e) {
+//            throw new RuntimeException(e);
+//          }
+//        });
   }
 
   /**
@@ -70,16 +71,10 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    * @throws IOException if an I/O error occurs during code generation
    */
   public void generate(@Nonnull Language language, @Nonnull String packageName) throws IOException {
-      Map<Language, String> languageSpecificPackages = new HashMap<>();
-      specificPackages.entrySet().forEach(entry ->{
-          if (entry.getKey().equals(language.getID())) {
-              languageSpecificPackages.put(language, entry.getValue());
-          }
-      });
     generate(
         language,
         packageName,
-        new LanguageContext(packageName, Collections.singletonList(language), languageSpecificPackages));
+        new LanguageContext(language, packageName));
   }
 
   private void generate(

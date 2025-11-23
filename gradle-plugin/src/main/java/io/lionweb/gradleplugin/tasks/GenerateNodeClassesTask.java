@@ -35,7 +35,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
     }
     File generationDirectory = getGenerationDirectory().getAsFile().get();
     NodeClassesJavaCodeGenerator nodeClassesJavaCodeGenerator =
-        new NodeClassesJavaCodeGenerator(generationDirectory, getPrimitiveTypes().get(), getLanguagesSpecificPackages().get());
+        new NodeClassesJavaCodeGenerator(generationDirectory, getPrimitiveTypes().get()/*, getLanguagesSpecificPackages().get()*/);
     try {
       List<SerializationChunk> chunks = loadChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
