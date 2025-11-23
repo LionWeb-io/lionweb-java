@@ -44,7 +44,6 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @Nonnull Map<String, String> specificPackages)
       throws IOException {
     Objects.requireNonNull(languages, "languages should not be null");
-    Objects.requireNonNull(defaultPackageName, "defaultPackageName should not be null");
     if (languages.isEmpty()) {
       return;
     }
@@ -83,8 +82,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     generate(language, generationContext);
   }
 
-  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
-      throws IOException {
+  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName) {
     Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
     languages.forEach(
         language -> {

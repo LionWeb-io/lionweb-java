@@ -480,29 +480,32 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     }
   }
 
-  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName)
-      throws IOException {
+  public void generate(@Nonnull List<Language> languages, @Nullable String defaultPackageName,
+                       @Nonnull Map<String, String> specificPackages, @Nonnull Map<String, String> primitiveTypes) {
     Objects.requireNonNull(languages, "languages should not be null");
-    Objects.requireNonNull(packageName, "packageName should not be null");
+    Objects.requireNonNull(specificPackages, "specificPackages should not be null");
     if (languages.isEmpty()) {
       return;
     }
-    Map<Language, String> languageSpecificPackages = new HashMap<>();
-    throw new UnsupportedOperationException("Not yet implemented");
-    //      specificPackages.entrySet().forEach(entry ->{
-    //          Language language = languages.stream().filter(l ->
-    // l.getID().equals(entry.getKey())).findFirst().get();
-    //          languageSpecificPackages.put(language, entry.getValue());
-    //      });
-    //    LanguageContext languageContext = new LanguageContext(packageName, languages,
-    // languageSpecificPackages);
-    //    languages.forEach(
-    //        language -> {
-    //          try {
-    //            generate(language, packageName, languageContext);
-    //          } catch (IOException e) {
-    //            throw new RuntimeException(e);
-    //          }
-    //        });
+      Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
+      for (Language language : languages) {
+          String specificPackage = specificPackages.get(language.getID());
+          if (specificPackage != null) {
+              languageConfs.add(
+                      new GenerationContext.LanguageGenerationConfiguration(language, specificPackage));
+          } else if (defaultPackageName != null) {
+              languageConfs.add(
+                      new GenerationContext.LanguageGenerationConfiguration(language, defaultPackageName));
+          } else {
+              throw new IllegalArgumentException(
+                      "No default package name and no specific package name for language "
+                              + language.getID());
+          }
+      }
+      GenerationContext languageContext = new GenerationContext(languageConfs, primitiveTypes);
+        languages.forEach(
+            language -> {
+              generate(language, languageContext);
+            });
   }
 }
