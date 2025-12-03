@@ -1,5 +1,7 @@
 package io.lionweb.gradleplugin;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.lionweb.LionWebVersion;
 import io.lionweb.gradleplugin.generators.LanguageJavaCodeGenerator;
 import io.lionweb.language.Language;
@@ -19,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class LanguageJavaCodeGeneratorTest {
+public class LanguageJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testLibraryGeneration() throws IOException {
@@ -94,6 +96,7 @@ public class LanguageJavaCodeGeneratorTest {
             .get();
     String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
     System.out.println(javaCode);
+    assertTrue(compileAllJavaFiles(destination));
   }
 
   @Test
@@ -112,6 +115,7 @@ public class LanguageJavaCodeGeneratorTest {
             .get();
     String javaCode = new String(Files.readAllBytes(javaFile), StandardCharsets.UTF_8);
     System.out.println(javaCode);
+    assertTrue(compileAllJavaFiles(destination));
   }
 
   @Test
@@ -160,6 +164,7 @@ public class LanguageJavaCodeGeneratorTest {
                     })
                 .collect(Collectors.toList());
     generator.generate(languages, "my.pack");
+    assertTrue(compileAllJavaFiles(destination));
   }
 
   private static String read(InputStream in) throws IOException {
