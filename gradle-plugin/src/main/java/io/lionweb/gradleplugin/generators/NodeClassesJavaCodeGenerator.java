@@ -627,51 +627,93 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     }
     conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
     if (reference.isMultiple()) {
-        throw new UnsupportedOperationException("Not yet implemented");
+      String adderName = "addTo" + pascalCase(reference.getName());
+      MethodSpec.Builder adder =
+          MethodSpec.methodBuilder(adderName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(TypeName.get(ReferenceValue.class), "referenceValue")
+              .addParameter(TypeName.INT, "index")
+              .returns(TypeName.INT);
+      adder.addCode(
+          CodeBlock.builder()
+              .beginControlFlow("if (index > $L.size())", fieldName)
+              .addStatement(
+                  "throw new IllegalArgumentException($S)",
+                  "Index must be less than or equal to size")
+              .endControlFlow()
+              .beginControlFlow("if (partitionObserverCache != null)")
+              .addStatement(
+                  "partitionObserverCache.referenceValueAdded(this, this.getClassifier().requireReferenceByName($S), index, referenceValue)",
+                  reference.getName())
+              .endControlFlow()
+              .addStatement("$L.add(index, referenceValue)", fieldName)
+              .addStatement("return $L.size() - 1", fieldName)
+              .build());
+      conceptClass.addMethod(adder.build());
+      MethodSpec getter =
+          MethodSpec.methodBuilder(getterName)
+              .returns(ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType))
+              .addModifiers(Modifier.PUBLIC)
+              .addStatement("return $L", fieldName)
+              .build();
+      conceptClass.addMethod(getter);
     } else {
-        MethodSpec.Builder setter = MethodSpec.methodBuilder(setterName)
-                .addModifiers(Modifier.PUBLIC)
-                .addParameter(TypeName.get(ReferenceValue.class), "value")
-                .returns(TypeName.VOID);
-        setter.addCode(
-                CodeBlock.builder()
-                        .beginControlFlow("if ($N == null)", "value")
-                        .beginControlFlow("if ($N != null)", "partitionObserverCache")
-                        .addStatement(
-                                "$N.referenceValueRemoved(this, $N, $L, $N)",
-                                "partitionObserverCache", "link", 0, fieldName)
-                        .endControlFlow()
-                        .addStatement("$N = null", fieldName)
-                        .nextControlFlow("else")
-                        .beginControlFlow("if ($N != null)", "partitionObserverCache")
-                        .beginControlFlow("if ($N != null)", fieldName)
-                        .addStatement("$T oldValue = $N", ReferenceValue.class, fieldName)
-                        .addStatement(
-                                "$N.referenceValueChanged(" +
-                                        "this, " +
-                                        "$N, " +
-                                        "$L, " +
-                                        "oldValue.getReferredID(), " +
-                                        "oldValue.getResolveInfo(), " +
-                                        "$N.getReferredID(), " +
-                                        "$N.getResolveInfo()" +
-                                        ")",
-                                "partitionObserverCache",
-                                "link",
-                                0,
-                                "value",
-                                "value")
-                        .nextControlFlow("else")
-                        .addStatement(
-                                "$N.referenceValueAdded(this, $N, $L, $N)",
-                                "partitionObserverCache", "link", 0, "value")
-                        .endControlFlow()
-                        .endControlFlow()
-                        .addStatement("this.$N = $N", fieldName, "value")
-                        .endControlFlow()
-                        .build()
-        );
-        conceptClass.addMethod(setter.build());
+      MethodSpec.Builder setter =
+          MethodSpec.methodBuilder(setterName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(TypeName.get(ReferenceValue.class), "value")
+              .returns(TypeName.VOID);
+      setter.addCode(
+          CodeBlock.builder()
+              .beginControlFlow("if ($N == null)", "value")
+              .beginControlFlow("if ($N != null)", "partitionObserverCache")
+              .addStatement(
+                  "$N.referenceValueRemoved(this, this.getClassifier().requirePropertyByName($S), $L, $N)",
+                  "partitionObserverCache",
+                  reference.getName(),
+                  0,
+                  fieldName)
+              .endControlFlow()
+              .addStatement("$N = null", fieldName)
+              .nextControlFlow("else")
+              .beginControlFlow("if ($N != null)", "partitionObserverCache")
+              .beginControlFlow("if ($N != null)", fieldName)
+              .addStatement("$T oldValue = $N", ReferenceValue.class, fieldName)
+              .addStatement(
+                  "$N.referenceValueChanged("
+                      + "this, "
+                      + "$N, "
+                      + "this.getClassifier().requirePropertyByName($S), "
+                      + "oldValue.getReferredID(), "
+                      + "oldValue.getResolveInfo(), "
+                      + "$N.getReferredID(), "
+                      + "$N.getResolveInfo()"
+                      + ")",
+                  "partitionObserverCache",
+                  reference.getName(),
+                  0,
+                  "value",
+                  "value")
+              .nextControlFlow("else")
+              .addStatement(
+                  "$N.referenceValueAdded(this, this.getClassifier().requirePropertyByName($S), $L, $N)",
+                  "partitionObserverCache",
+                  reference.getName(),
+                  0,
+                  "value")
+              .endControlFlow()
+              .endControlFlow()
+              .addStatement("this.$N = $N", fieldName, "value")
+              .endControlFlow()
+              .build());
+      conceptClass.addMethod(setter.build());
+      MethodSpec getter =
+          MethodSpec.methodBuilder(getterName)
+              .returns(baseFieldType)
+              .addModifiers(Modifier.PUBLIC)
+              .addStatement("return $L", fieldName)
+              .build();
+      conceptClass.addMethod(getter);
     }
   }
 
