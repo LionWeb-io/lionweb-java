@@ -672,8 +672,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                         .build()
         );
         conceptClass.addMethod(setter.build());
-
-        throw new UnsupportedOperationException("Not yet implemented");
     }
   }
 
