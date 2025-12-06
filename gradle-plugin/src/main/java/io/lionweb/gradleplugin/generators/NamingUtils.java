@@ -17,6 +17,10 @@ class NamingUtils {
       return s;
     }
 
+    if (s.equals(s.toUpperCase())) {
+      s = s.toLowerCase();
+    }
+
     String[] rawParts = s.trim().split("[^A-Za-z0-9]+");
     List<String> parts = new ArrayList<>();
 
@@ -25,7 +29,9 @@ class NamingUtils {
       if (p.isEmpty()) continue;
       String[] sub = p.split("(?=[A-Z])");
       for (String x : sub) {
-        if (!x.isEmpty()) parts.add(x);
+        if (!x.isEmpty()) {
+          parts.add(x);
+        }
       }
     }
 
