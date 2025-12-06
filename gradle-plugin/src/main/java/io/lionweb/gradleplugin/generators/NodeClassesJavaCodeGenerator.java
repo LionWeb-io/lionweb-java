@@ -34,11 +34,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     generate(language, new GenerationContext(language, packageName));
   }
 
-    public void generate(
-            @Nonnull Collection<Language> languages,
-            @Nullable String defaultPackageName) {
-        generate(languages, defaultPackageName, Collections.emptyMap(), Collections.emptyMap());
-    }
+  public void generate(
+      @Nonnull Collection<Language> languages, @Nullable String defaultPackageName) {
+    generate(languages, defaultPackageName, Collections.emptyMap(), Collections.emptyMap());
+  }
 
   public void generate(
       @Nonnull Collection<Language> languages,
@@ -573,7 +572,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
           .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
           .endControlFlow()
-          .addStatement("this.$N = $N", fieldName, "child")
+          .addStatement("this.$N = ($T) $N", fieldName, fieldType, "child")
           .beginControlFlow("if (partitionObserverCache != null)")
           .addStatement(
               "partitionObserverCache.childAdded(this, this.getClassifier().requireContainmentByName($S), 0, $N)",

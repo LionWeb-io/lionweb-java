@@ -48,15 +48,15 @@ public abstract class AbstractGeneratorTest {
     return result;
   }
 
-    protected static String read(InputStream in) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-            char[] buf = new char[2048];
-            int n;
-            while ((n = r.read(buf)) != -1) {
-                sb.append(buf, 0, n);
-            }
-        }
-        return sb.toString();
+  protected static String read(InputStream in) throws IOException {
+    StringBuilder sb = new StringBuilder();
+    try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
+      char[] buf = new char[2048];
+      int n;
+      while ((n = r.read(buf)) != -1) {
+        sb.append(buf, 0, n);
+      }
     }
+    return sb.toString();
+  }
 }

@@ -1,35 +1,30 @@
 package io.lionweb.gradleplugin;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import io.lionweb.LionWebVersion;
 import io.lionweb.gradleplugin.generators.LanguageJavaCodeGenerator;
 import io.lionweb.gradleplugin.generators.NodeClassesJavaCodeGenerator;
 import io.lionweb.language.Language;
-import io.lionweb.language.LionCoreBuiltins;
-import io.lionweb.lioncore.LionCore;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.TopologicalLanguageSorter;
 import io.lionweb.serialization.data.SerializationChunk;
-import org.junit.jupiter.api.Test;
-
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testStarlasuSpecsGeneration() throws IOException {
-    //File destination = Files.createTempDirectory("gen").toFile();
-      File destination = new File("src/test/java/");
-      LanguageJavaCodeGenerator languagesGenerator = new LanguageJavaCodeGenerator(destination);
-      NodeClassesJavaCodeGenerator nodeClassesGenerator = new NodeClassesJavaCodeGenerator(destination);
+    File destination = Files.createTempDirectory("gen").toFile();
+    LanguageJavaCodeGenerator languagesGenerator = new LanguageJavaCodeGenerator(destination);
+    NodeClassesJavaCodeGenerator nodeClassesGenerator =
+        new NodeClassesJavaCodeGenerator(destination);
 
     Set<String> paths =
         new HashSet<>(
@@ -71,11 +66,15 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
                     })
                 .collect(Collectors.toSet());
     Map<String, String> primitiveTypes = new HashMap<>();
-    primitiveTypes.put("com-strumenta-StarLasu-TokensList-id", "dummy.com.strumenta.starlasu.TokensList");
-    primitiveTypes.put("com-strumenta-Starlasu-v2-TokensList-2-id", "dummy.com.strumenta.starlasu.TokensList");
-    primitiveTypes.put("com-strumenta-StarLasu-Position-id", "dummy.com.strumenta.starlasu.Position");
-    primitiveTypes.put("com-strumenta-Starlasu-v2-Position-2-id", "dummy.com.strumenta.starlasu.Position");
-      languagesGenerator.generate(languages, "my.pack");
+    primitiveTypes.put(
+        "com-strumenta-StarLasu-TokensList-id", "dummy.com.strumenta.starlasu.TokensList");
+    primitiveTypes.put(
+        "com-strumenta-Starlasu-v2-TokensList-2-id", "dummy.com.strumenta.starlasu.TokensList");
+    primitiveTypes.put(
+        "com-strumenta-StarLasu-Position-id", "dummy.com.strumenta.starlasu.Position");
+    primitiveTypes.put(
+        "com-strumenta-Starlasu-v2-Position-2-id", "dummy.com.strumenta.starlasu.Position");
+    languagesGenerator.generate(languages, "my.pack");
     nodeClassesGenerator.generate(languages, "my.pack", Collections.emptyMap(), primitiveTypes);
     assertTrue(compileAllJavaFiles(destination));
   }
