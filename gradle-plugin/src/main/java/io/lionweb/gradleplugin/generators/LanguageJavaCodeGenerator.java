@@ -78,7 +78,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     GenerationContext generationContext =
         new GenerationContext(
             new HashSet<>(
-                Arrays.asList(
+                Collections.singleton(
                     new GenerationContext.LanguageGenerationConfiguration(language, packageName))));
     generate(language, generationContext);
   }
@@ -86,10 +86,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
   public void generate(@Nonnull Collection<Language> languages, @Nonnull String packageName) {
     Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
     languages.forEach(
-        language -> {
-          languageConfs.add(
-              new GenerationContext.LanguageGenerationConfiguration(language, packageName));
-        });
+        language ->
+            languageConfs.add(
+                new GenerationContext.LanguageGenerationConfiguration(language, packageName)));
 
     languages.forEach(
         language -> {
@@ -168,6 +167,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .getConcepts()
         .forEach(
             concept -> {
+              //    EXAMPLE:
               //    public Concept getLibrary() {
               //        return this.requireConceptByName("Library");
               //    }
@@ -179,6 +179,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
                       .build();
               languageClass.addMethod(conceptAccessor);
 
+              //    EXAMPLE:
               // private void initLibrary() {
               //        Concept libraryConcept = new Concept("Library");
               //        libraryConcept.setID("Library-id");
