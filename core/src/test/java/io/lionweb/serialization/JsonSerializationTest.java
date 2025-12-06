@@ -106,8 +106,7 @@ public class JsonSerializationTest extends SerializationTest {
     bobsLibrary.addBook(explorerBook);
 
     // The library MM is not using the standard primitive types but its own, so we need to specify
-    // how to serialize
-    // those values
+    // how to serialize those values
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization
