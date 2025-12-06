@@ -142,6 +142,12 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
+  /**
+   * Retrieves an Enumeration object with the specified name.
+   *
+   * @param name the name of the Enumeration to retrieve; must not be null
+   * @return the Enumeration with the specified name, or null if no match is found
+   */
   public @Nullable Enumeration getEnumerationByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     return getElements().stream()
