@@ -33,13 +33,14 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
   /**
    * Generates code for the specified languages and package name.
    *
-   * @param languages a list of languages for which the code will be generated; must not be null
+   * @param languages a collection of languages for which the code will be generated; must not be
+   *     null
    * @param defaultPackageName the base package name under which the code will be generated; must
    *     not be null
    * @throws IOException if an I/O error occurs during code generation
    */
   public void generate(
-      @Nonnull List<Language> languages,
+      @Nonnull Collection<Language> languages,
       @Nullable String defaultPackageName,
       @Nonnull Map<String, String> specificPackages)
       throws IOException {
@@ -82,7 +83,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     generate(language, generationContext);
   }
 
-  public void generate(@Nonnull List<Language> languages, @Nonnull String packageName) {
+  public void generate(@Nonnull Collection<Language> languages, @Nonnull String packageName) {
     Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
     languages.forEach(
         language -> {
