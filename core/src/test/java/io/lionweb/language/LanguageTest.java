@@ -354,4 +354,477 @@ public class LanguageTest {
 
     assertTrue(lionCoreLanguage.isValid());
   }
+
+  // ========== getDataTypeByName() Tests ==========
+
+  @Test
+  public void getDataTypeByNamePrimitiveType() {
+    Language language = new Language("TestLanguage");
+    PrimitiveType stringType = new PrimitiveType(language, "String", "string-id");
+    language.addElement(stringType);
+
+    DataType<?> result = language.getDataTypeByName("String");
+
+    assertNotNull(result);
+    assertEquals(stringType, result);
+    assertEquals("String", result.getName());
+  }
+
+  @Test
+  public void getDataTypeByNameEnumeration() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    language.addElement(statusEnum);
+
+    DataType<?> result = language.getDataTypeByName("Status");
+
+    assertNotNull(result);
+    assertEquals(statusEnum, result);
+    assertTrue(result instanceof Enumeration);
+  }
+
+  @Test
+  public void getDataTypeByNameStructuredDataType() {
+    Language language = new Language("TestLanguage");
+    StructuredDataType addressType = new StructuredDataType(language, "Address", "address-id");
+    language.addElement(addressType);
+
+    DataType<?> result = language.getDataTypeByName("Address");
+
+    assertNotNull(result);
+    assertEquals(addressType, result);
+    assertTrue(result instanceof StructuredDataType);
+  }
+
+  @Test
+  public void getDataTypeByNameNotFound() {
+    Language language = new Language("TestLanguage");
+
+    DataType<?> result = language.getDataTypeByName("NonExistent");
+
+    assertNull(result);
+  }
+
+  @Test
+  public void getDataTypeByNameElementIsNotDataType() {
+    Language language = new Language("TestLanguage");
+    Concept concept = new Concept(language, "Person", "person-id");
+    language.addElement(concept);
+
+    try {
+      language.getDataTypeByName("Person");
+      fail("Expected RuntimeException");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("is not a DataType"));
+      assertTrue(e.getMessage().contains("Person"));
+    }
+  }
+
+  @Test
+  public void getDataTypeByNameElementIsInterface() {
+    Language language = new Language("TestLanguage");
+    Interface namedInterface = new Interface(language, "Named", "named-id");
+    language.addElement(namedInterface);
+
+    try {
+      language.getDataTypeByName("Named");
+      fail("Expected RuntimeException");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("is not a DataType"));
+    }
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void getDataTypeByNameNullName() {
+    Language language = new Language("TestLanguage");
+    language.getDataTypeByName(null);
+  }
+
+  @Test
+  public void getDataTypeByNameEmptyName() {
+    Language language = new Language("TestLanguage");
+
+    DataType<?> result = language.getDataTypeByName("");
+
+    assertNull(result);
+  }
+
+  @Test
+  public void getDataTypeByNameMultiplePrimitiveTypes() {
+    Language language = new Language("TestLanguage");
+    PrimitiveType stringType = new PrimitiveType(language, "String", "string-id");
+    PrimitiveType intType = new PrimitiveType(language, "Integer", "int-id");
+    language.addElement(stringType);
+    language.addElement(intType);
+
+    assertEquals(stringType, language.getDataTypeByName("String"));
+    assertEquals(intType, language.getDataTypeByName("Integer"));
+  }
+
+  @Test
+  public void getDataTypeByNameCaseSensitive() {
+    Language language = new Language("TestLanguage");
+    PrimitiveType stringType = new PrimitiveType(language, "String", "string-id");
+    language.addElement(stringType);
+
+    assertNotNull(language.getDataTypeByName("String"));
+    assertNull(language.getDataTypeByName("string"));
+    assertNull(language.getDataTypeByName("STRING"));
+  }
+
+  // ========== requireDataTypeByName() Tests ==========
+
+  @Test
+  public void requireDataTypeByNamePrimitiveType() {
+    Language language = new Language("TestLanguage");
+    PrimitiveType intType = new PrimitiveType(language, "Integer", "int-id");
+    language.addElement(intType);
+
+    DataType<?> result = language.requireDataTypeByName("Integer");
+
+    assertNotNull(result);
+    assertEquals(intType, result);
+    assertEquals("Integer", result.getName());
+  }
+
+  @Test
+  public void requireDataTypeByNameEnumeration() {
+    Language language = new Language("TestLanguage");
+    Enumeration colorEnum = new Enumeration(language, "Color", "color-id");
+    language.addElement(colorEnum);
+
+    DataType<?> result = language.requireDataTypeByName("Color");
+
+    assertNotNull(result);
+    assertEquals(colorEnum, result);
+    assertTrue(result instanceof Enumeration);
+  }
+
+  @Test
+  public void requireDataTypeByNameStructuredDataType() {
+    Language language = new Language("TestLanguage");
+    StructuredDataType positionType = new StructuredDataType(language, "Position", "position-id");
+    language.addElement(positionType);
+
+    DataType<?> result = language.requireDataTypeByName("Position");
+
+    assertNotNull(result);
+    assertEquals(positionType, result);
+  }
+
+  @Test
+  public void requireDataTypeByNameNotFound() {
+    Language language = new Language("TestLanguage");
+
+    try {
+      language.requireDataTypeByName("NonExistent");
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      assertEquals("DataType named NonExistent was not found", e.getMessage());
+    }
+  }
+
+  @Test(expected = NullPointerException.class)
+  public void requireDataTypeByNameNullName() {
+    Language language = new Language("TestLanguage");
+    language.requireDataTypeByName(null);
+  }
+
+  @Test
+  public void requireDataTypeByNameNullNameMessage() {
+    Language language = new Language("TestLanguage");
+
+    try {
+      language.requireDataTypeByName(null);
+      fail("Expected NullPointerException");
+    } catch (NullPointerException e) {
+      assertEquals("name should not be null", e.getMessage());
+    }
+  }
+
+  @Test
+  public void requireDataTypeByNameEmptyName() {
+    Language language = new Language("TestLanguage");
+
+    try {
+      language.requireDataTypeByName("");
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      assertTrue(e.getMessage().contains("DataType named  was not found"));
+    }
+  }
+
+  @Test
+  public void requireDataTypeByNameThrowsOnConcept() {
+    Language language = new Language("TestLanguage");
+    Concept concept = new Concept(language, "Company", "company-id");
+    language.addElement(concept);
+
+    try {
+      language.requireDataTypeByName("Company");
+      fail("Expected RuntimeException");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("is not a DataType"));
+    }
+  }
+
+  @Test
+  public void requireDataTypeByNameThrowsOnInterface() {
+    Language language = new Language("TestLanguage");
+    Interface entityInterface = new Interface(language, "Entity", "entity-id");
+    language.addElement(entityInterface);
+
+    try {
+      language.requireDataTypeByName("Entity");
+      fail("Expected RuntimeException");
+    } catch (RuntimeException e) {
+      assertTrue(e.getMessage().contains("is not a DataType"));
+    }
+  }
+
+  @Test
+  public void requireDataTypeByNameVerifyDifferenceFromGet() {
+    Language language = new Language("TestLanguage");
+
+    // requireDataTypeByName should throw when not found
+    try {
+      language.requireDataTypeByName("Missing");
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // Expected
+    }
+
+    // getDataTypeByName should return null when not found
+    assertNull(language.getDataTypeByName("Missing"));
+  }
+
+  // ========== getEnumerations() Tests ==========
+
+  @Test
+  public void getEnumerationsEmptyLanguage() {
+    Language language = new Language("TestLanguage");
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void getEnumerationsSingleEnumeration() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    language.addElement(statusEnum);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals(statusEnum, result.get(0));
+    assertEquals("Status", result.get(0).getName());
+  }
+
+  @Test
+  public void getEnumerationsMultipleEnumerations() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    Enumeration colorEnum = new Enumeration(language, "Color", "color-id");
+    Enumeration priorityEnum = new Enumeration(language, "Priority", "priority-id");
+    language.addElement(statusEnum);
+    language.addElement(colorEnum);
+    language.addElement(priorityEnum);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertEquals(3, result.size());
+    assertTrue(result.contains(statusEnum));
+    assertTrue(result.contains(colorEnum));
+    assertTrue(result.contains(priorityEnum));
+  }
+
+  @Test
+  public void getEnumerationsMixedWithOtherElements() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    Concept personConcept = new Concept(language, "Person", "person-id");
+    Interface namedInterface = new Interface(language, "Named", "named-id");
+    PrimitiveType stringType = new PrimitiveType(language, "String", "string-id");
+    language.addElement(statusEnum);
+    language.addElement(personConcept);
+    language.addElement(namedInterface);
+    language.addElement(stringType);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals(statusEnum, result.get(0));
+  }
+
+  @Test
+  public void getEnumerationsNoConcepts() {
+    Language language = new Language("TestLanguage");
+    Concept personConcept = new Concept(language, "Person", "person-id");
+    Concept companyConcept = new Concept(language, "Company", "company-id");
+    Interface namedInterface = new Interface(language, "Named", "named-id");
+    language.addElement(personConcept);
+    language.addElement(companyConcept);
+    language.addElement(namedInterface);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertTrue(result.isEmpty());
+    assertEquals(0, result.size());
+  }
+
+  @Test
+  public void getEnumerationsPreservesOrder() {
+    Language language = new Language("TestLanguage");
+    Enumeration firstEnum = new Enumeration(language, "First", "first-id");
+    Enumeration secondEnum = new Enumeration(language, "Second", "second-id");
+    Enumeration thirdEnum = new Enumeration(language, "Third", "third-id");
+    language.addElement(firstEnum);
+    language.addElement(secondEnum);
+    language.addElement(thirdEnum);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertEquals(3, result.size());
+    assertEquals(firstEnum, result.get(0));
+    assertEquals(secondEnum, result.get(1));
+    assertEquals(thirdEnum, result.get(2));
+  }
+
+  @Test
+  public void getEnumerationsWithAllDataTypes() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    PrimitiveType intType = new PrimitiveType(language, "Integer", "int-id");
+    StructuredDataType addressType = new StructuredDataType(language, "Address", "address-id");
+    language.addElement(statusEnum);
+    language.addElement(intType);
+    language.addElement(addressType);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals(statusEnum, result.get(0));
+  }
+
+  @Test
+  public void getEnumerationsReturnsDifferentListInstance() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    language.addElement(statusEnum);
+
+    List<Enumeration> result1 = language.getEnumerations();
+    List<Enumeration> result2 = language.getEnumerations();
+
+    assertNotSame(result1, result2);
+    assertEquals(result1.size(), result2.size());
+    assertEquals(result1.get(0), result2.get(0));
+  }
+
+  @Test
+  public void getEnumerationsResultIsModifiable() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    language.addElement(statusEnum);
+
+    List<Enumeration> result = language.getEnumerations();
+    result.clear();
+    assertEquals(0, result.size());
+
+    // Original language should still have the enumeration
+    assertEquals(1, language.getEnumerations().size());
+  }
+
+  @Test
+  public void getEnumerationsWithLiterals() {
+    Language language = new Language("TestLanguage");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+
+    EnumerationLiteral activeLiteral = new EnumerationLiteral(language.getLionWebVersion());
+    activeLiteral.setName("ACTIVE");
+    activeLiteral.setID("active-id");
+    statusEnum.addLiteral(activeLiteral);
+
+    EnumerationLiteral inactiveLiteral = new EnumerationLiteral(language.getLionWebVersion());
+    inactiveLiteral.setName("INACTIVE");
+    inactiveLiteral.setID("inactive-id");
+    statusEnum.addLiteral(inactiveLiteral);
+
+    language.addElement(statusEnum);
+
+    List<Enumeration> result = language.getEnumerations();
+
+    assertNotNull(result);
+    assertEquals(1, result.size());
+    assertEquals(2, result.get(0).getLiterals().size());
+  }
+
+  // ========== Integration Tests ==========
+
+  @Test
+  public void dataTypeMethodsIntegrationAllDataTypes() {
+    Language language = new Language("TestLanguage");
+    PrimitiveType boolType = new PrimitiveType(language, "Boolean", "bool-id");
+    Enumeration statusEnum = new Enumeration(language, "Status", "status-id");
+    StructuredDataType positionType = new StructuredDataType(language, "Position", "position-id");
+    language.addElement(boolType);
+    language.addElement(statusEnum);
+    language.addElement(positionType);
+
+    assertEquals(boolType, language.getDataTypeByName("Boolean"));
+    assertEquals(statusEnum, language.getDataTypeByName("Status"));
+    assertEquals(positionType, language.getDataTypeByName("Position"));
+
+    assertEquals(boolType, language.requireDataTypeByName("Boolean"));
+    assertEquals(statusEnum, language.requireDataTypeByName("Status"));
+    assertEquals(positionType, language.requireDataTypeByName("Position"));
+
+    List<Enumeration> enumerations = language.getEnumerations();
+    assertEquals(1, enumerations.size());
+    assertEquals(statusEnum, enumerations.get(0));
+  }
+
+  @Test
+  public void dataTypeMethodsIntegrationMultipleEnumerations() {
+    Language language = new Language("TestLanguage");
+    Enumeration enum1 = new Enumeration(language, "Color", "color-id");
+    Enumeration enum2 = new Enumeration(language, "Priority", "priority-id");
+    language.addElement(enum1);
+    language.addElement(enum2);
+
+    assertEquals(enum1, language.getDataTypeByName("Color"));
+    assertEquals(enum2, language.getDataTypeByName("Priority"));
+
+    List<Enumeration> enumerations = language.getEnumerations();
+    assertEquals(2, enumerations.size());
+    assertTrue(enumerations.contains(enum1));
+    assertTrue(enumerations.contains(enum2));
+  }
+
+  @Test
+  public void dataTypeMethodsIntegrationNotFoundScenarios() {
+    Language language = new Language("TestLanguage");
+    PrimitiveType stringType = new PrimitiveType(language, "String", "string-id");
+    language.addElement(stringType);
+
+    assertNull(language.getDataTypeByName("NonExistent"));
+    try {
+      language.requireDataTypeByName("NonExistent");
+      fail("Expected IllegalArgumentException");
+    } catch (IllegalArgumentException e) {
+      // Expected
+    }
+
+    assertNotNull(language.getDataTypeByName("String"));
+    assertNotNull(language.requireDataTypeByName("String"));
+  }
 }
