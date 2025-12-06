@@ -119,6 +119,15 @@ class GenerationContext {
     return getGeneratedName(interf, true);
   }
 
+  String getGeneratedName(Classifier<?> classifier) {
+    if (classifier instanceof Concept) {
+      return getGeneratedName((Concept) classifier);
+    } else if (classifier instanceof Interface) {
+      return getGeneratedName((Interface) classifier);
+    }
+    throw new UnsupportedOperationException("Not yet implemented");
+  }
+
   String getGeneratedName(Interface interf, boolean versionedIfNecessary) {
     if (isGeneratedLanguage(interf.getLanguage())) {
       String interfName = capitalize(interf.getName());
@@ -197,7 +206,7 @@ class GenerationContext {
   TypeName typeFor(Classifier<?> classifier) {
     if (isGeneratedLanguage(classifier.getLanguage())) {
       return ClassName.get(
-          generationPackage(classifier.getLanguage()), pascalCase(classifier.getName()));
+          generationPackage(classifier.getLanguage()), getGeneratedName(classifier));
     } else if (classifier.equals(LionCoreBuiltins.getNode(classifier.getLionWebVersion()))) {
       return TypeName.get(Node.class);
     } else {

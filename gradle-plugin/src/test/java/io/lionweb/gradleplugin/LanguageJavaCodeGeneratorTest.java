@@ -166,5 +166,4 @@ public class LanguageJavaCodeGeneratorTest extends AbstractGeneratorTest {
     generator.generate(languages, "my.pack");
     assertTrue(compileAllJavaFiles(destination));
   }
-
 }

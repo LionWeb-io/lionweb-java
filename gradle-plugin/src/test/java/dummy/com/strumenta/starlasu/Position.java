@@ -1,4 +1,3 @@
 package dummy.com.strumenta.starlasu;
 
-public class Position {
-}
+public class Position {}
