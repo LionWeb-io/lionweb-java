@@ -17,7 +17,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
@@ -123,18 +124,17 @@ public class LanguageJavaCodeGeneratorTest extends AbstractGeneratorTest {
     File destination = Files.createTempDirectory("gen").toFile();
     LanguageJavaCodeGenerator generator = new LanguageJavaCodeGenerator(destination);
 
-    List<String> paths =
-        Arrays.asList(
-            "/ast.language.v1.json",
-            "/ast.language.v2.json",
-            "/codebase.language.v1.json",
-            "/codebase.language.v2.json",
-            "/comments.language.v1.json",
-            "/migration.language.v1.json",
-            "/pipeline.language.v1.json");
-    // TODO load languages together, in topological order
-    // TODO generate for all the languages at once
-    List<SerializationChunk> chunks =
+    Set<String> paths =
+        new HashSet<>(
+            Arrays.asList(
+                "/ast.language.v1.json",
+                "/ast.language.v2.json",
+                "/codebase.language.v1.json",
+                "/codebase.language.v2.json",
+                "/comments.language.v1.json",
+                "/migration.language.v1.json",
+                "/pipeline.language.v1.json"));
+    Set<SerializationChunk> chunks =
         paths.stream()
             .map(
                 path -> {
@@ -145,10 +145,10 @@ public class LanguageJavaCodeGeneratorTest extends AbstractGeneratorTest {
                     throw new RuntimeException(e);
                   }
                 })
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    List<Language> languages =
+    Set<Language> languages =
         new TopologicalLanguageSorter(LionWebVersion.v2023_1)
             .topologicalSort(chunks).stream()
                 .map(
@@ -162,20 +162,9 @@ public class LanguageJavaCodeGeneratorTest extends AbstractGeneratorTest {
                       serialization.registerLanguage(language);
                       return language;
                     })
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     generator.generate(languages, "my.pack");
     assertTrue(compileAllJavaFiles(destination));
   }
 
-  private static String read(InputStream in) throws IOException {
-    StringBuilder sb = new StringBuilder();
-    try (BufferedReader r = new BufferedReader(new InputStreamReader(in, StandardCharsets.UTF_8))) {
-      char[] buf = new char[2048];
-      int n;
-      while ((n = r.read(buf)) != -1) {
-        sb.append(buf, 0, n);
-      }
-    }
-    return sb.toString();
-  }
 }

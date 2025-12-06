@@ -34,8 +34,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     generate(language, new GenerationContext(language, packageName));
   }
 
+    public void generate(
+            @Nonnull Collection<Language> languages,
+            @Nullable String defaultPackageName) {
+        generate(languages, defaultPackageName, Collections.emptyMap(), Collections.emptyMap());
+    }
+
   public void generate(
-      @Nonnull List<Language> languages,
+      @Nonnull Collection<Language> languages,
       @Nullable String defaultPackageName,
       @Nonnull Map<String, String> specificPackages,
       @Nonnull Map<String, String> primitiveTypes) {
@@ -668,7 +674,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .beginControlFlow("if ($N == null)", "value")
               .beginControlFlow("if ($N != null)", "partitionObserverCache")
               .addStatement(
-                  "$N.referenceValueRemoved(this, this.getClassifier().requirePropertyByName($S), $L, $N)",
+                  "$N.referenceValueRemoved(this, this.getClassifier().requireReferenceByName($S), $L, $N)",
                   "partitionObserverCache",
                   reference.getName(),
                   0,
@@ -682,8 +688,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addStatement(
                   "$N.referenceValueChanged("
                       + "this, "
-                      + "$N, "
-                      + "this.getClassifier().requirePropertyByName($S), "
+                      + "this.getClassifier().requireReferenceByName($S), 0, "
                       + "oldValue.getReferredID(), "
                       + "oldValue.getResolveInfo(), "
                       + "$N.getReferredID(), "
@@ -691,12 +696,11 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                       + ")",
                   "partitionObserverCache",
                   reference.getName(),
-                  0,
                   "value",
                   "value")
               .nextControlFlow("else")
               .addStatement(
-                  "$N.referenceValueAdded(this, this.getClassifier().requirePropertyByName($S), $L, $N)",
+                  "$N.referenceValueAdded(this, this.getClassifier().requireReferenceByName($S), $L, $N)",
                   "partitionObserverCache",
                   reference.getName(),
                   0,

@@ -63,7 +63,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                 .collect(Collectors.toList()));
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(lionWebVersion);
-    List<Language> languages =
+    Set<Language> languages =
         sortedChunks.stream()
             .map(
                 chunk -> {
@@ -77,7 +77,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                   serialization.registerLanguage(language);
                   return language;
                 })
-            .collect(Collectors.toList());
+            .collect(Collectors.toSet());
 
     nodeClassesJavaCodeGenerator.generate(
         languages,
