@@ -119,13 +119,13 @@ public class Instantiator {
             new Annotation(lionWebVersion).setID(serializedNode.getID()));
     if (lionWebVersion != LionWebVersion.v2023_1) {
       customDeserializers.put(
-              LionCore.getStructuredDataType().getID(),
-              (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
-                      new StructuredDataType(null, null, serializedNode.getID()));
+          LionCore.getStructuredDataType().getID(),
+          (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
+              new StructuredDataType(null, null, serializedNode.getID()));
       customDeserializers.put(
-              LionCore.getField().getID(),
-              (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
-                      new Field(null, null, serializedNode.getID()));
+          LionCore.getField().getID(),
+          (concept, serializedNode, deserializedNodesByID, propertiesValues) ->
+              new Field(null, null, serializedNode.getID()));
     }
   }
 }
