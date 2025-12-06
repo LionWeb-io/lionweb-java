@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.2.2
+
+* Do not register types introduced in LW 2024.1 when using LW 2023
+* When comparing Chunks, check also used languages
+
 ### Version 1.2.1
 
 * Improve generation of Language Classes from the Gradle Plugin
