@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.2.1
+
+* Improve generation of Language Classes from the Gradle Plugin
+* Adding generation of AST Classes from the Gradle Plugin
+
 ### Version 1.2.0
 
 * Preliminary work to support delta protocol
