@@ -142,16 +142,27 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .orElse(null);
   }
 
-  public @Nullable Enumeration getEnumerationByName(String name) {
+  public @Nullable Enumeration getEnumerationByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     return getElements().stream()
         .filter(element -> element instanceof Enumeration)
         .map(element -> (Enumeration) element)
-        .filter(element -> element.getName().equals(name))
+        .filter(element -> Objects.equals(element.getName(), name))
         .findFirst()
         .orElse(null);
   }
 
-  public Concept requireConceptByName(String name) {
+  /**
+   * Retrieves a {@link Concept} by its name, ensuring it exists. If no {@link Concept} with the
+   * specified name is found, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link Concept}; must not be null
+   * @return the {@link Concept} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no {@link Concept} with the specified name is found
+   */
+  public @Nonnull Concept requireConceptByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
     Concept concept = getConceptByName(name);
     if (concept == null) {
       throw new IllegalArgumentException("Concept named " + name + " was not found");
@@ -169,7 +180,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    * @throws NullPointerException if the name is null
    * @throws IllegalArgumentException if no classifier with the specified name is found
    */
-  public Classifier<?> requireClassifierByName(@Nonnull String name) {
+  public @Nonnull Classifier<?> requireClassifierByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     Classifier<?> classifier = getClassifierByName(name);
     if (classifier == null) {
@@ -188,7 +199,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    * @throws NullPointerException if the name is null
    * @throws IllegalArgumentException if no interface with the specified name is found
    */
-  public Interface requireInterfaceByName(@Nonnull String name) {
+  public @Nonnull Interface requireInterfaceByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     Interface interf = getInterfaceByName(name);
     if (interf == null) {
@@ -207,7 +218,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    * @throws NullPointerException if the name is null
    * @throws IllegalArgumentException if no annotation with the specified name is found
    */
-  public Annotation requireAnnotationByName(@Nonnull String name) {
+  public @Nonnull Annotation requireAnnotationByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     Annotation annotation = getAnnotationByName(name);
     if (annotation == null) {
@@ -226,7 +237,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    * @throws NullPointerException if the name is null
    * @throws IllegalArgumentException if no
    */
-  public PrimitiveType requirePrimitiveTypeByName(@Nonnull String name) {
+  public @Nonnull PrimitiveType requirePrimitiveTypeByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     PrimitiveType primitiveType = getPrimitiveTypeByName(name);
     if (primitiveType == null) {
@@ -236,7 +247,16 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
-  public DataType<?> requireDataTypeByName(@Nonnull String name) {
+  /**
+   * Ensures the retrieval of a {@link DataType} by its name. If no {@link DataType} with the
+   * specified name exists, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link DataType}; must not be null
+   * @return the {@link DataType} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no {@link DataType} with the specified name is found
+   */
+  public @Nonnull DataType<?> requireDataTypeByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
     DataType<?> dataType = getDataTypeByName(name);
     if (dataType == null) {
@@ -320,6 +340,19 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
+  /**
+   * Retrieves a {@link DataType} by its name from the list of elements. If an element with the
+   * specified name exists and is an instance of {@link DataType}, it is returned. If the element
+   * exists but is not a {@link DataType}, a {@link RuntimeException} is thrown. If no element with
+   * the specified name exists, null is returned.
+   *
+   * @param name the name of the desired {@link DataType}; must not be null
+   * @return the {@link DataType} with the specified name if found and valid, or null if no such
+   *     element exists
+   * @throws NullPointerException if the name is null
+   * @throws RuntimeException if an element with the specified name exists but is not a {@link
+   *     DataType}
+   */
   public @Nullable DataType<?> getDataTypeByName(@Nonnull String name) {
     Objects.requireNonNull(name);
     LanguageEntity<?> element = this.getElementByName(name);
@@ -327,7 +360,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
       return null;
     }
     if (element instanceof DataType) {
-      return (DataType) element;
+      return (DataType<?>) element;
     } else {
       throw new RuntimeException("Element " + name + " is not a DataType");
     }
@@ -358,6 +391,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     return new LanguageValidator().validate(this);
   }
 
+  /**
+   * Retrieves a list of all elements that are instances of StructuredDataType.
+   *
+   * @return a non-null list of StructuredDataType objects filtered from the available elements.
+   */
   public @Nonnull List<StructuredDataType> getStructuredDataTypes() {
     return getElements().stream()
         .filter(e -> e instanceof StructuredDataType)
@@ -365,6 +403,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .collect(Collectors.toList());
   }
 
+  /**
+   * Retrieves a list of Concept objects from the underlying elements.
+   *
+   * @return a non-null list containing all elements filtered and cast as Concept objects
+   */
   public @Nonnull List<Concept> getConcepts() {
     return getElements().stream()
         .filter(e -> e instanceof Concept)
@@ -372,6 +415,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .collect(Collectors.toList());
   }
 
+  /**
+   * Retrieves a list of elements filtered to include only instances of Interface.
+   *
+   * @return a non-null list of Interface objects extracted from the elements.
+   */
   public @Nonnull List<Interface> getInterfaces() {
     return getElements().stream()
         .filter(e -> e instanceof Interface)
@@ -379,6 +427,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .collect(Collectors.toList());
   }
 
+  /**
+   * Retrieves a list of annotation definitions from the current elements.
+   *
+   * @return a list of {@link Annotation} objects collected from the elements
+   */
   public @Nonnull List<Annotation> getAnnotationDefinitions() {
     return getElements().stream()
         .filter(e -> e instanceof Annotation)
@@ -386,6 +439,11 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
         .collect(Collectors.toList());
   }
 
+  /**
+   * Retrieves a list of all Enumeration instances from the collection of elements.
+   *
+   * @return a non-null list of Enumeration objects extracted and filtered from the elements.
+   */
   public @Nonnull List<Enumeration> getEnumerations() {
     return getElements().stream()
         .filter(e -> e instanceof Enumeration)
