@@ -148,8 +148,7 @@ class GenerationContext {
     return getGeneratedName(enumeration, true);
   }
 
-  String getGeneratedName(
-      io.lionweb.language.Enumeration enumeration, boolean versionedIfNecessary) {
+  String getGeneratedName(Enumeration enumeration, boolean versionedIfNecessary) {
     if (isGeneratedLanguage(enumeration.getLanguage())) {
       String interfName = capitalize(enumeration.getName());
       if (versionedIfNecessary && ambiguousLanguages().contains(enumeration.getLanguage())) {

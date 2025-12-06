@@ -3,7 +3,6 @@ package io.lionweb.gradleplugin.generators;
 import static io.lionweb.gradleplugin.generators.NamingUtils.*;
 
 import com.palantir.javapoet.*;
-import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
 import io.lionweb.model.ClassifierInstance;
@@ -19,6 +18,10 @@ import javax.lang.model.element.Modifier;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * The NodeClassesJavaCodeGenerator class is responsible for generating Java code for node classes
+ * based on provided models, languages, and configurations.
+ */
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   /**
    * Constructs a NodeClassesJavaCodeGenerator with a specified destination directory.
@@ -74,18 +77,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   private void generate(@Nonnull Language language, @Nonnull GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(generationContext, "languageContext should not be null");
-    language
-        .getConcepts()
-        .forEach(
-            concept -> {
-              generateConcept(concept, generationContext);
-            });
-    language
-        .getInterfaces()
-        .forEach(
-            interf -> {
-              generateInterface(interf, generationContext);
-            });
+    language.getConcepts().forEach(concept -> generateConcept(concept, generationContext));
+    language.getInterfaces().forEach(interf -> generateInterface(interf, generationContext));
     language
         .getStructuredDataTypes()
         .forEach(
@@ -94,25 +87,16 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             });
     language
         .getEnumerations()
-        .forEach(
-            enumeration -> {
-              generateEnumeration(enumeration, generationContext);
-            });
+        .forEach(enumeration -> generateEnumeration(enumeration, generationContext));
   }
 
   private void generateEnumeration(
       @Nonnull Enumeration enumeration, @Nonnull GenerationContext generationContext) {
-    LionWebVersion lionWebVersion = enumeration.getLanguage().getLionWebVersion();
     String className = generationContext.getGeneratedName(enumeration);
 
     TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
 
-    enumeration
-        .getLiterals()
-        .forEach(
-            literal -> {
-              enumClass.addEnumConstant(literal.getName());
-            });
+    enumeration.getLiterals().forEach(literal -> enumClass.addEnumConstant(literal.getName()));
 
     String packageName = generationContext.generationPackage(enumeration.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
@@ -125,7 +109,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void generateConcept(
       @Nonnull Concept concept, @Nonnull GenerationContext generationContext) {
-    LionWebVersion lionWebVersion = concept.getLanguage().getLionWebVersion();
     String className = generationContext.getGeneratedName(concept);
 
     TypeName classifierInstanceOfUnknown =
@@ -144,10 +127,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     }
     concept
         .getImplemented()
-        .forEach(
-            ii -> {
-              conceptClass.addSuperinterface(generationContext.getInterfaceType(ii));
-            });
+        .forEach(ii -> conceptClass.addSuperinterface(generationContext.getInterfaceType(ii)));
     if (concept.isAbstract()) {
       conceptClass.addModifiers(Modifier.ABSTRACT);
     }
@@ -315,10 +295,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     ClassName REFERENCE = ClassName.get(Reference.class);
     ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
 
-    // List<? extends Node>
-    TypeName LIST_OF_WILDCARD_NODE =
-        ParameterizedTypeName.get(ClassName.get(List.class), WildcardTypeName.subtypeOf(NODE));
-
     // List<? extends ReferenceValue>
     TypeName LIST_OF_WILDCARD_REF_VALUE =
         ParameterizedTypeName.get(
@@ -442,26 +418,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       TypeSpec.Builder conceptClass,
       MethodSpec.Builder getPropertyValue,
       MethodSpec.Builder setPropertyValue) {
-    LionWebVersion lionWebVersion = property.getLionWebVersion();
     String fieldName = camelCase(property.getName());
     String getterName = "get" + pascalCase(property.getName());
     String setterName = "set" + pascalCase(property.getName());
-    TypeName fieldType;
-    String mappedQName = generationContext.primitiveTypeQName(property.getType().getID());
-    int index = mappedQName == null ? -1 : mappedQName.lastIndexOf(".");
-    String _packageName = index == -1 ? null : mappedQName.substring(0, index);
-    String _simpleName = index == -1 ? mappedQName : mappedQName.substring(index + 1);
-    if (mappedQName != null) {
-      fieldType = ClassName.get(_packageName, _simpleName);
-    } else if (property.getType().equals(LionCoreBuiltins.getString(lionWebVersion))) {
-      fieldType = ClassName.get(String.class);
-    } else if (property.getType().equals(LionCoreBuiltins.getInteger(lionWebVersion))) {
-      fieldType = TypeName.INT;
-    } else if (property.getType() instanceof Enumeration) {
-      fieldType = generationContext.getEnumerationTypeName((Enumeration) property.getType());
-    } else {
-      throw new UnsupportedOperationException("Unknown property type: " + property.getType());
-    }
+    TypeName fieldType = generationContext.typeFor(property.getType());
     conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
     getPropertyValue
         .beginControlFlow(
@@ -509,10 +469,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       TypeSpec.Builder conceptClass,
       MethodSpec.Builder getChildren,
       MethodSpec.Builder addChild1) {
-    LionWebVersion lionWebVersion = containment.getLionWebVersion();
     String fieldName = camelCase(containment.getName());
-    String getterName = "get" + pascalCase(containment.getName());
-    String setterName = "set" + pascalCase(containment.getName());
     TypeName baseFieldType = generationContext.typeFor(containment.getType());
     TypeName fieldType = baseFieldType;
     if (containment.isMultiple()) {
@@ -581,47 +538,12 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           .addStatement("return")
           .endControlFlow();
     }
-
-    //        setPropertyValue
-    //                .beginControlFlow(
-    //                        "if ($T.equals(property.getKey(), $S))",
-    //                        ClassName.get(Objects.class),
-    //                        property.getKey())
-    //                .addStatement("$L(($T) value)", setterName, fieldType)
-    //                .addStatement("return")
-    //                .endControlFlow();
-    //        MethodSpec getter =
-    //                MethodSpec.methodBuilder(getterName)
-    //                        .returns(generationContext.typeFor(property.getType()))
-    //                        .addModifiers(Modifier.PUBLIC)
-    //                        .addStatement("return $L", camelCase(property.getName()))
-    //                        .build();
-    //        conceptClass.addMethod(getter);
-    //        MethodSpec setter =
-    //                MethodSpec.methodBuilder(setterName)
-    //                        .addModifiers(Modifier.PUBLIC)
-    //                        .addParameter(
-    //
-    // ParameterSpec.builder(generationContext.typeFor(property.getType()), "value")
-    //                                        .build())
-    //                        .addCode(
-    //                                "if (partitionObserverCache != null) {\n"
-    //                                        + "      partitionObserverCache.propertyChanged(\n"
-    //                                        + "          this,
-    // this.getClassifier().requirePropertyByName($S), $L(), value);\n"
-    //                                        + "    }\n",
-    //                                property.getName(),
-    //                                getterName)
-    //                        .addStatement("this.$L = value", fieldName)
-    //                        .build();
-    //        conceptClass.addMethod(setter);
   }
 
   private static void considerConceptReference(
       @Nonnull Reference reference,
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass) {
-    LionWebVersion lionWebVersion = reference.getLionWebVersion();
     String fieldName = camelCase(reference.getName());
     String getterName = "get" + pascalCase(reference.getName());
     String setterName = "set" + pascalCase(reference.getName());
@@ -729,10 +651,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addModifiers(Modifier.PUBLIC);
     interf
         .getExtendedInterfaces()
-        .forEach(
-            ii -> {
-              interfClass.addSuperinterface(generationContext.getInterfaceType(ii));
-            });
+        .forEach(ii -> interfClass.addSuperinterface(generationContext.getInterfaceType(ii)));
 
     interf
         .getFeatures()
@@ -756,9 +675,32 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                                 .build())
                         .build());
               } else if (feature instanceof Containment) {
-
+                throw new UnsupportedOperationException("Containment not yet supported");
               } else if (feature instanceof Reference) {
-
+                Reference reference = (Reference) feature;
+                if (reference.isMultiple()) {
+                  String adderName = "addTo" + pascalCase(reference.getName());
+                  MethodSpec.Builder adder =
+                      MethodSpec.methodBuilder(adderName)
+                          .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                          .addParameter(TypeName.get(ReferenceValue.class), "referenceValue")
+                          .addParameter(TypeName.INT, "index")
+                          .returns(TypeName.INT);
+                  interfClass.addMethod(adder.build());
+                } else {
+                  MethodSpec.Builder setter =
+                      MethodSpec.methodBuilder("set" + NamingUtils.capitalize(reference.getName()))
+                          .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                          .addParameter(TypeName.get(ReferenceValue.class), "value")
+                          .returns(TypeName.VOID);
+                  interfClass.addMethod(setter.build());
+                  MethodSpec getter =
+                      MethodSpec.methodBuilder("get" + NamingUtils.capitalize(reference.getName()))
+                          .returns(ClassName.get(ReferenceValue.class))
+                          .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                          .build();
+                  interfClass.addMethod(getter);
+                }
               } else {
                 throw new IllegalStateException("Unknown feature type: " + feature.getClass());
               }
