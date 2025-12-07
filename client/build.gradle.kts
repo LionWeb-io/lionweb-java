@@ -6,9 +6,9 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
-    alias(libs.plugins.vtPublish)
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.buildConfig)
+    alias(libs.plugins.vt.publish)
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.build.config)
 }
 
 repositories {

@@ -1,31 +1,31 @@
 [versions]
-kotlinVersion="2.0.21"
-lwJavaVersion="1.2.0"
-kotestVersion="5.9.1"
-testcontainersVersion="1.21.3"
+kotlin ="2.0.21"
+lwjava ="1.2.2"
+kotest ="5.9.1"
+testcontainers ="1.21.3"
 
 [plugins]
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.1.0" }
-kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinVersion" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version = "2.1.0" }
-vtPublish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
-buildConfig = { id = "com.github.gmazzo.buildconfig", version = "5.7.1" }
+vt-publish = { id = "com.vanniktech.maven.publish", version = "0.34.0" }
+build-config = { id = "com.github.gmazzo.buildconfig", version = "5.7.1" }
 release = { id = "net.researchgate.release", version = "3.1.0"}
 versioncheck = { id="com.github.ben-manes.versions", version = "0.53.0" }
 
 [libraries]
 okhttp = { group = "com.squareup.okhttp3", name="okhttp", version="4.12.0"}
 gson = { group = "com.google.code.gson", name="gson", version="2.13.0" }
-kotlin-reflect = { group = "org.jetbrains.kotlin", name="kotlin-reflect", version.ref = "kotlinVersion" }
-ktest-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlinVersion" }
-lwjava-core = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-core", version.ref = "lwJavaVersion"}
-lwjava-client = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-client", version.ref = "lwJavaVersion"}
-lwjava-client-testing = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-client-testing", version.ref = "lwJavaVersion"}
-lwjava-extensions = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-extensions", version.ref = "lwJavaVersion"}
-kotest-runner = { module="io.kotest:kotest-runner-junit5-jvm", version.ref = "kotestVersion"}
-kotest-assertions = { module="io.kotest:kotest-assertions-core", version.ref = "kotestVersion"}
-kotest-property = { module="io.kotest:kotest-property", version.ref = "kotestVersion" }
-testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainersVersion" }
-testcontainers-junit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainersVersion" }
-testcontainers-pg = { module="org.testcontainers:postgresql", version.ref = "testcontainersVersion" }
+kotlin-reflect = { group = "org.jetbrains.kotlin", name="kotlin-reflect", version.ref = "kotlin" }
+ktest-junit = { group = "org.jetbrains.kotlin", name = "kotlin-test-junit5", version.ref = "kotlin" }
+lwjava-core = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-core", version.ref = "lwjava" }
+lwjava-client = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-client", version.ref = "lwjava" }
+lwjava-client-testing = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-client-testing", version.ref = "lwjava" }
+lwjava-extensions = { group = "io.lionweb.lionweb-java", name = "lionweb-java-2024.1-extensions", version.ref = "lwjava" }
+kotest-runner = { module="io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
+kotest-assertions = { module="io.kotest:kotest-assertions-core", version.ref = "kotest" }
+kotest-property = { module="io.kotest:kotest-property", version.ref = "kotest" }
+testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-junit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-pg = { module="org.testcontainers:postgresql", version.ref = "testcontainers" }
 protobuf = { module="com.google.protobuf:protobuf-java", version = "4.33.0" }

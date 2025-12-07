@@ -1,10 +1,10 @@
 plugins {
     `jvm-test-suite`
-    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
-    alias(libs.plugins.vtPublish)
+    alias(libs.plugins.vt.publish)
 }
 
 repositories {
