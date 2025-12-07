@@ -110,7 +110,10 @@ class GenerationContext {
         .collect(Collectors.toSet());
   }
 
-  CodeBlock resolveLanguage(Language language) {
+  CodeBlock resolveLanguage(Language language, Language languageBeingGenerated) {
+      if (language.equals(languageBeingGenerated)) {
+          return CodeBlock.of("this");
+      }
     if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
       return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
     } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {
