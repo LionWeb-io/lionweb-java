@@ -190,7 +190,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .returns(ClassName.get(Concept.class))
             .addStatement(
                 "return $L.$L()",
-                generationContext.resolveLanguage(concept.getLanguage()),
+                generationContext.resolveLanguage(concept.getLanguage(), null),
                 "get" + generationContext.getGeneratedName(concept, false))
             .build());
     MethodSpec.Builder getPropertyValue =
