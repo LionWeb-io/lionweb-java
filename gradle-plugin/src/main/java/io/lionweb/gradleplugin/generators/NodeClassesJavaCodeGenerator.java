@@ -39,7 +39,12 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   public void generate(
       @Nonnull Collection<Language> languages, @Nullable String defaultPackageName) {
-    generate(languages, defaultPackageName, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+    generate(
+        languages,
+        defaultPackageName,
+        Collections.emptyMap(),
+        Collections.emptyMap(),
+        Collections.emptyMap());
   }
 
   public void generate(

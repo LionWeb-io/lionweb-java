@@ -23,30 +23,39 @@ import javax.annotation.Nullable;
  */
 class GenerationContext {
 
-    public boolean hasOverridenName(@Nonnull Language language) {
-        Objects.requireNonNull(language, "language should not be null");
-        LanguageGenerationConfiguration languageGenerationConfiguration = languageConfs.stream().filter(entry -> entry.language.equals(language)).findFirst().orElse(null);
-        if (languageGenerationConfiguration == null) {
-            return false;
-        }
-        return languageGenerationConfiguration.overriddenClassName != null;
+  public boolean hasOverridenName(@Nonnull Language language) {
+    Objects.requireNonNull(language, "language should not be null");
+    LanguageGenerationConfiguration languageGenerationConfiguration =
+        languageConfs.stream()
+            .filter(entry -> entry.language.equals(language))
+            .findFirst()
+            .orElse(null);
+    if (languageGenerationConfiguration == null) {
+      return false;
     }
+    return languageGenerationConfiguration.overriddenClassName != null;
+  }
 
-    public @Nonnull String getOverriddenName(@Nonnull Language language) {
-        Objects.requireNonNull(language, "language should not be null");
-        LanguageGenerationConfiguration languageGenerationConfiguration = languageConfs.stream().filter(entry -> entry.language.equals(language)).findFirst().orElse(null);
-        if (languageGenerationConfiguration == null) {
-            throw new IllegalArgumentException("Language not generated: " + language.getName());
-        }
-        return languageGenerationConfiguration.overriddenClassName;
+  public @Nonnull String getOverriddenName(@Nonnull Language language) {
+    Objects.requireNonNull(language, "language should not be null");
+    LanguageGenerationConfiguration languageGenerationConfiguration =
+        languageConfs.stream()
+            .filter(entry -> entry.language.equals(language))
+            .findFirst()
+            .orElse(null);
+    if (languageGenerationConfiguration == null) {
+      throw new IllegalArgumentException("Language not generated: " + language.getName());
     }
+    return languageGenerationConfiguration.overriddenClassName;
+  }
 
-    static class LanguageGenerationConfiguration {
+  static class LanguageGenerationConfiguration {
     final @Nonnull Language language;
     final @Nonnull String generationPackage;
     final @Nullable String overriddenClassName;
 
-    LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage, @Nullable String className) {
+    LanguageGenerationConfiguration(
+        @Nonnull Language language, @Nonnull String generationPackage, @Nullable String className) {
       Objects.requireNonNull(language, "language should not be null");
       Objects.requireNonNull(generationPackage, "generationPackage should not be null");
       this.language = language;
@@ -54,9 +63,9 @@ class GenerationContext {
       this.overriddenClassName = className;
     }
 
-      LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage) {
-          this(language, generationPackage, null);
-      }
+    LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage) {
+      this(language, generationPackage, null);
+    }
   }
 
   private final Set<LanguageGenerationConfiguration> languageConfs;
@@ -79,7 +88,9 @@ class GenerationContext {
       @Nonnull Map<String, String> languageClassNames) {
     this(
         new HashSet<>(
-            Arrays.asList(new LanguageGenerationConfiguration(language, generationPackage, languageClassNames.get(language.getID())))),
+            Arrays.asList(
+                new LanguageGenerationConfiguration(
+                    language, generationPackage, languageClassNames.get(language.getID())))),
         primitiveTypes);
   }
 
@@ -111,9 +122,9 @@ class GenerationContext {
   }
 
   CodeBlock resolveLanguage(Language language, Language languageBeingGenerated) {
-      if (language.equals(languageBeingGenerated)) {
-          return CodeBlock.of("this");
-      }
+    if (language.equals(languageBeingGenerated)) {
+      return CodeBlock.of("this");
+    }
     if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2023_1))) {
       return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCoreBuiltins, lionWebVersion);
     } else if (language.equals(LionCoreBuiltins.getInstance(LionWebVersion.v2024_1))) {

@@ -1,13 +1,13 @@
 package io.lionweb.gradleplugin.generators;
 
 import static io.lionweb.gradleplugin.generators.CommonClassNames.*;
+import static io.lionweb.gradleplugin.generators.CommonClassNames.enumerationLiteral;
 import static io.lionweb.gradleplugin.generators.NamingUtils.capitalize;
 import static io.lionweb.gradleplugin.generators.NamingUtils.toLanguageClassName;
 
 import com.palantir.javapoet.*;
 import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -52,17 +52,17 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     for (Language language : languages) {
       String packag = specificPackages.get(language.getID());
       if (packag == null) {
-          if (defaultPackageName == null) {
-              throw new IllegalArgumentException(
-                      "No default package name and no specific package name for language "
-                              + language.getID());
-          }
+        if (defaultPackageName == null) {
+          throw new IllegalArgumentException(
+              "No default package name and no specific package name for language "
+                  + language.getID());
+        }
 
-          packag = defaultPackageName;
+        packag = defaultPackageName;
       }
       String className = languageClassNames.get(language.getID());
       languageConfs.add(
-              new GenerationContext.LanguageGenerationConfiguration(language, packag, className));
+          new GenerationContext.LanguageGenerationConfiguration(language, packag, className));
     }
     GenerationContext languageContext = new GenerationContext(languageConfs);
     languages.forEach(
@@ -137,7 +137,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .forEach(
             dependency -> {
               constructor.addStatement(
-                  "this.addDependency($L)", generationContext.resolveLanguage(dependency, language));
+                  "this.addDependency($L)",
+                  generationContext.resolveLanguage(dependency, language));
             });
 
     MethodSpec getInstance =
@@ -216,7 +217,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
               concept
                   .getFeatures()
                   .forEach(
-                      feature -> initFeature(initMethod, feature, "concept", generationContext, language));
+                      feature ->
+                          initFeature(initMethod, feature, "concept", generationContext, language));
               languageClass.addMethod(initMethod.build());
 
               constructor.addStatement("init$L()", capitalize(concept.getName()));
@@ -279,50 +281,60 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .getAnnotationDefinitions()
         .forEach(
             annotationDef -> {
-              MethodSpec getter =
-                  MethodSpec.methodBuilder("get" + capitalize(annotationDef.getName()))
-                      .returns(annotationDefClass)
-                      .addModifiers(Modifier.PUBLIC)
-                      .addStatement(
-                          "return this.requireAnnotationByName($S)", annotationDef.getName())
-                      .build();
-              languageClass.addMethod(getter);
+              try {
+                MethodSpec getter =
+                    MethodSpec.methodBuilder("get" + capitalize(annotationDef.getName()))
+                        .returns(annotationDefClass)
+                        .addModifiers(Modifier.PUBLIC)
+                        .addStatement(
+                            "return this.requireAnnotationByName($S)", annotationDef.getName())
+                        .build();
+                languageClass.addMethod(getter);
 
-              MethodSpec.Builder initMethod =
-                  MethodSpec.methodBuilder("init" + capitalize(annotationDef.getName()))
-                      .addModifiers(Modifier.PRIVATE)
-                      .returns(void.class)
-                      .addStatement(
-                          "$T annotationDef = this.requireAnnotationByName($S)",
-                          annotationDefClass,
-                          annotationDef.getName());
-              if (annotationDef.getExtendedAnnotation() != null) {
+                MethodSpec.Builder initMethod =
+                    MethodSpec.methodBuilder("init" + capitalize(annotationDef.getName()))
+                        .addModifiers(Modifier.PRIVATE)
+                        .returns(void.class)
+                        .addStatement(
+                            "$T annotationDef = this.requireAnnotationByName($S)",
+                            annotationDefClass,
+                            annotationDef.getName());
+                if (annotationDef.getExtendedAnnotation() != null) {
+                  initMethod.addStatement(
+                      "annotationDef.setExtendedAnnotation($L)",
+                      toAnnotationExpr(
+                          annotationDef.getExtendedAnnotation(), generationContext, language));
+                }
+                annotationDef
+                    .getImplemented()
+                    .forEach(
+                        interf ->
+                            initMethod.addStatement(
+                                "annotationDef.addImplementedInterface($L)",
+                                toInterfaceExpr(interf, generationContext, language)));
                 initMethod.addStatement(
-                    "annotationDef.setExtendedAnnotation($L)",
-                    toAnnotationExpr(annotationDef.getExtendedAnnotation(), generationContext, language));
+                    "annotationDef.setAnnotates($L)",
+                    toClassifierExpr(annotationDef.getAnnotates(), generationContext, language));
+                annotationDef
+                    .getFeatures()
+                    .forEach(
+                        feature ->
+                            initFeature(
+                                initMethod, feature, "annotationDef", generationContext, language));
+                languageClass.addMethod(initMethod.build());
+
+                constructor.addStatement("init$L()", capitalize(annotationDef.getName()));
+
+                createElements.addStatement(
+                    "new $T(this, $S, $S, $S);",
+                    annotationDefClass,
+                    annotationDef.getName(),
+                    annotationDef.getID(),
+                    annotationDef.getKey());
+              } catch (RuntimeException e) {
+                throw new RuntimeException(
+                    "Issue generating annotation " + annotationDef.getName(), e);
               }
-              annotationDef
-                  .getImplemented()
-                  .forEach(
-                      interf ->
-                          initMethod.addStatement(
-                              "annotationDef.addImplementedInterface($L)",
-                              toInterfaceExpr(interf, generationContext, language)));
-              annotationDef
-                  .getFeatures()
-                  .forEach(
-                      feature ->
-                          initFeature(initMethod, feature, "annotationDef", generationContext, language));
-              languageClass.addMethod(initMethod.build());
-
-              constructor.addStatement("init$L()", capitalize(annotationDef.getName()));
-
-              createElements.addStatement(
-                  "new $T(this, $S, $S, $S);",
-                  annotationDefClass,
-                  annotationDef.getName(),
-                  annotationDef.getID(),
-                  annotationDef.getKey());
             });
 
     language
@@ -337,14 +349,27 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .forEach(
             element -> {
               if (element instanceof Enumeration) {
-                  createElements.addStatement(
-                          "$T $L = new $T(this, $S, $S);",
-                          enumeration,
-                          toVariableName(element.getName()),
-                          enumeration,
-                          element.getName(),
-                          element.getID());
-                  createElements.addStatement("$L.setKey($S)", toVariableName(element.getName()), element.getKey());
+                String varName = toVariableName(element.getName());
+                createElements.addStatement(
+                    "$T $L = new $T(this, $S, $S);",
+                    enumeration,
+                    varName,
+                    enumeration,
+                    element.getName(),
+                    element.getID());
+                createElements.addStatement("$L.setKey($S)", varName, element.getKey());
+                Enumeration enumeration = (Enumeration) element;
+                enumeration
+                    .getLiterals()
+                    .forEach(
+                        literal ->
+                            createElements.addStatement(
+                                "$L.addLiteral(new $T(this.getLionWebVersion(), $S).setID($S).setKey($S))",
+                                varName,
+                                enumerationLiteral,
+                                literal.getName(),
+                                literal.getID(),
+                                literal.getKey()));
               } else if (element instanceof PrimitiveType) {
                 createElements.addStatement(
                     "$T $L = new $T(this, $S, $S);",
@@ -353,7 +378,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
                     primitiveType,
                     element.getName(),
                     element.getID());
-                createElements.addStatement("$L.setKey($S)",toVariableName(element.getName()), element.getKey());
+                createElements.addStatement(
+                    "$L.setKey($S)", toVariableName(element.getName()), element.getKey());
               }
             });
 
@@ -385,7 +411,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toDataTypeExpr(((Property) feature).getType(), generationContext, languageBeingGenerated));
+          toDataTypeExpr(
+              ((Property) feature).getType(), generationContext, languageBeingGenerated));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
     } else if (feature instanceof Containment) {
       initMethod.addStatement(
@@ -399,7 +426,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toClassifierExpr(((Containment) feature).getType(), generationContext, languageBeingGenerated));
+          toClassifierExpr(
+              ((Containment) feature).getType(), generationContext, languageBeingGenerated));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
       initMethod.addStatement(
           "$L.setMultiple($L)", variableName, ((Containment) feature).isMultiple());
@@ -415,7 +443,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       initMethod.addStatement(
           "$L.setType($L)",
           variableName,
-          toClassifierExpr(((Reference) feature).getType(), generationContext, languageBeingGenerated));
+          toClassifierExpr(
+              ((Reference) feature).getType(), generationContext, languageBeingGenerated));
       initMethod.addStatement("$L.setOptional($L)", variableName, feature.isOptional());
       initMethod.addStatement(
           "$L.setMultiple($L)", variableName, ((Reference) feature).isMultiple());
@@ -424,7 +453,8 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
     }
   }
 
-  private CodeBlock toDataTypeExpr(DataType<?> dataType, GenerationContext generationContext, Language languageBeingGenerated) {
+  private CodeBlock toDataTypeExpr(
+      DataType<?> dataType, GenerationContext generationContext, Language languageBeingGenerated) {
     return CodeBlock.of(
         "$L.requireDataTypeByName($S)",
         generationContext.resolveLanguage(dataType.getLanguage(), languageBeingGenerated),
@@ -432,7 +462,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
   }
 
   private CodeBlock toClassifierExpr(
-      Classifier<?> classifierType, GenerationContext generationContext, Language languageBeingGenerated) {
+      Classifier<?> classifierType,
+      GenerationContext generationContext,
+      Language languageBeingGenerated) {
     return CodeBlock.of(
         "$L.requireClassifierByName($S)",
         generationContext.resolveLanguage(classifierType.getLanguage(), languageBeingGenerated),
@@ -440,14 +472,17 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
   }
 
   private CodeBlock toConceptExpr(
-      Classifier<?> classifierType, GenerationContext generationContext, Language languageBeingGenerated) {
+      Classifier<?> classifierType,
+      GenerationContext generationContext,
+      Language languageBeingGenerated) {
     return CodeBlock.of(
         "$L.requireConceptByName($S)",
         generationContext.resolveLanguage(classifierType.getLanguage(), languageBeingGenerated),
         classifierType.getName());
   }
 
-  private CodeBlock toAnnotationExpr(Annotation annotation, GenerationContext generationContext, Language languageBeingGenerated) {
+  private CodeBlock toAnnotationExpr(
+      Annotation annotation, GenerationContext generationContext, Language languageBeingGenerated) {
     return CodeBlock.of(
         "$L.requireAnnotationByName($S)",
         generationContext.resolveLanguage(annotation.getLanguage(), languageBeingGenerated),
@@ -455,7 +490,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
   }
 
   private CodeBlock toInterfaceExpr(
-      Classifier<?> classifierType, GenerationContext generationContext, Language languageBeingGenerated) {
+      Classifier<?> classifierType,
+      GenerationContext generationContext,
+      Language languageBeingGenerated) {
     return CodeBlock.of(
         "$L.requireInterfaceByName($S)",
         generationContext.resolveLanguage(classifierType.getLanguage(), languageBeingGenerated),
