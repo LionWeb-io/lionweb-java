@@ -337,16 +337,23 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .forEach(
             element -> {
               if (element instanceof Enumeration) {
-                throw new UnsupportedOperationException("Not yet implemented");
+                  createElements.addStatement(
+                          "$T $L = new $T(this, $S, $S);",
+                          enumeration,
+                          toVariableName(element.getName()),
+                          enumeration,
+                          element.getName(),
+                          element.getID());
+                  createElements.addStatement("$L.setKey($S)", toVariableName(element.getName()), element.getKey());
               } else if (element instanceof PrimitiveType) {
                 createElements.addStatement(
                     "$T $L = new $T(this, $S, $S);",
                     primitiveType,
-                    element.getName(),
+                    toVariableName(element.getName()),
                     primitiveType,
                     element.getName(),
                     element.getID());
-                createElements.addStatement("$L.setKey($S)", element.getName(), element.getKey());
+                createElements.addStatement("$L.setKey($S)",toVariableName(element.getName()), element.getKey());
               }
             });
 
