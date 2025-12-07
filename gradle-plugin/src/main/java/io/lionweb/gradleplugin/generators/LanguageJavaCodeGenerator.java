@@ -37,31 +37,31 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
    *     null
    * @param defaultPackageName the base package name under which the code will be generated; must
    *     not be null
-   * @throws IOException if an I/O error occurs during code generation
    */
   public void generate(
       @Nonnull Collection<Language> languages,
       @Nullable String defaultPackageName,
-      @Nonnull Map<String, String> specificPackages)
-      throws IOException {
+      @Nonnull Map<String, String> specificPackages,
+      @Nonnull Map<String, String> languageClassNames) {
     Objects.requireNonNull(languages, "languages should not be null");
     if (languages.isEmpty()) {
       return;
     }
     Set<GenerationContext.LanguageGenerationConfiguration> languageConfs = new HashSet<>();
     for (Language language : languages) {
-      String specificPackage = specificPackages.get(language.getID());
-      if (specificPackage != null) {
-        languageConfs.add(
-            new GenerationContext.LanguageGenerationConfiguration(language, specificPackage));
-      } else if (defaultPackageName != null) {
-        languageConfs.add(
-            new GenerationContext.LanguageGenerationConfiguration(language, defaultPackageName));
-      } else {
-        throw new IllegalArgumentException(
-            "No default package name and no specific package name for language "
-                + language.getID());
+      String packag = specificPackages.get(language.getID());
+      if (packag == null) {
+          if (defaultPackageName == null) {
+              throw new IllegalArgumentException(
+                      "No default package name and no specific package name for language "
+                              + language.getID());
+          }
+
+          packag = defaultPackageName;
       }
+      String className = languageClassNames.get(language.getID());
+      languageConfs.add(
+              new GenerationContext.LanguageGenerationConfiguration(language, packag, className));
     }
     GenerationContext languageContext = new GenerationContext(languageConfs);
     languages.forEach(

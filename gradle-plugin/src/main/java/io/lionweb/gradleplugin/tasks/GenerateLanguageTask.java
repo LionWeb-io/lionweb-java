@@ -67,9 +67,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
       List<SerializationChunk> chunks = loadChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
           .forEach(
-              lionWebVersion -> {
-                generateLanguagesForChunks(lionWebVersion, chunks, languageJavaCodeGenerator);
-              });
+              lionWebVersion -> generateLanguagesForChunks(lionWebVersion, chunks, languageJavaCodeGenerator));
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
@@ -106,7 +104,6 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                   return language;
                 })
             .collect(Collectors.toList());
-    try {
       if (languages.isEmpty()) {
         getLogger()
             .info("LionWeb Version " + lionWebVersion + " - No LionWeb Languages to generate");
@@ -120,10 +117,8 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
         languageJavaCodeGenerator.generate(
             languages,
             getDefaultPackageName().getOrNull(),
-            getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()));
+            getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
+                getLanguagesClassNames().getOrElse(Collections.emptyMap()));
       }
-    } catch (IOException ex) {
-      throw new RuntimeException(ex);
-    }
   }
 }

@@ -14,6 +14,7 @@ import io.lionweb.model.Node;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * Provides a context for language generation, containing configurations for language generation and
@@ -22,16 +23,40 @@ import javax.annotation.Nonnull;
  */
 class GenerationContext {
 
-  static class LanguageGenerationConfiguration {
+    public boolean hasOverridenName(@Nonnull Language language) {
+        Objects.requireNonNull(language, "language should not be null");
+        LanguageGenerationConfiguration languageGenerationConfiguration = languageConfs.stream().filter(entry -> entry.language.equals(language)).findFirst().orElse(null);
+        if (languageGenerationConfiguration == null) {
+            return false;
+        }
+        return languageGenerationConfiguration.overriddenClassName != null;
+    }
+
+    public @Nonnull String getOverriddenName(@Nonnull Language language) {
+        Objects.requireNonNull(language, "language should not be null");
+        LanguageGenerationConfiguration languageGenerationConfiguration = languageConfs.stream().filter(entry -> entry.language.equals(language)).findFirst().orElse(null);
+        if (languageGenerationConfiguration == null) {
+            throw new IllegalArgumentException("Language not generated: " + language.getName());
+        }
+        return languageGenerationConfiguration.overriddenClassName;
+    }
+
+    static class LanguageGenerationConfiguration {
     final @Nonnull Language language;
     final @Nonnull String generationPackage;
+    final @Nullable String overriddenClassName;
 
-    LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage) {
+    LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage, @Nullable String className) {
       Objects.requireNonNull(language, "language should not be null");
       Objects.requireNonNull(generationPackage, "generationPackage should not be null");
       this.language = language;
       this.generationPackage = generationPackage;
+      this.overriddenClassName = className;
     }
+
+      LanguageGenerationConfiguration(@Nonnull Language language, @Nonnull String generationPackage) {
+          this(language, generationPackage, null);
+      }
   }
 
   private final Set<LanguageGenerationConfiguration> languageConfs;
@@ -50,10 +75,11 @@ class GenerationContext {
   GenerationContext(
       @Nonnull Language language,
       @Nonnull String generationPackage,
-      @Nonnull Map<String, String> primitiveTypes) {
+      @Nonnull Map<String, String> primitiveTypes,
+      @Nonnull Map<String, String> languageClassNames) {
     this(
         new HashSet<>(
-            Arrays.asList(new LanguageGenerationConfiguration(language, generationPackage))),
+            Arrays.asList(new LanguageGenerationConfiguration(language, generationPackage, languageClassNames.get(language.getID())))),
         primitiveTypes);
   }
 

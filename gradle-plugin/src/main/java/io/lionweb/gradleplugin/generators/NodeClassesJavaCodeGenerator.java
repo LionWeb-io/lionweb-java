@@ -39,14 +39,15 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   public void generate(
       @Nonnull Collection<Language> languages, @Nullable String defaultPackageName) {
-    generate(languages, defaultPackageName, Collections.emptyMap(), Collections.emptyMap());
+    generate(languages, defaultPackageName, Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
   }
 
   public void generate(
       @Nonnull Collection<Language> languages,
       @Nullable String defaultPackageName,
       @Nonnull Map<String, String> specificPackages,
-      @Nonnull Map<String, String> primitiveTypes) {
+      @Nonnull Map<String, String> primitiveTypes,
+      @Nonnull Map<String, String> languageClassNames) {
     Objects.requireNonNull(languages, "languages should not be null");
     Objects.requireNonNull(specificPackages, "specificPackages should not be null");
     if (languages.isEmpty()) {
