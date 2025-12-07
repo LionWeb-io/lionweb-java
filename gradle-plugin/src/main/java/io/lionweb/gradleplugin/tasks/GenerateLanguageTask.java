@@ -67,7 +67,8 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
       List<SerializationChunk> chunks = loadChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
           .forEach(
-              lionWebVersion -> generateLanguagesForChunks(lionWebVersion, chunks, languageJavaCodeGenerator));
+              lionWebVersion ->
+                  generateLanguagesForChunks(lionWebVersion, chunks, languageJavaCodeGenerator));
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
@@ -104,21 +105,20 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                   return language;
                 })
             .collect(Collectors.toList());
-      if (languages.isEmpty()) {
-        getLogger()
-            .info("LionWeb Version " + lionWebVersion + " - No LionWeb Languages to generate");
-      } else {
-        getLogger()
-            .info(
-                "LionWeb Version "
-                    + lionWebVersion
-                    + " - Generation of LionWeb Languages: "
-                    + languages.stream().map(Language::getName).collect(Collectors.joining(", ")));
-        languageJavaCodeGenerator.generate(
-            languages,
-            getDefaultPackageName().getOrNull(),
-            getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
-                getLanguagesClassNames().getOrElse(Collections.emptyMap()));
-      }
+    if (languages.isEmpty()) {
+      getLogger().info("LionWeb Version " + lionWebVersion + " - No LionWeb Languages to generate");
+    } else {
+      getLogger()
+          .info(
+              "LionWeb Version "
+                  + lionWebVersion
+                  + " - Generation of LionWeb Languages: "
+                  + languages.stream().map(Language::getName).collect(Collectors.joining(", ")));
+      languageJavaCodeGenerator.generate(
+          languages,
+          getDefaultPackageName().getOrNull(),
+          getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
+          getLanguagesClassNames().getOrElse(Collections.emptyMap()));
+    }
   }
 }

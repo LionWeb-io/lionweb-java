@@ -75,7 +75,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     primitiveTypes.put(
         "com-strumenta-Starlasu-v2-Position-2-id", "dummy.com.strumenta.starlasu.Position");
     languagesGenerator.generate(languages, "my.pack");
-    nodeClassesGenerator.generate(languages, "my.pack", Collections.emptyMap(), primitiveTypes);
+    nodeClassesGenerator.generate(
+        languages, "my.pack", Collections.emptyMap(), primitiveTypes, Collections.emptyMap());
     assertTrue(compileAllJavaFiles(destination));
   }
 }
