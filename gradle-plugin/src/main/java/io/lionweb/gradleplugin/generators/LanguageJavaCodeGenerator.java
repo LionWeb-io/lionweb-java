@@ -6,10 +6,11 @@ import static io.lionweb.gradleplugin.generators.NamingUtils.toLanguageClassName
 
 import com.palantir.javapoet.*;
 import io.lionweb.language.*;
+import io.lionweb.language.Enumeration;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.util.Enumeration;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.lang.model.element.Modifier;
@@ -335,7 +336,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .getElements()
         .forEach(
             element -> {
-              if (element instanceof Enumeration<?>) {
+              if (element instanceof Enumeration) {
                 throw new UnsupportedOperationException("Not yet implemented");
               } else if (element instanceof PrimitiveType) {
                 createElements.addStatement(
