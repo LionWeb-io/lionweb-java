@@ -62,6 +62,9 @@ class NamingUtils {
     Objects.requireNonNull(language.getName(), "language.getName() should not be null");
     String[] parts = language.getName().split("\\.");
     String s = capitalize(parts[parts.length - 1]) + "Language";
+    if (generationContext != null && generationContext.hasOverridenName(language)) {
+        return generationContext.getOverriddenName(language);
+    }
     if (generationContext != null && generationContext.ambiguousLanguages().contains(language)) {
       s = s + "V" + language.getVersion();
     }

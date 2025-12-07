@@ -83,6 +83,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
         languages,
         getDefaultPackageName().getOrNull(),
         getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
-        getPrimitiveTypes().getOrElse(Collections.emptyMap()));
+        getPrimitiveTypes().getOrElse(Collections.emptyMap()),
+            getLanguagesClassNames().getOrElse(Collections.emptyMap()));
   }
 }
