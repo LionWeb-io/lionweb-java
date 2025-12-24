@@ -58,7 +58,7 @@ public class RepositoryStorage {
 
           public void addLanguageChunk(SerializationChunk chunk) {
             if (storeAlsoLanguages) {
-              server.store(repositoryName, chunk.getClassifierInstances());
+              server.createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
             }
           }
 
