@@ -56,17 +56,31 @@ public class SerializationProvider {
     return new ProtoBufSerialization();
   }
 
-  protected static void standardInitialization(AbstractSerialization serialization) {
-    serialization.classifierResolver.registerLanguage(
-        LionCore.getInstance(serialization.getLionWebVersion()));
-    serialization.instantiator.registerLionCoreCustomDeserializers(
-        serialization.getLionWebVersion());
+  /**
+   * In most cases you may want not to call this method directly but call
+   * getStandardJsonSerialization instead.
+   */
+  public static void standardInitialization(AbstractSerialization serialization) {
+    standardInitialization(serialization, serialization.getLionWebVersion());
+  }
+
+  /**
+   * In most cases you may want not to call this method directly but call
+   * getStandardJsonSerialization instead.
+   *
+   * <p>This method allows to consider core languages from a different LionWeb Version than the one
+   * used for serialization. This may be useful in the contest of upgrading or downgrading the
+   * LionWeb Version.
+   */
+  public static void standardInitialization(
+      AbstractSerialization serialization, LionWebVersion coreLanguagesVersion) {
+    serialization.classifierResolver.registerLanguage(LionCore.getInstance(coreLanguagesVersion));
+    serialization.instantiator.registerLionCoreCustomDeserializers(coreLanguagesVersion);
     serialization.primitiveValuesSerialization
-        .registerLionBuiltinsPrimitiveSerializersAndDeserializers(
-            serialization.getLionWebVersion());
+        .registerLionBuiltinsPrimitiveSerializersAndDeserializers(coreLanguagesVersion);
     serialization.instanceResolver.addAll(
-        LionCore.getInstance(serialization.getLionWebVersion()).thisAndAllDescendants());
+        LionCore.getInstance(coreLanguagesVersion).thisAndAllDescendants());
     serialization.instanceResolver.addAll(
-        LionCoreBuiltins.getInstance(serialization.getLionWebVersion()).thisAndAllDescendants());
+        LionCoreBuiltins.getInstance(coreLanguagesVersion).thisAndAllDescendants());
   }
 }
