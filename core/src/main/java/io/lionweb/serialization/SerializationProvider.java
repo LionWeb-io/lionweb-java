@@ -69,7 +69,7 @@ public class SerializationProvider {
    * getStandardJsonSerialization instead.
    *
    * <p>This method allows to consider core languages from a different LionWeb Version than the one
-   * used for serialization. This may be useful in the contest of upgrading or downgrading the
+   * used for serialization. This may be useful in the context of upgrading or downgrading the
    * LionWeb Version.
    */
   public static void standardInitialization(
