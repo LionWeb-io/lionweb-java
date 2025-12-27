@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 1.2.4
+
+* Refactor standardInitialization to support custom LionWeb versions
+
+### Version 1.2.3
+
+* Fixing and completing LanguageJavaCodeGenerator
+
 ### Version 1.2.2
 
 * Do not register types introduced in LW 2024.1 when using LW 2023
