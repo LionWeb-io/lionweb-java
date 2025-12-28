@@ -1,6 +1,6 @@
 [versions]
 kotlin ="2.0.21"
-lwjava ="1.2.2"
+lwjava ="1.2.4"
 kotest ="5.9.1"
 testcontainers ="1.21.3"
 
