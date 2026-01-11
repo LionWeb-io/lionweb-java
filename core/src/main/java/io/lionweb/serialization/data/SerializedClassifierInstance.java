@@ -48,7 +48,7 @@ public class SerializedClassifierInstance {
   }
 
   public void setParentNodeID(String parentNodeID) {
-    this.parentNodeID = parentNodeID;
+    this.parentNodeID = parentNodeID != null ? parentNodeID.intern() : null;
   }
 
   //
@@ -437,7 +437,7 @@ public class SerializedClassifierInstance {
     if (this.annotations == null) {
       this.annotations = new ArrayList<>(1);
     }
-    this.annotations.add(annotationID);
+    this.annotations.add(annotationID != null ? annotationID.intern() : null);
   }
 
   /**
@@ -472,7 +472,7 @@ public class SerializedClassifierInstance {
   }
 
   public void setID(String id) {
-    this.id = id;
+    this.id = id != null ? id.intern() : null;
   }
 
   @Override
