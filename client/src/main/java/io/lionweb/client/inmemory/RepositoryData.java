@@ -23,7 +23,9 @@ class RepositoryData {
       throw new IllegalArgumentException("Node " + nodeId + " does not exist");
     }
     nodesByID.remove(nodeId);
-    curr.getChildren().forEach(this::deleteNodeAndDescendant);
+    for (String childId : curr.getChildren()) {
+      deleteNodeAndDescendant(childId);
+    }
   }
 
   private class ChangeCalculator {
@@ -43,23 +45,36 @@ class RepositoryData {
         List<String> oldState,
         List<String> newState,
         String role) {
-      newState.stream()
-          .filter(n -> !oldState.contains(n))
-          .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
-      List<String> unknownNodes =
-          newState.stream()
-              .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
-              .collect(Collectors.toList());
+      for (String n : newState) {
+        if (!oldState.contains(n)) {
+          this.addedNodes.put(n, updatedNodesAsMap.get(n));
+        }
+      }
+      List<String> unknownNodes = new ArrayList<>();
+      for (String c : newState) {
+        if (!updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c)) {
+          unknownNodes.add(c);
+        }
+      }
       if (!unknownNodes.isEmpty()) {
         throw new IllegalArgumentException("We got unknown nodes as " + role + ": " + unknownNodes);
       }
-      this.removedNodes.addAll(
-          oldState.stream().filter(n -> !newState.contains(n)).collect(Collectors.toList()));
+      for (String n : oldState) {
+        if (!newState.contains(n)) {
+          this.removedNodes.add(n);
+        }
+      }
     }
 
     void store(List<SerializedClassifierInstance> updatedNodes) {
+      addedNodes.clear();
+      removedNodes.clear();
+
       Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
-      updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
+      for (SerializedClassifierInstance n : updatedNodes) {
+        updatedNodesAsMap.put(n.getID(), n);
+      }
+
       for (SerializedClassifierInstance updatedNode : updatedNodes) {
         if (nodesByID.containsKey(updatedNode.getID())) {
           SerializedClassifierInstance currentNode = nodesByID.get(updatedNode.getID());
@@ -88,7 +103,9 @@ class RepositoryData {
       // They have been moved and not removed
       removedNodes.removeAll(addedNodes.keySet());
       nodesByID.putAll(updatedNodesAsMap);
-      removedNodes.forEach(this::removeNode);
+      for (String removeNodeId : removedNodes) {
+        removeNode(removeNodeId);
+      }
     }
 
     private void removeNode(String removeNodeId) {
@@ -155,14 +172,18 @@ class RepositoryData {
 
   List<SerializedClassifierInstance> retrieveTrees(List<String> ids) {
     List<SerializedClassifierInstance> nodes = new ArrayList<>();
-    ids.forEach(n -> retrieveTree(n, nodes));
+    for (String n : ids) {
+      retrieveTree(n, nodes);
+    }
     return nodes;
   }
 
   private void retrieveTree(String id, List<SerializedClassifierInstance> nodes) {
     SerializedClassifierInstance n = nodesByID.get(id);
     nodes.add(n);
-    n.getChildren().forEach(c -> retrieveTree(c, nodes));
+    for (String c : n.getChildren()) {
+      retrieveTree(c, nodes);
+    }
   }
 
   void retrieve(String nodeId, int limit, List<SerializedClassifierInstance> retrieved) {
@@ -172,24 +193,20 @@ class RepositoryData {
     }
     retrieved.add(node);
     if (limit > 0) {
-      node.getChildren()
-          .forEach(
-              childId -> {
-                try {
-                  retrieve(childId, limit - 1, retrieved);
-                } catch (Exception e) {
-                  throw new RuntimeException("Unable to retrieve child of " + node, e);
-                }
-              });
-      node.getAnnotations()
-          .forEach(
-              annotationId -> {
-                try {
-                  retrieve(annotationId, limit - 1, retrieved);
-                } catch (Exception e) {
-                  throw new RuntimeException("Unable to retrieve annotation of " + node, e);
-                }
-              });
+      for (String childId : node.getChildren()) {
+        try {
+          retrieve(childId, limit - 1, retrieved);
+        } catch (Exception e) {
+          throw new RuntimeException("Unable to retrieve child of " + node, e);
+        }
+      }
+      for (String annotationId : node.getAnnotations()) {
+        try {
+          retrieve(annotationId, limit - 1, retrieved);
+        } catch (Exception e) {
+          throw new RuntimeException("Unable to retrieve annotation of " + node, e);
+        }
+      }
     }
   }
 
