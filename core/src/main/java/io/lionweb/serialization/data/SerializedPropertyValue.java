@@ -34,7 +34,7 @@ public class SerializedPropertyValue {
 
   private SerializedPropertyValue(MetaPointer metaPointer, String value) {
     this.metaPointer = metaPointer;
-    this.value = value;
+    this.value = value != null ? value.intern() : null;
   }
 
   public MetaPointer getMetaPointer() {

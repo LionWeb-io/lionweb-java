@@ -15,8 +15,8 @@ public class SerializedReferenceValue {
     public Entry() {}
 
     public Entry(String reference, String resolveInfo) {
-      this.resolveInfo = resolveInfo;
-      this.reference = reference;
+      this.resolveInfo = resolveInfo != null ? resolveInfo.intern() : null;
+      this.reference = reference != null ? reference.intern() : null;
     }
 
     public String getResolveInfo() {
