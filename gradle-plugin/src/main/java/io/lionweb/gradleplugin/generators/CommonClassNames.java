@@ -17,8 +17,8 @@ class CommonClassNames {
   static final ClassName lionWebVersion = ClassName.get(LionWebVersion.class);
   static final ClassName conceptClass = ClassName.get(Concept.class);
   static final ClassName interfaceClass = ClassName.get(Interface.class);
-  static final ClassName primitiveType = ClassName.get(PrimitiveType.class);
-  static final ClassName enumeration = ClassName.get(Enumeration.class);
-  static final ClassName enumerationLiteral = ClassName.get(EnumerationLiteral.class);
+  static final ClassName primitiveTypeClass = ClassName.get(PrimitiveType.class);
+  static final ClassName enumerationClass = ClassName.get(Enumeration.class);
+  static final ClassName enumerationLiteralClass = ClassName.get(EnumerationLiteral.class);
   static final ClassName annotationDefClass = ClassName.get(Annotation.class);
 }

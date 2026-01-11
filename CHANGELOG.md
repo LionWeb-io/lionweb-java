@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 1.2.5
+
+* In generated language class, add getters for primitive types and enumerations
+
 ### Version 1.2.4
 
 * Refactor standardInitialization to support custom LionWeb versions

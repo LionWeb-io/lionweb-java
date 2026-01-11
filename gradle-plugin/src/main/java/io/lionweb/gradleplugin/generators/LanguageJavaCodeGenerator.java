@@ -1,7 +1,7 @@
 package io.lionweb.gradleplugin.generators;
 
 import static io.lionweb.gradleplugin.generators.CommonClassNames.*;
-import static io.lionweb.gradleplugin.generators.CommonClassNames.enumerationLiteral;
+import static io.lionweb.gradleplugin.generators.CommonClassNames.enumerationLiteralClass;
 import static io.lionweb.gradleplugin.generators.NamingUtils.capitalize;
 import static io.lionweb.gradleplugin.generators.NamingUtils.toLanguageClassName;
 
@@ -345,6 +345,34 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
             });
 
     language
+        .getPrimitiveTypes()
+        .forEach(
+            primitiveType -> {
+              MethodSpec getter =
+                  MethodSpec.methodBuilder("get" + capitalize(primitiveType.getName()))
+                      .returns(primitiveTypeClass)
+                      .addModifiers(Modifier.PUBLIC)
+                      .addStatement(
+                          "return this.requirePrimitiveTypeByName($S)", primitiveType.getName())
+                      .build();
+              languageClass.addMethod(getter);
+            });
+
+    language
+        .getEnumerations()
+        .forEach(
+            enumeration -> {
+              MethodSpec getter =
+                  MethodSpec.methodBuilder("get" + capitalize(enumeration.getName()))
+                      .returns(enumerationClass)
+                      .addModifiers(Modifier.PUBLIC)
+                      .addStatement(
+                          "return this.requireEnumerationByName($S)", enumeration.getName())
+                      .build();
+              languageClass.addMethod(getter);
+            });
+
+    language
         .getElements()
         .forEach(
             element -> {
@@ -352,9 +380,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 String varName = toVariableName(element.getName());
                 createElements.addStatement(
                     "$T $L = new $T(this, $S, $S);",
-                    enumeration,
+                    enumerationClass,
                     varName,
-                    enumeration,
+                    enumerationClass,
                     element.getName(),
                     element.getID());
                 createElements.addStatement("$L.setKey($S)", varName, element.getKey());
@@ -366,16 +394,16 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
                             createElements.addStatement(
                                 "$L.addLiteral(new $T(this.getLionWebVersion(), $S).setID($S).setKey($S))",
                                 varName,
-                                enumerationLiteral,
+                                enumerationLiteralClass,
                                 literal.getName(),
                                 literal.getID(),
                                 literal.getKey()));
               } else if (element instanceof PrimitiveType) {
                 createElements.addStatement(
                     "$T $L = new $T(this, $S, $S);",
-                    primitiveType,
+                    primitiveTypeClass,
                     toVariableName(element.getName()),
-                    primitiveType,
+                    primitiveTypeClass,
                     element.getName(),
                     element.getID());
                 createElements.addStatement(
