@@ -25,8 +25,8 @@ import io.lionweb.model.ClassifierInstance
 import io.lionweb.model.Node
 import io.lionweb.model.impl.DynamicClassifierInstance
 import io.lionweb.serialization.AbstractSerialization
+import io.lionweb.serialization.DataTypesValuesSerialization
 import io.lionweb.serialization.Instantiator
-import io.lionweb.serialization.PrimitiveValuesSerialization
 import io.lionweb.serialization.data.SerializedClassifierInstance
 import kotlin.collections.component1
 import kotlin.collections.component2
@@ -49,14 +49,14 @@ interface MetamodelRegistry {
     fun registerMapping(
         kClass: KClass<*>,
         primitiveType: PrimitiveType,
-        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>? = null,
-        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>? = null,
+        serializer: DataTypesValuesSerialization.DataTypeSerializer<*>? = null,
+        deserializer: DataTypesValuesSerialization.DataTypeDeserializer<*>? = null,
     )
 
     fun addSerializerAndDeserializer(
         primitiveType: PrimitiveType,
-        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>,
-        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>,
+        serializer: DataTypesValuesSerialization.DataTypeSerializer<*>,
+        deserializer: DataTypesValuesSerialization.DataTypeDeserializer<*>,
     )
 
     fun getConcept(
@@ -90,7 +90,7 @@ interface MetamodelRegistry {
         lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
     )
 
-    fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization)
+    fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: DataTypesValuesSerialization)
 
     fun prepareSerialization(serialization: AbstractSerialization)
 }
@@ -98,8 +98,8 @@ interface MetamodelRegistry {
 class MetamodelRegistryImpl : MetamodelRegistry {
     private val classToClassifier = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, Classifier<*>>>()
     private val classToPrimitiveType = mutableMapOf<LionWebVersion, MutableMap<KClass<*>, PrimitiveType>>()
-    private val serializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveSerializer<*>>()
-    private val deserializers = mutableMapOf<PrimitiveType, PrimitiveValuesSerialization.PrimitiveDeserializer<*>>()
+    private val serializers = mutableMapOf<PrimitiveType, DataTypesValuesSerialization.DataTypeSerializer<*>>()
+    private val deserializers = mutableMapOf<PrimitiveType, DataTypesValuesSerialization.DataTypeDeserializer<*>>()
     private val instantiatorExclusionList = mutableSetOf<Classifier<*>>()
 
     init {
@@ -147,8 +147,8 @@ class MetamodelRegistryImpl : MetamodelRegistry {
     override fun registerMapping(
         kClass: KClass<*>,
         primitiveType: PrimitiveType,
-        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>?,
-        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>?,
+        serializer: DataTypesValuesSerialization.DataTypeSerializer<*>?,
+        deserializer: DataTypesValuesSerialization.DataTypeDeserializer<*>?,
     ) {
         require(!kClass.isSubclassOf(Node::class))
         classToPrimitiveType.computeIfAbsent(primitiveType.lionWebVersion) { mutableMapOf() }[kClass] = primitiveType
@@ -162,8 +162,8 @@ class MetamodelRegistryImpl : MetamodelRegistry {
 
     override fun addSerializerAndDeserializer(
         primitiveType: PrimitiveType,
-        serializer: PrimitiveValuesSerialization.PrimitiveSerializer<*>,
-        deserializer: PrimitiveValuesSerialization.PrimitiveDeserializer<*>,
+        serializer: DataTypesValuesSerialization.DataTypeSerializer<*>,
+        deserializer: DataTypesValuesSerialization.DataTypeDeserializer<*>,
     ) {
         serializers[primitiveType] = serializer
         deserializers[primitiveType] = deserializer
@@ -210,7 +210,7 @@ class MetamodelRegistryImpl : MetamodelRegistry {
         }
     }
 
-    override fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: PrimitiveValuesSerialization) {
+    override fun preparePrimitiveValuesSerialization(primitiveValuesSerialization: DataTypesValuesSerialization) {
         serializers.forEach { primitiveType, serializer ->
             primitiveValuesSerialization.registerSerializer(
                 primitiveType.id ?: throw IllegalStateException("PrimitiveType id should not be null"),

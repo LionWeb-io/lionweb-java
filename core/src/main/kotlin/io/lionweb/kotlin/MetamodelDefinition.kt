@@ -18,8 +18,8 @@ import io.lionweb.model.AnnotationInstance
 import io.lionweb.model.ClassifierInstance
 import io.lionweb.model.Node
 import io.lionweb.model.ReferenceValue
-import io.lionweb.serialization.PrimitiveValuesSerialization.PrimitiveDeserializer
-import io.lionweb.serialization.PrimitiveValuesSerialization.PrimitiveSerializer
+import io.lionweb.serialization.DataTypesValuesSerialization.DataTypeDeserializer
+import io.lionweb.serialization.DataTypesValuesSerialization.DataTypeSerializer
 import io.lionweb.utils.IdUtils
 import java.lang.IllegalStateException
 import kotlin.reflect.KClass
@@ -256,8 +256,8 @@ fun Language.createPrimitiveTypes(vararg primitiveTypeClasses: KClass<*>): List<
 
 fun <T : Any> Language.addSerializerAndDeserializer(
     primitiveTypeClass: KClass<T>,
-    serializer: PrimitiveSerializer<T?>,
-    deserializer: PrimitiveDeserializer<T?>,
+    serializer: DataTypeSerializer<T?>,
+    deserializer: DataTypeDeserializer<T?>,
     lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
     metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry,
 ) {
@@ -269,8 +269,8 @@ fun <T : Any> Language.addSerializerAndDeserializer(
 
 fun Language.createPrimitiveType(
     primitiveTypeClass: KClass<*>,
-    serializer: PrimitiveSerializer<*>? = null,
-    deserializer: PrimitiveDeserializer<*>? = null,
+    serializer: DataTypeSerializer<*>? = null,
+    deserializer: DataTypeDeserializer<*>? = null,
     metamodelRegistry: MetamodelRegistry = DefaultMetamodelRegistry,
 ): PrimitiveType {
     require(!primitiveTypeClass.isSubclassOf(Node::class))
