@@ -23,7 +23,7 @@ public class NodePopulatorTest {
         new DeserializationStatus(
             Collections.emptyList(),
             serialization.getInstanceResolver(),
-            serialization.primitiveValuesSerialization);
+            serialization.dataTypesValuesSerialization);
     NodePopulator nodePopulator =
         new NodePopulator(
             serialization, serialization.getInstanceResolver(), deserializationStatus);
@@ -81,7 +81,7 @@ public class NodePopulatorTest {
         new DeserializationStatus(
             Collections.emptyList(),
             serialization.getInstanceResolver(),
-            serialization.primitiveValuesSerialization);
+            serialization.dataTypesValuesSerialization);
     NodePopulator nodePopulator =
         new NodePopulator(
             serialization, serialization.getInstanceResolver(), deserializationStatus);
@@ -142,7 +142,7 @@ public class NodePopulatorTest {
         new DeserializationStatus(
             Collections.emptyList(),
             serialization.getInstanceResolver(),
-            serialization.primitiveValuesSerialization);
+            serialization.dataTypesValuesSerialization);
     NodePopulator nodePopulator =
         new NodePopulator(
             serialization,

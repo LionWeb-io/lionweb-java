@@ -76,7 +76,7 @@ public class SerializationProvider {
       AbstractSerialization serialization, LionWebVersion coreLanguagesVersion) {
     serialization.classifierResolver.registerLanguage(LionCore.getInstance(coreLanguagesVersion));
     serialization.instantiator.registerLionCoreCustomDeserializers(coreLanguagesVersion);
-    serialization.primitiveValuesSerialization
+    serialization.dataTypesValuesSerialization
         .registerLionBuiltinsPrimitiveSerializersAndDeserializers(coreLanguagesVersion);
     serialization.instanceResolver.addAll(
         LionCore.getInstance(coreLanguagesVersion).thisAndAllDescendants());

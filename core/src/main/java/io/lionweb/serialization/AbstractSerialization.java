@@ -30,7 +30,7 @@ public abstract class AbstractSerialization {
 
   protected ClassifierResolver classifierResolver;
   protected Instantiator instantiator;
-  protected PrimitiveValuesSerialization primitiveValuesSerialization;
+  protected DataTypesValuesSerialization dataTypesValuesSerialization;
 
   protected LocalClassifierInstanceResolver instanceResolver;
 
@@ -66,7 +66,7 @@ public abstract class AbstractSerialization {
     // prevent public access
     classifierResolver = new ClassifierResolver();
     instantiator = new Instantiator();
-    primitiveValuesSerialization = new PrimitiveValuesSerialization();
+    dataTypesValuesSerialization = new DataTypesValuesSerialization();
     instanceResolver = new LocalClassifierInstanceResolver();
   }
 
@@ -87,8 +87,8 @@ public abstract class AbstractSerialization {
   }
 
   public void setPrimitiveValuesSerialization(
-      PrimitiveValuesSerialization primitiveValuesSerialization) {
-    this.primitiveValuesSerialization = primitiveValuesSerialization;
+      DataTypesValuesSerialization dataTypesValuesSerialization) {
+    this.dataTypesValuesSerialization = dataTypesValuesSerialization;
   }
 
   public void setInstanceResolver(LocalClassifierInstanceResolver instanceResolver) {
@@ -99,8 +99,8 @@ public abstract class AbstractSerialization {
     return instantiator;
   }
 
-  public PrimitiveValuesSerialization getPrimitiveValuesSerialization() {
-    return primitiveValuesSerialization;
+  public DataTypesValuesSerialization getPrimitiveValuesSerialization() {
+    return dataTypesValuesSerialization;
   }
 
   public LocalClassifierInstanceResolver getInstanceResolver() {
@@ -109,7 +109,7 @@ public abstract class AbstractSerialization {
 
   public void enableDynamicNodes() {
     instantiator.enableDynamicNodes();
-    primitiveValuesSerialization.enableDynamicNodes();
+    dataTypesValuesSerialization.enableDynamicNodes();
   }
 
   public @Nonnull UnavailableNodePolicy getUnavailableParentPolicy() {
@@ -345,7 +345,7 @@ public abstract class AbstractSerialization {
     if (value == null) {
       return null;
     }
-    return primitiveValuesSerialization.serialize(dataType.getID(), value);
+    return dataTypesValuesSerialization.serialize(dataType.getID(), value);
   }
 
   //
@@ -375,7 +375,7 @@ public abstract class AbstractSerialization {
    */
   private DeserializationStatus sortLeavesFirst(List<SerializedClassifierInstance> originalList) {
     DeserializationStatus deserializationStatus =
-        new DeserializationStatus(originalList, instanceResolver, primitiveValuesSerialization);
+        new DeserializationStatus(originalList, instanceResolver, dataTypesValuesSerialization);
 
     // We create the list going from the roots, to their children and so on, and then we will revert
     // the list

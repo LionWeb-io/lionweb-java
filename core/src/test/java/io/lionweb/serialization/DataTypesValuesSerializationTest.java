@@ -14,9 +14,9 @@ import io.lionweb.model.impl.M3Node;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PrimitiveValueSerializationTest {
+public class DataTypesValuesSerializationTest {
 
-  private PrimitiveValuesSerialization serialization;
+  private DataTypesValuesSerialization serialization;
   private Language testLanguage;
   private Enumeration testEnumeration;
   private StructuredDataType testStructuredDataType;
@@ -26,7 +26,7 @@ public class PrimitiveValueSerializationTest {
 
   @Before
   public void setUp() {
-    serialization = new PrimitiveValuesSerialization();
+    serialization = new DataTypesValuesSerialization();
 
     // Create test language with enumeration and structured data type
     testLanguage = new Language(LionWebVersion.v2024_1, "testLang");
@@ -106,7 +106,7 @@ public class PrimitiveValueSerializationTest {
 
   @Test
   public void testRegisterCustomSerializer() {
-    PrimitiveValuesSerialization.PrimitiveSerializer<String> customSerializer =
+    DataTypesValuesSerialization.DataTypeSerializer<String> customSerializer =
         value -> "CUSTOM:" + value;
 
     serialization.registerSerializer("custom-type-id", customSerializer);
@@ -117,7 +117,7 @@ public class PrimitiveValueSerializationTest {
 
   @Test
   public void testRegisterCustomDeserializer() {
-    PrimitiveValuesSerialization.PrimitiveDeserializer<String> customDeserializer =
+    DataTypesValuesSerialization.DataTypeDeserializer<String> customDeserializer =
         serializedValue -> serializedValue.replace("CUSTOM:", "");
 
     serialization.registerDeserializer("custom-type-id", customDeserializer);
@@ -314,8 +314,8 @@ public class PrimitiveValueSerializationTest {
   @Test
   public void testSerializerForEnum() {
 
-    PrimitiveValuesSerialization.PrimitiveSerializer<TestEnum2> serializer =
-        PrimitiveValuesSerialization.serializerFor(TestEnum2.class, testEnumeration);
+    DataTypesValuesSerialization.DataTypeSerializer<TestEnum2> serializer =
+        DataTypesValuesSerialization.serializerFor(TestEnum2.class, testEnumeration);
 
     String result = serializer.serialize(TestEnum2.OPTION_ONE);
     assertEquals("option_one", result);
@@ -329,8 +329,8 @@ public class PrimitiveValueSerializationTest {
   @Test
   public void testDeserializerForEnum() {
 
-    PrimitiveValuesSerialization.PrimitiveDeserializer<TestEnum3> deserializer =
-        PrimitiveValuesSerialization.deserializerFor(TestEnum3.class, testEnumeration);
+    DataTypesValuesSerialization.DataTypeDeserializer<TestEnum3> deserializer =
+        DataTypesValuesSerialization.deserializerFor(TestEnum3.class, testEnumeration);
 
     TestEnum3 result = deserializer.deserialize("option_one");
     assertEquals(TestEnum3.OPTION_ONE, result);
@@ -343,8 +343,8 @@ public class PrimitiveValueSerializationTest {
   @Test
   public void testSerializerForEnumWithMissingLiteral() {
 
-    PrimitiveValuesSerialization.PrimitiveSerializer<TestEnum4> serializer =
-        PrimitiveValuesSerialization.serializerFor(TestEnum4.class, testEnumeration);
+    DataTypesValuesSerialization.DataTypeSerializer<TestEnum4> serializer =
+        DataTypesValuesSerialization.serializerFor(TestEnum4.class, testEnumeration);
 
     assertThrows(
         IllegalArgumentException.class,
@@ -361,8 +361,8 @@ public class PrimitiveValueSerializationTest {
   @Test
   public void testDeserializerForEnumWithMissingKey() {
 
-    PrimitiveValuesSerialization.PrimitiveDeserializer<TestEnum5> deserializer =
-        PrimitiveValuesSerialization.deserializerFor(TestEnum5.class, testEnumeration);
+    DataTypesValuesSerialization.DataTypeDeserializer<TestEnum5> deserializer =
+        DataTypesValuesSerialization.deserializerFor(TestEnum5.class, testEnumeration);
 
     assertThrows(
         IllegalArgumentException.class,

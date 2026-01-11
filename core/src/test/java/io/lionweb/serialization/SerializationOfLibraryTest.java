@@ -88,12 +88,12 @@ public class SerializationOfLibraryTest extends SerializationTest {
         .getPrimitiveValuesSerialization()
         .registerSerializer(
             "INhBvWyXvxwNsePuX0rdNGB_J9hi85cTb1Q0APXCyJ0",
-            (PrimitiveValuesSerialization.PrimitiveSerializer<String>) value -> value);
+            (DataTypesValuesSerialization.DataTypeSerializer<String>) value -> value);
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerSerializer(
             "gVp8_QSmXE2k4pd-sQZgjYMoW95SLLaVIH4yMYqqbt4",
-            (PrimitiveValuesSerialization.PrimitiveSerializer<Integer>) value -> value.toString());
+            (DataTypesValuesSerialization.DataTypeSerializer<Integer>) value -> value.toString());
     JsonObject jsonSerialized =
         jsonSerialization.serializeTreeToJsonElement(library).getAsJsonObject();
     InputStream inputStream =
