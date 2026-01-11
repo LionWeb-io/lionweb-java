@@ -25,7 +25,7 @@ class DeserializationStatus {
   final List<ProxyNode> proxies = new ArrayList<>();
   private final LocalClassifierInstanceResolver proxiesInstanceResolver;
   private final Set<String> sortedIDs = new HashSet<>();
-  private final PrimitiveValuesSerialization primitiveValuesSerialization;
+  private final DataTypesValuesSerialization dataTypesValuesSerialization;
   private final IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
       new IdentityHashMap<>();
   private final IdentityHashMap<DataType<?>, Map<String, Object>> propertyValuesCache =
@@ -41,8 +41,8 @@ class DeserializationStatus {
   DeserializationStatus(
       List<SerializedClassifierInstance> originalList,
       ClassifierInstanceResolver outsideInstancesResolver,
-      PrimitiveValuesSerialization primitiveValuesSerialization) {
-    this.primitiveValuesSerialization = primitiveValuesSerialization;
+      DataTypesValuesSerialization dataTypesValuesSerialization) {
+    this.dataTypesValuesSerialization = dataTypesValuesSerialization;
     sortedList = new ArrayList<>();
     nodesToSort = new ArrayList<>(originalList);
     this.proxiesInstanceResolver = new LocalClassifierInstanceResolver();
@@ -78,7 +78,7 @@ class DeserializationStatus {
     Map<String, Object> map = propertyValuesCache.computeIfAbsent(dataType, dt -> new HashMap<>());
     String key = serializedValue + "@required@" + isRequired;
     return map.computeIfAbsent(
-        key, k -> primitiveValuesSerialization.deserialize(dataType, serializedValue, isRequired));
+        key, k -> dataTypesValuesSerialization.deserialize(dataType, serializedValue, isRequired));
   }
 
   void putNodesWithNullIDsInFront() {

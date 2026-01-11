@@ -3,6 +3,8 @@
 ### Version 1.2.5
 
 * In generated language class, add getters for primitive types and enumerations
+* Rename PrimitiveValuesSerialization to DataTypeValuesSerialization and the internal interfaces as-well: 
+  PrimitiveSerializer, PrimitiveDeserializer, and PrimitiveValueSerializerAndDeserializer
 
 ### Version 1.2.4
 

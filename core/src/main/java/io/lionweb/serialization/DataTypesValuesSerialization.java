@@ -16,10 +16,10 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * This class is responsible for serialization and deserializing primitive values, based on the type
- * of the primitive value.
+ * This class is responsible for serialization and deserializing data type instances, based on the
+ * type of the data type.
  */
-public class PrimitiveValuesSerialization {
+public class DataTypesValuesSerialization {
   // We use the ID, and not the key, to classify the enumerations internally within
   // PrimitiveValuesSerialization because that is unique. In two versions of the language we may
   // have two PrimitiveTypes with the same key, that are different.
@@ -41,12 +41,12 @@ public class PrimitiveValuesSerialization {
     dynamicNodesEnabled = true;
   }
 
-  public interface PrimitiveSerializer<V> {
+  public interface DataTypeSerializer<V> {
     @Nullable
     String serialize(@Nullable V value);
   }
 
-  public interface PrimitiveDeserializer<V> {
+  public interface DataTypeDeserializer<V> {
     @Nullable
     V deserialize(@Nullable String serializedValue);
 
@@ -55,38 +55,38 @@ public class PrimitiveValuesSerialization {
     }
   }
 
-  public interface PrimitiveValueSerializerAndDeserializer<V>
-      extends PrimitiveSerializer<V>, PrimitiveDeserializer<V> {}
+  public interface DataTypeValueSerializerAndDeserializer<V>
+      extends DataTypeSerializer<V>, DataTypeDeserializer<V> {}
 
   /** Indexed by ID */
-  private final Map<String, PrimitiveDeserializer<?>> primitiveDeserializers = new HashMap<>();
+  private final Map<String, DataTypeDeserializer<?>> dataTypeDeserializers = new HashMap<>();
 
   /** Indexed by ID */
-  private final Map<String, PrimitiveSerializer<?>> primitiveSerializers = new HashMap<>();
+  private final Map<String, DataTypeSerializer<?>> dataTypeSerializers = new HashMap<>();
 
-  public @Nonnull PrimitiveValuesSerialization registerDeserializer(
-      @Nonnull String dataTypeID, @Nonnull PrimitiveDeserializer<?> deserializer) {
+  public @Nonnull DataTypesValuesSerialization registerDeserializer(
+      @Nonnull String dataTypeID, @Nonnull DataTypeDeserializer<?> deserializer) {
     Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
     Objects.requireNonNull(deserializer, "deserializer should not be null");
-    this.primitiveDeserializers.put(dataTypeID, deserializer);
+    this.dataTypeDeserializers.put(dataTypeID, deserializer);
     return this;
   }
 
-  public @Nonnull PrimitiveValuesSerialization registerDeserializer(
-      @Nonnull DataType<?> dataType, @Nonnull PrimitiveDeserializer<?> deserializer) {
+  public @Nonnull DataTypesValuesSerialization registerDeserializer(
+      @Nonnull DataType<?> dataType, @Nonnull DataTypeDeserializer<?> deserializer) {
     return registerDeserializer(dataType.getID(), deserializer);
   }
 
-  public @Nonnull PrimitiveValuesSerialization registerSerializer(
-      @Nonnull String dataTypeID, @Nonnull PrimitiveSerializer<?> serializer) {
+  public @Nonnull DataTypesValuesSerialization registerSerializer(
+      @Nonnull String dataTypeID, @Nonnull DataTypeSerializer<?> serializer) {
     Objects.requireNonNull(dataTypeID, "dataTypeID should not be null");
     Objects.requireNonNull(serializer, "serializer should not be null");
-    this.primitiveSerializers.put(dataTypeID, serializer);
+    this.dataTypeSerializers.put(dataTypeID, serializer);
     return this;
   }
 
-  public @Nonnull PrimitiveValuesSerialization registerSerializer(
-      @Nonnull DataType<?> dataType, @Nonnull PrimitiveSerializer<?> serializer) {
+  public @Nonnull DataTypesValuesSerialization registerSerializer(
+      @Nonnull DataType<?> dataType, @Nonnull DataTypeSerializer<?> serializer) {
     return registerSerializer(dataType.getID(), serializer);
   }
 
@@ -121,9 +121,9 @@ public class PrimitiveValuesSerialization {
   public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
       @Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-    primitiveDeserializers.put(
+    dataTypeDeserializers.put(
         LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
-        new PrimitiveDeserializer<Boolean>() {
+        new DataTypeDeserializer<Boolean>() {
 
           @Override
           public Boolean deserialize(String serializedValue) {
@@ -138,11 +138,11 @@ public class PrimitiveValuesSerialization {
             return Boolean.parseBoolean(serializedValue);
           }
         });
-    primitiveDeserializers.put(LionCoreBuiltins.getString(lionWebVersion).getID(), s -> s);
+    dataTypeDeserializers.put(LionCoreBuiltins.getString(lionWebVersion).getID(), s -> s);
     if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
-      primitiveDeserializers.put(
+      dataTypeDeserializers.put(
           LionCoreBuiltins.getJSON(lionWebVersion).getID(),
-          (PrimitiveDeserializer<JsonElement>)
+          (DataTypeDeserializer<JsonElement>)
               serializedValue -> {
                 if (serializedValue == null) {
                   return null;
@@ -150,9 +150,9 @@ public class PrimitiveValuesSerialization {
                 return JsonParser.parseString(serializedValue);
               });
     }
-    primitiveDeserializers.put(
+    dataTypeDeserializers.put(
         LionCoreBuiltins.getInteger(lionWebVersion).getID(),
-        (PrimitiveDeserializer<Integer>)
+        (DataTypeDeserializer<Integer>)
             serializedValue -> {
               if (serializedValue == null) {
                 return null;
@@ -160,28 +160,28 @@ public class PrimitiveValuesSerialization {
               return Integer.parseInt(serializedValue);
             });
 
-    primitiveSerializers.put(
+    dataTypeSerializers.put(
         LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
-        (PrimitiveSerializer<Boolean>) value -> Boolean.toString(value));
+        (DataTypeSerializer<Boolean>) value -> Boolean.toString(value));
     if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
-      primitiveSerializers.put(
+      dataTypeSerializers.put(
           LionCoreBuiltins.getJSON(lionWebVersion).getID(),
-          (PrimitiveSerializer<JsonElement>) value -> new Gson().toJson(value));
+          (DataTypeSerializer<JsonElement>) value -> new Gson().toJson(value));
     }
-    primitiveSerializers.put(
+    dataTypeSerializers.put(
         LionCoreBuiltins.getString(lionWebVersion).getID(),
-        (PrimitiveSerializer<String>) value -> value);
-    primitiveSerializers.put(
+        (DataTypeSerializer<String>) value -> value);
+    dataTypeSerializers.put(
         LionCoreBuiltins.getInteger(lionWebVersion).getID(),
-        (PrimitiveSerializer<Integer>) value -> value.toString());
+        (DataTypeSerializer<Integer>) value -> value.toString());
   }
 
   public Object deserialize(
       @Nonnull DataType dataType, String serializedValue, boolean isRequired) {
     Objects.requireNonNull(dataType, "dataType should not be null");
     String dataTypeID = dataType.getID();
-    if (primitiveDeserializers.containsKey(dataTypeID)) {
-      return primitiveDeserializers.get(dataTypeID).deserialize(serializedValue, isRequired);
+    if (dataTypeDeserializers.containsKey(dataTypeID)) {
+      return dataTypeDeserializers.get(dataTypeID).deserialize(serializedValue, isRequired);
     } else if (enumerationsByID.containsKey(dataTypeID) && dynamicNodesEnabled) {
       if (serializedValue == null) {
         return null;
@@ -234,8 +234,8 @@ public class PrimitiveValuesSerialization {
 
   public @Nullable String serialize(@Nonnull String primitiveTypeID, @Nullable Object value) {
     Objects.requireNonNull(primitiveTypeID, "The primitiveTypeID should not be null");
-    if (primitiveSerializers.containsKey(primitiveTypeID)) {
-      return ((PrimitiveSerializer<Object>) primitiveSerializers.get(primitiveTypeID))
+    if (dataTypeSerializers.containsKey(primitiveTypeID)) {
+      return ((DataTypeSerializer<Object>) dataTypeSerializers.get(primitiveTypeID))
           .serialize(value);
     } else if (isEnum(primitiveTypeID)) {
       if (value == null) {
@@ -260,7 +260,7 @@ public class PrimitiveValuesSerialization {
                   + " while serializing primitive value "
                   + value);
         }
-        return PrimitiveValuesSerialization.<Enum>serializerFor(
+        return DataTypesValuesSerialization.<Enum>serializerFor(
                 (Class<Enum>) value.getClass(), enumeration)
             .serialize((Enum) value);
       } else {
@@ -300,8 +300,8 @@ public class PrimitiveValuesSerialization {
       @Nonnull Class<E> enumClass, @Nonnull Enumeration enumeration) {
     Objects.requireNonNull(enumClass, "enumClass should not be null");
     Objects.requireNonNull(enumeration, "enumeration should not be null");
-    primitiveSerializers.put(enumeration.getID(), serializerFor(enumClass, enumeration));
-    primitiveDeserializers.put(enumeration.getID(), deserializerFor(enumClass, enumeration));
+    dataTypeSerializers.put(enumeration.getID(), serializerFor(enumClass, enumeration));
+    dataTypeDeserializers.put(enumeration.getID(), deserializerFor(enumClass, enumeration));
   }
 
   private boolean isEnum(@Nonnull String primitiveTypeID) {
@@ -314,7 +314,7 @@ public class PrimitiveValuesSerialization {
     return structuredDataTypesByID.containsKey(primitiveTypeID);
   }
 
-  public static <E extends Enum<E>> PrimitiveSerializer<E> serializerFor(
+  public static <E extends Enum<E>> DataTypeSerializer<E> serializerFor(
       @Nonnull Class<E> enumClass, @Nonnull Enumeration enumeration) {
     Objects.requireNonNull(enumClass, "enumClass should not be null");
     Objects.requireNonNull(enumeration, "enumeration should not be null");
@@ -340,7 +340,7 @@ public class PrimitiveValuesSerialization {
   }
 
   /** Please note that this will require support for reflection. */
-  public static <E extends Enum<E>> PrimitiveDeserializer<E> deserializerFor(
+  public static <E extends Enum<E>> DataTypeDeserializer<E> deserializerFor(
       @Nonnull Class<E> enumClass, @Nonnull Enumeration enumeration) {
     Objects.requireNonNull(enumClass, "enumClass should not be null");
     Objects.requireNonNull(enumeration, "enumeration should not be null");
