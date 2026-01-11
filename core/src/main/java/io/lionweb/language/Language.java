@@ -272,6 +272,25 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     }
   }
 
+  /**
+   * Ensures the retrieval of a {@link Enumeration} by its name. If no {@link Enumeration} with the
+   * specified name exists, an {@link IllegalArgumentException} is thrown.
+   *
+   * @param name the name of the desired {@link Enumeration}; must not be null
+   * @return the {@link Enumeration} with the specified name
+   * @throws NullPointerException if the name is null
+   * @throws IllegalArgumentException if no {@link Enumeration} with the specified name is found
+   */
+  public @Nonnull Enumeration requireEnumerationByName(@Nonnull String name) {
+    Objects.requireNonNull(name, "name should not be null");
+    Enumeration enumeration = getEnumerationByName(name);
+    if (enumeration == null) {
+      throw new IllegalArgumentException("Enumeration named " + name + " was not found");
+    } else {
+      return enumeration;
+    }
+  }
+
   public @Nullable Interface getInterfaceByName(String name) {
     return getElements().stream()
         .filter(element -> element instanceof Interface)
