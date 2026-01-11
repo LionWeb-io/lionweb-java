@@ -132,7 +132,8 @@ public class LionWebArchive {
       ZipEntry entry = zipIn.getNextEntry();
       while (entry != null) {
         if (entry.isDirectory()) {
-          throw new IllegalArgumentException("Entry is a directory: " + entry.getName());
+          entry = zipIn.getNextEntry();
+          continue;
         }
         if (entry.getName().startsWith("languages/")) {
           try {
@@ -157,7 +158,8 @@ public class LionWebArchive {
       ZipEntry entry = zipIn.getNextEntry();
       while (entry != null) {
         if (entry.isDirectory()) {
-          throw new IllegalArgumentException("Entry is a directory: " + entry.getName());
+          entry = zipIn.getNextEntry();
+          continue;
         }
         if (entry.getName().startsWith("partitions/")) {
           try {
