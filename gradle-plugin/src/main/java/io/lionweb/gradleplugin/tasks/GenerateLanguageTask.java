@@ -9,10 +9,7 @@ import io.lionweb.serialization.TopologicalLanguageSorter;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import kotlin.collections.builders.ListBuilder;
@@ -51,14 +48,14 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
   @TaskAction
   public void run() {
     getLogger().info("GenerateLanguageTask - Starting");
-    if (!getLanguagesDirectory().isPresent()) {
-      throw new GradleException("Languages directory not specified");
-    }
     if (!getGenerationDirectory().isPresent()) {
       throw new GradleException("Generation directory not specified");
     }
-    File languagesDirectory = getLanguagesDirectory().getAsFile().get();
-    if (!languagesDirectory.exists() || !languagesDirectory.isDirectory()) {
+    File languagesDirectory = null;
+    if (getLanguagesDirectory().getAsFile().isPresent()) {
+      languagesDirectory = getLanguagesDirectory().getAsFile().get();
+    }
+    if (languagesDirectory != null && (!languagesDirectory.exists() || !languagesDirectory.isDirectory())) {
       getLogger()
           .error("GenerateLanguageTask - Languages directory does not exist or is not a directory");
       throw new GradleException("Languages directory does not exist or is not a directory");
@@ -68,7 +65,9 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
         new LanguageJavaCodeGenerator(generationDirectory);
     try {
       List<SerializationChunk> dependenciesChunks = loadDependenciesChunks();
-      List<SerializationChunk> projectChunks = loadProjectChunks(languagesDirectory);
+      getLogger().info("GenerateLanguageTask - Dependencies chunks: " + dependenciesChunks.size());
+      List<SerializationChunk> projectChunks = languagesDirectory == null ? Collections.emptyList() :loadProjectChunks(languagesDirectory);
+      getLogger().info("GenerateLanguageTask - Project chunks: " + projectChunks.size());
       Arrays.stream(LionWebVersion.values())
           .forEach(
               lionWebVersion ->
@@ -98,6 +97,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                 .collect(Collectors.toList()));
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(lionWebVersion);
+    Set<Language> languagesLoadedFromProjectChunks = new HashSet<>();
     List<Language> languages =
         sortedChunks.stream()
             .map(
@@ -110,23 +110,36 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                               .get();
                   getLogger().info("LionWeb Language loaded: " + language.getName());
                   serialization.registerLanguage(language);
+                  if (projectChunks.contains(chunk)) {
+                    languagesLoadedFromProjectChunks.add(language);
+                  }
                   return language;
                 })
             .collect(Collectors.toList());
-    if (languages.isEmpty()) {
-      getLogger().info("LionWeb Version " + lionWebVersion + " - No LionWeb Languages to generate");
+    getLogger().info("LionWeb Version " + lionWebVersion + " - Languages loaded: " + languages.size());
+
+    List<Language> languagesToGenerate = new ArrayList<>();
+    if (getLanguagesToGenerate().isPresent()) {
+      Set<String> specifiedLanguagesToGenerate = getLanguagesToGenerate().get();
+      getLogger().info("LionWeb Version " + lionWebVersion + " - Languages to generate specified as " + specifiedLanguagesToGenerate.size());
+      languages.stream().filter(l -> specifiedLanguagesToGenerate.contains(l.getName())
+              ||  specifiedLanguagesToGenerate.contains(l.getID())
+              ||  specifiedLanguagesToGenerate.contains(l.getKey())).forEach(l -> languagesToGenerate.add(l));
     } else {
-      getLogger()
-          .info(
-              "LionWeb Version "
-                  + lionWebVersion
-                  + " - Generation of LionWeb Languages: "
-                  + languages.stream().map(Language::getName).collect(Collectors.joining(", ")));
-      languageJavaCodeGenerator.generate(
-          languages,
-          getDefaultPackageName().getOrNull(),
-          getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
-          getLanguagesClassNames().getOrElse(Collections.emptyMap()));
+      getLogger().info("LionWeb Version " + lionWebVersion + " - Languages to generate not specified");
+      languagesToGenerate.addAll(languagesLoadedFromProjectChunks);
     }
+    getLogger().info("LionWeb Version " + lionWebVersion + " - Languages considered for generation: " + languagesToGenerate.size());
+    getLogger()
+        .info(
+            "LionWeb Version "
+                + lionWebVersion
+                + " - Generation of LionWeb Languages: "
+                + languagesToGenerate.stream().map(Language::getName).collect(Collectors.joining(", ")));
+    languageJavaCodeGenerator.generate(
+            languagesToGenerate,
+        getDefaultPackageName().getOrNull(),
+        getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
+        getLanguagesClassNames().getOrElse(Collections.emptyMap()));
   }
 }
