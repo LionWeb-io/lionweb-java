@@ -1,12 +1,17 @@
 package io.lionweb.gradleplugin.tasks;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.gradle.api.DefaultTask;
@@ -38,7 +43,32 @@ public abstract class AbstractGenerationTask extends DefaultTask {
   @Input
   public abstract MapProperty<String, String> getLanguagesClassNames();
 
-  protected List<SerializationChunk> loadChunks(File languagesDirectory) throws IOException {
+  @Input
+  public abstract Property<Set<String>> getLanguagesToGenerate();
+
+  protected List<SerializationChunk> loadDependenciesChunks() throws IOException {
+    List<SerializationChunk> dependenciesChunks = new LinkedList<>();
+    Set<File> classpath = getProject().getConfigurations().getByName("compileClasspath").resolve();
+    classpath.stream().filter(f -> f.getName().endsWith(".jar")).forEach(jar -> {
+      try(JarFile jarFile = new JarFile(jar)) {
+        Enumeration<JarEntry> entries = jarFile.entries();
+        while (entries.hasMoreElements()) {
+          JarEntry entry = entries.nextElement();
+          if (entry.getName().startsWith("META-INF/lionweb/")) {
+            InputStream inputStream = jarFile.getInputStream(entry);
+            JsonElement je = JsonParser.parseReader(new java.io.InputStreamReader(inputStream));
+            dependenciesChunks.add(new LowLevelJsonSerialization()
+                    .deserializeSerializationBlock(je));
+          }
+        }
+      } catch (IOException e) {
+        getLogger().error("Error reading jar file: ${jar.absolutePath}", e);
+      }
+    });
+    return dependenciesChunks;
+  }
+
+  protected List<SerializationChunk> loadProjectChunks(File languagesDirectory) throws IOException {
     try (Stream<Path> stream = Files.walk(languagesDirectory.toPath())) {
       List<Path> files =
           stream
@@ -50,7 +80,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
         return Collections.emptyList();
       }
       getLogger().lifecycle("Language files found: " + files.size());
-      List<SerializationChunk> chunks =
+      List<SerializationChunk> projectChunks =
           files.stream()
               .map(
                   f -> {
@@ -69,7 +99,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
                     }
                   })
               .collect(Collectors.toList());
-      return chunks;
+      return projectChunks;
     }
   }
 }

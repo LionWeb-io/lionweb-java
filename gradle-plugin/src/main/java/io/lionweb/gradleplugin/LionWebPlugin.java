@@ -77,6 +77,7 @@ public class LionWebPlugin implements Plugin<Project> {
               task.getGenerationDirectory().set(ext.getGenerationDirectory());
               task.getLanguagesSpecificPackages().set(ext.getLanguagesSpecificPackages());
               task.getLanguagesClassNames().set(ext.getLanguagesClassNames());
+              task.getLanguagesToGenerate().set(ext.getLanguagesToGenerate());
               task.setGroup("lionweb");
               task.setDescription("Generates LionWeb languages");
             });
@@ -94,6 +95,7 @@ public class LionWebPlugin implements Plugin<Project> {
               task.getPrimitiveTypes().set(ext.getPrimitiveTypes());
               task.getLanguagesSpecificPackages().set(ext.getLanguagesSpecificPackages());
               task.getLanguagesClassNames().set(ext.getLanguagesClassNames());
+              task.getLanguagesToGenerate().set(ext.getLanguagesToGenerate());
               task.setGroup("lionweb");
               task.setDescription("Generates LionWeb node classes");
             });

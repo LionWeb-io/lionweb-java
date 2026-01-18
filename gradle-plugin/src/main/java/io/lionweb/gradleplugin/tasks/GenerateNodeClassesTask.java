@@ -36,7 +36,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
     NodeClassesJavaCodeGenerator nodeClassesJavaCodeGenerator =
         new NodeClassesJavaCodeGenerator(generationDirectory);
     try {
-      List<SerializationChunk> chunks = loadChunks(languagesDirectory);
+      List<SerializationChunk> chunks = loadProjectChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
           .forEach(
               lionWebVersion -> {

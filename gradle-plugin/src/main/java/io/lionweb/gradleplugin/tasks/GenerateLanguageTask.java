@@ -9,10 +9,13 @@ import io.lionweb.serialization.TopologicalLanguageSorter;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import kotlin.collections.builders.ListBuilder;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.*;
 
@@ -64,11 +67,12 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
     LanguageJavaCodeGenerator languageJavaCodeGenerator =
         new LanguageJavaCodeGenerator(generationDirectory);
     try {
-      List<SerializationChunk> chunks = loadChunks(languagesDirectory);
+      List<SerializationChunk> dependenciesChunks = loadDependenciesChunks();
+      List<SerializationChunk> projectChunks = loadProjectChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
           .forEach(
               lionWebVersion ->
-                  generateLanguagesForChunks(lionWebVersion, chunks, languageJavaCodeGenerator));
+                  generateLanguagesForChunks(lionWebVersion, projectChunks, dependenciesChunks, languageJavaCodeGenerator));
     } catch (IOException ex) {
       throw new RuntimeException(ex);
     }
@@ -78,12 +82,16 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
 
   private void generateLanguagesForChunks(
       LionWebVersion lionWebVersion,
-      List<SerializationChunk> chunks,
+      List<SerializationChunk> projectChunks,
+      List<SerializationChunk> dependenciesChunks,
       LanguageJavaCodeGenerator languageJavaCodeGenerator) {
     TopologicalLanguageSorter sorter = new TopologicalLanguageSorter(lionWebVersion);
+    List<SerializationChunk> allChunks = new ArrayList<>(projectChunks.size() + dependenciesChunks.size());
+    allChunks.addAll(dependenciesChunks);
+    allChunks.addAll(projectChunks);
     List<SerializationChunk> sortedChunks =
         sorter.topologicalSort(
-            chunks.stream()
+                allChunks.stream()
                 .filter(
                     c ->
                         c.getSerializationFormatVersion().equals(lionWebVersion.getVersionString()))
