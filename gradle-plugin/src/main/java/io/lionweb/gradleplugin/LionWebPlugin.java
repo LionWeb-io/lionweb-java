@@ -2,8 +2,10 @@ package io.lionweb.gradleplugin;
 
 import io.lionweb.gradleplugin.tasks.GenerateLanguageTask;
 import io.lionweb.gradleplugin.tasks.GenerateNodeClassesTask;
+import java.io.File;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.tasks.bundling.Jar;
 
 /**
  * The `LionWebPlugin` is a custom Gradle plugin for projects that utilize LionWeb for language
@@ -46,6 +48,20 @@ public class LionWebPlugin implements Plugin<Project> {
               new java.io.File(
                   project.getLayout().getBuildDirectory().get().getAsFile(), "generated-lionweb"));
     }
+
+    // We modify the Jar task to add the LionWeb languages in the Jar
+    project
+        .getTasks()
+        .withType(Jar.class)
+        .configureEach(
+            jar -> {
+              File lionwebDir = ext.getLanguagesDirectory().get().getAsFile();
+              if (lionwebDir.exists()) {
+                if (lionwebDir.exists()) {
+                  jar.from(lionwebDir, copySpec -> copySpec.into("META-INF/lionweb"));
+                }
+              }
+            });
 
     // Register task and map extension -> task inputs (lazy wiring)
     project
