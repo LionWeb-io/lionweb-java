@@ -73,7 +73,9 @@ public class LionWebPlugin implements Plugin<Project> {
               if (ext.getDefaultPackageName().isPresent()) {
                 task.getDefaultPackageName().set(ext.getDefaultPackageName());
               }
-              task.getLanguagesDirectory().set(ext.getLanguagesDirectory());
+              if (ext.getLanguagesDirectory().get().getAsFile().exists()) {
+                  task.getLanguagesDirectory().set(ext.getLanguagesDirectory());
+              }
               task.getGenerationDirectory().set(ext.getGenerationDirectory());
               task.getLanguagesSpecificPackages().set(ext.getLanguagesSpecificPackages());
               task.getLanguagesClassNames().set(ext.getLanguagesClassNames());

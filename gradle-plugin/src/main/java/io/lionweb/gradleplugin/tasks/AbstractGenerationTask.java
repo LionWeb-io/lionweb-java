@@ -18,13 +18,14 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Input;
-import org.gradle.api.tasks.InputDirectory;
+import org.gradle.api.provider.SetProperty;
+import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.Optional;
-import org.gradle.api.tasks.OutputDirectory;
 
 public abstract class AbstractGenerationTask extends DefaultTask {
   @InputDirectory
+  @Optional
+  @PathSensitive(PathSensitivity.RELATIVE)
   public abstract DirectoryProperty getLanguagesDirectory();
 
   @OutputDirectory
@@ -44,7 +45,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
   public abstract MapProperty<String, String> getLanguagesClassNames();
 
   @Input
-  public abstract Property<Set<String>> getLanguagesToGenerate();
+  public abstract SetProperty<String> getLanguagesToGenerate();
 
   protected List<SerializationChunk> loadDependenciesChunks() throws IOException {
     List<SerializationChunk> dependenciesChunks = new LinkedList<>();
@@ -54,7 +55,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
         Enumeration<JarEntry> entries = jarFile.entries();
         while (entries.hasMoreElements()) {
           JarEntry entry = entries.nextElement();
-          if (entry.getName().startsWith("META-INF/lionweb/")) {
+          if (entry.getName().startsWith("META-INF/lionweb/") && entry.getName().endsWith(".json")) {
             InputStream inputStream = jarFile.getInputStream(entry);
             JsonElement je = JsonParser.parseReader(new java.io.InputStreamReader(inputStream));
             dependenciesChunks.add(new LowLevelJsonSerialization()

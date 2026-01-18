@@ -3,6 +3,7 @@ package io.lionweb.gradleplugin;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 
 import java.util.Set;
 
@@ -20,5 +21,5 @@ public abstract class LionWebPluginExtension {
 
   public abstract MapProperty<String, String> getLanguagesClassNames();
 
-  public abstract Property<Set<String>> getLanguagesToGenerate();
+  public abstract SetProperty<String> getLanguagesToGenerate();
 }
