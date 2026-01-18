@@ -4,6 +4,8 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 
+import java.util.Set;
+
 public abstract class LionWebPluginExtension {
 
   public abstract Property<String> getDefaultPackageName();
@@ -17,4 +19,6 @@ public abstract class LionWebPluginExtension {
   public abstract MapProperty<String, String> getLanguagesSpecificPackages();
 
   public abstract MapProperty<String, String> getLanguagesClassNames();
+
+  public abstract Property<Set<String>> getLanguagesToGenerate();
 }
