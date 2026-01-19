@@ -6,6 +6,7 @@ import io.lionweb.language.*;
 import java.io.File;
 import java.util.*;
 import javax.annotation.Nonnull;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents an abstract generator for Java code. This class provides foundational utilities for
@@ -14,6 +15,7 @@ import javax.annotation.Nonnull;
  */
 public abstract class AbstractJavaCodeGenerator {
   protected final @Nonnull File destinationDir;
+  protected final @NotNull Map<String, String> mappings;
 
   /**
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
@@ -21,9 +23,12 @@ public abstract class AbstractJavaCodeGenerator {
    * @param destinationDir the directory where the generated code will be stored; must not be null
    * @throws NullPointerException if the destinationDir is null
    */
-  protected AbstractJavaCodeGenerator(@Nonnull File destinationDir) {
+  protected AbstractJavaCodeGenerator(
+      @Nonnull File destinationDir, @NotNull Map<String, String> mappings) {
     Objects.requireNonNull(destinationDir, "destinationDir should not be null");
+    Objects.requireNonNull(mappings, "mappings should not be null");
     this.destinationDir = destinationDir;
+    this.mappings = mappings;
   }
 
   protected static final List<String> JAVA_KEYWORDS =

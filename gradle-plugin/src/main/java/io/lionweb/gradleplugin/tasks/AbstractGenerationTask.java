@@ -47,25 +47,33 @@ public abstract class AbstractGenerationTask extends DefaultTask {
   @Input
   public abstract SetProperty<String> getLanguagesToGenerate();
 
+  @Input
+  public abstract MapProperty<String, String> getMappings();
+
   protected List<SerializationChunk> loadDependenciesChunks() throws IOException {
     List<SerializationChunk> dependenciesChunks = new LinkedList<>();
     Set<File> classpath = getProject().getConfigurations().getByName("compileClasspath").resolve();
-    classpath.stream().filter(f -> f.getName().endsWith(".jar")).forEach(jar -> {
-      try(JarFile jarFile = new JarFile(jar)) {
-        Enumeration<JarEntry> entries = jarFile.entries();
-        while (entries.hasMoreElements()) {
-          JarEntry entry = entries.nextElement();
-          if (entry.getName().startsWith("META-INF/lionweb/") && entry.getName().endsWith(".json")) {
-            InputStream inputStream = jarFile.getInputStream(entry);
-            JsonElement je = JsonParser.parseReader(new java.io.InputStreamReader(inputStream));
-            dependenciesChunks.add(new LowLevelJsonSerialization()
-                    .deserializeSerializationBlock(je));
-          }
-        }
-      } catch (IOException e) {
-        getLogger().error("Error reading jar file: ${jar.absolutePath}", e);
-      }
-    });
+    classpath.stream()
+        .filter(f -> f.getName().endsWith(".jar"))
+        .forEach(
+            jar -> {
+              try (JarFile jarFile = new JarFile(jar)) {
+                Enumeration<JarEntry> entries = jarFile.entries();
+                while (entries.hasMoreElements()) {
+                  JarEntry entry = entries.nextElement();
+                  if (entry.getName().startsWith("META-INF/lionweb/")
+                      && entry.getName().endsWith(".json")) {
+                    InputStream inputStream = jarFile.getInputStream(entry);
+                    JsonElement je =
+                        JsonParser.parseReader(new java.io.InputStreamReader(inputStream));
+                    dependenciesChunks.add(
+                        new LowLevelJsonSerialization().deserializeSerializationBlock(je));
+                  }
+                }
+              } catch (IOException e) {
+                getLogger().error("Error reading jar file: ${jar.absolutePath}", e);
+              }
+            });
     return dependenciesChunks;
   }
 
