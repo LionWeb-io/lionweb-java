@@ -70,6 +70,7 @@ class GenerationContext {
 
   private final Set<LanguageGenerationConfiguration> languageConfs;
   private final Map<String, String> primitiveTypes;
+  private final Map<String, String> mappings;
 
   GenerationContext(@Nonnull Language language, @Nonnull String generationPackage) {
     this(
@@ -78,29 +79,33 @@ class GenerationContext {
   }
 
   GenerationContext(@Nonnull Set<LanguageGenerationConfiguration> languageConfs) {
-    this(languageConfs, Collections.emptyMap());
+    this(languageConfs, Collections.emptyMap(), Collections.emptyMap());
   }
 
   GenerationContext(
       @Nonnull Language language,
       @Nonnull String generationPackage,
       @Nonnull Map<String, String> primitiveTypes,
-      @Nonnull Map<String, String> languageClassNames) {
+      @Nonnull Map<String, String> languageClassNames,
+      @Nonnull Map<String, String> mappings) {
     this(
         new HashSet<>(
             Arrays.asList(
                 new LanguageGenerationConfiguration(
                     language, generationPackage, languageClassNames.get(language.getID())))),
-        primitiveTypes);
+        primitiveTypes,
+        mappings);
   }
 
   GenerationContext(
       @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
-      @Nonnull Map<String, String> primitiveTypes) {
+      @Nonnull Map<String, String> primitiveTypes,
+      @Nonnull Map<String, String> mappings) {
     Objects.requireNonNull(languageConfs, "languageConfs should not be null");
     Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
     this.languageConfs = languageConfs;
     this.primitiveTypes = primitiveTypes;
+    this.mappings = mappings;
   }
 
   Set<Language> ambiguousLanguages() {
@@ -248,8 +253,13 @@ class GenerationContext {
           generationPackage(classifier.getLanguage()), getGeneratedName(classifier));
     } else if (classifier.equals(LionCoreBuiltins.getNode(classifier.getLionWebVersion()))) {
       return TypeName.get(Node.class);
+    } else if (mappings.containsKey(classifier.qualifiedName())) {
+      String mappedTypeName = mappings.get(classifier.qualifiedName());
+      String packageName = mappedTypeName.substring(0, mappedTypeName.lastIndexOf('.'));
+      String simpleName = mappedTypeName.substring(mappedTypeName.lastIndexOf('.') + 1);
+      return ClassName.get(packageName, simpleName);
     } else {
-      throw new UnsupportedOperationException("Not yet implemented: " + classifier.getName());
+      throw new UnsupportedOperationException("Not yet implemented: " + classifier.qualifiedName());
     }
   }
 
