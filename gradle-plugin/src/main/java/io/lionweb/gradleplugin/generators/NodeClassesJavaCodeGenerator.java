@@ -15,6 +15,8 @@ import java.io.IOException;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
+
+import org.gradle.api.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,6 +25,8 @@ import org.jetbrains.annotations.Nullable;
  * based on provided models, languages, and configurations.
  */
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
+
+  private @Nullable Logger logger = null;
 
   /**
    * Constructs a NodeClassesJavaCodeGenerator with a specified destination directory.
@@ -50,6 +54,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         language,
         new GenerationContext(
             language, packageName, Collections.emptyMap(), Collections.emptyMap(), mappings));
+  }
+
+  public void setLogger(@Nullable Logger logger) {
+    this.logger = logger;
   }
 
   public void generate(
@@ -99,7 +107,13 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   private void generate(@Nonnull Language language, @Nonnull GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(generationContext, "languageContext should not be null");
-    language.getConcepts().forEach(concept -> generateConcept(concept, generationContext));
+    language.getConcepts().forEach(concept -> {try {
+      generateConcept(concept, generationContext);
+    } catch (Throwable t) {
+      if (logger != null) {
+        logger.error("Failed to generate concept " + concept.getName(), t);
+      }
+    }});
     language.getInterfaces().forEach(interf -> generateInterface(interf, generationContext));
     language
         .getStructuredDataTypes()
@@ -148,11 +162,13 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .superclass(ClassName.get(AbstractNode.class))
             .addSuperinterface(ClassName.get(HasSettableParent.class));
       } else {
-        throw new UnsupportedOperationException("Extended concepts are not yet implemented");
-      }
-      concept
-          .getImplemented()
-          .forEach(ii -> conceptClass.addSuperinterface(generationContext.typeNameFor(ii)));
+        conceptClass.superclass(
+              generationContext.getConceptType(concept.getExtendedConcept())
+      );
+    }
+    concept
+        .getImplemented()
+        .forEach(ii -> conceptClass.addSuperinterface(generationContext.typeNameFor(ii)));
       if (concept.isAbstract()) {
         conceptClass.addModifiers(Modifier.ABSTRACT);
       }
