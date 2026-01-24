@@ -111,21 +111,24 @@ public abstract class AbstractGenerationTask extends DefaultTask {
           files.stream()
               .map(
                   f -> {
-                    try {
                       if (f.toString().endsWith(".json")) {
-                        return new LowLevelJsonSerialization()
-                            .deserializeSerializationBlock(f.toFile());
+                        try {
+                          return new LowLevelJsonSerialization()
+                                  .deserializeSerializationBlock(f.toFile());
+                        } catch (Exception e) {
+                          getLogger().warn("Failed to load file: " + f.toString() + " because " + e.getMessage());
+                          getLogger().warn("We will assume this is not a LionWeb language and skipping file");
+                          return null;
+                        }
                       } else if (f.toString().endsWith(".pb")) {
                         throw new UnsupportedOperationException("Protobuf not yet supported");
                       } else {
                         throw new UnsupportedOperationException(
                             "Unsupported file extension: <" + f.toString() + ">");
                       }
-                    } catch (IOException e) {
-                      throw new RuntimeException(e);
-                    }
                   })
-              .collect(Collectors.toList());
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toList());
       return projectChunks;
     }
   }

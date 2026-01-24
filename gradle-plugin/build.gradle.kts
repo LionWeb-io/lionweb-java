@@ -31,6 +31,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.protobuf)
     implementation(libs.javapoet)
+    implementation("org.jetbrains:annotations:17.0.0")
     testImplementation(gradleTestKit())
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")

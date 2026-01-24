@@ -36,6 +36,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
     File generationDirectory = getGenerationDirectory().getAsFile().get();
     NodeClassesJavaCodeGenerator nodeClassesJavaCodeGenerator =
         new NodeClassesJavaCodeGenerator(generationDirectory, getMappings().get());
+    nodeClassesJavaCodeGenerator.setLogger(getLogger());
     try {
       List<SerializationChunk> dependenciesChunks = loadDependenciesChunks();
       List<SerializationChunk> projectChunks =

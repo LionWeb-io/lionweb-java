@@ -274,6 +274,14 @@ class GenerationContext {
     }
   }
 
+  TypeName getConceptType(Concept concept) {
+    if (isGeneratedLanguage(concept.getLanguage())) {
+      return ClassName.get(generationPackage(concept.getLanguage()), getGeneratedName(concept));
+    } else {
+      throw new UnsupportedOperationException("Extended concepts are not yet implemented");
+    }
+  }
+
   TypeName typeNameFor(DataType<?> dataType) {
     TypeName fieldType;
     String mappedQName = this.primitiveTypeQName(dataType.getID());
@@ -289,7 +297,7 @@ class GenerationContext {
     } else if (dataType instanceof io.lionweb.language.Enumeration) {
       fieldType = typeNameFor((Enumeration) dataType);
     } else {
-      throw new UnsupportedOperationException("Unknown data type: " + dataType);
+      throw new UnsupportedOperationException("Unknown data type: " + dataType + ". Qualified name: " + this.primitiveTypeQName(dataType.getID()));
     }
     return fieldType;
   }
