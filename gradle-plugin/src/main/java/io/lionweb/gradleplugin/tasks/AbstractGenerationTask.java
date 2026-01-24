@@ -71,15 +71,25 @@ public abstract class AbstractGenerationTask extends DefaultTask {
                   JarEntry entry = entries.nextElement();
                   if (entry.getName().startsWith("META-INF/lionweb/")
                       && entry.getName().endsWith(".json")) {
-                    InputStream inputStream = jarFile.getInputStream(entry);
-                    JsonElement je =
-                        JsonParser.parseReader(new java.io.InputStreamReader(inputStream));
-                    dependenciesChunks.add(
-                        new LowLevelJsonSerialization().deserializeSerializationBlock(je));
+                    try {
+                      InputStream inputStream = jarFile.getInputStream(entry);
+                      JsonElement je =
+                          JsonParser.parseReader(new java.io.InputStreamReader(inputStream));
+                      dependenciesChunks.add(
+                          new LowLevelJsonSerialization().deserializeSerializationBlock(je));
+                    } catch (Exception e) {
+                      getLogger()
+                          .error(
+                              "Error reading jar file entry: "
+                                  + jar.getAbsolutePath()
+                                  + "#"
+                                  + entry.getName(),
+                              e);
+                    }
                   }
                 }
               } catch (IOException e) {
-                getLogger().error("Error reading jar file: ${jar.absolutePath}", e);
+                getLogger().error("Error reading jar file: " + jar.getAbsolutePath(), e);
               }
             });
     return dependenciesChunks;
