@@ -21,6 +21,8 @@ public abstract class AbstractJavaCodeGenerator {
    * Constructs an AbstractJavaCodeGenerator with a specified destination directory.
    *
    * @param destinationDir the directory where the generated code will be stored; must not be null
+   * @param mappings a mapping of custom type names to their corresponding Java types; must not be
+   *     null
    * @throws NullPointerException if the destinationDir is null
    */
   protected AbstractJavaCodeGenerator(
