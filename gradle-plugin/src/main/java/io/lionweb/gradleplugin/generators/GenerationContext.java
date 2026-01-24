@@ -297,7 +297,7 @@ class GenerationContext {
     } else if (dataType instanceof io.lionweb.language.Enumeration) {
       fieldType = typeNameFor((Enumeration) dataType);
     } else {
-      throw new UnsupportedOperationException("Unknown data type: " + dataType + ". Qualified name: " + this.primitiveTypeQName(dataType.getID()));
+      throw new UnsupportedOperationException("Unknown data type: " + dataType);
     }
     return fieldType;
   }

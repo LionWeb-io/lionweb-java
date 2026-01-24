@@ -721,7 +721,30 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                                 .build())
                         .build());
               } else if (feature instanceof Containment) {
-                throw new UnsupportedOperationException("Containment not yet supported");
+                Containment containment = (Containment) feature;
+                if (containment.isMultiple()) {
+                  String adderName = "addTo" + pascalCase(containment.getName());
+                  MethodSpec.Builder adder =
+                          MethodSpec.methodBuilder(adderName)
+                                  .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                  .addParameter(generationContext.typeFor(containment.getType()), "child")
+                                  .addParameter(TypeName.INT, "index")
+                                  .returns(TypeName.INT);
+                  interfClass.addMethod(adder.build());
+                } else {
+                  MethodSpec.Builder setter =
+                          MethodSpec.methodBuilder("set" + NamingUtils.capitalize(containment.getName()))
+                                  .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                  .addParameter(generationContext.typeFor(containment.getType()), "child")
+                                  .returns(TypeName.VOID);
+                  interfClass.addMethod(setter.build());
+                  MethodSpec getter =
+                          MethodSpec.methodBuilder("get" + NamingUtils.capitalize(containment.getName()))
+                                  .returns(generationContext.typeFor(containment.getType()))
+                                  .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                                  .build();
+                  interfClass.addMethod(getter);
+                }
               } else if (feature instanceof Reference) {
                 Reference reference = (Reference) feature;
                 if (reference.isMultiple()) {
