@@ -23,6 +23,17 @@ import org.jetbrains.annotations.Nullable;
  * based on provided models, languages, and configurations.
  */
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
+
+  /**
+   * Constructs a NodeClassesJavaCodeGenerator with a specified destination directory.
+   *
+   * @param destinationDir the directory where the generated code will be stored; must not be null
+   * @throws NullPointerException if the destinationDir is null
+   */
+  public NodeClassesJavaCodeGenerator(@NotNull File destinationDir) {
+    this(destinationDir, Collections.emptyMap());
+  }
+
   /**
    * Constructs a NodeClassesJavaCodeGenerator with a specified destination directory.
    *
@@ -141,7 +152,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       }
       concept
           .getImplemented()
-          .forEach(ii -> conceptClass.addSuperinterface(generationContext.getInterfaceType(ii)));
+          .forEach(ii -> conceptClass.addSuperinterface(generationContext.typeNameFor(ii)));
       if (concept.isAbstract()) {
         conceptClass.addModifiers(Modifier.ABSTRACT);
       }
@@ -440,7 +451,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     String fieldName = camelCase(property.getName());
     String getterName = "get" + pascalCase(property.getName());
     String setterName = "set" + pascalCase(property.getName());
-    TypeName fieldType = generationContext.typeFor(property.getType());
+    TypeName fieldType = generationContext.typeNameFor(property.getType());
     conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
     getPropertyValue
         .beginControlFlow(
@@ -459,7 +470,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .endControlFlow();
     MethodSpec getter =
         MethodSpec.methodBuilder(getterName)
-            .returns(generationContext.typeFor(property.getType()))
+            .returns(generationContext.typeNameFor(property.getType()))
             .addModifiers(Modifier.PUBLIC)
             .addStatement("return $L", camelCase(property.getName()))
             .build();
@@ -468,7 +479,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         MethodSpec.methodBuilder(setterName)
             .addModifiers(Modifier.PUBLIC)
             .addParameter(
-                ParameterSpec.builder(generationContext.typeFor(property.getType()), "value")
+                ParameterSpec.builder(generationContext.typeNameFor(property.getType()), "value")
                     .build())
             .addCode(
                 "if (partitionObserverCache != null) {\n"
@@ -489,7 +500,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       MethodSpec.Builder getChildren,
       MethodSpec.Builder addChild1) {
     String fieldName = camelCase(containment.getName());
-    TypeName baseFieldType = generationContext.typeFor(containment.getType());
+    TypeName baseFieldType = generationContext.typeNameFor(containment.getType());
     TypeName fieldType = baseFieldType;
     if (containment.isMultiple()) {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
@@ -670,7 +681,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .addModifiers(Modifier.PUBLIC);
     interf
         .getExtendedInterfaces()
-        .forEach(ii -> interfClass.addSuperinterface(generationContext.getInterfaceType(ii)));
+        .forEach(ii -> interfClass.addSuperinterface(generationContext.typeNameFor(ii)));
 
     interf
         .getFeatures()
@@ -681,7 +692,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 interfClass.addMethod(
                     MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                        .returns(generationContext.typeFor(((Property) feature).getType()))
+                        .returns(generationContext.typeNameFor(((Property) feature).getType()))
                         .build());
                 // Setter
                 interfClass.addMethod(
@@ -689,7 +700,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                         .addParameter(
                             ParameterSpec.builder(
-                                    generationContext.typeFor(((Property) feature).getType()),
+                                    generationContext.typeNameFor(((Property) feature).getType()),
                                     "value")
                                 .build())
                         .build());

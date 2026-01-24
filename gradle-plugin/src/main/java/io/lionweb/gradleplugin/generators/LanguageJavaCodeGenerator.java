@@ -22,6 +22,16 @@ import javax.lang.model.element.Modifier;
 public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   /**
+   * Constructs a LanguageJavaCodeGenerator with the specified destination directory.
+   *
+   * @param destinationDir the directory where the generated code will be stored; must not be null
+   * @throws NullPointerException if the destinationDir is null
+   */
+  public LanguageJavaCodeGenerator(@Nonnull File destinationDir) {
+    super(destinationDir, Collections.emptyMap());
+  }
+
+  /**
    * Constructs a LanguageJavaCodeGenerator with a specified destination directory.
    *
    * @param destinationDir the directory where the generated code will be stored; must not be null
