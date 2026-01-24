@@ -97,7 +97,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                 })
             .collect(Collectors.toSet());
     List<Language> languagesToGenerate = new ArrayList<>();
-    if (getLanguagesToGenerate().isPresent()) {
+    if (getLanguagesToGenerate().isPresent() && !getLanguagesToGenerate().get().isEmpty()) {
       Set<String> specifiedLanguagesToGenerate = getLanguagesToGenerate().get();
       getLogger()
           .info(

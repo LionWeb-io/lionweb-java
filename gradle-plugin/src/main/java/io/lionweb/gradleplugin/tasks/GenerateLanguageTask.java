@@ -127,7 +127,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
         .info("LionWeb Version " + lionWebVersion + " - Languages loaded: " + languages.size());
 
     List<Language> languagesToGenerate = new ArrayList<>();
-    if (getLanguagesToGenerate().isPresent()) {
+    if (getLanguagesToGenerate().isPresent() && !getLanguagesToGenerate().get().isEmpty()) {
       Set<String> specifiedLanguagesToGenerate = getLanguagesToGenerate().get();
       getLogger()
           .info(
@@ -153,14 +153,19 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                 + lionWebVersion
                 + " - Languages considered for generation: "
                 + languagesToGenerate.size());
-    getLogger()
-        .info(
-            "LionWeb Version "
-                + lionWebVersion
-                + " - Generation of LionWeb Languages: "
-                + languagesToGenerate.stream()
-                    .map(Language::getName)
-                    .collect(Collectors.joining(", ")));
+    if (languagesToGenerate.isEmpty()) {
+      getLogger()
+          .info("LionWeb Version " + lionWebVersion + " - No LionWeb Languages to generate.");
+    } else {
+      getLogger()
+          .info(
+              "LionWeb Version "
+                  + lionWebVersion
+                  + " - Generation of LionWeb Languages: "
+                  + languagesToGenerate.stream()
+                      .map(Language::getName)
+                      .collect(Collectors.joining(", ")));
+    }
     languageJavaCodeGenerator.generate(
         languagesToGenerate,
         getDefaultPackageName().getOrNull(),

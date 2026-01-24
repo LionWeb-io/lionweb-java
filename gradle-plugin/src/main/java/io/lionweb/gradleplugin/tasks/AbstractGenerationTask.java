@@ -15,6 +15,7 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.UnknownConfigurationException;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
@@ -45,6 +46,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
   public abstract MapProperty<String, String> getLanguagesClassNames();
 
   @Input
+  @Optional
   public abstract SetProperty<String> getLanguagesToGenerate();
 
   @Input
@@ -52,7 +54,13 @@ public abstract class AbstractGenerationTask extends DefaultTask {
 
   protected List<SerializationChunk> loadDependenciesChunks() throws IOException {
     List<SerializationChunk> dependenciesChunks = new LinkedList<>();
-    Set<File> classpath = getProject().getConfigurations().getByName("compileClasspath").resolve();
+    Set<File> classpath = Collections.emptySet();
+    try {
+      getProject().getConfigurations().getByName("compileClasspath").resolve();
+    } catch (UnknownConfigurationException e) {
+      getLogger()
+          .warn("No compileClasspath configuration found, skipping LionWeb dependency scanning");
+    }
     classpath.stream()
         .filter(f -> f.getName().endsWith(".jar"))
         .forEach(
