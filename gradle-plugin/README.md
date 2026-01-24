@@ -27,14 +27,29 @@ The plugin exposes a `lionweb` extension. Defaults are provided for the input/ou
 
 ```kotlin
 lionweb {
-  defaultPackageName.set("com.example.languages")
-  languagesDirectory.set(layout.projectDirectory.dir("src/main/lionweb"))
-  generationDirectory.set(layout.buildDirectory.dir("generated/lionweb"))
-  languagesSpecificPackages.put("com.example.mylanguage", "com.example.mylanguage")
-  languagesClassNames.put("com.example.mylanguage", "MyLanguage")
-  languagesToGenerate.set(setOf("MyLanguage", "com.example.mylanguage"))
-  primitiveTypes.put("com.example.types.Instant", "java.time.Instant")
-  mappings.put("com.example.other.ExternalConcept", "com.example.other.ExternalConceptImpl")
+     // Where to look for language definitions, defaults to src/main/lionweb
+     languagesDirectory = layout.projectDirectory.dir("my-dir-full-of-languages")
+  
+     // Set the package names with a global default and specific settings
+     defaultPackageName = "com.example.languages"
+     languagesSpecificPackages = mapOf("com_example_mylanguage_id" to "com.example.mylanguage")
+  
+     // Defaults to build/generated-lionweb
+     generationDirectory.set(layout.buildDirectory.dir("my-generation-dir"))
+  
+     // If we want to force the Language Class to have a specific name, we can
+     languagesClassNames = mapOf("com.example.mylanguage" to "MyLanguage")
+  
+     // If we want to generate code only for some of the languages (as the others are just dependencies,
+     // for example), we can use this setting
+     languagesToGenerate = setOf("MyLanguage")
+  
+     // Classes for primitive types must be written manually and specified here
+     primitiveTypes = mapOf("com.example.types.Instant" to "java.time.Instant")
+  
+     // Our language may refer to concepts for which a class has been already written. If so,
+     // this setting let the generator know about it.
+     mappings = mapOf("com.example.other.MyConcept" to "com.example.other.MyConceptImpl")
 }
 ```
 

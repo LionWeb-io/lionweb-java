@@ -35,7 +35,7 @@ import org.gradle.api.provider.SetProperty;
  *   generationDirectory.set(layout.buildDirectory.dir("my-generation-dir"))
  *
  *   // If we want to force the Language Class to have a specific name, we can
- *   languagesClassNames = mapOf"com.example.mylanguage" to "MyLanguage")
+ *   languagesClassNames = mapOf("com.example.mylanguage" to "MyLanguage")
  *
  *   // If we want to generate code only for some of the languages (as the others are just dependencies,
  *   // for example), we can use this setting
