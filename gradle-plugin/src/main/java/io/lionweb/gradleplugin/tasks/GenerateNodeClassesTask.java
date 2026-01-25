@@ -64,6 +64,8 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
       List<SerializationChunk> projectChunks,
       List<SerializationChunk> dependenciesChunks,
       NodeClassesJavaCodeGenerator nodeClassesJavaCodeGenerator) {
+    getLogger().info("Generating Node Classes for LionWeb Version " + lionWebVersion);
+    getLogger().info("Project Chunks: " + projectChunks.size() + ", Dependencies Chunks: " + dependenciesChunks.size());
     TopologicalLanguageSorter sorter = new TopologicalLanguageSorter(lionWebVersion);
     List<SerializationChunk> allChunks =
         new ArrayList<>(projectChunks.size() + dependenciesChunks.size());
