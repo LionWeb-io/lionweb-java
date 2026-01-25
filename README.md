@@ -1,4 +1,4 @@
-# LionWeb Java
+# LionWeb JVM
 
 ![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb.lionweb-java/lionweb-java-2024.1-core)
 
