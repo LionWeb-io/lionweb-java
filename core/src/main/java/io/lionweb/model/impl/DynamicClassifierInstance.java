@@ -35,7 +35,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   /**
    * The ID can be _temporarily_ left to null, but _eventually_ it should be not null, so we are
-   * preventing assigning null to it (see https://github.com/LionWeb-io/lionweb-java/pull/234).
+   * preventing assigning null to it (see https://github.com/LionWeb-io/lionweb-jvm/pull/234).
    */
   public @Nonnull DynamicClassifierInstance<T> setID(@Nonnull String id) {
     Objects.requireNonNull(id);

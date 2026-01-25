@@ -31,7 +31,7 @@ tasks.register<Jar>("sourcesJar") {
 
 mavenPublishing {
     coordinates(
-        groupId = "io.lionweb.lionweb-java",
+        groupId = "io.lionweb",
         artifactId = "lionweb-java-$specsVersion-" + project.name,
         version = project.version as String,
     )
@@ -41,17 +41,17 @@ mavenPublishing {
         description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-java")
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
 
         scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
         }
 
         licenses {
             license {
-                name.set("Apache Licenve V2.0")
+                name.set("Apache License V2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0")
                 distribution.set("repo")
             }

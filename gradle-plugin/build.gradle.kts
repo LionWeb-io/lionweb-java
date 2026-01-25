@@ -7,8 +7,8 @@ plugins {
 project.group = "io.lionweb"
 
 gradlePlugin {
-    website.set("https://github.com/LionWeb-io/LionWeb-java")
-    vcsUrl.set("https://github.com/LionWeb-io/lionweb-java.git")
+    website.set("https://github.com/LionWeb-io/lionweb-jvm")
+    vcsUrl.set("https://github.com/LionWeb-io/lionweb-jvm.git")
     plugins {
         create("lwGradlePlugin") {
             id = "io.lionweb"

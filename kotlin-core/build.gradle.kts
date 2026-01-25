@@ -53,8 +53,8 @@ val specsVersion: String by project
 mavenPublishing {
 
     coordinates(
-        groupId = "io.lionweb.lionweb-kotlin",
-        artifactId = "lionweb-kotlin-$specsVersion-" + project.name,
+        groupId = "io.lionweb",
+        artifactId = "lionweb-$specsVersion-" + project.name,
         version = project.version as String,
     )
 
@@ -63,17 +63,17 @@ mavenPublishing {
         description.set("Bindings to facilitate usage of LionWeb Java from Kotlin")
         version = project.version as String
         packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-kotlin")
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
 
         scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-kotlin.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-kotlin.git")
-            url.set("https://github.com/LionWeb-io/lionweb-kotlin.git")
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
         }
 
         licenses {
             license {
-                name.set("Apache Licenve V2.0")
+                name.set("Apache License V2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0")
                 distribution.set("repo")
             }
