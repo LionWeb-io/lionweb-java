@@ -5,7 +5,7 @@ plugins {
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     jacoco
     alias(libs.plugins.protobuf)
 }
@@ -35,7 +35,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation(libs.guava)
 
-    javadocConfig(emf.ecore)
+    javadocConfig(libs.emf.ecore)
 
     // Please note that this forces us to use Java 11 for the javadoc tasks
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
