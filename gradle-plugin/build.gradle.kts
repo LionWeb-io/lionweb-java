@@ -1,9 +1,7 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "1.2.0"
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
 }
 
 project.group = "io.lionweb"

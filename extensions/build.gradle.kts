@@ -1,11 +1,8 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import java.net.URI
-
 plugins {
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     jacoco
     alias(libs.plugins.protobuf)
 }
@@ -30,7 +27,8 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
 
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.engine)
+    testImplementation(libs.junit.api)
 }
 
 tasks.register<Jar>("sourcesJar") {
@@ -87,7 +85,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 
@@ -160,8 +158,8 @@ dependencies {
     "functionalTestImplementation"(project(":client"))
     "functionalTestImplementation"(project(":client-testing"))
     "functionalTestImplementation"(libs.testcontainers)
-    "functionalTestImplementation"(libs.testcontainersjunit)
-    "functionalTestImplementation"(libs.testcontainerspg)
+    "functionalTestImplementation"(libs.testcontainers.junit)
+    "functionalTestImplementation"(libs.testcontainers.pg)
     "functionalTestImplementation"(libs.junit.api)
     "functionalTestImplementation"(libs.junit.engine)
     "functionalTestImplementation"(libs.gson)

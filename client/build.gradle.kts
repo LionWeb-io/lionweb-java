@@ -1,11 +1,9 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `jvm-test-suite`
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     jacoco
 }
 
@@ -78,7 +76,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 
@@ -124,15 +122,16 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.okhttp)
     implementation(libs.gson)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.engine)
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))
     "functionalTestImplementation"(project(":client-testing"))
     "functionalTestImplementation"(libs.testcontainers)
-    "functionalTestImplementation"(libs.testcontainersjunit)
-    "functionalTestImplementation"(libs.testcontainerspg)
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    "functionalTestImplementation"(libs.testcontainers.junit)
+    "functionalTestImplementation"(libs.testcontainers.pg)
+    "functionalTestImplementation"(libs.junit.api)
+    "functionalTestImplementation"(libs.junit.engine)
     "functionalTestImplementation"(libs.gson)
 }

@@ -42,7 +42,7 @@ val jvmVersion = extra["jvmVersion"] as String
 
 dependencies {
     implementation(libs.okhttp)
-    implementation(libs.lwjava.core)
+    implementation(project(":core"))
     implementation(libs.gson)
     implementation(libs.kotlin.reflect)
     testImplementation(libs.ktest.junit)

@@ -41,6 +41,7 @@ modelApi = { module = "org.modelix:model-api", version.ref = "modelApiVersion" }
 javapoet = { module = "com.palantir.javapoet:javapoet", version ="0.8.0" }
 gson = { group = "com.google.code.gson", name="gson", version="2.13.0" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotationsVersion" }
+# TODO remove me
 junit4 = { group = "junit", name = "junit", version.ref = "junit4Version" }
 emf-common = { module = "org.eclipse.emf:org.eclipse.emf.common", version.ref = "emfCommonVersion" }
 emf-ecore = { module = "org.eclipse.emf:org.eclipse.emf.ecore", version.ref = "emfEcoreVersion" }

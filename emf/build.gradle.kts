@@ -1,8 +1,6 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     id("java-library")
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     id("signing")
 }
 
@@ -18,17 +16,18 @@ dependencies {
     api(project(":core"))
     api(project(":emf-builtins"))
 
-    api(emf.common)
-    api(emf.ecore)
-    api(emf.ecore.xmi)
+    api(libs.emf.common)
+    api(libs.emf.ecore)
+    api(libs.emf.ecore.xmi)
 
-    api(emf.emfjson)
+    api(libs.emfjson)
 
     implementation(libs.gson)
     implementation(libs.annotations)
 
     // Use JUnit test framework.
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.engine)
     testImplementation(libs.gson)
 }
 
@@ -115,6 +114,6 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }

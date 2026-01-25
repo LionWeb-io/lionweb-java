@@ -1,4 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import java.net.URI
 
 plugins {
@@ -27,7 +26,8 @@ val javadocConfig by configurations.creating {
 
 dependencies {
     // Use JUnit test framework.
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.engine)
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api(libs.commonsMath3)
@@ -119,7 +119,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(automaticRelease = true)
     signAllPublications()
 }
 

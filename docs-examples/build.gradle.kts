@@ -1,6 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import java.net.URI
-
 plugins {
     id("java-library")
 }

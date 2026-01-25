@@ -1,11 +1,9 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `jvm-test-suite`
     id("java-library")
-    alias(libs.plugins.buildConfig)
+    alias(libs.plugins.build.config)
     id("signing")
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
 }
 
 val jvmVersion = extra["jvmVersion"] as String
@@ -36,10 +34,10 @@ dependencies {
     implementation(project(":client"))
     implementation(libs.gson)
     implementation(libs.testcontainers)
-    implementation(libs.testcontainersjunit)
-    implementation(libs.testcontainerspg)
-    implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    implementation(libs.testcontainers.junit)
+    implementation(libs.testcontainers.pg)
+    implementation(libs.junit.api)
+    runtimeOnly(libs.junit.engine)
 }
 
 val lionwebServerCommitID = extra["lionwebServerCommitID"]
@@ -106,7 +104,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 

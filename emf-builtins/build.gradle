@@ -1,9 +1,6 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import org.apache.tools.ant.taskdefs.condition.Os
-
 plugins {
     id 'java-library'
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     id "eclipse"
     id 'signing'
 }
@@ -18,9 +15,9 @@ configurations {
 }
 
 dependencies {
-    api emf.common
-    api emf.ecore
-    api emf.ecore.xmi
+    api(libs.emf.common)
+    api(libs.emf.ecore)
+    api(libs.emf.ecore.xmi)
     api("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
     api("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     api("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
@@ -157,7 +154,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 

@@ -66,18 +66,18 @@ testing {
 dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
-    implementation(libs.lwjava.core)
-    implementation(libs.lwjava.client)
-    implementation(libs.lwjava.extensions)
+    implementation(project(":kotlin-core"))
+    implementation(project(":client"))
+    implementation(project(":extensions"))
     implementation(libs.gson)
     implementation(libs.kotlin.reflect)
     testImplementation(kotlin("test"))
     implementation(libs.protobuf)
 
+    "functionalTestImplementation"(project(":kotlin-core"))
+    "functionalTestImplementation"(project(":kotlin-client"))
     "functionalTestImplementation"(project(":core"))
-    "functionalTestImplementation"(project(":client"))
-    "functionalTestImplementation"(libs.lwjava.core)
-    "functionalTestImplementation"(libs.lwjava.extensions)
+    "functionalTestImplementation"(project(":extensions"))
     "functionalTestImplementation"(libs.ktest.junit)
     "functionalTestImplementation"(libs.kotest.runner)
     "functionalTestImplementation"(libs.kotest.assertions)
@@ -85,8 +85,8 @@ dependencies {
     "functionalTestImplementation"(libs.testcontainers)
     "functionalTestImplementation"(libs.testcontainers.junit)
     "functionalTestImplementation"(libs.testcontainers.pg)
-    "functionalTestImplementation"(libs.lwjava.client)
-    "functionalTestImplementation"(libs.lwjava.client.testing)
+    "functionalTestImplementation"(project(":client"))
+    "functionalTestImplementation"(project(":client-testing"))
 }
 
 val specsVersion: String by project
