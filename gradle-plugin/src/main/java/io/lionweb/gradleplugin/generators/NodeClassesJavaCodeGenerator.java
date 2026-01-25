@@ -521,7 +521,13 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     if (containment.isMultiple()) {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
     }
-    conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
+    FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE);
+    if (containment.isMultiple()) {
+      fieldBuilder.initializer("new $T<>()", ArrayList.class);
+    } else {
+      fieldBuilder.initializer("null");
+    }
+    conceptClass.addField(fieldBuilder.build());
     if (containment.isMultiple()) {
       String capitalizedName = pascalCase(containment.getName());
       TypeName listType =
@@ -538,22 +544,36 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           MethodSpec.methodBuilder("clear" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
               .addStatement(
-                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+                  "while (!$N.isEmpty()) {\n" +
+                          "    removeFrom$N(0);\n" +
+                          "}", fieldName, capitalizedName)
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("addTo" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
               .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
               .addStatement(
-                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+                  "addTo$N($N.size(), child)", capitalizedName, fieldName)
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("addTo" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
               .addParameter(TypeName.INT, "index")
               .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
-              .addStatement(
-                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+                  .addCode(CodeBlock.builder()
+                          .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
+                          .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
+                          .endControlFlow()
+                          .addStatement("$L.add(index, ($T)$N)", fieldName, baseFieldType, "child")
+                          .beginControlFlow("if ($N != null)", "partitionObserverCache")
+                          .addStatement(
+                                  "$N.childAdded(this, this.getClassifier().requireContainmentByName($S), $L.size() - 1, $N)",
+                                  "partitionObserverCache",
+                                  containment.getName(),
+                                  fieldName,
+                                  "child")
+                          .endControlFlow()
+                          .build())
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("removeFrom" + capitalizedName)
