@@ -1,6 +1,6 @@
 package io.lionweb.serialization.data;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;

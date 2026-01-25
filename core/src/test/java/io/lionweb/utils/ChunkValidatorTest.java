@@ -1,12 +1,12 @@
 package io.lionweb.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.serialization.data.*;
 import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ChunkValidatorTest {
 

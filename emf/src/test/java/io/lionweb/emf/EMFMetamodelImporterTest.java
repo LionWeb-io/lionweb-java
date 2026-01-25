@@ -1,6 +1,6 @@
 package io.lionweb.emf;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
@@ -18,7 +18,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emf.ecore.xmi.impl.EcoreResourceFactoryImpl;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EMFMetamodelImporterTest {
 

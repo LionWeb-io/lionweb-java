@@ -1,6 +1,6 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -18,9 +18,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 /** Specific tests of JsonSerialization using the Library example. */
 public class SerializationOfLibraryTest extends SerializationTest {
@@ -103,16 +102,17 @@ public class SerializationOfLibraryTest extends SerializationTest {
     SerializedJsonComparisonUtils.assertEquivalentLionWebJson(jsonRead, jsonSerialized);
   }
 
-  @Test(expected = IllegalStateException.class)
+  @Test
   public void deserializeLanguageWithDuplicateIDs() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/library-language-with-duplicate.json");
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    jsonSerialization.deserializeToNodes(inputStream);
+    assertThrows(
+        IllegalStateException.class, () -> jsonSerialization.deserializeToNodes(inputStream));
   }
 
-  @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
+  @TempDir public File temporaryFolder;
 
   @Test
   public void reserializeJsonFile() {
@@ -126,7 +126,7 @@ public class SerializationOfLibraryTest extends SerializationTest {
     Language libraryLanguage = (Language) deserializedNodes.get(0);
 
     try {
-      File outputFile = temporaryFolder.newFile("test-library-lang.json");
+      File outputFile = new File(temporaryFolder, "test-library-lang.json");
       JsonSerialization.saveLanguageToFile(libraryLanguage, outputFile);
 
       Language loadedLang = jsonSerialization.loadLanguage(outputFile);
@@ -174,14 +174,15 @@ public class SerializationOfLibraryTest extends SerializationTest {
    * Language instance which is containing everything else). When the unavailableParentPolicy is set
    * to THROW_ERROR we cannot deserialize the chunk into nodes.
    */
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializeSubtreesWithThrowErrorPolicy() {
     InputStream inputStream =
         this.getClass().getResourceAsStream("/serialization/partial-library-language.json");
     JsonSerialization jsonSerialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
     jsonSerialization.unavailableParentPolicy = UnavailableNodePolicy.THROW_ERROR;
-    List<Node> deserializedNodes = jsonSerialization.deserializeToNodes(inputStream);
+    assertThrows(
+        DeserializationException.class, () -> jsonSerialization.deserializeToNodes(inputStream));
   }
 
   /**

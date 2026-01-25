@@ -1,6 +1,6 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Testing various functionalities of ProtoBufSerialization. */
 public class ProtobufSerializationTest extends SerializationTest {

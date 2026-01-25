@@ -1,7 +1,7 @@
 package io.lionweb.serialization;
 
 import static io.lionweb.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.*;
 import io.lionweb.LionWebVersion;
@@ -26,9 +26,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
+import org.junit.jupiter.api.Test;
 
 /** Testing various functionalities of JsonSerialization. */
 public class JsonSerializationTest extends SerializationTest {

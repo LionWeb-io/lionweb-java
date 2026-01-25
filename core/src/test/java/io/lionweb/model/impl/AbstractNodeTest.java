@@ -1,10 +1,10 @@
 package io.lionweb.model.impl;
 
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.lionweb.language.*;
 import io.lionweb.model.MockPartitionObserver;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractNodeTest {
 

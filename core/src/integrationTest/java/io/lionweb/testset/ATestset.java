@@ -1,6 +1,6 @@
 package io.lionweb.testset;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.Language;

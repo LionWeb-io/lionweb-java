@@ -2,8 +2,8 @@ package io.lionweb.serialization;
 
 import static io.lionweb.serialization.SerializationProvider.getStandardJsonSerialization;
 import static io.lionweb.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -22,7 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LowLevelJsonSerializationTest extends SerializationTest {
 

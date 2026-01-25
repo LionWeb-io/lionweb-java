@@ -1,11 +1,12 @@
 package io.lionweb.language;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.utils.LanguageValidator;
 import io.lionweb.utils.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LionCoreBuiltinsTest {
 

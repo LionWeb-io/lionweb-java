@@ -1,7 +1,6 @@
 package io.lionweb.language;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.assigners.CommonIDAssigners;
@@ -10,7 +9,7 @@ import io.lionweb.lioncore.LionCore;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LanguageTest {
 
@@ -434,10 +433,10 @@ public class LanguageTest {
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void getDataTypeByNameNullName() {
     Language language = new Language("TestLanguage");
-    language.getDataTypeByName(null);
+    assertThrows(NullPointerException.class, () -> language.getDataTypeByName(null));
   }
 
   @Test
@@ -524,10 +523,10 @@ public class LanguageTest {
     }
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test
   public void requireDataTypeByNameNullName() {
     Language language = new Language("TestLanguage");
-    language.requireDataTypeByName(null);
+    assertThrows(NullPointerException.class, () -> language.requireDataTypeByName(null));
   }
 
   @Test

@@ -1,13 +1,13 @@
 package io.lionweb.api;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertSame;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 import io.lionweb.language.Concept;
 import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.model.impl.ProxyNode;
 import java.util.Arrays;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LocalClassifierInstanceResolverTest {
 

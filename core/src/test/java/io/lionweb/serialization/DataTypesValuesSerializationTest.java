@@ -1,6 +1,6 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.*;
 import io.lionweb.LionWebVersion;
@@ -12,7 +12,7 @@ import io.lionweb.model.impl.EnumerationValue;
 import io.lionweb.model.impl.EnumerationValueImpl;
 import io.lionweb.model.impl.M3Node;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DataTypesValuesSerializationTest {
 

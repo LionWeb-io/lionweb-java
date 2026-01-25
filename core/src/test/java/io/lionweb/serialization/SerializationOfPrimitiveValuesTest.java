@@ -1,6 +1,6 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -9,7 +9,7 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.model.Node;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Specific tests of JsonSerialization for the serialization and deserialization of primitive

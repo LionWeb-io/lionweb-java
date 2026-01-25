@@ -1,8 +1,7 @@
 package io.lionweb.serialization;
 
 import static io.lionweb.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -19,8 +18,7 @@ import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Specific tests of JsonSerialization using the LionCore example. */
 public class SerializationOfLionCoreTest extends SerializationTest {
@@ -36,7 +34,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("2023.1", serializationChunk.getSerializationFormatVersion());
 
     assertEquals(2, serializationChunk.getLanguages().size());
-    Assert.assertEquals(
+    assertEquals(
         LanguageVersion.of("LionCore-M3", "2023.1"),
         serializationChunk.getLanguages().iterator().next());
 
@@ -100,7 +98,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertEquals("2024.1", serializationChunk.getSerializationFormatVersion());
 
     assertEquals(2, serializationChunk.getLanguages().size());
-    Assert.assertEquals(
+    assertEquals(
         LanguageVersion.of("LionCore-M3", "2024.1"),
         serializationChunk.getLanguages().iterator().next());
 
@@ -231,7 +229,7 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     assertNull(lioncore.getParent());
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void deserializeLionCoreFailsWithoutRegisteringTheClassesOrEnablingDynamicNodes() {
     InputStream inputStream = this.getClass().getResourceAsStream("/serialization/lioncore.json");
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));
@@ -240,6 +238,6 @@ public class SerializationOfLionCoreTest extends SerializationTest {
     jsonSerialization
         .getPrimitiveValuesSerialization()
         .registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.currentVersion);
-    jsonSerialization.deserializeToNodes(jsonElement);
+    assertThrows(RuntimeException.class, () -> jsonSerialization.deserializeToNodes(jsonElement));
   }
 }

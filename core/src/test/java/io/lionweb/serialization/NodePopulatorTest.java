@@ -1,7 +1,7 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.LionCoreBuiltins;
@@ -11,7 +11,7 @@ import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.Collections;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class NodePopulatorTest {
 

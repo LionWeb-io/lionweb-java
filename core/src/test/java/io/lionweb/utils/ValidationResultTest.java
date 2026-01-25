@@ -1,6 +1,6 @@
 package io.lionweb.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.Concept;
 import io.lionweb.model.ClassifierInstance;
@@ -8,7 +8,7 @@ import io.lionweb.model.impl.DynamicNode;
 import java.util.Set;
 import java.util.function.Supplier;
 import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ValidationResultTest {
 

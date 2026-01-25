@@ -1,6 +1,6 @@
 package io.lionweb.model.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonArray;
 import io.lionweb.language.*;
@@ -9,7 +9,7 @@ import io.lionweb.serialization.*;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DynamicNodeTest {
 

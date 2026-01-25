@@ -1,12 +1,12 @@
 package io.lionweb.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.*;
 import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.model.impl.DynamicNode;
 import java.util.Arrays;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CompositePartitionObserverTest {
 

@@ -1,6 +1,6 @@
 package io.lionweb.model;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import io.lionweb.language.Annotation;
 import io.lionweb.language.Concept;
@@ -8,7 +8,7 @@ import io.lionweb.language.Containment;
 import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.model.impl.ProxyNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ClassifierInstanceTest {
 

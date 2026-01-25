@@ -1,6 +1,6 @@
 package io.lionweb.client;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.lionweb.LionWebVersion;
@@ -15,7 +15,7 @@ import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.extensions.BulkImport;
 import io.lionweb.serialization.extensions.ExtraProtoBufSerialization;
 import io.lionweb.serialization.extensions.ExtraSerializationProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Testing various functionalities of ProtoBufSerialization. */
 public class ExtraProtoBufSerializationTest {

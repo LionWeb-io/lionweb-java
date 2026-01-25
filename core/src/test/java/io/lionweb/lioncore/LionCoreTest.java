@@ -1,13 +1,13 @@
 package io.lionweb.lioncore;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.Concept;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
 import io.lionweb.utils.LanguageValidator;
 import io.lionweb.utils.ValidationResult;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LionCoreTest {
 
