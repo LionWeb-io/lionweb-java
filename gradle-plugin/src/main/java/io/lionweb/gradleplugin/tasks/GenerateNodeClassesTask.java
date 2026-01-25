@@ -97,6 +97,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                   return language;
                 })
             .collect(Collectors.toSet());
+    getLogger().info("LionWeb Version " + lionWebVersion + " - Languages loaded: " + languages.size());
     List<Language> languagesToGenerate = new ArrayList<>();
     if (getLanguagesToGenerate().isPresent() && !getLanguagesToGenerate().get().isEmpty()) {
       Set<String> specifiedLanguagesToGenerate = getLanguagesToGenerate().get();
@@ -113,6 +114,19 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                       || specifiedLanguagesToGenerate.contains(l.getID())
                       || specifiedLanguagesToGenerate.contains(l.getKey()))
           .forEach(l -> languagesToGenerate.add(l));
+      if (languagesToGenerate.isEmpty()) {
+        getLogger().warn(
+            "LionWeb Version "
+                + lionWebVersion
+                + " - No Languages to generate matched the specified languages");
+      } else {
+        getLogger()
+                .info(
+                        "LionWeb Version "
+                                + lionWebVersion
+                                + " - Identified Languages to generate: "
+                                + languagesToGenerate.stream().map(Language::getName).collect(Collectors.joining(", ")));
+      }
     } else {
       getLogger()
           .info("LionWeb Version " + lionWebVersion + " - Languages to generate not specified");
