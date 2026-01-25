@@ -25,6 +25,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
+  private static final ClassName CONTAINMENT = ClassName.get(Containment.class);
+  private static final ClassName NODE = ClassName.get(Node.class);
+  private static final ClassName REFERENCE = ClassName.get(Reference.class);
+  private static final ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
+
+  // List<? extends ReferenceValue>
+  private static final TypeName LIST_OF_WILDCARD_REF_VALUE =
+      ParameterizedTypeName.get(
+          ClassName.get(List.class), WildcardTypeName.subtypeOf(REFERENCE_VALUE));
+
   private @Nullable Logger logger = null;
 
   /**
@@ -149,10 +159,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void generateConcept(
       @Nonnull Concept concept, @Nonnull GenerationContext generationContext) {
-    ClassName CONTAINMENT = ClassName.get(Containment.class);
-    ClassName NODE = ClassName.get(Node.class);
-    ClassName REFERENCE = ClassName.get(Reference.class);
-    ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
 
     TypeSpec.Builder conceptClass;
     try {
@@ -407,11 +413,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   " not found.")
               .build());
 
-      // List<? extends ReferenceValue>
-      TypeName LIST_OF_WILDCARD_REF_VALUE =
-          ParameterizedTypeName.get(
-              ClassName.get(List.class), WildcardTypeName.subtypeOf(REFERENCE_VALUE));
-
       // Common body for all methods
       CodeBlock unsupportedOpBody =
           CodeBlock.builder()
@@ -458,44 +459,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       // public void setReferenceValues(Reference reference, List<? extends ReferenceValue> values)
       // {
       // ... }
-      MethodSpec setReferenceValues =
-          MethodSpec.methodBuilder("setReferenceValues")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(LIST_OF_WILDCARD_REF_VALUE, "values")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(setReferenceValues);
+      conceptClass.addMethod(generateSetReferenceValues(concept, generationContext));
 
-      // @Override
-      // public void setReferred(Reference reference, int index, Node referredNode) { ... }
-      MethodSpec setReferred =
-          MethodSpec.methodBuilder("setReferred")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(int.class, "index")
-              .addParameter(NODE, "referredNode")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(setReferred);
-
-      // @Override
-      // public void setResolveInfo(Reference reference, int index, String resolveInfo) { ... }
-      MethodSpec setResolveInfo =
-          MethodSpec.methodBuilder("setResolveInfo")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(int.class, "index")
-              .addParameter(String.class, "resolveInfo")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(setResolveInfo);
+      conceptClass.addMethod(generateSetReferred(concept, generationContext));
+      conceptClass.addMethod(generateSetResolveInfo(concept, generationContext));
     } catch (Exception e) {
       throw new RuntimeException(
           "Failed to generate class for concept " + concept.qualifiedName(), e);
@@ -508,6 +475,158 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private static @Nonnull MethodSpec generateSetReferenceValues(
+      @Nonnull Concept concept, @Nonnull GenerationContext context) {
+    MethodSpec.Builder setReferenceValues =
+        MethodSpec.methodBuilder("setReferenceValues")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(
+                ParameterSpec.builder(REFERENCE, "reference").addAnnotation(NotNull.class).build())
+            .addParameter(
+                ParameterSpec.builder(LIST_OF_WILDCARD_REF_VALUE, "values")
+                    .addAnnotation(NotNull.class)
+                    .build());
+    setReferenceValues.addStatement(
+        "$T.requireNonNull(reference, $S)", Objects.class, "reference cannot be null");
+    setReferenceValues.addStatement(
+        "$T.requireNonNull(values, $S)", Objects.class, "values cannot be null");
+    concept
+        .allReferences()
+        .forEach(
+            reference -> {
+              setReferenceValues.beginControlFlow(
+                  "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
+              if (reference.isMultiple()) {
+                setReferenceValues.addStatement("set$N(values)", pascalCase(reference.getName()));
+              } else {
+                setReferenceValues.addStatement(
+                    "if (values.size() > 0) throw new IllegalArgumentException($S)",
+                    "Cannot specifiy more than one value for a single-valued reference");
+                setReferenceValues.addStatement(
+                    "set$N(values.isEmpty() ? null : values.get(0))",
+                    pascalCase(reference.getName()));
+              }
+              setReferenceValues.addStatement("return");
+              setReferenceValues.endControlFlow();
+            });
+    setReferenceValues.addStatement(
+        "throw new $T($S + reference + $S)",
+        IllegalStateException.class,
+        "Reference ",
+        " not found.");
+    return setReferenceValues.build();
+  }
+
+  private static @Nonnull MethodSpec generateSetReferred(
+      @Nonnull Concept concept, @Nonnull GenerationContext context) {
+    MethodSpec.Builder setReferred =
+        MethodSpec.methodBuilder("setReferred")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(
+                ParameterSpec.builder(REFERENCE, "reference").addAnnotation(NotNull.class).build())
+            .addParameter(int.class, "index")
+            .addParameter(
+                ParameterSpec.builder(NODE, "referredNode").addAnnotation(Nullable.class).build());
+    setReferred.addStatement(
+        "$T.requireNonNull(reference, $S)", Objects.class, "reference cannot be null");
+    setReferred.addStatement(
+        "if (index < 0) throw new IllegalArgumentException($S);", "index should be non-negative");
+    concept
+        .allReferences()
+        .forEach(
+            reference -> {
+              setReferred.beginControlFlow(
+                  "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
+              if (reference.isMultiple()) {
+                setReferred.addStatement(
+                    "if (index >= $N.size()) throw new IllegalArgumentException($S);",
+                    camelCase(reference.getName()),
+                    "index should be less than the size of the list");
+                setReferred.addStatement(
+                    "ReferenceValue original = $N.get(index)", camelCase(reference.getName()));
+                setReferred.addStatement(
+                    "$N.set(index, original.withReferred(referredNode))",
+                    camelCase(reference.getName()));
+              } else {
+                setReferred.addStatement(
+                    "if (index >= 1 || $N == null) throw new IllegalArgumentException($S);",
+                    camelCase(reference.getName()),
+                    "index should be less than the size of the list");
+                setReferred.addStatement(
+                    "$N = $N.withReferred(referredNode)",
+                    camelCase(reference.getName()),
+                    camelCase(reference.getName()));
+              }
+              setReferred.addStatement("return");
+              setReferred.endControlFlow();
+            });
+    setReferred.addStatement(
+        "throw new $T($S + reference + $S)",
+        IllegalStateException.class,
+        "Reference ",
+        " not found.");
+    return setReferred.build();
+  }
+
+  private static @Nonnull MethodSpec generateSetResolveInfo(
+      @Nonnull Concept concept, @Nonnull GenerationContext context) {
+    MethodSpec.Builder setResolveInfo =
+        MethodSpec.methodBuilder("setResolveInfo")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(void.class)
+            .addParameter(
+                ParameterSpec.builder(REFERENCE, "reference").addAnnotation(NotNull.class).build())
+            .addParameter(int.class, "index")
+            .addParameter(
+                ParameterSpec.builder(TypeName.get(String.class), "resolveInfo")
+                    .addAnnotation(Nullable.class)
+                    .build());
+    setResolveInfo.addStatement(
+        "$T.requireNonNull(reference, $S)", Objects.class, "reference cannot be null");
+    setResolveInfo.addStatement(
+        "if (index < 0) throw new IllegalArgumentException($S);", "index should be non-negative");
+    concept
+        .allReferences()
+        .forEach(
+            reference -> {
+              setResolveInfo.beginControlFlow(
+                  "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
+              if (reference.isMultiple()) {
+                setResolveInfo.addStatement(
+                    "if (index >= $N.size()) throw new IllegalArgumentException($S);",
+                    camelCase(reference.getName()),
+                    "index should be less than the size of the list");
+                setResolveInfo.addStatement(
+                    "ReferenceValue original = $N.get(index)", camelCase(reference.getName()));
+                setResolveInfo.addStatement(
+                    "$N.set(index, original.withResolveInfo(resolveInfo))",
+                    camelCase(reference.getName()));
+              } else {
+                setResolveInfo.addStatement(
+                    "if (index >= 1 || $N == null) throw new IllegalArgumentException($S);",
+                    camelCase(reference.getName()),
+                    "index should be less than the size of the list");
+                setResolveInfo.addStatement(
+                    "$N = $N.withResolveInfo(resolveInfo)",
+                    camelCase(reference.getName()),
+                    camelCase(reference.getName()));
+              }
+              setResolveInfo.addStatement("return");
+              setResolveInfo.endControlFlow();
+            });
+    setResolveInfo.addStatement(
+        "throw new $T($S + reference + $S)",
+        IllegalStateException.class,
+        "Reference ",
+        " not found.");
+    return setResolveInfo.build();
   }
 
   private static void considerConceptProperty(
@@ -1070,7 +1189,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           MethodSpec.methodBuilder("set" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
               .addParameter(
-                  ParameterSpec.builder(listRefType, "newValue")
+                  ParameterSpec.builder(LIST_OF_WILDCARD_REF_VALUE, "newValue")
                       .addAnnotation(NotNull.class)
                       .build())
               .addCode(
