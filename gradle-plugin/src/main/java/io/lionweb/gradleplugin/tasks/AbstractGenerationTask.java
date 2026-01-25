@@ -56,21 +56,24 @@ public abstract class AbstractGenerationTask extends DefaultTask {
     List<SerializationChunk> dependenciesChunks = new LinkedList<>();
     Set<File> classpath = Collections.emptySet();
     try {
-      getProject().getConfigurations().getByName("compileClasspath").resolve();
+      classpath = getProject().getConfigurations().getByName("compileClasspath").resolve();
     } catch (UnknownConfigurationException e) {
       getLogger()
           .warn("No compileClasspath configuration found, skipping LionWeb dependency scanning");
     }
+    getLogger().debug("Scanning classpath file for LionWeb dependencies: " + classpath.stream().map(File::getName).collect(Collectors.joining(", ")));
     classpath.stream()
         .filter(f -> f.getName().endsWith(".jar"))
         .forEach(
             jar -> {
+              getLogger().debug("Scanning jar file for LionWeb dependencies: " + jar.getAbsolutePath());
               try (JarFile jarFile = new JarFile(jar)) {
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
                   JarEntry entry = entries.nextElement();
                   if (entry.getName().startsWith("META-INF/lionweb/")
                       && entry.getName().endsWith(".json")) {
+                    getLogger().debug("Identified entry " + entry.getName() + " in jar file");
                     try {
                       InputStream inputStream = jarFile.getInputStream(entry);
                       JsonElement je =
