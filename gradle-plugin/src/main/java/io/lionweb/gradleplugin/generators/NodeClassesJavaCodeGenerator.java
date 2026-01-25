@@ -580,15 +580,32 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addModifiers(Modifier.PUBLIC)
               .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
               .addStatement(
-                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+                  CodeBlock.builder().add("int index = $N.indexOf(child);\n" +
+                                  "     if (index == -1) {\n" +
+                                  "         throw new IllegalArgumentException(\"Child not found: \" + child);\n" +
+                                  "     }\n" +
+                                  "     removeFrom$N(index);", fieldName, capitalizedName).build())
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("removeFrom" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
-              .addParameter(TypeName.INT, "index")
-              .addStatement(
-                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+              .addParameter(TypeName.INT, "index").addCode(CodeBlock.builder().addStatement("if ($N.size() > index) {\n" +
+                          "        Node removed = $N.remove(index);\n" +
+                          "        if (removed instanceof $T) { (($T) removed).setParent(null); }\n" +
+                          "        if (partitionObserverCache != null) {\n" +
+                          "          partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), index, removed);\n" +
+                          "        }\n" +
+                          "      } else {\n" +
+                          "        throw new IllegalArgumentException(\n" +
+                          "            \"Invalid index \" + index + \" when children are \" + $N.size());\n" +
+                          "      }", fieldName, fieldName, HasSettableParent.class, HasSettableParent.class, containment.getName(), fieldName).build())
               .build());
+      conceptClass.addMethod(
+              MethodSpec.methodBuilder("set" + capitalizedName)
+                      .addModifiers(Modifier.PUBLIC)
+                      .addParameter(listType, "newValue").addCode(CodeBlock.builder().addStatement("clear$N();\n" +
+                              "      for ($T child : newValue) { addTo$N(child); }", capitalizedName, baseFieldType, capitalizedName).build())
+                      .build());
     }
     if (containment.isMultiple()) {
       getChildren
