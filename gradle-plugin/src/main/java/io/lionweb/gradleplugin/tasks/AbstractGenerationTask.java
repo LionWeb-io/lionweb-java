@@ -61,12 +61,16 @@ public abstract class AbstractGenerationTask extends DefaultTask {
       getLogger()
           .warn("No compileClasspath configuration found, skipping LionWeb dependency scanning");
     }
-    getLogger().debug("Scanning classpath file for LionWeb dependencies: " + classpath.stream().map(File::getName).collect(Collectors.joining(", ")));
+    getLogger()
+        .debug(
+            "Scanning classpath file for LionWeb dependencies: "
+                + classpath.stream().map(File::getName).collect(Collectors.joining(", ")));
     classpath.stream()
         .filter(f -> f.getName().endsWith(".jar"))
         .forEach(
             jar -> {
-              getLogger().debug("Scanning jar file for LionWeb dependencies: " + jar.getAbsolutePath());
+              getLogger()
+                  .debug("Scanning jar file for LionWeb dependencies: " + jar.getAbsolutePath());
               try (JarFile jarFile = new JarFile(jar)) {
                 Enumeration<JarEntry> entries = jarFile.entries();
                 while (entries.hasMoreElements()) {
@@ -114,24 +118,31 @@ public abstract class AbstractGenerationTask extends DefaultTask {
           files.stream()
               .map(
                   f -> {
-                      if (f.toString().endsWith(".json")) {
-                        try {
-                          return new LowLevelJsonSerialization()
-                                  .deserializeSerializationBlock(f.toFile());
-                        } catch (Exception e) {
-                          getLogger().warn("Failed to load file: " + f.toString() + " because " + e.getMessage());
-                          getLogger().warn("We will assume this is not a LionWeb language and skipping file");
-                          return null;
-                        }
-                      } else if (f.toString().endsWith(".pb")) {
-                        throw new UnsupportedOperationException("Protobuf not yet supported");
-                      } else {
-                        throw new UnsupportedOperationException(
-                            "Unsupported file extension: <" + f.toString() + ">");
+                    if (f.toString().endsWith(".json")) {
+                      try {
+                        return new LowLevelJsonSerialization()
+                            .deserializeSerializationBlock(f.toFile());
+                      } catch (Exception e) {
+                        getLogger()
+                            .warn(
+                                "Failed to load file: "
+                                    + f.toString()
+                                    + " because "
+                                    + e.getMessage());
+                        getLogger()
+                            .warn(
+                                "We will assume this is not a LionWeb language and skipping file");
+                        return null;
                       }
+                    } else if (f.toString().endsWith(".pb")) {
+                      throw new UnsupportedOperationException("Protobuf not yet supported");
+                    } else {
+                      throw new UnsupportedOperationException(
+                          "Unsupported file extension: <" + f.toString() + ">");
+                    }
                   })
-                  .filter(Objects::nonNull)
-                  .collect(Collectors.toList());
+              .filter(Objects::nonNull)
+              .collect(Collectors.toList());
       return projectChunks;
     }
   }

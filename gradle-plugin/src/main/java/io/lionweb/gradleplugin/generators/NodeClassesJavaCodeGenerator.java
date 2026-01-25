@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.lang.model.element.Modifier;
-
 import org.gradle.api.logging.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -107,13 +106,18 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   private void generate(@Nonnull Language language, @Nonnull GenerationContext generationContext) {
     Objects.requireNonNull(language, "language should not be null");
     Objects.requireNonNull(generationContext, "languageContext should not be null");
-    language.getConcepts().forEach(concept -> {try {
-      generateConcept(concept, generationContext);
-    } catch (Throwable t) {
-      if (logger != null) {
-        logger.error("Failed to generate concept " + concept.getName(), t);
-      }
-    }});
+    language
+        .getConcepts()
+        .forEach(
+            concept -> {
+              try {
+                generateConcept(concept, generationContext);
+              } catch (Throwable t) {
+                if (logger != null) {
+                  logger.error("Failed to generate concept " + concept.getName(), t);
+                }
+              }
+            });
     language.getInterfaces().forEach(interf -> generateInterface(interf, generationContext));
     language
         .getStructuredDataTypes()
@@ -162,13 +166,11 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
             .superclass(ClassName.get(AbstractNode.class))
             .addSuperinterface(ClassName.get(HasSettableParent.class));
       } else {
-        conceptClass.superclass(
-              generationContext.getConceptType(concept.getExtendedConcept())
-      );
-    }
-    concept
-        .getImplemented()
-        .forEach(ii -> conceptClass.addSuperinterface(generationContext.typeNameFor(ii)));
+        conceptClass.superclass(generationContext.getConceptType(concept.getExtendedConcept()));
+      }
+      concept
+          .getImplemented()
+          .forEach(ii -> conceptClass.addSuperinterface(generationContext.typeNameFor(ii)));
       if (concept.isAbstract()) {
         conceptClass.addModifiers(Modifier.ABSTRACT);
       }
@@ -544,68 +546,100 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           MethodSpec.methodBuilder("clear" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
               .addStatement(
-                  "while (!$N.isEmpty()) {\n" +
-                          "    removeFrom$N(0);\n" +
-                          "}", fieldName, capitalizedName)
+                  "while (!$N.isEmpty()) {\n" + "    removeFrom$N(0);\n" + "}",
+                  fieldName,
+                  capitalizedName)
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("addTo" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
-              .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
-              .addStatement(
-                  "addTo$N($N.size(), child)", capitalizedName, fieldName)
+              .addParameter(
+                  ParameterSpec.builder(baseFieldType, "child")
+                      .addAnnotation(NotNull.class)
+                      .build())
+              .addStatement("addTo$N($N.size(), child)", capitalizedName, fieldName)
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("addTo" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
               .addParameter(TypeName.INT, "index")
-              .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
-                  .addCode(CodeBlock.builder()
-                          .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
-                          .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
-                          .endControlFlow()
-                          .addStatement("$L.add(index, ($T)$N)", fieldName, baseFieldType, "child")
-                          .beginControlFlow("if ($N != null)", "partitionObserverCache")
-                          .addStatement(
-                                  "$N.childAdded(this, this.getClassifier().requireContainmentByName($S), $L.size() - 1, $N)",
-                                  "partitionObserverCache",
-                                  containment.getName(),
-                                  fieldName,
-                                  "child")
-                          .endControlFlow()
-                          .build())
+              .addParameter(
+                  ParameterSpec.builder(baseFieldType, "child")
+                      .addAnnotation(NotNull.class)
+                      .build())
+              .addCode(
+                  CodeBlock.builder()
+                      .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
+                      .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
+                      .endControlFlow()
+                      .addStatement("$L.add(index, ($T)$N)", fieldName, baseFieldType, "child")
+                      .beginControlFlow("if ($N != null)", "partitionObserverCache")
+                      .addStatement(
+                          "$N.childAdded(this, this.getClassifier().requireContainmentByName($S), $L.size() - 1, $N)",
+                          "partitionObserverCache",
+                          containment.getName(),
+                          fieldName,
+                          "child")
+                      .endControlFlow()
+                      .build())
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("removeFrom" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
-              .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
+              .addParameter(
+                  ParameterSpec.builder(baseFieldType, "child")
+                      .addAnnotation(NotNull.class)
+                      .build())
               .addStatement(
-                  CodeBlock.builder().add("int index = $N.indexOf(child);\n" +
-                                  "     if (index == -1) {\n" +
-                                  "         throw new IllegalArgumentException(\"Child not found: \" + child);\n" +
-                                  "     }\n" +
-                                  "     removeFrom$N(index);", fieldName, capitalizedName).build())
+                  CodeBlock.builder()
+                      .add(
+                          "int index = $N.indexOf(child);\n"
+                              + "     if (index == -1) {\n"
+                              + "         throw new IllegalArgumentException(\"Child not found: \" + child);\n"
+                              + "     }\n"
+                              + "     removeFrom$N(index);",
+                          fieldName,
+                          capitalizedName)
+                      .build())
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("removeFrom" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
-              .addParameter(TypeName.INT, "index").addCode(CodeBlock.builder().addStatement("if ($N.size() > index) {\n" +
-                          "        Node removed = $N.remove(index);\n" +
-                          "        if (removed instanceof $T) { (($T) removed).setParent(null); }\n" +
-                          "        if (partitionObserverCache != null) {\n" +
-                          "          partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), index, removed);\n" +
-                          "        }\n" +
-                          "      } else {\n" +
-                          "        throw new IllegalArgumentException(\n" +
-                          "            \"Invalid index \" + index + \" when children are \" + $N.size());\n" +
-                          "      }", fieldName, fieldName, HasSettableParent.class, HasSettableParent.class, containment.getName(), fieldName).build())
+              .addParameter(TypeName.INT, "index")
+              .addCode(
+                  CodeBlock.builder()
+                      .addStatement(
+                          "if ($N.size() > index) {\n"
+                              + "        Node removed = $N.remove(index);\n"
+                              + "        if (removed instanceof $T) { (($T) removed).setParent(null); }\n"
+                              + "        if (partitionObserverCache != null) {\n"
+                              + "          partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), index, removed);\n"
+                              + "        }\n"
+                              + "      } else {\n"
+                              + "        throw new IllegalArgumentException(\n"
+                              + "            \"Invalid index \" + index + \" when children are \" + $N.size());\n"
+                              + "      }",
+                          fieldName,
+                          fieldName,
+                          HasSettableParent.class,
+                          HasSettableParent.class,
+                          containment.getName(),
+                          fieldName)
+                      .build())
               .build());
       conceptClass.addMethod(
-              MethodSpec.methodBuilder("set" + capitalizedName)
-                      .addModifiers(Modifier.PUBLIC)
-                      .addParameter(listType, "newValue").addCode(CodeBlock.builder().addStatement("clear$N();\n" +
-                              "      for ($T child : newValue) { addTo$N(child); }", capitalizedName, baseFieldType, capitalizedName).build())
-                      .build());
+          MethodSpec.methodBuilder("set" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(listType, "newValue")
+              .addCode(
+                  CodeBlock.builder()
+                      .addStatement(
+                          "clear$N();\n" + "      for ($T child : newValue) { addTo$N(child); }",
+                          capitalizedName,
+                          baseFieldType,
+                          capitalizedName)
+                      .build())
+              .build());
     }
     if (containment.isMultiple()) {
       getChildren
@@ -683,14 +717,22 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass) {
     String fieldName = camelCase(reference.getName());
+    String capitalizedName = pascalCase(reference.getName());
     String getterName = "get" + pascalCase(reference.getName());
     String setterName = "set" + pascalCase(reference.getName());
     TypeName baseFieldType = ClassName.get(ReferenceValue.class);
+    TypeName referredType = generationContext.typeNameFor(reference.getType());
     TypeName fieldType = baseFieldType;
     if (reference.isMultiple()) {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
     }
-    conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
+    FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE);
+    if (reference.isMultiple()) {
+      fieldBuilder.initializer("new $T<>()", ArrayList.class);
+    } else {
+      fieldBuilder.initializer("null");
+    }
+    conceptClass.addField(fieldBuilder.build());
     if (reference.isMultiple()) {
       String adderName = "addTo" + pascalCase(reference.getName());
       MethodSpec.Builder adder =
@@ -722,6 +764,113 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addStatement("return $L", fieldName)
               .build();
       conceptClass.addMethod(getter);
+
+      MethodSpec.Builder adderTakingNode =
+          MethodSpec.methodBuilder(adderName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(referredType, "referred")
+              .returns(TypeName.INT);
+      if (reference
+          .getType()
+          .allAncestors()
+          .contains(LionCoreBuiltins.getINamed(reference.getType().getLionWebVersion()))) {
+        adderTakingNode.addCode(
+            CodeBlock.builder()
+                .add(
+                    "return $N(new ReferenceValue(referred, referred.getName()), $N.size());",
+                    adderName,
+                    fieldName)
+                .build());
+      } else {
+        adderTakingNode.addCode(
+            CodeBlock.builder()
+                .add(
+                    "return $N(new ReferenceValue(referred, null), $N.size());",
+                    adderName,
+                    fieldName)
+                .build());
+      }
+      conceptClass.addMethod(adderTakingNode.build());
+
+      MethodSpec.Builder adderTakingNodeAndIndex =
+          MethodSpec.methodBuilder(adderName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(referredType, "referred")
+              .addParameter(TypeName.INT, "index")
+              .returns(TypeName.INT);
+      if (reference
+          .getType()
+          .allAncestors()
+          .contains(LionCoreBuiltins.getINamed(reference.getType().getLionWebVersion()))) {
+        adderTakingNodeAndIndex.addCode(
+            CodeBlock.builder()
+                .add(
+                    "return $N(new ReferenceValue(referred, referred.getName()), index);",
+                    adderName)
+                .build());
+      } else {
+        adderTakingNodeAndIndex.addCode(
+            CodeBlock.builder()
+                .add("return $N(new ReferenceValue(referred, null), index);", adderName)
+                .build());
+      }
+      conceptClass.addMethod(adderTakingNodeAndIndex.build());
+
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("clear" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addStatement(
+                  "while (!$N.isEmpty()) {\n" + "    removeFrom$N(0);\n" + "}",
+                  fieldName,
+                  capitalizedName)
+              .build());
+
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("removeFrom" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(
+                  ParameterSpec.builder(baseFieldType, "child")
+                      .addAnnotation(NotNull.class)
+                      .build())
+              .addStatement(
+                  CodeBlock.builder()
+                      .add(
+                          "int index = $N.indexOf(child);\n"
+                              + "     if (index == -1) {\n"
+                              + "         throw new IllegalArgumentException(\"Child not found: \" + child);\n"
+                              + "     }\n"
+                              + "     removeFrom$N(index);",
+                          fieldName,
+                          capitalizedName)
+                      .build())
+              .build());
+
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("removeFrom" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(ParameterSpec.builder(TypeName.INT, "index").build())
+              .addCode(
+                  CodeBlock.builder()
+                      .add(
+                          "if ($N.size() > index) {\n"
+                              + "\n"
+                              + "        ReferenceValue removed = $N.remove(index);\n"
+                              + "        if (partitionObserverCache != null) {\n"
+                              + "          partitionObserverCache.referenceValueRemoved(this, getClassifier().requireReferenceByName($S), index, removed);\n"
+                              + "        }\n"
+                              + "      } else {\n"
+                              + "        throw new IllegalArgumentException(\n"
+                              + "            \"Invalid index \"\n"
+                              + "                + index\n"
+                              + "                + \" when reference values are \"\n"
+                              + "                + $N.size());\n"
+                              + "      }",
+                          fieldName,
+                          fieldName,
+                          reference.getName(),
+                          fieldName)
+                      .build())
+              .build());
     } else {
       MethodSpec.Builder setter =
           MethodSpec.methodBuilder(setterName)
@@ -817,24 +966,28 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                 if (containment.isMultiple()) {
                   String adderName = "addTo" + pascalCase(containment.getName());
                   MethodSpec.Builder adder =
-                          MethodSpec.methodBuilder(adderName)
-                                  .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                  .addParameter(generationContext.typeNameFor(containment.getType()), "child")
-                                  .addParameter(TypeName.INT, "index")
-                                  .returns(TypeName.INT);
+                      MethodSpec.methodBuilder(adderName)
+                          .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                          .addParameter(
+                              generationContext.typeNameFor(containment.getType()), "child")
+                          .addParameter(TypeName.INT, "index")
+                          .returns(TypeName.INT);
                   interfClass.addMethod(adder.build());
                 } else {
                   MethodSpec.Builder setter =
-                          MethodSpec.methodBuilder("set" + NamingUtils.capitalize(containment.getName()))
-                                  .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                  .addParameter(generationContext.typeNameFor(containment.getType()), "child")
-                                  .returns(TypeName.VOID);
+                      MethodSpec.methodBuilder(
+                              "set" + NamingUtils.capitalize(containment.getName()))
+                          .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                          .addParameter(
+                              generationContext.typeNameFor(containment.getType()), "child")
+                          .returns(TypeName.VOID);
                   interfClass.addMethod(setter.build());
                   MethodSpec getter =
-                          MethodSpec.methodBuilder("get" + NamingUtils.capitalize(containment.getName()))
-                                  .returns(generationContext.typeNameFor(containment.getType()))
-                                  .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                  .build();
+                      MethodSpec.methodBuilder(
+                              "get" + NamingUtils.capitalize(containment.getName()))
+                          .returns(generationContext.typeNameFor(containment.getType()))
+                          .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
+                          .build();
                   interfClass.addMethod(getter);
                 }
               } else if (feature instanceof Reference) {
