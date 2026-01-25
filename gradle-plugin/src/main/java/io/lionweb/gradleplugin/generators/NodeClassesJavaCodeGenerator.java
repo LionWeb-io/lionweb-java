@@ -309,6 +309,20 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       features.addAll(concept.getFeatures());
       concept.getImplemented().forEach(i -> i.getFeatures().forEach(features::add));
 
+      // @Override
+      // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
+      MethodSpec.Builder getReferenceValues =
+          MethodSpec.methodBuilder("getReferenceValues")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(ParameterizedTypeName.get(ClassName.get(List.class), REFERENCE_VALUE))
+              .addParameter(
+                  ParameterSpec.builder(REFERENCE, "reference")
+                      .addAnnotation(NotNull.class)
+                      .build())
+              .addStatement(
+                  "$T.requireNonNull(reference, \"reference should not be null\");", Objects.class);
+
       features.forEach(
           feature -> {
             if (feature instanceof Property) {
@@ -327,7 +341,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   addChild1,
                   addChild2);
             } else if (feature instanceof Reference) {
-              considerConceptReference((Reference) feature, generationContext, conceptClass);
+              considerConceptReference(
+                  (Reference) feature, generationContext, conceptClass, getReferenceValues);
             } else {
               throw new IllegalStateException("Unknown feature type: " + feature.getClass());
             }
@@ -386,17 +401,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           .build();
       conceptClass.addMethod(addChild2.build());
 
-      // @Override
-      // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
-      MethodSpec getReferenceValues =
-          MethodSpec.methodBuilder("getReferenceValues")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(ParameterizedTypeName.get(ClassName.get(List.class), REFERENCE_VALUE))
-              .addParameter(REFERENCE, "reference")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(getReferenceValues);
+      getReferenceValues
+          .addStatement(
+              "throw new $T($S + reference + $S)",
+              IllegalStateException.class,
+              "Reference ",
+              " not found.")
+          .build();
+      conceptClass.addMethod(getReferenceValues.build());
 
       // @Override
       // public int addReferenceValue(Reference reference, ReferenceValue referredNode) { ... }
@@ -663,6 +675,39 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                           capitalizedName)
                       .build())
               .build());
+    } else {
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("set" + pascalCase(containment.getName()))
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(
+                  ParameterSpec.builder(baseFieldType, "newValue")
+                      .addAnnotation(Nullable.class)
+                      .build())
+              .addCode(
+                  "Node prevValue = $N;\n"
+                      + "    if (prevValue != null) {\n"
+                      + "      if (prevValue instanceof HasSettableParent) {\n"
+                      + "            ((HasSettableParent) prevValue).setParent(null);\n"
+                      + "          }\n"
+                      + "      if (partitionObserverCache != null) {\n"
+                      + "            partitionObserverCache.childRemoved(\n"
+                      + "                this, getClassifier().requireContainmentByName($S), 0, prevValue);\n"
+                      + "          }\n"
+                      + "    }\n"
+                      + "    if (newValue != null) {\n"
+                      + "      if (newValue instanceof HasSettableParent) {\n"
+                      + "        ((HasSettableParent) newValue).setParent(this);\n"
+                      + "      }\n"
+                      + "      $N = newValue;\n"
+                      + "      if (partitionObserverCache != null) {\n"
+                      + "        partitionObserverCache.childAdded(this, getClassifier().requireContainmentByName($S), 0, newValue);\n"
+                      + "      }\n"
+                      + "    }",
+                  fieldName,
+                  containment.getName(),
+                  fieldName,
+                  containment.getName())
+              .build());
     }
     if (containment.isMultiple()) {
       getChildren
@@ -730,7 +775,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       addChild2.addCode(
           CodeBlock.builder()
               .beginControlFlow("if (containment.getKey().equals($S))", containment.getKey())
-                  .addStatement("if (index > 0) throw new IllegalArgumentException($S);", "index should at most zero for a non-multiple containment")
+              .addStatement(
+                  "if (index > 0) throw new IllegalArgumentException($S);",
+                  "index should at most zero for a non-multiple containment")
               .addStatement(
                   "set$N(($T) child)",
                   pascalCase(containment.getName()),
@@ -751,7 +798,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   private static void considerConceptReference(
       @Nonnull Reference reference,
       @NotNull GenerationContext generationContext,
-      TypeSpec.Builder conceptClass) {
+      TypeSpec.Builder conceptClass,
+      MethodSpec.Builder getReferenceValues) {
     String fieldName = camelCase(reference.getName());
     String capitalizedName = pascalCase(reference.getName());
     String getterName = "get" + pascalCase(reference.getName());
@@ -962,6 +1010,24 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addStatement("return $L", fieldName)
               .build();
       conceptClass.addMethod(getter);
+    }
+
+    if (reference.isMultiple()) {
+      getReferenceValues
+          .beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))",
+              ClassName.get(Objects.class),
+              reference.getKey())
+          .addStatement("return $N", fieldName)
+          .endControlFlow();
+    } else {
+      getReferenceValues
+          .beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))",
+              ClassName.get(Objects.class),
+              reference.getKey())
+          .addStatement("return $T.singletonList($N)", Collections.class, fieldName)
+          .endControlFlow();
     }
   }
 
