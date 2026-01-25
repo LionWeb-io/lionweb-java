@@ -323,6 +323,28 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addStatement(
                   "$T.requireNonNull(reference, \"reference should not be null\");", Objects.class);
 
+      // @Override
+      // public int addReferenceValue(Reference reference, ReferenceValue referredNode) { ... }
+      MethodSpec.Builder addReferenceValue1 =
+          MethodSpec.methodBuilder("addReferenceValue")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(int.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(REFERENCE_VALUE, "referredNode");
+
+      // @Override
+      // public int addReferenceValue(Reference reference, int index, ReferenceValue referredNode) {
+      // ... }
+      MethodSpec.Builder addReferenceValue2 =
+          MethodSpec.methodBuilder("addReferenceValue")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(int.class)
+              .addParameter(REFERENCE, "reference")
+              .addParameter(int.class, "index")
+              .addParameter(REFERENCE_VALUE, "referredNode");
+
       features.forEach(
           feature -> {
             if (feature instanceof Property) {
@@ -342,7 +364,12 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   addChild2);
             } else if (feature instanceof Reference) {
               considerConceptReference(
-                  (Reference) feature, generationContext, conceptClass, getReferenceValues);
+                  (Reference) feature,
+                  generationContext,
+                  conceptClass,
+                  getReferenceValues,
+                  addReferenceValue1,
+                  addReferenceValue2);
             } else {
               throw new IllegalStateException("Unknown feature type: " + feature.getClass());
             }
@@ -410,33 +437,22 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           .build();
       conceptClass.addMethod(getReferenceValues.build());
 
-      // @Override
-      // public int addReferenceValue(Reference reference, ReferenceValue referredNode) { ... }
-      MethodSpec addReferenceValue1 =
-          MethodSpec.methodBuilder("addReferenceValue")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(int.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(REFERENCE_VALUE, "referredNode")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addReferenceValue1);
-
-      // @Override
-      // public int addReferenceValue(Reference reference, int index, ReferenceValue referredNode) {
-      // ... }
-      MethodSpec addReferenceValue2 =
-          MethodSpec.methodBuilder("addReferenceValue")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(int.class)
-              .addParameter(REFERENCE, "reference")
-              .addParameter(int.class, "index")
-              .addParameter(REFERENCE_VALUE, "referredNode")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addReferenceValue2);
+      addReferenceValue1
+          .addStatement(
+              "throw new $T($S + reference + $S)",
+              IllegalStateException.class,
+              "Reference ",
+              " not found.")
+          .build();
+      conceptClass.addMethod(addReferenceValue1.build());
+      addReferenceValue2
+          .addStatement(
+              "throw new $T($S + reference + $S)",
+              IllegalStateException.class,
+              "Reference ",
+              " not found.")
+          .build();
+      conceptClass.addMethod(addReferenceValue2.build());
 
       // @Override
       // public void setReferenceValues(Reference reference, List<? extends ReferenceValue> values)
@@ -799,7 +815,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @Nonnull Reference reference,
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass,
-      MethodSpec.Builder getReferenceValues) {
+      MethodSpec.Builder getReferenceValues,
+      MethodSpec.Builder addReferenceValue1,
+      MethodSpec.Builder addReferenceValue2) {
     String fieldName = camelCase(reference.getName());
     String capitalizedName = pascalCase(reference.getName());
     String getterName = "get" + pascalCase(reference.getName());
@@ -1020,6 +1038,21 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               reference.getKey())
           .addStatement("return $N", fieldName)
           .endControlFlow();
+      addReferenceValue1
+          .beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))",
+              ClassName.get(Objects.class),
+              reference.getKey())
+          .addStatement(
+              "return addTo$N(referredNode, $N.size())", pascalCase(reference.getName()), fieldName)
+          .endControlFlow();
+      addReferenceValue2
+          .beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))",
+              ClassName.get(Objects.class),
+              reference.getKey())
+          .addStatement("return addTo$N(referredNode, index)", pascalCase(reference.getName()))
+          .endControlFlow();
     } else {
       getReferenceValues
           .beginControlFlow(
@@ -1028,6 +1061,28 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               reference.getKey())
           .addStatement("return $T.singletonList($N)", Collections.class, fieldName)
           .endControlFlow();
+    }
+
+    if (reference.isMultiple()) {
+      TypeName listRefType =
+          ParameterizedTypeName.get(ClassName.get(List.class), TypeName.get(ReferenceValue.class));
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("set" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(
+                  ParameterSpec.builder(listRefType, "newValue")
+                      .addAnnotation(NotNull.class)
+                      .build())
+              .addCode(
+                  CodeBlock.of(
+                      "clear$N();\n"
+                          + "      for (ReferenceValue referenceValue : newValue) {\n"
+                          + "          addTo$N(referenceValue, $N.size());\n"
+                          + "      }",
+                      capitalizedName,
+                      capitalizedName,
+                      fieldName))
+              .build());
     }
   }
 
