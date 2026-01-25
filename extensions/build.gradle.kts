@@ -108,9 +108,9 @@ protobuf {
             val classifier = if (os.contains("mac") && arch == "aarch64") "osx-aarch_64" else ""
 
             artifact = if (classifier.isNotEmpty())
-                "com.google.protobuf:protoc:4.27.2:$classifier"
+                "com.google.protobuf:protoc:4.32.0:$classifier"
             else
-                "com.google.protobuf:protoc:4.27.2"
+                "com.google.protobuf:protoc:4.32.0"
         }
     }
     generateProtoTasks {
