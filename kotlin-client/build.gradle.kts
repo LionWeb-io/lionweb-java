@@ -1,5 +1,3 @@
-import java.util.jar.Manifest
-
 plugins {
     `jvm-test-suite`
 
@@ -160,26 +158,6 @@ afterEvaluate {
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
 }
-
-val lwJavaJar =
-    configurations
-        .findByName("functionalTestRuntimeClasspath")!!
-        .find { it.name.startsWith("lionweb-java-2024.1-client-1") } as File
-// Eventually we should use this value and drop it from gradle.properties
-val lwJavaLionwebRepositoryCommitID: String? =
-    zipTree(lwJavaJar)
-        .matching {
-            include("META-INF/MANIFEST.MF")
-        }.files
-        .firstOrNull()
-        ?.let { manifestFile ->
-            manifestFile
-                .inputStream()
-                .use {
-                    Manifest(it)
-                }.mainAttributes
-                .getValue("lionwebRepositoryCommitID")
-        }
 
 tasks.withType<Test> {
     testLogging {

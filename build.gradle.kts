@@ -74,14 +74,22 @@ gradle.projectsEvaluated {
         val allSources =
             files(
                 includedProjects.mapNotNull {
-                    it.extensions.findByType<JavaPluginExtension>()?.sourceSets?.findByName("main")?.allJava
+                    it.extensions
+                        .findByType<JavaPluginExtension>()
+                        ?.sourceSets
+                        ?.findByName("main")
+                        ?.allJava
                 },
             ).asFileTree
 
         val allClasspaths =
             files(
                 includedProjects.mapNotNull {
-                    it.extensions.findByType<JavaPluginExtension>()?.sourceSets?.findByName("main")?.compileClasspath
+                    it.extensions
+                        .findByType<JavaPluginExtension>()
+                        ?.sourceSets
+                        ?.findByName("main")
+                        ?.compileClasspath
                 },
             )
 

@@ -2,8 +2,8 @@ rootProject.name = "lionweb-jvm"
 
 pluginManagement {
     plugins {
-        id("org.jetbrains.kotlin.jvm") version("2.0.21")
-        id("org.gradle.toolchains.foojay-resolver-convention") version("0.7.0")
+        id("org.jetbrains.kotlin.jvm") version ("2.0.21")
+        id("org.gradle.toolchains.foojay-resolver-convention") version ("0.7.0")
     }
     repositories {
         gradlePluginPortal()
@@ -24,4 +24,3 @@ include("docs-examples")
 include("gradle-plugin")
 include("kotlin-core")
 include("kotlin-client")
-
