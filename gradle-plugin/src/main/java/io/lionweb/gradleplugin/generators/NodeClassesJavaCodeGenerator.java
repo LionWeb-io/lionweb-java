@@ -514,7 +514,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass,
       MethodSpec.Builder getChildren,
-      MethodSpec.Builder addChild1) {
+      MethodSpec.Builder addChild) {
     String fieldName = camelCase(containment.getName());
     TypeName baseFieldType = generationContext.typeNameFor(containment.getType());
     TypeName fieldType = baseFieldType;
@@ -522,6 +522,54 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
     }
     conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
+    if (containment.isMultiple()) {
+      String capitalizedName = pascalCase(containment.getName());
+      TypeName listType =
+          ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType)
+              .annotated(AnnotationSpec.builder(NotNull.class).build());
+      MethodSpec getter =
+          MethodSpec.methodBuilder("get" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(listType)
+              .addStatement("return $T.unmodifiableList($L)", Collections.class, fieldName)
+              .build();
+      conceptClass.addMethod(getter);
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("clear" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addStatement(
+                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+              .build());
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("addTo" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
+              .addStatement(
+                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+              .build());
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("addTo" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(TypeName.INT, "index")
+              .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
+              .addStatement(
+                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+              .build());
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("removeFrom" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(ParameterSpec.builder(baseFieldType, "child").addAnnotation(NotNull.class).build())
+              .addStatement(
+                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+              .build());
+      conceptClass.addMethod(
+          MethodSpec.methodBuilder("removeFrom" + capitalizedName)
+              .addModifiers(Modifier.PUBLIC)
+              .addParameter(TypeName.INT, "index")
+              .addStatement(
+                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
+              .build());
+    }
     if (containment.isMultiple()) {
       getChildren
           .beginControlFlow(
@@ -545,7 +593,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     }
 
     if (containment.isMultiple()) {
-      addChild1.addCode(
+      addChild.addCode(
           CodeBlock.builder()
               .beginControlFlow("if (containment.getKey().equals($S))", containment.getKey())
               .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
@@ -564,7 +612,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .endControlFlow()
               .build());
     } else {
-      addChild1
+      addChild
           .addStatement("$T removed = null", Node.class)
           .beginControlFlow("if ($N != null)", fieldName)
           .addStatement("this.removeChild($N)", fieldName)
@@ -584,6 +632,13 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           .addStatement("return")
           .endControlFlow();
     }
+
+    // TODO generate set entire containment
+    // TODO generate get entire containment
+    // TODO generate addTo with index
+    // TODO generate removeFrom with index
+    // TODO generate addTo without index
+    // TODO generate removeFrom without index
   }
 
   private static void considerConceptReference(
@@ -727,7 +782,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   MethodSpec.Builder adder =
                           MethodSpec.methodBuilder(adderName)
                                   .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                  .addParameter(generationContext.typeFor(containment.getType()), "child")
+                                  .addParameter(generationContext.typeNameFor(containment.getType()), "child")
                                   .addParameter(TypeName.INT, "index")
                                   .returns(TypeName.INT);
                   interfClass.addMethod(adder.build());
@@ -735,12 +790,12 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   MethodSpec.Builder setter =
                           MethodSpec.methodBuilder("set" + NamingUtils.capitalize(containment.getName()))
                                   .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
-                                  .addParameter(generationContext.typeFor(containment.getType()), "child")
+                                  .addParameter(generationContext.typeNameFor(containment.getType()), "child")
                                   .returns(TypeName.VOID);
                   interfClass.addMethod(setter.build());
                   MethodSpec getter =
                           MethodSpec.methodBuilder("get" + NamingUtils.capitalize(containment.getName()))
-                                  .returns(generationContext.typeFor(containment.getType()))
+                                  .returns(generationContext.typeNameFor(containment.getType()))
                                   .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                                   .build();
                   interfClass.addMethod(getter);
