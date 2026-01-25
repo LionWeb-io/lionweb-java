@@ -149,6 +149,11 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
   private void generateConcept(
       @Nonnull Concept concept, @Nonnull GenerationContext generationContext) {
+    ClassName CONTAINMENT = ClassName.get(Containment.class);
+    ClassName NODE = ClassName.get(Node.class);
+    ClassName REFERENCE = ClassName.get(Reference.class);
+    ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
+
     TypeSpec.Builder conceptClass;
     try {
       String className = generationContext.getGeneratedName(concept);
@@ -277,6 +282,28 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   "Containment should not be null")
               .addStatement(
                   "$T.requireNonNull(child, $S)", Objects.class, "Child should not be null");
+      // @Override
+      // public void addChild(Containment containment, Node child, int index) { ... }
+      MethodSpec.Builder addChild2 =
+          MethodSpec.methodBuilder("addChild")
+              .addAnnotation(Override.class)
+              .addModifiers(Modifier.PUBLIC)
+              .returns(void.class)
+              .addParameter(
+                  ParameterSpec.builder(CONTAINMENT, "containment")
+                      .addAnnotation(NotNull.class)
+                      .build())
+              .addParameter(
+                  ParameterSpec.builder(NODE, "child").addAnnotation(NotNull.class).build())
+              .addParameter(int.class, "index")
+              .addStatement(
+                  "$T.requireNonNull(containment, $S)",
+                  Objects.class,
+                  "containment must not be null")
+              .addStatement("$T.requireNonNull(child, $S)", Objects.class, "child must not be null")
+              .addStatement(
+                  "if (index < 0) throw new IllegalArgumentException($S);",
+                  "index should be non-negative");
 
       List<Feature<?>> features = new LinkedList<>();
       features.addAll(concept.getFeatures());
@@ -293,7 +320,12 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   setPropertyValue);
             } else if (feature instanceof Containment) {
               considerConceptContainment(
-                  (Containment) feature, generationContext, conceptClass, getChildren, addChild1);
+                  (Containment) feature,
+                  generationContext,
+                  conceptClass,
+                  getChildren,
+                  addChild1,
+                  addChild2);
             } else if (feature instanceof Reference) {
               considerConceptReference((Reference) feature, generationContext, conceptClass);
             } else {
@@ -333,11 +365,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   " not found.")
               .build());
 
-      ClassName CONTAINMENT = ClassName.get(Containment.class);
-      ClassName NODE = ClassName.get(Node.class);
-      ClassName REFERENCE = ClassName.get(Reference.class);
-      ClassName REFERENCE_VALUE = ClassName.get(ReferenceValue.class);
-
       // List<? extends ReferenceValue>
       TypeName LIST_OF_WILDCARD_REF_VALUE =
           ParameterizedTypeName.get(
@@ -350,19 +377,14 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
               .build();
 
-      // @Override
-      // public void addChild(Containment containment, Node child, int index) { ... }
-      MethodSpec addChild2 =
-          MethodSpec.methodBuilder("addChild")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(void.class)
-              .addParameter(CONTAINMENT, "containment")
-              .addParameter(NODE, "child")
-              .addParameter(int.class, "index")
-              .addCode(unsupportedOpBody)
-              .build();
-      conceptClass.addMethod(addChild2);
+      addChild2
+          .addStatement(
+              "throw new $T($S + containment + $S)",
+              IllegalStateException.class,
+              "Containment ",
+              " not found.")
+          .build();
+      conceptClass.addMethod(addChild2.build());
 
       // @Override
       // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
@@ -516,7 +538,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass,
       MethodSpec.Builder getChildren,
-      MethodSpec.Builder addChild) {
+      MethodSpec.Builder addChild1,
+      MethodSpec.Builder addChild2) {
     String fieldName = camelCase(containment.getName());
     TypeName baseFieldType = generationContext.typeNameFor(containment.getType());
     TypeName fieldType = baseFieldType;
@@ -557,16 +580,16 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   ParameterSpec.builder(baseFieldType, "child")
                       .addAnnotation(NotNull.class)
                       .build())
-              .addStatement("addTo$N($N.size(), child)", capitalizedName, fieldName)
+              .addStatement("addTo$N(child, $N.size())", capitalizedName, fieldName)
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("addTo" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
-              .addParameter(TypeName.INT, "index")
               .addParameter(
                   ParameterSpec.builder(baseFieldType, "child")
                       .addAnnotation(NotNull.class)
                       .build())
+              .addParameter(TypeName.INT, "index")
               .addCode(
                   CodeBlock.builder()
                       .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
@@ -664,26 +687,28 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     }
 
     if (containment.isMultiple()) {
-      addChild.addCode(
+      addChild1.addCode(
           CodeBlock.builder()
               .beginControlFlow("if (containment.getKey().equals($S))", containment.getKey())
-              .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
-              .addStatement("(($T) $N).setParent(this)", HasSettableParent.class, "child")
-              .endControlFlow()
-              .addStatement("$L.add(($T)$N)", fieldName, baseFieldType, "child")
-              .beginControlFlow("if ($N != null)", "partitionObserverCache")
               .addStatement(
-                  "$N.childAdded(this, this.getClassifier().requireContainmentByName($S), $L.size() - 1, $N)",
-                  "partitionObserverCache",
-                  containment.getName(),
-                  fieldName,
-                  "child")
+                  "addTo$N(($T) child)",
+                  pascalCase(containment.getName()),
+                  generationContext.typeNameFor(containment.getType()))
+              .addStatement("return")
               .endControlFlow()
+              .build());
+      addChild2.addCode(
+          CodeBlock.builder()
+              .beginControlFlow("if (containment.getKey().equals($S))", containment.getKey())
+              .addStatement(
+                  "addTo$N(($T) child, index)",
+                  pascalCase(containment.getName()),
+                  generationContext.typeNameFor(containment.getType()))
               .addStatement("return")
               .endControlFlow()
               .build());
     } else {
-      addChild
+      addChild1
           .addStatement("$T removed = null", Node.class)
           .beginControlFlow("if ($N != null)", fieldName)
           .addStatement("this.removeChild($N)", fieldName)
@@ -702,6 +727,17 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               "child")
           .addStatement("return")
           .endControlFlow();
+      addChild2.addCode(
+          CodeBlock.builder()
+              .beginControlFlow("if (containment.getKey().equals($S))", containment.getKey())
+                  .addStatement("if (index > 0) throw new IllegalArgumentException($S);", "index should at most zero for a non-multiple containment")
+              .addStatement(
+                  "set$N(($T) child)",
+                  pascalCase(containment.getName()),
+                  generationContext.typeNameFor(containment.getType()))
+              .addStatement("return")
+              .endControlFlow()
+              .build());
     }
 
     // TODO generate set entire containment
