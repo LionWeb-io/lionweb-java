@@ -33,8 +33,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private MonitoringObserver observer = new MonitoringObserver();
   private String participationId;
   private HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes = new HashMap<>();
-  private PrimitiveValuesSerialization primitiveValuesSerialization =
-      new PrimitiveValuesSerialization();
+  private DataTypesValuesSerialization dataTypesValuesSerialization =
+      new DataTypesValuesSerialization();
   private AbstractSerialization serialization;
   private Set<String> queriesSent = new HashSet<>();
   private String clientId;
@@ -49,7 +49,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     this.channel = channel;
     this.channel.registerEventReceiver(this);
     this.channel.registerQueryResponseReceiver(this);
-    this.primitiveValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(
+    this.dataTypesValuesSerialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(
         lionWebVersion);
     this.serialization = SerializationProvider.getStandardJsonSerialization(lionWebVersion);
     this.serialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
@@ -201,7 +201,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                   commandId,
                   classifierInstance.getID(),
                   MetaPointer.from(property),
-                  primitiveValuesSerialization.serialize(property.getType().getID(), newValue)));
+                  dataTypesValuesSerialization.serialize(property.getType().getID(), newValue)));
     }
 
     @Override
