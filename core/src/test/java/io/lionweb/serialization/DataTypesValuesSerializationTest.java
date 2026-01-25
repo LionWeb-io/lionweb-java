@@ -11,7 +11,7 @@ import io.lionweb.model.impl.DynamicStructuredDataTypeInstance;
 import io.lionweb.model.impl.EnumerationValue;
 import io.lionweb.model.impl.EnumerationValueImpl;
 import io.lionweb.model.impl.M3Node;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class DataTypesValuesSerializationTest {
@@ -24,7 +24,7 @@ public class DataTypesValuesSerializationTest {
   private PrimitiveType integerType;
   private PrimitiveType booleanType;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     serialization = new DataTypesValuesSerialization();
 

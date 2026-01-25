@@ -2,8 +2,7 @@ package io.lionweb.serialization;
 
 import static io.lionweb.serialization.SerializationProvider.getStandardJsonSerialization;
 import static io.lionweb.serialization.SerializedJsonComparisonUtils.assertEquivalentLionWebJson;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
@@ -115,7 +114,7 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     assertInstancesAreEquals(n1, deserializedNodes.get(0));
   }
 
-  @Test(expected = RuntimeException.class)
+  @Test
   public void unexepectedProperty() {
     String json =
         "{\n"
@@ -125,7 +124,7 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
             + "  \"info\": \"should not be here\"\n"
             + "}";
     LowLevelJsonSerialization lljs = new LowLevelJsonSerialization();
-    lljs.deserializeSerializationBlock(json);
+    assertThrows(RuntimeException.class, () -> lljs.deserializeSerializationBlock(json));
   }
 
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {

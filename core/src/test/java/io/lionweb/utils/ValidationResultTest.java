@@ -7,7 +7,7 @@ import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.impl.DynamicNode;
 import java.util.Set;
 import java.util.function.Supplier;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class ValidationResultTest {
@@ -15,7 +15,7 @@ public class ValidationResultTest {
   private ValidationResult validationResult;
   private ClassifierInstance<?> mockSubject;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     validationResult = new ValidationResult();
     Concept myConcept = new Concept();
@@ -337,9 +337,9 @@ public class ValidationResultTest {
       if ("Error 2".equals(issue.getMessage())) found2 = true;
       if ("Error 3".equals(issue.getMessage())) found3 = true;
     }
-    assertTrue("Error 1 should be found", found1);
-    assertTrue("Error 2 should be found", found2);
-    assertTrue("Error 3 should be found", found3);
+    assertTrue(found1, "Error 1 should be found");
+    assertTrue(found2, "Error 2 should be found");
+    assertTrue(found3, "Error 3 should be found");
   }
 
   @Test
@@ -353,9 +353,9 @@ public class ValidationResultTest {
     validationResult.addError("Test error");
     String result = validationResult.toString();
 
-    assertTrue("Should contain ValidationResult", result.startsWith("ValidationResult("));
-    assertTrue("Should contain error message", result.contains("Test error"));
-    assertTrue("Should end with closing parenthesis", result.endsWith(")"));
+    assertTrue(result.startsWith("ValidationResult("), "Should contain ValidationResult");
+    assertTrue(result.contains("Test error"), "Should contain error message");
+    assertTrue(result.endsWith(")"), "Should end with closing parenthesis");
   }
 
   @Test
@@ -364,25 +364,25 @@ public class ValidationResultTest {
     validationResult.addError("Second error");
     String result = validationResult.toString();
 
-    assertTrue("Should contain ValidationResult", result.startsWith("ValidationResult("));
-    assertTrue("Should contain first error", result.contains("First error"));
-    assertTrue("Should contain second error", result.contains("Second error"));
-    assertTrue("Should contain separator", result.contains(", "));
-    assertTrue("Should end with closing parenthesis", result.endsWith(")"));
+    assertTrue(result.startsWith("ValidationResult("), "Should contain ValidationResult");
+    assertTrue(result.contains("First error"), "Should contain first error");
+    assertTrue(result.contains("Second error"), "Should contain second error");
+    assertTrue(result.contains(", "), "Should contain separator");
+    assertTrue(result.endsWith(")"), "Should end with closing parenthesis");
   }
 
   @Test
   public void testIssuesSetIsNotNull() {
     Set<Issue> issues = validationResult.getIssues();
-    assertNotNull("Issues set should never be null", issues);
+    assertNotNull(issues, "Issues set should never be null");
   }
 
   @Test
   public void testEmptyValidationResultIsSuccessful() {
     ValidationResult emptyResult = new ValidationResult();
-    assertTrue("Empty validation result should be successful", emptyResult.isSuccessful());
+    assertTrue(emptyResult.isSuccessful(), "Empty validation result should be successful");
     assertEquals(
-        "Empty validation result should have no issues", 0, emptyResult.getIssues().size());
+        0, emptyResult.getIssues().size(), "Empty validation result should have no issues");
   }
 
   @Test
@@ -414,8 +414,8 @@ public class ValidationResultTest {
 
     validationResult.addErrorIf(false, expensiveSupplier);
 
-    assertFalse("Supplier should not be called when condition is false", supplierCalled[0]);
-    assertTrue("Validation should remain successful", validationResult.isSuccessful());
+    assertFalse(supplierCalled[0], "Supplier should not be called when condition is false");
+    assertTrue(validationResult.isSuccessful(), "Validation should remain successful");
   }
 
   @Test
@@ -429,9 +429,9 @@ public class ValidationResultTest {
 
     validationResult.addErrorIf(true, messageSupplier);
 
-    assertTrue("Supplier should be called when condition is true", supplierCalled[0]);
-    assertFalse("Validation should not be successful", validationResult.isSuccessful());
-    assertEquals("Should have one error", 1, validationResult.getIssues().size());
+    assertTrue(supplierCalled[0], "Supplier should be called when condition is true");
+    assertFalse(validationResult.isSuccessful(), "Validation should not be successful");
+    assertEquals(1, validationResult.getIssues().size(), "Should have one error");
     assertEquals(
         "Dynamic error message", validationResult.getIssues().iterator().next().getMessage());
   }

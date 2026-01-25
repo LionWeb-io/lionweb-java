@@ -33,7 +33,7 @@ public class MetaPointerConcurrencyTest {
             concurrencyScenario.getStart().await();
             for (int i = 0; i < callsPerThread; i++) {
               MetaPointer mp = MetaPointer.get(lang, ver, key);
-              assertSame("Must return the same canonical instance", ref, mp);
+              assertSame(ref, mp, "Must return the same canonical instance");
               synchronized (identities) {
                 identities.put(mp, Boolean.TRUE);
               }
@@ -52,7 +52,7 @@ public class MetaPointerConcurrencyTest {
     }
 
     // Identity set must contain exactly one MetaPointer
-    assertEquals("There must be exactly one canonical MetaPointer", 1, identities.size());
+    assertEquals(1, identities.size(), "There must be exactly one canonical MetaPointer");
     assertTrue(identities.containsKey(ref));
   }
 
@@ -89,7 +89,7 @@ public class MetaPointerConcurrencyTest {
             MetaPointer expected = refs.get(idx);
             for (int i = 0; i < 10_000; i++) {
               MetaPointer mp = MetaPointer.get(triple[0], triple[1], triple[2]);
-              assertSame("Canonicalization must hold per triple", expected, mp);
+              assertSame(expected, mp, "Canonicalization must hold per triple");
               synchronized (identitySets.get(idx)) {
                 identitySets.get(idx).put(mp, Boolean.TRUE);
               }
@@ -104,7 +104,7 @@ public class MetaPointerConcurrencyTest {
     // each triple should have exactly one canonical instance
     for (int i = 0; i < triples.size(); i++) {
       assertEquals(
-          "Triple " + i + " must have exactly one instance", 1, identitySets.get(i).size());
+          1, identitySets.get(i).size(), "Triple " + i + " must have exactly one instance");
       assertTrue(identitySets.get(i).containsKey(refs.get(i)));
     }
 
@@ -112,7 +112,7 @@ public class MetaPointerConcurrencyTest {
     for (int i = 0; i < refs.size(); i++) {
       for (int j = i + 1; j < refs.size(); j++) {
         assertNotSame(
-            "Different triples must map to different instances", refs.get(i), refs.get(j));
+            refs.get(i), refs.get(j), "Different triples must map to different instances");
       }
     }
   }

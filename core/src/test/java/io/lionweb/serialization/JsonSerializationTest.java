@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 /** Testing various functionalities of JsonSerialization. */
 public class JsonSerializationTest extends SerializationTest {
@@ -282,7 +283,7 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   // We should get a DeserializationException as we are unable to reassign the child with null ID
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializeChildrenWithNullID() {
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, null);
@@ -290,8 +291,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(sum1, il1, il2);
     prepareDeserializationOfSimpleMath(js);
-    List<Node> deserialized = js.deserializeToNodes(serialized);
-    assertEquals(Arrays.asList(sum1, il1, il2), deserialized);
+    assertThrows(DeserializationException.class, () -> js.deserializeToNodes(serialized));
   }
 
   private void prepareDeserializationOfRefMM(JsonSerialization js) {
@@ -311,7 +311,7 @@ public class JsonSerializationTest extends SerializationTest {
             });
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deadReferences() {
     RefNode r1 = new RefNode();
     RefNode r2 = new RefNode();
@@ -319,7 +319,7 @@ public class JsonSerializationTest extends SerializationTest {
     JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(r1);
     prepareDeserializationOfRefMM(js);
-    List<Node> deserialized = js.deserializeToNodes(serialized);
+    assertThrows(DeserializationException.class, () -> js.deserializeToNodes(serialized));
   }
 
   @Test
@@ -337,7 +337,7 @@ public class JsonSerializationTest extends SerializationTest {
     assertEquals(Arrays.asList(r1, r2, r3), deserialized);
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void containmentsLoop() {
     ContainerNode c1 = new ContainerNode();
     ContainerNode c2 = new ContainerNode();
@@ -348,22 +348,24 @@ public class JsonSerializationTest extends SerializationTest {
 
     assertEquals(c2, c1.getParent());
     assertEquals(c1, c2.getParent());
-    Assert.assertEquals(Arrays.asList(c2), ClassifierInstanceUtils.getChildren(c1));
-    Assert.assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
+    assertEquals(Arrays.asList(c2), ClassifierInstanceUtils.getChildren(c1));
+    assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
 
     JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
     JsonElement serialized = js.serializeNodesToJsonElement(c1, c2);
     prepareDeserializationOfRefMM(js);
-    List<Node> deserialized = js.deserializeToNodes(serialized);
+    assertThrows(DeserializationException.class, () -> js.deserializeToNodes(serialized));
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializeTreeWithoutRoot() {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    List<Node> nodes =
-        js.deserializeToNodes(
-            this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json"));
+    assertThrows(
+        DeserializationException.class,
+        () ->
+            js.deserializeToNodes(
+                this.getClass().getResourceAsStream("/mpsMeetup-issue10/example1.json")));
   }
 
   @Test
@@ -787,7 +789,7 @@ public class JsonSerializationTest extends SerializationTest {
                         && entry.getVersion().equals(language.getVersion())));
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializePartialTreeFailsByDefault() {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
@@ -798,7 +800,7 @@ public class JsonSerializationTest extends SerializationTest {
     InputStream is = this.getClass().getResourceAsStream("/serialization/partialTree.json");
 
     js.enableDynamicNodes();
-    List<Node> nodes = js.deserializeToNodes(is);
+    assertThrows(DeserializationException.class, () -> js.deserializeToNodes(is));
   }
 
   @Test
@@ -842,7 +844,7 @@ public class JsonSerializationTest extends SerializationTest {
     nodes.stream().filter(n -> n != pp1).allMatch(n -> !(n instanceof ProxyNode));
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializeTreeWithExternalReferencesWithThrowErrorsUnavailableNodePolicy() {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
@@ -856,7 +858,7 @@ public class JsonSerializationTest extends SerializationTest {
     js.enableDynamicNodes();
     js.setUnavailableParentPolicy(UnavailableNodePolicy.NULL_REFERENCES);
     js.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.THROW_ERROR);
-    js.deserializeToNodes(is);
+    assertThrows(DeserializationException.class, () -> js.deserializeToNodes(is));
   }
 
   @Test
@@ -973,9 +975,9 @@ public class JsonSerializationTest extends SerializationTest {
     js.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.NULL_REFERENCES);
     assertThrows(
         UnresolvedClassifierInstanceException.class,
-        new ThrowingRunnable() {
+        new Executable() {
           @Override
-          public void run() throws Throwable {
+          public void execute() {
             InputStream is =
                 this.getClass()
                     .getResourceAsStream("/serialization/todosWithChildrenNotProvided.json");

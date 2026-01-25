@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 
 /** Testing various functionalities of ProtoBufSerialization. */
@@ -126,7 +125,7 @@ public class ProtobufSerializationTest extends SerializationTest {
   }
 
   // We should get a DeserializationException as we are unable to reassign the child with null ID
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializeChildrenWithNullID() throws IOException {
     IntLiteral il1 = new IntLiteral(1, "int_1");
     IntLiteral il2 = new IntLiteral(2, null);
@@ -134,8 +133,8 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization serialization = SerializationProvider.getStandardProtoBufSerialization();
     byte[] serialized = serialization.serializeNodesToByteArray(sum1, il1, il2);
     prepareDeserializationOfSimpleMath(serialization);
-    List<Node> deserialized = serialization.deserializeToNodes(serialized);
-    assertEquals(Arrays.asList(sum1, il1, il2), deserialized);
+    assertThrows(
+        DeserializationException.class, () -> serialization.deserializeToNodes(serialized));
   }
 
   private void prepareDeserializationOfRefMM(ProtoBufSerialization protoBufSerialization) {
@@ -157,7 +156,7 @@ public class ProtobufSerializationTest extends SerializationTest {
             });
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deadReferences() throws IOException {
     RefNode r1 = new RefNode();
     RefNode r2 = new RefNode();
@@ -166,7 +165,8 @@ public class ProtobufSerializationTest extends SerializationTest {
         SerializationProvider.getStandardProtoBufSerialization();
     byte[] serialized = protoBufSerialization.serializeNodesToByteArray(r1);
     prepareDeserializationOfRefMM(protoBufSerialization);
-    List<Node> deserialized = protoBufSerialization.deserializeToNodes(serialized);
+    assertThrows(
+        DeserializationException.class, () -> protoBufSerialization.deserializeToNodes(serialized));
   }
 
   @Test
@@ -185,7 +185,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     assertEquals(Arrays.asList(r1, r2, r3), deserialized);
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void containmentsLoop() throws IOException {
     ContainerNode c1 = new ContainerNode();
     ContainerNode c2 = new ContainerNode();
@@ -196,14 +196,15 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     assertEquals(c2, c1.getParent());
     assertEquals(c1, c2.getParent());
-    Assert.assertEquals(Arrays.asList(c2), ClassifierInstanceUtils.getChildren(c1));
-    Assert.assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
+    assertEquals(Arrays.asList(c2), ClassifierInstanceUtils.getChildren(c1));
+    assertEquals(Arrays.asList(c1), ClassifierInstanceUtils.getChildren(c2));
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     byte[] serialized = protoBufSerialization.serializeNodesToByteArray(c1, c2);
     prepareDeserializationOfRefMM(protoBufSerialization);
-    List<Node> deserialized = protoBufSerialization.deserializeToNodes(serialized);
+    assertThrows(
+        DeserializationException.class, () -> protoBufSerialization.deserializeToNodes(serialized));
   }
 
   @Test
@@ -478,14 +479,14 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     // There must be at least one language (most likely two: built-ins + our language)
     int languagesCount = pbChunk.getInternedLanguagesCount();
-    assertTrue("Expected at least one interned language", languagesCount >= 1);
+    assertTrue(languagesCount >= 1, "Expected at least one interned language");
 
     // Every metapointer must reference an existing language index
     for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
       int languageIndex = mp.getLiLanguage();
       assertTrue(
-          "PBMetaPointer.language index must be within interned languages table",
-          languageIndex >= 0 && languageIndex <= languagesCount);
+          languageIndex >= 0 && languageIndex <= languagesCount,
+          "PBMetaPointer.language index must be within interned languages table");
 
       // Language key/version must point to valid entries in the interned strings table
       PBLanguage lang = pbChunk.getInternedLanguages(languageIndex - 1);
@@ -518,14 +519,14 @@ public class ProtobufSerializationTest extends SerializationTest {
 
     // There must be at least one language (most likely two: built-ins + our language)
     int languagesCount = pbChunk.getInternedLanguagesCount();
-    assertTrue("Expected at least one interned language", languagesCount >= 1);
+    assertTrue(languagesCount >= 1, "Expected at least one interned language");
 
     // Every metapointer must reference an existing language index
     for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
       int languageIndex = mp.getLiLanguage();
       assertTrue(
-          "PBMetaPointer.language index must be within interned languages table",
-          languageIndex >= 0 && languageIndex <= languagesCount);
+          languageIndex >= 0 && languageIndex <= languagesCount,
+          "PBMetaPointer.language index must be within interned languages table");
 
       // Language key/version must point to valid entries in the interned strings table
       PBLanguage lang = pbChunk.getInternedLanguages(languageIndex - 1);
@@ -541,7 +542,7 @@ public class ProtobufSerializationTest extends SerializationTest {
     }
   }
 
-  @Test(expected = DeserializationException.class)
+  @Test
   public void deserializationFailsWhenMetaPointerReferencesMissingLanguage() {
     // Build a PBChunk with a meta pointer referencing a non-existent language index (0),
     // and no languages in interned_languages. This should trigger a DeserializationException.
@@ -574,16 +575,19 @@ public class ProtobufSerializationTest extends SerializationTest {
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
     // This call should throw due to missing language for the metapointer
-    protoBufSerialization.deserializeToNodes(malformed);
+    assertThrows(
+        DeserializationException.class, () -> protoBufSerialization.deserializeToNodes(malformed));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void serializeNodesRejectsProxyNodes() {
     // Ensure ProxyNode is rejected by serializeNodesToByteArray
     io.lionweb.model.impl.ProxyNode proxy = new io.lionweb.model.impl.ProxyNode("proxy-id");
     ProtoBufSerialization serialization = SerializationProvider.getStandardProtoBufSerialization();
     // Casting to ClassifierInstance<?> could be implicit; using raw list to avoid generics issues
-    serialization.serializeNodesToByteArray(Collections.singletonList(proxy));
+    assertThrows(
+        IllegalArgumentException.class,
+        () -> serialization.serializeNodesToByteArray(Collections.singletonList(proxy)));
   }
 
   private void assertSerializationChunkContainsLanguage(

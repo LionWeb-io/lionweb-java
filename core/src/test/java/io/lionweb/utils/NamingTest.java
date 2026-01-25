@@ -1,5 +1,7 @@
 package io.lionweb.utils;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import org.junit.jupiter.api.Test;
 
 public class NamingTest {
@@ -9,9 +11,9 @@ public class NamingTest {
     Naming.validateName("myID123");
   }
 
-  @Test(expected = InvalidName.class)
+  @Test
   public void invalidSimpleNameStartingWithDigits() {
-    Naming.validateName("1myID");
+    assertThrows(InvalidName.class, () -> Naming.validateName("1myID"));
   }
 
   @Test
