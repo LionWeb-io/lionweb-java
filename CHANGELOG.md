@@ -1,5 +1,14 @@
 # Changelog
 
+### Version 1.2.7
+
+* Complete classes generation from the Gradle Plugin
+* Initial support for delta protocol
+
+### Version 1.2.6
+
+* Improve classes generation from the Gradle Plugin
+
 ### Version 1.2.5
 
 * In generated language class, add getters for primitive types and enumerations
