@@ -172,7 +172,9 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       List<Node> children = containmentValues.get(containment.getKey());
       if (children.size() > index) {
         Node removed = children.remove(index);
-        if (removed instanceof HasSettableParent) { ((HasSettableParent) removed).setParent(null); }
+        if (removed instanceof HasSettableParent) {
+          ((HasSettableParent) removed).setParent(null);
+        }
         if (partitionObserverCache != null) {
           partitionObserverCache.childRemoved(this, containment, index, removed);
         }
