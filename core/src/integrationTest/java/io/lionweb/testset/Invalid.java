@@ -6,29 +6,25 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class Invalid extends ATestset {
-  @Parameterized.Parameters(name = "[{index}] {0}")
-  public static Object[] inputFiles() {
-    Path integrationTests = findIntegrationTests();
+public class Invalid {
+  @MethodSource("inputFiles")
+  @ParameterizedTest(name = "[{index}] {0}")
+  public void assertInvalid(Path path) {
+    ATestset testset = new ATestset(path) {};
+    testset.assertIsNotValid(path);
+  }
+
+  public static Stream<Path> inputFiles() {
+    Path integrationTests = ATestset.findIntegrationTests();
     Path basePath = integrationTests.resolve("invalid");
-    Object[] result =
-        collectJsonFiles(
-            basePath, ignored.stream().map(s -> Paths.get(s)).collect(Collectors.toSet()));
-    return result;
-  }
-
-  public Invalid(Path path) {
-    super(path);
-  }
-
-  @Test
-  public void assertInvalid() {
-    assertIsNotValid(path);
+    return Arrays.stream(
+            ATestset.collectJsonFiles(
+                basePath, ignored.stream().map(s -> Paths.get(s)).collect(Collectors.toSet())))
+        .map(p -> (Path) p);
   }
 
   private static final Set<String> ignored =

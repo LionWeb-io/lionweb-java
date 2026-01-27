@@ -27,7 +27,7 @@ dependencies {
 
     // Use JUnit test framework.
     testImplementation(libs.junit.api)
-    testImplementation(libs.junit.engine)
+    testRuntimeOnly(libs.junit.engine)
     testImplementation(libs.gson)
 }
 

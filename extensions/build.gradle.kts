@@ -27,7 +27,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.okhttp)
 
-    testImplementation(libs.junit.engine)
+    testRuntimeOnly(libs.junit.engine)
     testImplementation(libs.junit.api)
 }
 

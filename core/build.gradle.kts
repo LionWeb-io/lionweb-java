@@ -27,7 +27,8 @@ val javadocConfig by configurations.creating {
 dependencies {
     // Use JUnit test framework.
     testImplementation(libs.junit.api)
-    testImplementation(libs.junit.engine)
+    testImplementation(libs.junit.params)
+    testRuntimeOnly(libs.junit.engine)
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api(libs.commonsMath3)
@@ -135,6 +136,8 @@ val integrationTestSourceSet = sourceSets.create("integrationTest") {
 
 configurations["integrationTestImplementation"]
     .extendsFrom(configurations["testImplementation"])
+configurations["integrationTestRuntimeOnly"]
+    .extendsFrom(configurations["testRuntimeOnly"])
 
 val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
 
@@ -178,6 +181,8 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
     testClassesDirs = integrationTestSourceSet.output.classesDirs
     classpath = integrationTestSourceSet.runtimeClasspath
     environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
+
+    useJUnitPlatform()
 }
 
 tasks.jacocoTestReport {

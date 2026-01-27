@@ -123,7 +123,7 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.gson)
     testImplementation(libs.junit.api)
-    testImplementation(libs.junit.engine)
+    testRuntimeOnly(libs.junit.engine)
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))

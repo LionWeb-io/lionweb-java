@@ -1,26 +1,22 @@
 package io.lionweb.testset;
 
 import java.nio.file.Path;
-import org.junit.jupiter.api.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
+import java.util.Arrays;
+import java.util.stream.Stream;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
-@RunWith(Parameterized.class)
-public class Valid extends ATestset {
-  @Parameterized.Parameters(name = "[{index}] {0}")
-  public static Object[] inputFiles() {
-    Path integrationTests = findIntegrationTests();
+public class Valid {
+  @MethodSource("inputFiles")
+  @ParameterizedTest(name = "[{index}] {0}")
+  public void assertValid(Path path) {
+    ATestset testset = new ATestset(path) {};
+    testset.assertCanBeLoadedAtLowLevel(path);
+  }
+
+  public static Stream<Path> inputFiles() {
+    Path integrationTests = ATestset.findIntegrationTests();
     Path basePath = integrationTests.resolve("valid");
-    Object[] result = collectJsonFiles(basePath);
-    return result;
-  }
-
-  public Valid(Path path) {
-    super(path);
-  }
-
-  @Test
-  public void assertValid() {
-    assertCanBeLoadedAtLowLevel(path);
+    return Arrays.stream(ATestset.collectJsonFiles(basePath)).map(p -> (Path) p);
   }
 }
