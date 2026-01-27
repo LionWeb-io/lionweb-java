@@ -254,6 +254,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
         return languageIndexMap.get(language);
       }
       int index = languages.size();
+      stringIndexer(language.getKey());
+      stringIndexer(language.getVersion());
       languages.add(language);
       languageIndexMap.put(language, index);
       return index;
