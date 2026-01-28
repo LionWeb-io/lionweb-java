@@ -138,5 +138,12 @@ tasks.register("integrationTest") {
 }
 
 tasks.register("format") {
-    dependsOn("spotlessApply", "ktlintFormat")
+    subprojects.forEach {
+        if (it.tasks.findByName("spotlessApply") != null) {
+            dependsOn(it.tasks.named("spotlessApply"))
+        }
+        if (it.tasks.findByName("ktlintFormat") != null) {
+            dependsOn(it.tasks.named("ktlintFormat"))
+        }
+    }
 }
