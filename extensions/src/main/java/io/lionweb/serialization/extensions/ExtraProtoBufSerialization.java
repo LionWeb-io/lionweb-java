@@ -55,11 +55,16 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
 
     // We need to process languages before strings, otherwise we might end up with null pointers
     for (LanguageVersion languageVersion : serializationChunk.getLanguages()) {
-      bulkImportBuilder.addInternedLanguages(
-          PBLanguage.newBuilder()
-              .setSiKey(serializeHelper.stringIndexer(languageVersion.getKey()))
-              .setSiVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
-              .build());
+      serializeHelper.languageIndexer(languageVersion);
+    }
+    for (LanguageVersion languageVersion : serializeHelper.getLanguages()) {
+      if (languageVersion != null) {
+        bulkImportBuilder.addInternedLanguages(
+            PBLanguage.newBuilder()
+                .setSiKey(serializeHelper.stringIndexer(languageVersion.getKey()))
+                .setSiVersion(serializeHelper.stringIndexer(languageVersion.getVersion()))
+                .build());
+      }
     }
 
     for (String string : serializeHelper.getStrings()) {

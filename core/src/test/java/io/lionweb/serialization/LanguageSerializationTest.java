@@ -1,13 +1,13 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.serialization.data.*;
 import java.util.Arrays;
 import java.util.HashSet;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Testing various functionalities of JsonSerialization. */
 public class LanguageSerializationTest extends SerializationTest {

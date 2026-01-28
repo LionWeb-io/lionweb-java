@@ -1,6 +1,6 @@
 package io.lionweb.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
@@ -10,7 +10,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LanguageValidatorTest {
 

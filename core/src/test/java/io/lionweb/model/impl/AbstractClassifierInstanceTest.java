@@ -1,7 +1,7 @@
 package io.lionweb.model.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import io.lionweb.language.Annotation;
 import io.lionweb.language.Concept;
@@ -14,7 +14,7 @@ import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.SimpleNode;
 import io.lionweb.serialization.simplemath.IntLiteral;
 import java.util.Arrays;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AbstractClassifierInstanceTest {
 

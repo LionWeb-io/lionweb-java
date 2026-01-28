@@ -1,0 +1,149 @@
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
+
+plugins {
+    alias(libs.plugins.release)
+    alias(libs.plugins.vt.publish) apply (false)
+    alias(libs.plugins.kotlin.jvm) apply (false)
+    alias(libs.plugins.ktlint)
+    alias(libs.plugins.dokka) apply (false)
+    alias(libs.plugins.versioncheck)
+    alias(libs.plugins.spotless)
+    id("java")
+}
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    apply(plugin = "com.diffplug.spotless")
+
+    spotless {
+        java {
+            googleJavaFormat()
+            targetExclude("**/src-gen/**", "**/build/**")
+        }
+    }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
+
+    tasks.withType<Javadoc>().configureEach {
+        isFailOnError = false
+
+        val javadocOptions = options as StandardJavadocDocletOptions
+        javadocOptions.addStringOption("Xdoclint:none", "-quiet")
+        javadocOptions.addStringOption("tag", "generated:a:Generated")
+        javadocOptions.addStringOption("tag", "model:a:Model")
+        javadocOptions.addStringOption("tag", "ordered:a:Ordered")
+    }
+}
+
+allprojects {
+
+    group = "io.lionweb"
+    project.version = version
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+}
+
+release {
+    buildTasks =
+        listOf(
+            ":core:publishAllPublicationsToMavenCentralRepository",
+            ":extensions:publishAllPublicationsToMavenCentralRepository",
+            ":client:publishAllPublicationsToMavenCentralRepository",
+            ":client-testing:publishAllPublicationsToMavenCentralRepository",
+            ":emf:publishAllPublicationsToMavenCentralRepository",
+            ":emf-builtins:publishAllPublicationsToMavenCentralRepository",
+            ":gradle-plugin:publishPlugins",
+            ":core:publishAllPublicationsToMavenCentralRepository",
+            ":client:publishAllPublicationsToMavenCentralRepository",
+            ":kotlin-core:publishAllPublicationsToMavenCentralRepository",
+            ":kotlin-client:publishAllPublicationsToMavenCentralRepository",
+        )
+    versionPropertyFile = "./gradle.properties"
+    git {
+        requireBranch.set("main")
+        pushToRemote.set("origin")
+    }
+}
+
+tasks.wrapper {
+    gradleVersion = "8.14.4"
+    distributionType = Wrapper.DistributionType.ALL
+}
+
+gradle.projectsEvaluated {
+    tasks.register<Javadoc>("aggregateJavadoc", Javadoc::class) {
+        group = "documentation"
+        description = "Aggregate Javadoc from all subprojects"
+        destinationDir = file("$rootDir/website/static/api")
+
+        val includedProjects = subprojects.filter { it.name != "docs-examples" }
+
+        val allSources =
+            files(
+                includedProjects.mapNotNull {
+                    it.extensions
+                        .findByType<JavaPluginExtension>()
+                        ?.sourceSets
+                        ?.findByName("main")
+                        ?.allJava
+                },
+            ).asFileTree
+
+        val allClasspaths =
+            files(
+                includedProjects.mapNotNull {
+                    it.extensions
+                        .findByType<JavaPluginExtension>()
+                        ?.sourceSets
+                        ?.findByName("main")
+                        ?.compileClasspath
+                },
+            )
+
+        source = allSources
+        classpath = allClasspaths
+
+        val javadocOptions = options as StandardJavadocDocletOptions
+        javadocOptions.encoding = "UTF-8"
+        javadocOptions.charSet = "UTF-8"
+        javadocOptions.setAuthor(true)
+        javadocOptions.setVersion(true)
+        javadocOptions.links("https://docs.oracle.com/javase/8/docs/api/")
+        javadocOptions.addStringOption("Xdoclint:none", "-quiet")
+        javadocOptions.addStringOption("tag", "generated:a:Generated")
+        javadocOptions.addStringOption("tag", "model:a:Model")
+        javadocOptions.addStringOption("tag", "ordered:a:Ordered")
+
+        doFirst {
+            println("Javadoc will be generated from:")
+            allSources.forEach { println("  - $it") }
+        }
+    }
+}
+
+tasks.register("integrationTest") {
+    group = "verification"
+    description = "Runs core module integration tests"
+    dependsOn(":core:integrationTest")
+}
+
+tasks.register("format") {
+    subprojects.forEach {
+        if (it.tasks.findByName("spotlessApply") != null) {
+            dependsOn(it.tasks.named("spotlessApply"))
+        }
+        if (it.tasks.findByName("ktlintFormat") != null) {
+            dependsOn(it.tasks.named("ktlintFormat"))
+        }
+    }
+}

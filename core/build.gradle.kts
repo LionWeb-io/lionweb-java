@@ -1,11 +1,15 @@
-import com.vanniktech.maven.publish.SonatypeHost
 import java.net.URI
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestListener
+import org.gradle.api.tasks.testing.TestResult
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     jacoco
     alias(libs.plugins.protobuf)
 }
@@ -27,7 +31,10 @@ val javadocConfig by configurations.creating {
 
 dependencies {
     // Use JUnit test framework.
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api(libs.commonsMath3)
@@ -35,7 +42,7 @@ dependencies {
     // This dependency is used internally, and not exposed to consumers on their own compile classpath.
     implementation(libs.guava)
 
-    javadocConfig(emf.ecore)
+    javadocConfig(libs.emf.ecore)
 
     // Please note that this forces us to use Java 11 for the javadoc tasks
     // unfortunately earlier version of these libraries, which were compatible with Java 8, are not available
@@ -47,16 +54,21 @@ dependencies {
     implementation(libs.protobuf)
 }
 
-tasks.register<Javadoc>("myJavadoc") {
-    source = sourceSets.main.get().allJava
-    classpath = javadocConfig
-    options {
-        require(this is StandardJavadocDocletOptions)
-        addStringOption("link", "https://docs.oracle.com/javase/8/docs/api/")
-        addStringOption("link", "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/")
-        addStringOption("link", "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
+tasks.withType<Javadoc>().configureEach {
+    val mainSourceSet = sourceSets.main.get()
+    classpath = files(mainSourceSet.output, mainSourceSet.compileClasspath, javadocConfig)
+    (options as StandardJavadocDocletOptions).apply {
+        links(
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/",
+            "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/",
+        )
         addStringOption("Xdoclint:none", "-quiet")
     }
+}
+
+tasks.register<Javadoc>("myJavadoc") {
+    source = sourceSets.main.get().allJava
 }
 
 tasks.register<Jar>("javadocJar") {
@@ -74,27 +86,27 @@ tasks.register<Jar>("sourcesJar") {
 
 mavenPublishing {
     coordinates(
-        groupId = "io.lionweb.lionweb-java",
-        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+        groupId = "io.lionweb",
+        artifactId = "lionweb-${specsVersion}-" + project.name,
         version = project.version as String,
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-java")
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
 
         scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
         }
 
         licenses {
             license {
-                name.set("Apache Licenve V2.0")
+                name.set("Apache License V2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0")
                 distribution.set("repo")
             }
@@ -119,7 +131,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(automaticRelease = true)
     signAllPublications()
 }
 
@@ -135,6 +147,8 @@ val integrationTestSourceSet = sourceSets.create("integrationTest") {
 
 configurations["integrationTestImplementation"]
     .extendsFrom(configurations["testImplementation"])
+configurations["integrationTestRuntimeOnly"]
+    .extendsFrom(configurations["testRuntimeOnly"])
 
 val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
 
@@ -175,9 +189,42 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
 val integrationTest = tasks.create("integrationTest", Test::class.java) {
     dependsOn(downloadIntegrationTestResources)
     group = "Verification"
+    description = "Runs integration tests in core/src/integrationTest"
+    shouldRunAfter(tasks.test)
     testClassesDirs = integrationTestSourceSet.output.classesDirs
     classpath = integrationTestSourceSet.runtimeClasspath
     environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
+
+    useJUnitPlatform()
+
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
+
+    val executedClasses = mutableSetOf<String>()
+    addTestListener(
+        object : TestListener {
+            override fun beforeSuite(suite: TestDescriptor) {}
+            override fun beforeTest(testDescriptor: TestDescriptor) {}
+            override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
+                testDescriptor.className?.let { executedClasses.add(it) }
+            }
+
+            override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+                if (suite.parent == null) {
+                    println(
+                        "Integration tests: ${result.testCount} invocations " +
+                            "from ${executedClasses.size} classes; " +
+                            "${result.successfulTestCount} passed, " +
+                            "${result.failedTestCount} failed, " +
+                            "${result.skippedTestCount} skipped"
+                    )
+                }
+            }
+        },
+    )
 }
 
 tasks.jacocoTestReport {
@@ -222,15 +269,11 @@ sourceSets {
 }
 
 tasks.test {
-    useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport) // run report after tests
-    useJUnit {
-        // This cast enables access to includeCategories and excludeCategories
-        this as JUnitOptions
-
+    useJUnitPlatform {
         val includeExpensive = project.findProperty("includeExpensiveTests") == "true"
         if (!includeExpensive) {
-            excludeCategories("io.lionweb.PerformanceTest")
+            excludeTags("performance")
         }
     }
 }

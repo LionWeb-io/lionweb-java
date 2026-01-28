@@ -38,7 +38,9 @@ public class LanguageEntitiesToEElementsMapping {
     this(lionWebVersion, true);
   }
 
-  /** @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping. */
+  /**
+   * @param prePopulateBuiltins Whether builtins should be pre-populated in this mapping.
+   */
   public LanguageEntitiesToEElementsMapping(
       @Nonnull LionWebVersion lionWebVersion, boolean prePopulateBuiltins) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");

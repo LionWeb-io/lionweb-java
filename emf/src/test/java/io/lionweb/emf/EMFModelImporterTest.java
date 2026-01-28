@@ -1,7 +1,7 @@
 package io.lionweb.emf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.model.ClassifierInstanceUtils;
@@ -19,7 +19,7 @@ import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
 import org.eclipse.emfcloud.jackson.resource.JsonResourceFactory;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EMFModelImporterTest {
 

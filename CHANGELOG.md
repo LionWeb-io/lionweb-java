@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.3.0
+
+* Combine LW Java and LW Kotlin to create LW JVM
+* Move to Junit 5, consistently
+
 ### Version 1.2.7
 
 * Complete classes generation from the Gradle Plugin

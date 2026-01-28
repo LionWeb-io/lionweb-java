@@ -1,6 +1,6 @@
 package io.lionweb.serialization.data;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.concurrent.*;
 import java.util.function.Consumer;
@@ -29,7 +29,7 @@ public class ConcurrencyScenario {
     for (int t = 0; t < threads; t++) {
       pool.execute(command);
     }
-    assertTrue("Workers did not finish in time", done.await(60, TimeUnit.SECONDS));
+    assertTrue(done.await(60, TimeUnit.SECONDS), "Workers did not finish in time");
     pool.shutdownNow();
   }
 
@@ -38,7 +38,7 @@ public class ConcurrencyScenario {
       int index = t;
       pool.execute(() -> command.accept(index));
     }
-    assertTrue("Workers did not finish in time", done.await(60, TimeUnit.SECONDS));
+    assertTrue(done.await(60, TimeUnit.SECONDS), "Workers did not finish in time");
     pool.shutdownNow();
   }
 }

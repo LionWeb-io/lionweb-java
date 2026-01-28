@@ -1,9 +1,9 @@
 package io.lionweb.serialization.data;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.Language;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class LanguageVersionTest {
 
@@ -12,7 +12,7 @@ public class LanguageVersionTest {
     LanguageVersion a = LanguageVersion.of("lang-key", "1.0");
     LanguageVersion b = LanguageVersion.of("lang-key", "1.0");
 
-    assertSame("Expected canonical instance for same key+version", a, b);
+    assertSame(a, b, "Expected canonical instance for same key+version");
     assertEquals(
         new LanguageVersionEqualsProxy("lang-key", "1.0"), new LanguageVersionEqualsProxy(a));
   }
@@ -93,7 +93,7 @@ public class LanguageVersionTest {
     assertTrue(s.contains("key='X'"));
     assertTrue(s.contains("version='9'"));
     // Sanity check on the prefix name used
-    assertTrue("toString should start with UsedLanguage{", s.startsWith("UsedLanguage{"));
+    assertTrue(s.startsWith("UsedLanguage{"), "toString should start with UsedLanguage{");
   }
 
   // Helper proxy to compare by value for equals tests without relying on reference equality

@@ -1,7 +1,7 @@
 package io.lionweb.emf;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.Language;
@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class EMFModelExporterTest {
 

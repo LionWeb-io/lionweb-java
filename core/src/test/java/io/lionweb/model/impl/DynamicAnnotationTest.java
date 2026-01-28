@@ -1,6 +1,7 @@
 package io.lionweb.model.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.lionweb.language.*;
 import io.lionweb.language.assigners.CommonIDAssigners;
@@ -8,7 +9,7 @@ import io.lionweb.language.assigners.CommonKeyAssigners;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.*;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class DynamicAnnotationTest {
 

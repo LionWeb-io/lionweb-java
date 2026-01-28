@@ -1,11 +1,9 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `jvm-test-suite`
     id("java-library")
     id("signing")
     alias(libs.plugins.shadow)
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     jacoco
 }
 
@@ -33,27 +31,27 @@ tasks.register<Jar>("sourcesJar") {
 
 mavenPublishing {
     coordinates(
-        groupId = "io.lionweb.lionweb-java",
-        artifactId = "lionweb-java-$specsVersion-" + project.name,
+        groupId = "io.lionweb",
+        artifactId = "lionweb-$specsVersion-" + project.name,
         version = project.version as String,
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-java")
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
 
         scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
         }
 
         licenses {
             license {
-                name.set("Apache Licenve V2.0")
+                name.set("Apache License V2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0")
                 distribution.set("repo")
             }
@@ -78,7 +76,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 
@@ -124,15 +122,18 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.okhttp)
     implementation(libs.gson)
-    testImplementation(libs.junit)
+    testImplementation(libs.junit.api)
+    testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))
     "functionalTestImplementation"(project(":client-testing"))
     "functionalTestImplementation"(libs.testcontainers)
-    "functionalTestImplementation"(libs.testcontainersjunit)
-    "functionalTestImplementation"(libs.testcontainerspg)
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    "functionalTestImplementation"("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    "functionalTestImplementation"(libs.testcontainers.junit)
+    "functionalTestImplementation"(libs.testcontainers.pg)
+    "functionalTestImplementation"(libs.junit.api)
+    "functionalTestImplementation"(libs.junit.engine)
+    "functionalTestRuntimeOnly"(libs.junit.platform.launcher)
     "functionalTestImplementation"(libs.gson)
 }

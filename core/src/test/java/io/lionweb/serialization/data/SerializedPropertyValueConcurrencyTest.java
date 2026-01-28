@@ -1,12 +1,12 @@
 package io.lionweb.serialization.data;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.IdentityHashMap;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicReference;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SerializedPropertyValueConcurrencyTest {
   @Test
@@ -95,8 +95,8 @@ public class SerializedPropertyValueConcurrencyTest {
     // Since large values are not cached, we should observe many distinct instances.
     // We don’t assert an exact number (to avoid being brittle) but > threads is a safe lower bound.
     assertTrue(
-        "Expected multiple distinct instances for large values, got " + identities.size(),
-        identities.size() > concurrencyScenario.getThreads());
+        identities.size() > concurrencyScenario.getThreads(),
+        "Expected multiple distinct instances for large values, got " + identities.size());
   }
 
   @Test

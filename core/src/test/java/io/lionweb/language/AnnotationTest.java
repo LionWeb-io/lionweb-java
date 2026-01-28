@@ -1,7 +1,7 @@
 package io.lionweb.language;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import io.lionweb.language.assigners.CommonIDAssigners;
 import io.lionweb.language.assigners.CommonKeyAssigners;
@@ -9,7 +9,7 @@ import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.ReferenceValue;
 import java.util.Arrays;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class AnnotationTest extends BaseTest {
 

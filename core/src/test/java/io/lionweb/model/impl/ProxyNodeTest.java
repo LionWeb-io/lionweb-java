@@ -1,12 +1,12 @@
 package io.lionweb.model.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.*;
 import io.lionweb.model.MockPartitionObserver;
 import io.lionweb.model.ReferenceValue;
 import java.util.Collections;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ProxyNodeTest {
 

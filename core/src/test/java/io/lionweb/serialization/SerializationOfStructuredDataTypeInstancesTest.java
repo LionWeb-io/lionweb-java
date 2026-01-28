@@ -1,6 +1,6 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -13,7 +13,7 @@ import io.lionweb.model.impl.DynamicStructuredDataTypeInstance;
 import io.lionweb.model.impl.EnumerationValueImpl;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Specific tests of JsonSerialization for the serialization and deserialization of Structured Data

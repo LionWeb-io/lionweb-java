@@ -1,12 +1,12 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class SerializedJsonComparisonUtilsTest {
 

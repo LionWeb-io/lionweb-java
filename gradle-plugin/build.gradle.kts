@@ -1,16 +1,14 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "1.2.0"
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
 }
 
 project.group = "io.lionweb"
 
 gradlePlugin {
-    website.set("https://github.com/LionWeb-io/LionWeb-java")
-    vcsUrl.set("https://github.com/LionWeb-io/lionweb-java.git")
+    website.set("https://github.com/LionWeb-io/lionweb-jvm")
+    vcsUrl.set("https://github.com/LionWeb-io/lionweb-jvm.git")
     plugins {
         create("lwGradlePlugin") {
             id = "io.lionweb"

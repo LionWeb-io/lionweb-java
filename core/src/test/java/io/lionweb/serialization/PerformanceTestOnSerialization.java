@@ -1,20 +1,19 @@
 package io.lionweb.serialization;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.PerformanceTest;
 import io.lionweb.model.Node;
 import java.io.*;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-@Category(PerformanceTest.class)
+@Tag("performance")
 public class PerformanceTestOnSerialization {
 
   @Test
@@ -73,8 +72,8 @@ public class PerformanceTestOnSerialization {
     long max = elapsedList.get(elapsedList.size() - 1);
     System.out.println("Range: " + min + " to " + max);
     assertTrue(
-        "Expected min time to be under " + thresholdMin + " but it was " + min, min < thresholdMin);
+        min < thresholdMin, "Expected min time to be under " + thresholdMin + " but it was " + min);
     assertTrue(
-        "Expected max time to be under " + thresholdMax + " but it was " + max, max < thresholdMax);
+        max < thresholdMax, "Expected max time to be under " + thresholdMax + " but it was " + max);
   }
 }

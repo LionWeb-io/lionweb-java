@@ -5,7 +5,7 @@ import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import java.nio.file.Path;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class ALanguageTestset extends ATestset {
   protected Language language;
@@ -14,7 +14,7 @@ public abstract class ALanguageTestset extends ATestset {
     super(path);
   }
 
-  @Before
+  @BeforeEach
   public void loadLanguage() {
     this.language =
         loadLanguage(

@@ -1,6 +1,6 @@
 package io.lionweb.client;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.lionweb.LionWebVersion;
@@ -15,7 +15,7 @@ import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.extensions.BulkImport;
 import io.lionweb.serialization.extensions.ExtraProtoBufSerialization;
 import io.lionweb.serialization.extensions.ExtraSerializationProvider;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /** Testing various functionalities of ProtoBufSerialization. */
 public class ExtraProtoBufSerializationTest {
@@ -52,30 +52,35 @@ public class ExtraProtoBufSerializationTest {
 
     PBAttachPoint pbAttachPoint = pbBulkImport.getAttachPoints(0);
 
-    assertEquals("n2", pbBulkImport.getInternedStrings(pbAttachPoint.getSiContainer()));
-    assertEquals("n1", pbBulkImport.getInternedStrings(pbAttachPoint.getSiRoot()));
+    assertEquals("n2", pbBulkImport.getInternedStrings(pbAttachPoint.getSiContainer() - 1));
+    assertEquals("n1", pbBulkImport.getInternedStrings(pbAttachPoint.getSiRoot() - 1));
 
     PBMetaPointer pbAttachPointContainment =
         pbBulkImport.getInternedMetaPointers(pbAttachPoint.getMpiMetaPointer());
     assertEquals(
-        "Foo",
+        "l-key",
         pbBulkImport.getInternedStrings(
-            pbBulkImport
-                .getInternedLanguages(pbAttachPointContainment.getLiLanguage())
-                .getSiKey()));
+            pbBulkImport.getInternedLanguages(pbAttachPointContainment.getLiLanguage()).getSiKey()
+                - 1));
+    assertEquals(
+        "l-key",
+        pbBulkImport.getInternedStrings(
+            pbBulkImport.getInternedLanguages(pbAttachPointContainment.getLiLanguage()).getSiKey()
+                - 1));
     assertEquals(
         "1",
         pbBulkImport.getInternedStrings(
             pbBulkImport
-                .getInternedLanguages(pbAttachPointContainment.getLiLanguage())
-                .getSiVersion()));
-    assertEquals("c-key", pbBulkImport.getInternedStrings(pbAttachPointContainment.getSiKey()));
+                    .getInternedLanguages(pbAttachPointContainment.getLiLanguage())
+                    .getSiVersion()
+                - 1));
+    assertEquals("c-key", pbBulkImport.getInternedStrings(pbAttachPointContainment.getSiKey() - 1));
 
     PBNode fbNode = pbBulkImport.getNodes(0);
-    assertEquals("n1", pbBulkImport.getInternedStrings(fbNode.getSiId()));
+    assertEquals("n1", pbBulkImport.getInternedStrings(fbNode.getSiId() - 1));
     // Here, even if we serialized a node that had no parent, the parent is obtained from the
-    // attach point
-    assertEquals("n2", pbBulkImport.getInternedStrings(fbNode.getSiParent()));
+    // attach point, but that happens during de-serialization, here we see 0 to indicate null
+    assertEquals(0, fbNode.getSiParent());
   }
 
   @Test
@@ -85,7 +90,8 @@ public class ExtraProtoBufSerializationTest {
     l.setKey("l-key");
     l.setVersion("1");
     Concept c = new Concept(l, "c", "c-id", "c-key");
-    Property property = Property.createRequired("foo", LionCoreBuiltins.getString());
+    Property property =
+        Property.createRequired("foo", LionCoreBuiltins.getString(LionWebVersion.v2023_1));
     property.setID("p-id");
     property.setKey("p-key");
     c.addFeature(property);
@@ -113,22 +119,22 @@ public class ExtraProtoBufSerializationTest {
 
     PBAttachPoint fbAttachPoint = fbBulkImport.getAttachPoints(0);
 
-    assertEquals("n2", fbBulkImport.getInternedStrings(fbAttachPoint.getSiContainer()));
-    assertEquals("n1", fbBulkImport.getInternedStrings(fbAttachPoint.getSiRoot()));
+    assertEquals("n2", fbBulkImport.getInternedStrings(fbAttachPoint.getSiContainer() - 1));
+    assertEquals("n1", fbBulkImport.getInternedStrings(fbAttachPoint.getSiRoot() - 1));
 
     PBMetaPointer fbAttachPointContainment =
         fbBulkImport.getInternedMetaPointers(fbAttachPoint.getMpiMetaPointer());
     PBLanguage fbLanguage =
-        fbBulkImport.getInternedLanguages(fbAttachPointContainment.getLiLanguage());
-    assertEquals("Foo", fbBulkImport.getInternedStrings(fbLanguage.getSiKey()));
-    assertEquals("1", fbBulkImport.getInternedStrings(fbLanguage.getSiVersion()));
-    assertEquals("c-key", fbBulkImport.getInternedStrings(fbAttachPointContainment.getSiKey()));
+        fbBulkImport.getInternedLanguages(fbAttachPointContainment.getLiLanguage() - 1);
+    assertEquals("Foo", fbBulkImport.getInternedStrings(fbLanguage.getSiKey() - 1));
+    assertEquals("1", fbBulkImport.getInternedStrings(fbLanguage.getSiVersion() - 1));
+    assertEquals("c-key", fbBulkImport.getInternedStrings(fbAttachPointContainment.getSiKey() - 1));
 
     PBNode fbNode = fbBulkImport.getNodes(0);
-    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getSiId()));
+    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getSiId() - 1));
     // Here, even if we serialized a node that had no parent, the parent is obtained from the
-    // attach point
-    assertEquals("n2", fbBulkImport.getInternedStrings(fbNode.getSiParent()));
+    // attach point, but that happens during deserialization
+    assertEquals(0, fbNode.getSiParent());
   }
 
   /**
@@ -159,7 +165,7 @@ public class ExtraProtoBufSerializationTest {
     assertEquals(1, fbBulkImport.getNodesCount());
 
     PBNode fbNode = fbBulkImport.getNodes(0);
-    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getSiId()));
-    assertEquals(null, fbBulkImport.getInternedStrings(fbNode.getSiParent()));
+    assertEquals("n1", fbBulkImport.getInternedStrings(fbNode.getSiId() - 1));
+    assertEquals(0, fbNode.getSiParent());
   }
 }

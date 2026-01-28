@@ -1,12 +1,11 @@
 package io.lionweb.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.serialization.data.*;
 import java.util.Arrays;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class ChunkValidatorTest {
 
@@ -15,7 +14,7 @@ public class ChunkValidatorTest {
   private LanguageVersion testLanguage;
   private MetaPointer testMetaPointer;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     validator = new ChunkValidator();
     chunk = new SerializationChunk();
@@ -50,10 +49,9 @@ public class ChunkValidatorTest {
 
     ValidationResult result = validator.validate(chunk);
 
-    Assert.assertFalse(result.isSuccessful());
-    Assert.assertEquals(1, result.getIssues().size());
-    Assert.assertTrue(
-        result.getIssues().iterator().next().getMessage().contains("Invalid node id"));
+    assertFalse(result.isSuccessful());
+    assertEquals(1, result.getIssues().size());
+    assertTrue(result.getIssues().iterator().next().getMessage().contains("Invalid node id"));
   }
 
   @Test

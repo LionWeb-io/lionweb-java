@@ -1,11 +1,9 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     `jvm-test-suite`
     id("java-library")
-    alias(libs.plugins.buildConfig)
+    alias(libs.plugins.build.config)
     id("signing")
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
 }
 
 val jvmVersion = extra["jvmVersion"] as String
@@ -36,10 +34,11 @@ dependencies {
     implementation(project(":client"))
     implementation(libs.gson)
     implementation(libs.testcontainers)
-    implementation(libs.testcontainersjunit)
-    implementation(libs.testcontainerspg)
-    implementation("org.junit.jupiter:junit-jupiter-api:5.8.1")
-    runtimeOnly("org.junit.jupiter:junit-jupiter-engine:5.8.1")
+    implementation(libs.testcontainers.junit)
+    implementation(libs.testcontainers.pg)
+    implementation(libs.junit.api)
+    runtimeOnly(libs.junit.engine)
+    runtimeOnly(libs.junit.platform.launcher)
 }
 
 val lionwebServerCommitID = extra["lionwebServerCommitID"]
@@ -61,27 +60,27 @@ tasks.register<Jar>("sourcesJar") {
 
 mavenPublishing {
     coordinates(
-        groupId = "io.lionweb.lionweb-java",
-        artifactId = "lionweb-java-${specsVersion}-" + project.name,
+        groupId = "io.lionweb",
+        artifactId = "lionweb-${specsVersion}-" + project.name,
         version = project.version as String,
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-java")
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
 
         scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
         }
 
         licenses {
             license {
-                name.set("Apache Licenve V2.0")
+                name.set("Apache License V2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0")
                 distribution.set("repo")
             }
@@ -106,7 +105,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 

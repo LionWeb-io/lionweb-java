@@ -1,9 +1,6 @@
-import com.vanniktech.maven.publish.SonatypeHost
-import org.apache.tools.ant.taskdefs.condition.Os
-
 plugins {
     id 'java-library'
-    alias(libs.plugins.vtpublish)
+    alias(libs.plugins.vt.publish)
     id "eclipse"
     id 'signing'
 }
@@ -18,9 +15,9 @@ configurations {
 }
 
 dependencies {
-    api emf.common
-    api emf.ecore
-    api emf.ecore.xmi
+    api(libs.emf.common)
+    api(libs.emf.ecore)
+    api(libs.emf.ecore.xmi)
     api("org.eclipse.emf:org.eclipse.emf.mwe2.launch:$mwe2LaunchVersion")
     api("org.eclipse.xtext:org.eclipse.xtext.common.types:$xtextVersion")
     api("org.eclipse.xtext:org.eclipse.xtext.xtext.generator:$xtextVersion")
@@ -108,7 +105,7 @@ task sourcesJar(type: Jar) {
 mavenPublishing {
     coordinates(
         "io.lionweb.lionweb-java",
-        "lionweb-java-${specsVersion}-" + project.name,
+        "lionweb-${specsVersion}-" + project.name,
         project.version as String,
     )
 
@@ -117,17 +114,17 @@ mavenPublishing {
         description.set("Builtins EPackage for EMF compatibility layer for LionWeb")
         version = project.version as String
         packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-java")
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
 
         scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-java.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-java.git")
-            url.set("https://github.com/LionWeb-io/lionweb-java.git")
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
         }
 
         licenses {
             license {
-                name.set("Apache Licenve V2.0")
+                name.set("Apache License V2.0")
                 url.set("https://www.apache.org/licenses/LICENSE-2.0")
                 distribution.set("repo")
             }
@@ -157,7 +154,7 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL, true)
+    publishToMavenCentral(true)
     signAllPublications()
 }
 

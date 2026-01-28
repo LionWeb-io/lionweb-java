@@ -1,6 +1,6 @@
 package io.lionweb.testset;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.Language;
@@ -21,10 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
-@RunWith(Parameterized.class)
 public abstract class ATestset {
   protected final Path path;
 
@@ -37,7 +34,7 @@ public abstract class ATestset {
         parse(path, SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1))
             .iterator()
             .next();
-    assertTrue(firstNode.getClass().toString(), firstNode instanceof Language);
+    assertTrue(firstNode instanceof Language, firstNode.getClass().toString());
     Language result = (Language) firstNode;
     LanguageValidator.ensureIsValid(result);
     return result;

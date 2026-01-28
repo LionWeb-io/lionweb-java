@@ -1,4 +1,5 @@
-# Plan for 1.2.0
+# Plan for 1.4.0
 
 - Drop support for JDK 1.8.
-- Initial support for Delta protocol
+- Complete support for Delta protocol.
+- Improve documentation.

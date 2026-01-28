@@ -1,10 +1,10 @@
 package io.lionweb.utils;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.serialization.data.*;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 public class PartitionChunkValidatorTest {
 
@@ -13,7 +13,7 @@ public class PartitionChunkValidatorTest {
   private LanguageVersion testLanguage;
   private MetaPointer testMetaPointer;
 
-  @Before
+  @BeforeEach
   public void setUp() {
     validator = new PartitionChunkValidator();
     chunk = new SerializationChunk();

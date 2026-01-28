@@ -1,8 +1,6 @@
 package io.lionweb.model.impl;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.*;
 import io.lionweb.lioncore.LionCore;
@@ -12,7 +10,7 @@ import io.lionweb.model.Node;
 import io.lionweb.model.ReferenceValue;
 import java.util.Arrays;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class M3NodeTest {
 

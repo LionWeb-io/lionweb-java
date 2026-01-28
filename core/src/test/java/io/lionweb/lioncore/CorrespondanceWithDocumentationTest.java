@@ -1,7 +1,7 @@
 package io.lionweb.lioncore;
 
 import static io.lionweb.serialization.SerializationProvider.getStandardJsonSerialization;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.Language;
@@ -12,7 +12,7 @@ import io.lionweb.utils.ModelComparator;
 import java.io.*;
 import java.net.URL;
 import java.util.List;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class CorrespondanceWithDocumentationTest {
 
@@ -50,7 +50,7 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertTrue(comparison.toString(), comparison.areEquivalent());
+    assertTrue(comparison.areEquivalent(), comparison.toString());
   }
 
   @Test
@@ -72,7 +72,7 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertTrue(comparison.toString(), comparison.areEquivalent());
+    assertTrue(comparison.areEquivalent(), comparison.toString());
   }
 
   @Test
@@ -94,7 +94,7 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertTrue(comparison.toString(), comparison.areEquivalent());
+    assertTrue(comparison.areEquivalent(), comparison.toString());
   }
 
   @Test
@@ -116,6 +116,6 @@ public class CorrespondanceWithDocumentationTest {
     for (String difference : comparison.getDifferences()) {
       System.out.println(" - " + difference);
     }
-    assertTrue(comparison.toString(), comparison.areEquivalent());
+    assertTrue(comparison.areEquivalent(), comparison.toString());
   }
 }

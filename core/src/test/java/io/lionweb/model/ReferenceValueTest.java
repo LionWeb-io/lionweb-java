@@ -1,11 +1,11 @@
 package io.lionweb.model;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.Concept;
 import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.model.impl.ProxyNode;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 public class ReferenceValueTest {
 
