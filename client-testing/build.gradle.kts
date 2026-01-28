@@ -38,6 +38,7 @@ dependencies {
     implementation(libs.testcontainers.pg)
     implementation(libs.junit.api)
     runtimeOnly(libs.junit.engine)
+    runtimeOnly(libs.junit.platform.launcher)
 }
 
 val lionwebServerCommitID = extra["lionwebServerCommitID"]

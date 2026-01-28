@@ -1,4 +1,8 @@
 import java.net.URI
+import org.gradle.api.tasks.testing.TestDescriptor
+import org.gradle.api.tasks.testing.TestListener
+import org.gradle.api.tasks.testing.TestResult
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("java-library")
@@ -29,6 +33,7 @@ dependencies {
     testImplementation(libs.junit.api)
     testImplementation(libs.junit.params)
     testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     // This dependency is exported to consumers, that is to say found on their compile classpath.
     api(libs.commonsMath3)
@@ -178,11 +183,32 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
 val integrationTest = tasks.create("integrationTest", Test::class.java) {
     dependsOn(downloadIntegrationTestResources)
     group = "Verification"
+    description = "Runs integration tests in core/src/integrationTest"
+    shouldRunAfter(tasks.test)
     testClassesDirs = integrationTestSourceSet.output.classesDirs
     classpath = integrationTestSourceSet.runtimeClasspath
     environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
 
     useJUnitPlatform()
+
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showStandardStreams = true
+    }
+
+    afterSuite(
+        KotlinClosure2<TestDescriptor, TestResult, Unit>({ suite, result ->
+            if (suite.parent == null) {
+                println(
+                    "Integration tests: ${result.testCount} executed, " +
+                        "${result.successfulTestCount} passed, " +
+                        "${result.failedTestCount} failed, " +
+                        "${result.skippedTestCount} skipped"
+                )
+            }
+        }),
+    )
 }
 
 tasks.jacocoTestReport {

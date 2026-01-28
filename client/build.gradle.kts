@@ -124,6 +124,7 @@ dependencies {
     implementation(libs.gson)
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))
@@ -133,5 +134,6 @@ dependencies {
     "functionalTestImplementation"(libs.testcontainers.pg)
     "functionalTestImplementation"(libs.junit.api)
     "functionalTestImplementation"(libs.junit.engine)
+    "functionalTestRuntimeOnly"(libs.junit.platform.launcher)
     "functionalTestImplementation"(libs.gson)
 }

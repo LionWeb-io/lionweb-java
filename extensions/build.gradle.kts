@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.okhttp)
 
     testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
     testImplementation(libs.junit.api)
 }
 
@@ -162,5 +163,6 @@ dependencies {
     "functionalTestImplementation"(libs.testcontainers.pg)
     "functionalTestImplementation"(libs.junit.api)
     "functionalTestImplementation"(libs.junit.engine)
+    "functionalTestRuntimeOnly"(libs.junit.platform.launcher)
     "functionalTestImplementation"(libs.gson)
 }

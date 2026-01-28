@@ -114,3 +114,9 @@ gradle.projectsEvaluated {
         }
     }
 }
+
+tasks.register("integrationTest") {
+    group = "verification"
+    description = "Runs core module integration tests"
+    dependsOn(":core:integrationTest")
+}
