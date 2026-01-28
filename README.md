@@ -1,6 +1,6 @@
 # LionWeb JVM
 
-![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb.lionweb-java/lionweb-java-2024.1-core)
+![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb/lionweb-2024.1-core)
 
 This projects requires Java 8, to maximize compatibility.
 
