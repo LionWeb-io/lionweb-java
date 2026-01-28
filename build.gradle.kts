@@ -54,6 +54,8 @@ release {
             ":gradle-plugin:publishPlugins",
             ":core:publishAllPublicationsToMavenCentralRepository",
             ":client:publishAllPublicationsToMavenCentralRepository",
+            ":kotlin-core:publishAllPublicationsToMavenCentralRepository",
+            ":kotlin-client:publishAllPublicationsToMavenCentralRepository",
         )
     versionPropertyFile = "./gradle.properties"
     git {
@@ -63,7 +65,7 @@ release {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.14.3"
+    gradleVersion = "8.14.4"
     distributionType = Wrapper.DistributionType.ALL
 }
 
