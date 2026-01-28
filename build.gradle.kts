@@ -120,3 +120,7 @@ tasks.register("integrationTest") {
     description = "Runs core module integration tests"
     dependsOn(":core:integrationTest")
 }
+
+tasks.register("format") {
+    dependsOn("spotlessApply", "ktlintFormat")
+}
