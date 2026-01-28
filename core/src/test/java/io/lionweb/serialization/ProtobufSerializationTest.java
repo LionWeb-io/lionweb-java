@@ -537,7 +537,7 @@ public class ProtobufSerializationTest extends SerializationTest {
 
       // Metapointer key must also resolve to a string
       assertNotEquals(-1, mp.getSiKey());
-      String mpKey = pbChunk.getInternedStrings(mp.getSiKey());
+      String mpKey = pbChunk.getInternedStrings(mp.getSiKey() - 1);
       assertNotNull("MetaPointer key must resolve to a string", mpKey);
     }
   }
