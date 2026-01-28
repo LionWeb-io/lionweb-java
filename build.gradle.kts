@@ -33,7 +33,7 @@ subprojects {
 
 allprojects {
 
-    group = "io.lionweb.lionweb-kotlin"
+    group = "io.lionweb"
     project.version = version
 
     repositories {

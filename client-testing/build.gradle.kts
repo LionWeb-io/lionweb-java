@@ -66,7 +66,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"

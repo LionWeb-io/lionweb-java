@@ -71,7 +71,7 @@ mavenPublishing {
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("EMF compatibility layer for LionWeb")
         version = project.version as String
         packaging = "jar"

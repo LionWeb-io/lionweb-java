@@ -32,12 +32,12 @@ tasks.register<Jar>("sourcesJar") {
 mavenPublishing {
     coordinates(
         groupId = "io.lionweb",
-        artifactId = "lionweb-java-$specsVersion-" + project.name,
+        artifactId = "lionweb-$specsVersion-" + project.name,
         version = project.version as String,
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("Java APIs for the LionWeb system")
         version = project.version as String
         packaging = "jar"
