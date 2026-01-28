@@ -227,15 +227,11 @@ sourceSets {
 }
 
 tasks.test {
-    useJUnitPlatform()
     finalizedBy(tasks.jacocoTestReport) // run report after tests
-    useJUnit {
-        // This cast enables access to includeCategories and excludeCategories
-        this as JUnitOptions
-
+    useJUnitPlatform {
         val includeExpensive = project.findProperty("includeExpensiveTests") == "true"
         if (!includeExpensive) {
-            excludeCategories("io.lionweb.PerformanceTest")
+            excludeTags("performance")
         }
     }
 }

@@ -25,6 +25,10 @@ subprojects {
             targetExclude("**/src-gen/**", "**/build/**")
         }
     }
+
+    tasks.withType<Test>().configureEach {
+        useJUnitPlatform()
+    }
 }
 
 allprojects {
