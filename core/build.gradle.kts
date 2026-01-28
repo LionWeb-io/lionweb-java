@@ -3,6 +3,7 @@ import org.gradle.api.tasks.testing.TestDescriptor
 import org.gradle.api.tasks.testing.TestListener
 import org.gradle.api.tasks.testing.TestResult
 import org.gradle.api.tasks.testing.logging.TestLogEvent
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     id("java-library")
@@ -53,16 +54,21 @@ dependencies {
     implementation(libs.protobuf)
 }
 
-tasks.register<Javadoc>("myJavadoc") {
-    source = sourceSets.main.get().allJava
-    classpath = javadocConfig
-    options {
-        require(this is StandardJavadocDocletOptions)
-        addStringOption("link", "https://docs.oracle.com/javase/8/docs/api/")
-        addStringOption("link", "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/")
-        addStringOption("link", "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
+tasks.withType<Javadoc>().configureEach {
+    val mainSourceSet = sourceSets.main.get()
+    classpath = files(mainSourceSet.output, mainSourceSet.compileClasspath, javadocConfig)
+    (options as StandardJavadocDocletOptions).apply {
+        links(
+            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/",
+            "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/",
+        )
         addStringOption("Xdoclint:none", "-quiet")
     }
+}
+
+tasks.register<Javadoc>("myJavadoc") {
+    source = sourceSets.main.get().allJava
 }
 
 tasks.register<Jar>("javadocJar") {

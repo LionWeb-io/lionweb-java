@@ -1,4 +1,5 @@
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
@@ -28,6 +29,16 @@ subprojects {
 
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+    }
+
+    tasks.withType<Javadoc>().configureEach {
+        isFailOnError = false
+
+        val javadocOptions = options as StandardJavadocDocletOptions
+        javadocOptions.addStringOption("Xdoclint:none", "-quiet")
+        javadocOptions.addStringOption("tag", "generated:a:Generated")
+        javadocOptions.addStringOption("tag", "model:a:Model")
+        javadocOptions.addStringOption("tag", "ordered:a:Ordered")
     }
 }
 
@@ -109,6 +120,9 @@ gradle.projectsEvaluated {
         javadocOptions.setVersion(true)
         javadocOptions.links("https://docs.oracle.com/javase/8/docs/api/")
         javadocOptions.addStringOption("Xdoclint:none", "-quiet")
+        javadocOptions.addStringOption("tag", "generated:a:Generated")
+        javadocOptions.addStringOption("tag", "model:a:Model")
+        javadocOptions.addStringOption("tag", "ordered:a:Ordered")
 
         doFirst {
             println("Javadoc will be generated from:")
