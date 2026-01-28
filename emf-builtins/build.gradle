@@ -104,13 +104,13 @@ task sourcesJar(type: Jar) {
 
 mavenPublishing {
     coordinates(
-        "io.lionweb.lionweb-java",
+        "io.lionweb",
         "lionweb-${specsVersion}-" + project.name,
         project.version as String,
     )
 
     pom {
-        name.set("lionweb-java-" + project.name)
+        name.set("lionweb-" + project.name)
         description.set("Builtins EPackage for EMF compatibility layer for LionWeb")
         version = project.version as String
         packaging = "jar"
