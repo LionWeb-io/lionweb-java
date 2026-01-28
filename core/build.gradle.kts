@@ -197,17 +197,27 @@ val integrationTest = tasks.create("integrationTest", Test::class.java) {
         showStandardStreams = true
     }
 
-    afterSuite(
-        KotlinClosure2<TestDescriptor, TestResult, Unit>({ suite, result ->
-            if (suite.parent == null) {
-                println(
-                    "Integration tests: ${result.testCount} executed, " +
-                        "${result.successfulTestCount} passed, " +
-                        "${result.failedTestCount} failed, " +
-                        "${result.skippedTestCount} skipped"
-                )
+    val executedClasses = mutableSetOf<String>()
+    addTestListener(
+        object : TestListener {
+            override fun beforeSuite(suite: TestDescriptor) {}
+            override fun beforeTest(testDescriptor: TestDescriptor) {}
+            override fun afterTest(testDescriptor: TestDescriptor, result: TestResult) {
+                testDescriptor.className?.let { executedClasses.add(it) }
             }
-        }),
+
+            override fun afterSuite(suite: TestDescriptor, result: TestResult) {
+                if (suite.parent == null) {
+                    println(
+                        "Integration tests: ${result.testCount} invocations " +
+                            "from ${executedClasses.size} classes; " +
+                            "${result.successfulTestCount} passed, " +
+                            "${result.failedTestCount} failed, " +
+                            "${result.skippedTestCount} skipped"
+                    )
+                }
+            }
+        },
     )
 }
 
