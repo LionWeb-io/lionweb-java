@@ -5,10 +5,7 @@ import static io.lionweb.gradleplugin.generators.NamingUtils.*;
 import com.palantir.javapoet.*;
 import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
-import io.lionweb.model.ClassifierInstance;
-import io.lionweb.model.HasSettableParent;
-import io.lionweb.model.Node;
-import io.lionweb.model.ReferenceValue;
+import io.lionweb.model.*;
 import io.lionweb.model.impl.AbstractNode;
 import java.io.File;
 import java.io.IOException;
@@ -146,7 +143,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
     TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
 
-    enumeration.getLiterals().forEach(literal -> enumClass.addEnumConstant(literal.getName()));
+    enumeration.getLiterals().forEach(literal -> enumClass.addEnumConstant(
+            toVariableName(literal.getName())));
 
     String packageName = generationContext.generationPackage(enumeration.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
@@ -200,15 +198,20 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addAnnotation(Nullable.class)
               .addModifiers(Modifier.PRIVATE)
               .build());
-      conceptClass.addMethod(
-          MethodSpec.constructorBuilder()
-              .addParameter(
-                  ParameterSpec.builder(ClassName.get(String.class), "id")
-                      .addAnnotation(NotNull.class)
-                      .build())
-              .addStatement("$T.requireNonNull(id, $S)", Objects.class, "id must not be null")
-              .addStatement("this.id = id")
+      MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
               .addModifiers(Modifier.PUBLIC)
+              .addParameter(
+                      ParameterSpec.builder(ClassName.get(String.class), "id")
+                              .addAnnotation(NotNull.class)
+                              .build());
+      if (concept.getExtendedConcept() == null) {
+        constructor.addStatement("$T.requireNonNull(id, $S)", Objects.class, "id must not be null")
+                .addStatement("this.id = id");
+      } else {
+        constructor.addStatement("super(id)");
+      }
+      conceptClass.addMethod(
+              constructor
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("getID")
@@ -244,7 +247,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addStatement(
                   "return $L.$L()",
                   generationContext.resolveLanguage(concept.getLanguage(), null),
-                  "get" + generationContext.getGeneratedName(concept, false))
+                      getterName(generationContext.getGeneratedName(concept, false)))
               .build());
       MethodSpec.Builder getPropertyValue =
           MethodSpec.methodBuilder("getPropertyValue")
@@ -313,7 +316,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
       List<Feature<?>> features = new LinkedList<>();
       features.addAll(concept.getFeatures());
-      concept.getImplemented().forEach(i -> i.getFeatures().forEach(features::add));
+      concept.getImplemented().forEach(i -> i.allFeatures().stream().filter(f -> !features.contains(f)).forEach(features::add));
 
       // @Override
       // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
@@ -636,10 +639,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       MethodSpec.Builder getPropertyValue,
       MethodSpec.Builder setPropertyValue) {
     String fieldName = camelCase(property.getName());
-    String getterName = "get" + pascalCase(property.getName());
+    String getterName = getterName(property.getName());
     String setterName = "set" + pascalCase(property.getName());
     TypeName fieldType = generationContext.typeNameFor(property.getType());
-    conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE).build());
+    conceptClass.addField(FieldSpec.builder(fieldType, fieldName, Modifier.PROTECTED).build());
     getPropertyValue
         .beginControlFlow(
             "if ($T.equals(property.getKey(), $S))",
@@ -693,7 +696,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     if (containment.isMultiple()) {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
     }
-    FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE);
+    FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, fieldName, Modifier.PROTECTED);
     if (containment.isMultiple()) {
       fieldBuilder.initializer("new $T<>()", ArrayList.class);
     } else {
@@ -706,7 +709,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType)
               .annotated(AnnotationSpec.builder(NotNull.class).build());
       MethodSpec getter =
-          MethodSpec.methodBuilder("get" + capitalizedName)
+          MethodSpec.methodBuilder(getterName(containment.getName()))
               .addModifiers(Modifier.PUBLIC)
               .returns(listType)
               .addStatement("return $T.unmodifiableList($L)", Collections.class, fieldName)
@@ -727,7 +730,8 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   ParameterSpec.builder(baseFieldType, "child")
                       .addAnnotation(NotNull.class)
                       .build())
-              .addStatement("addTo$N(child, $N.size())", capitalizedName, fieldName)
+              .returns(TypeName.INT)
+              .addStatement("return addTo$N(child, $N.size())", capitalizedName, fieldName)
               .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("addTo" + capitalizedName)
@@ -737,6 +741,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                       .addAnnotation(NotNull.class)
                       .build())
               .addParameter(TypeName.INT, "index")
+               .returns(TypeName.INT)
               .addCode(
                   CodeBlock.builder()
                       .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
@@ -751,6 +756,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                           fieldName,
                           "child")
                       .endControlFlow()
+                          .addStatement("return $L.size() - 1", fieldName)
                       .build())
               .build());
       conceptClass.addMethod(
@@ -939,7 +945,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       MethodSpec.Builder addReferenceValue2) {
     String fieldName = camelCase(reference.getName());
     String capitalizedName = pascalCase(reference.getName());
-    String getterName = "get" + pascalCase(reference.getName());
+    String getterName = getterName(reference.getName());
     String setterName = "set" + pascalCase(reference.getName());
     TypeName baseFieldType = ClassName.get(ReferenceValue.class);
     TypeName referredType = generationContext.typeNameFor(reference.getType());
@@ -947,7 +953,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
     if (reference.isMultiple()) {
       fieldType = ParameterizedTypeName.get(ClassName.get(List.class), baseFieldType);
     }
-    FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, fieldName, Modifier.PRIVATE);
+    FieldSpec.Builder fieldBuilder = FieldSpec.builder(fieldType, fieldName, Modifier.PROTECTED);
     if (reference.isMultiple()) {
       fieldBuilder.initializer("new $T<>()", ArrayList.class);
     } else {
@@ -1223,7 +1229,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               if (feature instanceof Property) {
                 // Getter
                 interfClass.addMethod(
-                    MethodSpec.methodBuilder("get" + capitalize(feature.getName()))
+                    MethodSpec.methodBuilder(getterName(feature.getName()))
                         .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                         .returns(generationContext.typeNameFor(((Property) feature).getType()))
                         .build());
@@ -1260,7 +1266,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   interfClass.addMethod(setter.build());
                   MethodSpec getter =
                       MethodSpec.methodBuilder(
-                              "get" + NamingUtils.capitalize(containment.getName()))
+                              getterName(containment.getName()))
                           .returns(generationContext.typeNameFor(containment.getType()))
                           .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                           .build();
@@ -1285,7 +1291,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                           .returns(TypeName.VOID);
                   interfClass.addMethod(setter.build());
                   MethodSpec getter =
-                      MethodSpec.methodBuilder("get" + NamingUtils.capitalize(reference.getName()))
+                      MethodSpec.methodBuilder(getterName(reference.getName()))
                           .returns(ClassName.get(ReferenceValue.class))
                           .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                           .build();

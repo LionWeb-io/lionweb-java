@@ -1,6 +1,7 @@
 package io.lionweb.gradleplugin.generators;
 
 import static io.lionweb.gradleplugin.generators.NamingUtils.camelCase;
+import static io.lionweb.gradleplugin.generators.NamingUtils.pascalCase;
 
 import io.lionweb.language.*;
 import java.io.File;
@@ -94,4 +95,13 @@ public abstract class AbstractJavaCodeGenerator {
       return res;
     }
   }
+
+  protected static String getterName(String name) {
+    String res = "get" + pascalCase(name);
+    if (res.equals("getClass")) {
+      return "getClass_";
+    }
+    return res;
+  }
+
 }

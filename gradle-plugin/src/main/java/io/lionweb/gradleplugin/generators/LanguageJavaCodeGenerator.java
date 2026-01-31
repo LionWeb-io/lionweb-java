@@ -185,7 +185,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
               //        return this.requireConceptByName("Library");
               //    }
               MethodSpec conceptAccessor =
-                  MethodSpec.methodBuilder("get" + capitalize(concept.getName()))
+                  MethodSpec.methodBuilder(getterName(concept.getName()))
                       .returns(ClassName.get(Concept.class))
                       .addModifiers(Modifier.PUBLIC)
                       .addStatement("return this.requireConceptByName($S)", concept.getName())
@@ -247,7 +247,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .forEach(
             interf -> {
               MethodSpec getter =
-                  MethodSpec.methodBuilder("get" + capitalize(interf.getName()))
+                  MethodSpec.methodBuilder(getterName(interf.getName()))
                       .returns(interfaceClass)
                       .addModifiers(Modifier.PUBLIC)
                       .addStatement("return this.requireInterfaceByName($S)", interf.getName())
@@ -294,7 +294,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
             annotationDef -> {
               try {
                 MethodSpec getter =
-                    MethodSpec.methodBuilder("get" + capitalize(annotationDef.getName()))
+                    MethodSpec.methodBuilder(getterName(annotationDef.getName()))
                         .returns(annotationDefClass)
                         .addModifiers(Modifier.PUBLIC)
                         .addStatement(
@@ -360,7 +360,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .forEach(
             primitiveType -> {
               MethodSpec getter =
-                  MethodSpec.methodBuilder("get" + capitalize(primitiveType.getName()))
+                  MethodSpec.methodBuilder(getterName(primitiveType.getName()))
                       .returns(primitiveTypeClass)
                       .addModifiers(Modifier.PUBLIC)
                       .addStatement(
@@ -374,7 +374,7 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
         .forEach(
             enumeration -> {
               MethodSpec getter =
-                  MethodSpec.methodBuilder("get" + capitalize(enumeration.getName()))
+                  MethodSpec.methodBuilder(getterName(enumeration.getName()))
                       .returns(enumerationClass)
                       .addModifiers(Modifier.PUBLIC)
                       .addStatement(
