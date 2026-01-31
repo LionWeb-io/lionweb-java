@@ -103,5 +103,4 @@ public abstract class AbstractJavaCodeGenerator {
     }
     return res;
   }
-
 }

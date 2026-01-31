@@ -143,8 +143,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
     TypeSpec.Builder enumClass = TypeSpec.enumBuilder(className).addModifiers(Modifier.PUBLIC);
 
-    enumeration.getLiterals().forEach(literal -> enumClass.addEnumConstant(
-            toVariableName(literal.getName())));
+    enumeration
+        .getLiterals()
+        .forEach(literal -> enumClass.addEnumConstant(toVariableName(literal.getName())));
 
     String packageName = generationContext.generationPackage(enumeration.getLanguage());
     JavaFile javaFile = JavaFile.builder(packageName, enumClass.build()).build();
@@ -198,21 +199,21 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addAnnotation(Nullable.class)
               .addModifiers(Modifier.PRIVATE)
               .build());
-      MethodSpec.Builder constructor = MethodSpec.constructorBuilder()
+      MethodSpec.Builder constructor =
+          MethodSpec.constructorBuilder()
               .addModifiers(Modifier.PUBLIC)
               .addParameter(
-                      ParameterSpec.builder(ClassName.get(String.class), "id")
-                              .addAnnotation(NotNull.class)
-                              .build());
+                  ParameterSpec.builder(ClassName.get(String.class), "id")
+                      .addAnnotation(NotNull.class)
+                      .build());
       if (concept.getExtendedConcept() == null) {
-        constructor.addStatement("$T.requireNonNull(id, $S)", Objects.class, "id must not be null")
-                .addStatement("this.id = id");
+        constructor
+            .addStatement("$T.requireNonNull(id, $S)", Objects.class, "id must not be null")
+            .addStatement("this.id = id");
       } else {
         constructor.addStatement("super(id)");
       }
-      conceptClass.addMethod(
-              constructor
-              .build());
+      conceptClass.addMethod(constructor.build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("getID")
               .returns(TypeName.get(String.class))
@@ -247,7 +248,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addStatement(
                   "return $L.$L()",
                   generationContext.resolveLanguage(concept.getLanguage(), null),
-                      getterName(generationContext.getGeneratedName(concept, false)))
+                  getterName(generationContext.getGeneratedName(concept, false)))
               .build());
       MethodSpec.Builder getPropertyValue =
           MethodSpec.methodBuilder("getPropertyValue")
@@ -316,7 +317,13 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
 
       List<Feature<?>> features = new LinkedList<>();
       features.addAll(concept.getFeatures());
-      concept.getImplemented().forEach(i -> i.allFeatures().stream().filter(f -> !features.contains(f)).forEach(features::add));
+      concept
+          .getImplemented()
+          .forEach(
+              i ->
+                  i.allFeatures().stream()
+                      .filter(f -> !features.contains(f))
+                      .forEach(features::add));
 
       // @Override
       // public List<ReferenceValue> getReferenceValues(Reference reference) { ... }
@@ -741,7 +748,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                       .addAnnotation(NotNull.class)
                       .build())
               .addParameter(TypeName.INT, "index")
-               .returns(TypeName.INT)
+              .returns(TypeName.INT)
               .addCode(
                   CodeBlock.builder()
                       .beginControlFlow("if ($N instanceof $T)", "child", HasSettableParent.class)
@@ -756,7 +763,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                           fieldName,
                           "child")
                       .endControlFlow()
-                          .addStatement("return $L.size() - 1", fieldName)
+                      .addStatement("return $L.size() - 1", fieldName)
                       .build())
               .build());
       conceptClass.addMethod(
@@ -1265,8 +1272,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                           .returns(TypeName.VOID);
                   interfClass.addMethod(setter.build());
                   MethodSpec getter =
-                      MethodSpec.methodBuilder(
-                              getterName(containment.getName()))
+                      MethodSpec.methodBuilder(getterName(containment.getName()))
                           .returns(generationContext.typeNameFor(containment.getType()))
                           .addModifiers(Modifier.PUBLIC, Modifier.ABSTRACT)
                           .build();

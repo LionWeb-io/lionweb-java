@@ -68,20 +68,20 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   /**
-   * Finds all interface ancestors. Works even for invalid inheritance hierarchies (i.e. containing loops).
-   * Note that this method only consider the interface ancestors, it does not consider extended concepts
-   * and their interface ancestors.
+   * Finds all interface ancestors. Works even for invalid inheritance hierarchies (i.e. containing
+   * loops). Note that this method only consider the interface ancestors, it does not consider
+   * extended concepts and their interface ancestors.
    */
   public @Nonnull Set<Interface> allInterfaceAncestors() {
     Set<Interface> result = new LinkedHashSet<>();
     Set<Interface> ancestors = new HashSet<>();
-      for (Classifier<?> c : directAncestors()) {
-          if (c instanceof Interface) {
-              ancestors.add((Interface)c);
-          }
+    for (Classifier<?> c : directAncestors()) {
+      if (c instanceof Interface) {
+        ancestors.add((Interface) c);
       }
+    }
 
-      while (!ancestors.isEmpty()) {
+    while (!ancestors.isEmpty()) {
       for (Interface a : new HashSet<>(ancestors)) {
         ancestors.remove(a);
         if (result.add(a)) {
