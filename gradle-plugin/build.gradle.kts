@@ -2,6 +2,7 @@ plugins {
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "1.2.0"
     alias(libs.plugins.vt.publish)
+    alias(libs.plugins.build.config)
 }
 
 project.group = "io.lionweb"
@@ -46,3 +47,11 @@ java {
 }
 
 val specsVersion = extra["specsVersion"] as String
+
+buildConfig {
+    sourceSets.getByName("main") {
+        packageName("io.lionweb.gradleplugin")
+        buildConfigField("String", "VERSION", "\"${version}\"")
+        useJavaOutput()
+    }
+}
