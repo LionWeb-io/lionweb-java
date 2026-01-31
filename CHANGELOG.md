@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.3.1
+
+* Fix issues in generation of classes related to conflicts with Java keywords
+* Make gradle plugin configure dependencies and source sets automatically
+
 ### Version 1.3.0
 
 * Combine LW Java and LW Kotlin to create LW JVM
