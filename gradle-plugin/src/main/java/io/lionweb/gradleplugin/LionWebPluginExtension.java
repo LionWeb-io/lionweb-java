@@ -123,4 +123,11 @@ public abstract class LionWebPluginExtension {
    * classifier.qualifiedName()} from the LionWeb language model.
    */
   public abstract MapProperty<String, String> getMappings();
+
+  /**
+   * Configures whether the compilation tasks should be enabled for the generated Java sources.
+   *
+   * @return a {@code Property<Boolean>} indicating if compilation tasks are configured and enabled.
+   */
+  public abstract Property<Boolean> getConfigureCompilation();
 }

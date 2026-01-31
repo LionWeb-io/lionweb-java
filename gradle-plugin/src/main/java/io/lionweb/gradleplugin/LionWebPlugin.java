@@ -5,7 +5,12 @@ import io.lionweb.gradleplugin.tasks.GenerateNodeClassesTask;
 import java.io.File;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.api.tasks.compile.JavaCompile;
 
 /**
  * The `LionWebPlugin` is a custom Gradle plugin for projects that utilize LionWeb for language
@@ -47,6 +52,34 @@ public class LionWebPlugin implements Plugin<Project> {
           .set(
               new java.io.File(
                   project.getLayout().getBuildDirectory().get().getAsFile(), "generated-lionweb"));
+    }
+    if (!ext.getConfigureCompilation().isPresent()) {
+        ext.getConfigureCompilation().set(true);
+    }
+    if (ext.getConfigureCompilation().get()) {
+        // Configure only when a Java plugin is applied (sourceSets + implementation exist then)
+        project
+                .getPluginManager()
+                .withPlugin(
+                        "java",
+                        appliedPlugin -> {
+                            // 1) Add generated sources to main sourceSet
+                            JavaPluginExtension javaExt = project.getExtensions().getByType(JavaPluginExtension.class);
+                            SourceSetContainer sourceSets = javaExt.getSourceSets();
+                            SourceSet main = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+
+                            // Use the extension's generationDirectory (supports user override)
+                            File generatedDir = ext.getGenerationDirectory().get().getAsFile();
+                            main.getJava().srcDir(generatedDir);
+
+                            // 2) Add dependencies to implementation
+                            project.getDependencies().add("implementation", "io.lionweb:lionweb-2024.1-core:" + BuildConfig.VERSION);
+                            project.getDependencies().add("implementation", "org.jetbrains:annotations:17.0.0");
+                        });
+
+        // If user uses java-library instead of java, this still works because java-library applies java,
+        // but keeping this doesn't hurt and makes intent explicit.
+        project.getPluginManager().withPlugin("java-library", p -> {});
     }
 
     // We modify the Jar task to add the LionWeb languages in the Jar
