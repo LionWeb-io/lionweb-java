@@ -122,6 +122,7 @@ public class Concept extends Classifier<Concept> {
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "Interface should not be null");
     this.addReferenceMultipleValue("implements", ClassifierInstanceUtils.referenceTo(iface));
+    invalidateFeaturesCache();
   }
 
   // TODO should we verify the Concept does not extend itself, even indirectly?
@@ -131,6 +132,7 @@ public class Concept extends Classifier<Concept> {
     } else {
       this.setReferenceSingleValue("extends", ClassifierInstanceUtils.referenceTo(extended));
     }
+    invalidateFeaturesCache();
   }
 
   @Nonnull

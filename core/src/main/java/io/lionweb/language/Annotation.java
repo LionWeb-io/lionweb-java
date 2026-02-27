@@ -76,6 +76,7 @@ public class Annotation extends Classifier<Annotation> {
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "iface should not be null");
     this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
+    invalidateFeaturesCache();
   }
 
   /**
@@ -92,6 +93,7 @@ public class Annotation extends Classifier<Annotation> {
     } else {
       this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
     }
+    invalidateFeaturesCache();
     return this;
   }
 

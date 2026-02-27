@@ -24,6 +24,13 @@ import javax.annotation.Nullable;
  */
 public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     implements NamespaceProvider {
+
+  private List<Feature<?>> cachedAllFeatures = null;
+  private List<Property> cachedAllProperties = null;
+  private List<Containment> cachedAllContainments = null;
+  private List<Reference> cachedAllReferences = null;
+  private List<Link<?>> cachedAllLinks = null;
+
   public Classifier() {
     super();
   }
@@ -94,43 +101,69 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   public @Nonnull List<Feature<?>> allFeatures() {
-    // TODO Should this return features which are overriden?
-    // TODO Should features be returned in a particular order?
-    List<Feature<?>> result = new LinkedList<>();
-    result.addAll(this.getFeatures());
-    combineFeatures(result, this.inheritedFeatures());
+    if (cachedAllFeatures == null) {
+      // TODO Should this return features which are overriden?
+      // TODO Should features be returned in a particular order?
+      List<Feature<?>> result = new ArrayList<>(this.getFeatures());
+      combineFeatures(result, this.inheritedFeatures());
+      cachedAllFeatures = Collections.unmodifiableList(result);
+    }
 
-    return result;
+    return cachedAllFeatures;
   }
 
   public abstract @Nonnull List<Feature<?>> inheritedFeatures();
 
   public @Nonnull List<Property> allProperties() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
-        .collect(Collectors.toList());
+    if (cachedAllProperties == null) {
+      List<Property> result = new ArrayList<>();
+      for (Feature<?> f : allFeatures()) {
+        if (f instanceof Property) {
+          result.add((Property) f);
+        }
+      }
+      cachedAllProperties = Collections.unmodifiableList(result);
+    }
+    return cachedAllProperties;
   }
 
   public @Nonnull List<Containment> allContainments() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .collect(Collectors.toList());
+    if (cachedAllContainments == null) {
+      List<Containment> result = new ArrayList<>();
+      for (Feature<?> f : allFeatures()) {
+        if (f instanceof Containment) {
+          result.add((Containment) f);
+        }
+      }
+      cachedAllContainments = Collections.unmodifiableList(result);
+    }
+    return cachedAllContainments;
   }
 
   public @Nonnull List<Reference> allReferences() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Reference)
-        .map(f -> (Reference) f)
-        .collect(Collectors.toList());
+    if (cachedAllReferences == null) {
+      List<Reference> result = new ArrayList<>();
+      for (Feature<?> f : allFeatures()) {
+        if (f instanceof Reference) {
+          result.add((Reference) f);
+        }
+      }
+      cachedAllReferences = Collections.unmodifiableList(result);
+    }
+    return cachedAllReferences;
   }
 
   public @Nonnull List<Link<?>> allLinks() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Link)
-        .map(f -> (Link<?>) f)
-        .collect(Collectors.toList());
+    if (cachedAllLinks == null) {
+      List<Link<?>> result = new ArrayList<>();
+      for (Feature<?> f : allFeatures()) {
+        if (f instanceof Link) {
+          result.add((Link<?>) f);
+        }
+      }
+      cachedAllLinks = Collections.unmodifiableList(result);
+    }
+    return cachedAllLinks;
   }
 
   // TODO should this expose an immutable list to force users to use methods on this class
@@ -143,6 +176,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     Objects.requireNonNull(feature, "feature should not be null");
     this.addContainmentMultipleValue("features", feature);
     feature.setParent(this);
+    invalidateFeaturesCache();
     return (T) this;
   }
 
@@ -265,6 +299,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
       throw new IllegalArgumentException("The given feature does not belong to this concept");
     }
     this.removeChild(feature);
+    invalidateFeaturesCache();
   }
 
   @Override
@@ -431,5 +466,17 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         featuresA.add(f);
       }
     }
+  }
+
+  /**
+   * Call this method whenever a feature is added/removed,
+   * or when the superclass/implemented interfaces change.
+   */
+  protected void invalidateFeaturesCache() {
+    this.cachedAllFeatures = null;
+    this.cachedAllProperties = null;
+    this.cachedAllContainments = null;
+    this.cachedAllReferences = null;
+    this.cachedAllLinks = null;
   }
 }
