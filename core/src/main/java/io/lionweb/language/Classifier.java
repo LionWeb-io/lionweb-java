@@ -4,7 +4,6 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.model.impl.M3Node;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -469,8 +468,8 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   /**
-   * Call this method whenever a feature is added/removed,
-   * or when the superclass/implemented interfaces change.
+   * Call this method whenever a feature is added/removed, or when the superclass/implemented
+   * interfaces change.
    */
   protected void invalidateFeaturesCache() {
     this.cachedAllFeatures = null;
