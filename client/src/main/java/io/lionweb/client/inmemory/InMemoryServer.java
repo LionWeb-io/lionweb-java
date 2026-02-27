@@ -44,7 +44,8 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Different clients can then still work with nodes or JSON or binary formats.
  *
- * <p>Also look at {@link NodesLevelInMemoryServerClient} for easier handling of node storage and retrieval.
+ * <p>Also look at {@link NodesLevelInMemoryServerClient} for easier handling of node storage and
+ * retrieval.
  */
 public class InMemoryServer {
 
@@ -165,7 +166,8 @@ public class InMemoryServer {
   }
 
   /**
-   * @param nodes {@link io.lionweb.serialization.LowLevelJsonSerialization} can produce {@link SerializedClassifierInstance} nodes, if we need to store data from JSON files.
+   * @param nodes {@link io.lionweb.serialization.LowLevelJsonSerialization} can produce {@link
+   *     SerializedClassifierInstance} nodes, if we need to store data from JSON files.
    */
   public RepositoryVersionToken store(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> nodes) {

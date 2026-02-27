@@ -1,11 +1,14 @@
 package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.model.Node;
+import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.M3Node;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * This represents a group of elements that shares some characteristics.
@@ -175,7 +178,6 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     Objects.requireNonNull(feature, "feature should not be null");
     this.addContainmentMultipleValue("features", feature);
     feature.setParent(this);
-    invalidateFeaturesCache();
     return (T) this;
   }
 
@@ -298,7 +300,6 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
       throw new IllegalArgumentException("The given feature does not belong to this concept");
     }
     this.removeChild(feature);
-    invalidateFeaturesCache();
   }
 
   @Override
@@ -477,5 +478,86 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     this.cachedAllContainments = null;
     this.cachedAllReferences = null;
     this.cachedAllLinks = null;
+  }
+
+  private final Set<String> featuresRelevantForCaching =
+      new HashSet<>(Arrays.asList("extends", "implements", "extendedInterface", "features"));
+
+  private void considerClearingCaches(@NonNull String linkName) {
+    if (featuresRelevantForCaching.contains(linkName)) {
+      invalidateFeaturesCache();
+    }
+  }
+
+  @Override
+  public int addReferenceValue(
+      @NonNull Reference reference,
+      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue referenceValue) {
+    considerClearingCaches(reference.getName());
+    int result = super.addReferenceValue(reference, referenceValue);
+    considerClearingCaches(reference.getName());
+    return result;
+  }
+
+  @Override
+  public int addReferenceValue(
+      @NonNull Reference reference,
+      int index,
+      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue referenceValue) {
+    int result = super.addReferenceValue(reference, index, referenceValue);
+    considerClearingCaches(reference.getName());
+    return result;
+  }
+
+  @Override
+  public void setReferenceValues(
+      @NonNull Reference reference, @NonNull List<? extends ReferenceValue> values) {
+    super.setReferenceValues(reference, values);
+    considerClearingCaches(reference.getName());
+  }
+
+  @Override
+  public void setReferred(
+      @NonNull Reference reference,
+      int index,
+      @org.checkerframework.checker.nullness.qual.Nullable Node referredNode) {
+    super.setReferred(reference, index, referredNode);
+    considerClearingCaches(reference.getName());
+  }
+
+  @Override
+  protected int addReferenceMultipleValue(String linkName, ReferenceValue value) {
+    int result = super.addReferenceMultipleValue(linkName, value);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  @Override
+  protected int addReferenceMultipleValue(String linkName, int index, ReferenceValue value) {
+    int result = super.addReferenceMultipleValue(linkName, index, value);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  @Override
+  protected void setReferenceSingleValue(
+      @NonNull String linkName,
+      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue value) {
+    super.setReferenceSingleValue(linkName, value);
+    considerClearingCaches(linkName);
+  }
+
+  @Override
+  protected boolean addContainmentMultipleValue(@NonNull String linkName, Node value) {
+    boolean result = super.addContainmentMultipleValue(linkName, value);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  @Override
+  protected boolean addContainmentMultipleValue(@NonNull String linkName, Node value, int index) {
+    boolean result = super.addContainmentMultipleValue(linkName, value, index);
+    considerClearingCaches(linkName);
+    return result;
   }
 }
