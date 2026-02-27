@@ -481,7 +481,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   private final Set<String> featuresRelevantForCaching =
-      new HashSet<>(Arrays.asList("extends", "implements", "extendedInterface", "features"));
+      new HashSet<>(Arrays.asList("extends", "implements", "features"));
 
   private void considerClearingCaches(@NonNull String linkName) {
     if (featuresRelevantForCaching.contains(linkName)) {
