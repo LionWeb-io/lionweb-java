@@ -188,13 +188,26 @@ public class InMemoryServer {
     for (Map.Entry<MetaPointer, List<SerializedClassifierInstance>> entry :
         byMetapointer.entrySet()) {
       ClassifierKey key = new ClassifierKey(entry.getKey().getLanguage(), entry.getKey().getKey());
-      ClassifierResult cr =
-          new ClassifierResult(
-              entry.getValue().stream()
-                  .limit(limit)
-                  .map(n -> n.getID())
-                  .collect(Collectors.toSet()),
-              entry.getValue().size());
+      List<SerializedClassifierInstance> instances = entry.getValue();
+
+      // Calculate how many elements we will actually take
+      int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
+      int targetSize = Math.min(instances.size(), actualLimit);
+
+      // Pre-allocate the HashSet considering Java's standard load factor (0.75)
+      // This eliminates the unnecessary allocations of HashMap$Node
+      Set<String> ids = new HashSet<>((int) Math.ceil(targetSize / 0.75));
+
+      int count = 0;
+      for (SerializedClassifierInstance n : instances) {
+        if (count >= actualLimit) {
+          break;
+        }
+        ids.add(n.getID());
+        count++;
+      }
+
+      ClassifierResult cr = new ClassifierResult(ids, instances.size());
       res.put(key, cr);
     }
     return res;
