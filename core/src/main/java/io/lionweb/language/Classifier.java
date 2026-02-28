@@ -1,12 +1,14 @@
 package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.model.Node;
+import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.M3Node;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * This represents a group of elements that shares some characteristics.
@@ -24,6 +26,13 @@ import javax.annotation.Nullable;
  */
 public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     implements NamespaceProvider {
+
+  private List<Feature<?>> cachedAllFeatures = null;
+  private List<Property> cachedAllProperties = null;
+  private List<Containment> cachedAllContainments = null;
+  private List<Reference> cachedAllReferences = null;
+  private List<Link<?>> cachedAllLinks = null;
+
   public Classifier() {
     super();
   }
@@ -94,43 +103,45 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   public @Nonnull List<Feature<?>> allFeatures() {
-    // TODO Should this return features which are overriden?
-    // TODO Should features be returned in a particular order?
-    List<Feature<?>> result = new LinkedList<>();
-    result.addAll(this.getFeatures());
-    combineFeatures(result, this.inheritedFeatures());
+    if (cachedAllFeatures == null) {
+      // TODO Should this return features which are overriden?
+      // TODO Should features be returned in a particular order?
+      List<Feature<?>> result = new ArrayList<>(this.getFeatures());
+      combineFeatures(result, this.inheritedFeatures());
+      cachedAllFeatures = Collections.unmodifiableList(result);
+    }
 
-    return result;
+    return cachedAllFeatures;
   }
 
   public abstract @Nonnull List<Feature<?>> inheritedFeatures();
 
   public @Nonnull List<Property> allProperties() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
-        .collect(Collectors.toList());
+    if (cachedAllProperties == null) {
+      cachedAllProperties = filterFeatures(Property.class);
+    }
+    return cachedAllProperties;
   }
 
   public @Nonnull List<Containment> allContainments() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .collect(Collectors.toList());
+    if (cachedAllContainments == null) {
+      cachedAllContainments = filterFeatures(Containment.class);
+    }
+    return cachedAllContainments;
   }
 
   public @Nonnull List<Reference> allReferences() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Reference)
-        .map(f -> (Reference) f)
-        .collect(Collectors.toList());
+    if (cachedAllReferences == null) {
+      cachedAllReferences = filterFeatures(Reference.class);
+    }
+    return cachedAllReferences;
   }
 
   public @Nonnull List<Link<?>> allLinks() {
-    return allFeatures().stream()
-        .filter(f -> f instanceof Link)
-        .map(f -> (Link<?>) f)
-        .collect(Collectors.toList());
+    if (cachedAllLinks == null) {
+      cachedAllLinks = (List<Link<?>>) (List<?>) filterFeatures(Link.class);
+    }
+    return cachedAllLinks;
   }
 
   // TODO should this expose an immutable list to force users to use methods on this class
@@ -431,5 +442,108 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
         featuresA.add(f);
       }
     }
+  }
+
+  /**
+   * Call this method whenever a feature is added/removed, or when the superclass/implemented
+   * interfaces change.
+   */
+  protected void invalidateFeaturesCache() {
+    this.cachedAllFeatures = null;
+    this.cachedAllProperties = null;
+    this.cachedAllContainments = null;
+    this.cachedAllReferences = null;
+    this.cachedAllLinks = null;
+  }
+
+  private final Set<String> featuresRelevantForCaching =
+      new HashSet<>(Arrays.asList("extends", "implements", "features"));
+
+  private void considerClearingCaches(@NonNull String linkName) {
+    if (featuresRelevantForCaching.contains(linkName)) {
+      invalidateFeaturesCache();
+    }
+  }
+
+  @Override
+  public int addReferenceValue(
+      @NonNull Reference reference,
+      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue referenceValue) {
+    considerClearingCaches(reference.getName());
+    int result = super.addReferenceValue(reference, referenceValue);
+    considerClearingCaches(reference.getName());
+    return result;
+  }
+
+  @Override
+  public int addReferenceValue(
+      @NonNull Reference reference,
+      int index,
+      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue referenceValue) {
+    int result = super.addReferenceValue(reference, index, referenceValue);
+    considerClearingCaches(reference.getName());
+    return result;
+  }
+
+  @Override
+  public void setReferenceValues(
+      @NonNull Reference reference, @NonNull List<? extends ReferenceValue> values) {
+    super.setReferenceValues(reference, values);
+    considerClearingCaches(reference.getName());
+  }
+
+  @Override
+  public void setReferred(
+      @NonNull Reference reference,
+      int index,
+      @org.checkerframework.checker.nullness.qual.Nullable Node referredNode) {
+    super.setReferred(reference, index, referredNode);
+    considerClearingCaches(reference.getName());
+  }
+
+  @Override
+  protected int addReferenceMultipleValue(String linkName, ReferenceValue value) {
+    int result = super.addReferenceMultipleValue(linkName, value);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  @Override
+  protected int addReferenceMultipleValue(String linkName, int index, ReferenceValue value) {
+    int result = super.addReferenceMultipleValue(linkName, index, value);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  @Override
+  protected void setReferenceSingleValue(
+      @NonNull String linkName,
+      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue value) {
+    super.setReferenceSingleValue(linkName, value);
+    considerClearingCaches(linkName);
+  }
+
+  @Override
+  protected boolean addContainmentMultipleValue(@NonNull String linkName, Node value) {
+    boolean result = super.addContainmentMultipleValue(linkName, value);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  @Override
+  protected boolean addContainmentMultipleValue(@NonNull String linkName, Node value, int index) {
+    boolean result = super.addContainmentMultipleValue(linkName, value, index);
+    considerClearingCaches(linkName);
+    return result;
+  }
+
+  private <T extends Feature<?>> List<T> filterFeatures(Class<T> featureClass) {
+    List<T> result = new ArrayList<>();
+    for (Feature<?> f : allFeatures()) {
+      if (featureClass.isInstance(f)) {
+        result.add(featureClass.cast(f));
+      }
+    }
+    return Collections.unmodifiableList(result);
   }
 }

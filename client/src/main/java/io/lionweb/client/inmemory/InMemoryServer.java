@@ -44,9 +44,12 @@ import org.jetbrains.annotations.Nullable;
  *
  * <p>Different clients can then still work with nodes or JSON or binary formats.
  *
- * <p>Also look at {@link NodesLevelInMemoryServerClient} for easier handling of node storage and retrieval.
+ * <p>Also look at {@link NodesLevelInMemoryServerClient} for easier handling of node storage and
+ * retrieval.
  */
 public class InMemoryServer {
+
+  private static final float DEFAULT_HASH_LOAD_FACTOR = 0.75f;
 
   /** Internally we store the data separately for each repository. */
   private final Map<String, RepositoryData> repositories = new LinkedHashMap<>();
@@ -165,7 +168,8 @@ public class InMemoryServer {
   }
 
   /**
-   * @param nodes {@link io.lionweb.serialization.LowLevelJsonSerialization} can produce {@link SerializedClassifierInstance} nodes, if we need to store data from JSON files.
+   * @param nodes {@link io.lionweb.serialization.LowLevelJsonSerialization} can produce {@link
+   *     SerializedClassifierInstance} nodes, if we need to store data from JSON files.
    */
   public RepositoryVersionToken store(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> nodes) {
@@ -193,13 +197,25 @@ public class InMemoryServer {
     for (Map.Entry<MetaPointer, List<SerializedClassifierInstance>> entry :
         byMetapointer.entrySet()) {
       ClassifierKey key = new ClassifierKey(entry.getKey().getLanguage(), entry.getKey().getKey());
-      ClassifierResult cr =
-          new ClassifierResult(
-              entry.getValue().stream()
-                  .limit(limit)
-                  .map(n -> n.getID())
-                  .collect(Collectors.toSet()),
-              entry.getValue().size());
+      List<SerializedClassifierInstance> instances = entry.getValue();
+
+      // Calculate how many elements we will actually take
+      int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
+      int targetSize = Math.min(instances.size(), actualLimit);
+
+      // Pre-allocate the HashSet considering Java's standard load factor
+      Set<String> ids = new HashSet<>((int) Math.ceil(targetSize / DEFAULT_HASH_LOAD_FACTOR));
+
+      int count = 0;
+      for (SerializedClassifierInstance n : instances) {
+        if (count >= actualLimit) {
+          break;
+        }
+        ids.add(n.getID());
+        count++;
+      }
+
+      ClassifierResult cr = new ClassifierResult(ids, instances.size());
       res.put(key, cr);
     }
     return res;
