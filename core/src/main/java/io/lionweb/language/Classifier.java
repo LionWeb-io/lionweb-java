@@ -118,52 +118,28 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   public @Nonnull List<Property> allProperties() {
     if (cachedAllProperties == null) {
-      List<Property> result = new ArrayList<>();
-      for (Feature<?> f : allFeatures()) {
-        if (f instanceof Property) {
-          result.add((Property) f);
-        }
-      }
-      cachedAllProperties = Collections.unmodifiableList(result);
+      cachedAllProperties = filterFeatures(Property.class);
     }
     return cachedAllProperties;
   }
 
   public @Nonnull List<Containment> allContainments() {
     if (cachedAllContainments == null) {
-      List<Containment> result = new ArrayList<>();
-      for (Feature<?> f : allFeatures()) {
-        if (f instanceof Containment) {
-          result.add((Containment) f);
-        }
-      }
-      cachedAllContainments = Collections.unmodifiableList(result);
+      cachedAllContainments = filterFeatures(Containment.class);
     }
     return cachedAllContainments;
   }
 
   public @Nonnull List<Reference> allReferences() {
     if (cachedAllReferences == null) {
-      List<Reference> result = new ArrayList<>();
-      for (Feature<?> f : allFeatures()) {
-        if (f instanceof Reference) {
-          result.add((Reference) f);
-        }
-      }
-      cachedAllReferences = Collections.unmodifiableList(result);
+      cachedAllReferences = filterFeatures(Reference.class);
     }
     return cachedAllReferences;
   }
 
   public @Nonnull List<Link<?>> allLinks() {
     if (cachedAllLinks == null) {
-      List<Link<?>> result = new ArrayList<>();
-      for (Feature<?> f : allFeatures()) {
-        if (f instanceof Link) {
-          result.add((Link<?>) f);
-        }
-      }
-      cachedAllLinks = Collections.unmodifiableList(result);
+      cachedAllLinks = (List<Link<?>>) (List<?>) filterFeatures(Link.class);
     }
     return cachedAllLinks;
   }
@@ -559,5 +535,15 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     boolean result = super.addContainmentMultipleValue(linkName, value, index);
     considerClearingCaches(linkName);
     return result;
+  }
+
+  private <T extends Feature<?>> List<T> filterFeatures(Class<T> featureClass) {
+    List<T> result = new ArrayList<>();
+    for (Feature<?> f : allFeatures()) {
+      if (featureClass.isInstance(f)) {
+        result.add(featureClass.cast(f));
+      }
+    }
+    return Collections.unmodifiableList(result);
   }
 }
