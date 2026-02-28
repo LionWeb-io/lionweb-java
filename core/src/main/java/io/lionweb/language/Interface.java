@@ -66,7 +66,6 @@ public class Interface extends Classifier<Interface> {
     Objects.requireNonNull(extendedInterface, "extendedInterface should not be null");
     this.addReferenceMultipleValue(
         "extends", ClassifierInstanceUtils.referenceTo(extendedInterface));
-    invalidateFeaturesCache();
   }
 
   @Nonnull

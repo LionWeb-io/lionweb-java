@@ -49,6 +49,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class InMemoryServer {
 
+  private static final float DEFAULT_HASH_LOAD_FACTOR = 0.75f;
+
   /** Internally we store the data separately for each repository. */
   private final Map<String, RepositoryData> repositories = new LinkedHashMap<>();
 
@@ -201,9 +203,8 @@ public class InMemoryServer {
       int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
       int targetSize = Math.min(instances.size(), actualLimit);
 
-      // Pre-allocate the HashSet considering Java's standard load factor (0.75)
-      // This eliminates the unnecessary allocations of HashMap$Node
-      Set<String> ids = new HashSet<>((int) Math.ceil(targetSize / 0.75));
+      // Pre-allocate the HashSet considering Java's standard load factor
+      Set<String> ids = new HashSet<>((int) Math.ceil(targetSize / DEFAULT_HASH_LOAD_FACTOR));
 
       int count = 0;
       for (SerializedClassifierInstance n : instances) {
