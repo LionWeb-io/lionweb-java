@@ -50,9 +50,20 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     Objects.requireNonNull(property, "Property should not be null");
     Objects.requireNonNull(
         property.getKey(), "Property.key should not be null (property: " + property + ")");
-    if (!getClassifier().allProperties().contains(property)) {
+
+    // PERFORMANCE FIX: Validate using String keys
+    boolean isValid = false;
+    for (Property p : getClassifier().allProperties()) {
+      if (Objects.equals(p.getKey(), property.getKey())) {
+        isValid = true;
+        break;
+      }
+    }
+
+    if (!isValid) {
       throw new IllegalArgumentException("Property not belonging to this classifier");
     }
+
     Object storedValue = propertyValues.get(property.getKey());
     if (storedValue == null
         && property.getType()
@@ -67,9 +78,17 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public void setPropertyValue(@Nonnull Property property, @Nullable Object value) {
     Objects.requireNonNull(property, "Property should not be null");
     Objects.requireNonNull(property.getKey(), "Cannot assign a property with no Key specified");
-    if (!getClassifier().allProperties().contains(property)) {
-      throw new IllegalArgumentException(
-          "Property " + property + " is not belonging to classifier " + getClassifier());
+    // PERFORMANCE FIX: Validate using String keys
+    boolean isValid = false;
+    for (Property p : getClassifier().allProperties()) {
+      if (Objects.equals(p.getKey(), property.getKey())) {
+        isValid = true;
+        break;
+      }
+    }
+
+    if (!isValid) {
+      throw new IllegalArgumentException("Property not belonging to this classifier");
     }
     if (partitionObserverCache != null) {
       partitionObserverCache.propertyChanged(
@@ -116,9 +135,21 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
     Objects.requireNonNull(containment, "Containment should not be null");
     Objects.requireNonNull(child, "Child should not be null");
-    if (!getClassifier().allContainments().contains(containment)) {
-      throw new IllegalArgumentException();
+
+    // PERFORMANCE FIX: Avoid M3Node.equals() triggered by List.contains()
+    // We validate by comparing the String keys instead.
+    boolean isValid = false;
+    for (Containment c : getClassifier().allContainments()) {
+      if (Objects.equals(c.getKey(), containment.getKey())) {
+        isValid = true;
+        break;
+      }
     }
+
+    if (!isValid) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
+
     if (containment.isMultiple()) {
       addContainment(containment, child);
     } else {
@@ -133,9 +164,21 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     }
     Objects.requireNonNull(containment, "Containment should not be null");
     Objects.requireNonNull(child, "Child should not be null");
-    if (!getClassifier().allContainments().contains(containment)) {
-      throw new IllegalArgumentException();
+
+    // PERFORMANCE FIX: Avoid M3Node.equals() triggered by List.contains()
+    // We validate by comparing the String keys instead.
+    boolean isValid = false;
+    for (Containment c : getClassifier().allContainments()) {
+      if (Objects.equals(c.getKey(), containment.getKey())) {
+        isValid = true;
+        break;
+      }
     }
+
+    if (!isValid) {
+      throw new IllegalArgumentException("Containment not belonging to this concept");
+    }
+
     if (containment.isMultiple()) {
       addContainment(containment, child, index);
     } else {
@@ -177,9 +220,21 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (containmentValues == null) {
       throw new IllegalArgumentException("Invalid index " + index + " when children are 0");
     }
-    if (!getClassifier().allContainments().contains(containment)) {
+
+    // PERFORMANCE FIX: Avoid M3Node.equals() triggered by List.contains()
+    // We validate by comparing the String keys instead.
+    boolean isValid = false;
+    for (Containment c : getClassifier().allContainments()) {
+      if (Objects.equals(c.getKey(), containment.getKey())) {
+        isValid = true;
+        break;
+      }
+    }
+
+    if (!isValid) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
+
     if (containmentValues.containsKey(containment.getKey())) {
       List<Node> children = containmentValues.get(containment.getKey());
       if (children.size() > index) {
@@ -202,9 +257,20 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
     Objects.requireNonNull(reference);
     Objects.requireNonNull(reference.getKey());
-    if (!getClassifier().allReferences().contains(reference)) {
+
+    // PERFORMANCE FIX: Validate using String keys
+    boolean isValid = false;
+    for (Reference r : getClassifier().allReferences()) {
+      if (Objects.equals(r.getKey(), reference.getKey())) {
+        isValid = true;
+        break;
+      }
+    }
+
+    if (!isValid) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
+
     if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       return referenceValues.get(reference.getKey());
     } else {
@@ -251,9 +317,20 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
     Objects.requireNonNull(reference, "Reference should not be null");
     Objects.requireNonNull(reference.getKey(), "Reference.key should not be null");
-    if (!getClassifier().allReferences().contains(reference)) {
+
+    // PERFORMANCE FIX: Validate using String keys
+    boolean isValid = false;
+    for (Reference r : getClassifier().allReferences()) {
+      if (Objects.equals(r.getKey(), reference.getKey())) {
+        isValid = true;
+        break;
+      }
+    }
+
+    if (!isValid) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
+
     if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       for (int i = 0; i < referenceValuesOfInterest.size(); i++) {
@@ -282,9 +359,20 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public void removeReferenceValue(@Nonnull Reference reference, int index) {
     Objects.requireNonNull(reference, "Reference should not be null");
     Objects.requireNonNull(reference.getKey(), "Reference.key should not be null");
-    if (!getClassifier().allReferences().contains(reference)) {
-      throw new IllegalArgumentException("Reference not belonging to this classifier");
+
+    // PERFORMANCE FIX: Validate using String keys
+    boolean isValid = false;
+    for (Reference r : getClassifier().allReferences()) {
+      if (Objects.equals(r.getKey(), reference.getKey())) {
+        isValid = true;
+        break;
+      }
     }
+
+    if (!isValid) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+
     if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       List<ReferenceValue> referenceValuesOfInterest = referenceValues.get(reference.getKey());
       if (referenceValuesOfInterest.size() > index) {
@@ -308,9 +396,20 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
       @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
     Objects.requireNonNull(reference, "Reference should not be null");
     Objects.requireNonNull(reference.getKey(), "Reference.key should not be null");
-    if (!getClassifier().allReferences().contains(reference)) {
-      throw new IllegalArgumentException("Reference not belonging to this classifier");
+
+    // PERFORMANCE FIX: Validate using String keys
+    boolean isValid = false;
+    for (Reference r : getClassifier().allReferences()) {
+      if (Objects.equals(r.getKey(), reference.getKey())) {
+        isValid = true;
+        break;
+      }
     }
+
+    if (!isValid) {
+      throw new IllegalArgumentException("Reference not belonging to this concept");
+    }
+
     initReferences();
     if (partitionObserverCache != null) {
       List<ReferenceValue> current = referenceValues.get(reference.getKey());
