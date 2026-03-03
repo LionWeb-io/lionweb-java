@@ -90,9 +90,21 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public List<Node> getChildren(@Nonnull Containment containment) {
     Objects.requireNonNull(containment, "Containment should not be null");
     Objects.requireNonNull(containment.getKey(), "Containment.key should not be null");
-    if (!getClassifier().allContainments().contains(containment)) {
+
+    // PERFORMANCE FIX: Avoid M3Node.equals() triggered by List.contains()
+    // We validate by comparing the String keys instead.
+    boolean isValid = false;
+    for (Containment c : getClassifier().allContainments()) {
+      if (Objects.equals(c.getKey(), containment.getKey())) {
+        isValid = true;
+        break;
+      }
+    }
+
+    if (!isValid) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
+
     if (containmentValues != null && containmentValues.containsKey(containment.getKey())) {
       return containmentValues.get(containment.getKey());
     } else {
