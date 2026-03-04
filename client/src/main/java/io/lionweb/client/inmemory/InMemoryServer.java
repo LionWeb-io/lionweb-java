@@ -189,35 +189,41 @@ public class InMemoryServer {
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
       @NotNull String repositoryName, @Nullable Integer limit) {
+
     RepositoryData repositoryData = getRepository(repositoryName);
-    Map<MetaPointer, List<SerializedClassifierInstance>> byMetapointer =
-        repositoryData.nodesByID.values().stream()
-            .collect(Collectors.groupingBy(n -> n.getClassifier()));
-    Map<ClassifierKey, ClassifierResult> res = new HashMap<>();
-    for (Map.Entry<MetaPointer, List<SerializedClassifierInstance>> entry :
-        byMetapointer.entrySet()) {
-      ClassifierKey key = new ClassifierKey(entry.getKey().getLanguage(), entry.getKey().getKey());
-      List<SerializedClassifierInstance> instances = entry.getValue();
+    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
 
-      // Calculate how many elements we will actually take
-      int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
-      int targetSize = Math.min(instances.size(), actualLimit);
+    // PERFORMANCE FIX: Temporary maps to accumulate results in a SINGLE O(N) pass
+    Map<ClassifierKey, Integer> counts = new HashMap<>();
+    Map<ClassifierKey, Set<String>> idsMap = new HashMap<>();
 
-      // Pre-allocate the HashSet considering Java's standard load factor
-      Set<String> ids = new HashSet<>((int) Math.ceil(targetSize / DEFAULT_HASH_LOAD_FACTOR));
+    // Iterate over all nodes exactly once (No Streams, no groupingBy!)
+    for (SerializedClassifierInstance n : repositoryData.nodesByID.values()) {
+      MetaPointer mp = n.getClassifier();
+      ClassifierKey key = new ClassifierKey(mp.getLanguage(), mp.getKey());
 
-      int count = 0;
-      for (SerializedClassifierInstance n : instances) {
-        if (count >= actualLimit) {
-          break;
-        }
+      // Update the total count for this classifier
+      int currentCount = counts.getOrDefault(key, 0);
+      counts.put(key, currentCount + 1);
+
+      // Add the ID only if we haven't exceeded the requested limit
+      if (currentCount < actualLimit) {
+        // Pre-allocate the Set if this is the first time we encounter this classifier
+        Set<String> ids = idsMap.computeIfAbsent(key, k -> new HashSet<>());
         ids.add(n.getID());
-        count++;
       }
-
-      ClassifierResult cr = new ClassifierResult(ids, instances.size());
-      res.put(key, cr);
     }
+
+    // Build the final result map
+    Map<ClassifierKey, ClassifierResult> res = new HashMap<>();
+    for (Map.Entry<ClassifierKey, Integer> entry : counts.entrySet()) {
+      ClassifierKey key = entry.getKey();
+      int totalCount = entry.getValue();
+      Set<String> ids = idsMap.getOrDefault(key, Collections.emptySet());
+
+      res.put(key, new ClassifierResult(ids, totalCount));
+    }
+
     return res;
   }
 
