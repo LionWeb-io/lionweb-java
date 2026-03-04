@@ -188,7 +188,7 @@ public class InMemoryServer {
   }
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
-          @NotNull String repositoryName, @Nullable Integer limit) {
+      @NotNull String repositoryName, @Nullable Integer limit) {
 
     RepositoryData repositoryData = getRepository(repositoryName);
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
