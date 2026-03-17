@@ -31,6 +31,7 @@ import io.lionweb.serialization.data.SerializedReferenceValue;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +56,7 @@ public class InMemoryServer {
   /** Internally we store the data separately for each repository. */
   private final Map<String, RepositoryData> repositories = new ConcurrentHashMap<>();
 
-  private int nextParticipationId = 1;
+  private final AtomicInteger nextParticipationId = new AtomicInteger(1);
 
   public @NotNull RepositoryConfiguration getRepositoryConfiguration(
       @NotNull String repositoryName) {
@@ -95,7 +96,7 @@ public class InMemoryServer {
   public @NotNull List<String> listPartitionIDs(@NotNull String repositoryName) {
     Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
     RepositoryData repositoryData = repositories.get(repositoryName);
-    return repositoryData.partitionIDs;
+    return new ArrayList<>(repositoryData.partitionIDs);
   }
 
   public @NotNull RepositoryVersionToken createPartitionFromChunk(
@@ -198,21 +199,26 @@ public class InMemoryServer {
     Map<ClassifierKey, Integer> counts = new HashMap<>();
     Map<ClassifierKey, Set<String>> idsMap = new HashMap<>();
 
-    // Iterate over all nodes exactly once (No Streams, no groupingBy!)
-    for (SerializedClassifierInstance n : repositoryData.nodesByID.values()) {
-      MetaPointer mp = n.getClassifier();
-      ClassifierKey key = new ClassifierKey(mp.getLanguage(), mp.getKey());
+    repositoryData.getLock().readLock().lock();
+    try {
+      // Iterate over all nodes exactly once (No Streams, no groupingBy!)
+      for (SerializedClassifierInstance n : repositoryData.nodesByID.values()) {
+        MetaPointer mp = n.getClassifier();
+        ClassifierKey key = new ClassifierKey(mp.getLanguage(), mp.getKey());
 
-      // Update the total count for this classifier
-      int currentCount = counts.getOrDefault(key, 0);
-      counts.put(key, currentCount + 1);
+        // Update the total count for this classifier
+        int currentCount = counts.getOrDefault(key, 0);
+        counts.put(key, currentCount + 1);
 
-      // Add the ID only if we haven't exceeded the requested limit
-      if (currentCount < actualLimit) {
-        // Pre-allocate the Set if this is the first time we encounter this classifier
-        Set<String> ids = idsMap.computeIfAbsent(key, k -> new HashSet<>());
-        ids.add(n.getID());
+        // Add the ID only if we haven't exceeded the requested limit
+        if (currentCount < actualLimit) {
+          // Pre-allocate the Set if this is the first time we encounter this classifier
+          Set<String> ids = idsMap.computeIfAbsent(key, k -> new HashSet<>());
+          ids.add(n.getID());
+        }
       }
+    } finally {
+      repositoryData.getLock().readLock().unlock();
     }
 
     // Build the final result map
@@ -235,9 +241,15 @@ public class InMemoryServer {
   public Map<String, ClassifierResult> nodesByLanguage(
       @NotNull String repositoryName, @Nullable Integer limit) {
     RepositoryData repositoryData = getRepository(repositoryName);
-    Map<String, List<SerializedClassifierInstance>> byMetapointer =
-        repositoryData.nodesByID.values().stream()
-            .collect(Collectors.groupingBy(n -> n.getClassifier().getLanguage()));
+    Map<String, List<SerializedClassifierInstance>> byMetapointer;
+    repositoryData.getLock().readLock().lock();
+    try {
+      byMetapointer =
+          repositoryData.nodesByID.values().stream()
+              .collect(Collectors.groupingBy(n -> n.getClassifier().getLanguage()));
+    } finally {
+      repositoryData.getLock().readLock().unlock();
+    }
     Map<String, ClassifierResult> res = new HashMap<>();
     for (Map.Entry<String, List<SerializedClassifierInstance>> entry : byMetapointer.entrySet()) {
       ClassifierResult cr =
@@ -297,7 +309,7 @@ public class InMemoryServer {
     public DeltaQueryResponse receiveQuery(DeltaQuery query) {
       if (query instanceof SignOnRequest) {
         SignOnRequest signOnRequest = (SignOnRequest) query;
-        return new SignOnResponse(signOnRequest.queryId, "participation-" + nextParticipationId++);
+        return new SignOnResponse(signOnRequest.queryId, "participation-" + nextParticipationId.getAndIncrement());
       }
       throw new UnsupportedOperationException("Not supported yet.");
     }

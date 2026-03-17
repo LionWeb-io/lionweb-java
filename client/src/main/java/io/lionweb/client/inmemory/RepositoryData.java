@@ -7,24 +7,37 @@ import io.lionweb.serialization.data.SerializedContainmentValue;
 import io.lionweb.utils.CommonChecks;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 class RepositoryData {
   @NotNull RepositoryConfiguration configuration;
-  final List<String> partitionIDs = new ArrayList<>();
-  final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
-  private int currentVersion = 0;
-  private int nextId = 1;
+  final List<String> partitionIDs = new CopyOnWriteArrayList<>();
+  final Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
+  private final ReadWriteLock lock = new ReentrantReadWriteLock();
+  private final AtomicInteger currentVersion = new AtomicInteger(0);
+  private final AtomicInteger nextId = new AtomicInteger(1);
 
   void deleteNodeAndDescendant(String nodeId) {
+    lock.writeLock().lock();
+    try {
+      deleteNodeAndDescendantUnlocked(nodeId);
+    } finally {
+      lock.writeLock().unlock();
+    }
+  }
+
+  private void deleteNodeAndDescendantUnlocked(String nodeId) {
     SerializedClassifierInstance curr = nodesByID.get(nodeId);
     if (curr == null) {
       throw new IllegalArgumentException("Node " + nodeId + " does not exist");
     }
     nodesByID.remove(nodeId);
-    curr.getChildren().forEach(this::deleteNodeAndDescendant);
+    curr.getChildren().forEach(this::deleteNodeAndDescendantUnlocked);
   }
 
   private class ChangeCalculator {
@@ -127,16 +140,21 @@ class RepositoryData {
   }
 
   RepositoryVersionToken bumpVersion() {
-    return new RepositoryVersionToken("v-" + ++currentVersion);
+    return new RepositoryVersionToken("v-" + currentVersion.incrementAndGet());
   }
 
   List<String> ids(int count) {
     List<String> res = new ArrayList<>(count);
-    while (res.size() < count) {
-      String candidate = "id-" + (nextId++);
-      if (!nodesByID.containsKey(candidate)) {
-        res.add(candidate);
+    lock.readLock().lock();
+    try {
+      while (res.size() < count) {
+        String candidate = "id-" + nextId.getAndIncrement();
+        if (!nodesByID.containsKey(candidate)) {
+          res.add(candidate);
+        }
       }
+    } finally {
+      lock.readLock().unlock();
     }
     return res;
   }
@@ -151,7 +169,12 @@ class RepositoryData {
                     "Node " + n + " should be registered as a partition");
               }
             });
-    new ChangeCalculator().store(newNodes);
+    lock.writeLock().lock();
+    try {
+      new ChangeCalculator().store(newNodes);
+    } finally {
+      lock.writeLock().unlock();
+    }
   }
 
   List<SerializedClassifierInstance> retrieveTrees(List<String> ids) {
@@ -167,6 +190,16 @@ class RepositoryData {
   }
 
   void retrieve(String nodeId, int limit, List<SerializedClassifierInstance> retrieved) {
+    lock.readLock().lock();
+    try {
+      retrieveUnlocked(nodeId, limit, retrieved);
+    } finally {
+      lock.readLock().unlock();
+    }
+  }
+
+  private void retrieveUnlocked(
+      String nodeId, int limit, List<SerializedClassifierInstance> retrieved) {
     SerializedClassifierInstance node = nodesByID.get(nodeId);
     if (node == null) {
       throw new IllegalArgumentException("Node with id " + nodeId + " cannot be found");
@@ -177,7 +210,7 @@ class RepositoryData {
           .forEach(
               childId -> {
                 try {
-                  retrieve(childId, limit - 1, retrieved);
+                  retrieveUnlocked(childId, limit - 1, retrieved);
                 } catch (Exception e) {
                   throw new RuntimeException("Unable to retrieve child of " + node, e);
                 }
@@ -186,7 +219,7 @@ class RepositoryData {
           .forEach(
               annotationId -> {
                 try {
-                  retrieve(annotationId, limit - 1, retrieved);
+                  retrieveUnlocked(annotationId, limit - 1, retrieved);
                 } catch (Exception e) {
                   throw new RuntimeException("Unable to retrieve annotation of " + node, e);
                 }
@@ -194,8 +227,22 @@ class RepositoryData {
     }
   }
 
+  /** Exposes the read lock for callers that need to iterate over nodesByID safely. */
+  ReadWriteLock getLock() {
+    return lock;
+  }
+
   /** This is intended for debugging purposes. It checks if the data is consistent. */
   public @NotNull ValidationResult checkConsistency() {
+    lock.readLock().lock();
+    try {
+      return checkConsistencyUnlocked();
+    } finally {
+      lock.readLock().unlock();
+    }
+  }
+
+  private @NotNull ValidationResult checkConsistencyUnlocked() {
     ValidationResult result = new ValidationResult();
 
     // Check for invalid node IDs
