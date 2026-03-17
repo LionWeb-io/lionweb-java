@@ -7,13 +7,14 @@ import io.lionweb.serialization.data.SerializedContainmentValue;
 import io.lionweb.utils.CommonChecks;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
 class RepositoryData {
   @NotNull RepositoryConfiguration configuration;
   final List<String> partitionIDs = new ArrayList<>();
-  final Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
+  final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
   private int currentVersion = 0;
   private int nextId = 1;
 

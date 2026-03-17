@@ -30,6 +30,7 @@ import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedReferenceValue;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -52,7 +53,7 @@ public class InMemoryServer {
   private static final float DEFAULT_HASH_LOAD_FACTOR = 0.75f;
 
   /** Internally we store the data separately for each repository. */
-  private final Map<String, RepositoryData> repositories = new LinkedHashMap<>();
+  private final Map<String, RepositoryData> repositories = new ConcurrentHashMap<>();
 
   private int nextParticipationId = 1;
 
