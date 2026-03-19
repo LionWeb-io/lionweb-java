@@ -49,7 +49,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   public Object getPropertyValue(@Nonnull Property property) {
     Objects.requireNonNull(property, "Property should not be null");
     Objects.requireNonNull(
-        property.getKey(), "Property.key should not be null (property: " + property + ")");
+        property.getKey(), () -> "Property.key should not be null (property: " + property + ")");
 
     ensureHaveProperty(property);
 
