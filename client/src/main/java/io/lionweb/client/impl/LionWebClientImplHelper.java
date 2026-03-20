@@ -16,7 +16,7 @@ abstract class LionWebClientImplHelper {
   protected final Gson gson =
       new GsonBuilder()
           .setFormattingStyle(
-              FormattingStyle.PRETTY.withNewline(System.lineSeparator()).withIndent("    "))
+              FormattingStyle.PRETTY.withNewline(System.lineSeparator()).withIndent("           "))
           .serializeNulls()
           .create();
 
