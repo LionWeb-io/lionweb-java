@@ -21,7 +21,7 @@ or support.
 
 For visibility on the future plans regarding this project refer to the [Roadmap](ROADMAP.md).
 
-Currently the project is on-par with the LionWeb specifications.
+Currently, the project is on-par with the LionWeb specifications.
 
 In particular, this library supports both version 2023.1 and 2024.1 of the specs.
 
