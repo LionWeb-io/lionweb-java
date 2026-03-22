@@ -24,7 +24,7 @@ class DeserializationStatus {
   private final List<SerializedClassifierInstance> nodesToSort;
   final List<ProxyNode> proxies = new ArrayList<>();
   private final LocalClassifierInstanceResolver proxiesInstanceResolver;
-  private final Set<String> sortedIDs = new HashSet<>();
+  private Set<String> sortedIDs;
   private final DataTypesValuesSerialization dataTypesValuesSerialization;
   private final IdentityHashMap<Classifier<?>, Map<MetaPointer, Feature<?>>> featuresCache =
       new IdentityHashMap<>();
@@ -43,7 +43,9 @@ class DeserializationStatus {
       ClassifierInstanceResolver outsideInstancesResolver,
       DataTypesValuesSerialization dataTypesValuesSerialization) {
     this.dataTypesValuesSerialization = dataTypesValuesSerialization;
-    sortedList = new ArrayList<>();
+    int n = originalList.size();
+    sortedList = new ArrayList<>(n);
+    sortedIDs = new HashSet<>(n);
     nodesToSort = new ArrayList<>(originalList);
     this.proxiesInstanceResolver = new LocalClassifierInstanceResolver();
     this.globalInstanceResolver =
