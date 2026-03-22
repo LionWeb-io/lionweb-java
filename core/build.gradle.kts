@@ -151,7 +151,7 @@ configurations["integrationTestImplementation"]
 configurations["integrationTestRuntimeOnly"]
     .extendsFrom(configurations["testRuntimeOnly"])
 
-val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
+val integrationTestResources : File = File(project.layout.buildDirectory.get().asFile, "integrationTestResources")
 
 val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
     val repoURL = "https://github.com/LionWeb-io/lionweb-integration-testing.git"
@@ -164,7 +164,7 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
             logger.info("About to download integration test using this command: $cmdLine")
             val process = ProcessBuilder()
                 .command(cmdLine.split(" "))
-                .directory(project.buildDir)
+                .directory(project.layout.buildDirectory.get().asFile)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
@@ -187,7 +187,7 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
 }
 
 // Add a task to run the integration tests
-val integrationTest = tasks.create("integrationTest", Test::class.java) {
+val integrationTest = tasks.register<Test>("integrationTest") {
     dependsOn(downloadIntegrationTestResources)
     group = "Verification"
     description = "Runs integration tests in core/src/integrationTest"
@@ -284,6 +284,11 @@ configurations["performanceTestImplementation"]
 configurations["performanceTestRuntimeOnly"]
     .extendsFrom(configurations["testRuntimeOnly"])
 
+dependencies {
+    add("performanceTestImplementation", "org.openjdk.jmh:jmh-core:1.37")
+    add("performanceTestAnnotationProcessor", "org.openjdk.jmh:jmh-generator-annprocess:1.37")
+}
+
 // Runs performance tests in src/performanceTest/java. Right-clicking a test in that
 // directory in IDEA will automatically target this task.
 tasks.register<Test>("performanceTest") {
@@ -301,7 +306,7 @@ tasks.register<Test>("performanceTest") {
 
 idea {
     module {
-        testSourceDirs = testSourceDirs + performanceTestSourceSet.java.srcDirs
-        testResourceDirs = testResourceDirs + performanceTestSourceSet.resources.srcDirs
+        testSources.from(performanceTestSourceSet.java.srcDirs)
+        testResources.from(performanceTestSourceSet.resources.srcDirs)
     }
 }
