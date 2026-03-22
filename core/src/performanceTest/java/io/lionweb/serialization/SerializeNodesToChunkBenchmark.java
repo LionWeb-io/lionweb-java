@@ -1,17 +1,5 @@
 package io.lionweb.serialization;
 
-// Gradle dependencies to add in core/build.gradle.kts:
-//
-//   performanceTestImplementation("org.openjdk.jmh:jmh-core:1.37")
-//   performanceTestAnnotationProcessor("org.openjdk.jmh:jmh-generator-annprocess:1.37")
-//
-// To run from the command line:
-//   ./gradlew :core:performanceTestClasses
-//   java -cp core/build/classes/java/performanceTest:<classpath> \
-//        org.openjdk.jmh.Main SerializeNodesToChunkBenchmark
-//
-// Or directly from IDEA: run SerializeNodesToChunkBenchmark.main()
-
 import io.lionweb.LionWebVersion;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;

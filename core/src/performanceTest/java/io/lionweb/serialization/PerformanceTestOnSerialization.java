@@ -25,7 +25,8 @@ public class PerformanceTestOnSerialization {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
-    performanceMeasure(() -> js.deserializeToNodes(json), 250, 430);
+    // Baseline: 119–141 ms (trimmed); thresholds have ~50% headroom for CI variance
+    performanceMeasure(() -> js.deserializeToNodes(json), 180, 220);
   }
 
   @Test
@@ -43,7 +44,8 @@ public class PerformanceTestOnSerialization {
     // Let's create a separate JsonSerialization, just in case some caches could affect the result
     final JsonSerialization js2 =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 160, 200);
+    // Baseline: 53–59 ms (trimmed); thresholds have ~50% headroom for CI variance
+    performanceMeasure(() -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 80, 95);
   }
 
   @Test
@@ -53,8 +55,8 @@ public class PerformanceTestOnSerialization {
     JsonSerialization js =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
 
-    // Baseline: ~115 MB per call; threshold has ~20% headroom
-    measureMemoryAllocation(() -> js.deserializeToNodes(json), 140 * 1024 * 1024L);
+    // Baseline: ~112.6 MB per call; threshold has ~20% headroom
+    measureMemoryAllocation(() -> js.deserializeToNodes(json), 130 * 1024 * 1024L);
   }
 
   @Test
@@ -72,9 +74,9 @@ public class PerformanceTestOnSerialization {
     // Let's create a separate JsonSerialization, just in case some caches could affect the result
     final JsonSerialization js2 =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    // Baseline: ~87 MB per call; threshold has ~20% headroom
+    // Baseline: ~84.3 MB per call; threshold has ~20% headroom
     measureMemoryAllocation(
-        () -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 110 * 1024 * 1024L);
+        () -> js2.serializeTreesToJsonElement(roots.get(0), roots.get(1)), 100 * 1024 * 1024L);
   }
 
   private String readInputStreamToString(InputStream inputStream) {
