@@ -102,9 +102,8 @@ public class SerializeNodesToChunkBenchmark {
   }
 
   /**
-   * Baseline: starts from the roots, performs tree traversal via {@code
-   * collectSelfAndDescendants} (which builds a {@code LinkedHashSet}), then calls {@code
-   * serializeNodesToSerializationChunk}.
+   * Baseline: starts from the roots, performs tree traversal via {@code collectSelfAndDescendants}
+   * (which builds a {@code LinkedHashSet}), then calls {@code serializeNodesToSerializationChunk}.
    *
    * <p>The time difference relative to {@link #serializeNodesToChunk} reflects the cost of the
    * traversal and the {@code LinkedHashSet} allocation.
