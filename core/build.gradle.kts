@@ -277,3 +277,20 @@ tasks.test {
         }
     }
 }
+
+// A dedicated task to run only performance-tagged tests, runnable from IDEA or CI
+// without needing -PincludeExpensiveTests=true.
+tasks.register<Test>("performanceTest") {
+    group = "Verification"
+    description = "Runs performance tests tagged with @Tag(\"performance\")"
+    shouldRunAfter(tasks.test)
+    testClassesDirs = sourceSets.test.get().output.classesDirs
+    classpath = sourceSets.test.get().runtimeClasspath
+    useJUnitPlatform {
+        includeTags("performance")
+    }
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        showStandardStreams = true
+    }
+}
