@@ -7,6 +7,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     id("java-library")
+    id("idea")
     id("signing")
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
@@ -270,27 +271,37 @@ sourceSets {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport) // run report after tests
-    useJUnitPlatform {
-        val includeExpensive = project.findProperty("includeExpensiveTests") == "true"
-        if (!includeExpensive) {
-            excludeTags("performance")
-        }
-    }
+    useJUnitPlatform()
 }
 
-// A dedicated task to run only performance-tagged tests, runnable from IDEA or CI
-// without needing -PincludeExpensiveTests=true.
+val performanceTestSourceSet = sourceSets.create("performanceTest") {
+    compileClasspath += sourceSets["main"].output + sourceSets["test"].output
+    runtimeClasspath += sourceSets["main"].output + sourceSets["test"].output
+}
+
+configurations["performanceTestImplementation"]
+    .extendsFrom(configurations["testImplementation"])
+configurations["performanceTestRuntimeOnly"]
+    .extendsFrom(configurations["testRuntimeOnly"])
+
+// Runs performance tests in src/performanceTest/java. Right-clicking a test in that
+// directory in IDEA will automatically target this task.
 tasks.register<Test>("performanceTest") {
     group = "Verification"
-    description = "Runs performance tests tagged with @Tag(\"performance\")"
+    description = "Runs performance tests in src/performanceTest/java"
     shouldRunAfter(tasks.test)
-    testClassesDirs = sourceSets.test.get().output.classesDirs
-    classpath = sourceSets.test.get().runtimeClasspath
-    useJUnitPlatform {
-        includeTags("performance")
-    }
+    testClassesDirs = performanceTestSourceSet.output.classesDirs
+    classpath = performanceTestSourceSet.runtimeClasspath
+    useJUnitPlatform()
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
+    }
+}
+
+idea {
+    module {
+        testSourceDirs = testSourceDirs + performanceTestSourceSet.java.srcDirs
+        testResourceDirs = testResourceDirs + performanceTestSourceSet.resources.srcDirs
     }
 }
