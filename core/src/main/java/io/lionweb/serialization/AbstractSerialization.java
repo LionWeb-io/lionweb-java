@@ -199,15 +199,15 @@ public abstract class AbstractSerialization {
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializationChunk.addClassifierInstance(
-              serializeNode(classifierInstance, serializationStatus));
+          serializeNode(classifierInstance, serializationStatus));
       for (AnnotationInstance annotationInstance : classifierInstance.getAnnotations()) {
         if (!classifierInstancesSet.contains(annotationInstance)) {
           serializationChunk.addClassifierInstance(
-                  serializeAnnotationInstance(annotationInstance, serializationStatus));
+              serializeAnnotationInstance(annotationInstance, serializationStatus));
         }
       }
       serializationStatus.considerLanguageDuringSerialization(
-              languageConsumer, classifierInstance.getClassifier().getLanguage());
+          languageConsumer, classifierInstance.getClassifier().getLanguage());
     }
     serializationChunk.populateUsedLanguages();
     return serializationChunk;

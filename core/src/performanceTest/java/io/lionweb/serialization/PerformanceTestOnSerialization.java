@@ -126,13 +126,20 @@ public class PerformanceTestOnSerialization {
       allocationList.add(allocated);
     }
     allocationList = allocationList.stream().sorted().collect(Collectors.toList());
-    allocationList = allocationList.subList(N_TOP_REMOVED, allocationList.size() - N_BOTTOM_REMOVED);
+    allocationList =
+        allocationList.subList(N_TOP_REMOVED, allocationList.size() - N_BOTTOM_REMOVED);
     assertEquals(N_ITERATIONS - N_TOP_REMOVED - N_BOTTOM_REMOVED, allocationList.size());
     long min = allocationList.get(0);
     long max = allocationList.get(allocationList.size() - 1);
     System.out.println(
-        "Allocation range: " + (min / 1024) + " KB to " + (max / 1024) + " KB"
-            + " (threshold: " + (thresholdMaxBytes / 1024) + " KB)");
+        "Allocation range: "
+            + (min / 1024)
+            + " KB to "
+            + (max / 1024)
+            + " KB"
+            + " (threshold: "
+            + (thresholdMaxBytes / 1024)
+            + " KB)");
     assertTrue(
         max < thresholdMaxBytes,
         "Expected max allocation to be under "
