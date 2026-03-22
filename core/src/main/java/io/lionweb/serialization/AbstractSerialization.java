@@ -194,7 +194,10 @@ public abstract class AbstractSerialization {
     SerializationStatus serializationStatus = new SerializationStatus();
     Consumer<Language> languageConsumer = this::considerLanguageDuringSerialization;
 
-    Set<ClassifierInstance<?>> classifierInstancesSet = new HashSet<>(classifierInstances);
+    Set<ClassifierInstance<?>> classifierInstancesSet =
+        (classifierInstances instanceof Set)
+            ? (Set<ClassifierInstance<?>>) classifierInstances
+            : new HashSet<>(classifierInstances);
 
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
