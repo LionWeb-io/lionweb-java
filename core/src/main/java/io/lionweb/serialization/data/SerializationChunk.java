@@ -11,11 +11,20 @@ import javax.annotation.Nonnull;
  */
 public class SerializationChunk {
 
-  private final Map<String, SerializedClassifierInstance> classifierInstancesByID = new HashMap<>();
+  private final Map<String, SerializedClassifierInstance> classifierInstancesByID;
 
   private String serializationFormatVersion;
   private final List<LanguageVersion> languages = new ArrayList<>();
-  private final List<SerializedClassifierInstance> classifierInstances = new ArrayList<>();
+  private final List<SerializedClassifierInstance> classifierInstances;
+
+  public SerializationChunk() {
+    this(16);
+  }
+
+  public SerializationChunk(int initialCapacity) {
+    this.classifierInstancesByID = new HashMap<>(initialCapacity);
+    this.classifierInstances = new ArrayList<>(initialCapacity);
+  }
 
   public static SerializationChunk fromNodes(
       @Nonnull LionWebVersion lionWebVersion, @Nonnull List<SerializedClassifierInstance> nodes) {

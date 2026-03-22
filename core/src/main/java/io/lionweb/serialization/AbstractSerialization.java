@@ -189,23 +189,25 @@ public abstract class AbstractSerialization {
 
   public SerializationChunk serializeNodesToSerializationChunk(
       Collection<ClassifierInstance<?>> classifierInstances) {
-    SerializationChunk serializationChunk = new SerializationChunk();
+    SerializationChunk serializationChunk = new SerializationChunk(classifierInstances.size());
     serializationChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     SerializationStatus serializationStatus = new SerializationStatus();
     Consumer<Language> languageConsumer = this::considerLanguageDuringSerialization;
+
+    Set<ClassifierInstance<?>> classifierInstancesSet = new HashSet<>(classifierInstances);
+
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializationChunk.addClassifierInstance(
-          serializeNode(classifierInstance, serializationStatus));
-      classifierInstance.getAnnotations().stream()
-          .filter(a -> !classifierInstances.contains(a))
-          .forEach(
-              annotationInstance -> {
-                serializationChunk.addClassifierInstance(
-                    serializeAnnotationInstance(annotationInstance, serializationStatus));
-              });
+              serializeNode(classifierInstance, serializationStatus));
+      for (AnnotationInstance annotationInstance : classifierInstance.getAnnotations()) {
+        if (!classifierInstancesSet.contains(annotationInstance)) {
+          serializationChunk.addClassifierInstance(
+                  serializeAnnotationInstance(annotationInstance, serializationStatus));
+        }
+      }
       serializationStatus.considerLanguageDuringSerialization(
-          languageConsumer, classifierInstance.getClassifier().getLanguage());
+              languageConsumer, classifierInstance.getClassifier().getLanguage());
     }
     serializationChunk.populateUsedLanguages();
     return serializationChunk;
