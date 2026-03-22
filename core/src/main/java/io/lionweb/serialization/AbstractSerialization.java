@@ -174,14 +174,14 @@ public abstract class AbstractSerialization {
   //
 
   public SerializationChunk serializeTreeToSerializationChunk(ClassifierInstance<?> root) {
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
     return serializeNodesToSerializationChunk(classifierInstances);
   }
 
   public SerializationChunk serializeTreesToSerializationChunk(
       List<? extends ClassifierInstance<?>> roots) {
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     roots.forEach(
         root -> ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances));
     return serializeNodesToSerializationChunk(classifierInstances);

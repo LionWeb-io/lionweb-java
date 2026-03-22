@@ -112,7 +112,7 @@ public class JsonSerialization extends AbstractSerialization {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     return serializeNodesToJsonElement(
@@ -125,7 +125,7 @@ public class JsonSerialization extends AbstractSerialization {
     Set<String> nodesIDs = new HashSet<>();
     List<ClassifierInstance<?>> allNodes = new ArrayList<>();
     for (ClassifierInstance<?> root : roots) {
-      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+      List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
       ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
       classifierInstances.forEach(
           n -> {

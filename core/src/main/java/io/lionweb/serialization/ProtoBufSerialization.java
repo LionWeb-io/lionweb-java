@@ -157,12 +157,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
-    // Use LinkedHashSet with initial capacity to reduce resizing
     Set<String> nodesIDs = new HashSet<>(1024);
     List<ClassifierInstance<?>> allNodes = new ArrayList<>(1024);
 
     for (ClassifierInstance<?> root : roots) {
-      Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>(512);
+      List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
       ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
 
       // Process in batches to reduce memory allocation
@@ -346,7 +345,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     if (classifierInstance instanceof ProxyNode) {
       throw new IllegalArgumentException("Proxy nodes cannot be serialized");
     }
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
     SerializationChunk serializationChunk =

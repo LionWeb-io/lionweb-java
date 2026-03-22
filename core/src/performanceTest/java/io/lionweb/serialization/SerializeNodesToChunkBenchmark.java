@@ -24,8 +24,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  *   <li>{@link #serializeNodesToChunk} – the method under test, called with the flat collection of
  *       all already-materialised nodes (as happens in every real call).
  *   <li>{@link #serializeTreesToChunk} – baseline that passes only the roots: includes the extra
- *       cost of {@code collectSelfAndDescendants} + {@code LinkedHashSet}, then calls the same
- *       method.
+ *       cost of {@code collectSelfAndDescendants} tree traversal, then calls the same method.
  * </ul>
  *
  * <p>With {@code GCProfiler}, {@code main} also prints {@code gc.alloc.rate.norm} (bytes allocated
@@ -105,8 +104,8 @@ public class SerializeNodesToChunkBenchmark {
    * Baseline: starts from the roots, performs tree traversal via {@code collectSelfAndDescendants}
    * (which builds a {@code LinkedHashSet}), then calls {@code serializeNodesToSerializationChunk}.
    *
-   * <p>The time difference relative to {@link #serializeNodesToChunk} reflects the cost of the
-   * traversal and the {@code LinkedHashSet} allocation.
+   * <p>The time difference relative to {@link #serializeNodesToChunk} reflects the cost of the tree
+   * traversal in {@code collectSelfAndDescendants}.
    */
   @Benchmark
   public SerializationChunk serializeTreesToChunk() {
