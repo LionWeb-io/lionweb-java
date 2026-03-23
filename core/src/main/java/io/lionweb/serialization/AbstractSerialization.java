@@ -174,14 +174,14 @@ public abstract class AbstractSerialization {
   //
 
   public SerializationChunk serializeTreeToSerializationChunk(ClassifierInstance<?> root) {
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
     return serializeNodesToSerializationChunk(classifierInstances);
   }
 
   public SerializationChunk serializeTreesToSerializationChunk(
       List<? extends ClassifierInstance<?>> roots) {
-    Set<ClassifierInstance<?>> classifierInstances = new LinkedHashSet<>();
+    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     roots.forEach(
         root -> ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances));
     return serializeNodesToSerializationChunk(classifierInstances);
@@ -189,21 +189,24 @@ public abstract class AbstractSerialization {
 
   public SerializationChunk serializeNodesToSerializationChunk(
       Collection<ClassifierInstance<?>> classifierInstances) {
-    SerializationChunk serializationChunk = new SerializationChunk();
+    SerializationChunk serializationChunk = new SerializationChunk(classifierInstances.size());
     serializationChunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
     SerializationStatus serializationStatus = new SerializationStatus();
     Consumer<Language> languageConsumer = this::considerLanguageDuringSerialization;
+
+    Set<String> classifierInstanceIDSet =
+        classifierInstances.stream().map(ClassifierInstance::getID).collect(Collectors.toSet());
+
     for (ClassifierInstance<?> classifierInstance : classifierInstances) {
       Objects.requireNonNull(classifierInstance, "nodes should not contain null values");
       serializationChunk.addClassifierInstance(
           serializeNode(classifierInstance, serializationStatus));
-      classifierInstance.getAnnotations().stream()
-          .filter(a -> !classifierInstances.contains(a))
-          .forEach(
-              annotationInstance -> {
-                serializationChunk.addClassifierInstance(
-                    serializeAnnotationInstance(annotationInstance, serializationStatus));
-              });
+      for (AnnotationInstance annotationInstance : classifierInstance.getAnnotations()) {
+        if (!classifierInstanceIDSet.contains(annotationInstance.getID())) {
+          serializationChunk.addClassifierInstance(
+              serializeAnnotationInstance(annotationInstance, serializationStatus));
+        }
+      }
       serializationStatus.considerLanguageDuringSerialization(
           languageConsumer, classifierInstance.getClassifier().getLanguage());
     }
@@ -492,17 +495,18 @@ public abstract class AbstractSerialization {
     if (sortedSerializedClassifierInstances.size() != serializedClassifierInstances.size()) {
       throw new IllegalStateException();
     }
-    Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>();
+    int nodeCount = serializedClassifierInstances.size();
+    Map<String, ClassifierInstance<?>> deserializedByID = new HashMap<>(nodeCount);
     IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap =
-        new IdentityHashMap<>();
+        new IdentityHashMap<>(nodeCount);
     sortedSerializedClassifierInstances.forEach(
         n -> {
           ClassifierInstance<?> instantiated =
               instantiateFromSerialized(lionWebVersion, deserializationStatus, n, deserializedByID);
-          if (n.getID() != null && deserializedByID.containsKey(n.getID())) {
+          ClassifierInstance<?> prev = deserializedByID.put(n.getID(), instantiated);
+          if (n.getID() != null && prev != null) {
             throw new IllegalStateException("Duplicate ID found: " + n.getID());
           }
-          deserializedByID.put(n.getID(), instantiated);
           serializedToInstanceMap.put(n, instantiated);
         });
     if (sortedSerializedClassifierInstances.size() != serializedToInstanceMap.size()) {
@@ -552,9 +556,9 @@ public abstract class AbstractSerialization {
 
     // We want the nodes returned to be sorted as the original serializedNodes
     List<ClassifierInstance<?>> nodesWithOriginalSorting =
-        serializedClassifierInstances.stream()
-            .map(serializedToInstanceMap::get)
-            .collect(Collectors.toList());
+        new ArrayList<>(nodeCount + deserializationStatus.proxies.size());
+    serializedClassifierInstances.forEach(
+        n -> nodesWithOriginalSorting.add(serializedToInstanceMap.get(n)));
     nodesWithOriginalSorting.addAll(deserializationStatus.proxies);
     return nodesWithOriginalSorting;
   }

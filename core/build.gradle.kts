@@ -7,6 +7,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     id("java-library")
+    id("idea")
     id("signing")
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
@@ -150,7 +151,7 @@ configurations["integrationTestImplementation"]
 configurations["integrationTestRuntimeOnly"]
     .extendsFrom(configurations["testRuntimeOnly"])
 
-val integrationTestResources : File = File(project.buildDir, "integrationTestResources")
+val integrationTestResources : File = File(project.layout.buildDirectory.get().asFile, "integrationTestResources")
 
 val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestResources") {
     val repoURL = "https://github.com/LionWeb-io/lionweb-integration-testing.git"
@@ -163,7 +164,7 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
             logger.info("About to download integration test using this command: $cmdLine")
             val process = ProcessBuilder()
                 .command(cmdLine.split(" "))
-                .directory(project.buildDir)
+                .directory(project.layout.buildDirectory.get().asFile)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
@@ -186,7 +187,7 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
 }
 
 // Add a task to run the integration tests
-val integrationTest = tasks.create("integrationTest", Test::class.java) {
+val integrationTest = tasks.register<Test>("integrationTest") {
     dependsOn(downloadIntegrationTestResources)
     group = "Verification"
     description = "Runs integration tests in core/src/integrationTest"
@@ -270,10 +271,42 @@ sourceSets {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport) // run report after tests
-    useJUnitPlatform {
-        val includeExpensive = project.findProperty("includeExpensiveTests") == "true"
-        if (!includeExpensive) {
-            excludeTags("performance")
-        }
+    useJUnitPlatform()
+}
+
+val performanceTestSourceSet = sourceSets.create("performanceTest") {
+    compileClasspath += sourceSets["main"].output + sourceSets["test"].output
+    runtimeClasspath += sourceSets["main"].output + sourceSets["test"].output
+}
+
+configurations["performanceTestImplementation"]
+    .extendsFrom(configurations["testImplementation"])
+configurations["performanceTestRuntimeOnly"]
+    .extendsFrom(configurations["testRuntimeOnly"])
+
+dependencies {
+    add("performanceTestImplementation", "org.openjdk.jmh:jmh-core:1.37")
+    add("performanceTestAnnotationProcessor", "org.openjdk.jmh:jmh-generator-annprocess:1.37")
+}
+
+// Runs performance tests in src/performanceTest/java. Right-clicking a test in that
+// directory in IDEA will automatically target this task.
+tasks.register<Test>("performanceTest") {
+    group = "Verification"
+    description = "Runs performance tests in src/performanceTest/java"
+    shouldRunAfter(tasks.test)
+    testClassesDirs = performanceTestSourceSet.output.classesDirs
+    classpath = performanceTestSourceSet.runtimeClasspath
+    useJUnitPlatform()
+    testLogging {
+        events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        showStandardStreams = true
+    }
+}
+
+idea {
+    module {
+        testSources.from(performanceTestSourceSet.java.srcDirs)
+        testResources.from(performanceTestSourceSet.resources.srcDirs)
     }
 }
