@@ -1,5 +1,24 @@
 # Changelog
 
+### Version 1.3.7
+
+* Introducing benchmarks
+* Tuning serialization and deserialization performance
+
+### Version 1.3.6
+
+* Improve performance by computing expensive `requireNonNull` exception message lazily
+
+### Version 1.3.5
+
+* Improvements to InMemoryServer concurrency
+
+### Version 1.3.4
+
+* Performance improvements to `InMemoryServer`
+* Performance improvements to language model
+* Performance improvements to `DynamicClassidierInstance`
+
 ### Version 1.3.3
 
 * Performance improvements because of features caching

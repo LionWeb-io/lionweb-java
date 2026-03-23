@@ -71,6 +71,21 @@ The Changelog is [here](CHANGELOG.md).
 To ensure proper testing coverage we configured Jacoco.
 You can run `./gradlew jacocoTestReport` and then find the report for each module, under `build/reports/jacoco`.
 
+## Benchmarks
+
+The project includes JMH (Java Microbenchmark Harness) benchmarks to measure and optimize serialization/deserialization performance:
+
+- **DeserializeFromChunkBenchmark** - Benchmarks `deserializeSerializationChunk` performance, measuring both the core deserialization logic (excluding JSON parsing) and end-to-end deserialization from JSON
+- **SerializeNodesToChunkBenchmark** - Benchmarks `serializeNodesToSerializationChunk` performance, comparing direct serialization of flat node collections versus tree-based serialization with traversal
+
+These benchmarks use GC profiling to track memory allocations and identify optimization opportunities. They are located in `core/src/performanceTest/java` and can be run using:
+
+```
+./gradlew :core:performanceTest
+```
+
+Or run directly from your IDE by executing the `main` method in each benchmark class.
+
 ## Contributors
 
 This project is part of the [LionWeb](https://lionweb.io) initiative.
