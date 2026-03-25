@@ -15,8 +15,14 @@ public class SerializationChunk {
 
   private String serializationFormatVersion;
   private final List<LanguageVersion> languages = new ArrayList<>();
-  /** Shadow set for O(1) duplicate detection. Uses identity equality since LanguageVersion is interned. */
-  private final Set<LanguageVersion> languagesSet = Collections.newSetFromMap(new IdentityHashMap<>());
+
+  /**
+   * Shadow set for O(1) duplicate detection. Uses identity equality since LanguageVersion is
+   * interned.
+   */
+  private final Set<LanguageVersion> languagesSet =
+      Collections.newSetFromMap(new IdentityHashMap<>());
+
   private final List<SerializedClassifierInstance> classifierInstances;
 
   public SerializationChunk() {

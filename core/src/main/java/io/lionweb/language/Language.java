@@ -6,7 +6,9 @@ import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.M3Node;
 import io.lionweb.utils.LanguageValidator;
 import io.lionweb.utils.ValidationResult;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -26,6 +28,16 @@ import javax.annotation.Nullable;
  *     structure aspect</i> in documentation</a>
  */
 public class Language extends M3Node<Language> implements NamespaceProvider, IKeyed<Language> {
+
+  /**
+   * Lazy cache: element name → LanguageEntity. Nulled out whenever an element is added.
+   *
+   * <p><b>Assumption:</b> element names are treated as immutable after {@link #addElement} is
+   * called. If a name is changed on an already-added element the cache will return stale results.
+   * In that case, call {@link #invalidateElementsByNameCache()} explicitly to force a rebuild.
+   */
+  private Map<String, LanguageEntity<?>> elementsByNameCache = null;
+
   public Language(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);
   }
@@ -103,7 +115,19 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
     Objects.requireNonNull(element, "element should not be null");
     this.addContainmentMultipleValue("entities", element);
     element.setParent(this);
+    elementsByNameCache = null;
     return element;
+  }
+
+  /**
+   * Drops the elements-by-name cache, forcing it to be rebuilt on the next lookup.
+   *
+   * <p>Call this if you rename a {@link LanguageEntity} that has already been added to this
+   * language, to avoid stale results from {@link #getElementByName} and the {@code getXByName}
+   * family of methods.
+   */
+  public void invalidateElementsByNameCache() {
+    elementsByNameCache = null;
   }
 
   /**
@@ -117,12 +141,8 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    */
   public @Nullable Concept getConceptByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
-    return getElements().stream()
-        .filter(element -> element instanceof Concept)
-        .map(element -> (Concept) element)
-        .filter(element -> element.getName().equals(name))
-        .findFirst()
-        .orElse(null);
+    LanguageEntity<?> element = getElementByName(name);
+    return (element instanceof Concept) ? (Concept) element : null;
   }
 
   /**
@@ -134,12 +154,8 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    */
   public @Nullable Classifier<?> getClassifierByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
-    return getElements().stream()
-        .filter(element -> element instanceof Classifier<?>)
-        .map(element -> (Classifier<?>) element)
-        .filter(element -> element.getName().equals(name))
-        .findFirst()
-        .orElse(null);
+    LanguageEntity<?> element = getElementByName(name);
+    return (element instanceof Classifier<?>) ? (Classifier<?>) element : null;
   }
 
   /**
@@ -150,12 +166,8 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    */
   public @Nullable Enumeration getEnumerationByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
-    return getElements().stream()
-        .filter(element -> element instanceof Enumeration)
-        .map(element -> (Enumeration) element)
-        .filter(element -> Objects.equals(element.getName(), name))
-        .findFirst()
-        .orElse(null);
+    LanguageEntity<?> element = getElementByName(name);
+    return (element instanceof Enumeration) ? (Enumeration) element : null;
   }
 
   /**
@@ -292,12 +304,8 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   }
 
   public @Nullable Interface getInterfaceByName(String name) {
-    return getElements().stream()
-        .filter(element -> element instanceof Interface)
-        .map(element -> (Interface) element)
-        .filter(element -> element.getName().equals(name))
-        .findFirst()
-        .orElse(null);
+    LanguageEntity<?> element = getElementByName(name);
+    return (element instanceof Interface) ? (Interface) element : null;
   }
 
   /**
@@ -309,12 +317,8 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    */
   public @Nullable Annotation getAnnotationByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
-    return getElements().stream()
-        .filter(element -> element instanceof Annotation)
-        .map(element -> (Annotation) element)
-        .filter(element -> element.getName().equals(name))
-        .findFirst()
-        .orElse(null);
+    LanguageEntity<?> element = getElementByName(name);
+    return (element instanceof Annotation) ? (Annotation) element : null;
   }
 
   public @Nullable String getName() {
@@ -332,10 +336,17 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
 
   public @Nullable LanguageEntity<?> getElementByName(@Nonnull String name) {
     Objects.requireNonNull(name);
-    return getElements().stream()
-        .filter(element -> Objects.equals(element.getName(), name))
-        .findFirst()
-        .orElse(null);
+    if (elementsByNameCache == null) {
+      Map<String, LanguageEntity<?>> cache = new HashMap<>();
+      for (LanguageEntity<?> element : getElements()) {
+        String n = element.getName();
+        if (n != null) {
+          cache.put(n, element);
+        }
+      }
+      elementsByNameCache = cache;
+    }
+    return elementsByNameCache.get(name);
   }
 
   /**

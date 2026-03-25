@@ -18,8 +18,10 @@ class RepositoryData {
   @NotNull RepositoryConfiguration configuration;
   final List<String> partitionIDs = new ArrayList<>();
   final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
+
   /** Pre-computed index: ClassifierKey → set of node IDs. Kept in sync with nodesByID. */
   private final Map<ClassifierKey, Set<String>> classifierIndex = new HashMap<>();
+
   private int currentVersion = 0;
   private int nextId = 1;
 
@@ -54,7 +56,10 @@ class RepositoryData {
     }
   }
 
-  /** Returns pre-computed classifier → result map, applying an optional node-ID limit per classifier. */
+  /**
+   * Returns pre-computed classifier → result map, applying an optional node-ID limit per
+   * classifier.
+   */
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
     Map<ClassifierKey, ClassifierResult> result = new HashMap<>(classifierIndex.size() * 2);

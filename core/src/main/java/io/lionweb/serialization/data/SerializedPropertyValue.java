@@ -10,7 +10,8 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SerializedPropertyValue {
   private static final int THRESHOLD = 128;
-  private static final ConcurrentHashMap<MetaPointer, ConcurrentHashMap<String, SerializedPropertyValue>>
+  private static final ConcurrentHashMap<
+          MetaPointer, ConcurrentHashMap<String, SerializedPropertyValue>>
       INSTANCES_BY_METAPOINTER = new ConcurrentHashMap<>();
 
   /** This will avoid most unnecessary duplicate instantiations, but this is not guaranteed. */
