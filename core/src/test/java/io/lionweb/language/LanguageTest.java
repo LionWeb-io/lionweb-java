@@ -801,6 +801,8 @@ public class LanguageTest {
     // Without explicit invalidation, the cache may return a stale result
     // (either null for "NewName" or the old name mapping)
     // After explicit invalidation, the result must reflect the new name.
+    assertNotNull(language.getClassifierByName("OldName"));
+    assertNull(language.getClassifierByName("NewName"));
     language.invalidateElementsByNameCache();
 
     assertNull(language.getClassifierByName("OldName"));
