@@ -20,37 +20,37 @@ public class DeserializationStatusTest {
   }
 
   @Test
-  public void placeAtRemovesNodeFromNodesToSort() {
+  public void markAsSortedRemovesNodeFromNodesToSort() {
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", MP);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", MP);
     SerializedClassifierInstance n3 = new SerializedClassifierInstance("n3", MP);
     DeserializationStatus status = statusOf(n1, n2, n3);
 
     assertEquals(3, status.howManyToSort());
-    status.placeAt(0);
+    status.markAsSorted(0);
     assertEquals(2, status.howManyToSort());
   }
 
   @Test
-  public void placeAtMovesNodeToSortedList() {
+  public void markAsSortedMovesNodeToSortedList() {
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", MP);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", MP);
     DeserializationStatus status = statusOf(n1, n2);
 
-    status.placeAt(0);
+    status.markAsSorted(0);
 
     assertEquals(1, status.howManySorted());
     assertTrue(status.isSortedID("n1"));
   }
 
   @Test
-  public void placeAtLastElement() {
+  public void placeLastAtLastElement() {
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", MP);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", MP);
     DeserializationStatus status = statusOf(n1, n2);
 
     // Place last element (index == last, no swap needed)
-    status.placeAt(1);
+    status.markAsSorted(1);
 
     assertTrue(status.isSortedID("n2"));
     assertEquals(1, status.howManyToSort());
@@ -58,16 +58,16 @@ public class DeserializationStatusTest {
   }
 
   @Test
-  public void placeAtAllNodesProducesCorrectSortedList() {
+  public void markAsSortedAllNodesProducesCorrectSortedList() {
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", MP);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", MP);
     SerializedClassifierInstance n3 = new SerializedClassifierInstance("n3", MP);
     DeserializationStatus status = statusOf(n1, n2, n3);
 
     // Place index 1 (n2), then index 0 of remaining, then remaining
-    status.placeAt(1); // places n2; n3 swaps to index 1
-    status.placeAt(0); // places n1; n3 now at index 0
-    status.placeAt(0); // places n3
+    status.markAsSorted(1); // places n2; n3 swaps to index 1
+    status.markAsSorted(0); // places n1; n3 now at index 0
+    status.markAsSorted(0); // places n3
 
     assertEquals(0, status.howManyToSort());
     assertEquals(3, status.howManySorted());
@@ -84,7 +84,7 @@ public class DeserializationStatusTest {
     DeserializationStatus status = statusOf(n1);
 
     assertFalse(status.isSortedID("n1"));
-    status.placeAt(0);
+    status.markAsSorted(0);
     assertTrue(status.isSortedID("n1"));
   }
 }
