@@ -5,6 +5,7 @@ import io.lionweb.client.api.ClassifierKey;
 import io.lionweb.client.api.ClassifierResult;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.model.Node;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.*;
@@ -57,10 +58,24 @@ public class NodesByClassifierBenchmark {
       classifiers[c] = MetaPointer.get("bench-lang", "1.0", "Classifier" + c);
     }
 
+    int containmentsCount = 13;
+    MetaPointer[] containments = new MetaPointer[containmentsCount];
+    for (int c = 0; c < containmentsCount; c++) {
+      containments[c] = MetaPointer.get("bench-lang", "1.0", "Containment" + c);
+    }
+
     List<SerializedClassifierInstance> nodes = new ArrayList<>(nodeCount);
+    SerializedClassifierInstance root = null;
     for (int i = 0; i < nodeCount; i++) {
       MetaPointer mp = classifiers[i % classifierCount];
-      nodes.add(new SerializedClassifierInstance("node-" + i, mp));
+      SerializedClassifierInstance newNode = new SerializedClassifierInstance("node-" + i, mp);
+      if (i == 0) {
+        root = newNode;
+      } else {
+        root.addChild(containments[i % containmentsCount], newNode.getID());
+        newNode.setParentNodeID(root.getID());
+      }
+      nodes.add(newNode);
     }
 
     // Store the first node as partition root; the rest as flat children of root
