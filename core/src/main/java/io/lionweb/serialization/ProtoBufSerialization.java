@@ -8,7 +8,6 @@ import io.lionweb.serialization.data.*;
 import io.lionweb.serialization.data.MetaPointer;
 import java.io.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 public class ProtoBufSerialization extends AbstractSerialization {
@@ -40,10 +39,12 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public List<io.lionweb.model.Node> deserializeToNodes(PBChunk chunk) {
-    return deserializeToClassifierInstances(chunk).stream()
-        .filter(ci -> ci instanceof io.lionweb.model.Node)
-        .map(ci -> (io.lionweb.model.Node) ci)
-        .collect(Collectors.toList());
+    List<ClassifierInstance<?>> all = deserializeToClassifierInstances(chunk);
+    List<io.lionweb.model.Node> nodes = new ArrayList<>(all.size());
+    for (ClassifierInstance<?> ci : all) {
+      if (ci instanceof io.lionweb.model.Node) nodes.add((io.lionweb.model.Node) ci);
+    }
+    return nodes;
   }
 
   public List<ClassifierInstance<?>> deserializeToClassifierInstances(PBChunk chunk) {
@@ -189,8 +190,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
-    if (classifierInstances.stream().anyMatch(n -> n instanceof ProxyNode)) {
-      throw new IllegalArgumentException("Proxy nodes cannot be serialized");
+    for (ClassifierInstance<?> n : classifierInstances) {
+      if (n instanceof ProxyNode) {
+        throw new IllegalArgumentException("Proxy nodes cannot be serialized");
+      }
     }
     SerializationChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
     return serializeToByteArray(serializationBlock);
@@ -295,47 +298,35 @@ public class ProtoBufSerialization extends AbstractSerialization {
                   nodeBuilder.addProperties(b.build());
                 }
               });
-      n.getContainments()
-          .forEach(
-              p -> {
-                List<String> childrenIds = p.getChildrenIds();
-                if (serializeEmptyFeatures || !childrenIds.isEmpty()) {
-                  nodeBuilder.addContainments(
-                      PBContainment.newBuilder()
-                          .addAllSiChildren(
-                              childrenIds.stream()
-                                  .map(this::stringIndexer)
-                                  .collect(Collectors.toList()))
-                          .setMpiMetaPointer(this.metaPointerIndexer(p.getMetaPointer()))
-                          .build());
-                }
-              });
-      n.getReferences()
-          .forEach(
-              p -> {
-                List<SerializedReferenceValue.Entry> referenceEntries = p.getValue();
-                if (serializeEmptyFeatures || !referenceEntries.isEmpty()) {
-                  nodeBuilder.addReferences(
-                      PBReference.newBuilder()
-                          .addAllValues(
-                              referenceEntries.stream()
-                                  .map(
-                                      rf -> {
-                                        PBReferenceValue.Builder b = PBReferenceValue.newBuilder();
-                                        if (rf.getReference() != null) {
-                                          b.setSiReferred(this.stringIndexer(rf.getReference()));
-                                        }
-                                        if (rf.getResolveInfo() != null) {
-                                          b.setSiResolveInfo(
-                                              this.stringIndexer(rf.getResolveInfo()));
-                                        }
-                                        return b.build();
-                                      })
-                                  .collect(Collectors.toList()))
-                          .setMpiMetaPointer(this.metaPointerIndexer(p.getMetaPointer()))
-                          .build());
-                }
-              });
+      for (SerializedContainmentValue p : n.getContainments()) {
+        List<String> childrenIds = p.getChildrenIds();
+        if (serializeEmptyFeatures || !childrenIds.isEmpty()) {
+          PBContainment.Builder cb = PBContainment.newBuilder();
+          cb.setMpiMetaPointer(this.metaPointerIndexer(p.getMetaPointer()));
+          for (String childId : childrenIds) {
+            cb.addSiChildren(this.stringIndexer(childId));
+          }
+          nodeBuilder.addContainments(cb.build());
+        }
+      }
+      for (SerializedReferenceValue p : n.getReferences()) {
+        List<SerializedReferenceValue.Entry> referenceEntries = p.getValue();
+        if (serializeEmptyFeatures || !referenceEntries.isEmpty()) {
+          PBReference.Builder rb = PBReference.newBuilder();
+          rb.setMpiMetaPointer(this.metaPointerIndexer(p.getMetaPointer()));
+          for (SerializedReferenceValue.Entry rf : referenceEntries) {
+            PBReferenceValue.Builder b = PBReferenceValue.newBuilder();
+            if (rf.getReference() != null) {
+              b.setSiReferred(this.stringIndexer(rf.getReference()));
+            }
+            if (rf.getResolveInfo() != null) {
+              b.setSiResolveInfo(this.stringIndexer(rf.getResolveInfo()));
+            }
+            rb.addValues(b.build());
+          }
+          nodeBuilder.addReferences(rb.build());
+        }
+      }
       n.getAnnotations().forEach(a -> nodeBuilder.addSiAnnotations(this.stringIndexer(a)));
       return nodeBuilder.build();
     }
@@ -348,11 +339,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
     List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
     ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
 
-    SerializationChunk serializationChunk =
-        serializeNodesToSerializationChunk(
-            classifierInstances.stream()
-                .filter(n -> !(n instanceof ProxyNode))
-                .collect(Collectors.toList()));
+    List<ClassifierInstance<?>> nonProxy = new ArrayList<>(classifierInstances.size());
+    for (ClassifierInstance<?> n : classifierInstances) {
+      if (!(n instanceof ProxyNode)) nonProxy.add(n);
+    }
+    SerializationChunk serializationChunk = serializeNodesToSerializationChunk(nonProxy);
     return serialize(serializationChunk);
   }
 

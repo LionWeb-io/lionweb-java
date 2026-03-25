@@ -25,6 +25,10 @@ public class SerializationChunk {
 
   private final List<SerializedClassifierInstance> classifierInstances;
 
+  // Stable unmodifiable views — created once, always reflect current list contents.
+  private final List<SerializedClassifierInstance> classifierInstancesView;
+  private final List<LanguageVersion> languagesView;
+
   public SerializationChunk() {
     this(16);
   }
@@ -32,6 +36,8 @@ public class SerializationChunk {
   public SerializationChunk(int initialCapacity) {
     this.classifierInstancesByID = new HashMap<>(initialCapacity);
     this.classifierInstances = new ArrayList<>(initialCapacity);
+    this.classifierInstancesView = Collections.unmodifiableList(classifierInstances);
+    this.languagesView = Collections.unmodifiableList(languages);
   }
 
   public static SerializationChunk fromNodes(
@@ -44,7 +50,8 @@ public class SerializationChunk {
     SerializationChunk instance = new SerializationChunk();
     instance.setSerializationFormatVersion(lionWebVersion.getVersionString());
     nodes.forEach(n -> instance.addClassifierInstance(n));
-    instance.populateUsedLanguages();
+    // populateUsedLanguages() is no longer needed here: addClassifierInstance() registers
+    // each instance's languages incrementally as it is added.
     return instance;
   }
 
@@ -57,7 +64,7 @@ public class SerializationChunk {
   }
 
   public List<SerializedClassifierInstance> getClassifierInstances() {
-    return Collections.unmodifiableList(classifierInstances);
+    return classifierInstancesView;
   }
 
   /**
@@ -70,6 +77,7 @@ public class SerializationChunk {
     Objects.requireNonNull(instance, "instance should not be null");
     this.classifierInstancesByID.put(instance.getID(), instance);
     classifierInstances.add(instance);
+    considerMetaPointers(instance);
   }
 
   /**
@@ -120,7 +128,7 @@ public class SerializationChunk {
   }
 
   public List<LanguageVersion> getLanguages() {
-    return Collections.unmodifiableList(languages);
+    return languagesView;
   }
 
   public void concat(List<SerializedClassifierInstance> instances) {
@@ -130,19 +138,15 @@ public class SerializationChunk {
   /**
    * Traverse the SerializationChunk, collecting all the metapointers and populating the used
    * languages accordingly.
+   *
+   * <p>When instances are added via {@link #addClassifierInstance}, this is done incrementally and
+   * this method is effectively a no-op (all languages are already registered). It remains available
+   * for chunks built by directly manipulating the backing list (e.g. via {@link #concat}) or for
+   * external callers that bypassed the incremental path.
    */
   public void populateUsedLanguages() {
     for (SerializedClassifierInstance classifierInstance : classifierInstances) {
-      considerMetaPointer(classifierInstance.getClassifier());
-      for (SerializedContainmentValue containmentValue : classifierInstance.getContainments()) {
-        considerMetaPointer(containmentValue.getMetaPointer());
-      }
-      for (SerializedReferenceValue referenceValue : classifierInstance.getReferences()) {
-        considerMetaPointer(referenceValue.getMetaPointer());
-      }
-      for (SerializedPropertyValue propertyValue : classifierInstance.getProperties()) {
-        considerMetaPointer(propertyValue.getMetaPointer());
-      }
+      considerMetaPointers(classifierInstance);
     }
   }
 
@@ -174,7 +178,27 @@ public class SerializationChunk {
     return Objects.hash(serializationFormatVersion, languages, classifierInstances);
   }
 
+  private void considerMetaPointers(SerializedClassifierInstance instance) {
+    considerMetaPointer(instance.getClassifier());
+    for (SerializedPropertyValue pv : instance.getProperties()) {
+      considerMetaPointer(pv.getMetaPointer());
+    }
+    for (SerializedContainmentValue cv : instance.getContainments()) {
+      considerMetaPointer(cv.getMetaPointer());
+    }
+    for (SerializedReferenceValue rv : instance.getReferences()) {
+      considerMetaPointer(rv.getMetaPointer());
+    }
+  }
+
   private void considerMetaPointer(MetaPointer metaPointer) {
+    if (metaPointer == null
+        || metaPointer.getLanguage() == null
+        || metaPointer.getVersion() == null) {
+      // Incomplete/malformed metapointer — skip silently. Downstream deserialization
+      // will raise a proper error when the node is actually processed.
+      return;
+    }
     LanguageVersion languageVersion = LanguageVersion.fromMetaPointer(metaPointer);
     if (languagesSet.add(languageVersion)) {
       languages.add(languageVersion);
