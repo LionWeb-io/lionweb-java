@@ -1,6 +1,6 @@
 package io.lionweb.serialization.data;
 
-import java.util.*;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class SerializedPropertyValue {
   private static final int THRESHOLD = 128;
-  private static final Map<MetaPointer, Map<String, SerializedPropertyValue>>
+  private static final ConcurrentHashMap<MetaPointer, ConcurrentHashMap<String, SerializedPropertyValue>>
       INSTANCES_BY_METAPOINTER = new ConcurrentHashMap<>();
 
   /** This will avoid most unnecessary duplicate instantiations, but this is not guaranteed. */
@@ -22,9 +22,11 @@ public class SerializedPropertyValue {
     if (value != null && value.length() >= THRESHOLD) {
       return new SerializedPropertyValue(metaPointer, value);
     }
-    Map<String, SerializedPropertyValue> valuesForMetaPointer =
-        INSTANCES_BY_METAPOINTER.computeIfAbsent(
-            metaPointer, k -> Collections.synchronizedMap(new WeakHashMap<>()));
+    if (value == null) {
+      return new SerializedPropertyValue(metaPointer, null);
+    }
+    ConcurrentHashMap<String, SerializedPropertyValue> valuesForMetaPointer =
+        INSTANCES_BY_METAPOINTER.computeIfAbsent(metaPointer, k -> new ConcurrentHashMap<>());
     return valuesForMetaPointer.computeIfAbsent(
         value, v -> new SerializedPropertyValue(metaPointer, v));
   }

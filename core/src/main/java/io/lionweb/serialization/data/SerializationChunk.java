@@ -15,6 +15,8 @@ public class SerializationChunk {
 
   private String serializationFormatVersion;
   private final List<LanguageVersion> languages = new ArrayList<>();
+  /** Shadow set for O(1) duplicate detection. Uses identity equality since LanguageVersion is interned. */
+  private final Set<LanguageVersion> languagesSet = Collections.newSetFromMap(new IdentityHashMap<>());
   private final List<SerializedClassifierInstance> classifierInstances;
 
   public SerializationChunk() {
@@ -90,7 +92,9 @@ public class SerializationChunk {
    */
   public void addLanguage(@Nonnull LanguageVersion language) {
     Objects.requireNonNull(language, "language should not be null");
-    this.languages.add(language);
+    if (languagesSet.add(language)) {
+      this.languages.add(language);
+    }
   }
 
   /**
@@ -166,7 +170,7 @@ public class SerializationChunk {
 
   private void considerMetaPointer(MetaPointer metaPointer) {
     LanguageVersion languageVersion = LanguageVersion.fromMetaPointer(metaPointer);
-    if (!languages.contains(languageVersion)) {
+    if (languagesSet.add(languageVersion)) {
       languages.add(languageVersion);
     }
   }
