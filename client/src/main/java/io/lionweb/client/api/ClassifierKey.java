@@ -10,8 +10,9 @@ public final class ClassifierKey {
   public ClassifierKey(String languageKey, String classifierKey) {
     this.languageKey = languageKey;
     this.classifierKey = classifierKey;
+    // This is equivalent to Objects.hash
     this.hashCode =
-        31 * (languageKey == null ? 0 : languageKey.hashCode())
+        31 * ((languageKey == null ? 0 : languageKey.hashCode()) + 31)
             + (classifierKey == null ? 0 : classifierKey.hashCode());
   }
 
