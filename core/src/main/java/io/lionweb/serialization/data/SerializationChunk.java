@@ -50,7 +50,7 @@ public class SerializationChunk {
     SerializationChunk instance = new SerializationChunk();
     instance.setSerializationFormatVersion(lionWebVersion.getVersionString());
     nodes.forEach(n -> instance.addClassifierInstance(n));
-    // populateUsedLanguages() is no longer needed here: addClassifierInstance() registers
+    // populateUsedLanguages() is no needed here: addClassifierInstance() registers
     // each instance's languages incrementally as it is added.
     return instance;
   }
