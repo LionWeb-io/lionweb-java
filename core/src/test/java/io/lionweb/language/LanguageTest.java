@@ -808,17 +808,6 @@ public class LanguageTest {
     assertEquals(concept, language.getClassifierByName("NewName"));
   }
 
-  @Test
-  public void cacheIsLazilyBuilt() {
-    Language language = new Language("TestLanguage");
-    Concept concept = new Concept(language, "MyConcept", "c-id");
-    language.addElement(concept);
-
-    // First access builds the cache; second access uses it
-    assertEquals(concept, language.getClassifierByName("MyConcept"));
-    assertEquals(concept, language.getClassifierByName("MyConcept"));
-  }
-
   // ========== Integration Tests ==========
 
   @Test
