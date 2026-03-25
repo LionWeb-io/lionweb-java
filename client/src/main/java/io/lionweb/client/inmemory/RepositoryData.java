@@ -1,7 +1,10 @@
 package io.lionweb.client.inmemory;
 
+import io.lionweb.client.api.ClassifierKey;
+import io.lionweb.client.api.ClassifierResult;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
+import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedContainmentValue;
 import io.lionweb.utils.CommonChecks;
@@ -15,6 +18,8 @@ class RepositoryData {
   @NotNull RepositoryConfiguration configuration;
   final List<String> partitionIDs = new ArrayList<>();
   final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
+  /** Pre-computed index: ClassifierKey → set of node IDs. Kept in sync with nodesByID. */
+  private final Map<ClassifierKey, Set<String>> classifierIndex = new HashMap<>();
   private int currentVersion = 0;
   private int nextId = 1;
 
@@ -23,8 +28,52 @@ class RepositoryData {
     if (curr == null) {
       throw new IllegalArgumentException("Node " + nodeId + " does not exist");
     }
+    indexRemove(curr);
     nodesByID.remove(nodeId);
     curr.getChildren().forEach(this::deleteNodeAndDescendant);
+  }
+
+  private ClassifierKey classifierKeyOf(SerializedClassifierInstance node) {
+    MetaPointer mp = node.getClassifier();
+    return new ClassifierKey(mp.getLanguage(), mp.getKey());
+  }
+
+  private void indexAdd(SerializedClassifierInstance node) {
+    ClassifierKey key = classifierKeyOf(node);
+    classifierIndex.computeIfAbsent(key, k -> new HashSet<>()).add(node.getID());
+  }
+
+  private void indexRemove(SerializedClassifierInstance node) {
+    ClassifierKey key = classifierKeyOf(node);
+    Set<String> ids = classifierIndex.get(key);
+    if (ids != null) {
+      ids.remove(node.getID());
+      if (ids.isEmpty()) {
+        classifierIndex.remove(key);
+      }
+    }
+  }
+
+  /** Returns pre-computed classifier → result map, applying an optional node-ID limit per classifier. */
+  Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) {
+    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
+    Map<ClassifierKey, ClassifierResult> result = new HashMap<>(classifierIndex.size() * 2);
+    for (Map.Entry<ClassifierKey, Set<String>> entry : classifierIndex.entrySet()) {
+      Set<String> allIds = entry.getValue();
+      int total = allIds.size();
+      Set<String> limitedIds;
+      if (actualLimit >= total) {
+        limitedIds = Collections.unmodifiableSet(allIds);
+      } else {
+        limitedIds = new HashSet<>();
+        for (String id : allIds) {
+          limitedIds.add(id);
+          if (limitedIds.size() >= actualLimit) break;
+        }
+      }
+      result.put(entry.getKey(), new ClassifierResult(limitedIds, total));
+    }
+    return result;
   }
 
   private class ChangeCalculator {
@@ -44,18 +93,28 @@ class RepositoryData {
         List<String> oldState,
         List<String> newState,
         String role) {
-      newState.stream()
-          .filter(n -> !oldState.contains(n))
-          .forEach(n -> this.addedNodes.put(n, updatedNodesAsMap.get(n)));
-      List<String> unknownNodes =
-          newState.stream()
-              .filter(c -> !updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c))
-              .collect(Collectors.toList());
-      if (!unknownNodes.isEmpty()) {
+      Set<String> oldStateSet = new HashSet<>(oldState);
+      Set<String> newStateSet = new HashSet<>(newState);
+      for (String n : newState) {
+        if (!oldStateSet.contains(n)) {
+          this.addedNodes.put(n, updatedNodesAsMap.get(n));
+        }
+      }
+      List<String> unknownNodes = null;
+      for (String c : newState) {
+        if (!updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c)) {
+          if (unknownNodes == null) unknownNodes = new ArrayList<>();
+          unknownNodes.add(c);
+        }
+      }
+      if (unknownNodes != null) {
         throw new IllegalArgumentException("We got unknown nodes as " + role + ": " + unknownNodes);
       }
-      this.removedNodes.addAll(
-          oldState.stream().filter(n -> !newState.contains(n)).collect(Collectors.toList()));
+      for (String n : oldState) {
+        if (!newStateSet.contains(n)) {
+          this.removedNodes.add(n);
+        }
+      }
     }
 
     void store(List<SerializedClassifierInstance> updatedNodes) {
@@ -88,6 +147,21 @@ class RepositoryData {
       }
       // They have been moved and not removed
       removedNodes.removeAll(addedNodes.keySet());
+      // Update classifier index for new/updated nodes before replacing nodesByID entries
+      for (SerializedClassifierInstance updatedNode : updatedNodes) {
+        SerializedClassifierInstance existing = nodesByID.get(updatedNode.getID());
+        if (existing != null) {
+          // Handle potential classifier change (rare but correct)
+          ClassifierKey oldKey = classifierKeyOf(existing);
+          ClassifierKey newKey = classifierKeyOf(updatedNode);
+          if (!oldKey.equals(newKey)) {
+            indexRemove(existing);
+            indexAdd(updatedNode);
+          }
+        } else {
+          indexAdd(updatedNode);
+        }
+      }
       nodesByID.putAll(updatedNodesAsMap);
       removedNodes.forEach(this::removeNode);
     }
@@ -104,6 +178,7 @@ class RepositoryData {
           removeNode(annotationId);
         }
       }
+      indexRemove(serializedClassifierInstance);
       nodesByID.remove(removeNodeId);
     }
   }
