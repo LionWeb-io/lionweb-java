@@ -99,6 +99,22 @@ class DeserializationStatus {
     sortedIDs.add(node.getID());
   }
 
+  /**
+   * Places the node at the given index in the sorted list using O(1) swap-remove.
+   * The element at {@code index} is swapped with the last element before removal,
+   * so callers must decrement their loop counter after calling this method.
+   */
+  void placeAt(int index) {
+    int last = nodesToSort.size() - 1;
+    SerializedClassifierInstance node = nodesToSort.get(index);
+    if (index != last) {
+      nodesToSort.set(index, nodesToSort.get(last));
+    }
+    nodesToSort.remove(last);
+    sortedList.add(node);
+    sortedIDs.add(node.getID());
+  }
+
   public List<SerializedClassifierInstance> getSortedList() {
     return sortedList;
   }
