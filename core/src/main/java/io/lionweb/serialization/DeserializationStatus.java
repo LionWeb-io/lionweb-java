@@ -100,9 +100,9 @@ class DeserializationStatus {
   }
 
   /**
-   * Places the last node at the given index in the sorted list using O(1) swap-remove. The element at
-   * {@code index} is swapped with the last element before removal, so callers must decrement their
-   * loop counter after calling this method.
+   * Places the last node at the given index in the sorted list using O(1) swap-remove. The element
+   * at {@code index} is swapped with the last element before removal, so callers must decrement
+   * their loop counter after calling this method.
    */
   void markAsSorted(int index) {
     int last = nodesToSort.size() - 1;

@@ -5,7 +5,6 @@ import io.lionweb.client.api.ClassifierKey;
 import io.lionweb.client.api.ClassifierResult;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
-import io.lionweb.model.Node;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.util.*;
