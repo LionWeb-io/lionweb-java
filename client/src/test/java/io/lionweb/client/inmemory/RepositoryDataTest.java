@@ -191,8 +191,7 @@ public class RepositoryDataTest {
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp1);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", mp2);
     SerializedClassifierInstance n3 = new SerializedClassifierInstance("n3", mp1);
-    n1.unsafeAppendContainmentValue(
-        MetaPointer.get("l1", "1.0", "ch"), Arrays.asList("n2", "n3"));
+    n1.unsafeAppendContainmentValue(MetaPointer.get("l1", "1.0", "ch"), Arrays.asList("n2", "n3"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n1");
 
@@ -212,8 +211,7 @@ public class RepositoryDataTest {
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", mp);
     SerializedClassifierInstance n3 = new SerializedClassifierInstance("n3", mp);
-    n1.unsafeAppendContainmentValue(
-        MetaPointer.get("l1", "1.0", "ch"), Arrays.asList("n2", "n3"));
+    n1.unsafeAppendContainmentValue(MetaPointer.get("l1", "1.0", "ch"), Arrays.asList("n2", "n3"));
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n1");
 
