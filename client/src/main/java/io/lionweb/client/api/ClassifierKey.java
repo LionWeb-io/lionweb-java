@@ -5,10 +5,15 @@ import java.util.Objects;
 public final class ClassifierKey {
   private final String languageKey;
   private final String classifierKey;
+  private final int hashCode;
 
   public ClassifierKey(String languageKey, String classifierKey) {
     this.languageKey = languageKey;
     this.classifierKey = classifierKey;
+    // This is equivalent to Objects.hash
+    this.hashCode =
+        31 * ((languageKey == null ? 0 : languageKey.hashCode()) + 31)
+            + (classifierKey == null ? 0 : classifierKey.hashCode());
   }
 
   public String getLanguageKey() {
@@ -30,7 +35,7 @@ public final class ClassifierKey {
 
   @Override
   public int hashCode() {
-    return Objects.hash(languageKey, classifierKey);
+    return hashCode;
   }
 
   @Override

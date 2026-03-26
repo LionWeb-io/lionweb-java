@@ -453,7 +453,7 @@ public abstract class AbstractSerialization {
                 || unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES;
 
         if (parentIsNullOrSorted || parentIsNotNeeded) {
-          deserializationStatus.place(node);
+          deserializationStatus.markAsSorted(i);
           i--;
         }
       }

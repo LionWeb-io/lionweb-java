@@ -3,7 +3,6 @@ package io.lionweb.serialization.data;
 import io.lionweb.language.Language;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -18,16 +17,18 @@ public class LanguageVersion {
   private @Nullable String key;
   private @Nullable String version;
 
-  // Interning support: canonical instances per (key, version) pair.
-  private static final ConcurrentMap<String, LanguageVersion> INTERN = new ConcurrentHashMap<>();
-
-  private static String makeInternKey(@Nullable String key, @Nullable String version) {
-    return (key == null ? "\u0000" : key) + "\u0000" + (version == null ? "\u0000" : version);
-  }
+  // Interning support: two-level map avoids any String allocation on cache hits.
+  // Null key/version are mapped to the sentinel "\u0000" to allow use as ConcurrentHashMap keys.
+  private static final String NULL_SENTINEL = "\u0000";
+  private static final ConcurrentHashMap<String, ConcurrentHashMap<String, LanguageVersion>>
+      INTERN = new ConcurrentHashMap<>();
 
   public static LanguageVersion of(@Nullable String key, @Nullable String version) {
-    final String internKey = makeInternKey(key, version);
-    return INTERN.computeIfAbsent(internKey, k -> new LanguageVersion(key, version));
+    String k = key == null ? NULL_SENTINEL : key;
+    String v = version == null ? NULL_SENTINEL : version;
+    ConcurrentHashMap<String, LanguageVersion> byVersion =
+        INTERN.computeIfAbsent(k, __ -> new ConcurrentHashMap<>());
+    return byVersion.computeIfAbsent(v, __ -> new LanguageVersion(key, version));
   }
 
   // Returns the canonical instance equivalent to the provided UsedLanguage.

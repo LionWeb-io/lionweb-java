@@ -24,7 +24,6 @@ import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
-import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedReferenceValue;
@@ -190,42 +189,8 @@ public class InMemoryServer {
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
       @NotNull String repositoryName, @Nullable Integer limit) {
-
     RepositoryData repositoryData = getRepository(repositoryName);
-    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
-
-    // PERFORMANCE FIX: Temporary maps to accumulate results in a SINGLE O(N) pass
-    Map<ClassifierKey, Integer> counts = new HashMap<>();
-    Map<ClassifierKey, Set<String>> idsMap = new HashMap<>();
-
-    // Iterate over all nodes exactly once (No Streams, no groupingBy!)
-    for (SerializedClassifierInstance n : repositoryData.nodesByID.values()) {
-      MetaPointer mp = n.getClassifier();
-      ClassifierKey key = new ClassifierKey(mp.getLanguage(), mp.getKey());
-
-      // Update the total count for this classifier
-      int currentCount = counts.getOrDefault(key, 0);
-      counts.put(key, currentCount + 1);
-
-      // Add the ID only if we haven't exceeded the requested limit
-      if (currentCount < actualLimit) {
-        // Pre-allocate the Set if this is the first time we encounter this classifier
-        Set<String> ids = idsMap.computeIfAbsent(key, k -> new HashSet<>());
-        ids.add(n.getID());
-      }
-    }
-
-    // Build the final result map
-    Map<ClassifierKey, ClassifierResult> res = new HashMap<>();
-    for (Map.Entry<ClassifierKey, Integer> entry : counts.entrySet()) {
-      ClassifierKey key = entry.getKey();
-      int totalCount = entry.getValue();
-      Set<String> ids = idsMap.getOrDefault(key, Collections.emptySet());
-
-      res.put(key, new ClassifierResult(ids, totalCount));
-    }
-
-    return res;
+    return repositoryData.nodesByClassifier(limit);
   }
 
   public Map<String, ClassifierResult> nodesByLanguage(@NotNull String repositoryName) {

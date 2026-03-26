@@ -1,17 +1,21 @@
 package io.lionweb.utils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 public class CommonChecks {
 
-  private static final Pattern ID_Pattern = Pattern.compile("[a-zA-Z0-9_-]+");
-
   public static boolean isValidID(String id) {
-    if (id == null) {
+    if (id == null || id.isEmpty()) {
       return false;
     }
-    Matcher m = ID_Pattern.matcher(id);
-    return m.matches();
+    for (int i = 0; i < id.length(); i++) {
+      char c = id.charAt(i);
+      if (!((c >= 'a' && c <= 'z')
+          || (c >= 'A' && c <= 'Z')
+          || (c >= '0' && c <= '9')
+          || c == '_'
+          || c == '-')) {
+        return false;
+      }
+    }
+    return true;
   }
 }

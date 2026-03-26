@@ -118,6 +118,33 @@ testing {
     }
 }
 
+val performanceTestSourceSet = sourceSets.create("performanceTest") {
+    compileClasspath += sourceSets["main"].output + sourceSets["test"].output
+    runtimeClasspath += sourceSets["main"].output + sourceSets["test"].output
+}
+
+configurations["performanceTestImplementation"]
+    .extendsFrom(configurations["testImplementation"])
+configurations["performanceTestRuntimeOnly"]
+    .extendsFrom(configurations["testRuntimeOnly"])
+
+tasks.register<Test>("performanceTest") {
+    group = "Verification"
+    description = "Runs performance tests in src/performanceTest/java"
+    shouldRunAfter(tasks.test)
+    testClassesDirs = performanceTestSourceSet.output.classesDirs
+    classpath = performanceTestSourceSet.runtimeClasspath
+    useJUnitPlatform()
+    testLogging {
+        events(
+            org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED,
+            org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED,
+        )
+        showStandardStreams = true
+    }
+}
+
 dependencies {
     implementation(project(":core"))
     implementation(libs.okhttp)
@@ -125,6 +152,8 @@ dependencies {
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
+    add("performanceTestImplementation", "org.openjdk.jmh:jmh-core:1.37")
+    add("performanceTestAnnotationProcessor", "org.openjdk.jmh:jmh-generator-annprocess:1.37")
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))

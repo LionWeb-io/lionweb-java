@@ -767,6 +767,49 @@ public class LanguageTest {
     assertEquals(2, result.get(0).getLiterals().size());
   }
 
+  // ========== elementsByName cache invalidation Tests ==========
+
+  @Test
+  public void cacheIsInvalidatedOnAddElement() {
+    Language language = new Language("TestLanguage");
+    Concept concept1 = new Concept(language, "First", "id1");
+    language.addElement(concept1);
+
+    // Warm up the cache
+    assertNotNull(language.getClassifierByName("First"));
+    assertNull(language.getClassifierByName("Second"));
+
+    // Adding a new element must invalidate and rebuild the cache
+    Concept concept2 = new Concept(language, "Second", "id2");
+    language.addElement(concept2);
+
+    assertNotNull(language.getClassifierByName("Second"));
+  }
+
+  @Test
+  public void explicitCacheInvalidationAfterRename() {
+    Language language = new Language("TestLanguage");
+    Concept concept = new Concept(language, "OldName", "id1");
+    language.addElement(concept);
+
+    // Warm up the cache
+    assertNotNull(language.getClassifierByName("OldName"));
+
+    // Simulate rename without going through addElement
+    concept.setName("NewName");
+
+    // Without explicit invalidation, the cache may return a stale result
+    // (either null for "NewName" or the old name mapping)
+    // After explicit invalidation, the result must reflect the new name.
+    assertNotNull(language.getClassifierByName("OldName"));
+    assertNull(language.getClassifierByName("NewName"));
+    language.invalidateElementsByNameCache();
+
+    assertNull(language.getClassifierByName("OldName"));
+    assertNotNull(language.getClassifierByName("NewName"));
+    assertEquals(concept, language.getClassifierByName("NewName"));
+  }
+
   // ========== Integration Tests ==========
 
   @Test
