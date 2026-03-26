@@ -14,6 +14,16 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Holds all node data for a single repository.
+ *
+ * <p><b>Thread-safety:</b> concurrent reads of {@link #nodesByID} are safe (it is a {@link
+ * java.util.concurrent.ConcurrentHashMap}), but <em>mutations are not thread-safe</em>. Methods
+ * such as {@link #store}, {@link #deleteNodeAndDescendant}, and the internal classifier index
+ * updates perform multi-step, non-atomic operations across several data structures. Callers must
+ * externally serialize all mutations. The {@code ConcurrentHashMap} for {@code nodesByID} should
+ * not be mistaken for a broader thread-safety guarantee.
+ */
 class RepositoryData {
   @NotNull RepositoryConfiguration configuration;
   final List<String> partitionIDs = new ArrayList<>();
