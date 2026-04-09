@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class NetworkUtils {
@@ -26,7 +27,7 @@ public class NetworkUtils {
         result.write(buffer, 0, length);
       }
 
-      return result.toString();
+      return result.toString(StandardCharsets.UTF_8.name());
     }
   }
 
