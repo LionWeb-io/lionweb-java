@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs exclusion filter.
+
+  Add patterns here for known false positives, generated code, or issues
+  that are accepted/tracked elsewhere. See:
+  https://spotbugs.readthedocs.io/en/stable/filter.html
+-->
+<FindBugsFilter>
+
+  <!-- Exclude generated Protobuf classes -->
+  <Match>
+    <Source name="~.*\.proto"/>
+  </Match>
+
+  <!-- Exclude Xtext/MWE2 generated sources in emf-builtins -->
+  <Match>
+    <Package name="~io\.lionweb\.emf\.builtins\..*"/>
+  </Match>
+
+</FindBugsFilter>

@@ -15,5 +15,4 @@ build
 
 # Ignore Eclipse project files
 .settings
-.java-version
 .vscode
