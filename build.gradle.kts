@@ -10,6 +10,7 @@ plugins {
     alias(libs.plugins.dokka) apply (false)
     alias(libs.plugins.versioncheck)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.spotbugs) apply (false)
     id("java")
 }
 
@@ -24,6 +25,23 @@ subprojects {
         java {
             googleJavaFormat()
             targetExclude("**/src-gen/**", "**/build/**")
+        }
+    }
+
+    // Apply SpotBugs to subprojects that use the java-library or java plugin.
+    // ignoreFailures = true lets CI pass while the team reviews the initial report.
+    // Once known issues are addressed, set ignoreFailures = false.
+    pluginManager.withPlugin("java-library") {
+        apply(plugin = "com.github.spotbugs")
+        configure<com.github.spotbugs.snom.SpotBugsExtension> {
+            ignoreFailures.set(true)
+            effort.set(com.github.spotbugs.snom.Effort.DEFAULT)
+            reportLevel.set(com.github.spotbugs.snom.Confidence.HIGH)
+            excludeFilter.set(rootProject.file("config/spotbugs/exclude.xml"))
+        }
+        tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
+            reports.maybeCreate("html").required.set(true)
+            reports.maybeCreate("xml").required.set(false)
         }
     }
 
