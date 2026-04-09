@@ -4,8 +4,10 @@ import com.google.gson.*;
 import io.lionweb.LionWebVersion;
 import io.lionweb.serialization.data.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -69,7 +71,9 @@ public class LowLevelJsonSerialization {
    * whenever is possible, in the measure that it is possible.
    */
   public SerializationChunk deserializeSerializationBlock(File file) throws FileNotFoundException {
-    return deserializeSerializationBlock(JsonParser.parseReader(new FileReader(file)));
+    return deserializeSerializationBlock(
+        JsonParser.parseReader(
+            new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8)));
   }
 
   public JsonElement serializeToJsonElement(SerializationChunk serializationChunk) {

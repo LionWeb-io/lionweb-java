@@ -40,7 +40,8 @@ public class JsonSerialization extends AbstractSerialization {
         getStandardJsonSerialization(language.getLionWebVersion())
             .serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
-    BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+    BufferedWriter writer =
+        new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
     writer.write(content);
     writer.close();
   }
@@ -213,6 +214,7 @@ public class JsonSerialization extends AbstractSerialization {
   }
 
   public List<Node> deserializeToNodes(InputStream inputStream) {
-    return deserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream)));
+    return deserializeToNodes(
+        JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
   }
 }

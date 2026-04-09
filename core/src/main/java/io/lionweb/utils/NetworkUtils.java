@@ -3,6 +3,7 @@ package io.lionweb.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -26,7 +27,7 @@ public class NetworkUtils {
         result.write(buffer, 0, length);
       }
 
-      return result.toString();
+      return result.toString(StandardCharsets.UTF_8.name());
     }
   }
 
