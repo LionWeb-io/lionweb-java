@@ -2,6 +2,7 @@ package io.lionweb.model.impl;
 
 import io.lionweb.language.Concept;
 import io.lionweb.model.*;
+import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,7 +34,8 @@ public abstract class AbstractNode extends AbstractClassifierInstance<Concept> i
   }
 
   @Override
-  public boolean registerPartitionObserver(@Nullable PartitionObserver observer) {
+  public boolean registerPartitionObserver(@Nonnull PartitionObserver observer) {
+    Objects.requireNonNull(observer, "observer should not be null");
     if (!this.isRoot()) {
       throw new UnsupportedOperationException(
           "Cannot register a partition observer on a node which is not root");
