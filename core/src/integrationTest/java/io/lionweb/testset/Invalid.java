@@ -20,7 +20,7 @@ public class Invalid {
 
   public static Stream<Path> inputFiles() {
     Path integrationTests = ATestset.findIntegrationTests();
-    Path basePath = integrationTests.resolve("invalid");
+    Path basePath = integrationTests.resolve("withoutLanguage").resolve("invalid");
     return Arrays.stream(
             ATestset.collectJsonFiles(
                 basePath, ignored.stream().map(s -> Paths.get(s)).collect(Collectors.toSet())))
