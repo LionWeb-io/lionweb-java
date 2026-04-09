@@ -17,8 +17,12 @@ import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.model.impl.DynamicNode;
 import io.lionweb.serialization.data.*;
+import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -112,6 +116,22 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     List<Node> deserializedNodes = hjs.deserializeToNodes(je);
     assertEquals(1, deserializedNodes.size());
     assertInstancesAreEquals(n1, deserializedNodes.get(0));
+  }
+
+  @Test
+  public void deserializeLionCoreFromFile() throws IOException {
+    File tempFile = File.createTempFile("lioncore", ".json");
+    tempFile.deleteOnExit();
+    try (InputStream in = this.getClass().getResourceAsStream("/serialization/lioncore.json");
+        OutputStream out = Files.newOutputStream(tempFile.toPath())) {
+      byte[] buf = new byte[8192];
+      int n;
+      while ((n = in.read(buf)) != -1) out.write(buf, 0, n);
+    }
+    LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
+    SerializationChunk serializationChunk =
+        jsonSerialization.deserializeSerializationBlock(tempFile);
+    assertFalse(serializationChunk.getClassifierInstances().isEmpty());
   }
 
   @Test
