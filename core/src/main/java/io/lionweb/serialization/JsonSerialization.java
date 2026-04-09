@@ -41,7 +41,8 @@ public class JsonSerialization extends AbstractSerialization {
             .serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
     BufferedWriter writer =
-        new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+        new BufferedWriter(
+            new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
     writer.write(content);
     writer.close();
   }

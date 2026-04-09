@@ -46,7 +46,7 @@ public class DynamicNode extends DynamicClassifierInstance<Concept>
 
   @Override
   public boolean registerPartitionObserver(@Nonnull PartitionObserver observer) {
-      Objects.requireNonNull(observer, "observer should not be null");
+    Objects.requireNonNull(observer, "observer should not be null");
     if (!this.isRoot()) {
       throw new UnsupportedOperationException(
           "Cannot register a partition observer on a node which is not root");

@@ -157,7 +157,7 @@ public class ProxyNode extends AbstractNode {
 
   @Override
   public boolean registerPartitionObserver(@Nonnull PartitionObserver observer) {
-      Objects.requireNonNull(observer, "observer should not be null");
+    Objects.requireNonNull(observer, "observer should not be null");
     throw cannotDoBecauseProxy();
   }
 
