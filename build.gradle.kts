@@ -40,8 +40,8 @@ subprojects {
             excludeFilter.set(rootProject.file("config/spotbugs/exclude.xml"))
         }
         tasks.withType<com.github.spotbugs.snom.SpotBugsTask>().configureEach {
-            reports.create("html") { enabled = true }
-            reports.create("xml") { enabled = false }
+            reports.maybeCreate("html").required.set(true)
+            reports.maybeCreate("xml").required.set(false)
         }
     }
 
