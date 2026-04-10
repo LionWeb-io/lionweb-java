@@ -19,7 +19,6 @@ public abstract class ALanguageTestset extends ATestset {
     this.language =
         loadLanguage(
             findIntegrationTests()
-                // .resolve("testset")
                 .resolve("withLanguage")
                 .resolve("myLang.language.json"));
   }
