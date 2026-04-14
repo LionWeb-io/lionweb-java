@@ -16,7 +16,7 @@ public class Valid {
 
   public static Stream<Path> inputFiles() {
     Path integrationTests = ATestset.findIntegrationTests();
-    Path basePath = integrationTests.resolve("valid");
+    Path basePath = integrationTests.resolve("withoutLanguage").resolve("valid");
     return Arrays.stream(ATestset.collectJsonFiles(basePath)).map(p -> (Path) p);
   }
 }
