@@ -24,8 +24,8 @@ changes.
 **First-time setup:**
 
 ```bash
-git clone https://github.com/LionWeb-io/lionweb-java.git
-cd lionweb-java
+git clone https://github.com/LionWeb-io/lionweb-jvm.git
+cd lionweb-jvm
 ./gradlew setup   # generates Protobuf and Xtext sources
 ```
 
@@ -119,10 +119,10 @@ sources are on the classpath.
 
 ## Submitting Changes
 
-1. Fork the repository and create a branch from `master`.
+1. Fork the repository and create a branch from `main`.
 2. Make your changes, ensuring `./gradlew check` and `./gradlew spotlessCheck` pass locally.
 3. Add or update tests as appropriate.
-4. Open a pull request against `master` with a clear description of what was changed and why.
+4. Open a pull request against `main` with a clear description of what was changed and why.
 5. Respond to review feedback promptly.
 
 For significant changes or new features, please open an issue first to discuss the approach

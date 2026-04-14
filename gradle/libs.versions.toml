@@ -27,7 +27,6 @@ build-config = { id = "com.github.gmazzo.buildconfig", version = "5.7.1" }
 release = { id = "net.researchgate.release", version = "3.1.0"}
 versioncheck = { id="com.github.ben-manes.versions", version = "0.53.0" }
 spotless = { id = "com.diffplug.spotless", version = "7.2.1" }
-spotbugs = { id = "com.github.spotbugs", version = "6.1.7" }
 
 [libraries]
 protobuf = { group = "com.google.protobuf", name = "protobuf-java", version.ref = "protobufVersion" }
