@@ -13,7 +13,7 @@ jobs:
     name: Java 17 Performance Tests
 
     steps:
-    - uses: actions/checkout@v5
+    - uses: actions/checkout@v6
     - name: Setup java
       uses: actions/setup-java@v5
       with:
