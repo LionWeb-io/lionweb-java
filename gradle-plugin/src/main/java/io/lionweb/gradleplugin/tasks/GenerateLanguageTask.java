@@ -41,6 +41,7 @@ import org.gradle.api.tasks.*;
  * files. - `generationDirectory` - Optional output directory for generated Java files. -
  * `packageName` - Required property specifying the package for generated Java classes.
  */
+@CacheableTask
 public abstract class GenerateLanguageTask extends AbstractGenerationTask {
 
   @TaskAction
