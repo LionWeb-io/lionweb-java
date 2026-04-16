@@ -14,6 +14,7 @@ import io.lionweb.serialization.data.*;
 import io.lionweb.utils.NetworkUtils;
 import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -35,16 +36,20 @@ import javax.annotation.Nonnull;
  */
 public class JsonSerialization extends AbstractSerialization {
 
-  public static void saveLanguageToFile(Language language, File file) throws IOException {
+  public static void saveLanguageToFile(Language language, File file, Charset charset)
+      throws IOException {
     String content =
         getStandardJsonSerialization(language.getLionWebVersion())
             .serializeTreesToJsonString(language);
     file.getParentFile().mkdirs();
     BufferedWriter writer =
-        new BufferedWriter(
-            new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8));
+        new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
     writer.write(content);
     writer.close();
+  }
+
+  public static void saveLanguageToFile(Language language, File file) throws IOException {
+    saveLanguageToFile(language, file, StandardCharsets.UTF_8);
   }
 
   /**
@@ -214,8 +219,11 @@ public class JsonSerialization extends AbstractSerialization {
     return deserializeToNodes(JsonParser.parseString(json));
   }
 
+  public List<Node> deserializeToNodes(InputStream inputStream, Charset charset) {
+    return deserializeToNodes(JsonParser.parseReader(new InputStreamReader(inputStream, charset)));
+  }
+
   public List<Node> deserializeToNodes(InputStream inputStream) {
-    return deserializeToNodes(
-        JsonParser.parseReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)));
+    return deserializeToNodes(inputStream, StandardCharsets.UTF_8);
   }
 }
