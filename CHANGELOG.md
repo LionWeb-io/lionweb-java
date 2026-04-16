@@ -1,5 +1,32 @@
 # Changelog
 
+### Version 1.3.10
+
+* Upgrade Gradle wrapper to 9.4.1
+* Fix encoding issues in file I/O by using explicit UTF-8 encoding instead of platform default charset
+* Add support for custom charsets in JSON serialization/deserialization methods
+* Fix Gradle plugin task validation errors for Gradle 9 compatibility (`@CacheableTask` on generation tasks)
+* Fix code generation task to run on Java 11+ (MWE2 launcher requirement)
+* Upgrade Kotlin to 2.3.20
+* Upgrade org.eclipse.emf.ecore.xmi to 2.40.0
+* Upgrade protobuf-java to 4.34.1
+* Upgrade com.github.gmazzo.buildconfig to 6.0.9
+
+### Version 1.3.9
+
+* Fix null check for `registerPartitionObserver` parameter
+* Fix integration test paths after lionweb-integration-testing restructure
+* Performance optimization for `LanguageVersion.of` with fast path cache lookup
+* Simplify `Containment` and `Property` construction by including ID in constructor
+* Remove SpotBugs integration
+
+### Version 1.3.8
+
+* Further serialization and deserialization performance improvements
+* Add classifier indexing to `RepositoryData` for efficient node retrieval
+* Optimize `hashCode` caching in `ClassifierKey`
+* Add O(1) `placeAt` method for efficient node sorting during deserialization
+
 ### Version 1.3.7
 
 * Introducing benchmarks
