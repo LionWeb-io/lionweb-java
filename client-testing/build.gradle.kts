@@ -110,5 +110,5 @@ mavenPublishing {
 }
 
 tasks.named("sourcesJar") {
-    dependsOn("generateMainBuildConfig")
+    dependsOn("generateBuildConfigClasses")
 }
