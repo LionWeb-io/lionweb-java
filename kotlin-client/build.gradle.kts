@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     `jvm-test-suite`
 
@@ -136,8 +138,8 @@ java {
 }
 
 tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
-    kotlinOptions {
-        jvmTarget = jvmVersion
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget(jvmVersion))
     }
 }
 
