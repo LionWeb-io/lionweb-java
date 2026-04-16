@@ -12,8 +12,9 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.gradle.api.GradleException;
-import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.*;
 
+@CacheableTask
 public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
 
   @TaskAction

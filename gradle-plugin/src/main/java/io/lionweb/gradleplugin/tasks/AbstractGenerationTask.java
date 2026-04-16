@@ -23,6 +23,7 @@ import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.Optional;
 
+@CacheableTask
 public abstract class AbstractGenerationTask extends DefaultTask {
   @InputDirectory
   @Optional

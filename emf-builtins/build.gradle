@@ -39,6 +39,10 @@ tasks.register("generateXtextLanguage", JavaExec) {
     args = args?.plus("src/main/java/io/lionweb/emf/builtins/GenerateBuiltins.mwe2")
     args = args?.plus("-p")
     args = args?.plus("rootPath=/${projectDir}")
+    javaLauncher = javaToolchains.launcherFor {
+        // This is the Java version used to run the tool, not the target for compilation
+        languageVersion = JavaLanguageVersion.of(11)
+    }
 }
 
 tasks.generateXtextLanguage.dependsOn("cleanGeneratedEcore")
@@ -162,8 +166,3 @@ task setup() {
     dependsOn("generateXtextLanguage")
 }
 
-java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
-    }
-}
