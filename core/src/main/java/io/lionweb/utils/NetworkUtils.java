@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class NetworkUtils {
@@ -14,11 +16,16 @@ public class NetworkUtils {
     // Prevent instantiation
   }
 
-  public static String getStringFromUrl(URL url) throws IOException {
-    return inputStreamToString(urlToInputStream(url, null));
+  public static String getStringFromUrl(URL url, Charset charset) throws IOException {
+    return inputStreamToString(urlToInputStream(url, null), charset);
   }
 
-  private static String inputStreamToString(InputStream inputStream) throws IOException {
+  public static String getStringFromUrl(URL url) throws IOException {
+    return getStringFromUrl(url, StandardCharsets.UTF_8);
+  }
+
+  private static String inputStreamToString(InputStream inputStream, Charset charset)
+      throws IOException {
     try (ByteArrayOutputStream result = new ByteArrayOutputStream()) {
       byte[] buffer = new byte[1024];
       int length;
@@ -26,7 +33,7 @@ public class NetworkUtils {
         result.write(buffer, 0, length);
       }
 
-      return result.toString();
+      return result.toString(charset.name());
     }
   }
 
