@@ -13,7 +13,7 @@ public class SerializedClassifierInstance {
   private String id;
   private MetaPointer classifier;
 
-  private final List<SerializedPropertyValue> properties = new ArrayList<>();
+  private final List<SerializedPropertyValue> properties = new ArrayList<>(5);
 
   /**
    * Given that in wide trees most nodes have no containments, we avoid the instantiation, unless it
@@ -560,7 +560,7 @@ public class SerializedClassifierInstance {
 
   private void initContainments() {
     if (this.containments == null) {
-      this.containments = new ArrayList<>();
+      this.containments = new ArrayList<>(3);
     }
   }
 }
