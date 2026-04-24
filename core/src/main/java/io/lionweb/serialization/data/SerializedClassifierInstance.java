@@ -36,11 +36,20 @@ public class SerializedClassifierInstance {
   //
   // Constructors
   //
-  public SerializedClassifierInstance() {}
+  public SerializedClassifierInstance(Schema schema) {
+      this.schema = schema;
+      this.properties = new String[schema.properties.length];
+      this.containments = new List[schema.containments.length];
+      this.references = new List[schema.references.length];
+  }
 
-  public SerializedClassifierInstance(String id, MetaPointer concept) {
+  public SerializedClassifierInstance(String id, Schema schema) {
     setID(id);
-    setClassifier(concept);
+      this.schema = schema;
+      this.properties = new String[schema.properties.length];
+      this.containments = new List[schema.containments.length];
+      this.references = new List[schema.references.length];
+    //setClassifier(concept);
   }
 
   //
@@ -60,7 +69,11 @@ public class SerializedClassifierInstance {
   //
 
   public List<SerializedPropertyValue> getProperties() {
-    return Collections.unmodifiableList(properties);
+      List<SerializedPropertyValue> properties = new ArrayList<>(schema.properties.length);
+      for (int i = 0; i < schema.properties.length; i++) {
+          properties.add(SerializedPropertyValue.get(schema.properties[i], this.properties[i]));
+      }
+    return properties;
   }
 
   @Nullable
@@ -93,7 +106,9 @@ public class SerializedClassifierInstance {
    *     would not cause an error
    */
   public void unsafeAppendPropertyValue(@Nullable SerializedPropertyValue propertyValue) {
-    this.properties.add(propertyValue);
+      if (propertyValue != null) {
+          setPropertyValue(propertyValue);
+      }
   }
 
   /**
@@ -105,15 +120,13 @@ public class SerializedClassifierInstance {
    */
   public void setPropertyValue(@Nonnull SerializedPropertyValue propertyValue) {
     Objects.requireNonNull(propertyValue, "propertyValue must not be null");
-    for (int i = 0; i < this.properties.size(); i++) {
-      SerializedPropertyValue property = this.properties.get(i);
-      if (property.getMetaPointer() != null
-          && property.getMetaPointer().equals(propertyValue.getMetaPointer())) {
-        this.properties.set(i, propertyValue);
-        return;
+      for (int i = 0; i < schema.properties.length; i++) {
+          if (schema.properties[i].equals(propertyValue.getMetaPointer())) {
+              this.properties[i] = propertyValue.getValue();
+              return;
+          }
       }
-    }
-    this.properties.add(propertyValue);
+      throw new IllegalArgumentException("Property not found: " + propertyValue.getMetaPointer());
   }
 
   /**
@@ -134,19 +147,19 @@ public class SerializedClassifierInstance {
   //
 
   public List<SerializedContainmentValue> getContainments() {
-    if (containments == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(this.containments);
+      List<SerializedContainmentValue> containments = new ArrayList<>(schema.containments.length);
+      for (int i = 0; i < schema.containments.length; i++) {
+          containments.add(new SerializedContainmentValue(schema.containments[i], this.containments[i]));
+      }
+      return containments;
   }
 
   public List<String> getChildren() {
-    if (containments == null) {
-      return Collections.emptyList();
-    }
     List<String> children = new ArrayList<>();
-    this.containments.forEach(c -> children.addAll(c.getChildrenIds()));
-    return Collections.unmodifiableList(children);
+    for (int i = 0; i < containments.length; i++) {
+        children.addAll(containments[i]);
+    }
+    return children;
   }
 
   @Nonnull
@@ -166,8 +179,14 @@ public class SerializedClassifierInstance {
    * <p>It is however slightly faster than the (safer) addChild.
    */
   public void unsafeAppendContainmentValue(SerializedContainmentValue containmentValue) {
-    initContainments();
-    this.containments.add(containmentValue);
+    //initContainments();
+      for (int i = 0; i < schema.containments.length; i++) {
+          if (schema.containments[i].equals(containmentValue.getMetaPointer())) {
+              this.containments[i] = containmentValue.getChildrenIds();
+              return;
+          }
+      }
+      throw new IllegalArgumentException("Containment not found: " + containmentValue.getMetaPointer());
   }
 
   /**
@@ -183,25 +202,28 @@ public class SerializedClassifierInstance {
    */
   public void unsafeAppendContainmentValue(
       @Nullable MetaPointer containment, @Nonnull List<String> childrenIds) {
-    initContainments();
-    this.containments.add(new SerializedContainmentValue(containment, childrenIds));
+    //initContainments();
+      if (containment != null) {
+          for (int i = 0; i < schema.containments.length; i++) {
+              if (schema.containments[i].equals(containment)) {
+                  this.containments[i] = childrenIds;
+                  return;
+              }
+          }
+          throw new IllegalArgumentException("Containment not found: " + containment);
+      }
   }
 
   public void addChild(@Nonnull MetaPointer metaPointer, @Nonnull String childID) {
     Objects.requireNonNull(metaPointer);
     Objects.requireNonNull(childID);
-    initContainments();
-    Optional<SerializedContainmentValue> entry =
-        this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
-    if (entry.isPresent()) {
-      List<String> currValue = entry.get().getChildrenIds();
-      List<String> newValue = new ArrayList<>(currValue.size() + 1);
-      newValue.addAll(currValue);
-      newValue.add(childID);
-      entry.get().setChildrenIds(newValue);
-    } else {
-      unsafeAppendContainmentValue(metaPointer, Arrays.asList(childID));
-    }
+      for (int i = 0; i < schema.containments.length; i++) {
+          if (schema.containments[i].equals(metaPointer)) {
+              this.containments[i].add(childID);
+              return;
+          }
+      }
+      throw new IllegalArgumentException("Containment not found: " + metaPointer);
   }
 
   /**
@@ -223,26 +245,25 @@ public class SerializedClassifierInstance {
     if (index < 0) {
       throw new IllegalArgumentException("Index must be greater than or equal to zero");
     }
-    initContainments();
-    Optional<SerializedContainmentValue> entry =
-        this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
-    if (entry.isPresent()) {
-      List<String> currValue = entry.get().getChildrenIds();
-      List<String> newValue = new ArrayList<>(currValue.size() + 1);
-      newValue.addAll(currValue);
-      newValue.add(index, childID);
-      entry.get().setChildrenIds(newValue);
-    } else {
-      unsafeAppendContainmentValue(metaPointer, Arrays.asList(childID));
-    }
+      for (int i = 0; i < schema.containments.length; i++) {
+          if (schema.containments[i].equals(metaPointer)) {
+              this.containments[i].add(index, childID);
+              return;
+          }
+      }
+      throw new IllegalArgumentException("Containment not found: " + metaPointer);
   }
 
   public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
     Objects.requireNonNull(metaPointer);
-    if (this.containments == null) {
-      return false;
-    }
-    return this.containments.removeIf(c -> c.getMetaPointer().equals(metaPointer));
+      for (int i = 0; i < schema.containments.length; i++) {
+          if (schema.containments[i].equals(metaPointer)) {
+              boolean res = this.containments[i].size() > 0;
+              this.containments[i].clear();
+              return res;
+          }
+      }
+      throw new IllegalArgumentException("Containment not found: " + metaPointer);
   }
 
   /**
@@ -253,15 +274,13 @@ public class SerializedClassifierInstance {
    */
   public boolean removeChild(@Nonnull String childId) {
     Objects.requireNonNull(childId, "childId should not be null");
-    if (this.containments == null) {
-      return false;
-    }
-    for (SerializedContainmentValue containment : this.containments) {
-      if (containment.removeChild(childId)) {
-        return true;
+      for (int i = 0; i < schema.containments.length; i++) {
+          boolean removed = this.containments[i].remove(childId);
+          if (removed) {
+              return true;
+          }
       }
-    }
-    return false;
+      return false;
   }
 
   /**
@@ -269,7 +288,9 @@ public class SerializedClassifierInstance {
    * created with children. Children can only be added in a second moment.
    */
   public void clearContainments() {
-    containments = null;
+    for (int i = 0; i < schema.containments.length; i++) {
+        this.containments[i].clear();
+    }
   }
 
   //
@@ -277,10 +298,11 @@ public class SerializedClassifierInstance {
   //
 
   public List<SerializedReferenceValue> getReferences() {
-    if (this.references == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(this.references);
+      List<SerializedReferenceValue> references = new ArrayList<>(schema.references.length);
+      for (int i = 0; i < schema.references.length; i++) {
+          references.add(new SerializedReferenceValue(schema.references[i], this.references[i]));
+      }
+      return references;
   }
 
   @Nullable
@@ -314,8 +336,14 @@ public class SerializedClassifierInstance {
    *     value would not cause an error
    */
   public void unsafeAppendReferenceValue(@Nullable SerializedReferenceValue referenceValue) {
-    initReferences();
-    this.references.add(referenceValue);
+    //initReferences();
+    //this.references.add(referenceValue);
+      for (int i = 0; i < schema.references.length; i++) {
+          if (schema.references[i].equals(referenceValue.getMetaPointer())) {
+              references[i].addAll(referenceValue.getValue());
+              return;
+          }
+      }
   }
 
   /**
@@ -330,18 +358,11 @@ public class SerializedClassifierInstance {
       @Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
     Objects.requireNonNull(metaPointer);
     Objects.requireNonNull(referenceValue);
-    initReferences();
-    Optional<SerializedReferenceValue> entry =
-        this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
-    if (entry.isPresent()) {
-      List<SerializedReferenceValue.Entry> currValue = entry.get().getValue();
-      List<SerializedReferenceValue.Entry> newValue = new ArrayList<>(currValue.size() + 1);
-      newValue.addAll(currValue);
-      newValue.add(referenceValue);
-      entry.get().setValue(newValue);
-    } else {
-      unsafeAppendReferenceValue(
-          new SerializedReferenceValue(metaPointer, Arrays.asList(referenceValue)));
+    for (int i = 0; i < schema.references.length; i++) {
+        if (schema.references[i].equals(metaPointer)) {
+            references[i].add(referenceValue);
+            return;
+        }
     }
   }
 
@@ -370,26 +391,12 @@ public class SerializedClassifierInstance {
     }
     Objects.requireNonNull(metaPointer);
     Objects.requireNonNull(referenceValue);
-    initReferences();
-    Optional<SerializedReferenceValue> entry =
-        this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
-    if (entry.isPresent()) {
-      List<SerializedReferenceValue.Entry> currValue = entry.get().getValue();
-      List<SerializedReferenceValue.Entry> newValue = new ArrayList<>(currValue.size() + 1);
-      newValue.addAll(currValue);
-      if (index > newValue.size()) {
-        throw new IllegalStateException(
-            "Index 0.." + newValue.size() + " expected, but got " + index);
+      for (int i = 0; i < schema.references.length; i++) {
+          if (schema.references[i].equals(metaPointer)) {
+              references[i].add(index, referenceValue);
+              return;
+          }
       }
-      newValue.add(index, referenceValue);
-      entry.get().setValue(newValue);
-    } else {
-      if (index > 0) {
-        throw new IllegalStateException("Index 0..0 expected, but got " + index);
-      }
-      unsafeAppendReferenceValue(
-          new SerializedReferenceValue(metaPointer, Arrays.asList(referenceValue)));
-    }
   }
 
   public void setReferenceValue(
@@ -404,16 +411,12 @@ public class SerializedClassifierInstance {
 
   public void setReferenceValue(@Nonnull SerializedReferenceValue referenceValue) {
     Objects.requireNonNull(referenceValue);
-    initReferences();
-    for (int i = 0; i < this.references.size(); i++) {
-      SerializedReferenceValue entry = this.references.get(i);
-      if (entry.getMetaPointer() != null
-          && entry.getMetaPointer().equals(referenceValue.getMetaPointer())) {
-        this.references.set(i, referenceValue);
-        return;
+      for (int i = 0; i < schema.references.length; i++) {
+          if (schema.references[i].equals(referenceValue.getMetaPointer())) {
+              references[i] = referenceValue.getValue();
+              return;
+          }
       }
-    }
-    unsafeAppendReferenceValue(referenceValue);
   }
 
   //
@@ -463,11 +466,14 @@ public class SerializedClassifierInstance {
   //
 
   public MetaPointer getClassifier() {
-    return classifier;
+    return schema.classifier;
   }
 
   public void setClassifier(MetaPointer classifier) {
-    this.classifier = classifier;
+    if (classifier.equals(this.schema.classifier)) {
+        return;
+    }
+    throw new IllegalArgumentException("Cannot change classifier");
   }
 
   @Nullable
@@ -485,11 +491,11 @@ public class SerializedClassifierInstance {
     if (!(o instanceof SerializedClassifierInstance)) return false;
     SerializedClassifierInstance that = (SerializedClassifierInstance) o;
     return Objects.equals(id, that.id)
-        && Objects.equals(classifier, that.classifier)
+        && Objects.equals(schema, that.schema)
         && Objects.equals(parentNodeID, that.parentNodeID)
         && Objects.equals(properties, that.properties)
-        && Objects.equals(getContainments(), that.getContainments())
-        && Objects.equals(getReferences(), that.getReferences())
+        && Objects.equals(containments, that.containments)
+        && Objects.equals(references, that.references)
         && Objects.equals(getAnnotations(), that.getAnnotations());
   }
 
@@ -497,11 +503,11 @@ public class SerializedClassifierInstance {
   public int hashCode() {
     return Objects.hash(
         id,
-        classifier,
+        schema,
         parentNodeID,
         properties,
-        getContainments(),
-        getReferences(),
+        containments,
+        references,
         getAnnotations());
   }
 
@@ -512,7 +518,7 @@ public class SerializedClassifierInstance {
         + id
         + '\''
         + ", classifier="
-        + classifier
+        + schema.classifier
         + ", parentNodeID='"
         + parentNodeID
         + '\''
@@ -538,12 +544,10 @@ public class SerializedClassifierInstance {
   public boolean contains(@Nonnull String id) {
     Objects.requireNonNull(id, "id must not be null");
     if (this.containments != null) {
-      for (SerializedContainmentValue containmentValue : this.containments) {
-        for (String childId : containmentValue.getChildrenIds()) {
-          if (Objects.equals(childId, id)) {
-            return true;
+      for (int i = 0; i < this.containments.length; i++) {
+          if (this.containments[i].contains(id)) {
+              return true;
           }
-        }
       }
     }
     if (this.annotations != null) {
@@ -556,15 +560,15 @@ public class SerializedClassifierInstance {
   // Private methods
   //
 
-  private void initReferences() {
-    if (this.references == null) {
-      this.references = new ArrayList<>(1);
-    }
-  }
-
-  private void initContainments() {
-    if (this.containments == null) {
-      this.containments = new ArrayList<>();
-    }
-  }
+//  private void initReferences() {
+//    if (this.references == null) {
+//      this.references = new ArrayList<>(1);
+//    }
+//  }
+//
+//  private void initContainments() {
+//    if (this.containments == null) {
+//      this.containments = new ArrayList<>();
+//    }
+//  }
 }
