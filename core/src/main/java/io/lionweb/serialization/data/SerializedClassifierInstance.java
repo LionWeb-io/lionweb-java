@@ -5,9 +5,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Lower-level representation of a Classifier Instance (either a Node or an AnnotationInstance)
- * used during serialization and deserialization. Note that "broken" classifier instances (e.g.
- * with null IDs or missing MetaPointers) can also be represented.
+ * Lower-level representation of a Classifier Instance (either a Node or an AnnotationInstance) used
+ * during serialization and deserialization. Note that "broken" classifier instances (e.g. with null
+ * IDs or missing MetaPointers) can also be represented.
  *
  * <h3>Two internal representations</h3>
  *
@@ -15,21 +15,20 @@ import javax.annotation.Nullable;
  *
  * <ol>
  *   <li><b>Schema mode</b> (active when {@link #schema} is non-null): feature values are held in
- *       parallel arrays ({@code propertyValues[]}, {@code containmentValues[]},
- *       {@code referenceValues[]}) indexed positionally against the {@link ClassifierSchema}. The
+ *       parallel arrays ({@code propertyValues[]}, {@code containmentValues[]}, {@code
+ *       referenceValues[]}) indexed positionally against the {@link ClassifierSchema}. The
  *       MetaPointer for each feature slot is stored once in the schema rather than once per
  *       instance, eliminating the dominant per-node overhead for large homogeneous models. Nodes
  *       whose features deviate from the schema are handled via optional overflow maps.
- *   <li><b>Legacy mode</b> (active when {@code schema} is null): features are stored in
- *       {@code ArrayList}s of wrapper objects ({@link SerializedPropertyValue},
- *       {@link SerializedContainmentValue}, {@link SerializedReferenceValue}). This is the
- *       original representation, used for programmatically constructed nodes and all paths that
- *       do not go through the ProtoBuf compact deserialization.
+ *   <li><b>Legacy mode</b> (active when {@code schema} is null): features are stored in {@code
+ *       ArrayList}s of wrapper objects ({@link SerializedPropertyValue}, {@link
+ *       SerializedContainmentValue}, {@link SerializedReferenceValue}). This is the original
+ *       representation, used for programmatically constructed nodes and all paths that do not go
+ *       through the ProtoBuf compact deserialization.
  * </ol>
  *
- * <p>The public API is identical regardless of which mode is active. Methods such as
- * {@link #getProperties()}, {@link #addChild}, and {@link #setPropertyValue} work correctly in
- * both modes.
+ * <p>The public API is identical regardless of which mode is active. Methods such as {@link
+ * #getProperties()}, {@link #addChild}, and {@link #setPropertyValue} work correctly in both modes.
  */
 public class SerializedClassifierInstance {
 
@@ -172,8 +171,8 @@ public class SerializedClassifierInstance {
    * Returns an unmodifiable view of all properties.
    *
    * <p>In schema mode this returns a live view backed directly by the compact arrays — no
-   * intermediate objects are allocated until an element is actually retrieved (the
-   * {@link SerializedPropertyValue} flyweight is created on demand).
+   * intermediate objects are allocated until an element is actually retrieved (the {@link
+   * SerializedPropertyValue} flyweight is created on demand).
    */
   public List<SerializedPropertyValue> getProperties() {
     if (schema != null) {
@@ -222,8 +221,8 @@ public class SerializedClassifierInstance {
    *
    * <p>It is however slightly faster than the (safer) setPropertyValue.
    *
-   * <p>In schema mode the MetaPointer is resolved to a schema slot (O(n) linear scan, n ≤ ~20);
-   * if absent from the schema the value is placed in the overflow map.
+   * <p>In schema mode the MetaPointer is resolved to a schema slot (O(n) linear scan, n ≤ ~20); if
+   * absent from the schema the value is placed in the overflow map.
    *
    * @param propertyValue the value should be non null to constitute a valid chunk, but a null value
    *     would not cause an error
@@ -231,7 +230,8 @@ public class SerializedClassifierInstance {
   public void unsafeAppendPropertyValue(@Nullable SerializedPropertyValue propertyValue) {
     if (schema != null) {
       // A null value has no MetaPointer to route it to a schema slot; silently drop it just as
-      // the legacy path would on the next read (null entries are never returned from getProperties).
+      // the legacy path would on the next read (null entries are never returned from
+      // getProperties).
       if (propertyValue == null) return;
       MetaPointer mp = propertyValue.getMetaPointer();
       int idx = mp != null ? schema.indexOfProperty(mp) : -1;
@@ -870,8 +870,8 @@ public class SerializedClassifierInstance {
   }
 
   /**
-   * Returns the live entry list for the given reference MetaPointer in schema mode, creating it
-   * if absent. Routes to the overflow map when the MetaPointer is not in the schema.
+   * Returns the live entry list for the given reference MetaPointer in schema mode, creating it if
+   * absent. Routes to the overflow map when the MetaPointer is not in the schema.
    */
   private List<SerializedReferenceValue.Entry> refListFor(MetaPointer metaPointer) {
     int idx = schema.indexOfReference(metaPointer);
@@ -929,8 +929,7 @@ public class SerializedClassifierInstance {
 
     @Override
     public int size() {
-      return schema.propertyCount()
-          + (overflowProperties == null ? 0 : overflowProperties.size());
+      return schema.propertyCount() + (overflowProperties == null ? 0 : overflowProperties.size());
     }
 
     @Override
@@ -957,8 +956,8 @@ public class SerializedClassifierInstance {
    * may be smaller than {@code schema.containmentCount()}.
    *
    * <p>The returned {@link SerializedContainmentValue} wrappers are constructed with the no-copy
-   * package-private constructor so the caller's list and our compact storage share the same
-   * backing list. Mutations on the returned wrapper flow back into compact storage.
+   * package-private constructor so the caller's list and our compact storage share the same backing
+   * list. Mutations on the returned wrapper flow back into compact storage.
    */
   private final class SchemaContainmentView extends AbstractList<SerializedContainmentValue> {
 

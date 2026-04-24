@@ -38,12 +38,13 @@ public class SerializedContainmentValue {
    * Package-private: wraps {@code liveChildrenIds} directly, without a defensive copy.
    *
    * <p>Used by the schema-backed view in {@link SerializedClassifierInstance} to construct a
-   * transient wrapper around the list that already lives inside the compact
-   * {@code containmentValues[]} array. Skipping the copy is safe because the wrapper is ephemeral
-   * and callers only use it for a single iteration; mutations through the wrapper's
-   * {@link #setChildrenIds} flow back to the underlying storage, which is intentional.
+   * transient wrapper around the list that already lives inside the compact {@code
+   * containmentValues[]} array. Skipping the copy is safe because the wrapper is ephemeral and
+   * callers only use it for a single iteration; mutations through the wrapper's {@link
+   * #setChildrenIds} flow back to the underlying storage, which is intentional.
    */
-  SerializedContainmentValue(MetaPointer metaPointer, List<String> liveChildrenIds, boolean noCopy) {
+  SerializedContainmentValue(
+      MetaPointer metaPointer, List<String> liveChildrenIds, boolean noCopy) {
     this.metaPointer = metaPointer;
     this.childrenIds = liveChildrenIds;
   }

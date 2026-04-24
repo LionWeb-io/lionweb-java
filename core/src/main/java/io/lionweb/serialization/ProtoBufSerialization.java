@@ -200,7 +200,8 @@ public class ProtoBufSerialization extends AbstractSerialization {
               // Intern the schema (shared across all nodes with the same classifier
               // and same feature set) and build the compact instance.
               // ---------------------------------------------------------------
-              ClassifierSchema schema = ClassifierSchema.get(classifierMp, propKeys, contKeys, refKeys);
+              ClassifierSchema schema =
+                  ClassifierSchema.get(classifierMp, propKeys, contKeys, refKeys);
               SerializedClassifierInstance sci =
                   SerializedClassifierInstance.compact(
                       schema,

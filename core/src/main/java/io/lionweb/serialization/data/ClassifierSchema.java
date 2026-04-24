@@ -12,14 +12,14 @@ import javax.annotation.Nonnull;
  * <h3>Motivation</h3>
  *
  * <p>In a typical model the vast majority of nodes that share a classifier also share exactly the
- * same set of features. The naive representation stores one {@link MetaPointer} per feature
- * <em>per node</em>, inside wrapper objects like {@link SerializedPropertyValue}. For a model with
- * 100 K nodes of the same type, those MetaPointer references are stored 100 K times each. This
- * class factors them out into a single, shared descriptor: instances then hold only the
- * <em>values</em>, indexed positionally against the schema.
+ * same set of features. The naive representation stores one {@link MetaPointer} per feature <em>per
+ * node</em>, inside wrapper objects like {@link SerializedPropertyValue}. For a model with 100 K
+ * nodes of the same type, those MetaPointer references are stored 100 K times each. This class
+ * factors them out into a single, shared descriptor: instances then hold only the <em>values</em>,
+ * indexed positionally against the schema.
  *
- * <p>The analogy is Java's {@code Class} object: it describes field layout once, while every
- * object instance holds field values without re-stating the field names or types.
+ * <p>The analogy is Java's {@code Class} object: it describes field layout once, while every object
+ * instance holds field values without re-stating the field names or types.
  *
  * <h3>Interning</h3>
  *
@@ -76,20 +76,20 @@ public final class ClassifierSchema {
   public final MetaPointer classifier;
 
   /**
-   * Ordered property MetaPointers. Index {@code i} corresponds to
-   * {@code SerializedClassifierInstance.propertyValues[i]}.
+   * Ordered property MetaPointers. Index {@code i} corresponds to {@code
+   * SerializedClassifierInstance.propertyValues[i]}.
    */
   public final MetaPointer[] propertyKeys;
 
   /**
-   * Ordered containment MetaPointers. Index {@code i} corresponds to
-   * {@code SerializedClassifierInstance.containmentValues[i]}.
+   * Ordered containment MetaPointers. Index {@code i} corresponds to {@code
+   * SerializedClassifierInstance.containmentValues[i]}.
    */
   public final MetaPointer[] containmentKeys;
 
   /**
-   * Ordered reference MetaPointers. Index {@code i} corresponds to
-   * {@code SerializedClassifierInstance.referenceValues[i]}.
+   * Ordered reference MetaPointers. Index {@code i} corresponds to {@code
+   * SerializedClassifierInstance.referenceValues[i]}.
    */
   public final MetaPointer[] referenceKeys;
 

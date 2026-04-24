@@ -79,9 +79,9 @@ public class SerializedReferenceValue {
    * Package-private: wraps {@code liveValue} directly, without a defensive copy.
    *
    * <p>Used by the schema-backed view in {@link SerializedClassifierInstance} to construct a
-   * transient wrapper around the entry list that already lives inside the compact
-   * {@code referenceValues[]} array. The wrapper is ephemeral and exists only for the duration of
-   * a single iteration; any mutations flow back to the underlying storage.
+   * transient wrapper around the entry list that already lives inside the compact {@code
+   * referenceValues[]} array. The wrapper is ephemeral and exists only for the duration of a single
+   * iteration; any mutations flow back to the underlying storage.
    */
   SerializedReferenceValue(MetaPointer metaPointer, List<Entry> liveValue, boolean noCopy) {
     this.metaPointer = metaPointer;

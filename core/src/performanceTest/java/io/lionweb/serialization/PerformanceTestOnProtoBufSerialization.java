@@ -13,14 +13,14 @@ import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 /**
- * Performance tests for the ProtoBuf serialization path, mirroring the methodology of
- * {@link PerformanceTestOnSerialization}.
+ * Performance tests for the ProtoBuf serialization path, mirroring the methodology of {@link
+ * PerformanceTestOnSerialization}.
  *
- * <p>These tests are the primary vehicle for measuring the impact of the
- * {@link io.lionweb.serialization.data.ClassifierSchema} optimization. The schema-backed compact
- * representation is only activated in the ProtoBuf deserialization path
- * ({@link ProtoBufSerialization#deserializeToChunk}), so the JSON benchmarks in
- * {@link PerformanceTestOnSerialization} do not exercise it.
+ * <p>These tests are the primary vehicle for measuring the impact of the {@link
+ * io.lionweb.serialization.data.ClassifierSchema} optimization. The schema-backed compact
+ * representation is only activated in the ProtoBuf deserialization path ({@link
+ * ProtoBufSerialization#deserializeToChunk}), so the JSON benchmarks in {@link
+ * PerformanceTestOnSerialization} do not exercise it.
  *
  * <p>The benchmark measures the chunk-level round-trip ({@link SerializationChunk} ↔ ProtoBuf
  * bytes) rather than the high-level node round-trip, which isolates the deserialization code we
@@ -30,9 +30,9 @@ import org.junit.jupiter.api.Test;
 public class PerformanceTestOnProtoBufSerialization {
 
   /**
-   * Loads LargeLanguage.json, converts it to a {@link SerializationChunk} via
-   * {@link LowLevelJsonSerialization}, then serializes that chunk to ProtoBuf bytes once. This
-   * gives us a realistic payload without needing language type registrations.
+   * Loads LargeLanguage.json, converts it to a {@link SerializationChunk} via {@link
+   * LowLevelJsonSerialization}, then serializes that chunk to ProtoBuf bytes once. This gives us a
+   * realistic payload without needing language type registrations.
    */
   private byte[] buildProtoBufBytes() {
     InputStream is = getClass().getResourceAsStream("/serialization/LargeLanguage.json");
@@ -64,13 +64,14 @@ public class PerformanceTestOnProtoBufSerialization {
     ProtoBufSerialization pbs = new ProtoBufSerialization();
 
     System.out.println("ProtoBuf payload size: " + pbBytes.length + " bytes");
-    performanceMeasure(() -> {
-      try {
-        pbs.deserializeToChunk(pbBytes);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    });
+    performanceMeasure(
+        () -> {
+          try {
+            pbs.deserializeToChunk(pbBytes);
+          } catch (IOException e) {
+            throw new UncheckedIOException(e);
+          }
+        });
   }
 
   /** Benchmarks per-call heap allocation during ProtoBuf → {@link SerializationChunk}. */
@@ -80,13 +81,14 @@ public class PerformanceTestOnProtoBufSerialization {
     ProtoBufSerialization pbs = new ProtoBufSerialization();
 
     System.out.println("ProtoBuf payload size: " + pbBytes.length + " bytes");
-    measureMemoryAllocation(() -> {
-      try {
-        pbs.deserializeToChunk(pbBytes);
-      } catch (IOException e) {
-        throw new UncheckedIOException(e);
-      }
-    });
+    measureMemoryAllocation(
+        () -> {
+          try {
+            pbs.deserializeToChunk(pbBytes);
+          } catch (IOException e) {
+            throw new UncheckedIOException(e);
+          }
+        });
   }
 
   // --------------------------------------------------------------------------
@@ -125,7 +127,8 @@ public class PerformanceTestOnProtoBufSerialization {
       allocationList.add(allocated);
     }
     allocationList = allocationList.stream().sorted().collect(Collectors.toList());
-    allocationList = allocationList.subList(N_TOP_REMOVED, allocationList.size() - N_BOTTOM_REMOVED);
+    allocationList =
+        allocationList.subList(N_TOP_REMOVED, allocationList.size() - N_BOTTOM_REMOVED);
     assertEquals(N_ITERATIONS - N_TOP_REMOVED - N_BOTTOM_REMOVED, allocationList.size());
     long min = allocationList.get(0);
     long max = allocationList.get(allocationList.size() - 1);
