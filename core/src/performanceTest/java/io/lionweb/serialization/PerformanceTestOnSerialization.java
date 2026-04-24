@@ -11,6 +11,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -117,7 +118,8 @@ public class PerformanceTestOnSerialization {
    * (HotSpot JVM), falling back to heap delta otherwise. Outliers are trimmed the same way as in
    * {@link #performanceMeasure}.
    */
-  private void measureMemoryAllocation(Runnable runnable, long thresholdMaxBytes) {
+  private void measureMemoryAllocation(Supplier<Object> supplier, long thresholdMaxBytes) {
+    Runnable runnable = () -> supplier.get();
     List<Long> allocationList = new ArrayList<>();
     int N_ITERATIONS = 25;
     int N_TOP_REMOVED = 4;
@@ -142,6 +144,8 @@ public class PerformanceTestOnSerialization {
             + " (threshold: "
             + (thresholdMaxBytes / 1024)
             + " KB)");
+    long retained = measureRetainedBytes(supplier);
+    System.out.println("Retained memory: " + (retained / 1024) + " KB");
     assertTrue(
         max < thresholdMaxBytes,
         "Expected max allocation to be under "
@@ -149,6 +153,22 @@ public class PerformanceTestOnSerialization {
             + " KB but it was "
             + (max / 1024)
             + " KB");
+  }
+
+  /**
+   * Returns the number of bytes retained on the heap after executing {@code supplier} and running
+   * GC. This measures live objects created by the supplier that survive garbage collection.
+   */
+  private long measureRetainedBytes(Supplier<Object> supplier) {
+    System.gc();
+    System.gc();
+    Runtime rt = Runtime.getRuntime();
+    long before = rt.totalMemory() - rt.freeMemory();
+    Object result = supplier.get();
+    System.gc();
+    System.gc();
+    long after = rt.totalMemory() - rt.freeMemory();
+    return Math.max(0L, after - before);
   }
 
   /**

@@ -8,6 +8,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ public class PerformanceTestOnProtoBufSerialization {
     measureMemoryAllocation(
         () -> {
           try {
-            pbs.deserializeToChunk(pbBytes);
+            return pbs.deserializeToChunk(pbBytes);
           } catch (IOException e) {
             throw new UncheckedIOException(e);
           }
@@ -116,7 +117,8 @@ public class PerformanceTestOnProtoBufSerialization {
     System.out.println("Range: " + min + " ms to " + max + " ms");
   }
 
-  private void measureMemoryAllocation(Runnable runnable) {
+  private void measureMemoryAllocation(Supplier<Object> supplier) {
+    Runnable runnable = () -> supplier.get();
     List<Long> allocationList = new ArrayList<>();
     int N_ITERATIONS = 25;
     int N_TOP_REMOVED = 4;
@@ -133,6 +135,20 @@ public class PerformanceTestOnProtoBufSerialization {
     long min = allocationList.get(0);
     long max = allocationList.get(allocationList.size() - 1);
     System.out.println("Allocation range: " + (min / 1024) + " KB to " + (max / 1024) + " KB");
+    long retained = measureRetainedBytes(supplier);
+    System.out.println("Retained memory: " + (retained / 1024) + " KB");
+  }
+
+  private long measureRetainedBytes(Supplier<Object> supplier) {
+    System.gc();
+    System.gc();
+    Runtime rt = Runtime.getRuntime();
+    long before = rt.totalMemory() - rt.freeMemory();
+    Object result = supplier.get();
+    System.gc();
+    System.gc();
+    long after = rt.totalMemory() - rt.freeMemory();
+    return Math.max(0L, after - before);
   }
 
   private long measureAllocatedBytes(Runnable runnable) {

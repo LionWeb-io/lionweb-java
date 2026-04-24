@@ -8,6 +8,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -95,7 +96,7 @@ public class PerformanceTestHomogeneousModelProtoBuf {
     measureMemoryAllocation(
         () -> {
           try {
-            pbs.deserializeToChunk(pbBytes);
+            return pbs.deserializeToChunk(pbBytes);
           } catch (IOException e) {
             throw new UncheckedIOException(e);
           }
@@ -178,7 +179,8 @@ public class PerformanceTestHomogeneousModelProtoBuf {
     System.out.println("Range: " + times.get(0) + " ms to " + times.get(times.size() - 1) + " ms");
   }
 
-  private void measureMemoryAllocation(Runnable r) {
+  private void measureMemoryAllocation(Supplier<Object> s) {
+    Runnable r = () -> s.get();
     List<Long> allocs = new ArrayList<>(N_ITERATIONS);
     for (int i = 0; i < N_ITERATIONS; i++) {
       long bytes = measureAllocatedBytes(r);
@@ -194,6 +196,20 @@ public class PerformanceTestHomogeneousModelProtoBuf {
             + " KB to "
             + (allocs.get(allocs.size() - 1) / 1024)
             + " KB");
+    long retained = measureRetainedBytes(s);
+    System.out.println("Retained memory: " + (retained / 1024) + " KB");
+  }
+
+  private long measureRetainedBytes(Supplier<Object> s) {
+    System.gc();
+    System.gc();
+    Runtime rt = Runtime.getRuntime();
+    long before = rt.totalMemory() - rt.freeMemory();
+    Object result = s.get();
+    System.gc();
+    System.gc();
+    long after = rt.totalMemory() - rt.freeMemory();
+    return Math.max(0L, after - before);
   }
 
   private long measureAllocatedBytes(Runnable r) {

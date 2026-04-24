@@ -14,6 +14,7 @@ import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -99,8 +100,7 @@ public class PerformanceTestHomogeneousModelRepositoryData {
         "Homogeneous model ("
             + NODE_PER_CKUNK_COUNT * CHUNKS_COUNT * 4
             + " nodes)");
-    measureMemoryAllocation(
-        () -> buildRepositoryData());
+    measureMemoryAllocation(() -> buildRepositoryData());
   }
 
   // -------------------------------------------------------------------------
@@ -215,7 +215,8 @@ public class PerformanceTestHomogeneousModelRepositoryData {
     System.out.println("Range: " + times.get(0) + " ms to " + times.get(times.size() - 1) + " ms");
   }
 
-  private void measureMemoryAllocation(Runnable r) {
+  private void measureMemoryAllocation(Supplier<Object> s) {
+    Runnable r = () -> s.get();
     List<Long> allocs = new ArrayList<>(N_ITERATIONS);
     for (int i = 0; i < N_ITERATIONS; i++) {
       long bytes = measureAllocatedBytes(r);
@@ -231,6 +232,20 @@ public class PerformanceTestHomogeneousModelRepositoryData {
             + " KB to "
             + (allocs.get(allocs.size() - 1) / 1024)
             + " KB");
+    long retained = measureRetainedBytes(s);
+    System.out.println("Retained memory: " + (retained / 1024) + " KB");
+  }
+
+  private long measureRetainedBytes(Supplier<Object> s) {
+    System.gc();
+    System.gc();
+    Runtime rt = Runtime.getRuntime();
+    long before = rt.totalMemory() - rt.freeMemory();
+    Object result = s.get();
+    System.gc();
+    System.gc();
+    long after = rt.totalMemory() - rt.freeMemory();
+    return Math.max(0L, after - before);
   }
 
   private long measureAllocatedBytes(Runnable r) {
