@@ -100,57 +100,116 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .getNodesList()
         .forEach(
             n -> {
-              SerializedClassifierInstance sci = new SerializedClassifierInstance();
-              sci.setID(stringsArray[n.getSiId()]);
-              sci.setParentNodeID(stringsArray[n.getSiParent()]);
-              sci.setClassifier(metapointersArray[n.getMpiClassifier()]);
-              n.getPropertiesList()
-                  .forEach(
-                      p -> {
-                        int siValue = p.getSiValue();
-                        if (serializeEmptyFeatures || siValue != 0) {
-                          SerializedPropertyValue spv =
-                              SerializedPropertyValue.get(
-                                  metapointersArray[p.getMpiMetaPointer()], stringsArray[siValue]);
-                          sci.unsafeAppendPropertyValue(spv);
-                        }
-                      });
-              n.getContainmentsList()
-                  .forEach(
-                      c -> {
-                        List<String> children = new ArrayList<>(c.getSiChildrenList().size());
-                        for (int childIndex : c.getSiChildrenList()) {
-                          if (childIndex == 0) {
-                            throw new DeserializationException(
-                                "Unable to deserialize child identified by Null ID");
-                          }
-                          children.add(stringsArray[childIndex]);
-                        }
-                        if (serializeEmptyFeatures || !children.isEmpty()) {
-                          SerializedContainmentValue scv =
-                              new SerializedContainmentValue(
-                                  metapointersArray[c.getMpiMetaPointer()], children);
-                          sci.unsafeAppendContainmentValue(scv);
-                        }
-                      });
-              n.getReferencesList()
-                  .forEach(
-                      r -> {
-                        SerializedReferenceValue srv =
-                            new SerializedReferenceValue(metapointersArray[r.getMpiMetaPointer()]);
-                        r.getValuesList()
-                            .forEach(
-                                rv -> {
-                                  SerializedReferenceValue.Entry entry =
-                                      new SerializedReferenceValue.Entry();
-                                  entry.setReference(stringsArray[rv.getSiReferred()]);
-                                  entry.setResolveInfo(stringsArray[rv.getSiResolveInfo()]);
-                                  srv.addValue(entry);
-                                });
-                        if (serializeEmptyFeatures || !srv.getValue().isEmpty()) {
-                          sci.unsafeAppendReferenceValue(srv);
-                        }
-                      });
+              MetaPointer classifierMp = metapointersArray[n.getMpiClassifier()];
+
+              // ---------------------------------------------------------------
+              // Properties: count first (to size the arrays exactly), then fill.
+              // Skipping empty-value entries when serializeEmptyFeatures==false
+              // keeps the schema small and avoids null slots in the value array.
+              // ---------------------------------------------------------------
+              List<PBProperty> pbProps = n.getPropertiesList();
+              int propCount = 0;
+              for (PBProperty p : pbProps) {
+                if (serializeEmptyFeatures || p.getSiValue() != 0) propCount++;
+              }
+              MetaPointer[] propKeys = new MetaPointer[propCount];
+              String[] propValues = new String[propCount];
+              int pi = 0;
+              for (PBProperty p : pbProps) {
+                int siValue = p.getSiValue();
+                if (serializeEmptyFeatures || siValue != 0) {
+                  propKeys[pi] = metapointersArray[p.getMpiMetaPointer()];
+                  propValues[pi] = stringsArray[siValue];
+                  pi++;
+                }
+              }
+
+              // ---------------------------------------------------------------
+              // Containments: build per-containment child-ID lists, then key array.
+              // ---------------------------------------------------------------
+              List<PBContainment> pbConts = n.getContainmentsList();
+              // Temporary storage: gather (key, childList) pairs for non-empty containments.
+              int contCountMax = pbConts.size();
+              MetaPointer[] contKeysTemp = new MetaPointer[contCountMax];
+              @SuppressWarnings("unchecked")
+              List<String>[] contValuesTemp = new List[contCountMax];
+              int ci = 0;
+              for (PBContainment c : pbConts) {
+                List<Integer> rawChildren = c.getSiChildrenList();
+                List<String> children = new ArrayList<>(rawChildren.size());
+                for (int childIndex : rawChildren) {
+                  if (childIndex == 0) {
+                    throw new DeserializationException(
+                        "Unable to deserialize child identified by Null ID");
+                  }
+                  children.add(stringsArray[childIndex]);
+                }
+                if (serializeEmptyFeatures || !children.isEmpty()) {
+                  contKeysTemp[ci] = metapointersArray[c.getMpiMetaPointer()];
+                  contValuesTemp[ci] = children;
+                  ci++;
+                }
+              }
+              // Trim to actual count if some containments were skipped.
+              MetaPointer[] contKeys;
+              @SuppressWarnings("unchecked")
+              List<String>[] contValues;
+              if (ci == contCountMax) {
+                contKeys = contKeysTemp;
+                contValues = contValuesTemp;
+              } else {
+                contKeys = Arrays.copyOf(contKeysTemp, ci);
+                contValues = Arrays.copyOf(contValuesTemp, ci);
+              }
+
+              // ---------------------------------------------------------------
+              // References: same pattern as containments.
+              // ---------------------------------------------------------------
+              List<PBReference> pbRefs = n.getReferencesList();
+              int refCountMax = pbRefs.size();
+              MetaPointer[] refKeysTemp = new MetaPointer[refCountMax];
+              @SuppressWarnings("unchecked")
+              List<SerializedReferenceValue.Entry>[] refValuesTemp = new List[refCountMax];
+              int ri = 0;
+              for (PBReference r : pbRefs) {
+                List<PBReferenceValue> pbEntries = r.getValuesList();
+                List<SerializedReferenceValue.Entry> entries = new ArrayList<>(pbEntries.size());
+                for (PBReferenceValue rv : pbEntries) {
+                  entries.add(
+                      new SerializedReferenceValue.Entry(
+                          stringsArray[rv.getSiReferred()], stringsArray[rv.getSiResolveInfo()]));
+                }
+                if (serializeEmptyFeatures || !entries.isEmpty()) {
+                  refKeysTemp[ri] = metapointersArray[r.getMpiMetaPointer()];
+                  refValuesTemp[ri] = entries;
+                  ri++;
+                }
+              }
+              MetaPointer[] refKeys;
+              @SuppressWarnings("unchecked")
+              List<SerializedReferenceValue.Entry>[] refValues;
+              if (ri == refCountMax) {
+                refKeys = refKeysTemp;
+                refValues = refValuesTemp;
+              } else {
+                refKeys = Arrays.copyOf(refKeysTemp, ri);
+                refValues = Arrays.copyOf(refValuesTemp, ri);
+              }
+
+              // ---------------------------------------------------------------
+              // Intern the schema (shared across all nodes with the same classifier
+              // and same feature set) and build the compact instance.
+              // ---------------------------------------------------------------
+              ClassifierSchema schema = ClassifierSchema.get(classifierMp, propKeys, contKeys, refKeys);
+              SerializedClassifierInstance sci =
+                  SerializedClassifierInstance.compact(
+                      schema,
+                      stringsArray[n.getSiId()],
+                      stringsArray[n.getSiParent()],
+                      propValues,
+                      contValues,
+                      refValues);
+
               n.getSiAnnotationsList().forEach(a -> sci.addAnnotation(stringsArray[a]));
               serializationChunk.addClassifierInstance(sci);
             });
