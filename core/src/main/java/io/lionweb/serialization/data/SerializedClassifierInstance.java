@@ -11,18 +11,22 @@ import javax.annotation.Nullable;
  */
 public class SerializedClassifierInstance {
   private String id;
-  private MetaPointer classifier;
+  //private MetaPointer classifier;
+  private Schema schema;
 
-  private final List<SerializedPropertyValue> properties = new ArrayList<>();
+  //private final List<SerializedPropertyValue> properties = new ArrayList<>();
+  private final String[] properties;
+  private final List<String>[] containments;
+  private final List<SerializedReferenceValue.Entry>[] references;
 
   /**
    * Given that in wide trees most nodes have no containments, we avoid the instantiation, unless it
    * is necessary.
    */
-  private @Nullable List<SerializedContainmentValue> containments;
+  //private @Nullable List<SerializedContainmentValue> containments;
 
   /** Given most nodes have no references, we avoid the instantiation, unless it is necessary. */
-  private @Nullable List<SerializedReferenceValue> references;
+  //private @Nullable List<SerializedReferenceValue> references;
 
   /** Given most nodes have no annotations, we avoid the instantiation, unless it is necessary. */
   private @Nullable List<String> annotations;
