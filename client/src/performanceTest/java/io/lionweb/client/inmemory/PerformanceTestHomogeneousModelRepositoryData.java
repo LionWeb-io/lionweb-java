@@ -100,9 +100,7 @@ public class PerformanceTestHomogeneousModelRepositoryData {
             + NODE_PER_CKUNK_COUNT * CHUNKS_COUNT * 4
             + " nodes)");
     measureMemoryAllocation(
-        () -> {
-              buildRepositoryData();
-        });
+        () -> buildRepositoryData());
   }
 
   // -------------------------------------------------------------------------
@@ -120,6 +118,25 @@ public class PerformanceTestHomogeneousModelRepositoryData {
   private InMemoryServer buildRepositoryData() {
     InMemoryServer inMemoryServer = new InMemoryServer();
     inMemoryServer.createRepository(new RepositoryConfiguration("MyRepo", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+
+    Schema rootSchema = new Schema();
+    rootSchema.classifier = MP_CLASSIFIER;
+    rootSchema.properties = new MetaPointer[]{MP_NAME, MP_VISIBILITY, MP_IS_STATIC, MP_RETURN_TYPE, MP_DOC};
+    rootSchema.containments = new MetaPointer[]{MP_PARAMS, MP_BODY};
+    rootSchema.references = new MetaPointer[]{MP_CALLEE, MP_OVERRIDES};
+
+    Schema paramSchema = new Schema();
+    paramSchema.classifier = MP_PARAM;
+    paramSchema.properties = new MetaPointer[]{};
+    paramSchema.containments = new MetaPointer[]{};
+    paramSchema.references = new MetaPointer[]{};
+
+    Schema stmtSchema = new Schema();
+      stmtSchema.classifier = MP_STMT;
+      stmtSchema.properties = new MetaPointer[]{};
+      stmtSchema.containments = new MetaPointer[]{};
+      stmtSchema.references = new MetaPointer[]{};
+
     for (int i = 0; i < CHUNKS_COUNT; i++) {
 //        SerializationChunk chunk = new SerializationChunk();
 //        chunk.setSerializationFormatVersion("2023.1");
@@ -127,7 +144,7 @@ public class PerformanceTestHomogeneousModelRepositoryData {
         List<SerializedClassifierInstance> nodesInChunk = new ArrayList<>(NODE_PER_CKUNK_COUNT * 4);
 
         for (int j = 0; j < NODE_PER_CKUNK_COUNT; j++) {
-            SerializedClassifierInstance sci = new SerializedClassifierInstance("n-" + j, MP_CLASSIFIER);
+            SerializedClassifierInstance sci = new SerializedClassifierInstance("n-" + j, rootSchema);
             nodesInChunk.add(sci);
 
             // 5 properties
@@ -147,13 +164,13 @@ public class PerformanceTestHomogeneousModelRepositoryData {
             String s1 = "stmt-" + j;
             sci.unsafeAppendContainmentValue(new SerializedContainmentValue(MP_BODY, s1));
 
-            SerializedClassifierInstance p1Ci = new SerializedClassifierInstance(p1, Schema.fromMetaPointer(MP_PARAM));
+            SerializedClassifierInstance p1Ci = new SerializedClassifierInstance(p1, paramSchema);
             nodesInChunk.add(p1Ci);
 
-            SerializedClassifierInstance p2Ci = new SerializedClassifierInstance(p2, Schema.fromMetaPointer(MP_PARAM));
+            SerializedClassifierInstance p2Ci = new SerializedClassifierInstance(p2, paramSchema);
             nodesInChunk.add(p2Ci);
 
-            SerializedClassifierInstance stmtCi = new SerializedClassifierInstance(s1, Schema.fromMetaPointer(MP_STMT));
+            SerializedClassifierInstance stmtCi = new SerializedClassifierInstance(s1, stmtSchema);
             nodesInChunk.add(stmtCi);
 
             // 2 references

@@ -344,6 +344,9 @@ public class SerializedClassifierInstance {
     //this.references.add(referenceValue);
       for (int i = 0; i < schema.references.length; i++) {
           if (schema.references[i].equals(referenceValue.getMetaPointer())) {
+              if (references[i] == null) {
+                  references[i] = new ArrayList<>();
+              }
               references[i].addAll(referenceValue.getValue());
               return;
           }
