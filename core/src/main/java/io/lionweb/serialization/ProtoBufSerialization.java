@@ -100,57 +100,124 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .getNodesList()
         .forEach(
             n -> {
-              SerializedClassifierInstance sci = new SerializedClassifierInstance();
-              sci.setID(stringsArray[n.getSiId()]);
-              sci.setParentNodeID(stringsArray[n.getSiParent()]);
-              sci.setClassifier(metapointersArray[n.getMpiClassifier()]);
-              n.getPropertiesList()
-                  .forEach(
-                      p -> {
-                        int siValue = p.getSiValue();
-                        if (serializeEmptyFeatures || siValue != 0) {
-                          SerializedPropertyValue spv =
-                              SerializedPropertyValue.get(
-                                  metapointersArray[p.getMpiMetaPointer()], stringsArray[siValue]);
-                          sci.unsafeAppendPropertyValue(spv);
-                        }
-                      });
-              n.getContainmentsList()
-                  .forEach(
-                      c -> {
-                        List<String> children = new ArrayList<>(c.getSiChildrenList().size());
-                        for (int childIndex : c.getSiChildrenList()) {
-                          if (childIndex == 0) {
-                            throw new DeserializationException(
-                                "Unable to deserialize child identified by Null ID");
-                          }
-                          children.add(stringsArray[childIndex]);
-                        }
-                        if (serializeEmptyFeatures || !children.isEmpty()) {
-                          SerializedContainmentValue scv =
-                              new SerializedContainmentValue(
-                                  metapointersArray[c.getMpiMetaPointer()], children);
-                          sci.unsafeAppendContainmentValue(scv);
-                        }
-                      });
-              n.getReferencesList()
-                  .forEach(
-                      r -> {
-                        SerializedReferenceValue srv =
-                            new SerializedReferenceValue(metapointersArray[r.getMpiMetaPointer()]);
-                        r.getValuesList()
-                            .forEach(
-                                rv -> {
-                                  SerializedReferenceValue.Entry entry =
-                                      new SerializedReferenceValue.Entry();
-                                  entry.setReference(stringsArray[rv.getSiReferred()]);
-                                  entry.setResolveInfo(stringsArray[rv.getSiResolveInfo()]);
-                                  srv.addValue(entry);
-                                });
-                        if (serializeEmptyFeatures || !srv.getValue().isEmpty()) {
-                          sci.unsafeAppendReferenceValue(srv);
-                        }
-                      });
+              // ------------------------------------------------------------------
+              // Compact deserialization path:
+              //
+              // Rather than creating SerializedPropertyValue / SerializedContainmentValue /
+              // SerializedReferenceValue wrapper objects for every feature of every node, we:
+              //   1. Determine which features are present and allocate parallel key/value arrays.
+              //   2. Fill those arrays directly (no wrapper objects).
+              //   3. Look up (or create) the shared ClassifierSchema for this classifier +
+              //      feature-set combination.
+              //   4. Build a compact SerializedClassifierInstance that holds only the value arrays.
+              //
+              // For a model with N nodes of the same type and F features each, this eliminates
+              // N×F wrapper object allocations and stores each feature MetaPointer once (in the
+              // shared schema) instead of once per node.
+              // ------------------------------------------------------------------
+
+              MetaPointer classifierMp = metapointersArray[n.getMpiClassifier()];
+
+              // --- Properties ---
+              List<PBProperty> pbProps = n.getPropertiesList();
+              // Count how many properties pass the empty-feature filter so we can size the arrays
+              // exactly (avoids Arrays.copyOf later in the common serializeEmptyFeatures=true case).
+              int propCount = 0;
+              if (serializeEmptyFeatures) {
+                propCount = pbProps.size();
+              } else {
+                for (PBProperty p : pbProps) {
+                  if (p.getSiValue() != 0) propCount++;
+                }
+              }
+              MetaPointer[] propKeys = new MetaPointer[propCount];
+              String[] propValues = new String[propCount];
+              int pi = 0;
+              for (PBProperty p : pbProps) {
+                int siValue = p.getSiValue();
+                if (serializeEmptyFeatures || siValue != 0) {
+                  propKeys[pi] = metapointersArray[p.getMpiMetaPointer()];
+                  propValues[pi] = stringsArray[siValue];
+                  pi++;
+                }
+              }
+
+              // --- Containments ---
+              List<PBContainment> pbConts = n.getContainmentsList();
+              int contCount = 0;
+              if (serializeEmptyFeatures) {
+                contCount = pbConts.size();
+              } else {
+                for (PBContainment c : pbConts) {
+                  if (c.getSiChildrenCount() > 0) contCount++;
+                }
+              }
+              MetaPointer[] contKeys = new MetaPointer[contCount];
+              @SuppressWarnings("unchecked")
+              List<String>[] contValues = new List[contCount];
+              int ci = 0;
+              for (PBContainment c : pbConts) {
+                List<Integer> siChildren = c.getSiChildrenList();
+                if (serializeEmptyFeatures || !siChildren.isEmpty()) {
+                  contKeys[ci] = metapointersArray[c.getMpiMetaPointer()];
+                  List<String> children = new ArrayList<>(siChildren.size());
+                  for (int childIndex : siChildren) {
+                    if (childIndex == 0) {
+                      throw new DeserializationException(
+                          "Unable to deserialize child identified by Null ID");
+                    }
+                    children.add(stringsArray[childIndex]);
+                  }
+                  contValues[ci] = children;
+                  ci++;
+                }
+              }
+
+              // --- References ---
+              List<PBReference> pbRefs = n.getReferencesList();
+              int refCount = 0;
+              if (serializeEmptyFeatures) {
+                refCount = pbRefs.size();
+              } else {
+                for (PBReference r : pbRefs) {
+                  if (r.getValuesCount() > 0) refCount++;
+                }
+              }
+              MetaPointer[] refKeys = new MetaPointer[refCount];
+              @SuppressWarnings("unchecked")
+              List<SerializedReferenceValue.Entry>[] refValues = new List[refCount];
+              int ri = 0;
+              for (PBReference r : pbRefs) {
+                if (serializeEmptyFeatures || r.getValuesCount() > 0) {
+                  refKeys[ri] = metapointersArray[r.getMpiMetaPointer()];
+                  List<SerializedReferenceValue.Entry> entries =
+                      new ArrayList<>(r.getValuesCount());
+                  for (PBReferenceValue rv : r.getValuesList()) {
+                    SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
+                    entry.setReference(stringsArray[rv.getSiReferred()]);
+                    entry.setResolveInfo(stringsArray[rv.getSiResolveInfo()]);
+                    entries.add(entry);
+                  }
+                  refValues[ri] = entries;
+                  ri++;
+                }
+              }
+
+              // --- Build the shared schema and the compact instance ---
+              // ClassifierSchema.get() interns the schema: nodes of the same classifier that have
+              // the same feature set (the common case) will share a single ClassifierSchema object.
+              ClassifierSchema schema =
+                  ClassifierSchema.get(classifierMp, propKeys, contKeys, refKeys);
+
+              SerializedClassifierInstance sci =
+                  SerializedClassifierInstance.compact(
+                      schema,
+                      stringsArray[n.getSiId()],
+                      stringsArray[n.getSiParent()],
+                      propValues,
+                      contValues,
+                      refValues);
+
               n.getSiAnnotationsList().forEach(a -> sci.addAnnotation(stringsArray[a]));
               serializationChunk.addClassifierInstance(sci);
             });
