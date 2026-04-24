@@ -226,10 +226,10 @@ public abstract class AbstractSerialization {
   private SerializedClassifierInstance serializeNode(
       @Nonnull ClassifierInstance<?> classifierInstance, SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "Node should not be null");
-    SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
+    SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance(Schema.fromClassifier(classifierInstance.getClassifier()));
     serializedClassifierInstance.setID(classifierInstance.getID());
-    serializedClassifierInstance.setClassifier(
-        MetaPointer.from(classifierInstance.getClassifier()));
+//    serializedClassifierInstance.setClassifier(
+//        MetaPointer.from(classifierInstance.getClassifier()));
     if (classifierInstance.getParent() != null) {
       serializedClassifierInstance.setParentNodeID(classifierInstance.getParent().getID());
     }
@@ -247,11 +247,12 @@ public abstract class AbstractSerialization {
   private SerializedClassifierInstance serializeAnnotationInstance(
       @Nonnull AnnotationInstance annotationInstance, SerializationStatus serializationStatus) {
     Objects.requireNonNull(annotationInstance, "AnnotationInstance should not be null");
-    SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance();
+    MetaPointer classifier = MetaPointer.from(annotationInstance.getAnnotationDefinition());
+    SerializedClassifierInstance serializedClassifierInstance = new SerializedClassifierInstance(Schema.fromMetaPointer(classifier));
     serializedClassifierInstance.setID(annotationInstance.getID());
     serializedClassifierInstance.setParentNodeID(annotationInstance.getParent().getID());
-    serializedClassifierInstance.setClassifier(
-        MetaPointer.from(annotationInstance.getAnnotationDefinition()));
+//    serializedClassifierInstance.setClassifier(
+//        classifier);
     serializeProperties(annotationInstance, serializedClassifierInstance, serializationStatus);
     serializeContainments(annotationInstance, serializedClassifierInstance, serializationStatus);
     serializeReferences(

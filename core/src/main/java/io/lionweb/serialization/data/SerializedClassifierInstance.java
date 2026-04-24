@@ -43,6 +43,10 @@ public class SerializedClassifierInstance {
       this.references = new List[schema.references.length];
   }
 
+    public SerializedClassifierInstance(String id, MetaPointer classifier) {
+      this(id, Schema.fromMetaPointer(classifier));
+    }
+
   public SerializedClassifierInstance(String id, Schema schema) {
     setID(id);
       this.schema = schema;

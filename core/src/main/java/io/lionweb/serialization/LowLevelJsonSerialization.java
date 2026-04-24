@@ -264,10 +264,12 @@ public class LowLevelJsonSerialization {
     try {
       JsonObject jsonObject = jsonElement.getAsJsonObject();
 
+      MetaPointer classifier = SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "classifier");
+      Schema schema = Schema.fromMetaPointer(classifier);
       SerializedClassifierInstance serializedClassifierInstance =
-          new SerializedClassifierInstance();
-      serializedClassifierInstance.setClassifier(
-          SerializationUtils.tryToGetMetaPointerProperty(jsonObject, "classifier"));
+          new SerializedClassifierInstance(schema);
+//      serializedClassifierInstance.setClassifier(
+//          );
       serializedClassifierInstance.setParentNodeID(
           SerializationUtils.tryToGetStringProperty(jsonObject, "parent"));
 

@@ -147,13 +147,13 @@ public class PerformanceTestHomogeneousModelRepositoryData {
             String s1 = "stmt-" + j;
             sci.unsafeAppendContainmentValue(new SerializedContainmentValue(MP_BODY, s1));
 
-            SerializedClassifierInstance p1Ci = new SerializedClassifierInstance(p1, MP_PARAM);
+            SerializedClassifierInstance p1Ci = new SerializedClassifierInstance(p1, Schema.fromMetaPointer(MP_PARAM));
             nodesInChunk.add(p1Ci);
 
-            SerializedClassifierInstance p2Ci = new SerializedClassifierInstance(p2, MP_PARAM);
+            SerializedClassifierInstance p2Ci = new SerializedClassifierInstance(p2, Schema.fromMetaPointer(MP_PARAM));
             nodesInChunk.add(p2Ci);
 
-            SerializedClassifierInstance stmtCi = new SerializedClassifierInstance(s1, MP_STMT);
+            SerializedClassifierInstance stmtCi = new SerializedClassifierInstance(s1, Schema.fromMetaPointer(MP_STMT));
             nodesInChunk.add(stmtCi);
 
             // 2 references
