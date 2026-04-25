@@ -10,12 +10,12 @@ import java.util.BitSet;
  * This avoids the cost of k independent hash computations while maintaining good independence.
  *
  * <p>Sized for ~1% false-positive rate: m ≈ 9.6 bits per expected element. At 67 000 nodes per
- * partition this is roughly 80 KB per filter — negligible compared to the serialized partition
- * data that would otherwise be read from disk.
+ * partition this is roughly 80 KB per filter — negligible compared to the serialized partition data
+ * that would otherwise be read from disk.
  *
  * <p>False negatives are impossible: a node ID that was {@link #add added} will always return
- * {@code true} from {@link #mightContain}. A {@code false} return is a definitive "not present"
- * and allows skipping the disk read entirely.
+ * {@code true} from {@link #mightContain}. A {@code false} return is a definitive "not present" and
+ * allows skipping the disk read entirely.
  */
 class PartitionBloomFilter {
 

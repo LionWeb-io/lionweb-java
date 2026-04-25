@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Client for {@link DiskBackedServer} that operates on {@link SerializedClassifierInstance}
- * objects directly, without requiring language definitions.
+ * Client for {@link DiskBackedServer} that operates on {@link SerializedClassifierInstance} objects
+ * directly, without requiring language definitions.
  *
  * <p>This is the disk-backed counterpart of {@link ChunkLevelInMemoryServerClient} and has an
  * identical API.

@@ -30,10 +30,10 @@ import io.lionweb.utils.ValidationResult;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.*;
-import java.util.stream.Stream;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -48,8 +48,8 @@ import org.jetbrains.annotations.Nullable;
  * <p>The {@code maxHotPartitionsPerRepository} parameter controls how many partitions are kept in
  * memory per repository. Tune this based on available heap and the size of your partitions.
  *
- * <p>Temporary files are written under {@code tempDir}. They are not cleaned up automatically;
- * call {@link #deleteTempFiles()} when the server is no longer needed.
+ * <p>Temporary files are written under {@code tempDir}. They are not cleaned up automatically; call
+ * {@link #deleteTempFiles()} when the server is no longer needed.
  */
 public class DiskBackedServer {
 
@@ -365,7 +365,11 @@ public class DiskBackedServer {
         channel.sendEvent(
             seq ->
                 new ChildAdded(
-                        seq, addChild.parent, addChild.newChild, addChild.containment, addChild.index)
+                        seq,
+                        addChild.parent,
+                        addChild.newChild,
+                        addChild.containment,
+                        addChild.index)
                     .addSource(source));
         return;
       } else if (command instanceof DeleteChild) {
@@ -412,7 +416,8 @@ public class DiskBackedServer {
         node.addReferenceValue(
             addReference.reference,
             addReference.index,
-            new SerializedReferenceValue.Entry(addReference.newTarget, addReference.newResolveInfo));
+            new SerializedReferenceValue.Entry(
+                addReference.newTarget, addReference.newResolveInfo));
         repoData.hotRepositoryDataForNode(addReference.parent);
         channel.sendEvent(
             seq ->

@@ -14,7 +14,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,12 +21,14 @@ import org.jetbrains.annotations.Nullable;
  * Holds all node data for a single repository using a two-tier hot/cold strategy.
  *
  * <h3>Hot / cold tiers</h3>
+ *
  * Hot partitions are kept as {@link RepositoryData} instances in memory. Cold partitions are
  * serialized to disk as Protobuf files and evicted from memory using an LRU policy bounded by
  * {@code maxHotPartitions}. Promoting a cold partition back to hot deserializes the file and
  * rebuilds its {@link RepositoryData}.
  *
  * <h3>Bloom filters</h3>
+ *
  * Each cold partition has a {@link PartitionBloomFilter} built at eviction time (while nodes are
  * still in memory). On a cold-node lookup, every cold partition's filter is checked first. A
  * definitive "not present" from the filter skips the disk read entirely. Only "maybe present"
@@ -35,12 +36,12 @@ import org.jetbrains.annotations.Nullable;
  * to O(cold_partitions × memory) in the common case.
  *
  * <h3>Count indexes</h3>
- * Two compact count indexes — {@code classifierCountIndex} and {@code languageCountIndex} — cover
- * all partitions (hot and cold) and survive eviction. They let {@code nodesByClassifier} and
- * {@code nodesByLanguage} return accurate totals without loading cold partitions.
  *
- * <p><b>Thread safety:</b> same caveats as {@link RepositoryData} — mutations are not
- * thread-safe.
+ * Two compact count indexes — {@code classifierCountIndex} and {@code languageCountIndex} — cover
+ * all partitions (hot and cold) and survive eviction. They let {@code nodesByClassifier} and {@code
+ * nodesByLanguage} return accurate totals without loading cold partitions.
+ *
+ * <p><b>Thread safety:</b> same caveats as {@link RepositoryData} — mutations are not thread-safe.
  */
 class DiskBackedRepositoryData {
 
@@ -52,37 +53,36 @@ class DiskBackedRepositoryData {
   final List<String> partitionIDs = new ArrayList<>();
 
   /**
-   * Access-order LinkedHashMap gives LRU eviction: the eldest entry is the least-recently
-   * accessed partition and is evicted to disk when the hot tier is full.
+   * Access-order LinkedHashMap gives LRU eviction: the eldest entry is the least-recently accessed
+   * partition and is evicted to disk when the hot tier is full.
    */
   private final Map<String, RepositoryData> hotPartitions;
 
   private final Set<String> coldPartitionIDs = new HashSet<>();
 
   /**
-   * Bloom filter per cold partition, built at eviction time.
-   * A "definitely absent" answer lets us skip the disk read entirely during cold-node lookup.
+   * Bloom filter per cold partition, built at eviction time. A "definitely absent" answer lets us
+   * skip the disk read entirely during cold-node lookup.
    */
   private final Map<String, PartitionBloomFilter> coldPartitionFilters = new HashMap<>();
 
   private final Set<String> dirtyPartitions = new HashSet<>();
 
   /**
-   * nodeId → partitionId for nodes currently in hot partitions. May have stale entries for
-   * deleted nodes; entries are validated and cleaned up on lookup.
+   * nodeId → partitionId for nodes currently in hot partitions. May have stale entries for deleted
+   * nodes; entries are validated and cleaned up on lookup.
    */
   private final Map<String, String> hotNodeIndex = new HashMap<>();
 
   /**
-   * Compact count index covering ALL partitions (hot + cold).
-   * ClassifierKey → (partitionId → node count in that partition).
-   * Kept in sync on every mutation; entries survive eviction.
+   * Compact count index covering ALL partitions (hot + cold). ClassifierKey → (partitionId → node
+   * count in that partition). Kept in sync on every mutation; entries survive eviction.
    */
   private final Map<ClassifierKey, Map<String, Integer>> classifierCountIndex = new HashMap<>();
 
   /**
-   * Compact count index covering ALL partitions (hot + cold).
-   * language string → (partitionId → node count in that partition).
+   * Compact count index covering ALL partitions (hot + cold). language string → (partitionId → node
+   * count in that partition).
    */
   private final Map<String, Map<String, Integer>> languageCountIndex = new HashMap<>();
 
@@ -91,10 +91,24 @@ class DiskBackedRepositoryData {
   private int currentVersion = 0;
   private int nextId = 1;
 
+  DiskBackedRepositoryData(@NotNull RepositoryConfiguration configuration) {
+    this(configuration, createDefaultRepoDir(configuration.getName()), 200);
+  }
+
+  private static Path createDefaultRepoDir(String repositoryName) {
+    try {
+      return Files.createTempDirectory("lionweb-diskbacked-" + sanitize(repositoryName) + "-");
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private static String sanitize(String name) {
+    return name.replaceAll("[^a-zA-Z0-9._-]", "_");
+  }
+
   DiskBackedRepositoryData(
-      @NotNull RepositoryConfiguration configuration,
-      @NotNull Path repoDir,
-      int maxHotPartitions) {
+      @NotNull RepositoryConfiguration configuration, @NotNull Path repoDir, int maxHotPartitions) {
     this.configuration = configuration;
     this.repoDir = repoDir;
     this.maxHotPartitions = maxHotPartitions;
@@ -131,7 +145,8 @@ class DiskBackedRepositoryData {
     return result;
   }
 
-  void addPartition(@NotNull String partitionId, @NotNull List<SerializedClassifierInstance> nodes) {
+  void addPartition(
+      @NotNull String partitionId, @NotNull List<SerializedClassifierInstance> nodes) {
     if (!partitionIDs.contains(partitionId)) {
       partitionIDs.add(partitionId);
     }
@@ -199,9 +214,7 @@ class DiskBackedRepositoryData {
   }
 
   void retrieve(
-      @NotNull String nodeId,
-      int limit,
-      @NotNull List<SerializedClassifierInstance> result) {
+      @NotNull String nodeId, int limit, @NotNull List<SerializedClassifierInstance> result) {
     String pid = findHotPartitionFor(nodeId);
     if (pid == null) {
       pid = findAndLoadColdPartitionFor(nodeId);
@@ -213,9 +226,9 @@ class DiskBackedRepositoryData {
   }
 
   /**
-   * Returns the hot {@link RepositoryData} that contains the given node, loading its partition
-   * from disk if necessary. Marks the partition dirty since the caller intends to mutate the
-   * returned node in-place.
+   * Returns the hot {@link RepositoryData} that contains the given node, loading its partition from
+   * disk if necessary. Marks the partition dirty since the caller intends to mutate the returned
+   * node in-place.
    */
   @NotNull
   RepositoryData hotRepositoryDataForNode(@NotNull String nodeId) {
@@ -231,8 +244,8 @@ class DiskBackedRepositoryData {
   }
 
   /**
-   * Returns accurate totals across ALL partitions (hot + cold) using the compact count index.
-   * Node ID samples in the result are drawn from hot partitions only.
+   * Returns accurate totals across ALL partitions (hot + cold) using the compact count index. Node
+   * ID samples in the result are drawn from hot partitions only.
    */
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(@Nullable Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
@@ -260,8 +273,8 @@ class DiskBackedRepositoryData {
   }
 
   /**
-   * Returns accurate totals across ALL partitions (hot + cold) using the compact count index.
-   * Node ID samples in the result are drawn from hot partitions only.
+   * Returns accurate totals across ALL partitions (hot + cold) using the compact count index. Node
+   * ID samples in the result are drawn from hot partitions only.
    */
   Map<String, ClassifierResult> nodesByLanguage(@Nullable Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
@@ -283,6 +296,15 @@ class DiskBackedRepositoryData {
       for (int c : entry.getValue().values()) total += c;
       Set<String> ids = hotIds.getOrDefault(entry.getKey(), Collections.<String>emptySet());
       result.put(entry.getKey(), new ClassifierResult(ids, total));
+    }
+    return result;
+  }
+
+  /** Returns all node IDs currently in hot partitions. */
+  Set<String> nodeIDs() {
+    Set<String> result = new HashSet<>();
+    for (RepositoryData rd : hotPartitions.values()) {
+      result.addAll(rd.nodesByID.keySet());
     }
     return result;
   }
@@ -324,8 +346,7 @@ class DiskBackedRepositoryData {
   }
 
   private String resolvePartition(
-      SerializedClassifierInstance node,
-      Map<String, SerializedClassifierInstance> batchMap) {
+      SerializedClassifierInstance node, Map<String, SerializedClassifierInstance> batchMap) {
     if (node.getParentNodeID() == null) {
       return node.getID();
     }
