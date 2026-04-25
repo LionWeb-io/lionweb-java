@@ -368,9 +368,18 @@ class DiskBackedRepositoryData {
   /**
    * Scans cold partitions for the given node ID using Bloom filters to skip candidates that
    * definitely do not contain the node. Loads and promotes the matching partition on success.
+   *
+   * <p>Partition roots are short-circuited: if the node ID is itself a cold partition ID, the
+   * partition is loaded directly without any Bloom filter scan. This covers the dominant access
+   * pattern of {@code retrieve(partitionRootId, depth)}.
    */
   @Nullable
   private String findAndLoadColdPartitionFor(String nodeId) {
+    // Fast path: partition roots are their own partition ID
+    if (coldPartitionIDs.contains(nodeId)) {
+      ensureHot(nodeId);
+      return nodeId;
+    }
     for (String coldPid : new ArrayList<>(coldPartitionIDs)) {
       PartitionBloomFilter filter = coldPartitionFilters.get(coldPid);
       if (filter != null && !filter.mightContain(nodeId)) {
