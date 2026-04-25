@@ -4,7 +4,7 @@ import io.lionweb.client.api.ClassifierKey;
 import io.lionweb.client.api.ClassifierResult;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.api.RepositoryVersionToken;
-import io.lionweb.serialization.LowLevelJsonSerialization;
+import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.ValidationResult;
@@ -21,28 +21,30 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Holds all node data for a single repository using a two-tier hot/cold strategy.
  *
- * <p>Hot partitions are kept as {@link RepositoryData} instances in memory. Cold partitions are
- * serialized to disk and evicted from memory using LRU policy. The number of hot partitions is
- * bounded by {@code maxHotPartitions}; when the limit is exceeded the least-recently-used
- * partition is flushed to disk.
+ * <h3>Hot / cold tiers</h3>
+ * Hot partitions are kept as {@link RepositoryData} instances in memory. Cold partitions are
+ * serialized to disk as Protobuf files and evicted from memory using an LRU policy bounded by
+ * {@code maxHotPartitions}. Promoting a cold partition back to hot deserializes the file and
+ * rebuilds its {@link RepositoryData}.
  *
- * <p>Two compact count indexes are maintained across ALL partitions (hot and cold):
- * {@code classifierCountIndex} and {@code languageCountIndex}. Each maps a classifier/language
- * key to a per-partition count. This lets {@code nodesByClassifier} and {@code nodesByLanguage}
- * return accurate totals without loading cold partitions. Node IDs in the result are populated
- * from hot partitions only; to get IDs from a cold partition, warm it up first via
- * {@code retrieve}.
+ * <h3>Bloom filters</h3>
+ * Each cold partition has a {@link PartitionBloomFilter} built at eviction time (while nodes are
+ * still in memory). On a cold-node lookup, every cold partition's filter is checked first. A
+ * definitive "not present" from the filter skips the disk read entirely. Only "maybe present"
+ * partitions are actually read from disk. This reduces cold lookups from O(cold_partitions × disk)
+ * to O(cold_partitions × memory) in the common case.
  *
- * <p>Cold-node lookup during {@code store} or {@code retrieve} automatically loads the
- * appropriate cold partition. The lookup scans cold partition files (O(cold partitions));
- * a bloom-filter index per partition is the natural next step for very large cold sets.
+ * <h3>Count indexes</h3>
+ * Two compact count indexes — {@code classifierCountIndex} and {@code languageCountIndex} — cover
+ * all partitions (hot and cold) and survive eviction. They let {@code nodesByClassifier} and
+ * {@code nodesByLanguage} return accurate totals without loading cold partitions.
  *
  * <p><b>Thread safety:</b> same caveats as {@link RepositoryData} — mutations are not
  * thread-safe.
  */
 class DiskBackedRepositoryData {
 
-  private static final LowLevelJsonSerialization SERIALIZATION = new LowLevelJsonSerialization();
+  private static final ProtoBufSerialization SERIALIZATION = new ProtoBufSerialization();
 
   @NotNull final RepositoryConfiguration configuration;
 
@@ -56,18 +58,25 @@ class DiskBackedRepositoryData {
   private final Map<String, RepositoryData> hotPartitions;
 
   private final Set<String> coldPartitionIDs = new HashSet<>();
+
+  /**
+   * Bloom filter per cold partition, built at eviction time.
+   * A "definitely absent" answer lets us skip the disk read entirely during cold-node lookup.
+   */
+  private final Map<String, PartitionBloomFilter> coldPartitionFilters = new HashMap<>();
+
   private final Set<String> dirtyPartitions = new HashSet<>();
 
   /**
    * nodeId → partitionId for nodes currently in hot partitions. May have stale entries for
-   * deleted nodes; validated and cleaned up on lookup.
+   * deleted nodes; entries are validated and cleaned up on lookup.
    */
   private final Map<String, String> hotNodeIndex = new HashMap<>();
 
   /**
    * Compact count index covering ALL partitions (hot + cold).
    * ClassifierKey → (partitionId → node count in that partition).
-   * Kept in sync on every mutation; never cleared on eviction.
+   * Kept in sync on every mutation; entries survive eviction.
    */
   private final Map<ClassifierKey, Map<String, Integer>> classifierCountIndex = new HashMap<>();
 
@@ -127,6 +136,7 @@ class DiskBackedRepositoryData {
       partitionIDs.add(partitionId);
     }
     coldPartitionIDs.remove(partitionId);
+    coldPartitionFilters.remove(partitionId);
     RepositoryData rd = new RepositoryData(configuration);
     rd.partitionIDs.add(partitionId);
     rd.store(nodes);
@@ -141,6 +151,7 @@ class DiskBackedRepositoryData {
   void deletePartition(@NotNull String partitionId) {
     partitionIDs.remove(partitionId);
     coldPartitionIDs.remove(partitionId);
+    coldPartitionFilters.remove(partitionId);
     dirtyPartitions.remove(partitionId);
     RepositoryData rd = hotPartitions.remove(partitionId);
     if (rd != null) {
@@ -183,7 +194,6 @@ class DiskBackedRepositoryData {
       for (SerializedClassifierInstance n : entry.getValue()) {
         hotNodeIndex.put(n.getID(), pid);
       }
-      // Rebuild counts after store — ChangeCalculator may have implicitly removed nodes
       rebuildPartitionCountIndices(pid, rd);
     }
   }
@@ -227,7 +237,6 @@ class DiskBackedRepositoryData {
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(@Nullable Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
 
-    // Collect IDs from hot partitions, capped at actualLimit per classifier
     Map<ClassifierKey, Set<String>> hotIds = new HashMap<>();
     for (RepositoryData rd : hotPartitions.values()) {
       for (SerializedClassifierInstance n : rd.nodesByID.values()) {
@@ -240,7 +249,6 @@ class DiskBackedRepositoryData {
       }
     }
 
-    // Build results using global count index for totals
     Map<ClassifierKey, ClassifierResult> result = new HashMap<>();
     for (Map.Entry<ClassifierKey, Map<String, Integer>> entry : classifierCountIndex.entrySet()) {
       int total = 0;
@@ -258,7 +266,6 @@ class DiskBackedRepositoryData {
   Map<String, ClassifierResult> nodesByLanguage(@Nullable Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
 
-    // Collect IDs from hot partitions, capped at actualLimit per language
     Map<String, Set<String>> hotIds = new HashMap<>();
     for (RepositoryData rd : hotPartitions.values()) {
       for (SerializedClassifierInstance n : rd.nodesByID.values()) {
@@ -270,7 +277,6 @@ class DiskBackedRepositoryData {
       }
     }
 
-    // Build results using global count index for totals
     Map<String, ClassifierResult> result = new HashMap<>();
     for (Map.Entry<String, Map<String, Integer>> entry : languageCountIndex.entrySet()) {
       int total = 0;
@@ -292,18 +298,16 @@ class DiskBackedRepositoryData {
 
   // --- private helpers ---
 
-  /**
-   * Rebuilds the classifier and language count entries for a single partition. Removes old counts
-   * for this partition, then recomputes from the partition's current node set.
-   */
   private void rebuildPartitionCountIndices(String partitionId, RepositoryData rd) {
     removePartitionFromCountIndices(partitionId);
     for (SerializedClassifierInstance n : rd.nodesByID.values()) {
       ClassifierKey ck =
           new ClassifierKey(n.getClassifier().getLanguage(), n.getClassifier().getKey());
-      classifierCountIndex.computeIfAbsent(ck, k -> new HashMap<>())
+      classifierCountIndex
+          .computeIfAbsent(ck, k -> new HashMap<>())
           .merge(partitionId, 1, Integer::sum);
-      languageCountIndex.computeIfAbsent(n.getClassifier().getLanguage(), k -> new HashMap<>())
+      languageCountIndex
+          .computeIfAbsent(n.getClassifier().getLanguage(), k -> new HashMap<>())
           .merge(partitionId, 1, Integer::sum);
     }
   }
@@ -319,11 +323,6 @@ class DiskBackedRepositoryData {
     languageCountIndex.values().removeIf(Map::isEmpty);
   }
 
-  /**
-   * Resolves which partition a node belongs to. For root nodes it's trivially the node itself.
-   * For non-root nodes the parent chain is walked through the batch, then hot nodes, then (as a
-   * last resort) cold partition files are scanned and automatically loaded.
-   */
   private String resolvePartition(
       SerializedClassifierInstance node,
       Map<String, SerializedClassifierInstance> batchMap) {
@@ -342,15 +341,16 @@ class DiskBackedRepositoryData {
         }
         current = parent.getParentNodeID();
       } else {
-        // Parent is neither in the batch nor in a hot partition — scan cold partitions
+        // Parent not in batch and not hot — scan cold partitions (auto-load)
         String coldPid = findAndLoadColdPartitionFor(current);
         if (coldPid != null) return coldPid;
         break;
       }
     }
     throw new IllegalArgumentException(
-        "Cannot determine partition for node " + node.getID() + ". "
-            + "Ensure the partition exists before storing its nodes.");
+        "Cannot determine partition for node "
+            + node.getID()
+            + ". Ensure the partition exists before storing its nodes.");
   }
 
   @Nullable
@@ -365,14 +365,23 @@ class DiskBackedRepositoryData {
     return pid;
   }
 
+  /**
+   * Scans cold partitions for the given node ID using Bloom filters to skip candidates that
+   * definitely do not contain the node. Loads and promotes the matching partition on success.
+   */
   @Nullable
   private String findAndLoadColdPartitionFor(String nodeId) {
     for (String coldPid : new ArrayList<>(coldPartitionIDs)) {
+      PartitionBloomFilter filter = coldPartitionFilters.get(coldPid);
+      if (filter != null && !filter.mightContain(nodeId)) {
+        continue; // definitely not in this partition — skip disk read
+      }
+      // Filter says "maybe" — verify by reading the file
       Path file = partitionFile(coldPid);
       if (!Files.exists(file)) continue;
       try {
-        String json = Files.readString(file, StandardCharsets.UTF_8);
-        SerializationChunk chunk = SERIALIZATION.deserializeSerializationBlock(json);
+        byte[] bytes = Files.readAllBytes(file);
+        SerializationChunk chunk = SERIALIZATION.deserializeToChunk(bytes);
         boolean found =
             chunk.getClassifierInstances().stream().anyMatch(n -> nodeId.equals(n.getID()));
         if (found) {
@@ -396,6 +405,7 @@ class DiskBackedRepositoryData {
     }
     RepositoryData rd = loadFromDisk(partitionId);
     coldPartitionIDs.remove(partitionId);
+    coldPartitionFilters.remove(partitionId);
     hotPartitions.put(partitionId, rd); // may trigger eviction of another partition
     for (String nid : rd.nodesByID.keySet()) {
       hotNodeIndex.put(nid, partitionId);
@@ -406,9 +416,14 @@ class DiskBackedRepositoryData {
     if (dirtyPartitions.remove(partitionId)) {
       writeToDisk(partitionId, rd);
     }
+    // Build Bloom filter while nodes are still in memory
+    PartitionBloomFilter filter = new PartitionBloomFilter(rd.nodesByID.size());
+    rd.nodesByID.keySet().forEach(filter::add);
+    coldPartitionFilters.put(partitionId, filter);
+
     rd.nodesByID.keySet().forEach(hotNodeIndex::remove);
     coldPartitionIDs.add(partitionId);
-    // Count index entries remain — they are still valid for cold partitions
+    // Count index entries survive eviction — they remain valid for cold partitions
   }
 
   private void writeToDisk(String partitionId, RepositoryData rd) {
@@ -416,9 +431,9 @@ class DiskBackedRepositoryData {
     if (nodes.isEmpty()) return;
     SerializationChunk chunk =
         SerializationChunk.fromNodes(configuration.getLionWebVersion(), nodes);
-    String json = SERIALIZATION.serializeToJsonString(chunk);
+    byte[] bytes = SERIALIZATION.serializeToByteArray(chunk);
     try {
-      Files.writeString(partitionFile(partitionId), json, StandardCharsets.UTF_8);
+      Files.write(partitionFile(partitionId), bytes);
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
@@ -427,8 +442,8 @@ class DiskBackedRepositoryData {
   private RepositoryData loadFromDisk(String partitionId) {
     Path file = partitionFile(partitionId);
     try {
-      String json = Files.readString(file, StandardCharsets.UTF_8);
-      SerializationChunk chunk = SERIALIZATION.deserializeSerializationBlock(json);
+      byte[] bytes = Files.readAllBytes(file);
+      SerializationChunk chunk = SERIALIZATION.deserializeToChunk(bytes);
       RepositoryData rd = new RepositoryData(configuration);
       rd.partitionIDs.add(partitionId);
       List<SerializedClassifierInstance> nodes = new ArrayList<>(chunk.getClassifierInstances());
@@ -446,6 +461,6 @@ class DiskBackedRepositoryData {
     if (encoded.length() > 200) {
       encoded = encoded.substring(0, 200);
     }
-    return repoDir.resolve(encoded + ".json");
+    return repoDir.resolve(encoded + ".pb");
   }
 }
