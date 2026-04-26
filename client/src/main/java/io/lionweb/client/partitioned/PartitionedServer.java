@@ -11,6 +11,7 @@ import io.lionweb.utils.ValidationResult;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,8 @@ public class PartitionedServer implements Closeable {
   private final Map<String, PartitionedRepositoryData> repositories = new ConcurrentHashMap<>();
   private final RepositoryBackend backend;
   private final CacheConfig cacheConfig;
+  /** Non-null only when this instance owns the directory and must delete it at shutdown. */
+  private final Path ownedTempDir;
 
   // -------------------------------------------------------------------------
   // Constructors
@@ -50,12 +53,12 @@ public class PartitionedServer implements Closeable {
    * cache configuration ({@link CacheConfig#DEFAULT}).
    */
   public PartitionedServer(@NotNull Path storageDir) {
-    this(new DiskRepositoryBackend(storageDir), CacheConfig.DEFAULT);
+    this(new DiskRepositoryBackend(storageDir), CacheConfig.DEFAULT, null);
   }
 
   /** Creates a server with explicit cache configuration. */
   public PartitionedServer(@NotNull Path storageDir, @NotNull CacheConfig cacheConfig) {
-    this(new DiskRepositoryBackend(storageDir), cacheConfig);
+    this(new DiskRepositoryBackend(storageDir), cacheConfig, null);
   }
 
   /**
@@ -63,8 +66,49 @@ public class PartitionedServer implements Closeable {
    * backends) or alternative storage strategies.
    */
   public PartitionedServer(@NotNull RepositoryBackend backend, @NotNull CacheConfig cacheConfig) {
+    this(backend, cacheConfig, null);
+  }
+
+  /**
+   * Creates a temporary server that allocates its own directory under the system temp folder and
+   * deletes it automatically when the JVM exits (via a shutdown hook) or when {@link #close()} is
+   * called explicitly.
+   *
+   * <p>This constructor is convenient for tests and short-lived processing jobs that need
+   * disk-backed partition storage without managing a directory lifecycle manually.
+   *
+   * <pre>{@code
+   * try (PartitionedServer server = PartitionedServer.withTempStorage()) {
+   *     server.createRepository(...);
+   *     // use server
+   * }
+   * }</pre>
+   */
+  public static PartitionedServer withTempStorage() {
+    return withTempStorage(CacheConfig.DEFAULT);
+  }
+
+  /** Like {@link #withTempStorage()} but with an explicit cache configuration. */
+  public static PartitionedServer withTempStorage(@NotNull CacheConfig cacheConfig) {
+    try {
+      Path dir = Files.createTempDirectory("lionweb-partitioned-");
+      return new PartitionedServer(new DiskRepositoryBackend(dir), cacheConfig, dir);
+    } catch (IOException e) {
+      throw new UncheckedIOException(e);
+    }
+  }
+
+  private PartitionedServer(
+      @NotNull RepositoryBackend backend,
+      @NotNull CacheConfig cacheConfig,
+      @Nullable Path ownedTempDir) {
     this.backend = backend;
     this.cacheConfig = cacheConfig;
+    this.ownedTempDir = ownedTempDir;
+    if (ownedTempDir != null) {
+      Runtime.getRuntime()
+          .addShutdownHook(new Thread(() -> deleteDirectoryQuietly(ownedTempDir)));
+    }
   }
 
   // -------------------------------------------------------------------------
@@ -276,6 +320,9 @@ public class PartitionedServer implements Closeable {
   /**
    * Flushes all dirty partitions and releases resources. After calling {@code close()}, the server
    * must not be used.
+   *
+   * <p>If this server was created via {@link #withTempStorage()}, the temporary directory is also
+   * deleted here and the JVM shutdown hook is cancelled.
    */
   @Override
   public void close() {
@@ -287,11 +334,30 @@ public class PartitionedServer implements Closeable {
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+    if (ownedTempDir != null) {
+      deleteDirectoryQuietly(ownedTempDir);
+    }
   }
 
   // -------------------------------------------------------------------------
   // Private helpers
   // -------------------------------------------------------------------------
+
+  private static void deleteDirectoryQuietly(Path dir) {
+    try {
+      if (!Files.exists(dir)) return;
+      java.nio.file.Files.walk(dir)
+          .sorted(java.util.Comparator.reverseOrder())
+          .forEach(
+              p -> {
+                try {
+                  Files.deleteIfExists(p);
+                } catch (IOException ignored) {
+                }
+              });
+    } catch (IOException ignored) {
+    }
+  }
 
   private @NotNull PartitionedRepositoryData getRepository(@NotNull String repositoryName) {
     Objects.requireNonNull(repositoryName);
