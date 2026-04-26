@@ -8,8 +8,7 @@ package io.lionweb.client.partitioned;
  */
 public final class CacheConfig {
 
-  /** Conservative default: 16 partitions / 500 000 total nodes. */
-  public static final CacheConfig DEFAULT = new CacheConfig(16, 500_000);
+  public static final CacheConfig DEFAULT = new CacheConfig(2_000, 5_000_000);
 
   private final int maxLoadedPartitions;
   private final int maxLoadedNodes;
