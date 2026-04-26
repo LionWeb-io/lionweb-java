@@ -151,7 +151,7 @@ public class PartitionedServerBenchmark {
 
   private static void deleteRecursively(Path dir) throws IOException {
     if (!Files.exists(dir)) return;
-    try (var stream = Files.walk(dir)) {
+    try (java.util.stream.Stream<Path> stream = Files.walk(dir)) {
       stream
           .sorted(Comparator.reverseOrder())
           .forEach(
