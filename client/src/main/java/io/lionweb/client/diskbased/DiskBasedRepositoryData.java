@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 class DiskBasedRepositoryData {
   @NotNull RepositoryConfiguration configuration;
   final List<String> partitionIDs = new ArrayList<>();
-  final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
+    //final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
 
   /** Pre-computed index: ClassifierKey → set of node IDs. Kept in sync with nodesByID. */
   private final Map<ClassifierKey, Set<String>> classifierIndex = new HashMap<>();
@@ -36,14 +36,29 @@ class DiskBasedRepositoryData {
   private int currentVersion = 0;
   private int nextId = 1;
 
-  void deleteNodeAndDescendant(String nodeId) {
-    SerializedClassifierInstance curr = nodesByID.get(nodeId);
-    if (curr == null) {
-      throw new IllegalArgumentException("Node " + nodeId + " does not exist");
+  private int maxHotPartitions = 100;
+
+    private ColdPartitionManager coldPartitions = new ColdPartitionManager();
+    private HotPartitionManager hotPartitions = new HotPartitionManager(maxHotPartitions, coldPartitions);
+
+    public int getMaxHotPartitions() {
+        return maxHotPartitions;
     }
-    indexRemove(curr);
-    nodesByID.remove(nodeId);
-    curr.getChildren().forEach(this::deleteNodeAndDescendant);
+
+    public void setMaxHotPartitions(int maxHotPartitions) {
+        this.maxHotPartitions = maxHotPartitions;
+        this.hotPartitions.setMaxHotPartitions(maxHotPartitions);
+    }
+
+    void deleteNodeAndDescendant(String nodeId) {
+//    SerializedClassifierInstance curr = nodesByID.get(nodeId);
+//    if (curr == null) {
+//      throw new IllegalArgumentException("Node " + nodeId + " does not exist");
+//    }
+//    indexRemove(curr);
+//    nodesByID.remove(nodeId);
+//    curr.getChildren().forEach(this::deleteNodeAndDescendant);
+        throw new UnsupportedOperationException();
   }
 
   private ClassifierKey classifierKeyOf(SerializedClassifierInstance node) {
@@ -109,93 +124,96 @@ class DiskBasedRepositoryData {
         List<String> oldState,
         List<String> newState,
         String role) {
-      Set<String> oldStateSet = new HashSet<>(oldState);
-      Set<String> newStateSet = new HashSet<>(newState);
-      for (String n : newState) {
-        if (!oldStateSet.contains(n)) {
-          this.addedNodes.put(n, updatedNodesAsMap.get(n));
-        }
-      }
-      List<String> unknownNodes = null;
-      for (String c : newState) {
-        if (!updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c)) {
-          if (unknownNodes == null) unknownNodes = new ArrayList<>();
-          unknownNodes.add(c);
-        }
-      }
-      if (unknownNodes != null) {
-        throw new IllegalArgumentException("We got unknown nodes as " + role + ": " + unknownNodes);
-      }
-      for (String n : oldState) {
-        if (!newStateSet.contains(n)) {
-          this.removedNodes.add(n);
-        }
-      }
+//      Set<String> oldStateSet = new HashSet<>(oldState);
+//      Set<String> newStateSet = new HashSet<>(newState);
+//      for (String n : newState) {
+//        if (!oldStateSet.contains(n)) {
+//          this.addedNodes.put(n, updatedNodesAsMap.get(n));
+//        }
+//      }
+//      List<String> unknownNodes = null;
+//      for (String c : newState) {
+//        if (!updatedNodesAsMap.containsKey(c) && !nodesByID.containsKey(c)) {
+//          if (unknownNodes == null) unknownNodes = new ArrayList<>();
+//          unknownNodes.add(c);
+//        }
+//      }
+//      if (unknownNodes != null) {
+//        throw new IllegalArgumentException("We got unknown nodes as " + role + ": " + unknownNodes);
+//      }
+//      for (String n : oldState) {
+//        if (!newStateSet.contains(n)) {
+//          this.removedNodes.add(n);
+//        }
+//      }
+        throw new UnsupportedOperationException();
     }
 
     void store(List<SerializedClassifierInstance> updatedNodes) {
-      Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
-      updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
-      for (SerializedClassifierInstance updatedNode : updatedNodes) {
-        if (nodesByID.containsKey(updatedNode.getID())) {
-          SerializedClassifierInstance currentNode = nodesByID.get(updatedNode.getID());
-          if (currentNode.getParentNodeID() != null
-              && !updatedNodesAsMap.containsKey(currentNode.getParentNodeID())) {
-            // If the node currently has a parent, which has not been modified it can only means two
-            // things:
-            // - The node has changed parent, being removed from the old parent
-            // - The node stayed where it was: same parent, same position
-            if (!currentNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
-              removeContainedNode(currentNode.getParentNodeID(), updatedNode.getID());
-            }
-          }
-          calculateNodeListDifferences(
-              updatedNodesAsMap,
-              nodesByID.get(updatedNode.getID()).getChildren(),
-              updatedNode.getChildren(),
-              "children");
-          calculateNodeListDifferences(
-              updatedNodesAsMap,
-              nodesByID.get(updatedNode.getID()).getAnnotations(),
-              updatedNode.getAnnotations(),
-              "annotations");
-        }
-      }
-      // They have been moved and not removed
-      removedNodes.removeAll(addedNodes.keySet());
-      // Update classifier index for new/updated nodes before replacing nodesByID entries
-      for (SerializedClassifierInstance updatedNode : updatedNodes) {
-        SerializedClassifierInstance existing = nodesByID.get(updatedNode.getID());
-        if (existing != null) {
-          // Handle potential classifier change (rare but correct)
-          ClassifierKey oldKey = classifierKeyOf(existing);
-          ClassifierKey newKey = classifierKeyOf(updatedNode);
-          if (!oldKey.equals(newKey)) {
-            indexRemove(existing);
-            indexAdd(updatedNode);
-          }
-        } else {
-          indexAdd(updatedNode);
-        }
-      }
-      nodesByID.putAll(updatedNodesAsMap);
-      removedNodes.forEach(this::removeNode);
+        throw new UnsupportedOperationException();
+//      Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
+//      updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
+//      for (SerializedClassifierInstance updatedNode : updatedNodes) {
+//        if (nodesByID.containsKey(updatedNode.getID())) {
+//          SerializedClassifierInstance currentNode = nodesByID.get(updatedNode.getID());
+//          if (currentNode.getParentNodeID() != null
+//              && !updatedNodesAsMap.containsKey(currentNode.getParentNodeID())) {
+//            // If the node currently has a parent, which has not been modified it can only means two
+//            // things:
+//            // - The node has changed parent, being removed from the old parent
+//            // - The node stayed where it was: same parent, same position
+//            if (!currentNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
+//              removeContainedNode(currentNode.getParentNodeID(), updatedNode.getID());
+//            }
+//          }
+//          calculateNodeListDifferences(
+//              updatedNodesAsMap,
+//              nodesByID.get(updatedNode.getID()).getChildren(),
+//              updatedNode.getChildren(),
+//              "children");
+//          calculateNodeListDifferences(
+//              updatedNodesAsMap,
+//              nodesByID.get(updatedNode.getID()).getAnnotations(),
+//              updatedNode.getAnnotations(),
+//              "annotations");
+//        }
+//      }
+//      // They have been moved and not removed
+//      removedNodes.removeAll(addedNodes.keySet());
+//      // Update classifier index for new/updated nodes before replacing nodesByID entries
+//      for (SerializedClassifierInstance updatedNode : updatedNodes) {
+//        SerializedClassifierInstance existing = nodesByID.get(updatedNode.getID());
+//        if (existing != null) {
+//          // Handle potential classifier change (rare but correct)
+//          ClassifierKey oldKey = classifierKeyOf(existing);
+//          ClassifierKey newKey = classifierKeyOf(updatedNode);
+//          if (!oldKey.equals(newKey)) {
+//            indexRemove(existing);
+//            indexAdd(updatedNode);
+//          }
+//        } else {
+//          indexAdd(updatedNode);
+//        }
+//      }
+//      nodesByID.putAll(updatedNodesAsMap);
+//      removedNodes.forEach(this::removeNode);
     }
 
     private void removeNode(String removeNodeId) {
-      SerializedClassifierInstance serializedClassifierInstance = nodesByID.get(removeNodeId);
-      for (String childId : serializedClassifierInstance.getChildren()) {
-        if (!addedNodes.containsKey(childId)) {
-          removeNode(childId);
-        }
-      }
-      for (String annotationId : serializedClassifierInstance.getAnnotations()) {
-        if (!addedNodes.containsKey(annotationId)) {
-          removeNode(annotationId);
-        }
-      }
-      indexRemove(serializedClassifierInstance);
-      nodesByID.remove(removeNodeId);
+//      SerializedClassifierInstance serializedClassifierInstance = nodesByID.get(removeNodeId);
+//      for (String childId : serializedClassifierInstance.getChildren()) {
+//        if (!addedNodes.containsKey(childId)) {
+//          removeNode(childId);
+//        }
+//      }
+//      for (String annotationId : serializedClassifierInstance.getAnnotations()) {
+//        if (!addedNodes.containsKey(annotationId)) {
+//          removeNode(annotationId);
+//        }
+//      }
+//      indexRemove(serializedClassifierInstance);
+//      nodesByID.remove(removeNodeId);
+        throw new UnsupportedOperationException();
     }
   }
 
@@ -208,9 +226,10 @@ class DiskBasedRepositoryData {
    * @param containedId the identifier of the contained node to be removed
    */
   private void removeContainedNode(String containerId, String containedId) {
-    SerializedClassifierInstance container = nodesByID.get(containerId);
-    container.getContainments().forEach(containment -> containment.removeChild(containedId));
-    container.removeAnnotation(containedId);
+//    SerializedClassifierInstance container = nodesByID.get(containerId);
+//    container.getContainments().forEach(containment -> containment.removeChild(containedId));
+//    container.removeAnnotation(containedId);
+      throw new UnsupportedOperationException();
   }
 
   DiskBasedRepositoryData(@NotNull RepositoryConfiguration configuration) {
@@ -222,15 +241,26 @@ class DiskBasedRepositoryData {
   }
 
   List<String> ids(int count) {
-    List<String> res = new ArrayList<>(count);
-    while (res.size() < count) {
-      String candidate = "id-" + (nextId++);
-      if (!nodesByID.containsKey(candidate)) {
-        res.add(candidate);
-      }
-    }
-    return res;
+//    List<String> res = new ArrayList<>(count);
+//    while (res.size() < count) {
+//      String candidate = "id-" + (nextId++);
+//      if (!nodesByID.containsKey(candidate)) {
+//        res.add(candidate);
+//      }
+//    }
+//    return res;
+      throw new UnsupportedOperationException();
   }
+
+    public Map<String, SerializedClassifierInstance> getNodesByID() {
+        throw new UnsupportedOperationException();
+    }
+
+    public Set<String> getNodesIDs() {
+        Set<String> ids = hotPartitions.getNodesIDs();
+        ids.addAll(coldPartitions.getNodesIDs());
+        return ids;
+    }
 
   void store(List<SerializedClassifierInstance> newNodes) {
     newNodes.stream()
@@ -252,129 +282,132 @@ class DiskBasedRepositoryData {
   }
 
   private void retrieveTree(String id, List<SerializedClassifierInstance> nodes) {
-    SerializedClassifierInstance n = nodesByID.get(id);
-    nodes.add(n);
-    n.getChildren().forEach(c -> retrieveTree(c, nodes));
+//    SerializedClassifierInstance n = nodesByID.get(id);
+//    nodes.add(n);
+//    n.getChildren().forEach(c -> retrieveTree(c, nodes));
+      throw new UnsupportedOperationException();
   }
 
   void retrieve(String nodeId, int limit, List<SerializedClassifierInstance> retrieved) {
-    SerializedClassifierInstance node = nodesByID.get(nodeId);
-    if (node == null) {
-      throw new IllegalArgumentException("Node with id " + nodeId + " cannot be found");
-    }
-    retrieved.add(node);
-    if (limit > 0) {
-      node.getChildren()
-          .forEach(
-              childId -> {
-                try {
-                  retrieve(childId, limit - 1, retrieved);
-                } catch (Exception e) {
-                  throw new RuntimeException("Unable to retrieve child of " + node, e);
-                }
-              });
-      node.getAnnotations()
-          .forEach(
-              annotationId -> {
-                try {
-                  retrieve(annotationId, limit - 1, retrieved);
-                } catch (Exception e) {
-                  throw new RuntimeException("Unable to retrieve annotation of " + node, e);
-                }
-              });
-    }
+//    SerializedClassifierInstance node = nodesByID.get(nodeId);
+//    if (node == null) {
+//      throw new IllegalArgumentException("Node with id " + nodeId + " cannot be found");
+//    }
+//    retrieved.add(node);
+//    if (limit > 0) {
+//      node.getChildren()
+//          .forEach(
+//              childId -> {
+//                try {
+//                  retrieve(childId, limit - 1, retrieved);
+//                } catch (Exception e) {
+//                  throw new RuntimeException("Unable to retrieve child of " + node, e);
+//                }
+//              });
+//      node.getAnnotations()
+//          .forEach(
+//              annotationId -> {
+//                try {
+//                  retrieve(annotationId, limit - 1, retrieved);
+//                } catch (Exception e) {
+//                  throw new RuntimeException("Unable to retrieve annotation of " + node, e);
+//                }
+//              });
+//    }
+      throw new UnsupportedOperationException();
   }
 
   /** This is intended for debugging purposes. It checks if the data is consistent. */
   public @NotNull ValidationResult checkConsistency() {
-    ValidationResult result = new ValidationResult();
-
-    // Check for invalid node IDs
-    for (String nodeId : nodesByID.keySet()) {
-      if (!CommonChecks.isValidID(nodeId)) {
-        result.addError("Invalid node id: " + nodeId);
-      }
-    }
-
-    // Check for duplicate node IDs (this is already guaranteed by using HashMap, but good to be
-    // explicit)
-    // No need for additional check since HashMap ensures uniqueness
-
-    // Ensuring that containments and annotations are the inverse of parent relationships
-    Map<String, Set<String>> containedNodes = new HashMap<>();
-    for (SerializedClassifierInstance node : nodesByID.values()) {
-      for (SerializedContainmentValue containmentValue : node.getContainments()) {
-        for (String childId : containmentValue.getChildrenIds()) {
-          // Verifying nodes do not appear in multiple containments or annotations
-          String newPlacement = node.getID() + " at " + containmentValue.getMetaPointer();
-          if (containedNodes.containsKey(childId)) {
-            result.addError(
-                childId
-                    + " is listed in multiple places: "
-                    + containedNodes.get(childId)
-                    + " and now "
-                    + newPlacement);
-          } else {
-            containedNodes.put(childId, new HashSet<>(Arrays.asList(newPlacement)));
-          }
-          SerializedClassifierInstance child = nodesByID.get(childId);
-          if (child != null && !child.getParentNodeID().equals(node.getID())) {
-            result.addError(
-                childId
-                    + " is listed as child of "
-                    + node.getID()
-                    + " but it has "
-                    + child.getParentNodeID()
-                    + " as parent");
-          }
-        }
-      }
-      for (String annotationId : node.getAnnotations()) {
-        // Verifying nodes do not appear in multiple containments or annotations
-        String newPlacement = node.getID() + " among annotations";
-        if (containedNodes.containsKey(annotationId)) {
-          result.addError(
-              annotationId
-                  + " is listed in multiple places: "
-                  + containedNodes.get(annotationId)
-                  + " and now "
-                  + newPlacement);
-        } else {
-          containedNodes.put(annotationId, new HashSet<>(Arrays.asList(newPlacement)));
-        }
-        SerializedClassifierInstance annotation = nodesByID.get(annotationId);
-        if (annotationId != null
-            && annotation != null
-            && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
-          result.addError(
-              annotationId
-                  + " is listed as an annotation of "
-                  + node.getID()
-                  + " but it has "
-                  + annotation.getParentNodeID()
-                  + "as parent ");
-        }
-      }
-
-      if (node.getParentNodeID() != null) {
-        SerializedClassifierInstance parent = nodesByID.get(node.getParentNodeID());
-        if (parent != null && !parent.contains(node.getID())) {
-          String msg =
-              node.getID()
-                  + " lists as parent "
-                  + node.getParentNodeID()
-                  + " but such parent does not contain it. It contains these children: "
-                  + parent.getChildren().stream().collect(Collectors.joining(", "));
-          if (!node.getAnnotations().isEmpty()) {
-            msg +=
-                " and these annotations: "
-                    + node.getAnnotations().stream().collect(Collectors.joining(", "));
-          }
-          result.addError(msg);
-        }
-      }
-    }
-
-    return result;
+//    ValidationResult result = new ValidationResult();
+//
+//    // Check for invalid node IDs
+//    for (String nodeId : nodesByID.keySet()) {
+//      if (!CommonChecks.isValidID(nodeId)) {
+//        result.addError("Invalid node id: " + nodeId);
+//      }
+//    }
+//
+//    // Check for duplicate node IDs (this is already guaranteed by using HashMap, but good to be
+//    // explicit)
+//    // No need for additional check since HashMap ensures uniqueness
+//
+//    // Ensuring that containments and annotations are the inverse of parent relationships
+//    Map<String, Set<String>> containedNodes = new HashMap<>();
+//    for (SerializedClassifierInstance node : nodesByID.values()) {
+//      for (SerializedContainmentValue containmentValue : node.getContainments()) {
+//        for (String childId : containmentValue.getChildrenIds()) {
+//          // Verifying nodes do not appear in multiple containments or annotations
+//          String newPlacement = node.getID() + " at " + containmentValue.getMetaPointer();
+//          if (containedNodes.containsKey(childId)) {
+//            result.addError(
+//                childId
+//                    + " is listed in multiple places: "
+//                    + containedNodes.get(childId)
+//                    + " and now "
+//                    + newPlacement);
+//          } else {
+//            containedNodes.put(childId, new HashSet<>(Arrays.asList(newPlacement)));
+//          }
+//          SerializedClassifierInstance child = nodesByID.get(childId);
+//          if (child != null && !child.getParentNodeID().equals(node.getID())) {
+//            result.addError(
+//                childId
+//                    + " is listed as child of "
+//                    + node.getID()
+//                    + " but it has "
+//                    + child.getParentNodeID()
+//                    + " as parent");
+//          }
+//        }
+//      }
+//      for (String annotationId : node.getAnnotations()) {
+//        // Verifying nodes do not appear in multiple containments or annotations
+//        String newPlacement = node.getID() + " among annotations";
+//        if (containedNodes.containsKey(annotationId)) {
+//          result.addError(
+//              annotationId
+//                  + " is listed in multiple places: "
+//                  + containedNodes.get(annotationId)
+//                  + " and now "
+//                  + newPlacement);
+//        } else {
+//          containedNodes.put(annotationId, new HashSet<>(Arrays.asList(newPlacement)));
+//        }
+//        SerializedClassifierInstance annotation = nodesByID.get(annotationId);
+//        if (annotationId != null
+//            && annotation != null
+//            && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
+//          result.addError(
+//              annotationId
+//                  + " is listed as an annotation of "
+//                  + node.getID()
+//                  + " but it has "
+//                  + annotation.getParentNodeID()
+//                  + "as parent ");
+//        }
+//      }
+//
+//      if (node.getParentNodeID() != null) {
+//        SerializedClassifierInstance parent = nodesByID.get(node.getParentNodeID());
+//        if (parent != null && !parent.contains(node.getID())) {
+//          String msg =
+//              node.getID()
+//                  + " lists as parent "
+//                  + node.getParentNodeID()
+//                  + " but such parent does not contain it. It contains these children: "
+//                  + parent.getChildren().stream().collect(Collectors.joining(", "));
+//          if (!node.getAnnotations().isEmpty()) {
+//            msg +=
+//                " and these annotations: "
+//                    + node.getAnnotations().stream().collect(Collectors.joining(", "));
+//          }
+//          result.addError(msg);
+//        }
+//      }
+//    }
+//
+//    return result;
+      throw new UnsupportedOperationException();
   }
 }

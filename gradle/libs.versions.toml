@@ -55,3 +55,4 @@ kotest-property = { module="io.kotest:kotest-property", version.ref = "kotest" }
 testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-pg = { module="org.testcontainers:postgresql", version.ref = "testcontainers" }
+caffeine = { module="com.github.ben-manes.caffeine:caffeine", version = "2.9.3" }

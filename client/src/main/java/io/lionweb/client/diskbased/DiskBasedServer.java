@@ -201,22 +201,23 @@ public class DiskBasedServer {
 
   public Map<String, ClassifierResult> nodesByLanguage(
       @NotNull String repositoryName, @Nullable Integer limit) {
-    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
-    Map<String, List<SerializedClassifierInstance>> byMetapointer =
-        repositoryData.nodesByID.values().stream()
-            .collect(Collectors.groupingBy(n -> n.getClassifier().getLanguage()));
-    Map<String, ClassifierResult> res = new HashMap<>();
-    for (Map.Entry<String, List<SerializedClassifierInstance>> entry : byMetapointer.entrySet()) {
-      ClassifierResult cr =
-          new ClassifierResult(
-              entry.getValue().stream()
-                  .limit(limit)
-                  .map(n -> n.getID())
-                  .collect(Collectors.toSet()),
-              entry.getValue().size());
-      res.put(entry.getKey(), cr);
-    }
-    return res;
+//    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
+//    Map<String, List<SerializedClassifierInstance>> byMetapointer =
+//        repositoryData.nodesByID.values().stream()
+//            .collect(Collectors.groupingBy(n -> n.getClassifier().getLanguage()));
+//    Map<String, ClassifierResult> res = new HashMap<>();
+//    for (Map.Entry<String, List<SerializedClassifierInstance>> entry : byMetapointer.entrySet()) {
+//      ClassifierResult cr =
+//          new ClassifierResult(
+//              entry.getValue().stream()
+//                  .limit(limit)
+//                  .map(n -> n.getID())
+//                  .collect(Collectors.toSet()),
+//              entry.getValue().size());
+//      res.put(entry.getKey(), cr);
+//    }
+//    return res;
+      throw new UnsupportedOperationException();
   }
 
   /**
