@@ -17,7 +17,7 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 /**
- * JMH benchmark for {@link RepositoryData#nodesByClassifier}.
+ * JMH benchmark for {@link InMemoryRepositoryData#nodesByClassifier}.
  *
  * <p>This was the top CPU hotspot (1051 samples out of ~3500 total lionweb samples) identified via
  * JFR profiling. The old implementation scanned all nodes on every call (O(N)); the new
@@ -38,8 +38,8 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
 @State(Scope.Thread)
 public class NodesByClassifierBenchmark {
 
-  private RepositoryData smallRepo;
-  private RepositoryData largeRepo;
+  private InMemoryRepositoryData smallRepo;
+  private InMemoryRepositoryData largeRepo;
 
   @Setup(Level.Trial)
   public void setup() {
@@ -47,9 +47,9 @@ public class NodesByClassifierBenchmark {
     largeRepo = buildRepo(10_000, 20);
   }
 
-  private RepositoryData buildRepo(int nodeCount, int classifierCount) {
-    RepositoryData repo =
-        new RepositoryData(
+  private InMemoryRepositoryData buildRepo(int nodeCount, int classifierCount) {
+    InMemoryRepositoryData repo =
+        new InMemoryRepositoryData(
             new RepositoryConfiguration("bench", LionWebVersion.v2023_1, HistorySupport.DISABLED));
 
     MetaPointer[] classifiers = new MetaPointer[classifierCount];

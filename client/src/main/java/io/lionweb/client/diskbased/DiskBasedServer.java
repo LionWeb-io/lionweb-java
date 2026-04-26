@@ -1,4 +1,4 @@
-package io.lionweb.client.inmemory;
+package io.lionweb.client.diskbased;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
@@ -21,64 +21,42 @@ import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
+import io.lionweb.client.inmemory.NodesLevelInMemoryServerClient;
+import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedReferenceValue;
 import io.lionweb.utils.ValidationResult;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.nio.file.*;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
 /**
- * A disk-backed server that keeps frequently accessed partitions in memory and evicts
- * least-recently-used partitions to disk as JSON files.
+ * An InMemoryServer is useful for testing and as a replacement for a proper server, when performing
+ * processing operations.
  *
- * <p>This has the same public API as {@link InMemoryServer} and is a drop-in replacement when
- * memory usage is a concern. The hot-partition tier provides the same access speed as {@link
- * InMemoryServer}; accessing a cold partition incurs a deserialization cost on first access.
+ * <p>We store data using SerializedClassifierInstance so that: - We do not need to know the
+ * languages - We can inspect the nodes while we could not if we stored the data serialized in JSON
+ * or binary formats.
  *
- * <p>The {@code maxHotPartitionsPerRepository} parameter controls how many partitions are kept in
- * memory per repository. Tune this based on available heap and the size of your partitions.
+ * <p>Different clients can then still work with nodes or JSON or binary formats.
  *
- * <p>Temporary files are written under {@code tempDir}. They are not cleaned up automatically; call
- * {@link #deleteTempFiles()} when the server is no longer needed.
+ * <p>Also look at {@link NodesLevelInMemoryServerClient} for easier handling of node storage and
+ * retrieval.
  */
-public class DiskBackedServer {
+public class DiskBasedServer {
 
-  private static final int DEFAULT_MAX_HOT_PARTITIONS = 10;
+  private static final float DEFAULT_HASH_LOAD_FACTOR = 0.75f;
 
-  private final Map<String, DiskBackedRepositoryData> repositories = new ConcurrentHashMap<>();
-  private final Path tempDir;
-  private final int maxHotPartitionsPerRepository;
+  /** Internally we store the data separately for each repository. */
+  private final Map<String, DiskBasedRepositoryData> repositories = new ConcurrentHashMap<>();
+
   private int nextParticipationId = 1;
-
-  public DiskBackedServer(@NotNull Path tempDir, int maxHotPartitionsPerRepository) {
-    this.tempDir = tempDir;
-    this.maxHotPartitionsPerRepository = maxHotPartitionsPerRepository;
-    try {
-      Files.createDirectories(tempDir);
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-  }
-
-  public DiskBackedServer(@NotNull Path tempDir) {
-    this(tempDir, DEFAULT_MAX_HOT_PARTITIONS);
-  }
-
-  public DiskBackedServer() {
-    this(createDefaultTempDir());
-  }
-
-  // --- Repository management ---
 
   public @NotNull RepositoryConfiguration getRepositoryConfiguration(
       @NotNull String repositoryName) {
@@ -89,7 +67,8 @@ public class DiskBackedServer {
     if (count < 0) {
       throw new IllegalArgumentException("One can ask for zero or more ids");
     }
-    return getRepository(repositoryName).ids(count);
+    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
+    return repositoryData.ids(count);
   }
 
   public @NotNull Set<RepositoryConfiguration> listRepositories() {
@@ -100,103 +79,111 @@ public class DiskBackedServer {
     Objects.requireNonNull(repositoryConfiguration);
     if (repositoryConfiguration.getHistorySupport() == HistorySupport.ENABLED) {
       throw new IllegalArgumentException(
-          "The DiskBackedServer does not support History for the time being");
+          "The InMemoryServer does not support History for the time being");
     }
-    Path repoDir = tempDir.resolve(sanitize(repositoryConfiguration.getName()));
     repositories.put(
-        repositoryConfiguration.getName(),
-        new DiskBackedRepositoryData(
-            repositoryConfiguration, repoDir, maxHotPartitionsPerRepository));
+        repositoryConfiguration.getName(), new DiskBasedRepositoryData(repositoryConfiguration));
   }
 
   public void deleteRepository(@NotNull String repositoryName) {
     Objects.requireNonNull(repositoryName);
     if (!repositories.containsKey(repositoryName)) {
-      throw new IllegalArgumentException("Repository not found: " + repositoryName);
+      throw new IllegalArgumentException();
     }
     repositories.remove(repositoryName);
   }
 
-  // --- Partition operations ---
-
   public @NotNull List<String> listPartitionIDs(@NotNull String repositoryName) {
-    Objects.requireNonNull(repositoryName);
-    return getRepository(repositoryName).partitionIDs;
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    DiskBasedRepositoryData repositoryData = repositories.get(repositoryName);
+    return repositoryData.partitionIDs;
   }
 
   public @NotNull RepositoryVersionToken createPartitionFromChunk(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> partitions) {
     Objects.requireNonNull(partitions);
-    DiskBackedRepositoryData repoData = getRepository(repositoryName);
-    partitions.stream()
-        .filter(n -> n.getParentNodeID() == null)
-        .filter(n -> !repoData.partitionIDs.contains(n.getID()))
-        .forEach(n -> repoData.addPartition(n.getID(), Collections.emptyList()));
-    repoData.store(partitions);
-    return repoData.bumpVersion();
+    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
+    // We get all roots (i.e. -> partitions) which do not yet exist
+    // and add them to the list of partition IDs
+    repositoryData.partitionIDs.addAll(
+        partitions.stream()
+            .filter(n -> n.getParentNodeID() == null)
+            .map(SerializedClassifierInstance::getID)
+            .filter(id -> !repositoryData.partitionIDs.contains(id))
+            .collect(Collectors.toList()));
+    repositoryData.store(partitions);
+    return repositoryData.bumpVersion();
   }
 
   public @NotNull RepositoryVersionToken createPartition(
       @NotNull String repositoryName,
       @NotNull Node partition,
       @NotNull AbstractSerialization serialization) {
-    Objects.requireNonNull(repositoryName);
-    Objects.requireNonNull(partition);
-    Objects.requireNonNull(serialization);
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    Objects.requireNonNull(partition, "Partition should not be null");
+    Objects.requireNonNull(serialization, "Serialization should not be null");
     if (partition.getParent() != null) {
       throw new IllegalArgumentException("Partition should not have a parent");
     }
-    SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(partition);
-    return createPartitionFromChunk(repositoryName, chunk.getClassifierInstances());
+
+    SerializationChunk serializationChunk =
+        serialization.serializeNodesToSerializationChunk(partition);
+    return createPartitionFromChunk(repositoryName, serializationChunk.getClassifierInstances());
   }
 
   public @NotNull RepositoryVersionToken deletePartitions(
       @NotNull String repositoryName, @NotNull List<String> partitionIds) {
     Objects.requireNonNull(partitionIds);
-    DiskBackedRepositoryData repoData = getRepository(repositoryName);
-    partitionIds.forEach(repoData::deletePartition);
-    return repoData.bumpVersion();
+    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
+    repositoryData.partitionIDs.removeIf(partitionIds::contains);
+    partitionIds.forEach(repositoryData::deleteNodeAndDescendant);
+    return repositoryData.bumpVersion();
   }
-
-  // --- Node retrieval and storage ---
 
   public List<SerializedClassifierInstance> retrieve(
       @NotNull String repositoryName, List<String> nodeIds, int limit) {
-    Objects.requireNonNull(repositoryName);
-    DiskBackedRepositoryData repoData = getRepository(repositoryName);
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    DiskBasedRepositoryData repositoryData = repositories.get(repositoryName);
     List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-    nodeIds.forEach(id -> repoData.retrieve(id, limit, retrieved));
+    nodeIds.forEach(n -> repositoryData.retrieve(n, limit, retrieved));
     return retrieved;
   }
 
-  public @Nullable io.lionweb.model.ClassifierInstance<?> retrieveAsClassifierInstance(
+  public @Nullable ClassifierInstance<?> retrieveAsClassifierInstance(
       @NotNull String repositoryName,
       @NotNull String nodeId,
       @NotNull AbstractSerialization serialization) {
-    Objects.requireNonNull(repositoryName);
-    Objects.requireNonNull(nodeId);
-    Objects.requireNonNull(serialization);
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    Objects.requireNonNull(nodeId, "NodeId should not be null");
+    Objects.requireNonNull(serialization, "Serialization should not be null");
     List<SerializedClassifierInstance> serializedNodes =
         retrieve(repositoryName, Arrays.asList(nodeId), 1);
     if (serializedNodes.isEmpty()) {
       return null;
     }
-    LionWebVersion lionWebVersion = getRepository(repositoryName).configuration.getLionWebVersion();
-    List<io.lionweb.model.ClassifierInstance<?>> nodes =
+    LionWebVersion lionWebVersion =
+        repositories.get(repositoryName).configuration.getLionWebVersion();
+    List<ClassifierInstance<?>> nodes =
         serialization.deserializeSerializationChunk(
             SerializationChunk.fromNodes(lionWebVersion, serializedNodes));
     return nodes.stream().filter(n -> Objects.equals(n.getID(), nodeId)).findFirst().orElse(null);
   }
 
+  /**
+   * @param nodes {@link io.lionweb.serialization.LowLevelJsonSerialization} can produce {@link
+   *     SerializedClassifierInstance} nodes, if we need to store data from JSON files.
+   */
   public RepositoryVersionToken store(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> nodes) {
-    Objects.requireNonNull(repositoryName);
-    DiskBackedRepositoryData repoData = getRepository(repositoryName);
-    repoData.store(nodes);
-    return repoData.bumpVersion();
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    DiskBasedRepositoryData repositoryData = repositories.get(repositoryName);
+    repositoryData.store(nodes);
+    return repositoryData.bumpVersion();
   }
 
-  // --- Inspection ---
+  //
+  // Inspection
+  //
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(@NotNull String repositoryName) {
     return nodesByClassifier(repositoryName, Integer.MAX_VALUE);
@@ -204,7 +191,8 @@ public class DiskBackedServer {
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
       @NotNull String repositoryName, @Nullable Integer limit) {
-    return getRepository(repositoryName).nodesByClassifier(limit);
+    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
+    return repositoryData.nodesByClassifier(limit);
   }
 
   public Map<String, ClassifierResult> nodesByLanguage(@NotNull String repositoryName) {
@@ -213,78 +201,61 @@ public class DiskBackedServer {
 
   public Map<String, ClassifierResult> nodesByLanguage(
       @NotNull String repositoryName, @Nullable Integer limit) {
-    return getRepository(repositoryName).nodesByLanguage(limit);
+    DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
+    Map<String, List<SerializedClassifierInstance>> byMetapointer =
+        repositoryData.nodesByID.values().stream()
+            .collect(Collectors.groupingBy(n -> n.getClassifier().getLanguage()));
+    Map<String, ClassifierResult> res = new HashMap<>();
+    for (Map.Entry<String, List<SerializedClassifierInstance>> entry : byMetapointer.entrySet()) {
+      ClassifierResult cr =
+          new ClassifierResult(
+              entry.getValue().stream()
+                  .limit(limit)
+                  .map(n -> n.getID())
+                  .collect(Collectors.toSet()),
+              entry.getValue().size());
+      res.put(entry.getKey(), cr);
+    }
+    return res;
   }
 
+  /**
+   * Checks the consistency of all repositories stored in the system and aggregates any validation
+   * issues found into a single {@link ValidationResult}.
+   *
+   * <p>The method iterates through all repository data, invokes their individual consistency
+   * checks, and collects any issues reported into the resulting validation result object.
+   *
+   * <p>This is intended for debugging purposes.
+   *
+   * @return a {@link ValidationResult} containing all identified issues, or an empty result if no
+   *     issues were found.
+   */
   public @NotNull ValidationResult checkConsistency() {
     ValidationResult result = new ValidationResult();
-    for (DiskBackedRepositoryData repoData : repositories.values()) {
-      result.getIssues().addAll(repoData.checkConsistency().getIssues());
+    for (DiskBasedRepositoryData repositoryData : repositories.values()) {
+      ValidationResult partial = repositoryData.checkConsistency();
+      result.getIssues().addAll(partial.getIssues());
     }
     return result;
   }
 
-  // --- Delta channel ---
+  //
+  // Delta methods
+  //
 
   public void monitorDeltaChannel(String repositoryName, @NotNull DeltaChannel channel) {
-    Objects.requireNonNull(channel);
+    Objects.requireNonNull(channel, "Channel should not be null");
     channel.registerCommandReceiver(new DeltaCommandReceiverImpl(repositoryName, channel));
     channel.registerQueryReceiver(new DeltaQueryReceiverImpl(repositoryName, channel));
   }
 
-  // --- Cleanup ---
-
-  /** Deletes all temporary partition files written to disk. */
-  public void deleteTempFiles() {
-    try {
-      if (Files.exists(tempDir)) {
-        try (Stream<Path> walk = Files.walk(tempDir)) {
-          walk.sorted(Comparator.reverseOrder())
-              .forEach(
-                  p -> {
-                    try {
-                      Files.deleteIfExists(p);
-                    } catch (IOException e) {
-                      // best-effort cleanup
-                    }
-                  });
-        }
-      }
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-  }
-
-  // --- Private ---
-
-  private @NotNull DiskBackedRepositoryData getRepository(@NotNull String repositoryName) {
-    Objects.requireNonNull(repositoryName);
-    DiskBackedRepositoryData repoData = repositories.get(repositoryName);
-    if (repoData == null) {
-      throw new IllegalArgumentException("Cannot find repository named " + repositoryName);
-    }
-    return repoData;
-  }
-
-  private static Path createDefaultTempDir() {
-    try {
-      return Files.createTempDirectory("lionweb-diskbacked-");
-    } catch (IOException e) {
-      throw new UncheckedIOException(e);
-    }
-  }
-
-  private static String sanitize(String name) {
-    return name.replaceAll("[^a-zA-Z0-9._-]", "_");
-  }
-
-  // --- Delta inner classes ---
-
   private class DeltaQueryReceiverImpl implements DeltaQueryReceiver {
-    private final String repositoryName;
-    private final DeltaChannel channel;
 
-    DeltaQueryReceiverImpl(String repositoryName, DeltaChannel channel) {
+    private String repositoryName;
+    private DeltaChannel channel;
+
+    private DeltaQueryReceiverImpl(String repositoryName, DeltaChannel channel) {
       this.repositoryName = repositoryName;
       this.channel = channel;
     }
@@ -300,10 +271,10 @@ public class DiskBackedServer {
   }
 
   private class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
-    private final String repositoryName;
-    private final DeltaChannel channel;
+    private String repositoryName;
+    private DeltaChannel channel;
 
-    DeltaCommandReceiverImpl(String repositoryName, DeltaChannel channel) {
+    private DeltaCommandReceiverImpl(String repositoryName, DeltaChannel channel) {
       this.repositoryName = repositoryName;
       this.channel = channel;
     }
@@ -313,59 +284,58 @@ public class DiskBackedServer {
       CommandSource source = new CommandSource(participationId, command.commandId);
       if (command instanceof ChangeProperty) {
         ChangeProperty changeProperty = (ChangeProperty) command;
-        DiskBackedRepositoryData repoData = getRepository(repositoryName);
+        DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
-          repoData.retrieve(changeProperty.node, 0, retrieved);
+          repositoryData.retrieve(changeProperty.node, 0, retrieved);
         } catch (IllegalArgumentException e) {
           channel.sendEvent(
-              seq ->
+              sequenceNumber ->
                   new ErrorEvent(
-                      seq,
+                      sequenceNumber,
                       StandardErrorCode.UNKNOWN_NODE,
                       "Node with id " + changeProperty.node + " not found"));
           return;
         }
         SerializedClassifierInstance node = retrieved.get(0);
-        String oldValue = node.getPropertyValue(changeProperty.property);
-        node.setPropertyValue(changeProperty.property, changeProperty.newValue);
-        String newValue = node.getPropertyValue(changeProperty.property);
-        // Ensure the partition is marked dirty after in-place mutation
-        repoData.hotRepositoryDataForNode(changeProperty.node);
+        String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
+        retrieved.get(0);
+        node.setPropertyValue(((ChangeProperty) command).property, changeProperty.newValue);
+        String newValue = node.getPropertyValue(((ChangeProperty) command).property);
         channel.sendEvent(
-            seq ->
-                new PropertyChanged(seq, node.getID(), changeProperty.property, newValue, oldValue)
+            sequenceNumber ->
+                new PropertyChanged(
+                        sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue)
                     .addSource(source));
         return;
       } else if (command instanceof AddChild) {
         AddChild addChild = (AddChild) command;
-        DiskBackedRepositoryData repoData = getRepository(repositoryName);
+        DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
-          repoData.retrieve(addChild.parent, 0, retrieved);
+          repositoryData.retrieve(addChild.parent, 0, retrieved);
         } catch (IllegalArgumentException e) {
           channel.sendEvent(
-              seq ->
+              sequenceNumber ->
                   new ErrorEvent(
-                      seq,
+                      sequenceNumber,
                       StandardErrorCode.UNKNOWN_NODE,
                       "Node with id " + addChild.parent + " not found"));
           return;
         }
         SerializedClassifierInstance node = retrieved.get(0);
-        repoData.store(addChild.newChild.getClassifierInstances());
+        repositoryData.store(addChild.newChild.getClassifierInstances());
         String childId =
             addChild.newChild.getClassifierInstances().stream()
-                .filter(n -> addChild.parent.equals(n.getParentNodeID()))
+                .filter(n -> n.getParentNodeID().equals(addChild.parent))
                 .findFirst()
                 .get()
                 .getID();
         node.addChild(addChild.containment, childId, addChild.index);
-        repoData.hotRepositoryDataForNode(addChild.parent);
         channel.sendEvent(
-            seq ->
+            sequenceNumber ->
                 new ChildAdded(
-                        seq,
+                        sequenceNumber,
                         addChild.parent,
                         addChild.newChild,
                         addChild.containment,
@@ -374,23 +344,24 @@ public class DiskBackedServer {
         return;
       } else if (command instanceof DeleteChild) {
         DeleteChild deleteChild = (DeleteChild) command;
-        DiskBackedRepositoryData repoData = getRepository(repositoryName);
+        DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
-          repoData.retrieve(deleteChild.parent, 0, retrieved);
+          repositoryData.retrieve(deleteChild.parent, 0, retrieved);
         } catch (IllegalArgumentException e) {
           channel.sendEvent(
-              seq ->
+              sequenceNumber ->
                   new ErrorEvent(
-                      seq,
+                      sequenceNumber,
                       StandardErrorCode.UNKNOWN_NODE,
                       "Node with id " + deleteChild.parent + " not found"));
           return;
         }
+        SerializedClassifierInstance node = retrieved.get(0);
         channel.sendEvent(
-            seq ->
+            sequenceNumber ->
                 new ChildDeleted(
-                        seq,
+                        sequenceNumber,
                         deleteChild.parent,
                         deleteChild.containment,
                         deleteChild.index,
@@ -399,15 +370,15 @@ public class DiskBackedServer {
         return;
       } else if (command instanceof AddReference) {
         AddReference addReference = (AddReference) command;
-        DiskBackedRepositoryData repoData = getRepository(repositoryName);
+        DiskBasedRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
-          repoData.retrieve(addReference.parent, 0, retrieved);
+          repositoryData.retrieve(addReference.parent, 0, retrieved);
         } catch (IllegalArgumentException e) {
           channel.sendEvent(
-              seq ->
+              sequenceNumber ->
                   new ErrorEvent(
-                      seq,
+                      sequenceNumber,
                       StandardErrorCode.UNKNOWN_NODE,
                       "Node with id " + addReference.parent + " not found"));
           return;
@@ -418,11 +389,10 @@ public class DiskBackedServer {
             addReference.index,
             new SerializedReferenceValue.Entry(
                 addReference.newTarget, addReference.newResolveInfo));
-        repoData.hotRepositoryDataForNode(addReference.parent);
         channel.sendEvent(
-            seq ->
+            sequenceNumber ->
                 new ReferenceAdded(
-                        seq,
+                        sequenceNumber,
                         addReference.parent,
                         addReference.reference,
                         addReference.index,
@@ -431,8 +401,22 @@ public class DiskBackedServer {
                     .addSource(source));
         return;
       }
+
       throw new UnsupportedOperationException(
           "Unsupported command type: " + command.getClass().getName());
     }
+  }
+
+  //
+  // Private methods
+  //
+
+  private @NotNull DiskBasedRepositoryData getRepository(@NotNull String repositoryName) {
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
+    DiskBasedRepositoryData repositoryData = repositories.get(repositoryName);
+    if (repositoryData == null) {
+      throw new IllegalArgumentException("Cannot find repository named " + repositoryName);
+    }
+    return repositoryData;
   }
 }

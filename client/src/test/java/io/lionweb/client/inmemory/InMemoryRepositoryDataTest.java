@@ -14,28 +14,28 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class DiskBackedRepositoryDataTest {
-
-  private DiskBackedRepositoryData newRepo() {
-    return new DiskBackedRepositoryData(
-        new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
-  }
+public class InMemoryRepositoryDataTest {
 
   @Test
   public void addSingleNode() {
-    DiskBackedRepositoryData repoData = newRepo();
-    assertEquals(Collections.emptySet(), repoData.nodeIDs());
+    InMemoryRepositoryData repositoryData =
+        new InMemoryRepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+    assertEquals(Collections.emptySet(), repositoryData.nodesByID.keySet());
 
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
 
-    repoData.addPartition("n1", Collections.singletonList(n1));
-    assertEquals(new HashSet<>(Collections.singletonList("n1")), repoData.nodeIDs());
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Collections.singletonList(n1));
+    assertEquals(new HashSet<>(Collections.singletonList("n1")), repositoryData.nodesByID.keySet());
   }
 
   @Test
   public void addTrees() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData =
+        new InMemoryRepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n2 =
@@ -52,13 +52,17 @@ public class DiskBackedRepositoryDataTest {
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
 
-    repoData.addPartition("n1", Arrays.asList(n1, n2, n3, n4));
-    assertEquals(new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4")), repoData.nodeIDs());
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2, n3, n4));
+    assertEquals(
+        new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4")), repositoryData.nodesByID.keySet());
   }
 
   @Test
   public void implicitlyRemoveChildren() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData =
+        new InMemoryRepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n2 =
@@ -75,8 +79,10 @@ public class DiskBackedRepositoryDataTest {
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
 
-    repoData.addPartition("n1", Arrays.asList(n1, n2, n3, n4));
-    assertEquals(new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4")), repoData.nodeIDs());
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2, n3, n4));
+    assertEquals(
+        new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4")), repositoryData.nodesByID.keySet());
 
     SerializedClassifierInstance n1b =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
@@ -88,38 +94,49 @@ public class DiskBackedRepositoryDataTest {
         MetaPointer.get("l1", "1.0", "containmentA"), Arrays.asList("n3", "n5"));
     n3b.setParentNodeID("n1");
     n5b.setParentNodeID("n1");
-    repoData.store(Arrays.asList(n1b, n3b, n5b));
+    repositoryData.store(Arrays.asList(n1b, n3b, n5b));
 
-    assertEquals(new HashSet<>(Arrays.asList("n1", "n3", "n5")), repoData.nodeIDs());
+    // n2 is not anymore a child of n1, so it should be removed
+    // n2 has two children: n3 and n4. n3 has been replaced under n1
+    // however n4 should disappear
+    assertEquals(new HashSet<>(Arrays.asList("n1", "n3", "n5")), repositoryData.nodesByID.keySet());
   }
 
   @Test
   public void idsAssignation() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repoData =
+        new InMemoryRepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     assertEquals(Collections.singletonList("id-1"), repoData.ids(1));
     // If I store a node with id-2, the system should not assign me such id later on
-    repoData.addPartition(
-        "id-2",
+    repoData.partitionIDs.add("id-2");
+    repoData.store(
         Collections.singletonList(
             new SerializedClassifierInstance(
                 "id-2", MetaPointer.from(LionCoreBuiltins.getNode(LionWebVersion.v2023_1)))));
     assertEquals(Collections.singletonList("id-3"), repoData.ids(1));
 
-    // If I ask again for IDs I should get different ones
+    // If I ask again for IDs to be assigned to me I should get different IDs
     assertEquals(Collections.singletonList("id-4"), repoData.ids(1));
   }
 
   // ========== classifier index tests ==========
 
+  private InMemoryRepositoryData newRepo() {
+    return new InMemoryRepositoryData(
+        new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
+  }
+
   @Test
   public void classifierIndexPopulatedOnStore() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
-    repoData.addPartition("n1", Collections.singletonList(n1));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Collections.singletonList(n1));
 
     ClassifierKey key = new ClassifierKey("l1", "c1");
-    Map<ClassifierKey, ClassifierResult> result = repoData.nodesByClassifier(null);
+    Map<ClassifierKey, ClassifierResult> result = repositoryData.nodesByClassifier(null);
     assertTrue(result.containsKey(key));
     assertEquals(Set.of("n1"), result.get(key).getIds());
     assertEquals(1, result.get(key).getSize());
@@ -127,7 +144,7 @@ public class DiskBackedRepositoryDataTest {
 
   @Test
   public void classifierIndexUpdatedOnDelete() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", mp);
@@ -135,14 +152,15 @@ public class DiskBackedRepositoryDataTest {
         MetaPointer.get("l1", "1.0", "children"), Collections.singletonList("n2"));
     n2.setParentNodeID("n1");
 
-    repoData.addPartition("n1", Arrays.asList(n1, n2));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2));
 
     // Delete n2 by updating n1 to have no children
     SerializedClassifierInstance n1b = new SerializedClassifierInstance("n1", mp);
-    repoData.store(Collections.singletonList(n1b));
+    repositoryData.store(Collections.singletonList(n1b));
 
     ClassifierKey key = new ClassifierKey("l1", "c1");
-    Map<ClassifierKey, ClassifierResult> result = repoData.nodesByClassifier(null);
+    Map<ClassifierKey, ClassifierResult> result = repositoryData.nodesByClassifier(null);
     assertTrue(result.containsKey(key));
     assertEquals(Set.of("n1"), result.get(key).getIds());
     assertEquals(1, result.get(key).getSize());
@@ -150,21 +168,24 @@ public class DiskBackedRepositoryDataTest {
 
   @Test
   public void classifierIndexRemovedWhenLastNodeDeleted() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
-    repoData.addPartition("n1", Collections.singletonList(n1));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Collections.singletonList(n1));
 
-    repoData.deletePartition("n1");
+    // Delete n1 by storing a version with no children (n1 is a partition root; removing partition)
+    repositoryData.partitionIDs.remove("n1");
+    repositoryData.deleteNodeAndDescendant("n1");
 
     ClassifierKey key = new ClassifierKey("l1", "c1");
-    Map<ClassifierKey, ClassifierResult> result = repoData.nodesByClassifier(null);
+    Map<ClassifierKey, ClassifierResult> result = repositoryData.nodesByClassifier(null);
     assertFalse(result.containsKey(key));
   }
 
   @Test
   public void classifierIndexMultipleClassifiers() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData = newRepo();
     MetaPointer mp1 = MetaPointer.get("l1", "1.0", "c1");
     MetaPointer mp2 = MetaPointer.get("l1", "1.0", "c2");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp1);
@@ -174,9 +195,10 @@ public class DiskBackedRepositoryDataTest {
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n1");
 
-    repoData.addPartition("n1", Arrays.asList(n1, n2, n3));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2, n3));
 
-    Map<ClassifierKey, ClassifierResult> result = repoData.nodesByClassifier(null);
+    Map<ClassifierKey, ClassifierResult> result = repositoryData.nodesByClassifier(null);
     assertEquals(2, result.size());
     assertEquals(Set.of("n1", "n3"), result.get(new ClassifierKey("l1", "c1")).getIds());
     assertEquals(Set.of("n2"), result.get(new ClassifierKey("l1", "c2")).getIds());
@@ -184,7 +206,7 @@ public class DiskBackedRepositoryDataTest {
 
   @Test
   public void nodesByClassifierLimitReturnsCorrectTotal() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", mp);
@@ -193,28 +215,32 @@ public class DiskBackedRepositoryDataTest {
     n2.setParentNodeID("n1");
     n3.setParentNodeID("n1");
 
-    repoData.addPartition("n1", Arrays.asList(n1, n2, n3));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2, n3));
 
     ClassifierKey key = new ClassifierKey("l1", "c1");
-    Map<ClassifierKey, ClassifierResult> result = repoData.nodesByClassifier(2);
+    Map<ClassifierKey, ClassifierResult> result = repositoryData.nodesByClassifier(2);
     ClassifierResult cr = result.get(key);
+    // total is always the real count
     assertEquals(3, cr.getSize());
+    // but ids are limited to 2
     assertEquals(2, cr.getIds().size());
   }
 
   @Test
   public void classifierIndexUpdatedOnClassifierChange() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData = newRepo();
     MetaPointer mp1 = MetaPointer.get("l1", "1.0", "c1");
     MetaPointer mp2 = MetaPointer.get("l1", "1.0", "c2");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp1);
-    repoData.addPartition("n1", Collections.singletonList(n1));
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Collections.singletonList(n1));
 
     // Re-store n1 with a different classifier
     SerializedClassifierInstance n1b = new SerializedClassifierInstance("n1", mp2);
-    repoData.store(Collections.singletonList(n1b));
+    repositoryData.store(Collections.singletonList(n1b));
 
-    Map<ClassifierKey, ClassifierResult> result = repoData.nodesByClassifier(null);
+    Map<ClassifierKey, ClassifierResult> result = repositoryData.nodesByClassifier(null);
     assertFalse(result.containsKey(new ClassifierKey("l1", "c1")));
     assertTrue(result.containsKey(new ClassifierKey("l1", "c2")));
     assertEquals(Set.of("n1"), result.get(new ClassifierKey("l1", "c2")).getIds());
@@ -222,7 +248,9 @@ public class DiskBackedRepositoryDataTest {
 
   @Test
   public void addAnnotationToExistingNode() {
-    DiskBackedRepositoryData repoData = newRepo();
+    InMemoryRepositoryData repositoryData =
+        new InMemoryRepositoryData(
+            new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
     SerializedClassifierInstance n2 =
@@ -239,19 +267,21 @@ public class DiskBackedRepositoryDataTest {
     n3.setParentNodeID("n2");
     n4.setParentNodeID("n2");
 
-    repoData.addPartition("n1", Arrays.asList(n1, n2, n3, n4));
-
+    repositoryData.partitionIDs.add("n1");
+    repositoryData.store(Arrays.asList(n1, n2, n3, n4));
     SerializedClassifierInstance ann1 =
         new SerializedClassifierInstance("ann1", MetaPointer.get("lAnnotations", "1.0", "a1"));
     ann1.setParentNodeID("n1");
     n1.addAnnotation("ann1");
-    repoData.store(Arrays.asList(n1, n2, n3, n4, ann1));
+    repositoryData.store(Arrays.asList(n1, n2, n3, n4, ann1));
 
-    assertEquals(new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")), repoData.nodeIDs());
-    List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-    repoData.retrieve("n1", 2, retrieved);
     assertEquals(
         new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")),
-        retrieved.stream().map(SerializedClassifierInstance::getID).collect(Collectors.toSet()));
+        repositoryData.nodesByID.keySet());
+    List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+    repositoryData.retrieve("n1", 2, retrieved);
+    assertEquals(
+        new HashSet<>(Arrays.asList("n1", "n2", "n3", "n4", "ann1")),
+        retrieved.stream().map(n -> n.getID()).collect(Collectors.toSet()));
   }
 }

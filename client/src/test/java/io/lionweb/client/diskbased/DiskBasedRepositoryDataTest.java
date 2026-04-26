@@ -1,25 +1,27 @@
-package io.lionweb.client.inmemory;
-
-import static org.junit.jupiter.api.Assertions.*;
+package io.lionweb.client.diskbased;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.ClassifierKey;
 import io.lionweb.client.api.ClassifierResult;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.diskbased.DiskBasedRepositoryData;
 import io.lionweb.language.LionCoreBuiltins;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
-import java.util.*;
-import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 
-public class RepositoryDataTest {
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DiskBasedRepositoryDataTest {
 
   @Test
   public void addSingleNode() {
-    RepositoryData repositoryData =
-        new RepositoryData(
+    DiskBasedRepositoryData repositoryData =
+        new DiskBasedRepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     assertEquals(Collections.emptySet(), repositoryData.nodesByID.keySet());
 
@@ -33,8 +35,8 @@ public class RepositoryDataTest {
 
   @Test
   public void addTrees() {
-    RepositoryData repositoryData =
-        new RepositoryData(
+    DiskBasedRepositoryData repositoryData =
+        new DiskBasedRepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
@@ -60,8 +62,8 @@ public class RepositoryDataTest {
 
   @Test
   public void implicitlyRemoveChildren() {
-    RepositoryData repositoryData =
-        new RepositoryData(
+    DiskBasedRepositoryData repositoryData =
+        new DiskBasedRepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));
@@ -104,8 +106,8 @@ public class RepositoryDataTest {
 
   @Test
   public void idsAssignation() {
-    RepositoryData repoData =
-        new RepositoryData(
+    DiskBasedRepositoryData repoData =
+        new DiskBasedRepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     assertEquals(Collections.singletonList("id-1"), repoData.ids(1));
     // If I store a node with id-2, the system should not assign me such id later on
@@ -122,14 +124,14 @@ public class RepositoryDataTest {
 
   // ========== classifier index tests ==========
 
-  private RepositoryData newRepo() {
-    return new RepositoryData(
+  private DiskBasedRepositoryData newRepo() {
+    return new DiskBasedRepositoryData(
         new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
   }
 
   @Test
   public void classifierIndexPopulatedOnStore() {
-    RepositoryData repositoryData = newRepo();
+    DiskBasedRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     repositoryData.partitionIDs.add("n1");
@@ -144,7 +146,7 @@ public class RepositoryDataTest {
 
   @Test
   public void classifierIndexUpdatedOnDelete() {
-    RepositoryData repositoryData = newRepo();
+    DiskBasedRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", mp);
@@ -168,7 +170,7 @@ public class RepositoryDataTest {
 
   @Test
   public void classifierIndexRemovedWhenLastNodeDeleted() {
-    RepositoryData repositoryData = newRepo();
+    DiskBasedRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     repositoryData.partitionIDs.add("n1");
@@ -185,7 +187,7 @@ public class RepositoryDataTest {
 
   @Test
   public void classifierIndexMultipleClassifiers() {
-    RepositoryData repositoryData = newRepo();
+    DiskBasedRepositoryData repositoryData = newRepo();
     MetaPointer mp1 = MetaPointer.get("l1", "1.0", "c1");
     MetaPointer mp2 = MetaPointer.get("l1", "1.0", "c2");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp1);
@@ -206,7 +208,7 @@ public class RepositoryDataTest {
 
   @Test
   public void nodesByClassifierLimitReturnsCorrectTotal() {
-    RepositoryData repositoryData = newRepo();
+    DiskBasedRepositoryData repositoryData = newRepo();
     MetaPointer mp = MetaPointer.get("l1", "1.0", "c1");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp);
     SerializedClassifierInstance n2 = new SerializedClassifierInstance("n2", mp);
@@ -229,7 +231,7 @@ public class RepositoryDataTest {
 
   @Test
   public void classifierIndexUpdatedOnClassifierChange() {
-    RepositoryData repositoryData = newRepo();
+    DiskBasedRepositoryData repositoryData = newRepo();
     MetaPointer mp1 = MetaPointer.get("l1", "1.0", "c1");
     MetaPointer mp2 = MetaPointer.get("l1", "1.0", "c2");
     SerializedClassifierInstance n1 = new SerializedClassifierInstance("n1", mp1);
@@ -248,8 +250,8 @@ public class RepositoryDataTest {
 
   @Test
   public void addAnnotationToExistingNode() {
-    RepositoryData repositoryData =
-        new RepositoryData(
+    DiskBasedRepositoryData repositoryData =
+        new DiskBasedRepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     SerializedClassifierInstance n1 =
         new SerializedClassifierInstance("n1", MetaPointer.get("l1", "1.0", "c1"));

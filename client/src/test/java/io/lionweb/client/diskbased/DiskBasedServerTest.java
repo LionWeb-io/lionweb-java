@@ -1,11 +1,9 @@
-package io.lionweb.client.inmemory;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+package io.lionweb.client.diskbased;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.client.inmemory.ChunkLevelInMemoryServerClient;
 import io.lionweb.client.inmemory.library.Book;
 import io.lionweb.client.inmemory.library.Library;
 import io.lionweb.client.inmemory.library.LibraryLanguage;
@@ -16,19 +14,23 @@ import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.ValidationResult;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import org.junit.jupiter.api.Test;
 
-public class DiskBackedServerTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+public class DiskBasedServerTest {
 
   @Test
   public void testModifyTreeAddingSubtreeWithAnnotations() throws IOException {
-    DiskBackedServer server = new DiskBackedServer();
-    ChunkLevelDiskBackedServerClient client = new ChunkLevelDiskBackedServerClient(server);
+    DiskBasedServer server = new DiskBasedServer();
+      ChunkLevelDiskBasedServerClient client = new ChunkLevelDiskBasedServerClient(server);
     client.createRepository(
         new RepositoryConfiguration("MyRepo", LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.setRepositoryName("MyRepo");

@@ -52,7 +52,7 @@ public class InMemoryServer {
   private static final float DEFAULT_HASH_LOAD_FACTOR = 0.75f;
 
   /** Internally we store the data separately for each repository. */
-  private final Map<String, RepositoryData> repositories = new ConcurrentHashMap<>();
+  private final Map<String, InMemoryRepositoryData> repositories = new ConcurrentHashMap<>();
 
   private int nextParticipationId = 1;
 
@@ -65,7 +65,7 @@ public class InMemoryServer {
     if (count < 0) {
       throw new IllegalArgumentException("One can ask for zero or more ids");
     }
-    RepositoryData repositoryData = getRepository(repositoryName);
+    InMemoryRepositoryData repositoryData = getRepository(repositoryName);
     return repositoryData.ids(count);
   }
 
@@ -80,7 +80,7 @@ public class InMemoryServer {
           "The InMemoryServer does not support History for the time being");
     }
     repositories.put(
-        repositoryConfiguration.getName(), new RepositoryData(repositoryConfiguration));
+        repositoryConfiguration.getName(), new InMemoryRepositoryData(repositoryConfiguration));
   }
 
   public void deleteRepository(@NotNull String repositoryName) {
@@ -93,14 +93,14 @@ public class InMemoryServer {
 
   public @NotNull List<String> listPartitionIDs(@NotNull String repositoryName) {
     Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
-    RepositoryData repositoryData = repositories.get(repositoryName);
+    InMemoryRepositoryData repositoryData = repositories.get(repositoryName);
     return repositoryData.partitionIDs;
   }
 
   public @NotNull RepositoryVersionToken createPartitionFromChunk(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> partitions) {
     Objects.requireNonNull(partitions);
-    RepositoryData repositoryData = getRepository(repositoryName);
+    InMemoryRepositoryData repositoryData = getRepository(repositoryName);
     // We get all roots (i.e. -> partitions) which do not yet exist
     // and add them to the list of partition IDs
     repositoryData.partitionIDs.addAll(
@@ -132,7 +132,7 @@ public class InMemoryServer {
   public @NotNull RepositoryVersionToken deletePartitions(
       @NotNull String repositoryName, @NotNull List<String> partitionIds) {
     Objects.requireNonNull(partitionIds);
-    RepositoryData repositoryData = getRepository(repositoryName);
+    InMemoryRepositoryData repositoryData = getRepository(repositoryName);
     repositoryData.partitionIDs.removeIf(partitionIds::contains);
     partitionIds.forEach(repositoryData::deleteNodeAndDescendant);
     return repositoryData.bumpVersion();
@@ -141,7 +141,7 @@ public class InMemoryServer {
   public List<SerializedClassifierInstance> retrieve(
       @NotNull String repositoryName, List<String> nodeIds, int limit) {
     Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
-    RepositoryData repositoryData = repositories.get(repositoryName);
+    InMemoryRepositoryData repositoryData = repositories.get(repositoryName);
     List<SerializedClassifierInstance> retrieved = new ArrayList<>();
     nodeIds.forEach(n -> repositoryData.retrieve(n, limit, retrieved));
     return retrieved;
@@ -174,7 +174,7 @@ public class InMemoryServer {
   public RepositoryVersionToken store(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> nodes) {
     Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
-    RepositoryData repositoryData = repositories.get(repositoryName);
+    InMemoryRepositoryData repositoryData = repositories.get(repositoryName);
     repositoryData.store(nodes);
     return repositoryData.bumpVersion();
   }
@@ -189,7 +189,7 @@ public class InMemoryServer {
 
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
       @NotNull String repositoryName, @Nullable Integer limit) {
-    RepositoryData repositoryData = getRepository(repositoryName);
+    InMemoryRepositoryData repositoryData = getRepository(repositoryName);
     return repositoryData.nodesByClassifier(limit);
   }
 
@@ -199,7 +199,7 @@ public class InMemoryServer {
 
   public Map<String, ClassifierResult> nodesByLanguage(
       @NotNull String repositoryName, @Nullable Integer limit) {
-    RepositoryData repositoryData = getRepository(repositoryName);
+    InMemoryRepositoryData repositoryData = getRepository(repositoryName);
     Map<String, List<SerializedClassifierInstance>> byMetapointer =
         repositoryData.nodesByID.values().stream()
             .collect(Collectors.groupingBy(n -> n.getClassifier().getLanguage()));
@@ -231,7 +231,7 @@ public class InMemoryServer {
    */
   public @NotNull ValidationResult checkConsistency() {
     ValidationResult result = new ValidationResult();
-    for (RepositoryData repositoryData : repositories.values()) {
+    for (InMemoryRepositoryData repositoryData : repositories.values()) {
       ValidationResult partial = repositoryData.checkConsistency();
       result.getIssues().addAll(partial.getIssues());
     }
@@ -282,7 +282,7 @@ public class InMemoryServer {
       CommandSource source = new CommandSource(participationId, command.commandId);
       if (command instanceof ChangeProperty) {
         ChangeProperty changeProperty = (ChangeProperty) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
+        InMemoryRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
           repositoryData.retrieve(changeProperty.node, 0, retrieved);
@@ -308,7 +308,7 @@ public class InMemoryServer {
         return;
       } else if (command instanceof AddChild) {
         AddChild addChild = (AddChild) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
+        InMemoryRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
           repositoryData.retrieve(addChild.parent, 0, retrieved);
@@ -342,7 +342,7 @@ public class InMemoryServer {
         return;
       } else if (command instanceof DeleteChild) {
         DeleteChild deleteChild = (DeleteChild) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
+        InMemoryRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
           repositoryData.retrieve(deleteChild.parent, 0, retrieved);
@@ -368,7 +368,7 @@ public class InMemoryServer {
         return;
       } else if (command instanceof AddReference) {
         AddReference addReference = (AddReference) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
+        InMemoryRepositoryData repositoryData = getRepository(repositoryName);
         List<SerializedClassifierInstance> retrieved = new ArrayList<>();
         try {
           repositoryData.retrieve(addReference.parent, 0, retrieved);
@@ -409,9 +409,9 @@ public class InMemoryServer {
   // Private methods
   //
 
-  private @NotNull RepositoryData getRepository(@NotNull String repositoryName) {
+  private @NotNull InMemoryRepositoryData getRepository(@NotNull String repositoryName) {
     Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
-    RepositoryData repositoryData = repositories.get(repositoryName);
+    InMemoryRepositoryData repositoryData = repositories.get(repositoryName);
     if (repositoryData == null) {
       throw new IllegalArgumentException("Cannot find repository named " + repositoryName);
     }

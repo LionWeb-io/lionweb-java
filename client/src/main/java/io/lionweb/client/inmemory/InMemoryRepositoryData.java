@@ -24,7 +24,7 @@ import org.jetbrains.annotations.NotNull;
  * externally serialize all mutations. The {@code ConcurrentHashMap} for {@code nodesByID} should
  * not be mistaken for a broader thread-safety guarantee.
  */
-class RepositoryData {
+class InMemoryRepositoryData {
   @NotNull RepositoryConfiguration configuration;
   final List<String> partitionIDs = new ArrayList<>();
   final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
@@ -212,7 +212,7 @@ class RepositoryData {
     container.removeAnnotation(containedId);
   }
 
-  RepositoryData(@NotNull RepositoryConfiguration configuration) {
+  InMemoryRepositoryData(@NotNull RepositoryConfiguration configuration) {
     this.configuration = configuration;
   }
 
