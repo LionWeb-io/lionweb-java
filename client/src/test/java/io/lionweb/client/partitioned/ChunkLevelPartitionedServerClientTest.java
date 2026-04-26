@@ -1,0 +1,107 @@
+package io.lionweb.client.partitioned;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import io.lionweb.LionWebVersion;
+import io.lionweb.client.api.HistorySupport;
+import io.lionweb.client.api.RepositoryConfiguration;
+import io.lionweb.language.Concept;
+import io.lionweb.language.Language;
+import io.lionweb.serialization.AbstractSerialization;
+import io.lionweb.serialization.SerializationProvider;
+import io.lionweb.serialization.data.SerializationChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+
+/**
+ * Mirrors {@code ChunkLevelInMemoryServerClientTest} for the partitioned implementation.
+ */
+public class ChunkLevelPartitionedServerClientTest {
+
+  @TempDir
+  Path tempDir;
+
+  @Test
+  public void testRepositoriesCRUD() {
+    try (PartitionedServer server = new PartitionedServer(tempDir)) {
+      ChunkLevelPartitionedServerClient client = new ChunkLevelPartitionedServerClient(server);
+      assertEquals(Collections.emptySet(), client.listRepositories());
+
+      client.createRepository(
+          new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+      assertEquals(
+          Collections.singleton(
+              new RepositoryConfiguration(
+                  "MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED)),
+          client.listRepositories());
+
+      client.deleteRepository("MyRepo");
+      assertEquals(Collections.emptySet(), client.listRepositories());
+    }
+  }
+
+  @Test
+  public void testPartitionsCRUD() {
+    try (PartitionedServer server = new PartitionedServer(tempDir)) {
+      ChunkLevelPartitionedServerClient client = new ChunkLevelPartitionedServerClient(server);
+      client.createRepository(
+          new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+      client.setRepositoryName("MyRepo");
+
+      assertEquals(Collections.emptyList(), client.listPartitionsIDs());
+
+      Language l1 =
+          new Language(LionWebVersion.v2024_1, "MyLanguage")
+              .setID("l-id")
+              .setKey("l-key")
+              .setVersion("1.0");
+      Concept c1 = new Concept(l1, "MyConcept", "c1-id").setKey("c1-key");
+
+      AbstractSerialization serialization =
+          SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+
+      client.createPartitionsFromChunk(
+          serialization.serializeTreeToSerializationChunk(l1).getClassifierInstances());
+      assertEquals(Collections.singletonList("l-id"), client.listPartitionsIDs());
+
+      client.deletePartitions(Collections.singletonList("l-id"));
+      assertEquals(Collections.emptyList(), client.listPartitionsIDs());
+    }
+  }
+
+  @Test
+  public void testNodesModification() throws IOException {
+    try (PartitionedServer server = new PartitionedServer(tempDir)) {
+      ChunkLevelPartitionedServerClient client = new ChunkLevelPartitionedServerClient(server);
+      client.createRepository(
+          new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+      client.setRepositoryName("MyRepo");
+
+      Language l1 =
+          new Language(LionWebVersion.v2024_1, "MyLanguage")
+              .setID("l-id")
+              .setKey("l-key")
+              .setVersion("1.0");
+      Concept c1 = new Concept(l1, "MyConcept", "c1-id").setKey("c1-key");
+
+      AbstractSerialization serialization =
+          SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
+
+      SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(l1);
+      client.createPartitionsFromChunk(chunk.getClassifierInstances());
+      assertEquals(Collections.singletonList("l-id"), client.listPartitionsIDs());
+
+      List<SerializedClassifierInstance> retrieved =
+          client.retrieveAsChunk(Collections.singletonList("c1-id"));
+      SerializationChunk retrievedChunk =
+          SerializationChunk.fromNodes(LionWebVersion.v2024_1, retrieved);
+      SerializationChunk expected = serialization.serializeTreeToSerializationChunk(c1);
+      assertEquals(expected, retrievedChunk);
+    }
+  }
+}
