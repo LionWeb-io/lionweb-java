@@ -232,7 +232,7 @@ class DiskBasedRepositoryData {
           coldPartitions.moveToHot(nodeId);
           return hotPartitions.getNodeByID(nodeId);
       }
-      throw new IllegalArgumentException("Node " + nodeId + " does not exist");
+      return null;
     }
 
     /**
