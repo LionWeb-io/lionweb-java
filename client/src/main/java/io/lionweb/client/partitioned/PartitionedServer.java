@@ -49,21 +49,24 @@ public class PartitionedServer implements Closeable {
   // -------------------------------------------------------------------------
 
   /**
-   * Creates a server that stores partition files under {@code storageDir}, using the default
-   * cache configuration ({@link CacheConfig#DEFAULT}).
+   * Creates a server that stores partition files under {@code storageDir}, using the default cache
+   * configuration ({@link CacheConfig#DEFAULT}). The directory is <em>not</em> deleted on close.
    */
   public PartitionedServer(@NotNull Path storageDir) {
     this(new DiskRepositoryBackend(storageDir), CacheConfig.DEFAULT, null);
   }
 
-  /** Creates a server with explicit cache configuration. */
+  /**
+   * Creates a server that stores partition files under {@code storageDir} with an explicit cache
+   * configuration. The directory is <em>not</em> deleted on close.
+   */
   public PartitionedServer(@NotNull Path storageDir, @NotNull CacheConfig cacheConfig) {
     this(new DiskRepositoryBackend(storageDir), cacheConfig, null);
   }
 
   /**
-   * Creates a server with a custom backend and cache configuration. Useful for testing (in-memory
-   * backends) or alternative storage strategies.
+   * Creates a server with a custom backend and cache configuration. Useful for testing or
+   * alternative storage strategies.
    */
   public PartitionedServer(@NotNull RepositoryBackend backend, @NotNull CacheConfig cacheConfig) {
     this(backend, cacheConfig, null);
@@ -78,24 +81,45 @@ public class PartitionedServer implements Closeable {
    * disk-backed partition storage without managing a directory lifecycle manually.
    *
    * <pre>{@code
-   * try (PartitionedServer server = PartitionedServer.withTempStorage()) {
+   * try (PartitionedServer server = new PartitionedServer()) {
    *     server.createRepository(...);
    *     // use server
    * }
    * }</pre>
    */
-  public static PartitionedServer withTempStorage() {
-    return withTempStorage(CacheConfig.DEFAULT);
+  public PartitionedServer() {
+    this(CacheConfig.DEFAULT);
   }
 
-  /** Like {@link #withTempStorage()} but with an explicit cache configuration. */
+  /**
+   * Like {@link #PartitionedServer()} but with an explicit cache configuration. A temp directory
+   * is allocated automatically and deleted on {@link #close()} or JVM exit.
+   */
+  public PartitionedServer(@NotNull CacheConfig cacheConfig) {
+    this(createTempDir(), cacheConfig, true);
+  }
+
+  /** @deprecated Use {@link #PartitionedServer(CacheConfig)} instead. */
+  public static PartitionedServer withTempStorage() {
+    return new PartitionedServer();
+  }
+
+  /** @deprecated Use {@link #PartitionedServer(CacheConfig)} instead. */
   public static PartitionedServer withTempStorage(@NotNull CacheConfig cacheConfig) {
+    return new PartitionedServer(cacheConfig);
+  }
+
+  private static Path createTempDir() {
     try {
-      Path dir = Files.createTempDirectory("lionweb-partitioned-");
-      return new PartitionedServer(new DiskRepositoryBackend(dir), cacheConfig, dir);
+      return Files.createTempDirectory("lionweb-partitioned-");
     } catch (IOException e) {
       throw new UncheckedIOException(e);
     }
+  }
+
+  /** Bridges {@link #PartitionedServer(CacheConfig)} — creates backend from an already-allocated dir. */
+  private PartitionedServer(@NotNull Path storageDir, @NotNull CacheConfig cacheConfig, boolean ownsDir) {
+    this(new DiskRepositoryBackend(storageDir), cacheConfig, ownsDir ? storageDir : null);
   }
 
   private PartitionedServer(
