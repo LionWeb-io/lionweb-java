@@ -68,7 +68,12 @@ final class HotPartitionManager {
     }
 
     public boolean containsNodeID(String nodeId) {
-        throw new UnsupportedOperationException();
+        for (PartitionData partitionData : hotPartitions.values()) {
+            if (partitionData.nodesByID.containsKey(nodeId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public SerializedClassifierInstance getNodeByID(String nodeId) {

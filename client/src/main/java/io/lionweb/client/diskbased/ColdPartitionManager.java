@@ -11,6 +11,7 @@ public class ColdPartitionManager {
     private final Path tempDir;
 
     private Map<String, File> partitionFilesByPartitionID = new HashMap<>();
+    private Map<String, String> nodesIDsToPartitionIDs = new HashMap<>();
 
     public ColdPartitionManager() {
         try {
@@ -40,6 +41,11 @@ public class ColdPartitionManager {
     }
 
     public boolean containsNodeID(String nodeId) {
+        return nodesIDsToPartitionIDs.containsKey(nodeId);
+    }
+
+    public void moveToHot(String nodeId) {
+        String partitionID = nodesIDsToPartitionIDs.get(nodeId);
         throw new UnsupportedOperationException();
     }
 }

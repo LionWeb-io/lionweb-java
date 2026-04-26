@@ -169,39 +169,37 @@ class DiskBasedRepositoryData {
               removeContainedNode(currentNode.getParentNodeID(), updatedNode.getID());
             }
           }
-//          calculateNodeListDifferences(
-//              updatedNodesAsMap,
-//              nodesByID.get(updatedNode.getID()).getChildren(),
-//              updatedNode.getChildren(),
-//              "children");
-//          calculateNodeListDifferences(
-//              updatedNodesAsMap,
-//              nodesByID.get(updatedNode.getID()).getAnnotations(),
-//              updatedNode.getAnnotations(),
-//              "annotations");
-            throw new UnsupportedOperationException();
+          calculateNodeListDifferences(
+              updatedNodesAsMap,
+              getNodeByID(updatedNode.getID()).getChildren(),
+              updatedNode.getChildren(),
+              "children");
+          calculateNodeListDifferences(
+              updatedNodesAsMap,
+              getNodeByID(updatedNode.getID()).getAnnotations(),
+              updatedNode.getAnnotations(),
+              "annotations");
         }
       }
-//      // They have been moved and not removed
-//      removedNodes.removeAll(addedNodes.keySet());
-//      // Update classifier index for new/updated nodes before replacing nodesByID entries
-//      for (SerializedClassifierInstance updatedNode : updatedNodes) {
-//        SerializedClassifierInstance existing = nodesByID.get(updatedNode.getID());
-//        if (existing != null) {
-//          // Handle potential classifier change (rare but correct)
-//          ClassifierKey oldKey = classifierKeyOf(existing);
-//          ClassifierKey newKey = classifierKeyOf(updatedNode);
-//          if (!oldKey.equals(newKey)) {
-//            indexRemove(existing);
-//            indexAdd(updatedNode);
-//          }
-//        } else {
-//          indexAdd(updatedNode);
-//        }
-//      }
-//      nodesByID.putAll(updatedNodesAsMap);
-//      removedNodes.forEach(this::removeNode);
-        throw new UnsupportedOperationException();
+      // They have been moved and not removed
+      removedNodes.removeAll(addedNodes.keySet());
+      // Update classifier index for new/updated nodes before replacing nodesByID entries
+      for (SerializedClassifierInstance updatedNode : updatedNodes) {
+        SerializedClassifierInstance existing = getNodeByID(updatedNode.getID());
+        if (existing != null) {
+          // Handle potential classifier change (rare but correct)
+          ClassifierKey oldKey = classifierKeyOf(existing);
+          ClassifierKey newKey = classifierKeyOf(updatedNode);
+          if (!oldKey.equals(newKey)) {
+            indexRemove(existing);
+            indexAdd(updatedNode);
+          }
+        } else {
+          indexAdd(updatedNode);
+        }
+      }
+      putAll(updatedNodesAsMap);
+      removedNodes.forEach(this::removeNode);
     }
 
     private void removeNode(String removeNodeId) {
@@ -222,12 +220,16 @@ class DiskBasedRepositoryData {
     }
   }
 
+    private void putAll(Map<String, SerializedClassifierInstance> nodes) {
+        throw new UnsupportedOperationException();
+    }
+
     private SerializedClassifierInstance getNodeByID(String nodeId) {
       if (hotPartitions.containsNodeID(nodeId)) {
         return hotPartitions.getNodeByID(nodeId);
       }
       if (coldPartitions.containsNodeID(nodeId)) {
-          if (1>0) throw new UnsupportedOperationException("Ensure loading");
+          coldPartitions.moveToHot(nodeId);
           return hotPartitions.getNodeByID(nodeId);
       }
       throw new IllegalArgumentException("Node " + nodeId + " does not exist");
