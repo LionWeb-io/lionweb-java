@@ -46,6 +46,9 @@ class DiskBasedRepositoryData {
     }
 
     public void setMaxHotPartitions(int maxHotPartitions) {
+        if (maxHotPartitions < 1) {
+            throw new IllegalArgumentException("maxHotPartitions must be greater than 0");
+        }
         this.maxHotPartitions = maxHotPartitions;
         this.hotPartitions.setMaxHotPartitions(maxHotPartitions);
     }
@@ -150,22 +153,22 @@ class DiskBasedRepositoryData {
     }
 
     void store(List<SerializedClassifierInstance> updatedNodes) {
-        throw new UnsupportedOperationException();
-//      Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
-//      updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
-//      for (SerializedClassifierInstance updatedNode : updatedNodes) {
-//        if (nodesByID.containsKey(updatedNode.getID())) {
-//          SerializedClassifierInstance currentNode = nodesByID.get(updatedNode.getID());
-//          if (currentNode.getParentNodeID() != null
-//              && !updatedNodesAsMap.containsKey(currentNode.getParentNodeID())) {
-//            // If the node currently has a parent, which has not been modified it can only means two
-//            // things:
-//            // - The node has changed parent, being removed from the old parent
-//            // - The node stayed where it was: same parent, same position
-//            if (!currentNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
-//              removeContainedNode(currentNode.getParentNodeID(), updatedNode.getID());
-//            }
-//          }
+      Map<String, SerializedClassifierInstance> updatedNodesAsMap = new HashMap<>();
+      updatedNodes.forEach(n -> updatedNodesAsMap.put(n.getID(), n));
+      Set<String> knownNodeIDs = getNodesIDs();
+      for (SerializedClassifierInstance updatedNode : updatedNodes) {
+        if (knownNodeIDs.contains(updatedNode.getID())) {
+          SerializedClassifierInstance currentNode = getNodeByID(updatedNode.getID());
+          if (currentNode.getParentNodeID() != null
+              && !updatedNodesAsMap.containsKey(currentNode.getParentNodeID())) {
+            // If the node currently has a parent, which has not been modified it can only means two
+            // things:
+            // - The node has changed parent, being removed from the old parent
+            // - The node stayed where it was: same parent, same position
+            if (!currentNode.getParentNodeID().equals(updatedNode.getParentNodeID())) {
+              removeContainedNode(currentNode.getParentNodeID(), updatedNode.getID());
+            }
+          }
 //          calculateNodeListDifferences(
 //              updatedNodesAsMap,
 //              nodesByID.get(updatedNode.getID()).getChildren(),
@@ -176,8 +179,9 @@ class DiskBasedRepositoryData {
 //              nodesByID.get(updatedNode.getID()).getAnnotations(),
 //              updatedNode.getAnnotations(),
 //              "annotations");
-//        }
-//      }
+            throw new UnsupportedOperationException();
+        }
+      }
 //      // They have been moved and not removed
 //      removedNodes.removeAll(addedNodes.keySet());
 //      // Update classifier index for new/updated nodes before replacing nodesByID entries
@@ -197,6 +201,7 @@ class DiskBasedRepositoryData {
 //      }
 //      nodesByID.putAll(updatedNodesAsMap);
 //      removedNodes.forEach(this::removeNode);
+        throw new UnsupportedOperationException();
     }
 
     private void removeNode(String removeNodeId) {
@@ -217,7 +222,18 @@ class DiskBasedRepositoryData {
     }
   }
 
-  /**
+    private SerializedClassifierInstance getNodeByID(String nodeId) {
+      if (hotPartitions.containsNodeID(nodeId)) {
+        return hotPartitions.getNodeByID(nodeId);
+      }
+      if (coldPartitions.containsNodeID(nodeId)) {
+          if (1>0) throw new UnsupportedOperationException("Ensure loading");
+          return hotPartitions.getNodeByID(nodeId);
+      }
+      throw new IllegalArgumentException("Node " + nodeId + " does not exist");
+    }
+
+    /**
    * Removes a contained node (a child or an annotation) from the specified container in the
    * repository data.
    *

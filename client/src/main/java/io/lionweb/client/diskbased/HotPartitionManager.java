@@ -1,5 +1,7 @@
 package io.lionweb.client.diskbased;
 
+import io.lionweb.serialization.data.SerializedClassifierInstance;
+
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,5 +65,13 @@ final class HotPartitionManager {
             ids.addAll(partitionData.nodesByID.keySet());
         }
         return ids;
+    }
+
+    public boolean containsNodeID(String nodeId) {
+        throw new UnsupportedOperationException();
+    }
+
+    public SerializedClassifierInstance getNodeByID(String nodeId) {
+        throw new UnsupportedOperationException();
     }
 }

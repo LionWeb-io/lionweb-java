@@ -38,4 +38,8 @@ public class ColdPartitionManager {
         }
         return ids;
     }
+
+    public boolean containsNodeID(String nodeId) {
+        throw new UnsupportedOperationException();
+    }
 }

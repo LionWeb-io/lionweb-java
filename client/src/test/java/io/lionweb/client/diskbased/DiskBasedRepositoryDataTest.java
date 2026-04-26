@@ -23,7 +23,7 @@ public class DiskBasedRepositoryDataTest {
     DiskBasedRepositoryData repositoryData =
         new DiskBasedRepositoryData(
             new RepositoryConfiguration("repo1", LionWebVersion.v2023_1, HistorySupport.DISABLED));
-    repositoryData.setMaxHotPartitions(0);
+    repositoryData.setMaxHotPartitions(1);
     assertEquals(Collections.emptySet(), repositoryData.getNodesIDs());
 
     SerializedClassifierInstance n1 =
