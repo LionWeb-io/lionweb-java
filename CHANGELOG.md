@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 1.3.12
+
+* Regenerate protobuffer stubs with updated version
+
 ### Version 1.3.11
 
 * Fix foojay toolchain resolver plugin compatibility with Gradle 9 (update to 1.0.0)
