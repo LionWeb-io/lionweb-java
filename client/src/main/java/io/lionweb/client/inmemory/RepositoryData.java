@@ -29,8 +29,8 @@ class RepositoryData {
   final List<String> partitionIDs = new ArrayList<>();
   final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
 
-  /** Pre-computed index: ClassifierKey → set of node IDs. Kept in sync with nodesByID. */
-  private final Map<ClassifierKey, Set<String>> classifierIndex = new HashMap<>();
+  /** Pre-computed index: ClassifierKey → list of node IDs. Kept in sync with nodesByID. */
+  private final Map<ClassifierKey, List<String>> classifierIndex = new HashMap<>();
 
   private int currentVersion = 0;
   private int nextId = 1;
@@ -52,12 +52,12 @@ class RepositoryData {
 
   private void indexAdd(SerializedClassifierInstance node) {
     ClassifierKey key = classifierKeyOf(node);
-    classifierIndex.computeIfAbsent(key, k -> new HashSet<>()).add(node.getID());
+    classifierIndex.computeIfAbsent(key, k -> new ArrayList<>()).add(node.getID());
   }
 
   private void indexRemove(SerializedClassifierInstance node) {
     ClassifierKey key = classifierKeyOf(node);
-    Set<String> ids = classifierIndex.get(key);
+    List<String> ids = classifierIndex.get(key);
     if (ids != null) {
       ids.remove(node.getID());
       if (ids.isEmpty()) {
@@ -73,12 +73,12 @@ class RepositoryData {
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
     Map<ClassifierKey, ClassifierResult> result = new HashMap<>(classifierIndex.size() * 2);
-    for (Map.Entry<ClassifierKey, Set<String>> entry : classifierIndex.entrySet()) {
-      Set<String> allIds = entry.getValue();
+    for (Map.Entry<ClassifierKey, List<String>> entry : classifierIndex.entrySet()) {
+      List<String> allIds = entry.getValue();
       int total = allIds.size();
       Set<String> limitedIds;
       if (actualLimit >= total) {
-        limitedIds = Collections.unmodifiableSet(allIds);
+        limitedIds = new HashSet<>(allIds);
       } else {
         limitedIds = new HashSet<>();
         for (String id : allIds) {
