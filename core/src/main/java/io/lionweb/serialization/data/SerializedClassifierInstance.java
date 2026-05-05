@@ -33,11 +33,11 @@ public class SerializedClassifierInstance {
   // Constructors
   //
   public SerializedClassifierInstance() {
-    this.properties = new ArrayList<>(5);
+    this.properties = new ArrayList<>(4);
   }
 
   public SerializedClassifierInstance(String id, MetaPointer concept) {
-    this.properties = new ArrayList<>(5);
+    this.properties = new ArrayList<>(4);
     setID(id);
     setClassifier(concept);
   }
