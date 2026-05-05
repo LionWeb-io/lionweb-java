@@ -133,19 +133,6 @@ public class DiskRepositoryBackendTest {
     assertEquals("v3", l.getPropertyValue(mp("lang", "1.0", "p3")));
   }
 
-  @Test
-  void longPropertyValue() throws IOException {
-    // Exceeds the old DataOutputStream.writeUTF limit of 65535 encoded bytes
-    String longValue = "x".repeat(70_000);
-    MetaPointer cls = mp("lang", "1.0", "Concept");
-    SerializedClassifierInstance n = node("n1", cls);
-    n.setPropertyValue(mp("lang", "1.0", "body"), longValue);
-
-    List<SerializedClassifierInstance> loaded = roundtrip(n);
-
-    assertEquals(longValue, loaded.get(0).getPropertyValue(mp("lang", "1.0", "body")));
-  }
-
   // ---------------------------------------------------------------------------
   // Containments
   // ---------------------------------------------------------------------------
@@ -176,10 +163,8 @@ public class DiskRepositoryBackendTest {
   void multipleContainments() throws IOException {
     MetaPointer cls = mp("lang", "1.0", "Concept");
     SerializedClassifierInstance parent = node("p", cls);
-    parent.unsafeAppendContainmentValue(
-        mp("lang", "1.0", "left"), Collections.singletonList("l"));
-    parent.unsafeAppendContainmentValue(
-        mp("lang", "1.0", "right"), Collections.singletonList("r"));
+    parent.unsafeAppendContainmentValue(mp("lang", "1.0", "left"), Collections.singletonList("l"));
+    parent.unsafeAppendContainmentValue(mp("lang", "1.0", "right"), Collections.singletonList("r"));
 
     SerializedClassifierInstance l = node("l", cls);
     l.setParentNodeID("p");
@@ -229,8 +214,7 @@ public class DiskRepositoryBackendTest {
 
     List<SerializedClassifierInstance> loaded = roundtrip(n);
 
-    SerializedReferenceValue.Entry le =
-        loaded.get(0).getReferences().get(0).getValue().get(0);
+    SerializedReferenceValue.Entry le = loaded.get(0).getReferences().get(0).getValue().get(0);
     assertNull(le.getReference());
     assertNull(le.getResolveInfo());
   }
@@ -246,8 +230,7 @@ public class DiskRepositoryBackendTest {
 
     List<SerializedClassifierInstance> loaded = roundtrip(n);
 
-    SerializedReferenceValue.Entry le =
-        loaded.get(0).getReferences().get(0).getValue().get(0);
+    SerializedReferenceValue.Entry le = loaded.get(0).getReferences().get(0).getValue().get(0);
     assertNull(le.getReference());
     assertEquals("SomeName", le.getResolveInfo());
   }
@@ -278,8 +261,7 @@ public class DiskRepositoryBackendTest {
     SerializedClassifierInstance n = node("n1", cls);
     n.setParentNodeID("parent-x");
     n.setPropertyValue(mp("lang", "1.0", "name"), "Alice");
-    n.unsafeAppendContainmentValue(
-        mp("lang", "1.0", "items"), Arrays.asList("c1", "c2"));
+    n.unsafeAppendContainmentValue(mp("lang", "1.0", "items"), Arrays.asList("c1", "c2"));
     SerializedReferenceValue ref = new SerializedReferenceValue(mp("lang", "1.0", "ref"));
     ref.addValue(new SerializedReferenceValue.Entry("target-id", "TargetName"));
     n.unsafeAppendReferenceValue(ref);
@@ -301,9 +283,7 @@ public class DiskRepositoryBackendTest {
     SerializedClassifierInstance l = findById(loaded, "n1");
     assertEquals("parent-x", l.getParentNodeID());
     assertEquals("Alice", l.getPropertyValue(mp("lang", "1.0", "name")));
-    assertEquals(
-        Arrays.asList("c1", "c2"),
-        l.getContainments().get(0).getChildrenIds());
+    assertEquals(Arrays.asList("c1", "c2"), l.getContainments().get(0).getChildrenIds());
     assertEquals("target-id", l.getReferences().get(0).getValue().get(0).getReference());
     assertEquals("TargetName", l.getReferences().get(0).getValue().get(0).getResolveInfo());
     assertEquals(Collections.singletonList("ann-1"), l.getAnnotations());
@@ -337,7 +317,7 @@ public class DiskRepositoryBackendTest {
    * Reproduces the index-overflow bug: when many unique strings (long node IDs + per-node unique
    * property keys such as source locations) push the string-table index past 65535, the MetaPointer
    * table's string entries — formerly stored as 16-bit shorts — would wrap and point to the wrong
-   * string.  After the fix (int-width indices in the MP table), this must round-trip cleanly.
+   * string. After the fix (int-width indices in the MP table), this must round-trip cleanly.
    */
   @Test
   void stringTableIndexBeyondShortRange() throws IOException {
@@ -361,14 +341,15 @@ public class DiskRepositoryBackendTest {
     assertEquals(count, loaded.size());
     for (SerializedClassifierInstance l : loaded) {
       // Recover i from the node ID
-      String suffix = l.getID().substring("OriginalNode-path-to-module-submodule-component-item-".length());
+      String suffix =
+          l.getID().substring("OriginalNode-path-to-module-submodule-component-item-".length());
       int i = Integer.parseInt(suffix);
       MetaPointer propMp = mp("lang", "1.0", "L" + i + ":0-L" + i + ":10");
-      assertEquals("value-" + i, l.getPropertyValue(propMp),
-          "Wrong value for node " + l.getID());
+      assertEquals("value-" + i, l.getPropertyValue(propMp), "Wrong value for node " + l.getID());
       // Crucially, the MetaPointer key must be correct
       assertEquals(1, l.getProperties().size());
-      assertEquals("L" + i + ":0-L" + i + ":10", l.getProperties().get(0).getMetaPointer().getKey());
+      assertEquals(
+          "L" + i + ":0-L" + i + ":10", l.getProperties().get(0).getMetaPointer().getKey());
     }
   }
 

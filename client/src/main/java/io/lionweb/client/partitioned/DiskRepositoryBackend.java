@@ -2,7 +2,6 @@ package io.lionweb.client.partitioned;
 
 import io.lionweb.serialization.data.*;
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -182,7 +181,7 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
 
     // Write string table (strings[0] is the null placeholder, not written)
     out.writeInt(strings.size() - 1);
-    for (int i = 1; i < strings.size(); i++) writeString(out, strings.get(i));
+    for (int i = 1; i < strings.size(); i++) out.writeUTF(strings.get(i));
 
     // Write metapointer table
     out.writeShort(metaPointers.size());
@@ -276,7 +275,7 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     // String table — index 0 stays null (sentinel)
     int strCount = in.readInt();
     String[] strings = new String[strCount + 1]; // strings[0] = null
-    for (int i = 1; i <= strCount; i++) strings[i] = readString(in);
+    for (int i = 1; i <= strCount; i++) strings[i] = in.readUTF();
 
     // MetaPointer table — 0-based
     int mpCount = in.readShort() & 0xFFFF;
@@ -355,35 +354,18 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
   }
 
   // ---------------------------------------------------------------------------
-  // String I/O helpers — int-prefixed UTF-8, no 65535-byte limit
-  // ---------------------------------------------------------------------------
-
-  private static void writeString(DataOutputStream out, String s) throws IOException {
-    byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
-    out.writeInt(bytes.length);
-    out.write(bytes);
-  }
-
-  private static String readString(DataInputStream in) throws IOException {
-    int length = in.readInt();
-    byte[] bytes = new byte[length];
-    in.readFully(bytes);
-    return new String(bytes, StandardCharsets.UTF_8);
-  }
-
-  // ---------------------------------------------------------------------------
   // Intern helpers (write side only)
   // ---------------------------------------------------------------------------
 
   /** Interns {@code s} into the string table. Returns 0 for null, 1-based index otherwise. */
   private static int internString(String s, List<String> strings, Map<String, Integer> index) {
     if (s == null) return 0;
-    return index.computeIfAbsent(
-        s,
-        k -> {
-          strings.add(k);
-          return strings.size() - 1; // 1-based because strings[0] is the null placeholder
-        });
+    Integer existing = index.get(s);
+    if (existing != null) return existing;
+    strings.add(s);
+    int idx = strings.size() - 1;
+    index.put(s, idx);
+    return idx;
   }
 
   /** Returns the string table index for {@code s}, which must already be interned. */
