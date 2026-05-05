@@ -154,10 +154,10 @@ public class PartitionedServer implements Closeable {
   }
 
   public PartitionedServer(
-      @NotNull Path storageDir,
+      @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig,
       boolean materializeClassifierIndex) {
-    this(new DiskRepositoryBackend(storageDir), cacheConfig, null, materializeClassifierIndex);
+    this(backend, cacheConfig, null, materializeClassifierIndex);
   }
 
   // -------------------------------------------------------------------------
@@ -336,7 +336,7 @@ public class PartitionedServer implements Closeable {
   }
 
   public ClassifierResult nodesByClassifier(@NotNull String repositoryName, ClassifierKey key) {
-    return getRepository(repositoryName).nodesByClassifier(limit, key);
+    return getRepository(repositoryName).nodesByClassifier(null, key);
   }
 
   // -------------------------------------------------------------------------
