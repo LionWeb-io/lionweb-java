@@ -9,8 +9,10 @@ import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.utils.CommonChecks;
 import io.lionweb.utils.ValidationResult;
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Manages all node data for a single repository, backed by a {@link PartitionCache} and a {@link
@@ -40,7 +42,9 @@ final class PartitionedRepositoryData {
   private final Map<String, String> nodeToPartitionIndex = new HashMap<>();
 
   /** ClassifierKey → set of node IDs; kept in sync across all partitions. */
-  private final Map<ClassifierKey, Set<String>> classifierIndex = new HashMap<>();
+  private final @Nullable Map<ClassifierKey, Set<String>> classifierIndex;
+
+  private final boolean materializeClassifierIndex;
 
   /** Per-partition metadata (dirty flag, etc.). */
   private final Map<String, PartitionMetadata> partitionMetadata = new HashMap<>();
@@ -54,7 +58,17 @@ final class PartitionedRepositoryData {
       @NotNull RepositoryConfiguration configuration,
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig) {
+    this(configuration, backend, cacheConfig, true);
+  }
+
+  PartitionedRepositoryData(
+      @NotNull RepositoryConfiguration configuration,
+      @NotNull RepositoryBackend backend,
+      @NotNull CacheConfig cacheConfig,
+      boolean materializeClassifierIndex) {
     this.configuration = configuration;
+    this.materializeClassifierIndex = materializeClassifierIndex;
+    this.classifierIndex = materializeClassifierIndex ? new HashMap<>() : null;
     this.cache =
         new PartitionCache(
             cacheConfig,
@@ -205,10 +219,70 @@ final class PartitionedRepositoryData {
   // Queries
   // ---------------------------------------------------------------------------
 
+  ClassifierResult nodesByClassifier(Integer limit, ClassifierKey key) {
+    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
+    Set<String> allIds;
+    if (materializeClassifierIndex) {
+      allIds = classifierIndex.getOrDefault(key, Collections.emptySet());
+    } else {
+      allIds = new HashSet<>();
+      for (String partitionId : partitionIds) {
+        LoadedPartition partition;
+        try {
+          partition = cache.getOrLoad(partitionId);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+        partition.pin();
+        try {
+          for (SerializedClassifierInstance node : partition.nodesByID.values()) {
+            if (key.equals(classifierKeyOf(node))) allIds.add(node.getID());
+          }
+        } finally {
+          partition.unpin();
+        }
+      }
+    }
+    int total = allIds.size();
+    Set<String> limitedIds;
+    if (actualLimit >= total) {
+      limitedIds = Collections.unmodifiableSet(allIds);
+    } else {
+      limitedIds = new HashSet<>();
+      for (String id : allIds) {
+        limitedIds.add(id);
+        if (limitedIds.size() >= actualLimit) break;
+      }
+    }
+    return new ClassifierResult(limitedIds, total);
+  }
+
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
-    Map<ClassifierKey, ClassifierResult> result = new HashMap<>(classifierIndex.size() * 2);
-    for (Map.Entry<ClassifierKey, Set<String>> entry : classifierIndex.entrySet()) {
+    Map<ClassifierKey, Set<String>> index;
+    if (materializeClassifierIndex) {
+      index = classifierIndex;
+    } else {
+      index = new HashMap<>();
+      for (String partitionId : partitionIds) {
+        LoadedPartition partition;
+        try {
+          partition = cache.getOrLoad(partitionId);
+        } catch (IOException e) {
+          throw new UncheckedIOException(e);
+        }
+        partition.pin();
+        try {
+          for (SerializedClassifierInstance node : partition.nodesByID.values()) {
+            index.computeIfAbsent(classifierKeyOf(node), k -> new HashSet<>()).add(node.getID());
+          }
+        } finally {
+          partition.unpin();
+        }
+      }
+    }
+    Map<ClassifierKey, ClassifierResult> result = new HashMap<>(index.size() * 2);
+    for (Map.Entry<ClassifierKey, Set<String>> entry : index.entrySet()) {
       Set<String> allIds = entry.getValue();
       int total = allIds.size();
       Set<String> limitedIds;
@@ -600,10 +674,12 @@ final class PartitionedRepositoryData {
   }
 
   private void classifierIndexAdd(SerializedClassifierInstance node) {
+    if (!materializeClassifierIndex) return;
     classifierIndex.computeIfAbsent(classifierKeyOf(node), k -> new HashSet<>()).add(node.getID());
   }
 
   private void classifierIndexRemove(SerializedClassifierInstance node) {
+    if (!materializeClassifierIndex) return;
     ClassifierKey key = classifierKeyOf(node);
     Set<String> ids = classifierIndex.get(key);
     if (ids != null) {

@@ -41,6 +41,7 @@ public class PartitionedServer implements Closeable {
   private final Map<String, PartitionedRepositoryData> repositories = new ConcurrentHashMap<>();
   private final RepositoryBackend backend;
   private final CacheConfig cacheConfig;
+  private final boolean materializeClassifierIndex;
 
   /** Non-null only when this instance owns the directory and must delete it at shutdown. */
   private final Path ownedTempDir;
@@ -135,12 +136,28 @@ public class PartitionedServer implements Closeable {
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig,
       @Nullable Path ownedTempDir) {
+    this(backend, cacheConfig, ownedTempDir, true);
+  }
+
+  private PartitionedServer(
+      @NotNull RepositoryBackend backend,
+      @NotNull CacheConfig cacheConfig,
+      @Nullable Path ownedTempDir,
+      boolean materializeClassifierIndex) {
     this.backend = backend;
     this.cacheConfig = cacheConfig;
     this.ownedTempDir = ownedTempDir;
+    this.materializeClassifierIndex = materializeClassifierIndex;
     if (ownedTempDir != null) {
       Runtime.getRuntime().addShutdownHook(new Thread(() -> deleteDirectoryQuietly(ownedTempDir)));
     }
+  }
+
+  public PartitionedServer(
+      @NotNull Path storageDir,
+      @NotNull CacheConfig cacheConfig,
+      boolean materializeClassifierIndex) {
+    this(new DiskRepositoryBackend(storageDir), cacheConfig, null, materializeClassifierIndex);
   }
 
   // -------------------------------------------------------------------------
@@ -164,7 +181,8 @@ public class PartitionedServer implements Closeable {
     }
     repositories.put(
         repositoryConfiguration.getName(),
-        new PartitionedRepositoryData(repositoryConfiguration, backend, cacheConfig));
+        new PartitionedRepositoryData(
+            repositoryConfiguration, backend, cacheConfig, materializeClassifierIndex));
   }
 
   public void deleteRepository(@NotNull String repositoryName) {
@@ -315,6 +333,10 @@ public class PartitionedServer implements Closeable {
   public @NotNull Map<String, ClassifierResult> nodesByLanguage(
       @NotNull String repositoryName, @Nullable Integer limit) {
     return getRepository(repositoryName).nodesByLanguage(limit);
+  }
+
+  public ClassifierResult nodesByClassifier(@NotNull String repositoryName, ClassifierKey key) {
+    return getRepository(repositoryName).nodesByClassifier(limit, key);
   }
 
   // -------------------------------------------------------------------------
