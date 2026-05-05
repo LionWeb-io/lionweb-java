@@ -63,7 +63,7 @@ public class PartitionedServerPersistenceTest {
     }
 
     // File should exist after flush
-    assertTrue(Files.exists(repoDir.resolve("p1.pb")), "Partition file should exist after flush");
+    assertTrue(Files.exists(repoDir.resolve("p1.lwb")), "Partition file should exist after flush");
   }
 
   /**
@@ -149,7 +149,7 @@ public class PartitionedServerPersistenceTest {
       srv.createPartitionFromChunk("testRepo", Collections.singletonList(root("p2")));
 
       // p2 is dirty, p1 was clean - p1 file modification time should not change
-      Path p1File = tempDir.resolve("testRepo").resolve("p1.pb");
+      Path p1File = tempDir.resolve("testRepo").resolve("p1.lwb");
       long modTime = Files.getLastModifiedTime(p1File).toMillis();
 
       // Give some time buffer
@@ -177,7 +177,7 @@ public class PartitionedServerPersistenceTest {
       srv.createPartitionFromChunk("testRepo", Collections.singletonList(root("p2")));
 
       // p1 file must now exist
-      Path p1File = tempDir.resolve("testRepo").resolve("p1.pb");
+      Path p1File = tempDir.resolve("testRepo").resolve("p1.lwb");
       assertTrue(Files.exists(p1File), "Dirty p1 must be flushed before eviction");
     }
   }
