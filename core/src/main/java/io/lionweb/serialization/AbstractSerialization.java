@@ -210,7 +210,6 @@ public abstract class AbstractSerialization {
       serializationStatus.considerLanguageDuringSerialization(
           languageConsumer, classifierInstance.getClassifier().getLanguage());
     }
-    serializationChunk.populateUsedLanguages();
     return serializationChunk;
   }
 

@@ -14,15 +14,30 @@ public class SerializationStatus {
   private final Set<String> consideredLanguageIDs = new HashSet<>();
 
   public Iterable<Property> allProperties(Classifier<?> classifier) {
-    return properties.computeIfAbsent(classifier.getID(), id -> classifier.allProperties());
+    String id = classifier.getID();
+    List<Property> cached = properties.get(id);
+    if (cached != null) return cached;
+    List<Property> computed = classifier.allProperties();
+    properties.put(id, computed);
+    return computed;
   }
 
   public Iterable<Containment> allContainments(Classifier<?> classifier) {
-    return containments.computeIfAbsent(classifier.getID(), id -> classifier.allContainments());
+    String id = classifier.getID();
+    List<Containment> cached = containments.get(id);
+    if (cached != null) return cached;
+    List<Containment> computed = classifier.allContainments();
+    containments.put(id, computed);
+    return computed;
   }
 
   public Iterable<Reference> allReferences(Classifier<?> classifier) {
-    return references.computeIfAbsent(classifier.getID(), id -> classifier.allReferences());
+    String id = classifier.getID();
+    List<Reference> cached = references.get(id);
+    if (cached != null) return cached;
+    List<Reference> computed = classifier.allReferences();
+    references.put(id, computed);
+    return computed;
   }
 
   public void considerLanguageDuringSerialization(Consumer<Language> consumer, Language language) {

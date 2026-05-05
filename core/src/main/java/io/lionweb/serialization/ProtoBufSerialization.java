@@ -29,6 +29,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return deserializeSerializationChunk(pbChunk);
   }
 
+  public SerializationChunk deserializeToChunk(InputStream inputStream) throws IOException {
+    PBChunk pbChunk = PBChunk.parseFrom(inputStream);
+    return deserializeSerializationChunk(pbChunk);
+  }
+
   public List<io.lionweb.model.Node> deserializeToNodes(File file) throws IOException {
     return deserializeToNodes(new FileInputStream(file));
   }
