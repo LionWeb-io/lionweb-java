@@ -3,6 +3,7 @@ package io.lionweb.client.inmemory;
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -118,6 +119,12 @@ public class ChunkLevelInMemoryServerClient
   //
   // InspectionAPIClient methods
   //
+
+  @Override
+  public ClassifierResult nodesByClassifier(ClassifierKey key) throws IOException {
+    requireRepository();
+    return inMemoryServer.nodesByClassifier(repositoryName, key);
+  }
 
   @Override
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier() {
