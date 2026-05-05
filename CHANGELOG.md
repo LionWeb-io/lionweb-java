@@ -11,6 +11,11 @@
 * Upgrade org.eclipse.emf.ecore.xmi to 2.40.0
 * Upgrade protobuf-java to 4.34.1
 * Upgrade com.github.gmazzo.buildconfig to 6.0.9
+* Fix foojay toolchain resolver plugin compatibility with Gradle 9 (update to 1.0.0)
+* Pre-size `SerializedClassifierInstance` feature lists from protobuf node counts to reduce allocations
+* Make classifier index materialization optional in `RepositoryData` and `InMemoryServer` (default: enabled)
+* Add `nodesByClassifier(limit, classifierKey)` for targeted single-classifier lookup
+* Optimize `nodesByClassifier` limit slicing via `subList` instead of element-by-element iteration
 
 ### Version 1.3.9
 
