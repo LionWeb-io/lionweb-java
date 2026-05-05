@@ -333,6 +333,45 @@ public class DiskRepositoryBackendTest {
     }
   }
 
+  /**
+   * Reproduces the index-overflow bug: when many unique strings (long node IDs + per-node unique
+   * property keys such as source locations) push the string-table index past 65535, the MetaPointer
+   * table's string entries — formerly stored as 16-bit shorts — would wrap and point to the wrong
+   * string.  After the fix (int-width indices in the MP table), this must round-trip cleanly.
+   */
+  @Test
+  void stringTableIndexBeyondShortRange() throws IOException {
+    // Build a string table that exceeds 65535 entries.
+    // Each node contributes: 1 long unique ID + 1 unique MP key (e.g. a source location).
+    // With 30 000 nodes: ~30 000 IDs + ~30 000 MP keys = ~60 000+ strings, crossing 65535.
+    int count = 33_000; // enough to push string indices past 0xFFFF
+    MetaPointer cls = mp("lang", "1.0", "Concept");
+    SerializedClassifierInstance[] nodes = new SerializedClassifierInstance[count];
+    for (int i = 0; i < count; i++) {
+      // Long unique node ID
+      String id = "OriginalNode-path-to-module-submodule-component-item-" + i;
+      // Unique MetaPointer key per node (simulates source-location-based keys like "L42:7-L42:13")
+      MetaPointer propMp = mp("lang", "1.0", "L" + i + ":0-L" + i + ":10");
+      nodes[i] = node(id, cls);
+      nodes[i].setPropertyValue(propMp, "value-" + i);
+    }
+
+    List<SerializedClassifierInstance> loaded = roundtrip(nodes);
+
+    assertEquals(count, loaded.size());
+    for (SerializedClassifierInstance l : loaded) {
+      // Recover i from the node ID
+      String suffix = l.getID().substring("OriginalNode-path-to-module-submodule-component-item-".length());
+      int i = Integer.parseInt(suffix);
+      MetaPointer propMp = mp("lang", "1.0", "L" + i + ":0-L" + i + ":10");
+      assertEquals("value-" + i, l.getPropertyValue(propMp),
+          "Wrong value for node " + l.getID());
+      // Crucially, the MetaPointer key must be correct
+      assertEquals(1, l.getProperties().size());
+      assertEquals("L" + i + ":0-L" + i + ":10", l.getProperties().get(0).getMetaPointer().getKey());
+    }
+  }
+
   @Test
   void multiplePartitions() throws IOException {
     MetaPointer cls = mp("lang", "1.0", "Concept");

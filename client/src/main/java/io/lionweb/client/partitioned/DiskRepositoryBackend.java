@@ -164,6 +164,7 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
       }
       for (SerializedContainmentValue c : sci.getContainments()) {
         internMp(c.getMetaPointer(), metaPointers, mpIndex, strings, stringIndex);
+        // This should be unneccessary: all the node IDs are also nodes of the chunk, or should be
         for (String childId : c.getChildrenIds()) internString(childId, strings, stringIndex);
       }
       for (SerializedReferenceValue r : sci.getReferences()) {
@@ -186,9 +187,9 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     // Write metapointer table
     out.writeShort(metaPointers.size());
     for (MetaPointer mp : metaPointers) {
-      out.writeShort(idxOf(mp.getLanguage(), stringIndex));
-      out.writeShort(idxOf(mp.getVersion(), stringIndex));
-      out.writeShort(idxOf(mp.getKey(), stringIndex));
+      out.writeInt(idxOf(mp.getLanguage(), stringIndex));
+      out.writeInt(idxOf(mp.getVersion(), stringIndex));
+      out.writeInt(idxOf(mp.getKey(), stringIndex));
     }
 
     // Write nodes
@@ -281,9 +282,9 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     int mpCount = in.readShort() & 0xFFFF;
     MetaPointer[] metaPointers = new MetaPointer[mpCount];
     for (int i = 0; i < mpCount; i++) {
-      String language = strings[in.readShort() & 0xFFFF];
-      String version = strings[in.readShort() & 0xFFFF];
-      String key = strings[in.readShort() & 0xFFFF];
+      String language = strings[in.readInt()];
+      String version = strings[in.readInt()];
+      String key = strings[in.readInt()];
       metaPointers[i] = MetaPointer.get(language, version, key);
     }
 
