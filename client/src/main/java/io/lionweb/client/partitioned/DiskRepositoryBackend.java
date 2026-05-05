@@ -2,6 +2,7 @@ package io.lionweb.client.partitioned;
 
 import io.lionweb.serialization.data.*;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -181,7 +182,7 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
 
     // Write string table (strings[0] is the null placeholder, not written)
     out.writeInt(strings.size() - 1);
-    for (int i = 1; i < strings.size(); i++) out.writeUTF(strings.get(i));
+    for (int i = 1; i < strings.size(); i++) writeString(out, strings.get(i));
 
     // Write metapointer table
     out.writeShort(metaPointers.size());
@@ -275,7 +276,7 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     // String table — index 0 stays null (sentinel)
     int strCount = in.readInt();
     String[] strings = new String[strCount + 1]; // strings[0] = null
-    for (int i = 1; i <= strCount; i++) strings[i] = in.readUTF();
+    for (int i = 1; i <= strCount; i++) strings[i] = readString(in);
 
     // MetaPointer table — 0-based
     int mpCount = in.readShort() & 0xFFFF;
@@ -374,6 +375,19 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     Integer i = index.get(s);
     if (i == null) throw new IllegalStateException("String not interned: " + s);
     return i;
+  }
+
+  private static void writeString(DataOutputStream out, String s) throws IOException {
+    byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
+    out.writeInt(bytes.length);
+    out.write(bytes);
+  }
+
+  private static String readString(DataInputStream in) throws IOException {
+    int length = in.readInt();
+    byte[] bytes = new byte[length];
+    in.readFully(bytes);
+    return new String(bytes, StandardCharsets.UTF_8);
   }
 
   /** Interns {@code mp} into the metapointer table, interning its constituent strings too. */

@@ -354,6 +354,20 @@ public class DiskRepositoryBackendTest {
   }
 
   @Test
+  void longPropertyValue() throws IOException {
+    MetaPointer cls = mp("lang", "1.0", "Concept");
+    MetaPointer propMp = mp("lang", "1.0", "body");
+    // 70 000 chars → ~70 000 bytes UTF-8, exceeding writeUTF's 65535-byte limit
+    String longValue = "x".repeat(70_000);
+    SerializedClassifierInstance n = node("n1", cls);
+    n.setPropertyValue(propMp, longValue);
+
+    List<SerializedClassifierInstance> loaded = roundtrip(n);
+
+    assertEquals(longValue, loaded.get(0).getPropertyValue(propMp));
+  }
+
+  @Test
   void multiplePartitions() throws IOException {
     MetaPointer cls = mp("lang", "1.0", "Concept");
     DiskRepositoryBackend backend = new DiskRepositoryBackend(tempDir);
