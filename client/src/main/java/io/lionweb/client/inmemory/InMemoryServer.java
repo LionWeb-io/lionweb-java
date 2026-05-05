@@ -198,10 +198,20 @@ public class InMemoryServer {
     return nodesByClassifier(repositoryName, Integer.MAX_VALUE);
   }
 
+  public ClassifierResult nodesByClassifier(@NotNull String repositoryName, ClassifierKey key) {
+    return nodesByClassifier(repositoryName, Integer.MAX_VALUE, key);
+  }
+
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
       @NotNull String repositoryName, @Nullable Integer limit) {
     RepositoryData repositoryData = getRepository(repositoryName);
     return repositoryData.nodesByClassifier(limit);
+  }
+
+  public ClassifierResult nodesByClassifier(
+      @NotNull String repositoryName, @Nullable Integer limit, ClassifierKey key) {
+    RepositoryData repositoryData = getRepository(repositoryName);
+    return repositoryData.nodesByClassifier(limit, key);
   }
 
   public Map<String, ClassifierResult> nodesByLanguage(@NotNull String repositoryName) {

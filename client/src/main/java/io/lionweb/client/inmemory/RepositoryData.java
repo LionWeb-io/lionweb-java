@@ -105,6 +105,33 @@ class RepositoryData {
     return result;
   }
 
+  ClassifierResult nodesByClassifier(Integer limit, ClassifierKey key) {
+    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
+    List<String> allIds;
+    if (materializeClassifierIndex) {
+      allIds = classifierIndex.getOrDefault(key, Collections.emptyList());
+    } else {
+      allIds = new ArrayList<>();
+      for (SerializedClassifierInstance node : nodesByID.values()) {
+        if (key.equals(classifierKeyOf(node))) {
+          allIds.add(node.getID());
+        }
+      }
+    }
+    int total = allIds.size();
+    Set<String> limitedIds;
+    if (actualLimit >= total) {
+      limitedIds = new HashSet<>(allIds);
+    } else {
+      limitedIds = new HashSet<>();
+      for (String id : allIds) {
+        limitedIds.add(id);
+        if (limitedIds.size() >= actualLimit) break;
+      }
+    }
+    return new ClassifierResult(limitedIds, total);
+  }
+
   private class ChangeCalculator {
     private final Map<String, SerializedClassifierInstance> addedNodes = new HashMap<>();
     private final Set<String> removedNodes = new HashSet<>();
@@ -230,7 +257,8 @@ class RepositoryData {
     this(configuration, true);
   }
 
-  RepositoryData(@NotNull RepositoryConfiguration configuration, boolean materializeClassifierIndex) {
+  RepositoryData(
+      @NotNull RepositoryConfiguration configuration, boolean materializeClassifierIndex) {
     this.configuration = configuration;
     this.materializeClassifierIndex = materializeClassifierIndex;
     this.classifierIndex = materializeClassifierIndex ? new HashMap<>() : null;
