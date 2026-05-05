@@ -2,7 +2,6 @@ package io.lionweb.client.partitioned;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.*;
-import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
 import io.lionweb.serialization.SerializationProvider;
@@ -22,8 +21,8 @@ import org.jetbrains.annotations.Nullable;
  * A client for {@link PartitionedServer} that operates on {@link Node} objects.
  *
  * <p>This is the partition-oriented equivalent of {@code NodesLevelInMemoryServerClient}. It wraps
- * a {@link ChunkLevelPartitionedServerClient} and uses {@link AbstractSerialization} for
- * converting between nodes and serialised chunks.
+ * a {@link ChunkLevelPartitionedServerClient} and uses {@link AbstractSerialization} for converting
+ * between nodes and serialised chunks.
  */
 public class NodesLevelPartitionedServerClient
     implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {

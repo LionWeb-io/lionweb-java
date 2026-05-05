@@ -1,8 +1,8 @@
 package io.lionweb.client.partitioned;
 
 /**
- * Compact per-partition metadata that is always kept in memory, regardless of whether the
- * partition itself is currently loaded.
+ * Compact per-partition metadata that is always kept in memory, regardless of whether the partition
+ * itself is currently loaded.
  *
  * <p>Instances of this class are owned by {@link PartitionedRepositoryData} and must not be shared
  * across threads without external synchronisation.

@@ -21,6 +21,7 @@ import org.openjdk.jmh.runner.options.OptionsBuilder;
  * JMH benchmark for {@link PartitionedServer}.
  *
  * <p>Scenarios:
+ *
  * <ul>
  *   <li>{@link #storePartition} — write one partition with many nodes.
  *   <li>{@link #retrieveWarmPartition} — read from an already-cached partition.
@@ -47,8 +48,8 @@ public class PartitionedServerBenchmark {
   private static final MetaPointer MP = MetaPointer.get("bench-lang", "1.0", "BenchNode");
 
   private Path tempDir;
-  private PartitionedServer warmServer;    // cache large enough for all partitions
-  private PartitionedServer coldServer;    // cache of 1 partition (forces eviction)
+  private PartitionedServer warmServer; // cache large enough for all partitions
+  private PartitionedServer coldServer; // cache of 1 partition (forces eviction)
 
   @Setup(Level.Trial)
   public void setup() throws IOException {
@@ -130,8 +131,7 @@ public class PartitionedServerBenchmark {
   // Helpers
   // -------------------------------------------------------------------------
 
-  private static List<SerializedClassifierInstance> buildPartitionNodes(
-      String rootId, int count) {
+  private static List<SerializedClassifierInstance> buildPartitionNodes(String rootId, int count) {
     List<SerializedClassifierInstance> nodes = new ArrayList<>(count);
     SerializedClassifierInstance root = new SerializedClassifierInstance(rootId, MP);
     nodes.add(root);

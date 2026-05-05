@@ -15,11 +15,11 @@ import java.util.Map;
  *
  * <p>The cache evicts the least-recently-used non-pinned partition when the number of loaded
  * partitions exceeds {@link CacheConfig#getMaxLoadedPartitions()} or the total node count exceeds
- * {@link CacheConfig#getMaxLoadedNodes()}. Dirty partitions are written to disk through the
- * {@link RepositoryBackend} before being evicted.
+ * {@link CacheConfig#getMaxLoadedNodes()}. Dirty partitions are written to disk through the {@link
+ * RepositoryBackend} before being evicted.
  *
- * <p>Pinning ({@link LoadedPartition#pin()} / {@link LoadedPartition#unpin()}) keeps a partition
- * in cache while it is actively being accessed, preventing accidental eviction during multi-step
+ * <p>Pinning ({@link LoadedPartition#pin()} / {@link LoadedPartition#unpin()}) keeps a partition in
+ * cache while it is actively being accessed, preventing accidental eviction during multi-step
  * operations.
  *
  * <p>This class is not thread-safe. The caller must provide external synchronisation for concurrent

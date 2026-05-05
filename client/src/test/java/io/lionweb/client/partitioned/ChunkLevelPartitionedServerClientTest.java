@@ -12,19 +12,15 @@ import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Mirrors {@code ChunkLevelInMemoryServerClientTest} for the partitioned implementation.
- */
+/** Mirrors {@code ChunkLevelInMemoryServerClientTest} for the partitioned implementation. */
 public class ChunkLevelPartitionedServerClientTest {
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @Test
   public void testRepositoriesCRUD() {

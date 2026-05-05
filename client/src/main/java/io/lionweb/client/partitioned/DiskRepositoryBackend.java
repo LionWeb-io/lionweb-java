@@ -4,7 +4,6 @@ import io.lionweb.serialization.ProtoBufSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -68,8 +67,8 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
   }
 
   @Override
-  public List<SerializedClassifierInstance> loadPartition(
-      String repositoryName, String partitionId) throws IOException {
+  public List<SerializedClassifierInstance> loadPartition(String repositoryName, String partitionId)
+      throws IOException {
     Path file = partitionFile(repositoryName, partitionId);
     if (!Files.exists(file)) {
       return Collections.emptyList();
@@ -80,8 +79,8 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
   }
 
   @Override
-  public void savePartition(
-      String repositoryName, String partitionId, SerializationChunk chunk) throws IOException {
+  public void savePartition(String repositoryName, String partitionId, SerializationChunk chunk)
+      throws IOException {
     Path repoDir = repoDir(repositoryName);
     Files.createDirectories(repoDir);
     byte[] bytes = proto.serializeToByteArray(chunk);

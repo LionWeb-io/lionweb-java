@@ -33,14 +33,15 @@ import org.jetbrains.annotations.Nullable;
  * <p>IOException from the backend is re-thrown as {@link UncheckedIOException} so that the method
  * signatures remain compatible with {@code InMemoryServer}.
  *
- * <p><b>Thread safety:</b> concurrent reads are safe, but mutation methods are not thread-safe (same
- * contract as {@code InMemoryServer}).
+ * <p><b>Thread safety:</b> concurrent reads are safe, but mutation methods are not thread-safe
+ * (same contract as {@code InMemoryServer}).
  */
 public class PartitionedServer implements Closeable {
 
   private final Map<String, PartitionedRepositoryData> repositories = new ConcurrentHashMap<>();
   private final RepositoryBackend backend;
   private final CacheConfig cacheConfig;
+
   /** Non-null only when this instance owns the directory and must delete it at shutdown. */
   private final Path ownedTempDir;
 
@@ -92,19 +93,23 @@ public class PartitionedServer implements Closeable {
   }
 
   /**
-   * Like {@link #PartitionedServer()} but with an explicit cache configuration. A temp directory
-   * is allocated automatically and deleted on {@link #close()} or JVM exit.
+   * Like {@link #PartitionedServer()} but with an explicit cache configuration. A temp directory is
+   * allocated automatically and deleted on {@link #close()} or JVM exit.
    */
   public PartitionedServer(@NotNull CacheConfig cacheConfig) {
     this(createTempDir(), cacheConfig, true);
   }
 
-  /** @deprecated Use {@link #PartitionedServer(CacheConfig)} instead. */
+  /**
+   * @deprecated Use {@link #PartitionedServer(CacheConfig)} instead.
+   */
   public static PartitionedServer withTempStorage() {
     return new PartitionedServer();
   }
 
-  /** @deprecated Use {@link #PartitionedServer(CacheConfig)} instead. */
+  /**
+   * @deprecated Use {@link #PartitionedServer(CacheConfig)} instead.
+   */
   public static PartitionedServer withTempStorage(@NotNull CacheConfig cacheConfig) {
     return new PartitionedServer(cacheConfig);
   }
@@ -117,8 +122,12 @@ public class PartitionedServer implements Closeable {
     }
   }
 
-  /** Bridges {@link #PartitionedServer(CacheConfig)} — creates backend from an already-allocated dir. */
-  private PartitionedServer(@NotNull Path storageDir, @NotNull CacheConfig cacheConfig, boolean ownsDir) {
+  /**
+   * Bridges {@link #PartitionedServer(CacheConfig)} — creates backend from an already-allocated
+   * dir.
+   */
+  private PartitionedServer(
+      @NotNull Path storageDir, @NotNull CacheConfig cacheConfig, boolean ownsDir) {
     this(new DiskRepositoryBackend(storageDir), cacheConfig, ownsDir ? storageDir : null);
   }
 
@@ -130,8 +139,7 @@ public class PartitionedServer implements Closeable {
     this.cacheConfig = cacheConfig;
     this.ownedTempDir = ownedTempDir;
     if (ownedTempDir != null) {
-      Runtime.getRuntime()
-          .addShutdownHook(new Thread(() -> deleteDirectoryQuietly(ownedTempDir)));
+      Runtime.getRuntime().addShutdownHook(new Thread(() -> deleteDirectoryQuietly(ownedTempDir)));
     }
   }
 

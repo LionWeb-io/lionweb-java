@@ -12,19 +12,15 @@ import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Mirrors {@code NodesLevelInMemoryServerClientTest} for the partitioned implementation.
- */
+/** Mirrors {@code NodesLevelInMemoryServerClientTest} for the partitioned implementation. */
 public class NodesLevelPartitionedServerClientTest {
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @Test
   public void testRepositoriesCRUD() {
     try (PartitionedServer server = new PartitionedServer(tempDir)) {
-      NodesLevelPartitionedServerClient client =
-          new NodesLevelPartitionedServerClient(server);
+      NodesLevelPartitionedServerClient client = new NodesLevelPartitionedServerClient(server);
       assertEquals(Collections.emptySet(), client.listRepositories());
 
       client.createRepository(

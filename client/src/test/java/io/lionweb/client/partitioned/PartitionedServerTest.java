@@ -20,13 +20,10 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Mirrors {@code InMemoryServerTest} for the partitioned implementation.
- */
+/** Mirrors {@code InMemoryServerTest} for the partitioned implementation. */
 public class PartitionedServerTest {
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   @Test
   public void testModifyTreeAddingSubtreeWithAnnotations() throws IOException {
@@ -94,7 +91,9 @@ public class PartitionedServerTest {
       assertEquals(2, book2Subtree.size());
 
       Set<String> subtreeIds =
-          book2Subtree.stream().map(SerializedClassifierInstance::getID).collect(Collectors.toSet());
+          book2Subtree.stream()
+              .map(SerializedClassifierInstance::getID)
+              .collect(Collectors.toSet());
       assertTrue(subtreeIds.contains("book2"));
       assertTrue(subtreeIds.contains("my-ann"));
     }

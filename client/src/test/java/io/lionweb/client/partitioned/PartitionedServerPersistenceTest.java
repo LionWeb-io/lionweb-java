@@ -18,8 +18,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 /**
- * Tests specific to the persistence, cache eviction, dirty tracking, and reload behaviour of
- * {@link PartitionedServer}. These scenarios have no equivalent in the in-memory implementation.
+ * Tests specific to the persistence, cache eviction, dirty tracking, and reload behaviour of {@link
+ * PartitionedServer}. These scenarios have no equivalent in the in-memory implementation.
  */
 public class PartitionedServerPersistenceTest {
 
@@ -27,8 +27,7 @@ public class PartitionedServerPersistenceTest {
   private static final RepositoryConfiguration REPO_CFG =
       new RepositoryConfiguration("testRepo", VERSION, HistorySupport.DISABLED);
 
-  @TempDir
-  Path tempDir;
+  @TempDir Path tempDir;
 
   // -------------------------------------------------------------------------
   // Helpers
@@ -110,10 +109,8 @@ public class PartitionedServerPersistenceTest {
       srv2.createRepository(REPO_CFG);
 
       // Load the persisted chunk back via the backend
-      DiskRepositoryBackend diskBackend =
-          new DiskRepositoryBackend(tempDir);
-      List<SerializedClassifierInstance> nodes =
-          diskBackend.loadPartition("testRepo", "part1");
+      DiskRepositoryBackend diskBackend = new DiskRepositoryBackend(tempDir);
+      List<SerializedClassifierInstance> nodes = diskBackend.loadPartition("testRepo", "part1");
       assertFalse(nodes.isEmpty(), "Persisted partition should be loadable from disk");
       assertEquals(2, nodes.size());
 
@@ -196,8 +193,7 @@ public class PartitionedServerPersistenceTest {
       srv.createRepository(REPO_CFG);
 
       for (int i = 0; i < maxParts + 5; i++) {
-        srv.createPartitionFromChunk(
-            "testRepo", Collections.singletonList(root("part-" + i)));
+        srv.createPartitionFromChunk("testRepo", Collections.singletonList(root("part-" + i)));
       }
       // Just verify no exception and all partitions are registered
       assertEquals(maxParts + 5, srv.listPartitionIDs("testRepo").size());
@@ -275,8 +271,7 @@ public class PartitionedServerPersistenceTest {
       srv.createPartitionFromChunk("testRepo", Collections.singletonList(r1));
       srv.createPartitionFromChunk("testRepo", Collections.singletonList(r2));
 
-      Map<ClassifierKey, ClassifierResult> result =
-          srv.nodesByClassifier("testRepo");
+      Map<ClassifierKey, ClassifierResult> result = srv.nodesByClassifier("testRepo");
       assertEquals(2, result.size());
       assertTrue(result.containsKey(new ClassifierKey("lang", "ConceptA")));
       assertTrue(result.containsKey(new ClassifierKey("lang", "ConceptB")));

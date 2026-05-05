@@ -13,8 +13,8 @@ import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Manages all node data for a single repository, backed by a {@link PartitionCache} and a
- * {@link RepositoryBackend}.
+ * Manages all node data for a single repository, backed by a {@link PartitionCache} and a {@link
+ * RepositoryBackend}.
  *
  * <p>The following structures are always kept in memory:
  *
@@ -115,8 +115,7 @@ final class PartitionedRepositoryData {
     // Validate: root nodes must be registered partitions
     for (SerializedClassifierInstance node : newNodes) {
       if (node.getParentNodeID() == null && !partitionIds.contains(node.getID())) {
-        throw new IllegalArgumentException(
-            "Node " + node + " should be registered as a partition");
+        throw new IllegalArgumentException("Node " + node + " should be registered as a partition");
       }
     }
 
@@ -159,8 +158,8 @@ final class PartitionedRepositoryData {
   // Retrieve
   // ---------------------------------------------------------------------------
 
-  void retrieve(
-      String nodeId, int limit, List<SerializedClassifierInstance> retrieved) throws IOException {
+  void retrieve(String nodeId, int limit, List<SerializedClassifierInstance> retrieved)
+      throws IOException {
     String partitionId = nodeToPartitionIndex.get(nodeId);
     if (partitionId == null) {
       throw new IllegalArgumentException("Node with id " + nodeId + " cannot be found");
@@ -319,12 +318,10 @@ final class PartitionedRepositoryData {
                   + " and now "
                   + placement);
         } else {
-          containedNodes.put(
-              annotationId, new HashSet<>(Collections.singletonList(placement)));
+          containedNodes.put(annotationId, new HashSet<>(Collections.singletonList(placement)));
         }
         SerializedClassifierInstance annotation = nodesByID.get(annotationId);
-        if (annotation != null
-            && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
+        if (annotation != null && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
           result.addError(
               annotationId
                   + " is listed as an annotation of "
@@ -518,8 +515,8 @@ final class PartitionedRepositoryData {
   }
 
   /**
-   * Calculates which nodes were added to or removed from a containment/annotation list.
-   * Mirrors {@code ChangeCalculator.calculateNodeListDifferences}.
+   * Calculates which nodes were added to or removed from a containment/annotation list. Mirrors
+   * {@code ChangeCalculator.calculateNodeListDifferences}.
    */
   private static void calculateListDiff(
       Map<String, SerializedClassifierInstance> updatedNodesAsMap,
@@ -561,9 +558,7 @@ final class PartitionedRepositoryData {
    * the parent's data stays consistent when a node changes parent.
    */
   private static void removeContainedNodeFromPartition(
-      Map<String, SerializedClassifierInstance> nodesByID,
-      String containerId,
-      String containedId) {
+      Map<String, SerializedClassifierInstance> nodesByID, String containerId, String containedId) {
     SerializedClassifierInstance container = nodesByID.get(containerId);
     if (container == null) return;
     container.getContainments().forEach(c -> c.removeChild(containedId));
@@ -571,14 +566,11 @@ final class PartitionedRepositoryData {
   }
 
   /**
-   * Recursively removes a node and all descendants that are not being moved.
-   * Mirrors {@code ChangeCalculator.removeNode}.
+   * Recursively removes a node and all descendants that are not being moved. Mirrors {@code
+   * ChangeCalculator.removeNode}.
    */
   private void removeNodeRecursive(
-      LoadedPartition partition,
-      String nodeId,
-      Set<String> movedNodeIds,
-      String partitionId) {
+      LoadedPartition partition, String nodeId, Set<String> movedNodeIds, String partitionId) {
     SerializedClassifierInstance node = partition.nodesByID.get(nodeId);
     if (node == null) return;
 

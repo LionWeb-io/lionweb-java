@@ -9,8 +9,8 @@ import java.util.Map;
  * A partition that has been loaded into the in-memory cache.
  *
  * <p>The {@code nodesByID} map holds all nodes belonging to this partition. All containment
- * relationships within a partition are local: a node's children are always in the same partition
- * as the node itself.
+ * relationships within a partition are local: a node's children are always in the same partition as
+ * the node itself.
  *
  * <p>Pinning ({@link #pin()} / {@link #unpin()}) prevents the cache from evicting this partition
  * while it is actively being read or written.

@@ -4,9 +4,9 @@
  * <h2>Purpose</h2>
  *
  * <p>{@link io.lionweb.client.partitioned.PartitionedServer} is an embedded LionWeb repository
- * server that keeps only a bounded window of partitions in memory and persists the rest to disk.
- * It is designed for repositories with tens of millions of nodes where keeping everything in the
- * JVM heap is impractical.
+ * server that keeps only a bounded window of partitions in memory and persists the rest to disk. It
+ * is designed for repositories with tens of millions of nodes where keeping everything in the JVM
+ * heap is impractical.
  *
  * <h2>When to use it</h2>
  *
@@ -43,9 +43,9 @@
  *
  * <h2>Persistence format</h2>
  *
- * <p>Each partition is stored as a single ProtoBuf file
- * ({@code <storageDir>/<repositoryName>/<partitionId>.pb}). The file format is the standard
- * LionWeb ProtoBuf serialisation produced by {@code ProtoBufSerialization}.
+ * <p>Each partition is stored as a single ProtoBuf file ({@code
+ * <storageDir>/<repositoryName>/<partitionId>.pb}). The file format is the standard LionWeb
+ * ProtoBuf serialisation produced by {@code ProtoBufSerialization}.
  *
  * <h2>Cache behaviour</h2>
  *
