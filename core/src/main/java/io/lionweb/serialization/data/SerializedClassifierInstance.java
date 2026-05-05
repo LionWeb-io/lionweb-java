@@ -13,7 +13,7 @@ public class SerializedClassifierInstance {
   private String id;
   private MetaPointer classifier;
 
-  private final List<SerializedPropertyValue> properties = new ArrayList<>(5);
+  private final List<SerializedPropertyValue> properties;
 
   /**
    * Given that in wide trees most nodes have no containments, we avoid the instantiation, unless it
@@ -32,11 +32,22 @@ public class SerializedClassifierInstance {
   //
   // Constructors
   //
-  public SerializedClassifierInstance() {}
+  public SerializedClassifierInstance() {
+    this.properties = new ArrayList<>(5);
+  }
 
   public SerializedClassifierInstance(String id, MetaPointer concept) {
+    this.properties = new ArrayList<>(5);
     setID(id);
     setClassifier(concept);
+  }
+
+  public SerializedClassifierInstance(
+      int propCount, int containmentCount, int refCount, int annotationCount) {
+    this.properties = new ArrayList<>(propCount);
+    if (containmentCount > 0) this.containments = new ArrayList<>(containmentCount);
+    if (refCount > 0) this.references = new ArrayList<>(refCount);
+    if (annotationCount > 0) this.annotations = new ArrayList<>(annotationCount);
   }
 
   //
