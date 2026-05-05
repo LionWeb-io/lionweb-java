@@ -90,7 +90,8 @@ class RepositoryData {
     for (Map.Entry<ClassifierKey, List<String>> entry : index.entrySet()) {
       List<String> allIds = entry.getValue();
       int total = allIds.size();
-      Set<String> limitedIds = new HashSet<>(actualLimit >= total ? allIds : allIds.subList(0, actualLimit));
+      Set<String> limitedIds =
+          new HashSet<>(actualLimit >= total ? allIds : allIds.subList(0, actualLimit));
       result.put(entry.getKey(), new ClassifierResult(limitedIds, total));
     }
     return result;
@@ -110,7 +111,8 @@ class RepositoryData {
       }
     }
     int total = allIds.size();
-    Set<String> limitedIds = new HashSet<>(actualLimit >= total ? allIds : allIds.subList(0, actualLimit));
+    Set<String> limitedIds =
+        new HashSet<>(actualLimit >= total ? allIds : allIds.subList(0, actualLimit));
     return new ClassifierResult(limitedIds, total);
   }
 
