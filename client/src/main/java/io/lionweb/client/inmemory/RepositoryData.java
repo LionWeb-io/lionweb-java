@@ -13,6 +13,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Holds all node data for a single repository.
@@ -30,7 +31,9 @@ class RepositoryData {
   final Map<String, SerializedClassifierInstance> nodesByID = new ConcurrentHashMap<>();
 
   /** Pre-computed index: ClassifierKey → list of node IDs. Kept in sync with nodesByID. */
-  private final Map<ClassifierKey, List<String>> classifierIndex = new HashMap<>();
+  private final @Nullable Map<ClassifierKey, List<String>> classifierIndex;
+
+  private final boolean materializeClassifierIndex;
 
   private int currentVersion = 0;
   private int nextId = 1;
@@ -51,11 +54,13 @@ class RepositoryData {
   }
 
   private void indexAdd(SerializedClassifierInstance node) {
+    if (!materializeClassifierIndex) return;
     ClassifierKey key = classifierKeyOf(node);
     classifierIndex.computeIfAbsent(key, k -> new ArrayList<>()).add(node.getID());
   }
 
   private void indexRemove(SerializedClassifierInstance node) {
+    if (!materializeClassifierIndex) return;
     ClassifierKey key = classifierKeyOf(node);
     List<String> ids = classifierIndex.get(key);
     if (ids != null) {
@@ -72,23 +77,43 @@ class RepositoryData {
    */
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(Integer limit) {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
-    Map<ClassifierKey, ClassifierResult> result = new HashMap<>(classifierIndex.size() * 2);
-    for (Map.Entry<ClassifierKey, List<String>> entry : classifierIndex.entrySet()) {
+    Map<ClassifierKey, List<String>> index;
+    if (materializeClassifierIndex) {
+      index = classifierIndex;
+    } else {
+      index = new HashMap<>();
+      for (SerializedClassifierInstance node : nodesByID.values()) {
+        index.computeIfAbsent(classifierKeyOf(node), k -> new ArrayList<>()).add(node.getID());
+      }
+    }
+    Map<ClassifierKey, ClassifierResult> result = new HashMap<>(index.size() * 2);
+    for (Map.Entry<ClassifierKey, List<String>> entry : index.entrySet()) {
       List<String> allIds = entry.getValue();
       int total = allIds.size();
-      Set<String> limitedIds;
-      if (actualLimit >= total) {
-        limitedIds = new HashSet<>(allIds);
-      } else {
-        limitedIds = new HashSet<>();
-        for (String id : allIds) {
-          limitedIds.add(id);
-          if (limitedIds.size() >= actualLimit) break;
-        }
-      }
+      Set<String> limitedIds =
+          new HashSet<>(actualLimit >= total ? allIds : allIds.subList(0, actualLimit));
       result.put(entry.getKey(), new ClassifierResult(limitedIds, total));
     }
     return result;
+  }
+
+  ClassifierResult nodesByClassifier(Integer limit, ClassifierKey key) {
+    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
+    List<String> allIds;
+    if (materializeClassifierIndex) {
+      allIds = classifierIndex.getOrDefault(key, Collections.emptyList());
+    } else {
+      allIds = new ArrayList<>();
+      for (SerializedClassifierInstance node : nodesByID.values()) {
+        if (key.equals(classifierKeyOf(node))) {
+          allIds.add(node.getID());
+        }
+      }
+    }
+    int total = allIds.size();
+    Set<String> limitedIds =
+        new HashSet<>(actualLimit >= total ? allIds : allIds.subList(0, actualLimit));
+    return new ClassifierResult(limitedIds, total);
   }
 
   private class ChangeCalculator {
@@ -213,7 +238,14 @@ class RepositoryData {
   }
 
   RepositoryData(@NotNull RepositoryConfiguration configuration) {
+    this(configuration, true);
+  }
+
+  RepositoryData(
+      @NotNull RepositoryConfiguration configuration, boolean materializeClassifierIndex) {
     this.configuration = configuration;
+    this.materializeClassifierIndex = materializeClassifierIndex;
+    this.classifierIndex = materializeClassifierIndex ? new HashMap<>() : null;
   }
 
   RepositoryVersionToken bumpVersion() {

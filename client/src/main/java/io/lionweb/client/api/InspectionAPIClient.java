@@ -6,7 +6,11 @@ import org.jetbrains.annotations.Nullable;
 
 public interface InspectionAPIClient {
   default Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
-    return nodesByClassifier(null);
+    return nodesByClassifier((Integer) null);
+  }
+
+  default ClassifierResult nodesByClassifier(ClassifierKey key) throws IOException {
+    return nodesByClassifier().get(key);
   }
 
   Map<ClassifierKey, ClassifierResult> nodesByClassifier(@Nullable Integer limit)
