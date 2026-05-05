@@ -26,10 +26,23 @@ public class SerializedPropertyValue {
     if (value == null) {
       return new SerializedPropertyValue(metaPointer, null);
     }
+    // Hot path: try a plain get first — zero allocation when already cached.
     ConcurrentHashMap<String, SerializedPropertyValue> valuesForMetaPointer =
-        INSTANCES_BY_METAPOINTER.computeIfAbsent(metaPointer, k -> new ConcurrentHashMap<>());
-    return valuesForMetaPointer.computeIfAbsent(
-        value, v -> new SerializedPropertyValue(metaPointer, v));
+        INSTANCES_BY_METAPOINTER.get(metaPointer);
+    if (valuesForMetaPointer == null) {
+      ConcurrentHashMap<String, SerializedPropertyValue> newMap = new ConcurrentHashMap<>();
+      ConcurrentHashMap<String, SerializedPropertyValue> existing =
+          INSTANCES_BY_METAPOINTER.putIfAbsent(metaPointer, newMap);
+      valuesForMetaPointer = (existing != null) ? existing : newMap;
+    }
+
+    SerializedPropertyValue spv = valuesForMetaPointer.get(value);
+    if (spv == null) {
+      SerializedPropertyValue candidate = new SerializedPropertyValue(metaPointer, value);
+      SerializedPropertyValue existing = valuesForMetaPointer.putIfAbsent(value, candidate);
+      spv = (existing != null) ? existing : candidate;
+    }
+    return spv;
   }
 
   private final MetaPointer metaPointer;

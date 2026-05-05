@@ -81,6 +81,23 @@ public class SerializationChunk {
   }
 
   /**
+   * Adds a {@link SerializedClassifierInstance} to this chunk without scanning its meta-pointers.
+   * Use this only when the language table has already been fully populated (e.g. from the ProtoBuf
+   * interned-language table) and the per-node meta-pointer scan would be redundant.
+   *
+   * <p><b>Warning:</b> Only call this when you can guarantee the language table is already
+   * complete. For incremental chunk construction, use {@link #addClassifierInstance} instead.
+   */
+  public void addClassifierInstanceWithoutLanguageScan(
+      @Nonnull SerializedClassifierInstance instance) {
+    Objects.requireNonNull(instance, "instance should not be null");
+    this.classifierInstancesByID.put(instance.getID(), instance);
+    classifierInstances.add(instance);
+    // considerMetaPointers intentionally NOT called — caller guarantees the language table is
+    // already complete.
+  }
+
+  /**
    * Adds multiple classifier instances to the current SerializationChunk.
    *
    * @param instances an array of SerializedClassifierInstance objects to be added

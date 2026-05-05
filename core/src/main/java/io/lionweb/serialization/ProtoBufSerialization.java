@@ -157,7 +157,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
                         }
                       });
               n.getSiAnnotationsList().forEach(a -> sci.addAnnotation(stringsArray[a]));
-              serializationChunk.addClassifierInstance(sci);
+              serializationChunk.addClassifierInstanceWithoutLanguageScan(sci);
             });
     return serializationChunk;
   }

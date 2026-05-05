@@ -27,6 +27,11 @@ public class SerializedClassifierInstance {
   /** Given most nodes have no annotations, we avoid the instantiation, unless it is necessary. */
   private @Nullable List<String> annotations;
 
+  private List<SerializedPropertyValue> propertiesView;
+  private List<SerializedContainmentValue> containmentsView;
+  private List<SerializedReferenceValue> referencesView;
+  private List<String> annotationsView;
+
   private String parentNodeID;
 
   //
@@ -34,10 +39,12 @@ public class SerializedClassifierInstance {
   //
   public SerializedClassifierInstance() {
     this.properties = new ArrayList<>(4);
+    this.propertiesView = Collections.unmodifiableList(properties);
   }
 
   public SerializedClassifierInstance(String id, MetaPointer concept) {
     this.properties = new ArrayList<>(4);
+    this.propertiesView = Collections.unmodifiableList(properties);
     setID(id);
     setClassifier(concept);
   }
@@ -45,9 +52,19 @@ public class SerializedClassifierInstance {
   public SerializedClassifierInstance(
       int propCount, int containmentCount, int refCount, int annotationCount) {
     this.properties = new ArrayList<>(propCount);
-    if (containmentCount > 0) this.containments = new ArrayList<>(containmentCount);
-    if (refCount > 0) this.references = new ArrayList<>(refCount);
-    if (annotationCount > 0) this.annotations = new ArrayList<>(annotationCount);
+    this.propertiesView = Collections.unmodifiableList(properties);
+    if (containmentCount > 0) {
+      this.containments = new ArrayList<>(containmentCount);
+      this.containmentsView = Collections.unmodifiableList(containments);
+    }
+    if (refCount > 0) {
+      this.references = new ArrayList<>(refCount);
+      this.referencesView = Collections.unmodifiableList(references);
+    }
+    if (annotationCount > 0) {
+      this.annotations = new ArrayList<>(annotationCount);
+      this.annotationsView = Collections.unmodifiableList(annotations);
+    }
   }
 
   //
@@ -67,7 +84,7 @@ public class SerializedClassifierInstance {
   //
 
   public List<SerializedPropertyValue> getProperties() {
-    return Collections.unmodifiableList(properties);
+    return propertiesView;
   }
 
   @Nullable
@@ -141,10 +158,8 @@ public class SerializedClassifierInstance {
   //
 
   public List<SerializedContainmentValue> getContainments() {
-    if (containments == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(this.containments);
+    if (containmentsView == null) return Collections.emptyList();
+    return containmentsView;
   }
 
   public List<String> getChildren() {
@@ -277,6 +292,7 @@ public class SerializedClassifierInstance {
    */
   public void clearContainments() {
     containments = null;
+    containmentsView = null;
   }
 
   //
@@ -284,10 +300,8 @@ public class SerializedClassifierInstance {
   //
 
   public List<SerializedReferenceValue> getReferences() {
-    if (this.references == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(this.references);
+    if (referencesView == null) return Collections.emptyList();
+    return referencesView;
   }
 
   @Nullable
@@ -428,16 +442,15 @@ public class SerializedClassifierInstance {
   //
 
   public List<String> getAnnotations() {
-    if (this.annotations == null) {
-      return Collections.emptyList();
-    }
-    return Collections.unmodifiableList(this.annotations);
+    if (annotationsView == null) return Collections.emptyList();
+    return annotationsView;
   }
 
   public void setAnnotations(@Nonnull List<String> annotationIDs) {
     Objects.requireNonNull(annotationIDs, "annotationIDs should not be null");
     if (this.annotations == null) {
       this.annotations = new ArrayList<>(annotationIDs.size());
+      this.annotationsView = Collections.unmodifiableList(annotations);
     } else {
       this.annotations.clear();
     }
@@ -447,6 +460,7 @@ public class SerializedClassifierInstance {
   public void addAnnotation(String annotationID) {
     if (this.annotations == null) {
       this.annotations = new ArrayList<>(1);
+      this.annotationsView = Collections.unmodifiableList(annotations);
     }
     this.annotations.add(annotationID);
   }
@@ -566,12 +580,14 @@ public class SerializedClassifierInstance {
   private void initReferences() {
     if (this.references == null) {
       this.references = new ArrayList<>(1);
+      this.referencesView = Collections.unmodifiableList(references);
     }
   }
 
   private void initContainments() {
     if (this.containments == null) {
       this.containments = new ArrayList<>(3);
+      this.containmentsView = Collections.unmodifiableList(containments);
     }
   }
 }
