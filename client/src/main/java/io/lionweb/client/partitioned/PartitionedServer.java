@@ -135,12 +135,33 @@ public class PartitionedServer implements Closeable {
   }
 
   /**
+   * Creates a temporary server with the given caching policy and default cache configuration. A
+   * temp directory is allocated automatically and deleted on {@link #close()} or JVM exit.
+   */
+  public PartitionedServer(@NotNull PartitionCachingPolicy cachingPolicy) {
+    this(createTempDir(), CacheConfig.DEFAULT, true, cachingPolicy);
+  }
+
+  /**
    * Bridges {@link #PartitionedServer(CacheConfig)} — creates backend from an already-allocated
    * dir.
    */
   private PartitionedServer(
       @NotNull Path storageDir, @NotNull CacheConfig cacheConfig, boolean ownsDir) {
     this(new DiskRepositoryBackend(storageDir), cacheConfig, ownsDir ? storageDir : null);
+  }
+
+  private PartitionedServer(
+      @NotNull Path storageDir,
+      @NotNull CacheConfig cacheConfig,
+      boolean ownsDir,
+      @NotNull PartitionCachingPolicy cachingPolicy) {
+    this(
+        new DiskRepositoryBackend(storageDir),
+        cacheConfig,
+        ownsDir ? storageDir : null,
+        true,
+        cachingPolicy);
   }
 
   private PartitionedServer(
