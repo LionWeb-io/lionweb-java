@@ -98,6 +98,20 @@ final class PartitionCache {
     currentNodeCount += delta;
   }
 
+  /**
+   * Persists the partition if dirty, then removes it from the cache.
+   *
+   * <p>Used by {@link PartitionCachingPolicy} to implement write-through eviction: the data is
+   * guaranteed to be on disk before the in-memory copy is released.
+   */
+  void evict(String partitionId) throws IOException {
+    LoadedPartition lp = loaded.get(partitionId);
+    if (lp == null) return;
+    persistIfDirty(partitionId, lp);
+    currentNodeCount -= lp.nodeCount();
+    loaded.remove(partitionId);
+  }
+
   /** Removes a partition from the cache without saving, even if dirty. */
   void remove(String partitionId) {
     LoadedPartition lp = loaded.remove(partitionId);

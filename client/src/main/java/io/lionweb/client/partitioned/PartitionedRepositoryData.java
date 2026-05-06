@@ -50,6 +50,7 @@ final class PartitionedRepositoryData {
   private final Map<String, PartitionMetadata> partitionMetadata = new HashMap<>();
 
   private final PartitionCache cache;
+  private final PartitionCachingPolicy cachingPolicy;
 
   private int currentVersion = 0;
   private int nextId = 1;
@@ -58,7 +59,7 @@ final class PartitionedRepositoryData {
       @NotNull RepositoryConfiguration configuration,
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig) {
-    this(configuration, backend, cacheConfig, true);
+    this(configuration, backend, cacheConfig, true, PartitionCachingPolicy.ALWAYS_CACHE);
   }
 
   PartitionedRepositoryData(
@@ -66,9 +67,24 @@ final class PartitionedRepositoryData {
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig,
       boolean materializeClassifierIndex) {
+    this(
+        configuration,
+        backend,
+        cacheConfig,
+        materializeClassifierIndex,
+        PartitionCachingPolicy.ALWAYS_CACHE);
+  }
+
+  PartitionedRepositoryData(
+      @NotNull RepositoryConfiguration configuration,
+      @NotNull RepositoryBackend backend,
+      @NotNull CacheConfig cacheConfig,
+      boolean materializeClassifierIndex,
+      @NotNull PartitionCachingPolicy cachingPolicy) {
     this.configuration = configuration;
     this.materializeClassifierIndex = materializeClassifierIndex;
     this.classifierIndex = materializeClassifierIndex ? new HashMap<>() : null;
+    this.cachingPolicy = cachingPolicy;
     this.cache =
         new PartitionCache(
             cacheConfig,
@@ -164,6 +180,10 @@ final class PartitionedRepositoryData {
         partitionMetadata.get(partitionId).dirty = true;
       } finally {
         partition.unpin();
+      }
+      if (!cachingPolicy.shouldCache(
+          partitionId, Collections.unmodifiableCollection(partition.nodesByID.values()))) {
+        cache.evict(partitionId);
       }
     }
   }

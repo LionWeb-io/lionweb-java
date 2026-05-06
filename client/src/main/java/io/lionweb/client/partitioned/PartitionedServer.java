@@ -42,6 +42,7 @@ public class PartitionedServer implements Closeable {
   private final RepositoryBackend backend;
   private final CacheConfig cacheConfig;
   private final boolean materializeClassifierIndex;
+  private final PartitionCachingPolicy cachingPolicy;
 
   /** Non-null only when this instance owns the directory and must delete it at shutdown. */
   private final Path ownedTempDir;
@@ -55,7 +56,12 @@ public class PartitionedServer implements Closeable {
    * configuration ({@link CacheConfig#DEFAULT}). The directory is <em>not</em> deleted on close.
    */
   public PartitionedServer(@NotNull Path storageDir) {
-    this(new DiskRepositoryBackend(storageDir), CacheConfig.DEFAULT, null);
+    this(
+        new DiskRepositoryBackend(storageDir),
+        CacheConfig.DEFAULT,
+        null,
+        true,
+        PartitionCachingPolicy.ALWAYS_CACHE);
   }
 
   /**
@@ -63,7 +69,12 @@ public class PartitionedServer implements Closeable {
    * configuration. The directory is <em>not</em> deleted on close.
    */
   public PartitionedServer(@NotNull Path storageDir, @NotNull CacheConfig cacheConfig) {
-    this(new DiskRepositoryBackend(storageDir), cacheConfig, null);
+    this(
+        new DiskRepositoryBackend(storageDir),
+        cacheConfig,
+        null,
+        true,
+        PartitionCachingPolicy.ALWAYS_CACHE);
   }
 
   /**
@@ -71,7 +82,7 @@ public class PartitionedServer implements Closeable {
    * alternative storage strategies.
    */
   public PartitionedServer(@NotNull RepositoryBackend backend, @NotNull CacheConfig cacheConfig) {
-    this(backend, cacheConfig, null);
+    this(backend, cacheConfig, null, true, PartitionCachingPolicy.ALWAYS_CACHE);
   }
 
   /**
@@ -136,18 +147,20 @@ public class PartitionedServer implements Closeable {
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig,
       @Nullable Path ownedTempDir) {
-    this(backend, cacheConfig, ownedTempDir, true);
+    this(backend, cacheConfig, ownedTempDir, true, PartitionCachingPolicy.ALWAYS_CACHE);
   }
 
   private PartitionedServer(
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig,
       @Nullable Path ownedTempDir,
-      boolean materializeClassifierIndex) {
+      boolean materializeClassifierIndex,
+      @NotNull PartitionCachingPolicy cachingPolicy) {
     this.backend = backend;
     this.cacheConfig = cacheConfig;
     this.ownedTempDir = ownedTempDir;
     this.materializeClassifierIndex = materializeClassifierIndex;
+    this.cachingPolicy = cachingPolicy;
     if (ownedTempDir != null) {
       Runtime.getRuntime().addShutdownHook(new Thread(() -> deleteDirectoryQuietly(ownedTempDir)));
     }
@@ -157,7 +170,35 @@ public class PartitionedServer implements Closeable {
       @NotNull RepositoryBackend backend,
       @NotNull CacheConfig cacheConfig,
       boolean materializeClassifierIndex) {
-    this(backend, cacheConfig, null, materializeClassifierIndex);
+    this(
+        backend,
+        cacheConfig,
+        null,
+        materializeClassifierIndex,
+        PartitionCachingPolicy.ALWAYS_CACHE);
+  }
+
+  /**
+   * Creates a server that stores partition files under {@code storageDir} with an explicit cache
+   * configuration and caching policy. The directory is <em>not</em> deleted on close.
+   */
+  public PartitionedServer(
+      @NotNull Path storageDir,
+      @NotNull CacheConfig cacheConfig,
+      @NotNull PartitionCachingPolicy cachingPolicy) {
+    this(new DiskRepositoryBackend(storageDir), cacheConfig, null, true, cachingPolicy);
+  }
+
+  /**
+   * Creates a server with a custom backend, cache configuration, and caching policy. Useful when
+   * some partitions should be stored and immediately evicted from the heap (e.g. write-once
+   * archives).
+   */
+  public PartitionedServer(
+      @NotNull RepositoryBackend backend,
+      @NotNull CacheConfig cacheConfig,
+      @NotNull PartitionCachingPolicy cachingPolicy) {
+    this(backend, cacheConfig, null, true, cachingPolicy);
   }
 
   // -------------------------------------------------------------------------
@@ -182,7 +223,11 @@ public class PartitionedServer implements Closeable {
     repositories.put(
         repositoryConfiguration.getName(),
         new PartitionedRepositoryData(
-            repositoryConfiguration, backend, cacheConfig, materializeClassifierIndex));
+            repositoryConfiguration,
+            backend,
+            cacheConfig,
+            materializeClassifierIndex,
+            cachingPolicy));
   }
 
   public void deleteRepository(@NotNull String repositoryName) {
