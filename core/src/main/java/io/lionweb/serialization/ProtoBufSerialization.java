@@ -100,7 +100,12 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .getNodesList()
         .forEach(
             n -> {
-              SerializedClassifierInstance sci = new SerializedClassifierInstance();
+              SerializedClassifierInstance sci =
+                  new SerializedClassifierInstance(
+                      n.getPropertiesList().size(),
+                      n.getContainmentsList().size(),
+                      n.getReferencesList().size(),
+                      n.getSiAnnotationsList().size());
               sci.setID(stringsArray[n.getSiId()]);
               sci.setParentNodeID(stringsArray[n.getSiParent()]);
               sci.setClassifier(metapointersArray[n.getMpiClassifier()]);

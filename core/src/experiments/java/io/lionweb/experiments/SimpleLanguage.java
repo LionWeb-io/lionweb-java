@@ -20,21 +20,19 @@ public class SimpleLanguage {
           new Concept(
               language, "Subconcept" + i, "subconcept-" + i + "-id", "subconcept-" + i + "-key");
 
-      Containment containment = new Containment("myContainment", baseConcept);
-      containment.setID("mycontainment-" + i + "-id");
+      Containment containment =
+          new Containment("myContainment", baseConcept, "mycontainment-" + i + "-id");
       containment.setKey("mycontainment-" + i + "-key");
       containment.setMultiple(true);
       containment.setType(baseConcept);
 
-      Property stringProperty = new Property("stringProp", subConcept);
+      Property stringProperty = new Property("stringProp", subConcept, "stringProp-" + i + "-id");
       stringProperty.setType(LionCoreBuiltins.getString());
-      stringProperty.setID("stringProp-" + i + "-id");
       stringProperty.setKey("stringProp-" + i + "-key");
       subConcept.addFeature(stringProperty);
 
-      Property intProperty = new Property("intProp", subConcept);
+      Property intProperty = new Property("intProp", subConcept, "intProp-" + i + "-id");
       intProperty.setType(LionCoreBuiltins.getString());
-      intProperty.setID("intProp-" + i + "-id");
       intProperty.setKey("intProp-" + i + "-key");
       subConcept.addFeature(intProperty);
 

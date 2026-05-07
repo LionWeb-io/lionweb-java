@@ -1,6 +1,7 @@
 # LionWeb JVM
 
 ![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb/lionweb-2024.1-core)
+![Build](https://github.com/LionWeb-io/lionweb-java/actions/workflows/check.yml/badge.svg)
 
 This projects requires Java 8, to maximize compatibility.
 

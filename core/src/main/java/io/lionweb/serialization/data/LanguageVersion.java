@@ -26,8 +26,16 @@ public class LanguageVersion {
   public static LanguageVersion of(@Nullable String key, @Nullable String version) {
     String k = key == null ? NULL_SENTINEL : key;
     String v = version == null ? NULL_SENTINEL : version;
-    ConcurrentHashMap<String, LanguageVersion> byVersion =
-        INTERN.computeIfAbsent(k, __ -> new ConcurrentHashMap<>());
+
+    // Fast path: both levels already present — zero allocation.
+    ConcurrentHashMap<String, LanguageVersion> byVersion = INTERN.get(k);
+    if (byVersion != null) {
+      LanguageVersion cached = byVersion.get(v);
+      if (cached != null) return cached;
+    }
+
+    // Slow path: first time this key/version pair is seen.
+    byVersion = INTERN.computeIfAbsent(k, __ -> new ConcurrentHashMap<>());
     return byVersion.computeIfAbsent(v, __ -> new LanguageVersion(key, version));
   }
 
