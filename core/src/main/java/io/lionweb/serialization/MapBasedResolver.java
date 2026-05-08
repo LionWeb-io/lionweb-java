@@ -11,12 +11,14 @@ import javax.annotation.Nullable;
  * position, so until we place them they could be a temporarily wrong ID.
  */
 class MapBasedResolver implements ClassifierInstanceResolver {
-  private final Map<String, ClassifierInstance<?>> instancesByID = new HashMap<>();
+  private final Map<String, ClassifierInstance<?>> instancesByID;
 
-  public MapBasedResolver() {}
+  public MapBasedResolver() {
+    this.instancesByID = new HashMap<>();
+  }
 
   public MapBasedResolver(Map<String, ClassifierInstance<?>> instancesByID) {
-    this.instancesByID.putAll(instancesByID);
+    this.instancesByID = instancesByID;
   }
 
   @Nullable

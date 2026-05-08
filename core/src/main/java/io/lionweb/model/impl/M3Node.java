@@ -518,18 +518,41 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     if (this == o) return true;
     if (!(o instanceof Node)) return false;
     Node other = (Node) o;
-
     return Objects.equals(getID(), other.getID())
         && shallowClassifierInstanceEquality(parent, other.getParent())
         && shallowClassifierInstanceEquality(getClassifier(), other.getClassifier())
-        && getClassifier().allProperties().stream()
-            .allMatch(p -> Objects.equals(getPropertyValue(p), other.getPropertyValue(p)))
-        && getClassifier().allContainments().stream()
-            .allMatch(c -> shallowContainmentEquality(getChildren(c), other.getChildren(c)))
-        && getClassifier().allReferences().stream()
-            .allMatch(
-                r -> shallowReferenceEquality(getReferenceValues(r), other.getReferenceValues(r)))
+        && propertiesEqual(other)
+        && containmentsEqual(other)
+        && referencesEqual(other)
         && shallowAnnotationsEquality(annotations, other.getAnnotations());
+  }
+
+  private boolean propertiesEqual(Node other) {
+    List<Property> props = getClassifier().allProperties();
+    for (int i = 0, n = props.size(); i < n; i++) {
+      Property p = props.get(i);
+      if (!Objects.equals(getPropertyValue(p), other.getPropertyValue(p))) return false;
+    }
+    return true;
+  }
+
+  private boolean containmentsEqual(Node other) {
+    List<Containment> conts = getClassifier().allContainments();
+    for (int i = 0, n = conts.size(); i < n; i++) {
+      Containment c = conts.get(i);
+      if (!shallowContainmentEquality(getChildren(c), other.getChildren(c))) return false;
+    }
+    return true;
+  }
+
+  private boolean referencesEqual(Node other) {
+    List<Reference> refs = getClassifier().allReferences();
+    for (int i = 0, n = refs.size(); i < n; i++) {
+      Reference r = refs.get(i);
+      if (!shallowReferenceEquality(getReferenceValues(r), other.getReferenceValues(r)))
+        return false;
+    }
+    return true;
   }
 
   @Override

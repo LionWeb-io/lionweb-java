@@ -47,7 +47,7 @@ public class SerializationChunk {
     if (nodes.isEmpty()) {
       throw new IllegalArgumentException();
     }
-    SerializationChunk instance = new SerializationChunk();
+    SerializationChunk instance = new SerializationChunk(nodes.size());
     instance.setSerializationFormatVersion(lionWebVersion.getVersionString());
     nodes.forEach(n -> instance.addClassifierInstance(n));
     // populateUsedLanguages() is no needed here: addClassifierInstance() registers
