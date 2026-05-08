@@ -203,6 +203,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
         throw new IllegalArgumentException("Proxy nodes cannot be serialized");
       }
     }
+    return buildPBChunk(classifierInstances).toByteArray();
+  }
+
+  private PBChunk buildPBChunk(List<ClassifierInstance<?>> classifierInstances) {
     PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
     chunkBuilder.setSerializationFormatVersion(getLionWebVersion().getVersionString());
     SerializeHelper helper = new SerializeHelper();
@@ -229,7 +233,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
       if (mp.getKey() != null) mpb.setSiKey(helper.stringIndexer(mp.getKey()));
       chunkBuilder.addInternedMetaPointers(mpb.build());
     }
-    return chunkBuilder.build().toByteArray();
+    return chunkBuilder.build();
   }
 
   private PBNode serializeNodeDirect(ClassifierInstance<?> node, SerializeHelper helper) {
@@ -433,18 +437,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public PBChunk serializeTree(ClassifierInstance<?> classifierInstance) {
-    if (classifierInstance instanceof ProxyNode) {
-      throw new IllegalArgumentException("Proxy nodes cannot be serialized");
-    }
-    List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
-    ClassifierInstance.collectSelfAndDescendants(classifierInstance, true, classifierInstances);
-
-    List<ClassifierInstance<?>> nonProxy = new ArrayList<>(classifierInstances.size());
-    for (ClassifierInstance<?> n : classifierInstances) {
-      if (!(n instanceof ProxyNode)) nonProxy.add(n);
-    }
-    SerializationChunk serializationChunk = serializeNodesToSerializationChunk(nonProxy);
-    return serialize(serializationChunk);
+    List<ClassifierInstance<?>> allNodes = new ArrayList<>(1024);
+    Set<String> seenIDs = new HashSet<>(1024);
+    collectNonProxyNoDup(classifierInstance, allNodes, seenIDs);
+    return buildPBChunk(allNodes);
   }
 
   public PBChunk serialize(SerializationChunk serializationChunk) {
