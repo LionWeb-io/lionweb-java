@@ -313,8 +313,7 @@ public abstract class AbstractSerialization {
       if (serializeEmptyFeatures || !value.isEmpty()) {
         MetaPointer metaPointer =
             MetaPointer.from(
-                containment,
-                ((LanguageEntity<?>) containment.getContainer()).getLanguage());
+                containment, ((LanguageEntity<?>) containment.getContainer()).getLanguage());
         SerializedContainmentValue containmentValue =
             new SerializedContainmentValue(metaPointer, value);
         serializedClassifierInstance.unsafeAppendContainmentValue(containmentValue);

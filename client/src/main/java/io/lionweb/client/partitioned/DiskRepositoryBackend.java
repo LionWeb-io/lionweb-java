@@ -259,7 +259,8 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
       }
 
       out.writeShort(anns.size());
-      for (int ai = 0, an = anns.size(); ai < an; ai++) out.writeInt(idxOf(anns.get(ai), stringIndex));
+      for (int ai = 0, an = anns.size(); ai < an; ai++)
+        out.writeInt(idxOf(anns.get(ai), stringIndex));
     }
   }
 
