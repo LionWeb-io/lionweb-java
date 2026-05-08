@@ -278,33 +278,26 @@ public abstract class AbstractSerialization {
       boolean builtinsReferenceDangling,
       SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    serializationStatus
-        .allReferences(classifierInstance.getClassifier())
-        .forEach(
-            reference -> {
-              List<SerializedReferenceValue.Entry> entries =
-                  classifierInstance.getReferenceValues(reference).stream()
-                      .map(
-                          rv -> {
-                            String referredID =
-                                rv.getReferred() == null ? null : rv.getReferred().getID();
-                            if (builtinsReferenceDangling
-                                && ClassifierInstanceUtils.isBuiltinElement(rv.getReferred())) {
-                              referredID = null;
-                            }
-                            return new SerializedReferenceValue.Entry(
-                                referredID, rv.getResolveInfo());
-                          })
-                      .collect(Collectors.toList());
-              if (serializeEmptyFeatures || !entries.isEmpty()) {
-                MetaPointer metaPointer =
-                    MetaPointer.from(
-                        reference, ((LanguageEntity<?>) reference.getContainer()).getLanguage());
-                SerializedReferenceValue referenceValue =
-                    new SerializedReferenceValue(metaPointer, entries);
-                serializedClassifierInstance.unsafeAppendReferenceValue(referenceValue);
-              }
-            });
+    for (Reference reference :
+        serializationStatus.allReferences(classifierInstance.getClassifier())) {
+      List<ReferenceValue> rvs = classifierInstance.getReferenceValues(reference);
+      List<SerializedReferenceValue.Entry> entries = new ArrayList<>(rvs.size());
+      for (int i = 0, n = rvs.size(); i < n; i++) {
+        ReferenceValue rv = rvs.get(i);
+        String referredID = rv.getReferred() == null ? null : rv.getReferred().getID();
+        if (builtinsReferenceDangling && ClassifierInstanceUtils.isBuiltinElement(rv.getReferred()))
+          referredID = null;
+        entries.add(new SerializedReferenceValue.Entry(referredID, rv.getResolveInfo()));
+      }
+      if (serializeEmptyFeatures || !entries.isEmpty()) {
+        MetaPointer metaPointer =
+            MetaPointer.from(
+                reference, ((LanguageEntity<?>) reference.getContainer()).getLanguage());
+        SerializedReferenceValue referenceValue =
+            new SerializedReferenceValue(metaPointer, entries);
+        serializedClassifierInstance.unsafeAppendReferenceValue(referenceValue);
+      }
+    }
   }
 
   private void serializeContainments(
@@ -312,25 +305,21 @@ public abstract class AbstractSerialization {
       SerializedClassifierInstance serializedClassifierInstance,
       SerializationStatus serializationStatus) {
     Objects.requireNonNull(classifierInstance, "ClassifierInstance should not be null");
-    serializationStatus
-        .allContainments(classifierInstance.getClassifier())
-        .forEach(
-            containment -> {
-              List<String> value =
-                  classifierInstance.getChildren(containment).stream()
-                      .map(Node::getID)
-                      .collect(Collectors.toList());
-              // We can avoid serializing empty values
-              if (serializeEmptyFeatures || !value.isEmpty()) {
-                MetaPointer metaPointer =
-                    MetaPointer.from(
-                        containment,
-                        ((LanguageEntity<?>) containment.getContainer()).getLanguage());
-                SerializedContainmentValue containmentValue =
-                    new SerializedContainmentValue(metaPointer, value);
-                serializedClassifierInstance.unsafeAppendContainmentValue(containmentValue);
-              }
-            });
+    for (Containment containment :
+        serializationStatus.allContainments(classifierInstance.getClassifier())) {
+      List<? extends Node> ch = classifierInstance.getChildren(containment);
+      List<String> value = new ArrayList<>(ch.size());
+      for (int i = 0, n = ch.size(); i < n; i++) value.add(ch.get(i).getID());
+      if (serializeEmptyFeatures || !value.isEmpty()) {
+        MetaPointer metaPointer =
+            MetaPointer.from(
+                containment,
+                ((LanguageEntity<?>) containment.getContainer()).getLanguage());
+        SerializedContainmentValue containmentValue =
+            new SerializedContainmentValue(metaPointer, value);
+        serializedClassifierInstance.unsafeAppendContainmentValue(containmentValue);
+      }
+    }
   }
 
   private void serializeProperties(

@@ -32,6 +32,9 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   private List<Containment> cachedAllContainments = null;
   private List<Reference> cachedAllReferences = null;
   private List<Link<?>> cachedAllLinks = null;
+  private Set<String> cachedAllPropertyKeys;
+  private Set<String> cachedAllContainmentKeys;
+  private Set<String> cachedAllReferenceKeys;
 
   public Classifier() {
     super();
@@ -142,6 +145,36 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
       cachedAllLinks = (List<Link<?>>) (List<?>) filterFeatures(Link.class);
     }
     return cachedAllLinks;
+  }
+
+  public Set<String> allPropertyKeys() {
+    if (cachedAllPropertyKeys == null) {
+      List<Property> all = allProperties();
+      Set<String> s = new HashSet<>(all.size() * 2);
+      for (int i = 0, n = all.size(); i < n; i++) s.add(all.get(i).getKey());
+      cachedAllPropertyKeys = s;
+    }
+    return cachedAllPropertyKeys;
+  }
+
+  public Set<String> allContainmentKeys() {
+    if (cachedAllContainmentKeys == null) {
+      List<Containment> all = allContainments();
+      Set<String> s = new HashSet<>(all.size() * 2);
+      for (int i = 0, n = all.size(); i < n; i++) s.add(all.get(i).getKey());
+      cachedAllContainmentKeys = s;
+    }
+    return cachedAllContainmentKeys;
+  }
+
+  public Set<String> allReferenceKeys() {
+    if (cachedAllReferenceKeys == null) {
+      List<Reference> all = allReferences();
+      Set<String> s = new HashSet<>(all.size() * 2);
+      for (int i = 0, n = all.size(); i < n; i++) s.add(all.get(i).getKey());
+      cachedAllReferenceKeys = s;
+    }
+    return cachedAllReferenceKeys;
   }
 
   // TODO should this expose an immutable list to force users to use methods on this class
@@ -454,6 +487,9 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
     this.cachedAllContainments = null;
     this.cachedAllReferences = null;
     this.cachedAllLinks = null;
+    this.cachedAllPropertyKeys = null;
+    this.cachedAllContainmentKeys = null;
+    this.cachedAllReferenceKeys = null;
   }
 
   private final Set<String> featuresRelevantForCaching =

@@ -197,14 +197,17 @@ public class SerializationChunk {
 
   private void considerMetaPointers(SerializedClassifierInstance instance) {
     considerMetaPointer(instance.getClassifier());
-    for (SerializedPropertyValue pv : instance.getProperties()) {
-      considerMetaPointer(pv.getMetaPointer());
+    List<SerializedPropertyValue> pvs = instance.getProperties();
+    for (int i = 0, n = pvs.size(); i < n; i++) {
+      considerMetaPointer(pvs.get(i).getMetaPointer());
     }
-    for (SerializedContainmentValue cv : instance.getContainments()) {
-      considerMetaPointer(cv.getMetaPointer());
+    List<SerializedContainmentValue> cvs = instance.getContainments();
+    for (int i = 0, n = cvs.size(); i < n; i++) {
+      considerMetaPointer(cvs.get(i).getMetaPointer());
     }
-    for (SerializedReferenceValue rv : instance.getReferences()) {
-      considerMetaPointer(rv.getMetaPointer());
+    List<SerializedReferenceValue> rvs = instance.getReferences();
+    for (int i = 0, n = rvs.size(); i < n; i++) {
+      considerMetaPointer(rvs.get(i).getMetaPointer());
     }
   }
 

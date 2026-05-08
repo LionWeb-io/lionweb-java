@@ -154,27 +154,47 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     Map<MetaPointer, Integer> mpIndex = new IdentityHashMap<>();
 
     // Single pre-scan pass to populate both tables
-    for (SerializedClassifierInstance sci : nodes) {
+    for (int ni = 0, nn = nodes.size(); ni < nn; ni++) {
+      SerializedClassifierInstance sci = nodes.get(ni);
       internString(sci.getID(), strings, stringIndex);
       internString(sci.getParentNodeID(), strings, stringIndex);
       internMp(sci.getClassifier(), metaPointers, mpIndex, strings, stringIndex);
-      for (SerializedPropertyValue p : sci.getProperties()) {
+      List<SerializedPropertyValue> sciProps = sci.getProperties();
+      for (int pi = 0, pn = sciProps.size(); pi < pn; pi++) {
+        SerializedPropertyValue p = sciProps.get(pi);
         internMp(p.getMetaPointer(), metaPointers, mpIndex, strings, stringIndex);
         internString(p.getValue(), strings, stringIndex);
       }
-      for (SerializedContainmentValue c : sci.getContainments()) {
+      List<SerializedContainmentValue> sciConts = sci.getContainments();
+      for (int ci = 0, cn = sciConts.size(); ci < cn; ci++) {
+        SerializedContainmentValue c = sciConts.get(ci);
         internMp(c.getMetaPointer(), metaPointers, mpIndex, strings, stringIndex);
         // This should be unneccessary: all the node IDs are also nodes of the chunk, or should be
-        for (String childId : c.getChildrenIds()) internString(childId, strings, stringIndex);
+        List<String> childIds = c.getChildrenIds();
+        for (int chi = 0, chn = childIds.size(); chi < chn; chi++)
+          internString(childIds.get(chi), strings, stringIndex);
       }
-      for (SerializedReferenceValue r : sci.getReferences()) {
+      List<SerializedReferenceValue> sciRefs = sci.getReferences();
+      for (int ri = 0, rn = sciRefs.size(); ri < rn; ri++) {
+        SerializedReferenceValue r = sciRefs.get(ri);
         internMp(r.getMetaPointer(), metaPointers, mpIndex, strings, stringIndex);
-        for (SerializedReferenceValue.Entry e : r.getValue()) {
+        List<SerializedReferenceValue.Entry> refEntries = r.getValue();
+        for (int ei = 0, en = refEntries.size(); ei < en; ei++) {
+          SerializedReferenceValue.Entry e = refEntries.get(ei);
           internString(e.getReference(), strings, stringIndex);
           internString(e.getResolveInfo(), strings, stringIndex);
         }
       }
-      for (String ann : sci.getAnnotations()) internString(ann, strings, stringIndex);
+      List<String> sciAnns = sci.getAnnotations();
+      for (int ai = 0, an = sciAnns.size(); ai < an; ai++)
+        internString(sciAnns.get(ai), strings, stringIndex);
+    }
+
+    // Pre-encode all string table entries once so getBytes() is called only once per string
+    List<byte[]> encodedStrings = new ArrayList<>(strings.size());
+    encodedStrings.add(null); // index 0 placeholder
+    for (int i = 1; i < strings.size(); i++) {
+      encodedStrings.add(strings.get(i).getBytes(StandardCharsets.UTF_8));
     }
 
     // Write magic
@@ -182,7 +202,7 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
 
     // Write string table (strings[0] is the null placeholder, not written)
     out.writeInt(strings.size() - 1);
-    for (int i = 1; i < strings.size(); i++) writeString(out, strings.get(i));
+    for (int i = 1; i < strings.size(); i++) writeEncodedString(out, encodedStrings.get(i));
 
     // Write metapointer table
     out.writeShort(metaPointers.size());
@@ -194,7 +214,8 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
 
     // Write nodes
     out.writeInt(nodes.size());
-    for (SerializedClassifierInstance sci : nodes) {
+    for (int ni = 0, nn = nodes.size(); ni < nn; ni++) {
+      SerializedClassifierInstance sci = nodes.get(ni);
       out.writeInt(idxOf(sci.getID(), stringIndex));
       out.writeInt(idxOf(sci.getParentNodeID(), stringIndex));
       out.writeShort(mpIndex.get(sci.getClassifier()));
@@ -209,31 +230,36 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
       out.writeShort(props.size());
       out.writeShort(conts.size());
 
-      for (SerializedPropertyValue p : props) {
+      for (int pi = 0, pn = props.size(); pi < pn; pi++) {
+        SerializedPropertyValue p = props.get(pi);
         out.writeShort(mpIndex.get(p.getMetaPointer()));
         out.writeInt(idxOf(p.getValue(), stringIndex));
       }
 
-      for (SerializedContainmentValue c : conts) {
+      for (int ci = 0, cn = conts.size(); ci < cn; ci++) {
+        SerializedContainmentValue c = conts.get(ci);
         out.writeShort(mpIndex.get(c.getMetaPointer()));
         List<String> children = c.getChildrenIds();
         out.writeShort(children.size());
-        for (String childId : children) out.writeInt(idxOf(childId, stringIndex));
+        for (int chi = 0, chn = children.size(); chi < chn; chi++)
+          out.writeInt(idxOf(children.get(chi), stringIndex));
       }
 
       out.writeShort(refs.size());
-      for (SerializedReferenceValue r : refs) {
+      for (int ri = 0, rn = refs.size(); ri < rn; ri++) {
+        SerializedReferenceValue r = refs.get(ri);
         out.writeShort(mpIndex.get(r.getMetaPointer()));
         List<SerializedReferenceValue.Entry> entries = r.getValue();
         out.writeShort(entries.size());
-        for (SerializedReferenceValue.Entry e : entries) {
+        for (int ei = 0, en = entries.size(); ei < en; ei++) {
+          SerializedReferenceValue.Entry e = entries.get(ei);
           out.writeInt(idxOf(e.getReference(), stringIndex));
           out.writeInt(idxOf(e.getResolveInfo(), stringIndex));
         }
       }
 
       out.writeShort(anns.size());
-      for (String ann : anns) out.writeInt(idxOf(ann, stringIndex));
+      for (int ai = 0, an = anns.size(); ai < an; ai++) out.writeInt(idxOf(anns.get(ai), stringIndex));
     }
   }
 
@@ -276,7 +302,8 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     // String table — index 0 stays null (sentinel)
     int strCount = in.readInt();
     String[] strings = new String[strCount + 1]; // strings[0] = null
-    for (int i = 1; i <= strCount; i++) strings[i] = readString(in);
+    byte[][] scratch = {new byte[256]};
+    for (int i = 1; i <= strCount; i++) strings[i] = readString(in, scratch);
 
     // MetaPointer table — 0-based
     int mpCount = in.readShort() & 0xFFFF;
@@ -377,17 +404,16 @@ public final class DiskRepositoryBackend implements RepositoryBackend {
     return i;
   }
 
-  private static void writeString(DataOutputStream out, String s) throws IOException {
-    byte[] bytes = s.getBytes(StandardCharsets.UTF_8);
-    out.writeInt(bytes.length);
-    out.write(bytes);
+  private static void writeEncodedString(DataOutputStream out, byte[] encoded) throws IOException {
+    out.writeInt(encoded.length);
+    out.write(encoded);
   }
 
-  private static String readString(DataInputStream in) throws IOException {
+  private static String readString(DataInputStream in, byte[][] scratch) throws IOException {
     int length = in.readInt();
-    byte[] bytes = new byte[length];
-    in.readFully(bytes);
-    return new String(bytes, StandardCharsets.UTF_8);
+    if (scratch[0].length < length) scratch[0] = new byte[length];
+    in.readFully(scratch[0], 0, length);
+    return new String(scratch[0], 0, length, StandardCharsets.UTF_8);
   }
 
   /** Interns {@code mp} into the metapointer table, interning its constituent strings too. */

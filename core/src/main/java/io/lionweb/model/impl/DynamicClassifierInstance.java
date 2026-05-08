@@ -534,44 +534,17 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   }
 
   private void ensureHaveProperty(@Nonnull Property property) {
-    boolean isValid = false;
-    for (Property p : getClassifier().allProperties()) {
-      if (Objects.equals(p.getKey(), property.getKey())) {
-        isValid = true;
-        break;
-      }
-    }
-
-    if (!isValid) {
+    if (!getClassifier().allPropertyKeys().contains(property.getKey()))
       throw new IllegalArgumentException("Property not belonging to this classifier");
-    }
   }
 
   private void ensureHaveContainment(@Nonnull Containment containment) {
-    boolean isValid = false;
-    for (Containment c : getClassifier().allContainments()) {
-      if (Objects.equals(c.getKey(), containment.getKey())) {
-        isValid = true;
-        break;
-      }
-    }
-
-    if (!isValid) {
+    if (!getClassifier().allContainmentKeys().contains(containment.getKey()))
       throw new IllegalArgumentException("Containment not belonging to this concept");
-    }
   }
 
   private void ensureHaveReference(@Nonnull Reference reference) {
-    boolean isValid = false;
-    for (Reference r : getClassifier().allReferences()) {
-      if (Objects.equals(r.getKey(), reference.getKey())) {
-        isValid = true;
-        break;
-      }
-    }
-
-    if (!isValid) {
+    if (!getClassifier().allReferenceKeys().contains(reference.getKey()))
       throw new IllegalArgumentException("Reference not belonging to this concept");
-    }
   }
 }
