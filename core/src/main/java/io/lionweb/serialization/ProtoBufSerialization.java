@@ -1,7 +1,12 @@
 package io.lionweb.serialization;
 
 import io.lionweb.LionWebVersion;
+import io.lionweb.language.*;
+import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.ClassifierInstanceUtils;
+import io.lionweb.model.Node;
+import io.lionweb.model.ReferenceValue;
 import io.lionweb.model.impl.ProxyNode;
 import io.lionweb.protobuf.*;
 import io.lionweb.serialization.data.*;
@@ -200,13 +205,105 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
-    for (ClassifierInstance<?> n : classifierInstances) {
-      if (n instanceof ProxyNode) {
+    for (int i = 0, sz = classifierInstances.size(); i < sz; i++) {
+      if (classifierInstances.get(i) instanceof ProxyNode) {
         throw new IllegalArgumentException("Proxy nodes cannot be serialized");
       }
     }
-    SerializationChunk serializationBlock = serializeNodesToSerializationChunk(classifierInstances);
-    return serializeToByteArray(serializationBlock);
+    PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
+    chunkBuilder.setSerializationFormatVersion(getLionWebVersion().getVersionString());
+    SerializeHelper helper = new SerializeHelper();
+    for (int i = 0, sz = classifierInstances.size(); i < sz; i++) {
+      chunkBuilder.addNodes(serializeNodeDirect(classifierInstances.get(i), helper));
+    }
+    List<LanguageVersion> langs = helper.getLanguages();
+    for (int i = 1, n = langs.size(); i < n; i++) {
+      LanguageVersion lv = langs.get(i);
+      PBLanguage.Builder lb = PBLanguage.newBuilder();
+      if (lv.getKey() != null) lb.setSiKey(helper.stringIndexer(lv.getKey()));
+      if (lv.getVersion() != null) lb.setSiVersion(helper.stringIndexer(lv.getVersion()));
+      chunkBuilder.addInternedLanguages(lb.build());
+    }
+    List<String> strs = helper.getStrings();
+    for (int i = 1, n = strs.size(); i < n; i++) {
+      chunkBuilder.addInternedStrings(strs.get(i));
+    }
+    List<MetaPointer> mps = helper.getMetaPointers();
+    for (int i = 0, n = mps.size(); i < n; i++) {
+      MetaPointer mp = mps.get(i);
+      PBMetaPointer.Builder mpb =
+          PBMetaPointer.newBuilder().setLiLanguage(helper.languageIndexer(mp.getLanguageVersion()));
+      if (mp.getKey() != null) mpb.setSiKey(helper.stringIndexer(mp.getKey()));
+      chunkBuilder.addInternedMetaPointers(mpb.build());
+    }
+    return chunkBuilder.build().toByteArray();
+  }
+
+  private PBNode serializeNodeDirect(ClassifierInstance<?> node, SerializeHelper helper) {
+    PBNode.Builder nodeBuilder = PBNode.newBuilder();
+    if (node.getID() != null) nodeBuilder.setSiId(helper.stringIndexer(node.getID()));
+    ClassifierInstance<?> parent = node.getParent();
+    if (parent != null) nodeBuilder.setSiParent(helper.stringIndexer(parent.getID()));
+    Classifier<?> classifier = node.getClassifier();
+    nodeBuilder.setMpiClassifier(helper.metaPointerIndexer(MetaPointer.from(classifier)));
+
+    List<Property> props = classifier.allProperties();
+    for (int i = 0, n = props.size(); i < n; i++) {
+      Property property = props.get(i);
+      Object val = node.getPropertyValue(property);
+      if (serializeEmptyFeatures || val != null) {
+        String strVal = null;
+        if (val != null) {
+          strVal = dataTypesValuesSerialization.serialize(property.getType().getID(), val);
+        }
+        PBProperty.Builder b = PBProperty.newBuilder();
+        b.setSiValue(helper.stringIndexer(strVal));
+        b.setMpiMetaPointer(helper.metaPointerIndexer(MetaPointer.from(property)));
+        nodeBuilder.addProperties(b.build());
+      }
+    }
+
+    List<Containment> conts = classifier.allContainments();
+    for (int i = 0, n = conts.size(); i < n; i++) {
+      Containment containment = conts.get(i);
+      List<? extends Node> children = node.getChildren(containment);
+      if (serializeEmptyFeatures || !children.isEmpty()) {
+        PBContainment.Builder cb = PBContainment.newBuilder();
+        cb.setMpiMetaPointer(helper.metaPointerIndexer(MetaPointer.from(containment)));
+        for (int j = 0, m = children.size(); j < m; j++) {
+          cb.addSiChildren(helper.stringIndexer(children.get(j).getID()));
+        }
+        nodeBuilder.addContainments(cb.build());
+      }
+    }
+
+    List<Reference> refs = classifier.allReferences();
+    for (int i = 0, n = refs.size(); i < n; i++) {
+      Reference reference = refs.get(i);
+      List<ReferenceValue> rvs = node.getReferenceValues(reference);
+      if (serializeEmptyFeatures || !rvs.isEmpty()) {
+        PBReference.Builder rb = PBReference.newBuilder();
+        rb.setMpiMetaPointer(helper.metaPointerIndexer(MetaPointer.from(reference)));
+        for (int j = 0, m = rvs.size(); j < m; j++) {
+          ReferenceValue rv = rvs.get(j);
+          PBReferenceValue.Builder b = PBReferenceValue.newBuilder();
+          String refID = rv.getReferred() == null ? null : rv.getReferred().getID();
+          if (builtinsReferenceDangling
+              && ClassifierInstanceUtils.isBuiltinElement(rv.getReferred())) refID = null;
+          if (refID != null) b.setSiReferred(helper.stringIndexer(refID));
+          if (rv.getResolveInfo() != null)
+            b.setSiResolveInfo(helper.stringIndexer(rv.getResolveInfo()));
+          rb.addValues(b.build());
+        }
+        nodeBuilder.addReferences(rb.build());
+      }
+    }
+
+    List<AnnotationInstance> anns = node.getAnnotations();
+    for (int i = 0, n = anns.size(); i < n; i++) {
+      nodeBuilder.addSiAnnotations(helper.stringIndexer(anns.get(i).getID()));
+    }
+    return nodeBuilder.build();
   }
 
   public byte[] serializeNodesToByteArray(ClassifierInstance<?>... classifierInstances) {
