@@ -26,12 +26,11 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public List<io.lionweb.model.Node> deserializeToNodes(byte[] bytes) throws IOException {
-    return deserializeToNodes(new ByteArrayInputStream(bytes));
+    return deserializeToNodes(PBChunk.parseFrom(bytes));
   }
 
   public SerializationChunk deserializeToChunk(byte[] bytes) throws IOException {
-    PBChunk pbChunk = PBChunk.parseFrom(new ByteArrayInputStream(bytes));
-    return deserializeSerializationChunk(pbChunk);
+    return deserializeSerializationChunk(PBChunk.parseFrom(bytes));
   }
 
   public SerializationChunk deserializeToChunk(InputStream inputStream) throws IOException {
@@ -106,102 +105,96 @@ public class ProtoBufSerialization extends AbstractSerialization {
       }
     }
 
-    chunk
-        .getNodesList()
-        .forEach(
-            n -> {
-              SerializedClassifierInstance sci =
-                  new SerializedClassifierInstance(
-                      n.getPropertiesList().size(),
-                      n.getContainmentsList().size(),
-                      n.getReferencesList().size(),
-                      n.getSiAnnotationsList().size());
-              sci.setID(stringsArray[n.getSiId()]);
-              sci.setParentNodeID(stringsArray[n.getSiParent()]);
-              sci.setClassifier(metapointersArray[n.getMpiClassifier()]);
-              n.getPropertiesList()
-                  .forEach(
-                      p -> {
-                        int siValue = p.getSiValue();
-                        if (serializeEmptyFeatures || siValue != 0) {
-                          SerializedPropertyValue spv =
-                              SerializedPropertyValue.get(
-                                  metapointersArray[p.getMpiMetaPointer()], stringsArray[siValue]);
-                          sci.unsafeAppendPropertyValue(spv);
-                        }
-                      });
-              n.getContainmentsList()
-                  .forEach(
-                      c -> {
-                        List<String> children = new ArrayList<>(c.getSiChildrenList().size());
-                        for (int childIndex : c.getSiChildrenList()) {
-                          if (childIndex == 0) {
-                            throw new DeserializationException(
-                                "Unable to deserialize child identified by Null ID");
-                          }
-                          children.add(stringsArray[childIndex]);
-                        }
-                        if (serializeEmptyFeatures || !children.isEmpty()) {
-                          SerializedContainmentValue scv =
-                              new SerializedContainmentValue(
-                                  metapointersArray[c.getMpiMetaPointer()], children);
-                          sci.unsafeAppendContainmentValue(scv);
-                        }
-                      });
-              n.getReferencesList()
-                  .forEach(
-                      r -> {
-                        SerializedReferenceValue srv =
-                            new SerializedReferenceValue(metapointersArray[r.getMpiMetaPointer()]);
-                        r.getValuesList()
-                            .forEach(
-                                rv -> {
-                                  SerializedReferenceValue.Entry entry =
-                                      new SerializedReferenceValue.Entry();
-                                  entry.setReference(stringsArray[rv.getSiReferred()]);
-                                  entry.setResolveInfo(stringsArray[rv.getSiResolveInfo()]);
-                                  srv.addValue(entry);
-                                });
-                        if (serializeEmptyFeatures || !srv.getValue().isEmpty()) {
-                          sci.unsafeAppendReferenceValue(srv);
-                        }
-                      });
-              n.getSiAnnotationsList().forEach(a -> sci.addAnnotation(stringsArray[a]));
-              serializationChunk.addClassifierInstanceWithoutLanguageScan(sci);
-            });
+    int nodeCount = chunk.getNodesCount();
+    for (int ni = 0; ni < nodeCount; ni++) {
+      PBNode n = chunk.getNodes(ni);
+      int propCount = n.getPropertiesCount();
+      int contCount = n.getContainmentsCount();
+      int refCount = n.getReferencesCount();
+      int annCount = n.getSiAnnotationsCount();
+      SerializedClassifierInstance sci =
+          new SerializedClassifierInstance(propCount, contCount, refCount, annCount);
+      sci.setID(stringsArray[n.getSiId()]);
+      sci.setParentNodeID(stringsArray[n.getSiParent()]);
+      sci.setClassifier(metapointersArray[n.getMpiClassifier()]);
+      for (int pi = 0; pi < propCount; pi++) {
+        PBProperty p = n.getProperties(pi);
+        int siValue = p.getSiValue();
+        if (serializeEmptyFeatures || siValue != 0) {
+          SerializedPropertyValue spv =
+              SerializedPropertyValue.get(
+                  metapointersArray[p.getMpiMetaPointer()], stringsArray[siValue]);
+          sci.unsafeAppendPropertyValue(spv);
+        }
+      }
+      for (int ci = 0; ci < contCount; ci++) {
+        PBContainment c = n.getContainments(ci);
+        int childrenCount = c.getSiChildrenCount();
+        List<String> children = new ArrayList<>(childrenCount);
+        for (int chi = 0; chi < childrenCount; chi++) {
+          int childIndex = c.getSiChildren(chi);
+          if (childIndex == 0) {
+            throw new DeserializationException("Unable to deserialize child identified by Null ID");
+          }
+          children.add(stringsArray[childIndex]);
+        }
+        if (serializeEmptyFeatures || !children.isEmpty()) {
+          SerializedContainmentValue scv =
+              new SerializedContainmentValue(metapointersArray[c.getMpiMetaPointer()], children);
+          sci.unsafeAppendContainmentValue(scv);
+        }
+      }
+      for (int ri = 0; ri < refCount; ri++) {
+        PBReference r = n.getReferences(ri);
+        SerializedReferenceValue srv =
+            new SerializedReferenceValue(metapointersArray[r.getMpiMetaPointer()]);
+        int valCount = r.getValuesCount();
+        for (int vi = 0; vi < valCount; vi++) {
+          PBReferenceValue rv = r.getValues(vi);
+          SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
+          entry.setReference(stringsArray[rv.getSiReferred()]);
+          entry.setResolveInfo(stringsArray[rv.getSiResolveInfo()]);
+          srv.addValue(entry);
+        }
+        if (serializeEmptyFeatures || !srv.getValue().isEmpty()) {
+          sci.unsafeAppendReferenceValue(srv);
+        }
+      }
+      for (int ai = 0; ai < annCount; ai++) {
+        sci.addAnnotation(stringsArray[n.getSiAnnotations(ai)]);
+      }
+      serializationChunk.addClassifierInstanceWithoutLanguageScan(sci);
+    }
     return serializationChunk;
   }
 
   public byte[] serializeTreesToByteArray(ClassifierInstance<?>... roots) {
-    Set<String> nodesIDs = new HashSet<>(1024);
     List<ClassifierInstance<?>> allNodes = new ArrayList<>(1024);
-
+    Set<String> seenIDs = new HashSet<>(1024);
     for (ClassifierInstance<?> root : roots) {
-      List<ClassifierInstance<?>> classifierInstances = new ArrayList<>();
-      ClassifierInstance.collectSelfAndDescendants(root, true, classifierInstances);
+      collectNonProxyNoDup(root, allNodes, seenIDs);
+    }
+    return serializeNodesToByteArray(allNodes);
+  }
 
-      // Process in batches to reduce memory allocation
-      for (ClassifierInstance<?> n : classifierInstances) {
-        if (n.getID() != null) {
-          if (!nodesIDs.contains(n.getID())) {
-            allNodes.add(n);
-            nodesIDs.add(n.getID());
-          }
-        } else {
-          allNodes.add(n);
-        }
+  private static void collectNonProxyNoDup(
+      ClassifierInstance<?> node, List<ClassifierInstance<?>> result, Set<String> seenIDs) {
+    if (node instanceof ProxyNode) return;
+    String id = node.getID();
+    if (id != null && !seenIDs.add(id)) return;
+    result.add(node);
+    List<AnnotationInstance> anns = node.getAnnotations();
+    for (int i = 0, n = anns.size(); i < n; i++) {
+      collectNonProxyNoDup(anns.get(i), result, seenIDs);
+    }
+    Classifier<?> classifier = node.getClassifier();
+    List<Containment> conts = classifier.allContainments();
+    for (int i = 0, n = conts.size(); i < n; i++) {
+      List<? extends Node> children = node.getChildren(conts.get(i));
+      for (int j = 0, m = children.size(); j < m; j++) {
+        collectNonProxyNoDup(children.get(j), result, seenIDs);
       }
     }
-
-    // Filter out proxy nodes more efficiently
-    List<ClassifierInstance<?>> filteredNodes = new ArrayList<>(allNodes.size());
-    for (ClassifierInstance<?> node : allNodes) {
-      if (!(node instanceof ProxyNode)) {
-        filteredNodes.add(node);
-      }
-    }
-
-    return serializeNodesToByteArray(filteredNodes);
   }
 
   public byte[] serializeNodesToByteArray(List<ClassifierInstance<?>> classifierInstances) {
