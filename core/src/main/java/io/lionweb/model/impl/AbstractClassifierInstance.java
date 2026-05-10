@@ -50,22 +50,36 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
       this.annotations = new ArrayList<>();
     }
     // necessary to avoid infinite loops and duplicate insertions
+    // NOTE: setAnnotated may recursively call addAnnotation, so we check by ID before calling it,
+    // then re-check after to see if the recursive call already added it.
     String instanceID = instance.getID();
     if (instanceID != null) {
       for (int i = 0, n = annotations.size(); i < n; i++) {
         if (Objects.equals(annotations.get(i).getID(), instanceID)) return false;
       }
-    } else {
-      for (int i = 0, n = annotations.size(); i < n; i++) {
-        if (annotations.get(i) == instance) return false;
-      }
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-    this.annotations.add(instance);
-    if (partitionObserverCache != null) {
-      partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
+    if (instanceID == null) {
+      for (int i = 0, n = annotations.size(); i < n; i++) {
+        if (annotations.get(i) == instance) return false;
+      }
+    }
+    boolean shouldAdd = true;
+    if (instanceID != null) {
+      for (int i = 0, n = annotations.size(); i < n; i++) {
+        if (Objects.equals(annotations.get(i).getID(), instanceID)) {
+          shouldAdd = false;
+          break;
+        }
+      }
+    }
+    if (shouldAdd) {
+      this.annotations.add(instance);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
+      }
     }
     return true;
   }
