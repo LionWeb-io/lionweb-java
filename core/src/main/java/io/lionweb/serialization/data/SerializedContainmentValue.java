@@ -40,7 +40,7 @@ public class SerializedContainmentValue {
 
   /** This returns the list of Node-IDs contained. */
   public List<String> getChildrenIds() {
-    return Collections.unmodifiableList(childrenIds);
+    return childrenIds;
   }
 
   /** This expects the list of Node-IDs contained. */
