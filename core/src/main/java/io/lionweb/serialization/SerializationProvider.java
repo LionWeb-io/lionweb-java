@@ -79,6 +79,19 @@ public class SerializationProvider {
     return new ProtoBufSerialization();
   }
 
+  /** This has specific support for LionCore or LionCoreBuiltins. */
+  public static LionBinSerialization getStandardLionBinSerialization(
+      @Nonnull LionWebVersion lionWebVersion) {
+    LionBinSerialization serialization = new LionBinSerialization(lionWebVersion);
+    standardInitialization(serialization);
+    return serialization;
+  }
+
+  /** This has specific support for LionCore or LionCoreBuiltins. */
+  public static LionBinSerialization getStandardLionBinSerialization() {
+    return getStandardLionBinSerialization(LionWebVersion.currentVersion);
+  }
+
   /**
    * In most cases you may want not to call this method directly but call
    * getStandardJsonSerialization instead.
