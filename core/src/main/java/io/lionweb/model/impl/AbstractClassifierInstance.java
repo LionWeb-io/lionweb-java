@@ -49,23 +49,23 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
-    if (instance.getID() != null
-        && annotations.stream().anyMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
-      // necessary to avoid infinite loops and duplicate insertions
-      return false;
+    // necessary to avoid infinite loops and duplicate insertions
+    String instanceID = instance.getID();
+    if (instanceID != null) {
+      for (int i = 0, n = annotations.size(); i < n; i++) {
+        if (Objects.equals(annotations.get(i).getID(), instanceID)) return false;
+      }
+    } else {
+      for (int i = 0, n = annotations.size(); i < n; i++) {
+        if (annotations.get(i) == instance) return false;
+      }
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-    if (instance.getID() == null && annotations.stream().anyMatch(a -> a == instance)) {
-      return false;
-    }
-    if (instance.getID() == null
-        || annotations.stream().noneMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
-      this.annotations.add(instance);
-      if (partitionObserverCache != null) {
-        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
-      }
+    this.annotations.add(instance);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
     }
     return true;
   }

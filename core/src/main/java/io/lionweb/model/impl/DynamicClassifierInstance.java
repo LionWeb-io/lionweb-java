@@ -11,7 +11,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   /** The ID should _eventually_ be not null. */
   protected @Nullable String id;
 
-  protected final Map<String, Object> propertyValues = new HashMap<>();
+  protected final Map<String, Object> propertyValues = new HashMap<>(4);
 
   /**
    * If the tree is wide, most nodes will have no children, so when holding millions of nodes in
@@ -359,7 +359,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   private void initContainments() {
     if (containmentValues == null) {
-      containmentValues = new HashMap<>();
+      containmentValues = new HashMap<>(4);
     }
   }
 
@@ -441,7 +441,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   private void initReferences() {
     if (referenceValues == null) {
-      referenceValues = new HashMap<>();
+      referenceValues = new HashMap<>(4);
     }
   }
 

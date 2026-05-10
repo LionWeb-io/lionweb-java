@@ -11,11 +11,12 @@ import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
+import io.lionweb.serialization.data.SerializedContainmentValue;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * This helper class take care of populating containments and references of a node, while we are
@@ -77,39 +78,37 @@ class NodePopulator {
   private void populateContainments(
       ClassifierInstance<?> node, SerializedClassifierInstance serializedClassifierInstance) {
     Classifier<?> concept = node.getClassifier();
-    serializedClassifierInstance
-        .getContainments()
-        .forEach(
-            serializedContainmentValue -> {
-              Containment containment =
-                  deserializationStatus.getContainment(
-                      concept, serializedContainmentValue.getMetaPointer());
-              if (containment == null) {
-                throw new NullPointerException(
-                    "Unable to resolve containment "
-                        + serializedContainmentValue.getMetaPointer()
-                        + " in concept "
-                        + concept);
-              }
-              Objects.requireNonNull(
-                  serializedContainmentValue.getChildrenIds(),
-                  "The containment value should not be null");
-              List<ClassifierInstance<?>> deserializedValue =
-                  serializedContainmentValue.getChildrenIds().stream()
-                      .map(
-                          childNodeID -> {
-                            if (serialization.getUnavailableChildrenPolicy()
-                                == UnavailableNodePolicy.PROXY_NODES) {
-                              return classifierInstanceResolver.resolveOrProxy(childNodeID);
-                            } else {
-                              return classifierInstanceResolver.strictlyResolve(childNodeID);
-                            }
-                          })
-                      .collect(Collectors.toList());
-              if (!Objects.equals(deserializedValue, node.getChildren(containment))) {
-                deserializedValue.forEach(child -> node.addChild(containment, (Node) child));
-              }
-            });
+    boolean isProxy =
+        serialization.getUnavailableChildrenPolicy() == UnavailableNodePolicy.PROXY_NODES;
+    List<SerializedContainmentValue> containments = serializedClassifierInstance.getContainments();
+    for (int ci = 0, cn = containments.size(); ci < cn; ci++) {
+      SerializedContainmentValue serializedContainmentValue = containments.get(ci);
+      Containment containment =
+          deserializationStatus.getContainment(
+              concept, serializedContainmentValue.getMetaPointer());
+      if (containment == null) {
+        throw new NullPointerException(
+            "Unable to resolve containment "
+                + serializedContainmentValue.getMetaPointer()
+                + " in concept "
+                + concept);
+      }
+      List<String> childrenIds = serializedContainmentValue.getChildrenIds();
+      Objects.requireNonNull(childrenIds, "The containment value should not be null");
+      List<ClassifierInstance<?>> deserializedValue = new ArrayList<>(childrenIds.size());
+      for (int i = 0, n = childrenIds.size(); i < n; i++) {
+        String childNodeID = childrenIds.get(i);
+        deserializedValue.add(
+            isProxy
+                ? classifierInstanceResolver.resolveOrProxy(childNodeID)
+                : classifierInstanceResolver.strictlyResolve(childNodeID));
+      }
+      if (!Objects.equals(deserializedValue, node.getChildren(containment))) {
+        for (int i = 0, n = deserializedValue.size(); i < n; i++) {
+          node.addChild(containment, (Node) deserializedValue.get(i));
+        }
+      }
+    }
   }
 
   private void populateNodeReferences(
