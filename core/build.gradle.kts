@@ -298,6 +298,7 @@ tasks.register<Test>("performanceTest") {
     testClassesDirs = performanceTestSourceSet.output.classesDirs
     classpath = performanceTestSourceSet.runtimeClasspath
     useJUnitPlatform()
+    maxHeapSize = "1g"
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true
