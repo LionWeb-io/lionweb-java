@@ -46,44 +46,36 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   @Override
   public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
     Objects.requireNonNull(instance);
-    String instanceID = instance.getID();
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
-    } else if (instanceID != null) {
-
-      for (AnnotationInstance existing : annotations) {
-        if (Objects.equals(existing.getID(), instanceID)) {
-          return false;
-        }
-      }
+    }
+    String instanceID = instance.getID();
+    if (containsAnnotation(instanceID, instance)) {
+      return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-    if (instanceID == null) {
-      for (AnnotationInstance existing : annotations) {
-        if (existing == instance) {
-          return false;
-        }
-      }
+    // setAnnotated may trigger a recursive addAnnotation that already inserted the instance
+    if (containsAnnotation(instanceID, instance)) {
+      return true;
     }
-    boolean insert = instanceID == null;
-    if (!insert) {
-      insert = true;
-      for (AnnotationInstance existing : annotations) {
-        if (Objects.equals(existing.getID(), instanceID)) {
-          insert = false;
-          break;
-        }
-      }
-    }
-    if (insert) {
-      this.annotations.add(instance);
-      if (partitionObserverCache != null) {
-        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
-      }
+    this.annotations.add(instance);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
     }
     return true;
+  }
+
+  private boolean containsAnnotation(String instanceID, AnnotationInstance instance) {
+    for (AnnotationInstance existing : annotations) {
+      if (instanceID != null
+          ? Objects.equals(existing.getID(), instanceID)
+          : existing == instance) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
