@@ -43,106 +43,48 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
         .collect(Collectors.toList());
   }
 
-  //  @Override
-  //  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
-  //    Objects.requireNonNull(instance);
-  //    if (this.annotations == null) {
-  //      this.annotations = new ArrayList<>();
-  //    }
-  //    if (instance.getID() != null
-  //        && annotations.stream().anyMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
-  //      // necessary to avoid infinite loops and duplicate insertions
-  //      return false;
-  //    }
-  //    if (instance instanceof DynamicAnnotationInstance) {
-  //      ((DynamicAnnotationInstance) instance).setAnnotated(this);
-  //    }
-  //    if (instance.getID() == null && annotations.stream().anyMatch(a -> a == instance)) {
-  //      return false;
-  //    }
-  //    if (instance.getID() == null
-  //        || annotations.stream().noneMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
-  //      this.annotations.add(instance);
-  //      if (partitionObserverCache != null) {
-  //        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
-  //      }
-  //    }
-  //    return true;
-  //  }
+  @Override
+  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
+    Objects.requireNonNull(instance);
+    String instanceID = instance.getID();
+    if (this.annotations == null) {
+      this.annotations = new ArrayList<>();
+    } else if (instanceID != null) {
 
-      @Override
-      public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
-        Objects.requireNonNull(instance);
-        String instanceID = instance.getID();
-        if (this.annotations == null) {
-          this.annotations = new ArrayList<>();
-        } else if (instanceID != null){
-
-            for (AnnotationInstance existing : annotations) {
-                if (Objects.equals(existing.getID(), instanceID)) {
-                    return false;
-                }
-            }
+      for (AnnotationInstance existing : annotations) {
+        if (Objects.equals(existing.getID(), instanceID)) {
+          return false;
         }
-        if (instance instanceof DynamicAnnotationInstance) {
-          ((DynamicAnnotationInstance) instance).setAnnotated(this);
-        }
-        if (instanceID == null) {
-            for (AnnotationInstance existing : annotations) {
-                if (existing == instance) {
-                    return false;
-                }
-            }
-        }
-        boolean insert = instanceID == null;
-        if (!insert) {
-            insert = true;
-            for (AnnotationInstance existing : annotations) {
-                if (Objects.equals(existing.getID(), instanceID)) {
-                    insert = false;
-                    break;
-                }
-            }
-        }
-        if (insert) {
-          this.annotations.add(instance);
-          if (partitionObserverCache != null) {
-            partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
-          }
-        }
-        return true;
       }
-
-//  @Override
-//  public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
-//    Objects.requireNonNull(instance);
-//    if (this.annotations == null) {
-//      this.annotations = new ArrayList<>();
-//    }
-//    Object instanceId = instance.getID();
-//    for (AnnotationInstance existing : annotations) {
-//      if (instanceId != null) {
-//          Object existingId = existing.getID();
-//        if (Objects.equals(existingId, instanceId)) {
-//          return false;
-//        }
-//      } else {
-//        if (existing == instance) {
-//          return false;
-//        }
-//      }
-//    }
-//
-//    if (instance instanceof DynamicAnnotationInstance) {
-//      ((DynamicAnnotationInstance) instance).setAnnotated(this);
-//    }
-//    this.annotations.add(instance);
-//    if (partitionObserverCache != null) {
-//      partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
-//    }
-//
-//    return true;
-//  }
+    }
+    if (instance instanceof DynamicAnnotationInstance) {
+      ((DynamicAnnotationInstance) instance).setAnnotated(this);
+    }
+    if (instanceID == null) {
+      for (AnnotationInstance existing : annotations) {
+        if (existing == instance) {
+          return false;
+        }
+      }
+    }
+    boolean insert = instanceID == null;
+    if (!insert) {
+      insert = true;
+      for (AnnotationInstance existing : annotations) {
+        if (Objects.equals(existing.getID(), instanceID)) {
+          insert = false;
+          break;
+        }
+      }
+    }
+    if (insert) {
+      this.annotations.add(instance);
+      if (partitionObserverCache != null) {
+        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
+      }
+    }
+    return true;
+  }
 
   @Override
   public int removeAnnotation(@Nonnull AnnotationInstance instance) {
