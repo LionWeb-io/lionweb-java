@@ -22,7 +22,7 @@ protobuf = { id = "com.google.protobuf", version = "0.9.6"}
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.1.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version = "2.2.0" }
-vt-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }
+vt-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
 build-config = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
 release = { id = "net.researchgate.release", version = "3.1.0"}
 versioncheck = { id="com.github.ben-manes.versions", version = "0.53.0" }
