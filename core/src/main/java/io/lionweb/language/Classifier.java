@@ -47,10 +47,10 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   public @Nullable Feature getFeatureByName(@Nonnull String name) {
     Objects.requireNonNull(name, "name should not be null");
-    return allFeatures().stream()
-        .filter(feature -> feature.getName().equals(name))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> feature : allFeatures()) {
+      if (name.equals(feature.getName())) return feature;
+    }
+    return null;
   }
 
   public abstract @Nonnull List<Classifier<?>> directAncestors();
@@ -285,32 +285,26 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   public @Nullable Property getPropertyByID(@Nonnull String propertyId) {
     Objects.requireNonNull(propertyId, "propertyId should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
-        .filter(p -> Objects.equals(p.getID(), propertyId))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Property && propertyId.equals(f.getID())) return (Property) f;
+    }
+    return null;
   }
 
   public @Nullable Property getPropertyByName(@Nonnull String propertyName) {
     Objects.requireNonNull(propertyName, "propertyName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Property)
-        .map(f -> (Property) f)
-        .filter(p -> Objects.equals(p.getName(), propertyName))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Property && propertyName.equals(f.getName())) return (Property) f;
+    }
+    return null;
   }
 
   public @Nullable Containment getContainmentByID(@Nonnull String containmentID) {
     Objects.requireNonNull(containmentID, "containmentID should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getID(), containmentID))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Containment && containmentID.equals(f.getID())) return (Containment) f;
+    }
+    return null;
   }
 
   /**
@@ -323,42 +317,35 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
    */
   public @Nullable Containment getContainmentByKey(@Nonnull String containmentKey) {
     Objects.requireNonNull(containmentKey, "containmentKey should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getKey(), containmentKey))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Containment && containmentKey.equals(((Containment) f).getKey()))
+        return (Containment) f;
+    }
+    return null;
   }
 
   public @Nullable Containment getContainmentByName(@Nonnull String containmentName) {
     Objects.requireNonNull(containmentName, "containmentName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Containment)
-        .map(f -> (Containment) f)
-        .filter(c -> Objects.equals(c.getName(), containmentName))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Containment && containmentName.equals(f.getName())) return (Containment) f;
+    }
+    return null;
   }
 
   public @Nullable Reference getReferenceByID(@Nonnull String referenceID) {
     Objects.requireNonNull(referenceID, "referenceID should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Reference)
-        .map(f -> (Reference) f)
-        .filter(c -> Objects.equals(c.getID(), referenceID))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Reference && referenceID.equals(f.getID())) return (Reference) f;
+    }
+    return null;
   }
 
   public @Nullable Reference getReferenceByName(@Nonnull String referenceName) {
     Objects.requireNonNull(referenceName, "referenceName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Reference)
-        .map(f -> (Reference) f)
-        .filter(c -> Objects.equals(c.getName(), referenceName))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Reference && referenceName.equals(f.getName())) return (Reference) f;
+    }
+    return null;
   }
 
   /**
@@ -400,12 +387,10 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   public @Nullable Link getLinkByName(@Nonnull String linkName) {
     Objects.requireNonNull(linkName, "linkName should not be null");
-    return allFeatures().stream()
-        .filter(f -> f instanceof Link)
-        .map(f -> (Link) f)
-        .filter(c -> Objects.equals(c.getName(), linkName))
-        .findFirst()
-        .orElse(null);
+    for (Feature<?> f : allFeatures()) {
+      if (f instanceof Link && linkName.equals(f.getName())) return (Link) f;
+    }
+    return null;
   }
 
   public @Nullable Property getPropertyByMetaPointer(MetaPointer metaPointer) {
