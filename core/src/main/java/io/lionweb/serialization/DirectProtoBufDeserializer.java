@@ -9,22 +9,21 @@ import java.util.*;
  * Deserializes protobuf binary data directly into a {@link SerializationChunk} without creating
  * intermediate protobuf message objects (PBChunk, PBNode, etc.).
  *
- * <p>The wire format is read in two logical passes:
+ * <p>For {@code byte[]} input the implementation uses two passes over the <em>same</em> backing
+ * array (no copy):
  *
  * <ol>
- *   <li>Read all fields of the top-level PBChunk message: accumulate interned strings inline, store
- *       raw language/meta-pointer field pairs as {@code int[]}, and buffer each node's body as a
- *       {@code byte[]}.
- *   <li>Resolve the index tables (languages then meta-pointers) and decode each buffered node body
- *       directly into a {@link SerializedClassifierInstance}.
+ *   <li>Read all string, language, and meta-pointer fields; skip node bodies.
+ *   <li>Resolve the index tables, then read only the node fields inline using
+ *       {@code pushLimit}/{@code popLimit} — no per-node {@code byte[]} allocation.
  * </ol>
+ *
+ * <p>For {@link InputStream} input the stream is first drained into a single {@code byte[]}, then
+ * the same two-pass strategy is applied.
  *
  * <p>The output is semantically equivalent to what {@code PBChunk.parseFrom(bytes)} followed by
  * {@code ProtoBufSerialization.deserializeSerializationChunk(pbChunk)} would produce, but avoids
  * creating any protobuf message objects.
- *
- * <p><b>Field ordering assumption:</b> this implementation buffers all node bodies and resolves
- * tables in a second pass, so fields may appear in any order in the input stream.
  */
 final class DirectProtoBufDeserializer {
 
@@ -34,107 +33,116 @@ final class DirectProtoBufDeserializer {
 
   static SerializationChunk deserialize(byte[] bytes, boolean serializeEmptyFeatures)
       throws IOException {
-    return deserialize(CodedInputStream.newInstance(bytes), serializeEmptyFeatures);
+    return deserializeTwoPass(bytes, serializeEmptyFeatures);
   }
 
   static SerializationChunk deserialize(InputStream in, boolean serializeEmptyFeatures)
       throws IOException {
-    return deserialize(CodedInputStream.newInstance(in), serializeEmptyFeatures);
+    // Drain to a single byte[] so we can apply the same two-pass optimisation.
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    byte[] buf = new byte[8192];
+    int n;
+    while ((n = in.read(buf)) != -1) baos.write(buf, 0, n);
+    return deserializeTwoPass(baos.toByteArray(), serializeEmptyFeatures);
   }
 
-  // ---- Core deserialize logic ----
+  // ---- Two-pass core ----
 
-  private static SerializationChunk deserialize(
-      CodedInputStream cis, boolean serializeEmptyFeatures) throws IOException {
+  private static SerializationChunk deserializeTwoPass(byte[] bytes, boolean serializeEmptyFeatures)
+      throws IOException {
 
     String version = "";
-    // index 0 = null; subsequent entries are the actual interned strings
+    // index 0 = null; actual strings start at index 1
     ArrayList<String> strings = new ArrayList<>();
     strings.add(null);
 
-    // Each int[2] = {siKey, siVersion} (raw string-table indices from the wire)
-    ArrayList<int[]> rawLanguages = new ArrayList<>();
-    // Each int[2] = {liLanguage, siKey} (raw table indices from the wire)
-    ArrayList<int[]> rawMetaPointers = new ArrayList<>();
-    // Raw bytes of each PBNode body (already stripped of the outer tag+length)
-    ArrayList<byte[]> nodeBodyList = new ArrayList<>();
+    // Flat int arrays for compact storage: langData[2i]=siKey, langData[2i+1]=siVersion
+    int[] langData = new int[16];
+    int langCount = 0;
 
-    // Pass 1: read top-level PBChunk fields
+    // mpData[2i]=liLanguage, mpData[2i+1]=siKey
+    int[] mpData = new int[32];
+    int mpCount = 0;
+
+    // Pass 1: read strings / languages / meta-pointers; skip node bodies
+    CodedInputStream cis = CodedInputStream.newInstance(bytes);
     int tag;
     while ((tag = cis.readTag()) != 0) {
-      int fieldNumber = tag >>> 3;
-      switch (fieldNumber) {
-        case 1: // serialization_format_version (string)
+      int f = tag >>> 3;
+      switch (f) {
+        case 1: // serialization_format_version
           version = cis.readString();
           break;
 
-        case 2: // interned_strings (repeated string)
+        case 2: // interned_strings
           strings.add(cis.readString());
           break;
 
-        case 3: // interned_meta_pointers (repeated PBMetaPointer embedded message)
+        case 3: // interned_meta_pointers
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
             int liLanguage = 0, siKey = 0;
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
-              int f = innerTag >>> 3;
-              if (f == 1) liLanguage = cis.readRawVarint32();
-              else if (f == 2) siKey = cis.readRawVarint32();
+              int fi = innerTag >>> 3;
+              if (fi == 1) liLanguage = cis.readRawVarint32();
+              else if (fi == 2) siKey = cis.readRawVarint32();
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
-            rawMetaPointers.add(new int[] {liLanguage, siKey});
+            if (mpCount * 2 >= mpData.length) mpData = Arrays.copyOf(mpData, mpData.length * 2);
+            mpData[mpCount * 2] = liLanguage;
+            mpData[mpCount * 2 + 1] = siKey;
+            mpCount++;
             break;
           }
 
-        case 4: // interned_languages (repeated PBLanguage embedded message)
+        case 4: // interned_languages
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
             int siKeyL = 0, siVersionL = 0;
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
-              int f = innerTag >>> 3;
-              if (f == 1) siKeyL = cis.readRawVarint32();
-              else if (f == 2) siVersionL = cis.readRawVarint32();
+              int fi = innerTag >>> 3;
+              if (fi == 1) siKeyL = cis.readRawVarint32();
+              else if (fi == 2) siVersionL = cis.readRawVarint32();
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
-            rawLanguages.add(new int[] {siKeyL, siVersionL});
+            if (langCount * 2 >= langData.length)
+              langData = Arrays.copyOf(langData, langData.length * 2);
+            langData[langCount * 2] = siKeyL;
+            langData[langCount * 2 + 1] = siVersionL;
+            langCount++;
             break;
           }
 
-        case 5: // nodes (repeated PBNode embedded message) — buffer body bytes
-          {
-            int len = cis.readRawVarint32();
-            nodeBodyList.add(cis.readRawBytes(len));
-            break;
-          }
+        case 5: // nodes — skip in pass 1
+          cis.skipField(tag);
+          break;
 
         default:
           cis.skipField(tag);
       }
     }
 
-    // Pass 2: resolve index tables
-    String[] stringsArray = strings.toArray(new String[0]);
+    // Resolve index tables
+    String[] stringsArray = strings.toArray(new String[strings.size()]);
 
-    LanguageVersion[] languagesArray = new LanguageVersion[rawLanguages.size() + 1];
+    LanguageVersion[] languagesArray = new LanguageVersion[langCount + 1];
     languagesArray[0] = null;
-    for (int i = 0; i < rawLanguages.size(); i++) {
-      int[] raw = rawLanguages.get(i);
-      String key = safeGet(stringsArray, raw[0]);
-      String ver = safeGet(stringsArray, raw[1]);
+    for (int i = 0; i < langCount; i++) {
+      String key = safeGet(stringsArray, langData[i * 2]);
+      String ver = safeGet(stringsArray, langData[i * 2 + 1]);
       languagesArray[i + 1] = LanguageVersion.of(key, ver);
     }
 
-    MetaPointer[] metaPointersArray = new MetaPointer[rawMetaPointers.size()];
-    for (int i = 0; i < rawMetaPointers.size(); i++) {
-      int[] raw = rawMetaPointers.get(i);
-      LanguageVersion lv = safeGet(languagesArray, raw[0]);
-      String key = safeGet(stringsArray, raw[1]);
+    MetaPointer[] metaPointersArray = new MetaPointer[mpCount];
+    for (int i = 0; i < mpCount; i++) {
+      LanguageVersion lv = safeGet(languagesArray, mpData[i * 2]);
+      String key = safeGet(stringsArray, mpData[i * 2 + 1]);
       if (lv != null) {
         metaPointersArray[i] = MetaPointer.get(lv.getKey(), lv.getVersion(), key);
       } else {
@@ -142,17 +150,26 @@ final class DirectProtoBufDeserializer {
       }
     }
 
-    // Pass 3: build SerializationChunk
-    SerializationChunk chunk = new SerializationChunk(nodeBodyList.size());
+    // Build chunk header
+    SerializationChunk chunk = new SerializationChunk();
     chunk.setSerializationFormatVersion(version);
     for (int i = 1; i < languagesArray.length; i++) {
       if (languagesArray[i] != null) chunk.addLanguage(languagesArray[i]);
     }
 
-    for (byte[] nodeBody : nodeBodyList) {
-      SerializedClassifierInstance sci =
-          readNode(nodeBody, stringsArray, metaPointersArray, serializeEmptyFeatures);
-      chunk.addClassifierInstance(sci);
+    // Pass 2: second pass over the same byte[] (no copy) — parse only node fields inline
+    cis = CodedInputStream.newInstance(bytes);
+    while ((tag = cis.readTag()) != 0) {
+      int f = tag >>> 3;
+      if (f == 5) {
+        int len = cis.readRawVarint32();
+        int oldLimit = cis.pushLimit(len);
+        chunk.addClassifierInstance(
+            readNodeInline(cis, stringsArray, metaPointersArray, serializeEmptyFeatures));
+        cis.popLimit(oldLimit);
+      } else {
+        cis.skipField(tag);
+      }
     }
 
     return chunk;
@@ -160,10 +177,17 @@ final class DirectProtoBufDeserializer {
 
   // ---- Node decoding ----
 
-  private static SerializedClassifierInstance readNode(
-      byte[] body, String[] strings, MetaPointer[] metaPointers, boolean serializeEmptyFeatures)
+  /**
+   * Reads a single PBNode body from {@code cis} (already limited by the caller via
+   * {@code pushLimit}) and converts it directly to a {@link SerializedClassifierInstance}.
+   * No intermediate byte[] or CodedInputStream is allocated.
+   */
+  private static SerializedClassifierInstance readNodeInline(
+      CodedInputStream cis,
+      String[] strings,
+      MetaPointer[] metaPointers,
+      boolean serializeEmptyFeatures)
       throws IOException {
-    CodedInputStream cis = CodedInputStream.newInstance(body);
 
     SerializedClassifierInstance sci = new SerializedClassifierInstance();
     int siId = 0, mpiClassifier = 0, siParent = 0;
@@ -187,9 +211,9 @@ final class DirectProtoBufDeserializer {
             int mpiIndex = 0, siValue = 0;
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
-              int f = innerTag >>> 3;
-              if (f == 1) mpiIndex = cis.readRawVarint32();
-              else if (f == 2) siValue = cis.readRawVarint32();
+              int fi = innerTag >>> 3;
+              if (fi == 1) mpiIndex = cis.readRawVarint32();
+              else if (fi == 2) siValue = cis.readRawVarint32();
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
@@ -209,10 +233,10 @@ final class DirectProtoBufDeserializer {
             List<String> children = null;
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
-              int f = innerTag >>> 3;
-              if (f == 1) {
+              int fi = innerTag >>> 3;
+              if (fi == 1) {
                 mpiIndex = cis.readRawVarint32();
-              } else if (f == 2) {
+              } else if (fi == 2) {
                 // packed repeated uint32 si_children
                 int packedLen = cis.readRawVarint32();
                 int packedOldLimit = cis.pushLimit(packedLen);
@@ -247,10 +271,10 @@ final class DirectProtoBufDeserializer {
             List<SerializedReferenceValue.Entry> entries = new ArrayList<>();
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
-              int f = innerTag >>> 3;
-              if (f == 1) {
+              int fi = innerTag >>> 3;
+              if (fi == 1) {
                 mpiIndex = cis.readRawVarint32();
-              } else if (f == 2) {
+              } else if (fi == 2) {
                 // PBReferenceValue embedded message
                 int rvLen = cis.readRawVarint32();
                 int rvOldLimit = cis.pushLimit(rvLen);
@@ -309,6 +333,7 @@ final class DirectProtoBufDeserializer {
 
   // ---- Helpers ----
 
+  @SuppressWarnings("unchecked")
   private static <T> T safeGet(T[] array, int index) {
     return (index >= 0 && index < array.length) ? array[index] : null;
   }

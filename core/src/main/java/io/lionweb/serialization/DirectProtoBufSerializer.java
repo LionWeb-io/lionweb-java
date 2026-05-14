@@ -13,8 +13,9 @@ import java.util.*;
  * <p>The two-pass strategy:
  *
  * <ol>
- *   <li>Visit every node to populate the interned string / language / meta-pointer index tables.
- *   <li>Compute the exact serialized byte count bottom-up (no intermediate byte arrays).
+ *   <li>Visit every node to populate the interned string / language / meta-pointer index tables
+ *       <em>and</em> compute each node's serialized body size in the same traversal.
+ *   <li>Compute the exact total byte count from the index tables plus the pre-computed node sizes.
  *   <li>Allocate a single {@code byte[]} and write all fields in one shot via {@link
  *       CodedOutputStream}.
  * </ol>
@@ -36,15 +37,16 @@ final class DirectProtoBufSerializer {
    * @return the protobuf-encoded bytes
    */
   static byte[] serialize(SerializationChunk chunk, boolean serializeEmptyFeatures) {
-    SerializeState state = buildIndexTables(chunk, serializeEmptyFeatures);
+    SerializeState state = new SerializeState();
     List<SerializedClassifierInstance> instances = chunk.getClassifierInstances();
 
-    // Pre-compute every node body size once; reused in both computeChunkSize and writeChunk
-    // to avoid visiting each node twice.
+    // Single pass: build index tables AND compute each node's body size simultaneously.
     int[] nodeBodySizes = new int[instances.size()];
-    int totalSize =
-        computeChunkSize(chunk, state, instances, nodeBodySizes, serializeEmptyFeatures);
+    for (int i = 0; i < instances.size(); i++) {
+      nodeBodySizes[i] = visitAndComputeBodySize(state, instances.get(i), serializeEmptyFeatures);
+    }
 
+    int totalSize = computeChunkSize(chunk, state, nodeBodySizes);
     byte[] result = new byte[totalSize];
     CodedOutputStream cos = CodedOutputStream.newInstance(result);
     try {
@@ -108,56 +110,90 @@ final class DirectProtoBufSerializer {
     }
   }
 
-  private static SerializeState buildIndexTables(
-      SerializationChunk chunk, boolean serializeEmptyFeatures) {
-    SerializeState state = new SerializeState();
-    for (SerializedClassifierInstance instance : chunk.getClassifierInstances()) {
-      visitNode(state, instance, serializeEmptyFeatures);
-    }
-    return state;
-  }
-
-  private static void visitNode(
+  /**
+   * Visits {@code n} to populate index tables AND returns the node's serialized body size in a
+   * single traversal, eliminating a separate size-computation pass.
+   *
+   * <p>Field indexing order matches the legacy {@code SerializeHelper.serializeNode} exactly so
+   * that string/language/meta-pointer table indices — and therefore the output bytes — are
+   * identical.
+   */
+  private static int visitAndComputeBodySize(
       SerializeState state, SerializedClassifierInstance n, boolean serializeEmptyFeatures) {
-    if (n.getID() != null) state.stringIndexer(n.getID());
-    if (n.getParentNodeID() != null) state.stringIndexer(n.getParentNodeID());
-    if (n.getClassifier() != null) state.metaPointerIndexer(n.getClassifier());
+    int size = 0;
 
+    // field 1: si_id
+    if (n.getID() != null) size += uint32FieldSize(state.stringIndexer(n.getID()));
+
+    // field 7: si_parent — indexed here to match legacy ordering; size contributed below
+    int siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
+
+    // field 2: mpi_classifier
+    if (n.getClassifier() != null)
+      size += uint32FieldSize(state.metaPointerIndexer(n.getClassifier()));
+
+    // field 3: properties
     for (SerializedPropertyValue p : n.getProperties()) {
       String value = p.getValue();
       if (serializeEmptyFeatures || value != null) {
-        // Match legacy SerializeHelper: value string is indexed BEFORE the meta-pointer
-        state.stringIndexer(value); // null-safe: returns 0 and adds nothing when null
-        if (p.getMetaPointer() != null) state.metaPointerIndexer(p.getMetaPointer());
+        // Match legacy SerializeHelper: value string indexed BEFORE meta-pointer
+        int siValue = state.stringIndexer(value);
+        int mpiIndex =
+            p.getMetaPointer() != null ? state.metaPointerIndexer(p.getMetaPointer()) : 0;
+        int bodySize = uint32FieldSize(mpiIndex) + uint32FieldSize(siValue);
+        size += 1 + varintSize(bodySize) + bodySize;
       }
     }
 
+    // field 4: containments
     for (SerializedContainmentValue c : n.getContainments()) {
       List<String> children = c.getChildrenIds();
       if (serializeEmptyFeatures || !children.isEmpty()) {
-        if (c.getMetaPointer() != null) state.metaPointerIndexer(c.getMetaPointer());
-        for (String childId : children) state.stringIndexer(childId);
+        int mpiIndex =
+            c.getMetaPointer() != null ? state.metaPointerIndexer(c.getMetaPointer()) : 0;
+        int packed = 0;
+        for (String childId : children) packed += varintSize(state.stringIndexer(childId));
+        int packedFieldSize = children.isEmpty() ? 0 : (1 + varintSize(packed) + packed);
+        int bodySize = uint32FieldSize(mpiIndex) + packedFieldSize;
+        size += 1 + varintSize(bodySize) + bodySize;
       }
     }
 
+    // field 5: references
     for (SerializedReferenceValue r : n.getReferences()) {
       List<SerializedReferenceValue.Entry> entries = r.getValue();
       if (serializeEmptyFeatures || !entries.isEmpty()) {
-        if (r.getMetaPointer() != null) state.metaPointerIndexer(r.getMetaPointer());
+        int mpiIndex =
+            r.getMetaPointer() != null ? state.metaPointerIndexer(r.getMetaPointer()) : 0;
+        int refBodySize = uint32FieldSize(mpiIndex);
         for (SerializedReferenceValue.Entry entry : entries) {
           // Match legacy: referred indexed before resolveInfo
-          if (entry.getReference() != null) state.stringIndexer(entry.getReference());
-          if (entry.getResolveInfo() != null) state.stringIndexer(entry.getResolveInfo());
+          int siReferred =
+              entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
+          int siResolveInfo =
+              entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
+          int rvBody = referenceValueBodySize(siResolveInfo, siReferred);
+          refBodySize += 1 + varintSize(rvBody) + rvBody;
         }
+        size += 1 + varintSize(refBodySize) + refBodySize;
       }
     }
 
-    for (String annId : n.getAnnotations()) {
-      if (annId != null) state.stringIndexer(annId);
+    // field 6: si_annotations (packed)
+    List<String> annotations = n.getAnnotations();
+    if (!annotations.isEmpty()) {
+      int packed = 0;
+      for (String annId : annotations) packed += varintSize(state.stringIndexer(annId));
+      size += 1 + varintSize(packed) + packed;
     }
+
+    // field 7: si_parent size (index already computed above to preserve table-population order)
+    size += uint32FieldSize(siParent);
+
+    return size;
   }
 
-  // ---- Size computation (Phase 2) ----
+  // ---- Size helpers ----
 
   /** UTF-8 byte count for {@code s} without allocating a byte array. */
   static int utf8ByteCount(String s) {
@@ -210,115 +246,13 @@ final class DirectProtoBufSerializer {
     return uint32FieldSize(siKey) + uint32FieldSize(siVersion);
   }
 
-  private static int propertyBodySize(int mpiIndex, int siValue) {
-    return uint32FieldSize(mpiIndex) + uint32FieldSize(siValue);
-  }
-
-  private static int packedChildrenSize(List<String> children, SerializeState state) {
-    if (children.isEmpty()) return 0;
-    int packed = 0;
-    for (String childId : children) packed += varintSize(state.stringIndex.get(childId));
-    return 1 + varintSize(packed) + packed; // tag + varint(packed) + packed bytes
-  }
-
   private static int referenceValueBodySize(int siResolveInfo, int siReferred) {
     return uint32FieldSize(siResolveInfo) + uint32FieldSize(siReferred);
   }
 
-  private static int referenceBodySize(
-      int mpiIndex, List<SerializedReferenceValue.Entry> entries, SerializeState state) {
-    int size = uint32FieldSize(mpiIndex);
-    for (SerializedReferenceValue.Entry entry : entries) {
-      int siReferred =
-          entry.getReference() != null
-              ? state.stringIndex.getOrDefault(entry.getReference(), 0)
-              : 0;
-      int siResolveInfo =
-          entry.getResolveInfo() != null
-              ? state.stringIndex.getOrDefault(entry.getResolveInfo(), 0)
-              : 0;
-      int rvBody = referenceValueBodySize(siResolveInfo, siReferred);
-      size += 1 + varintSize(rvBody) + rvBody;
-    }
-    return size;
-  }
-
-  private static int nodeBodySize(
-      SerializedClassifierInstance n, SerializeState state, boolean serializeEmptyFeatures) {
-    int size = 0;
-
-    // field 1: si_id
-    int siId = n.getID() != null ? state.stringIndex.getOrDefault(n.getID(), 0) : 0;
-    size += uint32FieldSize(siId);
-
-    // field 2: mpi_classifier
-    int mpiClassifier =
-        n.getClassifier() != null ? state.metaPointerIndex.getOrDefault(n.getClassifier(), 0) : 0;
-    size += uint32FieldSize(mpiClassifier);
-
-    // field 3: properties
-    for (SerializedPropertyValue p : n.getProperties()) {
-      String value = p.getValue();
-      if (serializeEmptyFeatures || value != null) {
-        int mpiIndex =
-            p.getMetaPointer() != null
-                ? state.metaPointerIndex.getOrDefault(p.getMetaPointer(), 0)
-                : 0;
-        int siValue = value != null ? state.stringIndex.getOrDefault(value, 0) : 0;
-        int bodySize = propertyBodySize(mpiIndex, siValue);
-        size += 1 + varintSize(bodySize) + bodySize;
-      }
-    }
-
-    // field 4: containments
-    for (SerializedContainmentValue c : n.getContainments()) {
-      List<String> children = c.getChildrenIds();
-      if (serializeEmptyFeatures || !children.isEmpty()) {
-        int mpiIndex =
-            c.getMetaPointer() != null
-                ? state.metaPointerIndex.getOrDefault(c.getMetaPointer(), 0)
-                : 0;
-        int bodySize = uint32FieldSize(mpiIndex) + packedChildrenSize(children, state);
-        size += 1 + varintSize(bodySize) + bodySize;
-      }
-    }
-
-    // field 5: references
-    for (SerializedReferenceValue r : n.getReferences()) {
-      List<SerializedReferenceValue.Entry> entries = r.getValue();
-      if (serializeEmptyFeatures || !entries.isEmpty()) {
-        int mpiIndex =
-            r.getMetaPointer() != null
-                ? state.metaPointerIndex.getOrDefault(r.getMetaPointer(), 0)
-                : 0;
-        int bodySize = referenceBodySize(mpiIndex, entries, state);
-        size += 1 + varintSize(bodySize) + bodySize;
-      }
-    }
-
-    // field 6: si_annotations (packed)
-    List<String> annotations = n.getAnnotations();
-    if (!annotations.isEmpty()) {
-      int packed = 0;
-      for (String annId : annotations)
-        packed += varintSize(state.stringIndex.getOrDefault(annId, 0));
-      size += 1 + varintSize(packed) + packed;
-    }
-
-    // field 7: si_parent
-    int siParent =
-        n.getParentNodeID() != null ? state.stringIndex.getOrDefault(n.getParentNodeID(), 0) : 0;
-    size += uint32FieldSize(siParent);
-
-    return size;
-  }
-
+  /** Computes the total chunk byte size from pre-computed node body sizes. */
   private static int computeChunkSize(
-      SerializationChunk chunk,
-      SerializeState state,
-      List<SerializedClassifierInstance> instances,
-      int[] nodeBodySizes,
-      boolean serializeEmptyFeatures) {
+      SerializationChunk chunk, SerializeState state, int[] nodeBodySizes) {
     int size = 0;
 
     // field 1: serialization_format_version
@@ -345,10 +279,8 @@ final class DirectProtoBufSerializer {
       size += 1 + varintSize(bodySize) + bodySize;
     }
 
-    // field 5: nodes — fill nodeBodySizes[] so writeChunk can reuse without re-computing
-    for (int i = 0, n = instances.size(); i < n; i++) {
-      int bodySize = nodeBodySize(instances.get(i), state, serializeEmptyFeatures);
-      nodeBodySizes[i] = bodySize;
+    // field 5: nodes — sizes already computed by visitAndComputeBodySize
+    for (int bodySize : nodeBodySizes) {
       size += 1 + varintSize(bodySize) + bodySize;
     }
 
@@ -401,7 +333,7 @@ final class DirectProtoBufSerializer {
       if (siVersion != 0) cos.writeUInt32(2, siVersion);
     }
 
-    // field 5: nodes — use pre-computed body sizes (no re-computation)
+    // field 5: nodes — use pre-computed body sizes
     for (int i = 0, n = instances.size(); i < n; i++) {
       cos.writeTag(5, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(nodeBodySizes[i]);
@@ -434,7 +366,7 @@ final class DirectProtoBufSerializer {
                 ? state.metaPointerIndex.getOrDefault(p.getMetaPointer(), 0)
                 : 0;
         int siValue = value != null ? state.stringIndex.getOrDefault(value, 0) : 0;
-        int bodySize = propertyBodySize(mpiIndex, siValue);
+        int bodySize = uint32FieldSize(mpiIndex) + uint32FieldSize(siValue);
         cos.writeTag(3, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(bodySize);
         if (mpiIndex != 0) cos.writeUInt32(1, mpiIndex);
@@ -442,7 +374,7 @@ final class DirectProtoBufSerializer {
       }
     }
 
-    // field 4: containments
+    // field 4: containments — compute 'packed' once for both the length prefix and the write loop
     for (SerializedContainmentValue c : n.getContainments()) {
       List<String> children = c.getChildrenIds();
       if (serializeEmptyFeatures || !children.isEmpty()) {
@@ -450,13 +382,14 @@ final class DirectProtoBufSerializer {
             c.getMetaPointer() != null
                 ? state.metaPointerIndex.getOrDefault(c.getMetaPointer(), 0)
                 : 0;
-        int bodySize = uint32FieldSize(mpiIndex) + packedChildrenSize(children, state);
+        int packed = 0;
+        for (String childId : children) packed += varintSize(state.stringIndex.get(childId));
+        int packedFieldSize = children.isEmpty() ? 0 : (1 + varintSize(packed) + packed);
+        int bodySize = uint32FieldSize(mpiIndex) + packedFieldSize;
         cos.writeTag(4, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(bodySize);
         if (mpiIndex != 0) cos.writeUInt32(1, mpiIndex);
         if (!children.isEmpty()) {
-          int packed = 0;
-          for (String childId : children) packed += varintSize(state.stringIndex.get(childId));
           cos.writeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
           cos.writeUInt32NoTag(packed);
           for (String childId : children) cos.writeUInt32NoTag(state.stringIndex.get(childId));
@@ -472,7 +405,19 @@ final class DirectProtoBufSerializer {
             r.getMetaPointer() != null
                 ? state.metaPointerIndex.getOrDefault(r.getMetaPointer(), 0)
                 : 0;
-        int refBodySize = referenceBodySize(mpiIndex, entries, state);
+        int refBodySize = uint32FieldSize(mpiIndex);
+        for (SerializedReferenceValue.Entry entry : entries) {
+          int siReferred =
+              entry.getReference() != null
+                  ? state.stringIndex.getOrDefault(entry.getReference(), 0)
+                  : 0;
+          int siResolveInfo =
+              entry.getResolveInfo() != null
+                  ? state.stringIndex.getOrDefault(entry.getResolveInfo(), 0)
+                  : 0;
+          int rvBody = referenceValueBodySize(siResolveInfo, siReferred);
+          refBodySize += 1 + varintSize(rvBody) + rvBody;
+        }
         cos.writeTag(5, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(refBodySize);
         if (mpiIndex != 0) cos.writeUInt32(1, mpiIndex);
