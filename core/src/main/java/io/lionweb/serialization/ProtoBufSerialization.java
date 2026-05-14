@@ -21,25 +21,26 @@ public class ProtoBufSerialization extends AbstractSerialization {
     super(lionWebVersion);
   }
 
-    /**
-     * Deserializes an array of bytes into a list of {@code Node} instances using a default
-     * {@code ByteArrayInputStream} for the provided byte array.
-     *
-     * @param bytes The byte array to be deserialized into {@code Node} instances. It must not be null.
-     * @return A list of {@code Node} instances deserialized from the given byte array.
-     * @throws IOException If an I/O error occurs during deserialization.
-     */
+  /**
+   * Deserializes an array of bytes into a list of {@code Node} instances using a default {@code
+   * ByteArrayInputStream} for the provided byte array.
+   *
+   * @param bytes The byte array to be deserialized into {@code Node} instances. It must not be
+   *     null.
+   * @return A list of {@code Node} instances deserialized from the given byte array.
+   * @throws IOException If an I/O error occurs during deserialization.
+   */
   public List<Node> deserializeToNodes(byte[] bytes) throws IOException {
     return deserializeToNodes(new ByteArrayInputStream(bytes));
   }
 
-    /**
-     * Deserializes the given byte array into a {@code SerializationChunk} instance.
-     *
-     * @param bytes The byte array representing serialized data. It must not be null.
-     * @return The deserialized {@code SerializationChunk} instance.
-     * @throws IOException If an I/O error occurs during the deserialization process.
-     */
+  /**
+   * Deserializes the given byte array into a {@code SerializationChunk} instance.
+   *
+   * @param bytes The byte array representing serialized data. It must not be null.
+   * @return The deserialized {@code SerializationChunk} instance.
+   * @throws IOException If an I/O error occurs during the deserialization process.
+   */
   public SerializationChunk deserializeToChunk(byte[] bytes) throws IOException {
     return DirectProtoBufDeserializer.deserialize(bytes, serializeEmptyFeatures);
   }

@@ -14,8 +14,8 @@ import java.util.*;
  *
  * <ol>
  *   <li>Read all string, language, and meta-pointer fields; skip node bodies.
- *   <li>Resolve the index tables, then read only the node fields inline using
- *       {@code pushLimit}/{@code popLimit} — no per-node {@code byte[]} allocation.
+ *   <li>Resolve the index tables, then read only the node fields inline using {@code
+ *       pushLimit}/{@code popLimit} — no per-node {@code byte[]} allocation.
  * </ol>
  *
  * <p>For {@link InputStream} input the stream is first drained into a single {@code byte[]}, then
@@ -178,9 +178,9 @@ final class DirectProtoBufDeserializer {
   // ---- Node decoding ----
 
   /**
-   * Reads a single PBNode body from {@code cis} (already limited by the caller via
-   * {@code pushLimit}) and converts it directly to a {@link SerializedClassifierInstance}.
-   * No intermediate byte[] or CodedInputStream is allocated.
+   * Reads a single PBNode body from {@code cis} (already limited by the caller via {@code
+   * pushLimit}) and converts it directly to a {@link SerializedClassifierInstance}. No intermediate
+   * byte[] or CodedInputStream is allocated.
    */
   private static SerializedClassifierInstance readNodeInline(
       CodedInputStream cis,

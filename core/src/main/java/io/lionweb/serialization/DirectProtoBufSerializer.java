@@ -125,7 +125,7 @@ final class DirectProtoBufSerializer {
     // Parallel to state.metaPointers (0-indexed)
     final int[] mpBodySizes;
     final int[] mpLiLanguage; // language index for each meta-pointer
-    final int[] mpSiKey;      // key string index for each meta-pointer
+    final int[] mpSiKey; // key string index for each meta-pointer
 
     // Parallel to state.languages (1-indexed; [i] corresponds to languages[i+1])
     final int[] langBodySizes;
@@ -146,10 +146,11 @@ final class DirectProtoBufSerializer {
       for (int i = 0; i < mpCount; i++) {
         MetaPointer mp = state.metaPointers.get(i);
         // At this point all entries are guaranteed to be in the maps; use get() not getOrDefault()
-        int li = mp.getLanguageVersion() != null
-            ? requireIndex(state.languageIndex, mp.getLanguageVersion(), "LanguageVersion") : 0;
-        int sk = mp.getKey() != null
-            ? requireIndex(state.stringIndex, mp.getKey(), "string") : 0;
+        int li =
+            mp.getLanguageVersion() != null
+                ? requireIndex(state.languageIndex, mp.getLanguageVersion(), "LanguageVersion")
+                : 0;
+        int sk = mp.getKey() != null ? requireIndex(state.stringIndex, mp.getKey(), "string") : 0;
         mpLiLanguage[i] = li;
         mpSiKey[i] = sk;
         mpBodySizes[i] = uint32FieldSize(li) + uint32FieldSize(sk);
@@ -161,10 +162,11 @@ final class DirectProtoBufSerializer {
       langSiVersion = new int[langCount];
       for (int i = 0; i < langCount; i++) {
         LanguageVersion lv = state.languages.get(i + 1);
-        int sk = lv.getKey() != null
-            ? requireIndex(state.stringIndex, lv.getKey(), "string") : 0;
-        int sv = lv.getVersion() != null
-            ? requireIndex(state.stringIndex, lv.getVersion(), "string") : 0;
+        int sk = lv.getKey() != null ? requireIndex(state.stringIndex, lv.getKey(), "string") : 0;
+        int sv =
+            lv.getVersion() != null
+                ? requireIndex(state.stringIndex, lv.getVersion(), "string")
+                : 0;
         langSiKey[i] = sk;
         langSiVersion[i] = sv;
         langBodySizes[i] = uint32FieldSize(sk) + uint32FieldSize(sv);
@@ -224,7 +226,8 @@ final class DirectProtoBufSerializer {
     plan.siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
 
     // field 2: mpi_classifier
-    plan.mpiClassifier = n.getClassifier() != null ? state.metaPointerIndexer(n.getClassifier()) : 0;
+    plan.mpiClassifier =
+        n.getClassifier() != null ? state.metaPointerIndexer(n.getClassifier()) : 0;
 
     int bodySize = uint32FieldSize(plan.siId) + uint32FieldSize(plan.mpiClassifier);
 
@@ -319,7 +322,8 @@ final class DirectProtoBufSerializer {
             SerializedReferenceValue.Entry entry = entries.get(k);
             // Match legacy: referred indexed before resolveInfo
             int sr = entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
-            int sri = entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
+            int sri =
+                entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
             int rvBody = uint32FieldSize(sri) + uint32FieldSize(sr);
             siResolveInfo[k] = sri;
             siReferred[k] = sr;
