@@ -240,7 +240,7 @@ final class DirectProtoBufDeserializer {
                 // packed repeated uint32 si_children
                 int packedLen = cis.readRawVarint32();
                 int packedOldLimit = cis.pushLimit(packedLen);
-                children = new ArrayList<>();
+                children = new ArrayList<>(Math.max(4, packedLen));
                 while (!cis.isAtEnd()) {
                   int childIdx = cis.readRawVarint32();
                   if (childIdx == 0) {
@@ -268,7 +268,7 @@ final class DirectProtoBufDeserializer {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
             int mpiIndex = 0;
-            List<SerializedReferenceValue.Entry> entries = new ArrayList<>();
+            List<SerializedReferenceValue.Entry> entries = null;
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
               int fi = innerTag >>> 3;
@@ -287,6 +287,7 @@ final class DirectProtoBufDeserializer {
                   else cis.skipField(rvTag);
                 }
                 cis.popLimit(rvOldLimit);
+                if (entries == null) entries = new ArrayList<>();
                 SerializedReferenceValue.Entry entry = new SerializedReferenceValue.Entry();
                 entry.setReference(safeGet(strings, siReferred));
                 entry.setResolveInfo(safeGet(strings, siResolveInfo));
@@ -296,6 +297,7 @@ final class DirectProtoBufDeserializer {
               }
             }
             cis.popLimit(oldLimit);
+            if (entries == null) entries = Collections.emptyList();
             if (serializeEmptyFeatures || !entries.isEmpty()) {
               MetaPointer mp = safeGet(metaPointers, mpiIndex);
               sci.unsafeAppendReferenceValue(new SerializedReferenceValue(mp, entries));

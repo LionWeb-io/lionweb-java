@@ -304,6 +304,15 @@ tasks.register<Test>("performanceTest") {
     }
 }
 
+tasks.register<JavaExec>("jmhBenchmark") {
+    group = "Verification"
+    description = "Runs JMH benchmarks in src/performanceTest/java"
+    dependsOn("performanceTestClasses")
+    classpath = performanceTestSourceSet.runtimeClasspath
+    mainClass.set("org.openjdk.jmh.Main")
+    args = listOf("ProtoBufBytesBenchmark", "-prof", "gc")
+}
+
 idea {
     module {
         testSources.from(performanceTestSourceSet.java.srcDirs)

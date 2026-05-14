@@ -1,11 +1,7 @@
 package io.lionweb.serialization;
 
-import io.lionweb.LionWebVersion;
-import io.lionweb.model.Node;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.openjdk.jmh.annotations.*;
@@ -60,14 +56,9 @@ public class ProtoBufBytesBenchmark {
       json = reader.lines().collect(Collectors.joining("\n"));
     }
 
-    JsonSerialization setupJs =
-        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
-    List<Node> nodes = setupJs.deserializeToNodes(json);
-
+    // Use low-level deserialization to stay at SerializationChunk level (no language registration)
+    chunk = new LowLevelJsonSerialization().deserializeSerializationBlock(json);
     pbSerialization = SerializationProvider.getStandardProtoBufSerialization();
-
-    // Build the SerializationChunk once; both benchmarks reuse it
-    chunk = pbSerialization.serializeNodesToSerializationChunk(new ArrayList<>(nodes));
 
     // Pre-serialize so deserialization benchmarks measure only the parsing side
     serializedBytes = DirectProtoBufSerializer.serialize(chunk, true);

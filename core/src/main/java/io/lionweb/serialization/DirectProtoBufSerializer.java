@@ -89,29 +89,98 @@ final class DirectProtoBufSerializer {
   }
 
   /**
-   * Resolved integer indexes and pre-computed body sizes for a single node. Built once; used by
-   * both the size-computation phase and the write phase without any map lookups.
+   * Flat serialization plan for all nodes. Replaces the per-node {@code NodePlan[]} object graph
+   * with a single struct of parallel int[] arrays for improved cache locality and reduced GC
+   * pressure.
+   *
+   * <p>Node-level data (one entry per node) is stored in parallel arrays indexed by node index.
+   * Feature data (properties, containments, references, annotations) is stored in flat arrays; each
+   * node has a start index and count that slice into the relevant flat arrays.
    */
-  static final class NodePlan {
-    int siId, mpiClassifier, siParent, bodySize;
+  static final class SerializationPlan {
+    int nodeCount;
 
-    // Properties: arrays of length propCount (null when propCount == 0)
-    int propCount;
-    int[] propMpi, propSiValue, propBodySize;
+    // Per-node arrays (length == nodeCount)
+    int[] nodeSiId;
+    int[] nodeMpiClassifier;
+    int[] nodeSiParent;
+    int[] nodeBodySize;
 
-    // Containments: arrays of length contCount (null when contCount == 0)
-    int contCount;
-    int[] contMpi, contBodySize, contPackedRawSize;
-    int[][] contChildIndexes; // [contCount][childCount per containment]
+    int[] nodePropStart;
+    int[] nodePropCount;
 
-    // References: arrays of length refCount (null when refCount == 0)
-    int refCount;
-    int[] refMpi, refBodySize;
-    int[][] refSiResolveInfo, refSiReferred, refEntryBodySize;
+    int[] nodeContStart;
+    int[] nodeContCount;
 
-    // Annotations (null when there are no annotations)
-    int[] annotationIndexes;
-    int annotPackedRawSize; // sum of varintSize(annotIdx) — used as the packed-field length prefix
+    int[] nodeRefStart;
+    int[] nodeRefCount;
+
+    int[] nodeAnnotStart;
+    int[] nodeAnnotCount;
+    int[] nodeAnnotPackedRawSize;
+
+    // Flat property arrays
+    int[] propMpi;
+    int[] propSiValue;
+    int[] propBodySize;
+
+    // Flat containment arrays
+    int[] contMpi;
+    int[] contBodySize;
+    int[] contPackedRawSize;
+    int[] contChildStart;
+    int[] contChildCount;
+
+    // Flat children array
+    int[] childIndexes;
+
+    // Flat reference arrays
+    int[] refMpi;
+    int[] refBodySize;
+    int[] refEntryStart;
+    int[] refEntryCount;
+
+    // Flat reference entry arrays
+    int[] refEntrySiResolveInfo;
+    int[] refEntrySiReferred;
+    int[] refEntryBodySize;
+
+    // Flat annotation array
+    int[] annotIndexes;
+  }
+
+  /**
+   * Simple growable int[] builder used to construct flat arrays in one pass.
+   *
+   * <p>Callers that own the appender and use explicit start+count bounds when reading can call
+   * {@link #rawBuffer()} instead of {@link #toArray()} to avoid an {@code Arrays.copyOf} when
+   * assigning to the plan — the extra trailing zeroes are never read.
+   */
+  private static final class IntAppender {
+    int[] data;
+    int size;
+
+    IntAppender(int cap) {
+      data = new int[Math.max(cap, 4)];
+    }
+
+    void add(int v) {
+      if (size == data.length) data = Arrays.copyOf(data, data.length * 2);
+      data[size++] = v;
+    }
+
+    int size() {
+      return size;
+    }
+
+    /** Returns the internal backing array (may be larger than {@link #size()}). */
+    int[] rawBuffer() {
+      return data;
+    }
+
+    int[] toArray() {
+      return Arrays.copyOf(data, size);
+    }
   }
 
   /**
@@ -194,19 +263,16 @@ final class DirectProtoBufSerializer {
 
     SerializeState state = new SerializeState(estimatedStrings, 8, estimatedMetaPointers);
 
-    // Single traversal: populate intern tables AND build per-node plans
-    NodePlan[] plans = new NodePlan[nodeCount];
-    for (int i = 0; i < nodeCount; i++) {
-      plans[i] = buildNodePlan(state, instances.get(i), serializeEmptyFeatures);
-    }
+    // Single traversal: populate intern tables AND build flat plan
+    SerializationPlan plan = buildSerializationPlan(state, instances, serializeEmptyFeatures);
 
     CachedTables cached = new CachedTables(state);
-    int totalSize = computeChunkSize(chunk, cached, plans);
+    int totalSize = computeChunkSize(chunk, cached, plan);
 
     byte[] result = new byte[totalSize];
     CodedOutputStream cos = CodedOutputStream.newInstance(result);
     try {
-      writeChunk(cos, chunk, state, cached, plans);
+      writeChunk(cos, chunk, state, cached, plan);
     } catch (IOException e) {
       throw new IllegalStateException("Unexpected IOException writing to byte array", e);
     }
@@ -215,34 +281,74 @@ final class DirectProtoBufSerializer {
 
   // ---- Plan building ----
 
-  private static NodePlan buildNodePlan(
-      SerializeState state, SerializedClassifierInstance n, boolean serializeEmptyFeatures) {
-    NodePlan plan = new NodePlan();
+  private static SerializationPlan buildSerializationPlan(
+      SerializeState state,
+      List<SerializedClassifierInstance> instances,
+      boolean serializeEmptyFeatures) {
 
-    // field 1: si_id
-    plan.siId = n.getID() != null ? state.stringIndexer(n.getID()) : 0;
+    int nodeCount = instances.size();
 
-    // field 7: si_parent — indexed here (between id and classifier) to match legacy table ordering
-    plan.siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
+    // Per-node arrays
+    int[] nodeSiId = new int[nodeCount];
+    int[] nodeMpiClassifier = new int[nodeCount];
+    int[] nodeSiParent = new int[nodeCount];
+    int[] nodeBodySize = new int[nodeCount];
+    int[] nodePropStart = new int[nodeCount];
+    int[] nodePropCount = new int[nodeCount];
+    int[] nodeContStart = new int[nodeCount];
+    int[] nodeContCount = new int[nodeCount];
+    int[] nodeRefStart = new int[nodeCount];
+    int[] nodeRefCount = new int[nodeCount];
+    int[] nodeAnnotStart = new int[nodeCount];
+    int[] nodeAnnotCount = new int[nodeCount];
+    int[] nodeAnnotPackedRawSize = new int[nodeCount];
 
-    // field 2: mpi_classifier
-    plan.mpiClassifier =
-        n.getClassifier() != null ? state.metaPointerIndexer(n.getClassifier()) : 0;
+    // Flat feature appenders
+    IntAppender propMpi = new IntAppender(nodeCount * 3);
+    IntAppender propSiValue = new IntAppender(nodeCount * 3);
+    IntAppender propBodySize = new IntAppender(nodeCount * 3);
 
-    int bodySize = uint32FieldSize(plan.siId) + uint32FieldSize(plan.mpiClassifier);
+    IntAppender contMpi = new IntAppender(nodeCount);
+    IntAppender contBodySize = new IntAppender(nodeCount);
+    IntAppender contPackedRawSize = new IntAppender(nodeCount);
+    IntAppender contChildStart = new IntAppender(nodeCount);
+    IntAppender contChildCount = new IntAppender(nodeCount);
 
-    // field 3: properties
-    List<SerializedPropertyValue> propList = n.getProperties();
-    int propCount = 0;
-    for (SerializedPropertyValue p : propList) {
-      if (serializeEmptyFeatures || p.getValue() != null) propCount++;
-    }
-    plan.propCount = propCount;
-    if (propCount > 0) {
-      plan.propMpi = new int[propCount];
-      plan.propSiValue = new int[propCount];
-      plan.propBodySize = new int[propCount];
-      int pi = 0;
+    IntAppender childIndexes = new IntAppender(nodeCount * 2);
+
+    IntAppender refMpi = new IntAppender(nodeCount);
+    IntAppender refBodySize = new IntAppender(nodeCount);
+    IntAppender refEntryStart = new IntAppender(nodeCount);
+    IntAppender refEntryCount = new IntAppender(nodeCount);
+
+    IntAppender refEntrySiResolveInfo = new IntAppender(nodeCount);
+    IntAppender refEntrySiReferred = new IntAppender(nodeCount);
+    IntAppender refEntryBodySize = new IntAppender(nodeCount);
+
+    IntAppender annotIndexes = new IntAppender(nodeCount / 4 + 4);
+
+    for (int ni = 0; ni < nodeCount; ni++) {
+      SerializedClassifierInstance n = instances.get(ni);
+
+      // field 1: si_id
+      int siId = n.getID() != null ? state.stringIndexer(n.getID()) : 0;
+      nodeSiId[ni] = siId;
+
+      // field 7: si_parent — indexed here (between id and classifier) to match legacy table ordering
+      int siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
+      nodeSiParent[ni] = siParent;
+
+      // field 2: mpi_classifier
+      int mpiClassifier =
+          n.getClassifier() != null ? state.metaPointerIndexer(n.getClassifier()) : 0;
+      nodeMpiClassifier[ni] = mpiClassifier;
+
+      int bodySize = uint32FieldSize(siId) + uint32FieldSize(mpiClassifier);
+
+      // field 3: properties
+      List<SerializedPropertyValue> propList = n.getProperties();
+      int propStart = propMpi.size();
+      int propCnt = 0;
       for (SerializedPropertyValue p : propList) {
         String value = p.getValue();
         if (serializeEmptyFeatures || value != null) {
@@ -250,117 +356,143 @@ final class DirectProtoBufSerializer {
           int siValue = state.stringIndexer(value);
           int mpi = p.getMetaPointer() != null ? state.metaPointerIndexer(p.getMetaPointer()) : 0;
           int pb = uint32FieldSize(mpi) + uint32FieldSize(siValue);
-          plan.propMpi[pi] = mpi;
-          plan.propSiValue[pi] = siValue;
-          plan.propBodySize[pi] = pb;
+          propMpi.add(mpi);
+          propSiValue.add(siValue);
+          propBodySize.add(pb);
           bodySize += 1 + varintSize(pb) + pb;
-          pi++;
+          propCnt++;
         }
       }
-    }
+      nodePropStart[ni] = propStart;
+      nodePropCount[ni] = propCnt;
 
-    // field 4: containments
-    List<SerializedContainmentValue> contList = n.getContainments();
-    int contCount = 0;
-    for (SerializedContainmentValue c : contList) {
-      if (serializeEmptyFeatures || !c.getChildrenIds().isEmpty()) contCount++;
-    }
-    plan.contCount = contCount;
-    if (contCount > 0) {
-      plan.contMpi = new int[contCount];
-      plan.contBodySize = new int[contCount];
-      plan.contPackedRawSize = new int[contCount];
-      plan.contChildIndexes = new int[contCount][];
-      int ci = 0;
+      // field 4: containments
+      List<SerializedContainmentValue> contList = n.getContainments();
+      int contStart = contMpi.size();
+      int contCnt = 0;
       for (SerializedContainmentValue c : contList) {
         List<String> children = c.getChildrenIds();
         if (serializeEmptyFeatures || !children.isEmpty()) {
           int mpi = c.getMetaPointer() != null ? state.metaPointerIndexer(c.getMetaPointer()) : 0;
           int nChildren = children.size();
-          int[] childIdxs = new int[nChildren];
+          int childStart = childIndexes.size();
           int packed = 0;
           for (int k = 0; k < nChildren; k++) {
-            childIdxs[k] = state.stringIndexer(children.get(k));
-            packed += varintSize(childIdxs[k]);
+            int childIdx = state.stringIndexer(children.get(k));
+            childIndexes.add(childIdx);
+            packed += varintSize(childIdx);
           }
           int packedFieldSize = nChildren == 0 ? 0 : (1 + varintSize(packed) + packed);
           int cb = uint32FieldSize(mpi) + packedFieldSize;
-          plan.contMpi[ci] = mpi;
-          plan.contBodySize[ci] = cb;
-          plan.contPackedRawSize[ci] = packed; // raw byte count of the packed content
-          plan.contChildIndexes[ci] = childIdxs;
+          contMpi.add(mpi);
+          contBodySize.add(cb);
+          contPackedRawSize.add(packed);
+          contChildStart.add(childStart);
+          contChildCount.add(nChildren);
           bodySize += 1 + varintSize(cb) + cb;
-          ci++;
+          contCnt++;
         }
       }
-    }
+      nodeContStart[ni] = contStart;
+      nodeContCount[ni] = contCnt;
 
-    // field 5: references
-    List<SerializedReferenceValue> refList = n.getReferences();
-    int refCount = 0;
-    for (SerializedReferenceValue r : refList) {
-      if (serializeEmptyFeatures || !r.getValue().isEmpty()) refCount++;
-    }
-    plan.refCount = refCount;
-    if (refCount > 0) {
-      plan.refMpi = new int[refCount];
-      plan.refBodySize = new int[refCount];
-      plan.refSiResolveInfo = new int[refCount][];
-      plan.refSiReferred = new int[refCount][];
-      plan.refEntryBodySize = new int[refCount][];
-      int ri = 0;
+      // field 5: references
+      List<SerializedReferenceValue> refList = n.getReferences();
+      int refStart = refMpi.size();
+      int refCnt = 0;
       for (SerializedReferenceValue r : refList) {
         List<SerializedReferenceValue.Entry> entries = r.getValue();
         if (serializeEmptyFeatures || !entries.isEmpty()) {
           int mpi = r.getMetaPointer() != null ? state.metaPointerIndexer(r.getMetaPointer()) : 0;
           int nEntries = entries.size();
-          int[] siResolveInfo = new int[nEntries];
-          int[] siReferred = new int[nEntries];
-          int[] entryBodies = new int[nEntries];
+          int entryStart = refEntrySiResolveInfo.size();
           int refBody = uint32FieldSize(mpi);
           for (int k = 0; k < nEntries; k++) {
             SerializedReferenceValue.Entry entry = entries.get(k);
             // Match legacy: referred indexed before resolveInfo
-            int sr = entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
+            int sr =
+                entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
             int sri =
                 entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
             int rvBody = uint32FieldSize(sri) + uint32FieldSize(sr);
-            siResolveInfo[k] = sri;
-            siReferred[k] = sr;
-            entryBodies[k] = rvBody;
+            refEntrySiResolveInfo.add(sri);
+            refEntrySiReferred.add(sr);
+            refEntryBodySize.add(rvBody);
             refBody += 1 + varintSize(rvBody) + rvBody;
           }
-          plan.refMpi[ri] = mpi;
-          plan.refBodySize[ri] = refBody;
-          plan.refSiResolveInfo[ri] = siResolveInfo;
-          plan.refSiReferred[ri] = siReferred;
-          plan.refEntryBodySize[ri] = entryBodies;
+          refMpi.add(mpi);
+          refBodySize.add(refBody);
+          refEntryStart.add(entryStart);
+          refEntryCount.add(nEntries);
           bodySize += 1 + varintSize(refBody) + refBody;
-          ri++;
+          refCnt++;
         }
       }
-    }
+      nodeRefStart[ni] = refStart;
+      nodeRefCount[ni] = refCnt;
 
-    // field 6: annotations (packed repeated uint32)
-    List<String> annotations = n.getAnnotations();
-    if (!annotations.isEmpty()) {
-      int nAnn = annotations.size();
-      int[] annIdxs = new int[nAnn];
+      // field 6: annotations (packed repeated uint32)
+      List<String> annotations = n.getAnnotations();
+      int annotStart = annotIndexes.size();
+      int annotCnt = annotations.size();
       int packed = 0;
-      for (int k = 0; k < nAnn; k++) {
+      for (int k = 0; k < annotCnt; k++) {
         // null annotation IDs map to index 0 (preserved from legacy getOrDefault behavior)
-        annIdxs[k] = state.stringIndexer(annotations.get(k));
-        packed += varintSize(annIdxs[k]);
+        int annIdx = state.stringIndexer(annotations.get(k));
+        annotIndexes.add(annIdx);
+        packed += varintSize(annIdx);
       }
-      plan.annotationIndexes = annIdxs;
-      plan.annotPackedRawSize = packed;
-      bodySize += 1 + varintSize(packed) + packed;
+      nodeAnnotStart[ni] = annotStart;
+      nodeAnnotCount[ni] = annotCnt;
+      nodeAnnotPackedRawSize[ni] = packed;
+      if (annotCnt > 0) {
+        bodySize += 1 + varintSize(packed) + packed;
+      }
+
+      // field 7: si_parent size (index already set above for table-ordering purposes)
+      bodySize += uint32FieldSize(siParent);
+
+      nodeBodySize[ni] = bodySize;
     }
 
-    // field 7: si_parent size (index already set above for table-ordering purposes)
-    bodySize += uint32FieldSize(plan.siParent);
+    SerializationPlan plan = new SerializationPlan();
+    plan.nodeCount = nodeCount;
+    plan.nodeSiId = nodeSiId;
+    plan.nodeMpiClassifier = nodeMpiClassifier;
+    plan.nodeSiParent = nodeSiParent;
+    plan.nodeBodySize = nodeBodySize;
+    plan.nodePropStart = nodePropStart;
+    plan.nodePropCount = nodePropCount;
+    plan.nodeContStart = nodeContStart;
+    plan.nodeContCount = nodeContCount;
+    plan.nodeRefStart = nodeRefStart;
+    plan.nodeRefCount = nodeRefCount;
+    plan.nodeAnnotStart = nodeAnnotStart;
+    plan.nodeAnnotCount = nodeAnnotCount;
+    plan.nodeAnnotPackedRawSize = nodeAnnotPackedRawSize;
 
-    plan.bodySize = bodySize;
+    // Use rawBuffer() to skip 17 Arrays.copyOf calls — access is always bounded by start+count.
+    plan.propMpi = propMpi.rawBuffer();
+    plan.propSiValue = propSiValue.rawBuffer();
+    plan.propBodySize = propBodySize.rawBuffer();
+
+    plan.contMpi = contMpi.rawBuffer();
+    plan.contBodySize = contBodySize.rawBuffer();
+    plan.contPackedRawSize = contPackedRawSize.rawBuffer();
+    plan.contChildStart = contChildStart.rawBuffer();
+    plan.contChildCount = contChildCount.rawBuffer();
+    plan.childIndexes = childIndexes.rawBuffer();
+
+    plan.refMpi = refMpi.rawBuffer();
+    plan.refBodySize = refBodySize.rawBuffer();
+    plan.refEntryStart = refEntryStart.rawBuffer();
+    plan.refEntryCount = refEntryCount.rawBuffer();
+    plan.refEntrySiResolveInfo = refEntrySiResolveInfo.rawBuffer();
+    plan.refEntrySiReferred = refEntrySiReferred.rawBuffer();
+    plan.refEntryBodySize = refEntryBodySize.rawBuffer();
+
+    plan.annotIndexes = annotIndexes.rawBuffer();
+
     return plan;
   }
 
@@ -368,7 +500,7 @@ final class DirectProtoBufSerializer {
 
   /** Computes the total serialized byte count from cached tables and plans — no domain objects. */
   private static int computeChunkSize(
-      SerializationChunk chunk, CachedTables cached, NodePlan[] plans) {
+      SerializationChunk chunk, CachedTables cached, SerializationPlan plan) {
     int size = 0;
 
     // field 1: serialization_format_version (not in the intern table; computed ad-hoc)
@@ -395,8 +527,9 @@ final class DirectProtoBufSerializer {
     }
 
     // field 5: nodes
-    for (NodePlan plan : plans) {
-      size += 1 + varintSize(plan.bodySize) + plan.bodySize;
+    for (int ni = 0; ni < plan.nodeCount; ni++) {
+      int bodySize = plan.nodeBodySize[ni];
+      size += 1 + varintSize(bodySize) + bodySize;
     }
 
     return size;
@@ -406,14 +539,14 @@ final class DirectProtoBufSerializer {
 
   /**
    * Writes the entire chunk. No HashMap lookups; no domain-object traversal. All data comes from
-   * {@code cached} arrays and {@code plans}.
+   * {@code cached} arrays and {@code plan}.
    */
   private static void writeChunk(
       CodedOutputStream cos,
       SerializationChunk chunk,
       SerializeState state,
       CachedTables cached,
-      NodePlan[] plans)
+      SerializationPlan plan)
       throws IOException {
 
     // field 1: serialization_format_version
@@ -450,23 +583,27 @@ final class DirectProtoBufSerializer {
       if (sv != 0) cos.writeUInt32(2, sv);
     }
 
-    // field 5: nodes — written entirely from plans, zero map lookups
-    for (NodePlan plan : plans) {
+    // field 5: nodes — written entirely from plan, zero map lookups
+    for (int ni = 0; ni < plan.nodeCount; ni++) {
       cos.writeTag(5, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      cos.writeUInt32NoTag(plan.bodySize);
-      writeNodeBody(cos, plan);
+      cos.writeUInt32NoTag(plan.nodeBodySize[ni]);
+      writeNodeBody(cos, plan, ni);
     }
   }
 
-  private static void writeNodeBody(CodedOutputStream cos, NodePlan plan) throws IOException {
+  private static void writeNodeBody(CodedOutputStream cos, SerializationPlan plan, int ni)
+      throws IOException {
     // field 1: si_id
-    if (plan.siId != 0) cos.writeUInt32(1, plan.siId);
+    int siId = plan.nodeSiId[ni];
+    if (siId != 0) cos.writeUInt32(1, siId);
 
     // field 2: mpi_classifier
-    if (plan.mpiClassifier != 0) cos.writeUInt32(2, plan.mpiClassifier);
+    int mpiClassifier = plan.nodeMpiClassifier[ni];
+    if (mpiClassifier != 0) cos.writeUInt32(2, mpiClassifier);
 
     // field 3: properties
-    for (int i = 0; i < plan.propCount; i++) {
+    int propEnd = plan.nodePropStart[ni] + plan.nodePropCount[ni];
+    for (int i = plan.nodePropStart[ni]; i < propEnd; i++) {
       int bodySize = plan.propBodySize[i];
       cos.writeTag(3, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(bodySize);
@@ -477,48 +614,56 @@ final class DirectProtoBufSerializer {
     }
 
     // field 4: containments
-    for (int i = 0; i < plan.contCount; i++) {
+    int contEnd = plan.nodeContStart[ni] + plan.nodeContCount[ni];
+    for (int i = plan.nodeContStart[ni]; i < contEnd; i++) {
       cos.writeTag(4, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(plan.contBodySize[i]);
       int mpi = plan.contMpi[i];
       if (mpi != 0) cos.writeUInt32(1, mpi);
-      int[] childIdxs = plan.contChildIndexes[i];
-      if (childIdxs.length > 0) {
+      int nChildren = plan.contChildCount[i];
+      if (nChildren > 0) {
         cos.writeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(plan.contPackedRawSize[i]);
-        for (int childIdx : childIdxs) cos.writeUInt32NoTag(childIdx);
+        int childEnd = plan.contChildStart[i] + nChildren;
+        for (int k = plan.contChildStart[i]; k < childEnd; k++) {
+          cos.writeUInt32NoTag(plan.childIndexes[k]);
+        }
       }
     }
 
     // field 5: references
-    for (int i = 0; i < plan.refCount; i++) {
+    int refEnd = plan.nodeRefStart[ni] + plan.nodeRefCount[ni];
+    for (int i = plan.nodeRefStart[ni]; i < refEnd; i++) {
       cos.writeTag(5, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(plan.refBodySize[i]);
       int mpi = plan.refMpi[i];
       if (mpi != 0) cos.writeUInt32(1, mpi);
-      int[] siResolveInfo = plan.refSiResolveInfo[i];
-      int[] siReferred = plan.refSiReferred[i];
-      int[] entryBodies = plan.refEntryBodySize[i];
-      for (int k = 0; k < siReferred.length; k++) {
-        int rvBody = entryBodies[k];
+      int entryEnd = plan.refEntryStart[i] + plan.refEntryCount[i];
+      for (int k = plan.refEntryStart[i]; k < entryEnd; k++) {
+        int rvBody = plan.refEntryBodySize[k];
         cos.writeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(rvBody);
-        int sri = siResolveInfo[k];
-        int sr = siReferred[k];
+        int sri = plan.refEntrySiResolveInfo[k];
+        int sr = plan.refEntrySiReferred[k];
         if (sri != 0) cos.writeUInt32(1, sri);
         if (sr != 0) cos.writeUInt32(2, sr);
       }
     }
 
     // field 6: si_annotations (packed repeated uint32)
-    if (plan.annotationIndexes != null) {
+    int annotCnt = plan.nodeAnnotCount[ni];
+    if (annotCnt > 0) {
       cos.writeTag(6, WireFormat.WIRETYPE_LENGTH_DELIMITED);
-      cos.writeUInt32NoTag(plan.annotPackedRawSize);
-      for (int annIdx : plan.annotationIndexes) cos.writeUInt32NoTag(annIdx);
+      cos.writeUInt32NoTag(plan.nodeAnnotPackedRawSize[ni]);
+      int annotEnd = plan.nodeAnnotStart[ni] + annotCnt;
+      for (int k = plan.nodeAnnotStart[ni]; k < annotEnd; k++) {
+        cos.writeUInt32NoTag(plan.annotIndexes[k]);
+      }
     }
 
     // field 7: si_parent
-    if (plan.siParent != 0) cos.writeUInt32(7, plan.siParent);
+    int siParent = plan.nodeSiParent[ni];
+    if (siParent != 0) cos.writeUInt32(7, siParent);
   }
 
   // ---- Helpers ----
