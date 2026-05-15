@@ -1,5 +1,7 @@
 package io.lionweb.serialization;
 
+import static io.lionweb.serialization.ProtoBufFieldNumbers.*;
+
 import com.google.protobuf.CodedOutputStream;
 import com.google.protobuf.WireFormat;
 import io.lionweb.serialization.data.*;
@@ -539,40 +541,40 @@ final class DirectProtoBufSerializer {
     // field 1: serialization_format_version
     String version = chunk.getSerializationFormatVersion();
     if (version != null && !version.isEmpty()) {
-      cos.writeString(1, version);
+      cos.writeString(CHUNK_SERIALIZATION_FORMAT_VERSION, version);
     }
 
     // field 2: interned_strings
     List<String> strings = state.strings;
     for (int i = 1; i < strings.size(); i++) {
-      cos.writeString(2, strings.get(i));
+      cos.writeString(CHUNK_INTERNED_STRINGS, strings.get(i));
     }
 
     // field 3: interned_meta_pointers — use cached integer arrays, no map lookups
     int mpCount = cached.mpBodySizes.length;
     for (int i = 0; i < mpCount; i++) {
-      cos.writeTag(3, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(CHUNK_INTERNED_META_POINTERS, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(cached.mpBodySizes[i]);
       int li = cached.mpLiLanguage[i];
       int sk = cached.mpSiKey[i];
-      if (li != 0) cos.writeUInt32(1, li);
-      if (sk != 0) cos.writeUInt32(2, sk);
+      if (li != 0) cos.writeUInt32(META_POINTER_LI_LANGUAGE, li);
+      if (sk != 0) cos.writeUInt32(META_POINTER_SI_KEY, sk);
     }
 
     // field 4: interned_languages — use cached integer arrays, no map lookups
     int langCount = cached.langBodySizes.length;
     for (int i = 0; i < langCount; i++) {
-      cos.writeTag(4, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(CHUNK_INTERNED_LANGUAGES, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(cached.langBodySizes[i]);
       int sk = cached.langSiKey[i];
       int sv = cached.langSiVersion[i];
-      if (sk != 0) cos.writeUInt32(1, sk);
-      if (sv != 0) cos.writeUInt32(2, sv);
+      if (sk != 0) cos.writeUInt32(LANGUAGE_SI_KEY, sk);
+      if (sv != 0) cos.writeUInt32(LANGUAGE_SI_VERSION, sv);
     }
 
     // field 5: nodes — written entirely from plan, zero map lookups
     for (int ni = 0; ni < plan.nodeCount; ni++) {
-      cos.writeTag(5, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(CHUNK_NODES, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(plan.nodeBodySize[ni]);
       writeNodeBody(cos, plan, ni);
     }
@@ -582,34 +584,34 @@ final class DirectProtoBufSerializer {
       throws IOException {
     // field 1: si_id
     int siId = plan.nodeSiId[ni];
-    if (siId != 0) cos.writeUInt32(1, siId);
+    if (siId != 0) cos.writeUInt32(NODE_SI_ID, siId);
 
     // field 2: mpi_classifier
     int mpiClassifier = plan.nodeMpiClassifier[ni];
-    if (mpiClassifier != 0) cos.writeUInt32(2, mpiClassifier);
+    if (mpiClassifier != 0) cos.writeUInt32(NODE_MPI_CLASSIFIER, mpiClassifier);
 
     // field 3: properties
     int propEnd = plan.nodePropStart[ni] + plan.nodePropCount[ni];
     for (int i = plan.nodePropStart[ni]; i < propEnd; i++) {
       int bodySize = plan.propBodySize[i];
-      cos.writeTag(3, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(NODE_PROPERTIES, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(bodySize);
       int mpi = plan.propMpi[i];
       int sv = plan.propSiValue[i];
-      if (mpi != 0) cos.writeUInt32(1, mpi);
-      if (sv != 0) cos.writeUInt32(2, sv);
+      if (mpi != 0) cos.writeUInt32(PROPERTY_MPI, mpi);
+      if (sv != 0) cos.writeUInt32(PROPERTY_SI_VALUE, sv);
     }
 
     // field 4: containments
     int contEnd = plan.nodeContStart[ni] + plan.nodeContCount[ni];
     for (int i = plan.nodeContStart[ni]; i < contEnd; i++) {
-      cos.writeTag(4, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(NODE_CONTAINMENTS, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(plan.contBodySize[i]);
       int mpi = plan.contMpi[i];
-      if (mpi != 0) cos.writeUInt32(1, mpi);
+      if (mpi != 0) cos.writeUInt32(CONTAINMENT_MPI, mpi);
       int nChildren = plan.contChildCount[i];
       if (nChildren > 0) {
-        cos.writeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+        cos.writeTag(CONTAINMENT_SI_CHILDREN, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(plan.contPackedRawSize[i]);
         int childEnd = plan.contChildStart[i] + nChildren;
         for (int k = plan.contChildStart[i]; k < childEnd; k++) {
@@ -621,26 +623,26 @@ final class DirectProtoBufSerializer {
     // field 5: references
     int refEnd = plan.nodeRefStart[ni] + plan.nodeRefCount[ni];
     for (int i = plan.nodeRefStart[ni]; i < refEnd; i++) {
-      cos.writeTag(5, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(NODE_REFERENCES, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(plan.refBodySize[i]);
       int mpi = plan.refMpi[i];
-      if (mpi != 0) cos.writeUInt32(1, mpi);
+      if (mpi != 0) cos.writeUInt32(REFERENCE_MPI, mpi);
       int entryEnd = plan.refEntryStart[i] + plan.refEntryCount[i];
       for (int k = plan.refEntryStart[i]; k < entryEnd; k++) {
         int rvBody = plan.refEntryBodySize[k];
-        cos.writeTag(2, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+        cos.writeTag(REFERENCE_ENTRIES, WireFormat.WIRETYPE_LENGTH_DELIMITED);
         cos.writeUInt32NoTag(rvBody);
         int sri = plan.refEntrySiResolveInfo[k];
         int sr = plan.refEntrySiReferred[k];
-        if (sri != 0) cos.writeUInt32(1, sri);
-        if (sr != 0) cos.writeUInt32(2, sr);
+        if (sri != 0) cos.writeUInt32(REFERENCE_VALUE_SI_RESOLVE_INFO, sri);
+        if (sr != 0) cos.writeUInt32(REFERENCE_VALUE_SI_REFERRED, sr);
       }
     }
 
     // field 6: si_annotations (packed repeated uint32)
     int annotCnt = plan.nodeAnnotCount[ni];
     if (annotCnt > 0) {
-      cos.writeTag(6, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+      cos.writeTag(NODE_SI_ANNOTATIONS, WireFormat.WIRETYPE_LENGTH_DELIMITED);
       cos.writeUInt32NoTag(plan.nodeAnnotPackedRawSize[ni]);
       int annotEnd = plan.nodeAnnotStart[ni] + annotCnt;
       for (int k = plan.nodeAnnotStart[ni]; k < annotEnd; k++) {
@@ -650,7 +652,7 @@ final class DirectProtoBufSerializer {
 
     // field 7: si_parent
     int siParent = plan.nodeSiParent[ni];
-    if (siParent != 0) cos.writeUInt32(7, siParent);
+    if (siParent != 0) cos.writeUInt32(NODE_SI_PARENT, siParent);
   }
 
   /** UTF-8 byte count for {@code s} without allocating a byte array. */

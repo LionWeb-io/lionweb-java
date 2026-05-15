@@ -1,5 +1,7 @@
 package io.lionweb.serialization;
 
+import static io.lionweb.serialization.ProtoBufFieldNumbers.*;
+
 import com.google.protobuf.CodedInputStream;
 import io.lionweb.serialization.data.*;
 import java.io.*;
@@ -65,15 +67,15 @@ final class DirectProtoBufDeserializer {
     while ((tag = cis.readTag()) != 0) {
       int f = tag >>> 3;
       switch (f) {
-        case 1: // serialization_format_version
+        case CHUNK_SERIALIZATION_FORMAT_VERSION:
           version = cis.readString();
           break;
 
-        case 2: // interned_strings
+        case CHUNK_INTERNED_STRINGS:
           strings.add(cis.readString());
           break;
 
-        case 3: // interned_meta_pointers
+        case CHUNK_INTERNED_META_POINTERS:
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
@@ -81,8 +83,8 @@ final class DirectProtoBufDeserializer {
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
               int fi = innerTag >>> 3;
-              if (fi == 1) liLanguage = cis.readRawVarint32();
-              else if (fi == 2) siKey = cis.readRawVarint32();
+              if (fi == META_POINTER_LI_LANGUAGE) liLanguage = cis.readRawVarint32();
+              else if (fi == META_POINTER_SI_KEY) siKey = cis.readRawVarint32();
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
@@ -93,7 +95,7 @@ final class DirectProtoBufDeserializer {
             break;
           }
 
-        case 4: // interned_languages
+        case CHUNK_INTERNED_LANGUAGES:
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
@@ -101,8 +103,8 @@ final class DirectProtoBufDeserializer {
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
               int fi = innerTag >>> 3;
-              if (fi == 1) siKeyL = cis.readRawVarint32();
-              else if (fi == 2) siVersionL = cis.readRawVarint32();
+              if (fi == LANGUAGE_SI_KEY) siKeyL = cis.readRawVarint32();
+              else if (fi == LANGUAGE_SI_VERSION) siVersionL = cis.readRawVarint32();
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
@@ -115,7 +117,7 @@ final class DirectProtoBufDeserializer {
             break;
           }
 
-        case 5: // nodes — skip in pass 1
+        case CHUNK_NODES: // skip in pass 1
           cis.skipField(tag);
           break;
 
@@ -157,7 +159,7 @@ final class DirectProtoBufDeserializer {
     cis = CodedInputStream.newInstance(bytes);
     while ((tag = cis.readTag()) != 0) {
       int f = tag >>> 3;
-      if (f == 5) {
+      if (f == CHUNK_NODES) {
         int len = cis.readRawVarint32();
         int oldLimit = cis.pushLimit(len);
         chunk.addClassifierInstance(
@@ -192,15 +194,15 @@ final class DirectProtoBufDeserializer {
     while ((tag = cis.readTag()) != 0) {
       int fieldNumber = tag >>> 3;
       switch (fieldNumber) {
-        case 1: // si_id
+        case NODE_SI_ID:
           siId = cis.readRawVarint32();
           break;
 
-        case 2: // mpi_classifier
+        case NODE_MPI_CLASSIFIER:
           mpiClassifier = cis.readRawVarint32();
           break;
 
-        case 3: // PBProperty embedded message
+        case NODE_PROPERTIES: // PBProperty embedded message
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
@@ -208,8 +210,8 @@ final class DirectProtoBufDeserializer {
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
               int fi = innerTag >>> 3;
-              if (fi == 1) mpiIndex = cis.readRawVarint32();
-              else if (fi == 2) siValue = cis.readRawVarint32();
+              if (fi == PROPERTY_MPI) mpiIndex = cis.readRawVarint32();
+              else if (fi == PROPERTY_SI_VALUE) siValue = cis.readRawVarint32();
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
@@ -221,7 +223,7 @@ final class DirectProtoBufDeserializer {
             break;
           }
 
-        case 4: // PBContainment embedded message
+        case NODE_CONTAINMENTS: // PBContainment embedded message
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
@@ -230,9 +232,9 @@ final class DirectProtoBufDeserializer {
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
               int fi = innerTag >>> 3;
-              if (fi == 1) {
+              if (fi == CONTAINMENT_MPI) {
                 mpiIndex = cis.readRawVarint32();
-              } else if (fi == 2) {
+              } else if (fi == CONTAINMENT_SI_CHILDREN) {
                 // packed repeated uint32 si_children
                 int packedLen = cis.readRawVarint32();
                 int packedOldLimit = cis.pushLimit(packedLen);
@@ -259,7 +261,7 @@ final class DirectProtoBufDeserializer {
             break;
           }
 
-        case 5: // PBReference embedded message
+        case NODE_REFERENCES: // PBReference embedded message
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
@@ -268,9 +270,9 @@ final class DirectProtoBufDeserializer {
             int innerTag;
             while ((innerTag = cis.readTag()) != 0) {
               int fi = innerTag >>> 3;
-              if (fi == 1) {
+              if (fi == REFERENCE_MPI) {
                 mpiIndex = cis.readRawVarint32();
-              } else if (fi == 2) {
+              } else if (fi == REFERENCE_ENTRIES) {
                 // PBReferenceValue embedded message
                 int rvLen = cis.readRawVarint32();
                 int rvOldLimit = cis.pushLimit(rvLen);
@@ -278,8 +280,8 @@ final class DirectProtoBufDeserializer {
                 int rvTag;
                 while ((rvTag = cis.readTag()) != 0) {
                   int rf = rvTag >>> 3;
-                  if (rf == 1) siResolveInfo = cis.readRawVarint32();
-                  else if (rf == 2) siReferred = cis.readRawVarint32();
+                  if (rf == REFERENCE_VALUE_SI_RESOLVE_INFO) siResolveInfo = cis.readRawVarint32();
+                  else if (rf == REFERENCE_VALUE_SI_REFERRED) siReferred = cis.readRawVarint32();
                   else cis.skipField(rvTag);
                 }
                 cis.popLimit(rvOldLimit);
@@ -301,7 +303,7 @@ final class DirectProtoBufDeserializer {
             break;
           }
 
-        case 6: // si_annotations (packed repeated uint32)
+        case NODE_SI_ANNOTATIONS: // packed repeated uint32
           {
             int len = cis.readRawVarint32();
             int oldLimit = cis.pushLimit(len);
@@ -313,7 +315,7 @@ final class DirectProtoBufDeserializer {
             break;
           }
 
-        case 7: // si_parent
+        case NODE_SI_PARENT:
           siParent = cis.readRawVarint32();
           break;
 
