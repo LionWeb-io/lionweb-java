@@ -82,6 +82,9 @@ fun SerializedClassifierInstance.subchunk(chunk: SerializationChunk): Serializat
         n.children.forEach {
             grow(chunk.classifierInstancesByID[it]!!)
         }
+        n.annotations.forEach {
+            grow(chunk.classifierInstancesByID[it]!!)
+        }
     }
     grow(this)
     val lwVersion = LionWebVersion.fromValue(chunk.serializationFormatVersion)

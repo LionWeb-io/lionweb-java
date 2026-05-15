@@ -334,7 +334,8 @@ final class DirectProtoBufSerializer {
       int siId = n.getID() != null ? state.stringIndexer(n.getID()) : 0;
       nodeSiId[ni] = siId;
 
-      // field 7: si_parent — indexed here (between id and classifier) to match legacy table ordering
+      // field 7: si_parent — indexed here (between id and classifier) to match legacy table
+      // ordering
       int siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
       nodeSiParent[ni] = siParent;
 
@@ -410,8 +411,7 @@ final class DirectProtoBufSerializer {
           for (int k = 0; k < nEntries; k++) {
             SerializedReferenceValue.Entry entry = entries.get(k);
             // Match legacy: referred indexed before resolveInfo
-            int sr =
-                entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
+            int sr = entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
             int sri =
                 entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
             int rvBody = uint32FieldSize(sri) + uint32FieldSize(sr);
