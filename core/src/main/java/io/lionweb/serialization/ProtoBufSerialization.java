@@ -45,7 +45,10 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return DirectProtoBufDeserializer.deserialize(bytes, serializeEmptyFeatures);
   }
 
-  /** Legacy deserialization path via protobuf-generated PBChunk — used for benchmarking only. */
+  /**
+   * Legacy deserialization path via protobuf-generated PBChunk — used for benchmarking only. To be
+   * removed in the future
+   */
   public SerializationChunk deserializeToChunkViaPbChunk(byte[] bytes) throws IOException {
     PBChunk pbChunk = PBChunk.parseFrom(new ByteArrayInputStream(bytes));
     return deserializeSerializationChunk(pbChunk);

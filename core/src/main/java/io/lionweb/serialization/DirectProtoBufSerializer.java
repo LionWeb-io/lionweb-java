@@ -9,23 +9,24 @@ import java.util.*;
 /**
  * Serializes a {@link SerializationChunk} directly to the protobuf binary format without creating
  * intermediate protobuf message objects (PBChunk, PBNode, etc.).
- *
- * <p>Strategy:
- *
- * <ol>
- *   <li>Traverse all nodes once to populate string / language / meta-pointer intern tables and
- *       build a {@link SerializationPlan} containing every integer index and pre-computed body size
- *       needed for writing.
- *   <li>Build a {@link CachedTables} containing UTF-8 lengths, meta-pointer body sizes, and
- *       language body sizes derived from the now-complete intern tables.
- *   <li>Compute the exact total byte count without touching domain objects.
- *   <li>Allocate one {@code byte[]} and write from the plan — zero HashMap lookups, zero domain-
- *       object traversal.
- * </ol>
- *
- * <p>The output is byte-for-byte identical to standard protobuf serialization of a PBChunk message.
  */
 final class DirectProtoBufSerializer {
+  // <p>Strategy:
+  //
+  // <ol>
+  //   <li>Traverse all nodes once to populate string / language / meta-pointer intern tables and
+  //       build a {@link SerializationPlan} containing every integer index and pre-computed body
+  // size
+  //       needed for writing.
+  //   <li>Build a {@link CachedTables} containing UTF-8 lengths, meta-pointer body sizes, and
+  //       language body sizes derived from the now-complete intern tables.
+  //   <li>Compute the exact total byte count without touching domain objects.
+  //   <li>Allocate one {@code byte[]} and write from the plan — zero HashMap lookups, zero domain-
+  //       object traversal.
+  // </ol>
+  //
+  // <p>The output is byte-for-byte identical to standard protobuf serialization of a PBChunk
+  // message.
 
   private DirectProtoBufSerializer() {}
 
@@ -89,9 +90,8 @@ final class DirectProtoBufSerializer {
   }
 
   /**
-   * Flat serialization plan for all nodes. Replaces the per-node {@code NodePlan[]} object graph
-   * with a single struct of parallel int[] arrays for improved cache locality and reduced GC
-   * pressure.
+   * Flat serialization plan for all nodes. Provides a single struct of parallel int[] arrays for
+   * improved cache locality and reduced GC pressure.
    *
    * <p>Node-level data (one entry per node) is stored in parallel arrays indexed by node index.
    * Feature data (properties, containments, references, annotations) is stored in flat arrays; each
@@ -177,10 +177,6 @@ final class DirectProtoBufSerializer {
     int[] rawBuffer() {
       return data;
     }
-
-    int[] toArray() {
-      return Arrays.copyOf(data, size);
-    }
   }
 
   /**
@@ -251,8 +247,6 @@ final class DirectProtoBufSerializer {
     }
   }
 
-  // ---- Public entry point ----
-
   static byte[] serialize(SerializationChunk chunk, boolean serializeEmptyFeatures) {
     List<SerializedClassifierInstance> instances = chunk.getClassifierInstances();
     int nodeCount = instances.size();
@@ -278,8 +272,6 @@ final class DirectProtoBufSerializer {
     }
     return result;
   }
-
-  // ---- Plan building ----
 
   private static SerializationPlan buildSerializationPlan(
       SerializeState state,
@@ -471,7 +463,6 @@ final class DirectProtoBufSerializer {
     plan.nodeAnnotCount = nodeAnnotCount;
     plan.nodeAnnotPackedRawSize = nodeAnnotPackedRawSize;
 
-    // Use rawBuffer() to skip 17 Arrays.copyOf calls — access is always bounded by start+count.
     plan.propMpi = propMpi.rawBuffer();
     plan.propSiValue = propSiValue.rawBuffer();
     plan.propBodySize = propBodySize.rawBuffer();
@@ -495,8 +486,6 @@ final class DirectProtoBufSerializer {
 
     return plan;
   }
-
-  // ---- Size computation ----
 
   /** Computes the total serialized byte count from cached tables and plans — no domain objects. */
   private static int computeChunkSize(
@@ -534,8 +523,6 @@ final class DirectProtoBufSerializer {
 
     return size;
   }
-
-  // ---- Write phase ----
 
   /**
    * Writes the entire chunk. No HashMap lookups; no domain-object traversal. All data comes from
@@ -665,8 +652,6 @@ final class DirectProtoBufSerializer {
     int siParent = plan.nodeSiParent[ni];
     if (siParent != 0) cos.writeUInt32(7, siParent);
   }
-
-  // ---- Helpers ----
 
   /** UTF-8 byte count for {@code s} without allocating a byte array. */
   static int utf8ByteCount(String s) {

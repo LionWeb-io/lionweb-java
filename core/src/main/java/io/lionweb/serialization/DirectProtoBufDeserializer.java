@@ -8,28 +8,25 @@ import java.util.*;
 /**
  * Deserializes protobuf binary data directly into a {@link SerializationChunk} without creating
  * intermediate protobuf message objects (PBChunk, PBNode, etc.).
- *
- * <p>For {@code byte[]} input the implementation uses two passes over the <em>same</em> backing
- * array (no copy):
- *
- * <ol>
- *   <li>Read all string, language, and meta-pointer fields; skip node bodies.
- *   <li>Resolve the index tables, then read only the node fields inline using {@code
- *       pushLimit}/{@code popLimit} — no per-node {@code byte[]} allocation.
- * </ol>
- *
- * <p>For {@link InputStream} input the stream is first drained into a single {@code byte[]}, then
- * the same two-pass strategy is applied.
- *
- * <p>The output is semantically equivalent to what {@code PBChunk.parseFrom(bytes)} followed by
- * {@code ProtoBufSerialization.deserializeSerializationChunk(pbChunk)} would produce, but avoids
- * creating any protobuf message objects.
  */
 final class DirectProtoBufDeserializer {
+  // <p>For {@code byte[]} input the implementation uses two passes over the <em>same</em> backing
+  // array (no copy):
+  //
+  // <ol>
+  //   <li>Read all string, language, and meta-pointer fields; skip node bodies.
+  //   <li>Resolve the index tables, then read only the node fields inline using {@code
+  //       pushLimit}/{@code popLimit} — no per-node {@code byte[]} allocation.
+  // </ol>
+  //
+  // <p>For {@link InputStream} input the stream is first drained into a single {@code byte[]}, then
+  // the same two-pass strategy is applied.
+  //
+  // <p>The output is semantically equivalent to what {@code PBChunk.parseFrom(bytes)} followed by
+  // {@code ProtoBufSerialization.deserializeSerializationChunk(pbChunk)} would produce, but avoids
+  // creating any protobuf message objects.
 
   private DirectProtoBufDeserializer() {}
-
-  // ---- Public entry points ----
 
   static SerializationChunk deserialize(byte[] bytes, boolean serializeEmptyFeatures)
       throws IOException {
@@ -45,8 +42,6 @@ final class DirectProtoBufDeserializer {
     while ((n = in.read(buf)) != -1) baos.write(buf, 0, n);
     return deserializeTwoPass(baos.toByteArray(), serializeEmptyFeatures);
   }
-
-  // ---- Two-pass core ----
 
   private static SerializationChunk deserializeTwoPass(byte[] bytes, boolean serializeEmptyFeatures)
       throws IOException {
@@ -111,8 +106,9 @@ final class DirectProtoBufDeserializer {
               else cis.skipField(innerTag);
             }
             cis.popLimit(oldLimit);
-            if (langCount * 2 >= langData.length)
+            if (langCount * 2 >= langData.length) {
               langData = Arrays.copyOf(langData, langData.length * 2);
+            }
             langData[langCount * 2] = siKeyL;
             langData[langCount * 2 + 1] = siVersionL;
             langCount++;
