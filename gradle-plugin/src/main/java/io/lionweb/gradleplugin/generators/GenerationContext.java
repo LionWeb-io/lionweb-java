@@ -11,6 +11,8 @@ import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.Node;
+import org.gradle.api.logging.Logger;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -26,6 +28,7 @@ class GenerationContext {
   private final Set<LanguageGenerationConfiguration> languageConfs;
   private final Map<String, String> primitiveTypes;
   private final Map<String, String> mappings;
+  private final Map<String, String> languageClassNames;
 
   /**
    * Constructs a new {@code GenerationContext} instance with the specified set of language
@@ -37,6 +40,7 @@ class GenerationContext {
    */
   GenerationContext(@Nonnull Set<LanguageGenerationConfiguration> languageConfs) {
     this(languageConfs, Collections.emptyMap(), Collections.emptyMap());
+    System.out.println("GenerationContext constructor A");
   }
 
   /**
@@ -68,6 +72,7 @@ class GenerationContext {
                     language, generationPackage, languageClassNames.get(language.getID())))),
         primitiveTypes,
         mappings);
+      System.out.println("GenerationContext constructor B");
   }
 
   /**
@@ -89,6 +94,7 @@ class GenerationContext {
         Collections.emptyMap(),
         Collections.emptyMap(),
         Collections.emptyMap());
+      System.out.println("GenerationContext constructor C");
   }
 
   /**
@@ -112,7 +118,23 @@ class GenerationContext {
     this.languageConfs = languageConfs;
     this.primitiveTypes = primitiveTypes;
     this.mappings = mappings;
+    this.languageClassNames = Collections.emptyMap();
+      System.out.println("GenerationContext constructor D");
   }
+
+    GenerationContext(
+        @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
+        @Nonnull Map<String, String> primitiveTypes,
+        @Nonnull Map<String, String> mappings,
+        @Nonnull Map<String, String> languageClassNames) {
+        Objects.requireNonNull(languageConfs, "languageConfs should not be null");
+        Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
+        this.languageConfs = languageConfs;
+        this.primitiveTypes = primitiveTypes;
+        this.mappings = mappings;
+        this.languageClassNames = languageClassNames;
+        System.out.println("GenerationContext constructor E");
+    }
 
   /**
    * Determines whether the given {@code language} has an overridden name defined in the associated
@@ -196,14 +218,17 @@ class GenerationContext {
     } else if (language.equals(LionCore.getInstance(LionWebVersion.v2023_1))) {
       return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCore, lionWebVersion);
     } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
-      return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCore, lionWebVersion);
+        return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCore, lionWebVersion);
+    } else if (languageClassNames.containsKey(language.getName())) {
+        return CodeBlock.of("$T.getLanguage()", ClassName.bestGuess(languageClassNames.get(language.getName())));
     } else {
       if (isGeneratedLanguage(language)) {
         return CodeBlock.of(
             "$T.getInstance()",
             ClassName.get(generationPackage(language), toLanguageClassName(language, this)));
       }
-      throw new RuntimeException("Language not found: " + language.getName());
+      throw new RuntimeException("Language not found: " + language.getName() +
+          ". Language being generated: " + languageBeingGenerated.getName()+ ". Language class names: " + languageClassNames.keySet());
     }
   }
 
