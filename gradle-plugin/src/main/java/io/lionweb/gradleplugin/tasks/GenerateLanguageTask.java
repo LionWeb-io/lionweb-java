@@ -169,6 +169,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                       .map(Language::getName)
                       .collect(Collectors.joining(", ")));
     }
+    System.out.println("getLanguagesClassNames: " + getLanguagesClassNames().get());
     languageJavaCodeGenerator.generate(
         languagesToGenerate,
         getDefaultPackageName().getOrNull(),

@@ -15,6 +15,7 @@ emfEcoreVersion = "2.33.0"
 emfEcoreXmiVersion = "2.40.0"
 emfjsonVersion = "2.2.0"
 annotationsVersion = "24.0.0"
+specs = "0.6.9"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "8.3.6"}
@@ -55,3 +56,4 @@ kotest-property = { module="io.kotest:kotest-property", version.ref = "kotest" }
 testcontainers =  { module="org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit = { module="org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-pg = { module="org.testcontainers:postgresql", version.ref = "testcontainers" }
+starlasu-specs = { module = "com.strumenta.starlasu.specs:starlasuspecs-jvm", version.ref = "specs" }
