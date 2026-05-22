@@ -27,7 +27,23 @@ class GenerationContext {
 
   private final Set<LanguageGenerationConfiguration> languageConfs;
   private final Map<String, String> primitiveTypes;
+  /**
+   * Mapping from concept names to their generated names.
+   */
   private final Map<String, String> mappings;
+    /**
+     * A mapping between language identifiers and their corresponding class names.
+     *
+     * This map is used to store the fully qualified class names of different programming
+     * languages, keyed by their unique identifiers. It allows for quick lookup of the class
+     * names associated with specific languages during code generation.
+     *
+     * The keys in the map represent the language IDs, while the values correspond to the
+     * class names of the languages.
+     *
+     * This variable is immutable and must be initialized during the creation of a
+     * {@code GenerationContext} instance.
+     */
   private final Map<String, String> languageClassNames;
 
   /**
@@ -301,9 +317,11 @@ class GenerationContext {
 
   TypeName getConceptType(Concept concept) {
     if (isGeneratedLanguage(concept.getLanguage())) {
-      return ClassName.get(generationPackage(concept.getLanguage()), getGeneratedName(concept));
+        return ClassName.get(generationPackage(concept.getLanguage()), getGeneratedName(concept));
+    } else if (mappings.containsKey(concept.qualifiedName())) {
+        return ClassName.bestGuess(mappings.get(concept.qualifiedName()));
     } else {
-      throw new UnsupportedOperationException("Extended concepts are not yet implemented");
+      throw new UnsupportedOperationException("Extended concepts are not yet implemented: concept: " + concept.qualifiedName()+". Mappings: " + mappings.keySet());
     }
   }
 
