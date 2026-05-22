@@ -319,6 +319,8 @@ class GenerationContext {
       fieldType = ClassName.get(String.class);
     } else if (dataType.equals(LionCoreBuiltins.getInteger(dataType.getLionWebVersion()))) {
       fieldType = TypeName.INT;
+    } else if (dataType.equals(LionCoreBuiltins.getBoolean(dataType.getLionWebVersion()))) {
+        fieldType = TypeName.BOOLEAN;
     } else if (dataType instanceof io.lionweb.language.Enumeration) {
       fieldType = typeNameFor((Enumeration) dataType);
     } else {
