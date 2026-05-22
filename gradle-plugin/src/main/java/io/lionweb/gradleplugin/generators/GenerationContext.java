@@ -309,9 +309,11 @@ class GenerationContext {
     if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
       return ClassName.get(INamed.class);
     } else if (isGeneratedLanguage(interf.getLanguage())) {
-      return ClassName.get(generationPackage(interf.getLanguage()), getGeneratedName(interf));
+        return ClassName.get(generationPackage(interf.getLanguage()), getGeneratedName(interf));
+    } else if (mappings.containsKey(interf.qualifiedName())) {
+        return ClassName.bestGuess(mappings.get(interf.qualifiedName()));
     } else {
-      throw new UnsupportedOperationException("Implemented interfaces are not yet implemented");
+      throw new UnsupportedOperationException("Implemented interfaces are not yet implemented: interf: " + interf.qualifiedName()+". Mappings: " + mappings.keySet());
     }
   }
 
