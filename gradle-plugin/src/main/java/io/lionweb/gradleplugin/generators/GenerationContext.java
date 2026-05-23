@@ -26,14 +26,14 @@ class GenerationContext {
   private final Set<LanguageGenerationConfiguration> languageConfs;
   private final Map<String, String> primitiveTypes;
 
-  /** Mapping from concept names to their generated names. */
-  private final Map<String, String> mappings;
+  /** Mapping from classifier names to the fully qualified name of the generated class. */
+  private final Map<String, String> classifierMappings;
 
   /**
    * A mapping between language identifiers and their corresponding class names.
    *
    * <p>This map is used to store the fully qualified class names of different programming
-   * languages, keyed by their unique identifiers. It allows for quick lookup of the class names
+   * languages, keyed by their unique identifiers. It allows for a quick lookup of the class names
    * associated with specific languages during code generation.
    *
    * <p>The keys in the map represent the language IDs, while the values correspond to the class
@@ -54,7 +54,6 @@ class GenerationContext {
    */
   GenerationContext(@Nonnull Set<LanguageGenerationConfiguration> languageConfs) {
     this(languageConfs, Collections.emptyMap(), Collections.emptyMap());
-    System.out.println("GenerationContext constructor A");
   }
 
   /**
@@ -69,8 +68,8 @@ class GenerationContext {
    *     their corresponding fully qualified names; must not be null.
    * @param languageClassNames a map where the keys are language IDs and the values are the
    *     associated language class names; must not be null.
-   * @param mappings a map containing additional key-value pairs to be used during code generation;
-   *     must not be null.
+   * @param classifierMappings a map containing additional key-value pairs to be used during code
+   *     generation; must not be null.
    * @throws NullPointerException if any of the provided parameters is null.
    */
   GenerationContext(
@@ -78,15 +77,14 @@ class GenerationContext {
       @Nonnull String generationPackage,
       @Nonnull Map<String, String> primitiveTypes,
       @Nonnull Map<String, String> languageClassNames,
-      @Nonnull Map<String, String> mappings) {
+      @Nonnull Map<String, String> classifierMappings) {
     this(
         new HashSet<>(
             Arrays.asList(
                 new LanguageGenerationConfiguration(
                     language, generationPackage, languageClassNames.get(language.getID())))),
         primitiveTypes,
-        mappings);
-    System.out.println("GenerationContext constructor B");
+        classifierMappings);
   }
 
   /**
@@ -108,7 +106,6 @@ class GenerationContext {
         Collections.emptyMap(),
         Collections.emptyMap(),
         Collections.emptyMap());
-    System.out.println("GenerationContext constructor C");
   }
 
   /**
@@ -119,35 +116,33 @@ class GenerationContext {
    *     the configurations for language generation; must not be null.
    * @param primitiveTypes a map where the keys are primitive type identifiers and the values are
    *     their respective qualified names; must not be null.
-   * @param mappings a map containing additional key-value pairs used during generation; must not be
-   *     null.
+   * @param classifierMappings a map containing additional key-value pairs used during generation;
+   *     must not be null.
    * @throws NullPointerException if any of the provided parameters is null.
    */
   GenerationContext(
       @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
       @Nonnull Map<String, String> primitiveTypes,
-      @Nonnull Map<String, String> mappings) {
+      @Nonnull Map<String, String> classifierMappings) {
     Objects.requireNonNull(languageConfs, "languageConfs should not be null");
     Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
     this.languageConfs = languageConfs;
     this.primitiveTypes = primitiveTypes;
-    this.mappings = mappings;
+    this.classifierMappings = classifierMappings;
     this.languageClassNames = Collections.emptyMap();
-    System.out.println("GenerationContext constructor D");
   }
 
   GenerationContext(
       @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
       @Nonnull Map<String, String> primitiveTypes,
-      @Nonnull Map<String, String> mappings,
+      @Nonnull Map<String, String> classifierMappings,
       @Nonnull Map<String, String> languageClassNames) {
     Objects.requireNonNull(languageConfs, "languageConfs should not be null");
     Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
     this.languageConfs = languageConfs;
     this.primitiveTypes = primitiveTypes;
-    this.mappings = mappings;
+    this.classifierMappings = classifierMappings;
     this.languageClassNames = languageClassNames;
-    System.out.println("GenerationContext constructor E");
   }
 
   /**
@@ -314,28 +309,28 @@ class GenerationContext {
       return ClassName.get(INamed.class);
     } else if (isGeneratedLanguage(interf.getLanguage())) {
       return ClassName.get(generationPackage(interf.getLanguage()), getGeneratedName(interf));
-    } else if (mappings.containsKey(interf.qualifiedName())) {
-      return ClassName.bestGuess(mappings.get(interf.qualifiedName()));
+    } else if (classifierMappings.containsKey(interf.qualifiedName())) {
+      return ClassName.bestGuess(classifierMappings.get(interf.qualifiedName()));
     } else {
       throw new UnsupportedOperationException(
           "Implemented interfaces are not yet implemented: interf: "
               + interf.qualifiedName()
-              + ". Mappings: "
-              + mappings.keySet());
+              + ". Classifier mappings: "
+              + classifierMappings.keySet());
     }
   }
 
   TypeName getConceptType(Concept concept) {
     if (isGeneratedLanguage(concept.getLanguage())) {
       return ClassName.get(generationPackage(concept.getLanguage()), getGeneratedName(concept));
-    } else if (mappings.containsKey(concept.qualifiedName())) {
-      return ClassName.bestGuess(mappings.get(concept.qualifiedName()));
+    } else if (classifierMappings.containsKey(concept.qualifiedName())) {
+      return ClassName.bestGuess(classifierMappings.get(concept.qualifiedName()));
     } else {
       throw new UnsupportedOperationException(
-          "Extended concepts are not yet implemented: concept: "
+          "Extended concepts are not yet implemented. Concept: "
               + concept.qualifiedName()
-              + ". Mappings: "
-              + mappings.keySet());
+              + ". Classifier mappings: "
+              + classifierMappings.keySet());
     }
   }
 
@@ -367,8 +362,8 @@ class GenerationContext {
           generationPackage(classifier.getLanguage()), getGeneratedName(classifier));
     } else if (classifier.equals(LionCoreBuiltins.getNode(classifier.getLionWebVersion()))) {
       return TypeName.get(Node.class);
-    } else if (mappings.containsKey(classifier.qualifiedName())) {
-      String mappedTypeName = mappings.get(classifier.qualifiedName());
+    } else if (classifierMappings.containsKey(classifier.qualifiedName())) {
+      String mappedTypeName = classifierMappings.get(classifier.qualifiedName());
       String packageName = mappedTypeName.substring(0, mappedTypeName.lastIndexOf('.'));
       String simpleName = mappedTypeName.substring(mappedTypeName.lastIndexOf('.') + 1);
       return ClassName.get(packageName, simpleName);
