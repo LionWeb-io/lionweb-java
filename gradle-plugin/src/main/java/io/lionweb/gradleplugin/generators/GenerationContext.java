@@ -11,8 +11,6 @@ import io.lionweb.language.*;
 import io.lionweb.language.Enumeration;
 import io.lionweb.lioncore.LionCore;
 import io.lionweb.model.Node;
-import org.gradle.api.logging.Logger;
-
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
@@ -27,23 +25,23 @@ class GenerationContext {
 
   private final Set<LanguageGenerationConfiguration> languageConfs;
   private final Map<String, String> primitiveTypes;
-  /**
-   * Mapping from concept names to their generated names.
-   */
+
+  /** Mapping from concept names to their generated names. */
   private final Map<String, String> mappings;
-    /**
-     * A mapping between language identifiers and their corresponding class names.
-     *
-     * This map is used to store the fully qualified class names of different programming
-     * languages, keyed by their unique identifiers. It allows for quick lookup of the class
-     * names associated with specific languages during code generation.
-     *
-     * The keys in the map represent the language IDs, while the values correspond to the
-     * class names of the languages.
-     *
-     * This variable is immutable and must be initialized during the creation of a
-     * {@code GenerationContext} instance.
-     */
+
+  /**
+   * A mapping between language identifiers and their corresponding class names.
+   *
+   * <p>This map is used to store the fully qualified class names of different programming
+   * languages, keyed by their unique identifiers. It allows for quick lookup of the class names
+   * associated with specific languages during code generation.
+   *
+   * <p>The keys in the map represent the language IDs, while the values correspond to the class
+   * names of the languages.
+   *
+   * <p>This variable is immutable and must be initialized during the creation of a {@code
+   * GenerationContext} instance.
+   */
   private final Map<String, String> languageClassNames;
 
   /**
@@ -88,7 +86,7 @@ class GenerationContext {
                     language, generationPackage, languageClassNames.get(language.getID())))),
         primitiveTypes,
         mappings);
-      System.out.println("GenerationContext constructor B");
+    System.out.println("GenerationContext constructor B");
   }
 
   /**
@@ -110,7 +108,7 @@ class GenerationContext {
         Collections.emptyMap(),
         Collections.emptyMap(),
         Collections.emptyMap());
-      System.out.println("GenerationContext constructor C");
+    System.out.println("GenerationContext constructor C");
   }
 
   /**
@@ -135,22 +133,22 @@ class GenerationContext {
     this.primitiveTypes = primitiveTypes;
     this.mappings = mappings;
     this.languageClassNames = Collections.emptyMap();
-      System.out.println("GenerationContext constructor D");
+    System.out.println("GenerationContext constructor D");
   }
 
-    GenerationContext(
-        @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
-        @Nonnull Map<String, String> primitiveTypes,
-        @Nonnull Map<String, String> mappings,
-        @Nonnull Map<String, String> languageClassNames) {
-        Objects.requireNonNull(languageConfs, "languageConfs should not be null");
-        Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
-        this.languageConfs = languageConfs;
-        this.primitiveTypes = primitiveTypes;
-        this.mappings = mappings;
-        this.languageClassNames = languageClassNames;
-        System.out.println("GenerationContext constructor E");
-    }
+  GenerationContext(
+      @Nonnull Set<LanguageGenerationConfiguration> languageConfs,
+      @Nonnull Map<String, String> primitiveTypes,
+      @Nonnull Map<String, String> mappings,
+      @Nonnull Map<String, String> languageClassNames) {
+    Objects.requireNonNull(languageConfs, "languageConfs should not be null");
+    Objects.requireNonNull(primitiveTypes, "primitiveTypes should not be null");
+    this.languageConfs = languageConfs;
+    this.primitiveTypes = primitiveTypes;
+    this.mappings = mappings;
+    this.languageClassNames = languageClassNames;
+    System.out.println("GenerationContext constructor E");
+  }
 
   /**
    * Determines whether the given {@code language} has an overridden name defined in the associated
@@ -234,17 +232,23 @@ class GenerationContext {
     } else if (language.equals(LionCore.getInstance(LionWebVersion.v2023_1))) {
       return CodeBlock.of("$T.getInstance($T.v2023_1)", lionCore, lionWebVersion);
     } else if (language.equals(LionCore.getInstance(LionWebVersion.v2024_1))) {
-        return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCore, lionWebVersion);
+      return CodeBlock.of("$T.getInstance($T.v2024_1)", lionCore, lionWebVersion);
     } else if (languageClassNames.containsKey(language.getName())) {
-        return CodeBlock.of("$T.getLanguage()", ClassName.bestGuess(languageClassNames.get(language.getName())));
+      return CodeBlock.of(
+          "$T.getLanguage()", ClassName.bestGuess(languageClassNames.get(language.getName())));
     } else {
       if (isGeneratedLanguage(language)) {
         return CodeBlock.of(
             "$T.getInstance()",
             ClassName.get(generationPackage(language), toLanguageClassName(language, this)));
       }
-      throw new RuntimeException("Language not found: " + language.getName() +
-          ". Language being generated: " + languageBeingGenerated.getName()+ ". Language class names: " + languageClassNames.keySet());
+      throw new RuntimeException(
+          "Language not found: "
+              + language.getName()
+              + ". Language being generated: "
+              + languageBeingGenerated.getName()
+              + ". Language class names: "
+              + languageClassNames.keySet());
     }
   }
 
@@ -309,21 +313,29 @@ class GenerationContext {
     if (interf.equals(LionCoreBuiltins.getINamed(interf.getLionWebVersion()))) {
       return ClassName.get(INamed.class);
     } else if (isGeneratedLanguage(interf.getLanguage())) {
-        return ClassName.get(generationPackage(interf.getLanguage()), getGeneratedName(interf));
+      return ClassName.get(generationPackage(interf.getLanguage()), getGeneratedName(interf));
     } else if (mappings.containsKey(interf.qualifiedName())) {
-        return ClassName.bestGuess(mappings.get(interf.qualifiedName()));
+      return ClassName.bestGuess(mappings.get(interf.qualifiedName()));
     } else {
-      throw new UnsupportedOperationException("Implemented interfaces are not yet implemented: interf: " + interf.qualifiedName()+". Mappings: " + mappings.keySet());
+      throw new UnsupportedOperationException(
+          "Implemented interfaces are not yet implemented: interf: "
+              + interf.qualifiedName()
+              + ". Mappings: "
+              + mappings.keySet());
     }
   }
 
   TypeName getConceptType(Concept concept) {
     if (isGeneratedLanguage(concept.getLanguage())) {
-        return ClassName.get(generationPackage(concept.getLanguage()), getGeneratedName(concept));
+      return ClassName.get(generationPackage(concept.getLanguage()), getGeneratedName(concept));
     } else if (mappings.containsKey(concept.qualifiedName())) {
-        return ClassName.bestGuess(mappings.get(concept.qualifiedName()));
+      return ClassName.bestGuess(mappings.get(concept.qualifiedName()));
     } else {
-      throw new UnsupportedOperationException("Extended concepts are not yet implemented: concept: " + concept.qualifiedName()+". Mappings: " + mappings.keySet());
+      throw new UnsupportedOperationException(
+          "Extended concepts are not yet implemented: concept: "
+              + concept.qualifiedName()
+              + ". Mappings: "
+              + mappings.keySet());
     }
   }
 
@@ -340,7 +352,7 @@ class GenerationContext {
     } else if (dataType.equals(LionCoreBuiltins.getInteger(dataType.getLionWebVersion()))) {
       fieldType = TypeName.INT;
     } else if (dataType.equals(LionCoreBuiltins.getBoolean(dataType.getLionWebVersion()))) {
-        fieldType = TypeName.BOOLEAN;
+      fieldType = TypeName.BOOLEAN;
     } else if (dataType instanceof io.lionweb.language.Enumeration) {
       fieldType = typeNameFor((Enumeration) dataType);
     } else {
