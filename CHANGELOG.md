@@ -6,6 +6,9 @@
 * Enhance `GenerationContext` with concept mappings and support for boolean fields
 * Improve exception messages in code generation for unsupported concepts and interfaces
 * Include instance ID in `Instantiator` exceptions for better diagnostics
+* Introduce `InconsistentDataHandler` interface for customizable handling of inconsistent data during serialization/deserialization
+* Extend `InconsistentDataHandler` to handle missing classifiers, in addition to missing properties
+* Improve null and duplicate ID checks during deserialization
 
 ### Version 1.3.14
 

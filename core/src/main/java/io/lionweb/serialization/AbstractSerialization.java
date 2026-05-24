@@ -34,6 +34,48 @@ public abstract class AbstractSerialization {
 
   protected LocalClassifierInstanceResolver instanceResolver;
 
+  protected InconsistentDataHandler inconsistentDataHandler = THROWING_INCONSISTENT_DATA_HANDLER;
+
+  /** Inconsistent data handler that throws an exception when inconsistent data is encountered. */
+  private static final InconsistentDataHandler THROWING_INCONSISTENT_DATA_HANDLER =
+      new InconsistentDataHandler() {
+
+        @Override
+        public void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer) {
+          throw new NullPointerException(
+              "Property with metaPointer "
+                  + metaPointer
+                  + " not found in classifier "
+                  + classifier
+                  + ". Properties: "
+                  + classifier.allProperties().stream()
+                      .map(MetaPointer::from)
+                      .collect(Collectors.toList()));
+        }
+
+        @Override
+        public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+          throw new RuntimeException(
+              "No metaPointer available for " + serializedClassifier + " for node " + id);
+        }
+      };
+
+  /**
+   * Sets the handler to deal with inconsistent data during the serialization or deserialization
+   * process. If the provided handler is null, a default throwing handler will be used.
+   *
+   * @param inconsistentDataHandler the {@code InconsistentDataHandler} implementation to handle
+   *     inconsistent data; can be {@code null} to use the default handler.
+   */
+  public void setInconsistentDataHandler(
+      @Nullable InconsistentDataHandler inconsistentDataHandler) {
+    if (inconsistentDataHandler == null) {
+      this.inconsistentDataHandler = THROWING_INCONSISTENT_DATA_HANDLER;
+    } else {
+      this.inconsistentDataHandler = inconsistentDataHandler;
+    }
+  }
+
   /**
    * This guides what we do when deserializing a sub-tree and not being able to resolve the parent.
    */
@@ -503,11 +545,13 @@ public abstract class AbstractSerialization {
         n -> {
           ClassifierInstance<?> instantiated =
               instantiateFromSerialized(lionWebVersion, deserializationStatus, n, deserializedByID);
-          ClassifierInstance<?> prev = deserializedByID.put(n.getID(), instantiated);
-          if (n.getID() != null && prev != null) {
-            throw new IllegalStateException("Duplicate ID found: " + n.getID());
+          if (instantiated != null) {
+            ClassifierInstance<?> prev = deserializedByID.put(n.getID(), instantiated);
+            if (n.getID() != null && prev != null) {
+              throw new IllegalStateException("Duplicate ID found: " + n.getID());
+            }
+            serializedToInstanceMap.put(n, instantiated);
           }
-          serializedToInstanceMap.put(n, instantiated);
         });
     if (sortedSerializedClassifierInstances.size() != serializedToInstanceMap.size()) {
       throw new IllegalStateException(
@@ -563,7 +607,7 @@ public abstract class AbstractSerialization {
     return nodesWithOriginalSorting;
   }
 
-  private ClassifierInstance<?> instantiateFromSerialized(
+  private @Nullable ClassifierInstance<?> instantiateFromSerialized(
       @Nonnull LionWebVersion lionWebVersion,
       DeserializationStatus deserializationStatus,
       SerializedClassifierInstance serializedClassifierInstance,
@@ -571,7 +615,9 @@ public abstract class AbstractSerialization {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
-      throw new RuntimeException("No metaPointer available for " + serializedClassifierInstance);
+      inconsistentDataHandler.handleMissingClassifier(
+          serializedClassifier, serializedClassifierInstance.getID());
+      return null;
     }
     Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifier);
 
@@ -586,23 +632,17 @@ public abstract class AbstractSerialization {
                   deserializationStatus.getProperty(
                       classifier, serializedPropertyValue.getMetaPointer());
               if (property == null) {
-                throw new NullPointerException(
-                    "Property with metaPointer "
-                        + serializedPropertyValue.getMetaPointer()
-                        + " not found in classifier "
-                        + classifier
-                        + ". Properties: "
-                        + classifier.allProperties().stream()
-                            .map(MetaPointer::from)
-                            .collect(Collectors.toList()));
+                inconsistentDataHandler.handleMissingProperty(
+                    classifier, serializedPropertyValue.getMetaPointer());
+              } else {
+                Objects.requireNonNull(property.getType(), "property type should not be null");
+                Object deserializedValue =
+                    deserializationStatus.deserializePropertyValue(
+                        property.getType(),
+                        serializedPropertyValue.getValue(),
+                        property.isRequired());
+                propertiesValues.put(property, deserializedValue);
               }
-              Objects.requireNonNull(property.getType(), "property type should not be null");
-              Object deserializedValue =
-                  deserializationStatus.deserializePropertyValue(
-                      property.getType(),
-                      serializedPropertyValue.getValue(),
-                      property.isRequired());
-              propertiesValues.put(property, deserializedValue);
             });
     ClassifierInstance<?> classifierInstance =
         getInstantiator()
