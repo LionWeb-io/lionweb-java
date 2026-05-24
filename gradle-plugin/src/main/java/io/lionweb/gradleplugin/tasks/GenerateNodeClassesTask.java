@@ -7,6 +7,7 @@ import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.TopologicalLanguageSorter;
 import io.lionweb.serialization.data.SerializationChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.io.File;
 import java.io.IOException;
 import java.util.*;
@@ -86,23 +87,33 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
                 .collect(Collectors.toList()));
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(lionWebVersion);
+    serialization.enableDynamicNodes(); // for dynamic annotations
     Set<Language> languagesLoadedFromProjectChunks = new HashSet<>();
     Set<Language> languages =
         sortedChunks.stream()
             .map(
                 chunk -> {
-                  Language language =
-                      (Language)
-                          serialization.deserializeSerializationChunk(chunk).stream()
-                              .filter(n -> n.getParent() == null)
-                              .findFirst()
-                              .get();
-                  getLogger().info("LionWeb Language loaded: " + language.getName());
-                  serialization.registerLanguage(language);
-                  if (projectChunks.contains(chunk)) {
-                    languagesLoadedFromProjectChunks.add(language);
+                  try {
+                    Language language =
+                        (Language)
+                            serialization.deserializeSerializationChunk(chunk).stream()
+                                .filter(n -> n.getParent() == null)
+                                .findFirst()
+                                .get();
+                    getLogger().info("LionWeb Language loaded: " + language.getName());
+                    serialization.registerLanguage(language);
+                    if (projectChunks.contains(chunk)) {
+                      languagesLoadedFromProjectChunks.add(language);
+                    }
+                    return language;
+                  } catch (Exception e) {
+                    SerializedClassifierInstance root =
+                        chunk.getClassifierInstances().stream()
+                            .filter(n -> n.getParentNodeID() == null)
+                            .findFirst()
+                            .orElse(null);
+                    throw new RuntimeException("Issue deserializing language " + root, e);
                   }
-                  return language;
                 })
             .collect(Collectors.toSet());
     getLogger()

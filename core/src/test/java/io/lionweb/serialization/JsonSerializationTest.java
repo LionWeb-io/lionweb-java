@@ -22,6 +22,7 @@ import io.lionweb.serialization.simplemath.Sum;
 import io.lionweb.utils.LanguageValidator;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
@@ -1079,5 +1080,96 @@ public class JsonSerializationTest extends SerializationTest {
     jsonSerialization.registerLanguage(l1);
     Language l2unserialized = jsonSerialization.loadLanguage(serializedL2);
     assertInstancesAreEquals(l2, l2unserialized);
+  }
+
+  @Test
+  public void inconsistentDataHandlerCapturesMissingProperty() {
+    // Serialize a node, then manually inject an unknown property into the JSON
+    IntLiteral il = new IntLiteral(42, "il1");
+    JsonSerialization js = SerializationProvider.getStandardJsonSerialization();
+    JsonElement serialized = js.serializeTreesToJsonElement(il);
+
+    // Inject an unknown property into the serialized node
+    JsonObject chunk = serialized.getAsJsonObject();
+    JsonArray nodes = chunk.get("nodes").getAsJsonArray();
+    JsonObject node = nodes.get(0).getAsJsonObject();
+    JsonArray properties = node.get("properties").getAsJsonArray();
+    JsonObject unknownProp = new JsonObject();
+    JsonObject metaPointer = new JsonObject();
+    metaPointer.addProperty("language", "SimpleMath");
+    metaPointer.addProperty("version", "1");
+    metaPointer.addProperty("key", "SimpleMath_IntLiteral_unknownProp");
+    unknownProp.add("property", metaPointer);
+    unknownProp.addProperty("value", "someValue");
+    properties.add(unknownProp);
+
+    // Set up a capturing InconsistentDataHandler
+    List<String> capturedMissingProperties = new ArrayList<>();
+    InconsistentDataHandler capturingHandler =
+        new InconsistentDataHandler() {
+          @Override
+          public void handleMissingProperty(
+              Classifier<?> classifier, MetaPointer missingMetaPointer) {
+            capturedMissingProperties.add(missingMetaPointer.getKey());
+          }
+
+          @Override
+          public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+            throw new RuntimeException("Unexpected missing classifier for id: " + id);
+          }
+        };
+
+    prepareDeserializationOfSimpleMath(js);
+    js.setInconsistentDataHandler(capturingHandler);
+    js.deserializeToNodes(serialized);
+
+    assertEquals(1, capturedMissingProperties.size());
+    assertEquals("SimpleMath_IntLiteral_unknownProp", capturedMissingProperties.get(0));
+  }
+
+  @Test
+  public void inconsistentDataHandlerCapturesMissingClassifier() {
+    // Build a raw JSON chunk with a node whose classifier is null (missing)
+    String json =
+        "{"
+            + "\"serializationFormatVersion\": \"2023.1\","
+            + "\"languages\": [],"
+            + "\"nodes\": ["
+            + "  {"
+            + "    \"id\": \"node1\","
+            + "    \"classifier\": null,"
+            + "    \"properties\": [],"
+            + "    \"containments\": [],"
+            + "    \"references\": [],"
+            + "    \"annotations\": [],"
+            + "    \"parent\": null"
+            + "  }"
+            + "]"
+            + "}";
+
+    List<String> capturedMissingClassifierIds = new ArrayList<>();
+    InconsistentDataHandler capturingHandler =
+        new InconsistentDataHandler() {
+          @Override
+          public void handleMissingProperty(
+              Classifier<?> classifier, MetaPointer missingMetaPointer) {
+            throw new RuntimeException("Unexpected missing property");
+          }
+
+          @Override
+          public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+            capturedMissingClassifierIds.add(id);
+          }
+        };
+
+    JsonSerialization js =
+        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+    js.setInconsistentDataHandler(capturingHandler);
+    // The handler is invoked before the size-consistency check, so the exception is thrown
+    // after our handler has captured the inconsistency.
+    assertThrows(IllegalStateException.class, () -> js.deserializeToNodes(json));
+
+    assertEquals(1, capturedMissingClassifierIds.size());
+    assertEquals("node1", capturedMissingClassifierIds.get(0));
   }
 }

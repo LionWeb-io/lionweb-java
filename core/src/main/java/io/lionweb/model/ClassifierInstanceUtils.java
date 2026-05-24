@@ -8,7 +8,6 @@ import io.lionweb.language.*;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -414,12 +413,9 @@ public class ClassifierInstanceUtils {
   public static boolean shallowClassifierInstanceEquality(
       @Nullable ClassifierInstance<?> classifierInstance1,
       @Nullable ClassifierInstance<?> classifierInstance2) {
-    if (classifierInstance1 == null && classifierInstance2 == null) {
-      return true;
-    }
-    if (classifierInstance1 != null
-        && classifierInstance2 != null
-        && classifierInstance1.getID() != null) {
+    if (classifierInstance1 == classifierInstance2) return true;
+    if (classifierInstance1 == null || classifierInstance2 == null) return false;
+    if (classifierInstance1.getID() != null) {
       return Objects.equals(classifierInstance1.getID(), classifierInstance2.getID());
     }
     return Objects.equals(classifierInstance1, classifierInstance2);
@@ -429,38 +425,36 @@ public class ClassifierInstanceUtils {
       List<AnnotationInstance> annotations1, List<AnnotationInstance> annotations2) {
     int size1 = annotations1 == null ? 0 : annotations1.size();
     int size2 = annotations2 == null ? 0 : annotations2.size();
-    return size1 == size2
-        && (size1 == 0
-            || IntStream.range(0, annotations1.size())
-                .allMatch(
-                    i ->
-                        shallowClassifierInstanceEquality(
-                            annotations1.get(i), annotations2.get(i))));
+    if (size1 != size2) return false;
+    for (int i = 0; i < size1; i++) {
+      if (!shallowClassifierInstanceEquality(annotations1.get(i), annotations2.get(i)))
+        return false;
+    }
+    return true;
   }
 
   public static boolean shallowContainmentEquality(
       List<? extends Node> childrenA, List<? extends Node> childrenB) {
-    return childrenA.size() == childrenB.size()
-        && IntStream.range(0, childrenA.size())
-            .allMatch(i -> shallowClassifierInstanceEquality(childrenA.get(i), childrenB.get(i)));
+    if (childrenA.size() != childrenB.size()) return false;
+    for (int i = 0, n = childrenA.size(); i < n; i++) {
+      if (!shallowClassifierInstanceEquality(childrenA.get(i), childrenB.get(i))) return false;
+    }
+    return true;
   }
 
   public static boolean shallowReferenceEquality(
       List<ReferenceValue> references1, List<ReferenceValue> references2) {
-    return references1.size() == references2.size()
-        && IntStream.range(0, references1.size())
-            .allMatch(
-                i -> {
-                  String referredID1 = references1.get(i).getReferredID();
-                  String referredID2 = references2.get(i).getReferredID();
-                  String resolveInfo1 = references1.get(i).getResolveInfo();
-                  String resolveInfo2 = references2.get(i).getResolveInfo();
-
-                  if (referredID1 == null && referredID2 == null) {
-                    return Objects.equals(resolveInfo1, resolveInfo2);
-                  } else {
-                    return Objects.equals(referredID1, referredID2);
-                  }
-                });
+    if (references1.size() != references2.size()) return false;
+    for (int i = 0, n = references1.size(); i < n; i++) {
+      ReferenceValue rv1 = references1.get(i), rv2 = references2.get(i);
+      String referredID1 = rv1.getReferredID();
+      String referredID2 = rv2.getReferredID();
+      if (referredID1 == null && referredID2 == null) {
+        if (!Objects.equals(rv1.getResolveInfo(), rv2.getResolveInfo())) return false;
+      } else {
+        if (!Objects.equals(referredID1, referredID2)) return false;
+      }
+    }
+    return true;
   }
 }

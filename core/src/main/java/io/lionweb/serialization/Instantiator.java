@@ -32,7 +32,10 @@ public class Instantiator {
       (ClassifierSpecificInstantiator<Node>)
           (classifier, serializedNode, deserializedNodesByID, propertiesValues) -> {
             throw new IllegalArgumentException(
-                "Unable to instantiate instance with classifier " + classifier);
+                "Unable to instantiate instance with classifier "
+                    + classifier
+                    + ". ID: "
+                    + serializedNode.getID());
           };
 
   public Instantiator() {}
