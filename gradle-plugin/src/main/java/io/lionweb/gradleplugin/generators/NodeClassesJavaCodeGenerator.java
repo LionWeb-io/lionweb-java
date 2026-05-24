@@ -362,35 +362,36 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .addParameter(int.class, "index")
               .addParameter(REFERENCE_VALUE, "referredNode");
 
-      features.forEach(
-          feature -> {
-            if (feature instanceof Property) {
-              considerConceptProperty(
-                  (Property) feature,
-                  generationContext,
-                  conceptClass,
-                  getPropertyValue,
-                  setPropertyValue);
-            } else if (feature instanceof Containment) {
-              considerConceptContainment(
-                  (Containment) feature,
-                  generationContext,
-                  conceptClass,
-                  getChildren,
-                  addChild1,
-                  addChild2);
-            } else if (feature instanceof Reference) {
-              considerConceptReference(
-                  (Reference) feature,
-                  generationContext,
-                  conceptClass,
-                  getReferenceValues,
-                  addReferenceValue1,
-                  addReferenceValue2);
-            } else {
-              throw new IllegalStateException("Unknown feature type: " + feature.getClass());
-            }
-          });
+      for (int featureIndex = 0; featureIndex < features.size(); featureIndex++) {
+        Feature<?> feature = features.get(featureIndex);
+        if (feature instanceof Property) {
+          considerConceptProperty(
+              (Property) feature,
+              generationContext,
+              conceptClass,
+              getPropertyValue,
+              setPropertyValue);
+        } else if (feature instanceof Containment) {
+          considerConceptContainment(
+              featureIndex,
+              (Containment) feature,
+              generationContext,
+              conceptClass,
+              getChildren,
+              addChild1,
+              addChild2);
+        } else if (feature instanceof Reference) {
+          considerConceptReference(
+              (Reference) feature,
+              generationContext,
+              conceptClass,
+              getReferenceValues,
+              addReferenceValue1,
+              addReferenceValue2);
+        } else {
+          throw new IllegalStateException("Unknown feature type: " + feature.getClass());
+        }
+      }
       conceptClass.addMethod(
           getPropertyValue
               .addStatement(
@@ -692,6 +693,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   }
 
   private static void considerConceptContainment(
+      int featureIndex,
       @Nonnull Containment containment,
       @NotNull GenerationContext generationContext,
       TypeSpec.Builder conceptClass,
@@ -786,6 +788,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                           capitalizedName)
                       .build())
               .build());
+      String removedVar = "removed_" + featureIndex;
       conceptClass.addMethod(
           MethodSpec.methodBuilder("removeFrom" + capitalizedName)
               .addModifiers(Modifier.PUBLIC)
@@ -794,20 +797,25 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                   CodeBlock.builder()
                       .addStatement(
                           "if ($N.size() > index) {\n"
-                              + "        Node removed = $N.remove(index);\n"
-                              + "        if (removed instanceof $T) { (($T) removed).setParent(null); }\n"
+                              + "        Node $N = $N.remove(index);\n"
+                              + "        if ($N instanceof $T) { (($T) removed_"
+                              + featureIndex
+                              + ").setParent(null); }\n"
                               + "        if (partitionObserverCache != null) {\n"
-                              + "          partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), index, removed);\n"
+                              + "          partitionObserverCache.childRemoved(this, this.getClassifier().requireContainmentByName($S), index, $N);\n"
                               + "        }\n"
                               + "      } else {\n"
                               + "        throw new IllegalArgumentException(\n"
                               + "            \"Invalid index \" + index + \" when children are \" + $N.size());\n"
                               + "      }",
                           fieldName,
+                          removedVar,
                           fieldName,
+                          removedVar,
                           HasSettableParent.class,
                           HasSettableParent.class,
                           containment.getName(),
+                          removedVar,
                           fieldName)
                       .build())
               .build());
@@ -902,8 +910,9 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
               .endControlFlow()
               .build());
     } else {
+      String removedVar = "removed_" + featureIndex;
       addChild1
-          .addStatement("$T removed = null", Node.class)
+          .addStatement("$T $N  = null", Node.class, removedVar)
           .beginControlFlow("if ($N != null)", fieldName)
           .addStatement("this.removeChild($N)", fieldName)
           .addStatement(

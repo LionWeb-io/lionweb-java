@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 1.3.16
+
+* Fix issue with conflicting variables in classes generation
+
 ### Version 1.3.15
 
 * Enable dynamic nodes in JSON serialization to support annotations
