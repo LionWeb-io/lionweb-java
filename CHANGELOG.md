@@ -1,5 +1,12 @@
 # Changelog
 
+### Version 1.3.15
+
+* Enable dynamic nodes in JSON serialization to support annotations
+* Enhance `GenerationContext` with concept mappings and support for boolean fields
+* Improve exception messages in code generation for unsupported concepts and interfaces
+* Include instance ID in `Instantiator` exceptions for better diagnostics
+
 ### Version 1.3.14
 
 * Enable dynamic nodes in JSON serialization to support annotations

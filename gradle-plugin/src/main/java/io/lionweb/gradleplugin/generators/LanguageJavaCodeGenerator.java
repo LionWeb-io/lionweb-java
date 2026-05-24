@@ -75,7 +75,9 @@ public class LanguageJavaCodeGenerator extends AbstractJavaCodeGenerator {
       languageConfs.add(
           new GenerationContext.LanguageGenerationConfiguration(language, packag, className));
     }
-    GenerationContext languageContext = new GenerationContext(languageConfs);
+    GenerationContext languageContext =
+        new GenerationContext(
+            languageConfs, Collections.emptyMap(), Collections.emptyMap(), languageClassNames);
     languages.forEach(
         language -> {
           try {

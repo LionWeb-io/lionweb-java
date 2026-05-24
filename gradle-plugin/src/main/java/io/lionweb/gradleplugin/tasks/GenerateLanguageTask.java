@@ -105,6 +105,8 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
                 .collect(Collectors.toList()));
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(lionWebVersion);
+    // Useful for annotations
+    serialization.enableDynamicNodes();
     Set<Language> languagesLoadedFromProjectChunks = new HashSet<>();
     List<Language> languages =
         sortedChunks.stream()
