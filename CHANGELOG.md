@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 1.3.11
+
+* Fix foojay toolchain resolver plugin compatibility with Gradle 9 (update to 1.0.0)
+* Pre-size `SerializedClassifierInstance` feature lists from protobuf node counts to reduce allocations
+* Make classifier index materialization optional in `RepositoryData` and `InMemoryServer` (default: enabled)
+* Add `nodesByClassifier(limit, classifierKey)` for targeted single-classifier lookup
+* Optimize `nodesByClassifier` limit slicing via `subList` instead of element-by-element iteration
+
 ### Version 1.3.10
 
 * Upgrade Gradle wrapper to 9.4.1

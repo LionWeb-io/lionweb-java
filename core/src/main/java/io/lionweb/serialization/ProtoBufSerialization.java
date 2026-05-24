@@ -2,6 +2,7 @@ package io.lionweb.serialization;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.Node;
 import io.lionweb.model.impl.ProxyNode;
 import io.lionweb.protobuf.*;
 import io.lionweb.serialization.data.*;
@@ -20,29 +21,60 @@ public class ProtoBufSerialization extends AbstractSerialization {
     super(lionWebVersion);
   }
 
-  public List<io.lionweb.model.Node> deserializeToNodes(byte[] bytes) throws IOException {
+  /**
+   * Deserializes an array of bytes into a list of {@code Node} instances using a default {@code
+   * ByteArrayInputStream} for the provided byte array.
+   *
+   * @param bytes The byte array to be deserialized into {@code Node} instances. It must not be
+   *     null.
+   * @return A list of {@code Node} instances deserialized from the given byte array.
+   * @throws IOException If an I/O error occurs during deserialization.
+   */
+  public List<Node> deserializeToNodes(byte[] bytes) throws IOException {
     return deserializeToNodes(new ByteArrayInputStream(bytes));
   }
 
+  /**
+   * Deserializes the given byte array into a {@code SerializationChunk} instance.
+   *
+   * @param bytes The byte array representing serialized data. It must not be null.
+   * @return The deserialized {@code SerializationChunk} instance.
+   * @throws IOException If an I/O error occurs during the deserialization process.
+   */
   public SerializationChunk deserializeToChunk(byte[] bytes) throws IOException {
+    return DirectProtoBufDeserializer.deserialize(bytes, serializeEmptyFeatures);
+  }
+
+  /**
+   * Legacy deserialization path via protobuf-generated PBChunk — used for benchmarking only. To be
+   * removed in the future
+   */
+  public SerializationChunk deserializeToChunkViaPbChunk(byte[] bytes) throws IOException {
     PBChunk pbChunk = PBChunk.parseFrom(new ByteArrayInputStream(bytes));
     return deserializeSerializationChunk(pbChunk);
   }
 
-  public List<io.lionweb.model.Node> deserializeToNodes(File file) throws IOException {
+  public List<Node> deserializeToNodes(File file) throws IOException {
     return deserializeToNodes(new FileInputStream(file));
   }
 
-  public List<io.lionweb.model.Node> deserializeToNodes(InputStream inputStream)
-      throws IOException {
-    return deserializeToNodes(PBChunk.parseFrom(inputStream));
+  public List<Node> deserializeToNodes(InputStream inputStream) throws IOException {
+    SerializationChunk chunk =
+        DirectProtoBufDeserializer.deserialize(inputStream, serializeEmptyFeatures);
+    validateSerializationBlock(chunk);
+    List<ClassifierInstance<?>> all = deserializeSerializationChunk(chunk);
+    List<Node> nodes = new ArrayList<>(all.size());
+    for (ClassifierInstance<?> ci : all) {
+      if (ci instanceof Node) nodes.add((Node) ci);
+    }
+    return nodes;
   }
 
-  public List<io.lionweb.model.Node> deserializeToNodes(PBChunk chunk) {
+  public List<Node> deserializeToNodes(PBChunk chunk) {
     List<ClassifierInstance<?>> all = deserializeToClassifierInstances(chunk);
-    List<io.lionweb.model.Node> nodes = new ArrayList<>(all.size());
+    List<Node> nodes = new ArrayList<>(all.size());
     for (ClassifierInstance<?> ci : all) {
-      if (ci instanceof io.lionweb.model.Node) nodes.add((io.lionweb.model.Node) ci);
+      if (ci instanceof Node) nodes.add((Node) ci);
     }
     return nodes;
   }
@@ -100,7 +132,12 @@ public class ProtoBufSerialization extends AbstractSerialization {
         .getNodesList()
         .forEach(
             n -> {
-              SerializedClassifierInstance sci = new SerializedClassifierInstance();
+              SerializedClassifierInstance sci =
+                  new SerializedClassifierInstance(
+                      n.getPropertiesList().size(),
+                      n.getContainmentsList().size(),
+                      n.getReferencesList().size(),
+                      n.getSiAnnotationsList().size());
               sci.setID(stringsArray[n.getSiId()]);
               sci.setParentNodeID(stringsArray[n.getSiParent()]);
               sci.setClassifier(metapointersArray[n.getMpiClassifier()]);
@@ -204,7 +241,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
   }
 
   public byte[] serializeToByteArray(SerializationChunk serializationChunk) {
-    return serialize(serializationChunk).toByteArray();
+    return DirectProtoBufSerializer.serialize(serializationChunk, serializeEmptyFeatures);
   }
 
   protected class SerializeHelper {

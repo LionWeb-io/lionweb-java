@@ -54,6 +54,16 @@ public class InMemoryServer {
   /** Internally we store the data separately for each repository. */
   private final Map<String, RepositoryData> repositories = new ConcurrentHashMap<>();
 
+  private final boolean materializeClassifierIndex;
+
+  public InMemoryServer() {
+    this(true);
+  }
+
+  public InMemoryServer(boolean materializeClassifierIndex) {
+    this.materializeClassifierIndex = materializeClassifierIndex;
+  }
+
   private int nextParticipationId = 1;
 
   public @NotNull RepositoryConfiguration getRepositoryConfiguration(
@@ -80,7 +90,8 @@ public class InMemoryServer {
           "The InMemoryServer does not support History for the time being");
     }
     repositories.put(
-        repositoryConfiguration.getName(), new RepositoryData(repositoryConfiguration));
+        repositoryConfiguration.getName(),
+        new RepositoryData(repositoryConfiguration, materializeClassifierIndex));
   }
 
   public void deleteRepository(@NotNull String repositoryName) {
@@ -187,10 +198,20 @@ public class InMemoryServer {
     return nodesByClassifier(repositoryName, Integer.MAX_VALUE);
   }
 
+  public ClassifierResult nodesByClassifier(@NotNull String repositoryName, ClassifierKey key) {
+    return nodesByClassifier(repositoryName, Integer.MAX_VALUE, key);
+  }
+
   public Map<ClassifierKey, ClassifierResult> nodesByClassifier(
       @NotNull String repositoryName, @Nullable Integer limit) {
     RepositoryData repositoryData = getRepository(repositoryName);
     return repositoryData.nodesByClassifier(limit);
+  }
+
+  public ClassifierResult nodesByClassifier(
+      @NotNull String repositoryName, @Nullable Integer limit, ClassifierKey key) {
+    RepositoryData repositoryData = getRepository(repositoryName);
+    return repositoryData.nodesByClassifier(limit, key);
   }
 
   public Map<String, ClassifierResult> nodesByLanguage(@NotNull String repositoryName) {

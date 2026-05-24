@@ -49,25 +49,33 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
-    if (instance.getID() != null
-        && annotations.stream().anyMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
-      // necessary to avoid infinite loops and duplicate insertions
+    String instanceID = instance.getID();
+    if (containsAnnotation(instanceID, instance)) {
       return false;
     }
     if (instance instanceof DynamicAnnotationInstance) {
       ((DynamicAnnotationInstance) instance).setAnnotated(this);
     }
-    if (instance.getID() == null && annotations.stream().anyMatch(a -> a == instance)) {
-      return false;
+    // setAnnotated may trigger a recursive addAnnotation that already inserted the instance
+    if (containsAnnotation(instanceID, instance)) {
+      return true;
     }
-    if (instance.getID() == null
-        || annotations.stream().noneMatch(a -> Objects.equals(a.getID(), instance.getID()))) {
-      this.annotations.add(instance);
-      if (partitionObserverCache != null) {
-        partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
-      }
+    this.annotations.add(instance);
+    if (partitionObserverCache != null) {
+      partitionObserverCache.annotationAdded(this, this.annotations.size() - 1, instance);
     }
     return true;
+  }
+
+  private boolean containsAnnotation(String instanceID, AnnotationInstance instance) {
+    for (AnnotationInstance existing : annotations) {
+      if (instanceID != null
+          ? Objects.equals(existing.getID(), instanceID)
+          : existing == instance) {
+        return true;
+      }
+    }
+    return false;
   }
 
   @Override
