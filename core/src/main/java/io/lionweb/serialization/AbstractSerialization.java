@@ -34,7 +34,41 @@ public abstract class AbstractSerialization {
 
   protected LocalClassifierInstanceResolver instanceResolver;
 
-  /**
+  protected InconsistentDataHandler inconsistentDataHandler = THROWING_INCONSISTENT_DATA_HANDLER;
+
+  public static final InconsistentDataHandler THROWING_INCONSISTENT_DATA_HANDLER = new InconsistentDataHandler() {
+
+      @Override
+      public void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer) {
+          throw new NullPointerException(
+              "Property with metaPointer "
+                  + metaPointer
+                  + " not found in classifier "
+                  + classifier
+                  + ". Properties: "
+                  + classifier.allProperties().stream()
+                  .map(MetaPointer::from)
+                  .collect(Collectors.toList()));
+      }
+  };
+
+    /**
+     * Sets the handler to deal with inconsistent data during the serialization or deserialization process.
+     * If the provided handler is null, a default throwing handler will be used.
+     *
+     * @param inconsistentDataHandler the {@code InconsistentDataHandler} implementation to handle
+     *                                inconsistent data; can be {@code null} to use the default handler.
+     */
+  public void setInconsistentDataHandler(@Nullable InconsistentDataHandler inconsistentDataHandler) {
+      if (inconsistentDataHandler == null) {
+          inconsistentDataHandler = THROWING_INCONSISTENT_DATA_HANDLER;
+      } else {
+          this.inconsistentDataHandler = inconsistentDataHandler;
+      }
+  }
+
+
+    /**
    * This guides what we do when deserializing a sub-tree and not being able to resolve the parent.
    */
   protected UnavailableNodePolicy unavailableParentPolicy = UnavailableNodePolicy.THROW_ERROR;
@@ -586,15 +620,9 @@ public abstract class AbstractSerialization {
                   deserializationStatus.getProperty(
                       classifier, serializedPropertyValue.getMetaPointer());
               if (property == null) {
-                throw new NullPointerException(
-                    "Property with metaPointer "
-                        + serializedPropertyValue.getMetaPointer()
-                        + " not found in classifier "
-                        + classifier
-                        + ". Properties: "
-                        + classifier.allProperties().stream()
-                            .map(MetaPointer::from)
-                            .collect(Collectors.toList()));
+                  inconsistentDataHandler.handleMissingProperty(
+                    classifier, serializedPropertyValue.getMetaPointer()
+                  );
               }
               Objects.requireNonNull(property.getType(), "property type should not be null");
               Object deserializedValue =
