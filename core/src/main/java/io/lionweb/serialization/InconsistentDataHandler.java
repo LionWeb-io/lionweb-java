@@ -14,4 +14,13 @@ public interface InconsistentDataHandler {
    *     property.
    */
   void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer);
+
+    /**
+     * Handles scenarios where a required classifier is missing during serialization or deserialization.
+     *
+     * @param serializedClassifier The {@code MetaPointer} representing the metadata or structure
+     *                              of the missing classifier.
+     * @param id                   A unique identifier associated with the classifier being processed.
+     */
+    void handleMissingClassifier(MetaPointer serializedClassifier, String id);
 }
