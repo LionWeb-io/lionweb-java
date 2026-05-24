@@ -3,6 +3,15 @@ package io.lionweb.serialization;
 import io.lionweb.language.Classifier;
 import io.lionweb.serialization.data.MetaPointer;
 
+/** Interface for handling inconsistent data during serialization and deserialization. */
 public interface InconsistentDataHandler {
-    void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer);
+  /**
+   * Handles operations when a required property is missing during data processing.
+   *
+   * @param classifier The {@link Classifier} instance that provides classification logic for the
+   *     data.
+   * @param metaPointer The {@code MetaPointer} referencing the metadata or structure of the missing
+   *     property.
+   */
+  void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer);
 }
