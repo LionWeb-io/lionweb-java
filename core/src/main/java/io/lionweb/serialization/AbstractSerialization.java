@@ -36,9 +36,7 @@ public abstract class AbstractSerialization {
 
   protected InconsistentDataHandler inconsistentDataHandler = THROWING_INCONSISTENT_DATA_HANDLER;
 
-  /**
-   * Inconsistent data handler that throws an exception when inconsistent data is encountered.
-   */
+  /** Inconsistent data handler that throws an exception when inconsistent data is encountered. */
   public static final InconsistentDataHandler THROWING_INCONSISTENT_DATA_HANDLER =
       new InconsistentDataHandler() {
 
@@ -55,10 +53,11 @@ public abstract class AbstractSerialization {
                       .collect(Collectors.toList()));
         }
 
-          @Override
-          public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
-              throw new RuntimeException("No metaPointer available for " + serializedClassifier + " for node " + id);
-          }
+        @Override
+        public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+          throw new RuntimeException(
+              "No metaPointer available for " + serializedClassifier + " for node " + id);
+        }
       };
 
   /**
@@ -547,11 +546,11 @@ public abstract class AbstractSerialization {
           ClassifierInstance<?> instantiated =
               instantiateFromSerialized(lionWebVersion, deserializationStatus, n, deserializedByID);
           if (instantiated != null) {
-              ClassifierInstance<?> prev = deserializedByID.put(n.getID(), instantiated);
-              if (n.getID() != null && prev != null) {
-                  throw new IllegalStateException("Duplicate ID found: " + n.getID());
-              }
-              serializedToInstanceMap.put(n, instantiated);
+            ClassifierInstance<?> prev = deserializedByID.put(n.getID(), instantiated);
+            if (n.getID() != null && prev != null) {
+              throw new IllegalStateException("Duplicate ID found: " + n.getID());
+            }
+            serializedToInstanceMap.put(n, instantiated);
           }
         });
     if (sortedSerializedClassifierInstances.size() != serializedToInstanceMap.size()) {
@@ -616,8 +615,9 @@ public abstract class AbstractSerialization {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     MetaPointer serializedClassifier = serializedClassifierInstance.getClassifier();
     if (serializedClassifier == null) {
-        inconsistentDataHandler.handleMissingClassifier(serializedClassifier, serializedClassifierInstance.getID());
-        return null;
+      inconsistentDataHandler.handleMissingClassifier(
+          serializedClassifier, serializedClassifierInstance.getID());
+      return null;
     }
     Classifier<?> classifier = getClassifierResolver().resolveClassifier(serializedClassifier);
 
