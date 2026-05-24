@@ -1,5 +1,24 @@
 # Changelog
 
+### Version 1.3.14
+
+* Enable dynamic nodes in JSON serialization to support annotations
+* Add `DirectProtoBufSerializer` and `DirectProtoBufDeserializer` for efficient binary serialization/deserialization
+* Optimize `DirectProtoBufSerializer` with single-pass indexing and cached indexing for improved performance
+* Introduce flat serialization plan in ProtoBuf serialization for improved cache locality and memory efficiency
+* Extend subchunk logic to include annotations
+* Extract ProtoBuf field numbers into a dedicated constants class for improved readability
+
+### Version 1.3.13
+
+* Refactor `Classifier`: replace stream-based feature lookups with enhanced for-loops for improved performance
+
+### Version 1.3.12
+
+* Optimize equality checks for `ClassifierInstances` and `ReferenceValues`
+* Optimize `addAnnotation` method for improved readability and performance
+* Bump org.jetbrains.dokka to 2.2.0
+
 ### Version 1.3.11
 
 * Fix foojay toolchain resolver plugin compatibility with Gradle 9 (update to 1.0.0)
