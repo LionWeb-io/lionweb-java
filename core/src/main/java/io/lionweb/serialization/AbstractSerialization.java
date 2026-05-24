@@ -37,7 +37,7 @@ public abstract class AbstractSerialization {
   protected InconsistentDataHandler inconsistentDataHandler = THROWING_INCONSISTENT_DATA_HANDLER;
 
   /** Inconsistent data handler that throws an exception when inconsistent data is encountered. */
-  public static final InconsistentDataHandler THROWING_INCONSISTENT_DATA_HANDLER =
+  private static final InconsistentDataHandler THROWING_INCONSISTENT_DATA_HANDLER =
       new InconsistentDataHandler() {
 
         @Override
