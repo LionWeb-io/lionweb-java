@@ -84,6 +84,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       @Nonnull Map<String, String> languageClassNames) {
     Objects.requireNonNull(languages, "languages should not be null");
     Objects.requireNonNull(specificPackages, "specificPackages should not be null");
+
     if (languages.isEmpty()) {
       return;
     }
@@ -103,7 +104,7 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       }
     }
     GenerationContext languageContext =
-        new GenerationContext(languageConfs, primitiveTypes, mappings);
+        new GenerationContext(languageConfs, primitiveTypes, mappings, languageClassNames);
     languages.forEach(
         language -> {
           generate(language, languageContext);
