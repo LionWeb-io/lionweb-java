@@ -10,7 +10,7 @@ kotlin ="2.3.20"
 kotest ="5.9.1"
 testcontainers ="1.21.3"
 junitPlatform = "1.13.4"
-emfCommonVersion = "2.28.0"
+emfCommonVersion = "2.45.0"
 emfEcoreVersion = "2.33.0"
 emfEcoreXmiVersion = "2.40.0"
 emfjsonVersion = "2.2.0"
@@ -41,7 +41,7 @@ jsonSchemaValidator = { module = "com.networknt:json-schema-validator", version.
 mpsOpenApi = { module = "com.jetbrains:mps-openapi", version.ref = "mpsOpenApiVersion" }
 modelApi = { module = "org.modelix:model-api", version.ref = "modelApiVersion" }
 javapoet = { module = "com.palantir.javapoet:javapoet", version ="0.8.0" }
-gson = { group = "com.google.code.gson", name="gson", version="2.13.0" }
+gson = { group = "com.google.code.gson", name="gson", version="2.14.0" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotationsVersion" }
 emf-common = { module = "org.eclipse.emf:org.eclipse.emf.common", version.ref = "emfCommonVersion" }
 emf-ecore = { module = "org.eclipse.emf:org.eclipse.emf.ecore", version.ref = "emfEcoreVersion" }
