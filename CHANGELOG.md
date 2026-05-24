@@ -1,5 +1,11 @@
 # Changelog
 
+### Version 1.3.15 (unreleased)
+
+* Introduce `InconsistentDataHandler` interface for customizable handling of inconsistent data during serialization/deserialization
+* Extend `InconsistentDataHandler` to handle missing classifiers, in addition to missing properties
+* Improve null and duplicate ID checks during deserialization
+
 ### Version 1.3.11
 
 * Fix foojay toolchain resolver plugin compatibility with Gradle 9 (update to 1.0.0)
