@@ -1,6 +1,6 @@
 [versions]
 protobufVersion = "4.34.1"
-junitVersion="5.13.4"
+junitVersion="6.1.0"
 guavaVersion = "33.0.0-jre"
 commonsMathVersion = "3.6.1"
 jsonSchemaValidatorVersion = "1.0.77"
