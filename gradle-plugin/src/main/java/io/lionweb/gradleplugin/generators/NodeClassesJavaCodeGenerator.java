@@ -392,62 +392,64 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
           throw new IllegalStateException("Unknown feature type: " + feature.getClass());
         }
       }
-      conceptClass.addMethod(
+      if (concept.getExtendedConcept() == null) {
           getPropertyValue
               .addStatement(
                   "throw new $T($S + property + $S)",
                   IllegalStateException.class,
                   "Property ",
-                  " not found.")
-              .build());
-      conceptClass.addMethod(
+                  " not found.");
           setPropertyValue
               .addStatement(
                   "throw new $T($S + property + $S)",
                   IllegalStateException.class,
                   "Property ",
-                  " not found.")
-              .build());
-      conceptClass.addMethod(
-          getChildren
+                  " not found.");
+              getChildren
+                  .addStatement(
+                      "throw new $T($S + containment + $S)",
+                      IllegalStateException.class,
+                      "Containment ",
+                      " not found.");
+              addChild1
+                  .addStatement(
+                      "throw new $T($S + containment + $S)",
+                      IllegalStateException.class,
+                      "Containment ",
+                      " not found.");
+          addChild2
               .addStatement(
                   "throw new $T($S + containment + $S)",
                   IllegalStateException.class,
                   "Containment ",
-                  " not found.")
+                  " not found.");
+
+          getReferenceValues
+              .addStatement(
+                  "throw new $T($S + reference + $S)",
+                  IllegalStateException.class,
+                  "Reference ",
+                  " not found.");
+      } else {
+          getPropertyValue.addStatement("return super.getPropertyValue(property)");
+          setPropertyValue.addStatement("super.setPropertyValue(property, value)");
+          getChildren.addStatement("return super.getChildren(containment)");
+          addChild1.addStatement("super.addChild(containment, child)");
+          addChild2.addStatement("super.addChild(containment, child, index)");
+
+          getReferenceValues.addStatement("return super.getReferenceValues(reference)");
+      }
+      conceptClass.addMethod(getPropertyValue.build());
+      conceptClass.addMethod(setPropertyValue.build());
+
+      conceptClass.addMethod(
+          getChildren
               .build());
       conceptClass.addMethod(
           addChild1
-              .addStatement(
-                  "throw new $T($S + containment + $S)",
-                  IllegalStateException.class,
-                  "Containment ",
-                  " not found.")
               .build());
-
-      // Common body for all methods
-      CodeBlock unsupportedOpBody =
-          CodeBlock.builder()
-              .addStatement(
-                  "throw new $T($S)", UnsupportedOperationException.class, "Not supported yet.")
-              .build();
-
-      addChild2
-          .addStatement(
-              "throw new $T($S + containment + $S)",
-              IllegalStateException.class,
-              "Containment ",
-              " not found.")
-          .build();
       conceptClass.addMethod(addChild2.build());
 
-      getReferenceValues
-          .addStatement(
-              "throw new $T($S + reference + $S)",
-              IllegalStateException.class,
-              "Reference ",
-              " not found.")
-          .build();
       conceptClass.addMethod(getReferenceValues.build());
 
       addReferenceValue1
