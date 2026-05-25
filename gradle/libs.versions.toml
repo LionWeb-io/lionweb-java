@@ -14,7 +14,7 @@ emfCommonVersion = "2.45.0"
 emfEcoreVersion = "2.42.0"
 emfEcoreXmiVersion = "2.40.0"
 emfjsonVersion = "2.2.0"
-annotationsVersion = "24.0.0"
+annotationsVersion = "26.1.0"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "8.3.6"}
