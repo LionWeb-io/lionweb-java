@@ -393,80 +393,70 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         }
       }
       if (concept.getExtendedConcept() == null) {
-          getPropertyValue
-              .addStatement(
-                  "throw new $T($S + property + $S)",
-                  IllegalStateException.class,
-                  "Property ",
-                  " not found.");
-          setPropertyValue
-              .addStatement(
-                  "throw new $T($S + property + $S)",
-                  IllegalStateException.class,
-                  "Property ",
-                  " not found.");
-              getChildren
-                  .addStatement(
-                      "throw new $T($S + containment + $S)",
-                      IllegalStateException.class,
-                      "Containment ",
-                      " not found.");
-              addChild1
-                  .addStatement(
-                      "throw new $T($S + containment + $S)",
-                      IllegalStateException.class,
-                      "Containment ",
-                      " not found.");
-          addChild2
-              .addStatement(
-                  "throw new $T($S + containment + $S)",
-                  IllegalStateException.class,
-                  "Containment ",
-                  " not found.");
+        getPropertyValue.addStatement(
+            "throw new $T($S + property + $S)",
+            IllegalStateException.class,
+            "Property ",
+            " not found.");
+        setPropertyValue.addStatement(
+            "throw new $T($S + property + $S)",
+            IllegalStateException.class,
+            "Property ",
+            " not found.");
+        getChildren.addStatement(
+            "throw new $T($S + containment + $S)",
+            IllegalStateException.class,
+            "Containment ",
+            " not found.");
+        addChild1.addStatement(
+            "throw new $T($S + containment + $S)",
+            IllegalStateException.class,
+            "Containment ",
+            " not found.");
+        addChild2.addStatement(
+            "throw new $T($S + containment + $S)",
+            IllegalStateException.class,
+            "Containment ",
+            " not found.");
 
-          getReferenceValues
-              .addStatement(
-                  "throw new $T($S + reference + $S)",
-                  IllegalStateException.class,
-                  "Reference ",
-                  " not found.");
+        getReferenceValues.addStatement(
+            "throw new $T($S + reference + $S)",
+            IllegalStateException.class,
+            "Reference ",
+            " not found.");
+        addReferenceValue1.addStatement(
+            "throw new $T($S + reference + $S)",
+            IllegalStateException.class,
+            "Reference ",
+            " not found.");
+        addReferenceValue2.addStatement(
+            "throw new $T($S + reference + $S)",
+            IllegalStateException.class,
+            "Reference ",
+            " not found.");
       } else {
-          getPropertyValue.addStatement("return super.getPropertyValue(property)");
-          setPropertyValue.addStatement("super.setPropertyValue(property, value)");
-          getChildren.addStatement("return super.getChildren(containment)");
-          addChild1.addStatement("super.addChild(containment, child)");
-          addChild2.addStatement("super.addChild(containment, child, index)");
+        getPropertyValue.addStatement("return super.getPropertyValue(property)");
+        setPropertyValue.addStatement("super.setPropertyValue(property, value)");
+        getChildren.addStatement("return super.getChildren(containment)");
+        addChild1.addStatement("super.addChild(containment, child)");
+        addChild2.addStatement("super.addChild(containment, child, index)");
 
-          getReferenceValues.addStatement("return super.getReferenceValues(reference)");
+        getReferenceValues.addStatement("return super.getReferenceValues(reference)");
+
+        addReferenceValue1.addStatement("return super.addReferenceValue(reference, referredNode)");
+        addReferenceValue2.addStatement(
+            "return super.addReferenceValue(reference, index, referredNode)");
       }
       conceptClass.addMethod(getPropertyValue.build());
       conceptClass.addMethod(setPropertyValue.build());
 
-      conceptClass.addMethod(
-          getChildren
-              .build());
-      conceptClass.addMethod(
-          addChild1
-              .build());
+      conceptClass.addMethod(getChildren.build());
+      conceptClass.addMethod(addChild1.build());
       conceptClass.addMethod(addChild2.build());
 
       conceptClass.addMethod(getReferenceValues.build());
 
-      addReferenceValue1
-          .addStatement(
-              "throw new $T($S + reference + $S)",
-              IllegalStateException.class,
-              "Reference ",
-              " not found.")
-          .build();
       conceptClass.addMethod(addReferenceValue1.build());
-      addReferenceValue2
-          .addStatement(
-              "throw new $T($S + reference + $S)",
-              IllegalStateException.class,
-              "Reference ",
-              " not found.")
-          .build();
       conceptClass.addMethod(addReferenceValue2.build());
 
       // @Override
