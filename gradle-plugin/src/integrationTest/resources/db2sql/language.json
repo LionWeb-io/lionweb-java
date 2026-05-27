@@ -1,0 +1,6353 @@
+{
+  "serializationFormatVersion": "2023.1",
+  "languages": [
+    {
+      "key": "LionCore-M3",
+      "version": "2023.1"
+    },
+    {
+      "key": "LionCore-builtins",
+      "version": "2023.1"
+    },
+    {
+      "key": "starlasu-comments",
+      "version": "1"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "language-db2sql-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Language"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Language-version"
+          },
+          "value": "1"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "language-db2sql-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "db2sql"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Language-entities"
+          },
+          "children": [
+            "db2sql-SqlStatement-id",
+            "db2sql-SqlInsertStatement-id",
+            "db2sql-SqlUpdateStatement-id",
+            "db2sql-SqlDeleteStatement-id",
+            "db2sql-SqlCreateTableStatement-id",
+            "db2sql-SqlDropTableStatement-id",
+            "db2sql-SqlAlterTableStatement-id",
+            "db2sql-DB2SQLCommitStatement-id",
+            "db2sql-DB2SQLSelectStatement-id",
+            "db2sql-DB2SQLSelectItem-id",
+            "db2sql-DB2SQLFromClause-id",
+            "db2sql-DB2SQLTableReference-id",
+            "db2sql-DB2SQLOrderByItem-id",
+            "db2sql-DB2SQLSelectAllItem-id",
+            "db2sql-DB2SQLExplicitSelectItem-id",
+            "db2sql-DB2SQLExpression-id",
+            "db2sql-DB2SQLColumnReferenceExpression-id",
+            "db2sql-DB2SQLLiteralExpression-id",
+            "db2sql-DB2SQLFunctionCallExpression-id",
+            "db2sql-DB2SQLScript-id",
+            "db2sql-DB2SQLDDLStatement-id",
+            "db2sql-DB2SQLQueryStatement-id",
+            "db2sql-DB2SQLSearchCondition-id",
+            "db2sql-DB2SQLComparisonSearchCondition-id",
+            "db2sql-DB2SQLAndSearchCondition-id",
+            "db2sql-DB2SQLTableExpression-id",
+            "db2sql-DB2SQLTableReferenceExpression-id",
+            "db2sql-DB2SQLAliasedTableExpression-id",
+            "db2sql-DB2SQLParenthesizedTableExpression-id",
+            "db2sql-DB2SQLQueryTableExpression-id",
+            "db2sql-DB2SQLEqualsComparisonExpression-id",
+            "db2sql-DB2SQLNotEqualsComparisonExpression-id",
+            "db2sql-DB2SQLLessThanComparisonExpression-id",
+            "db2sql-DB2SQLLessOrEqualComparisonExpression-id",
+            "db2sql-DB2SQLGreaterThanComparisonExpression-id",
+            "db2sql-DB2SQLGreaterOrEqualComparisonExpression-id",
+            "db2sql-DB2SQLLiteral-id",
+            "db2sql-DB2SQLNumberLiteral-id",
+            "db2sql-DB2SQLBooleanLiteral-id",
+            "db2sql-DB2SQLTrueLiteral-id",
+            "db2sql-DB2SQLFalseLiteral-id",
+            "db2sql-DB2SQLStringLiteral-id",
+            "db2sql-DB2SQLArithmeticExpression-id",
+            "db2sql-DB2SQLAdditionExpression-id",
+            "db2sql-DB2SQLSubtractionExpression-id",
+            "db2sql-DB2SQLMultiplicationExpression-id",
+            "db2sql-DB2SQLDivisionExpression-id",
+            "db2sql-DB2SQLBinaryArithmeticExpression-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Language-dependsOn"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": null
+    },
+    {
+      "id": "db2sql-SqlStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "ASTNode",
+              "reference": "com-strumenta-StarLasu-ASTNode-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Statement",
+              "reference": "com-strumenta-StarLasu-Statement-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        "0765206e-8b9d-4aa6-92ae-b5e3e4058959"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "0765206e-8b9d-4aa6-92ae-b5e3e4058959",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for all SQL statements in the initial db2sql language model."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlStatement-id"
+    },
+    {
+      "id": "db2sql-SqlInsertStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlInsertStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLInsertStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "06d929cd-7992-47e8-ac8c-95a5ef69d92d"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "06d929cd-7992-47e8-ac8c-95a5ef69d92d",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an INSERT statement in db2sql. In the current model, this concept identifies an INSERT command as a distinct SQL statement type."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlInsertStatement-id"
+    },
+    {
+      "id": "db2sql-SqlUpdateStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlUpdateStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLUpdateStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "11b42a05-8239-4d26-ba29-90214ab97fcb"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "11b42a05-8239-4d26-ba29-90214ab97fcb",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an UPDATE statement in db2sql. In the current model, this concept identifies an UPDATE command as a distinct SQL statement type."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlUpdateStatement-id"
+    },
+    {
+      "id": "db2sql-SqlDeleteStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlDeleteStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLDeleteStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "fb497adf-c049-4013-8bc0-6e0d050fce4b"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "fb497adf-c049-4013-8bc0-6e0d050fce4b",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a DELETE statement in db2sql. In the current model, this concept identifies a DELETE command as a distinct SQL statement type."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlDeleteStatement-id"
+    },
+    {
+      "id": "db2sql-SqlCreateTableStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlCreateTableStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLCreateTableStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLDDLStatement",
+              "reference": "db2sql-DB2SQLDDLStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "a58ebd2b-1d78-4950-be1c-948d4f63da30"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "a58ebd2b-1d78-4950-be1c-948d4f63da30",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a CREATE TABLE statement in db2sql. In the current model, this concept identifies a table-creation command as a distinct SQL statement type."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlCreateTableStatement-id"
+    },
+    {
+      "id": "db2sql-SqlDropTableStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlDropTableStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLDropTableStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLDDLStatement",
+              "reference": "db2sql-DB2SQLDDLStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "3c333637-3a1c-4ca2-ba11-546d8e69091f"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "3c333637-3a1c-4ca2-ba11-546d8e69091f",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a DROP TABLE statement in db2sql. In the current model, this concept identifies a table-drop command as a distinct SQL statement type."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlDropTableStatement-id"
+    },
+    {
+      "id": "db2sql-SqlAlterTableStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-SqlAlterTableStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLAlterTableStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLDDLStatement",
+              "reference": "db2sql-DB2SQLDDLStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "253c29d6-2bd8-4272-a954-e096d7548d09"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "253c29d6-2bd8-4272-a954-e096d7548d09",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an ALTER TABLE statement in db2sql. In the current model, this concept identifies a table-alteration command as a distinct SQL statement type."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-SqlAlterTableStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLCommitStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLCommitStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLCommitStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "d2726572-3770-4799-8b45-adf0973eec48"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "d2726572-3770-4799-8b45-adf0973eec48",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a COMMIT statement in db2sql. This statement explicitly ends the current transaction and makes the changes performed in the transaction permanent."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLCommitStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLSelectStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLSelectStatement-distinct-id",
+            "db2sql-DB2SQLSelectStatement-selectItems-id",
+            "db2sql-DB2SQLSelectStatement-fromClause-id",
+            "db2sql-DB2SQLSelectStatement-orderByItems-id",
+            "db2sql-DB2SQLSelectStatement-whereClause-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLQueryStatement",
+              "reference": "db2sql-DB2SQLQueryStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": [
+            {
+              "resolveInfo": "INamed",
+              "reference": "LionCore-builtins-INamed"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectStatement-distinct-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectStatement-distinct-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "distinct"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Boolean",
+              "reference": "LionCore-builtins-Boolean"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSelectStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectStatement-selectItems-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectStatement-selectItems-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "selectItems"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLSelectItem",
+              "reference": "db2sql-DB2SQLSelectItem-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSelectStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectStatement-fromClause-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectStatement-fromClause-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "fromClause"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLFromClause",
+              "reference": "db2sql-DB2SQLFromClause-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSelectStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectStatement-orderByItems-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectStatement-orderByItems-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "orderByItems"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLOrderByItem",
+              "reference": "db2sql-DB2SQLOrderByItem-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSelectStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectStatement-whereClause-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectStatement-whereClause-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "whereClause"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSelectStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectItem-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectItem-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLSelectItem"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": [
+            {
+              "resolveInfo": "INamed",
+              "reference": "LionCore-builtins-INamed"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLFromClause-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLFromClause-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLFromClause"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLFromClause-tableExpression-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLFromClause-tableExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLFromClause-tableExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "tableExpression"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLTableExpression",
+              "reference": "db2sql-DB2SQLTableExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLFromClause-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTableReference-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTableReference-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLTableReference"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLTableReference-alias-id",
+            "db2sql-DB2SQLTableReference-table-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": [
+            {
+              "resolveInfo": "INamed",
+              "reference": "LionCore-builtins-INamed"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTableReference-alias-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTableReference-alias-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "alias"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLTableReference-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTableReference-table-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTableReference-table-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "table"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLTableReference-id"
+    },
+    {
+      "id": "db2sql-DB2SQLOrderByItem-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLOrderByItem-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLOrderByItem"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLOrderByItem-ascending-id",
+            "db2sql-DB2SQLOrderByItem-expression-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLOrderByItem-ascending-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLOrderByItem-ascending-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "ascending"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "Boolean",
+              "reference": "LionCore-builtins-Boolean"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLOrderByItem-id"
+    },
+    {
+      "id": "db2sql-DB2SQLOrderByItem-expression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLOrderByItem-expression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "expression"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLOrderByItem-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSelectAllItem-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSelectAllItem-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLSelectAllItem"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLSelectItem",
+              "reference": "db2sql-DB2SQLSelectItem-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLExplicitSelectItem-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLExplicitSelectItem-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLExplicitSelectItem"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLExplicitSelectItem-expression-id",
+            "db2sql-DB2SQLExplicitSelectItem-alias-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLSelectItem",
+              "reference": "db2sql-DB2SQLSelectItem-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": [
+            {
+              "resolveInfo": "INamed",
+              "reference": "LionCore-builtins-INamed"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLExplicitSelectItem-expression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLExplicitSelectItem-expression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "expression"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLExplicitSelectItem-id"
+    },
+    {
+      "id": "db2sql-DB2SQLExplicitSelectItem-alias-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLExplicitSelectItem-alias-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "alias"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLExplicitSelectItem-id"
+    },
+    {
+      "id": "db2sql-DB2SQLExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLColumnReferenceExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLColumnReferenceExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLColumnReferenceExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLColumnReferenceExpression-column-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLColumnReferenceExpression-column-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Reference"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLColumnReferenceExpression-column-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "column"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "ASTNode",
+              "reference": "com-strumenta-StarLasu-ASTNode-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLColumnReferenceExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLLiteralExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLLiteralExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLLiteralExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLFunctionCallExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLFunctionCallExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLFunctionCallExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLFunctionCallExpression-functionName-id",
+            "db2sql-DB2SQLFunctionCallExpression-arguments-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLFunctionCallExpression-functionName-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLFunctionCallExpression-functionName-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "functionName"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLFunctionCallExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLFunctionCallExpression-arguments-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLFunctionCallExpression-arguments-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "arguments"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLFunctionCallExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLScript-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLScript-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLScript"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLScript-statements-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "ASTNode",
+              "reference": "com-strumenta-StarLasu-ASTNode-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "adf8033e-ff1e-43a6-a002-dd3a08e5d110"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "adf8033e-ff1e-43a6-a002-dd3a08e5d110",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Top-level container for a db2sql source file or script. It owns an ordered list of DB2SQLStatement nodes representing the statements that appear in the script."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLScript-id"
+    },
+    {
+      "id": "db2sql-DB2SQLScript-statements-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLScript-statements-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "statements"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLScript-id"
+    },
+    {
+      "id": "db2sql-DB2SQLDDLStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLDDLStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLDDLStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "4320545e-5372-4f18-8bdd-562a9fa44e79"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "4320545e-5372-4f18-8bdd-562a9fa44e79",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for Data Definition Language statements in db2sql, such as CREATE TABLE, DROP TABLE, and ALTER TABLE."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLDDLStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLQueryStatement-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLQueryStatement-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLQueryStatement"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLStatement",
+              "reference": "db2sql-SqlStatement-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "2664e435-4c5c-4091-9f6a-930dfd193eab"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "2664e435-4c5c-4091-9f6a-930dfd193eab",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for query statements in db2sql, currently used for SELECT statements."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLQueryStatement-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSearchCondition-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSearchCondition-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLSearchCondition"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "bd691163-5f11-4db3-b6a6-3d81325bd8b3"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "bd691163-5f11-4db3-b6a6-3d81325bd8b3",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for WHERE/HAVING-style search conditions in db2sql. It will represent boolean predicates used to filter rows in SELECT, UPDATE, and DELETE statements."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSearchCondition-id"
+    },
+    {
+      "id": "db2sql-DB2SQLComparisonSearchCondition-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLComparisonSearchCondition-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLComparisonSearchCondition-left-id",
+            "db2sql-DB2SQLComparisonSearchCondition-right-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLComparisonSearchCondition-left-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLComparisonSearchCondition-left-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "left"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLComparisonSearchCondition-id"
+    },
+    {
+      "id": "db2sql-DB2SQLComparisonSearchCondition-right-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLComparisonSearchCondition-right-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "right"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLComparisonSearchCondition-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAndSearchCondition-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAndSearchCondition-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLAndSearchCondition"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLAndSearchCondition-left-id",
+            "db2sql-DB2SQLAndSearchCondition-right-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLSearchCondition",
+              "reference": "db2sql-DB2SQLSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAndSearchCondition-left-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAndSearchCondition-left-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "left"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLSearchCondition",
+              "reference": "db2sql-DB2SQLSearchCondition-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLAndSearchCondition-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAndSearchCondition-right-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAndSearchCondition-right-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "right"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLSearchCondition",
+              "reference": "db2sql-DB2SQLSearchCondition-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLAndSearchCondition-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTableExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTableExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLTableExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": []
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "ad19da6b-a6ab-459e-aada-256ce7ed6e79"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "ad19da6b-a6ab-459e-aada-256ce7ed6e79",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for table-producing expressions that can appear in a FROM clause. This covers plain table references, aliased table expressions, parenthesized table expressions, and query-derived tables."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTableReferenceExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTableReferenceExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLTableReferenceExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLTableReferenceExpression-table-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLTableExpression",
+              "reference": "db2sql-DB2SQLTableExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": [
+            {
+              "resolveInfo": "INamed",
+              "reference": "LionCore-builtins-INamed"
+            }
+          ]
+        }
+      ],
+      "annotations": [
+        "e3f80185-a87c-4b2a-8a7c-f80609320ba1"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "e3f80185-a87c-4b2a-8a7c-f80609320ba1",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "A reference to a table name used as a table-producing expression in a FROM clause."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLTableReferenceExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTableReferenceExpression-table-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Reference"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTableReferenceExpression-table-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "table"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "ASTNode",
+              "reference": "com-strumenta-StarLasu-ASTNode-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLTableReferenceExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAliasedTableExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAliasedTableExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLAliasedTableExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLAliasedTableExpression-alias-id",
+            "db2sql-DB2SQLAliasedTableExpression-expression-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLTableExpression",
+              "reference": "db2sql-DB2SQLTableExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "8ef08c14-5365-40c7-b3eb-c9fdab9485db"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "8ef08c14-5365-40c7-b3eb-c9fdab9485db",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "A table-producing expression with an alias, written as expr AS foo."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLAliasedTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAliasedTableExpression-alias-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAliasedTableExpression-alias-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "alias"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLAliasedTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAliasedTableExpression-expression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAliasedTableExpression-expression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "expression"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLTableExpression",
+              "reference": "db2sql-DB2SQLTableExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLAliasedTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLParenthesizedTableExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLParenthesizedTableExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLParenthesizedExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLParenthesizedTableExpression-expression-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "664314e1-8386-4ccf-a634-5512d82f1529"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "664314e1-8386-4ccf-a634-5512d82f1529",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "A parenthesized table-producing expression, written as ( expr )."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLParenthesizedTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLParenthesizedTableExpression-expression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLParenthesizedTableExpression-expression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "expression"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLParenthesizedTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLQueryTableExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLQueryTableExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLQueryTableExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLQueryTableExpression-query-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLTableExpression",
+              "reference": "db2sql-DB2SQLTableExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "64ece82c-a752-4830-b750-3ec1553df58d"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "64ece82c-a752-4830-b750-3ec1553df58d",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "A table-producing expression that wraps a query statement and allows it to appear in a FROM clause as a derived table."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLQueryTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLQueryTableExpression-query-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLQueryTableExpression-query-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "query"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLQueryStatement",
+              "reference": "db2sql-DB2SQLQueryStatement-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLQueryTableExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLEqualsComparisonExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLEqualsComparisonExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLEqualsComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLComparisonExpression",
+              "reference": "db2sql-DB2SQLComparisonSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "0fa65c73-0596-41ce-ab20-b411d3ce76c2"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "0fa65c73-0596-41ce-ab20-b411d3ce76c2",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an equality comparison in db2sql, written with the equals operator. It compares the left and right DB2SQLExpression operands for equality."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLEqualsComparisonExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLNotEqualsComparisonExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLNotEqualsComparisonExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLNotEqualsComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLComparisonExpression",
+              "reference": "db2sql-DB2SQLComparisonSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "a435db84-4bf2-4f38-b71f-57ff416d8939"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "a435db84-4bf2-4f38-b71f-57ff416d8939",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an inequality comparison in db2sql, written with the not-equals operator. It compares the left and right DB2SQLExpression operands for inequality."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLNotEqualsComparisonExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLLessThanComparisonExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLLessThanComparisonExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLLessThanComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLComparisonExpression",
+              "reference": "db2sql-DB2SQLComparisonSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "4e837601-73c7-4333-abeb-7366cd56ad2d"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "4e837601-73c7-4333-abeb-7366cd56ad2d",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a less-than comparison in db2sql. It compares the left DB2SQLExpression operand to the right operand using the \u0027\u003c\u0027 operator."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLLessThanComparisonExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLLessOrEqualComparisonExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLLessOrEqualComparisonExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLLessOrEqualComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLComparisonExpression",
+              "reference": "db2sql-DB2SQLComparisonSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "53b127ae-b856-4b74-ae1c-aa792e9825d5"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "53b127ae-b856-4b74-ae1c-aa792e9825d5",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a less-than-or-equal comparison in db2sql. It compares the left DB2SQLExpression operand to the right operand using the \u0027\u003c\u003d\u0027 operator."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLLessOrEqualComparisonExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLGreaterThanComparisonExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLGreaterThanComparisonExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLGreaterThanComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLComparisonExpression",
+              "reference": "db2sql-DB2SQLComparisonSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "4d52779f-6ee7-41e3-b800-e9d509bdb8ee"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "4d52779f-6ee7-41e3-b800-e9d509bdb8ee",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a greater-than comparison in db2sql. It compares the left DB2SQLExpression operand to the right operand using the \u0027\u003e\u0027 operator."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLGreaterThanComparisonExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLGreaterOrEqualComparisonExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLGreaterOrEqualComparisonExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLGreaterOrEqualComparisonExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLComparisonExpression",
+              "reference": "db2sql-DB2SQLComparisonSearchCondition-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "88a2e1b2-eda9-49a8-8ad5-e583610acac3"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "88a2e1b2-eda9-49a8-8ad5-e583610acac3",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a greater-than-or-equal comparison in db2sql. It compares the left DB2SQLExpression operand to the right operand using the \u0027\u003e\u003d\u0027 operator."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLGreaterOrEqualComparisonExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLLiteral-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLLiteral-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLLiteral"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "9198dbd5-9dd3-4e26-a7ec-f1455f6c9e40"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "9198dbd5-9dd3-4e26-a7ec-f1455f6c9e40",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for literal expressions in db2sql. Literal concepts represent inline constant values used in SQL expressions."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLNumberLiteral-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLNumberLiteral-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLNumberLiteral"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLNumberLiteral-number-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLLiteral",
+              "reference": "db2sql-DB2SQLLiteral-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "87fd1371-0706-4e1a-b2b0-5c56ec582867"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "87fd1371-0706-4e1a-b2b0-5c56ec582867",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a numeric literal in db2sql. The number is stored as a string property so the original textual form can be preserved."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLNumberLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLNumberLiteral-number-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLNumberLiteral-number-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "number"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLNumberLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLBooleanLiteral-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLBooleanLiteral-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLBooleanLiteral"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLLiteral",
+              "reference": "db2sql-DB2SQLLiteral-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "46cc2f11-ed21-49d9-bdb3-9fe9bc4ca718"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "46cc2f11-ed21-49d9-bdb3-9fe9bc4ca718",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for boolean literals in db2sql. It is specialized by concrete true and false literal concepts."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLBooleanLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLTrueLiteral-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLTrueLiteral-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLTrueLiteral"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLBooleanLiteral",
+              "reference": "db2sql-DB2SQLBooleanLiteral-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "d670eac1-94b8-4676-8b7b-59328e86f5e0"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "d670eac1-94b8-4676-8b7b-59328e86f5e0",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents the boolean literal true in db2sql."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLTrueLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLFalseLiteral-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLFalseLiteral-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLFalseLiteral"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLBooleanLiteral",
+              "reference": "db2sql-DB2SQLBooleanLiteral-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "5a5f96b8-c3f4-4ef0-968e-d30211e37456"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "5a5f96b8-c3f4-4ef0-968e-d30211e37456",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents the boolean literal false in db2sql."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLFalseLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLStringLiteral-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLStringLiteral-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLStringLiteral"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLStringLiteral-value-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLLiteral",
+              "reference": "db2sql-DB2SQLLiteral-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "4e2ed2e0-9bdd-4877-8f91-980fa620c4f9"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "4e2ed2e0-9bdd-4877-8f91-980fa620c4f9",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a string literal in db2sql. The literal text is stored as a string property, including its textual content as parsed."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLStringLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLStringLiteral-value-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Property"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLStringLiteral-value-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "value"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Property-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "String",
+              "reference": "LionCore-builtins-String"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLStringLiteral-id"
+    },
+    {
+      "id": "db2sql-DB2SQLArithmeticExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLArithmeticExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLArithmeticExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "6778a94a-ace3-4c6a-8e05-9999493442c3"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "6778a94a-ace3-4c6a-8e05-9999493442c3",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Abstract base concept for arithmetic expressions in db2sql. It captures binary numeric operations and serves as the parent for addition, subtraction, multiplication, and division expressions. This follows DB2 SQL operator precedence, where multiplication and division bind more tightly than addition and subtraction."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLArithmeticExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLAdditionExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLAdditionExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLAdditionExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLBinaryArithmeticExpression",
+              "reference": "db2sql-DB2SQLBinaryArithmeticExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "e2375850-e92b-4838-b402-88f7ed2154ef"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "e2375850-e92b-4838-b402-88f7ed2154ef",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an addition operation in db2sql, written with the \u0027+\u0027 operator. It has left and right DB2SQLExpression operands inherited from DB2SQLArithmeticExpression."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLAdditionExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLSubtractionExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLSubtractionExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLSubtractionExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLBinaryArithmeticExpression",
+              "reference": "db2sql-DB2SQLBinaryArithmeticExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "829be09c-540d-4049-bb48-d18dbde9cd3e"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "829be09c-540d-4049-bb48-d18dbde9cd3e",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents an subtraction operation in db2sql, written with the \u0027-\u0027 operator. It has left and right DB2SQLExpression operands inherited from DB2SQLArithmeticExpression."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLSubtractionExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLMultiplicationExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLMultiplicationExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLMultiplicationExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLBinaryArithmeticExpression",
+              "reference": "db2sql-DB2SQLBinaryArithmeticExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "d0a72208-52a5-4298-b57a-f194b8fa92b0"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "d0a72208-52a5-4298-b57a-f194b8fa92b0",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a multiplication operation in db2sql, written with the \u0027*\u0027 operator. It has left and right DB2SQLExpression operands inherited from DB2SQLArithmeticExpression."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLMultiplicationExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLDivisionExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLDivisionExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLDivisionExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": []
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLBinaryArithmeticExpression",
+              "reference": "db2sql-DB2SQLBinaryArithmeticExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [
+        "ddd0a1a1-4c13-443d-a61a-46941f7344ef"
+      ],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "ddd0a1a1-4c13-443d-a61a-46941f7344ef",
+      "classifier": {
+        "language": "starlasu-comments",
+        "version": "1",
+        "key": "Comment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "starlasu-comments",
+            "version": "1",
+            "key": "Comment-text"
+          },
+          "value": "Represents a division operation in db2sql, written with the \u0027/\u0027 operator. It has left and right DB2SQLExpression operands inherited from DB2SQLArithmeticExpression."
+        }
+      ],
+      "containments": [],
+      "references": [],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLDivisionExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLBinaryArithmeticExpression-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Concept"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-abstract"
+          },
+          "value": "true"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-partition"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLBinaryArithmeticExpression-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "DB2SQLBinaryArithmeticExpression"
+        }
+      ],
+      "containments": [
+        {
+          "containment": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Classifier-features"
+          },
+          "children": [
+            "db2sql-DB2SQLBinaryArithmeticExpression-left-id",
+            "db2sql-DB2SQLBinaryArithmeticExpression-right-id"
+          ]
+        }
+      ],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-extends"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLArithmeticExpression",
+              "reference": "db2sql-DB2SQLArithmeticExpression-id"
+            }
+          ]
+        },
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Concept-implements"
+          },
+          "targets": []
+        }
+      ],
+      "annotations": [],
+      "parent": "language-db2sql-id"
+    },
+    {
+      "id": "db2sql-DB2SQLBinaryArithmeticExpression-left-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLBinaryArithmeticExpression-left-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "left"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLBinaryArithmeticExpression-id"
+    },
+    {
+      "id": "db2sql-DB2SQLBinaryArithmeticExpression-right-id",
+      "classifier": {
+        "language": "LionCore-M3",
+        "version": "2023.1",
+        "key": "Containment"
+      },
+      "properties": [
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-multiple"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Feature-optional"
+          },
+          "value": "false"
+        },
+        {
+          "property": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "IKeyed-key"
+          },
+          "value": "db2sql-DB2SQLBinaryArithmeticExpression-right-key"
+        },
+        {
+          "property": {
+            "language": "LionCore-builtins",
+            "version": "2023.1",
+            "key": "LionCore-builtins-INamed-name"
+          },
+          "value": "right"
+        }
+      ],
+      "containments": [],
+      "references": [
+        {
+          "reference": {
+            "language": "LionCore-M3",
+            "version": "2023.1",
+            "key": "Link-type"
+          },
+          "targets": [
+            {
+              "resolveInfo": "DB2SQLExpression",
+              "reference": "db2sql-DB2SQLExpression-id"
+            }
+          ]
+        }
+      ],
+      "annotations": [],
+      "parent": "db2sql-DB2SQLBinaryArithmeticExpression-id"
+    }
+  ]
+}
