@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 1.3.17
+
+* Add end-to-end integration test for Gradle plugin code generation pipeline (db2sql language)
+* Fix language topological sort ordering for cross-platform file system compatibility
+* Consolidate GitHub CI workflows into a unified `ci.yml` with Java 17, 21, and 25 matrix
+* Upgrade Gradle wrapper to 9.5.1
+* Upgrade Spotless to 8.5.1 for Java 25 compatibility
+
 ### Version 1.3.16
 
 * Fix issue with conflicting variables in classes generation
