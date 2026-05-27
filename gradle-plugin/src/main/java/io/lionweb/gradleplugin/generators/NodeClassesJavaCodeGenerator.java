@@ -186,20 +186,6 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         conceptClass.addModifiers(Modifier.ABSTRACT);
       }
 
-      conceptClass.addField(
-          FieldSpec.builder(ClassName.get(String.class), "id")
-              .addAnnotation(NotNull.class)
-              .addModifiers(Modifier.PRIVATE)
-              .build());
-      conceptClass.addField(
-          FieldSpec.builder(
-                  ParameterizedTypeName.get(
-                      ClassName.get(ClassifierInstance.class),
-                      WildcardTypeName.subtypeOf(Object.class)),
-                  "parent")
-              .addAnnotation(Nullable.class)
-              .addModifiers(Modifier.PRIVATE)
-              .build());
       MethodSpec.Builder constructor =
           MethodSpec.constructorBuilder()
               .addModifiers(Modifier.PUBLIC)
@@ -208,39 +194,54 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
                       .addAnnotation(NotNull.class)
                       .build());
       if (concept.getExtendedConcept() == null) {
+        conceptClass.addField(
+            FieldSpec.builder(ClassName.get(String.class), "id")
+                .addAnnotation(NotNull.class)
+                .addModifiers(Modifier.PRIVATE)
+                .build());
+        conceptClass.addField(
+            FieldSpec.builder(
+                    ParameterizedTypeName.get(
+                        ClassName.get(ClassifierInstance.class),
+                        WildcardTypeName.subtypeOf(Object.class)),
+                    "parent")
+                .addAnnotation(Nullable.class)
+                .addModifiers(Modifier.PRIVATE)
+                .build());
         constructor
             .addStatement("$T.requireNonNull(id, $S)", Objects.class, "id must not be null")
             .addStatement("this.id = id");
+        conceptClass.addMethod(constructor.build());
+        conceptClass.addMethod(
+            MethodSpec.methodBuilder("getID")
+                .returns(TypeName.get(String.class))
+                .addAnnotation(NotNull.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addStatement("return this.id")
+                .build());
+        conceptClass.addMethod(
+            MethodSpec.methodBuilder("getParent")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(classifierInstanceOfUnknown)
+                .addStatement("return this.parent")
+                .build());
+        conceptClass.addMethod(
+            MethodSpec.methodBuilder("setParent")
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(ClassName.get(ClassifierInstance.class))
+                .addParameter(
+                    ParameterSpec.builder(classifierInstanceOfUnknown, "parent")
+                        .addAnnotation(ClassName.get(Nullable.class))
+                        .build())
+                .addStatement("this.parent = parent")
+                .addStatement("return this")
+                .build());
       } else {
         constructor.addStatement("super(id)");
+        conceptClass.addMethod(constructor.build());
       }
-      conceptClass.addMethod(constructor.build());
-      conceptClass.addMethod(
-          MethodSpec.methodBuilder("getID")
-              .returns(TypeName.get(String.class))
-              .addAnnotation(NotNull.class)
-              .addModifiers(Modifier.PUBLIC)
-              .addStatement("return this.id")
-              .build());
-      conceptClass.addMethod(
-          MethodSpec.methodBuilder("getParent")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(classifierInstanceOfUnknown)
-              .addStatement("return this.parent")
-              .build());
-      conceptClass.addMethod(
-          MethodSpec.methodBuilder("setParent")
-              .addAnnotation(Override.class)
-              .addModifiers(Modifier.PUBLIC)
-              .returns(ClassName.get(ClassifierInstance.class))
-              .addParameter(
-                  ParameterSpec.builder(classifierInstanceOfUnknown, "parent")
-                      .addAnnotation(ClassName.get(Nullable.class))
-                      .build())
-              .addStatement("this.parent = parent")
-              .addStatement("return this")
-              .build());
       conceptClass.addMethod(
           MethodSpec.methodBuilder("getClassifier")
               .addAnnotation(Override.class)
@@ -463,10 +464,20 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
       // public void setReferenceValues(Reference reference, List<? extends ReferenceValue> values)
       // {
       // ... }
-      conceptClass.addMethod(generateSetReferenceValues(concept, generationContext));
+      List<Reference> ownReferences =
+          features.stream()
+              .filter(f -> f instanceof Reference)
+              .map(f -> (Reference) f)
+              .collect(java.util.stream.Collectors.toList());
+      boolean hasExtendedConcept = concept.getExtendedConcept() != null;
 
-      conceptClass.addMethod(generateSetReferred(concept, generationContext));
-      conceptClass.addMethod(generateSetResolveInfo(concept, generationContext));
+      conceptClass.addMethod(
+          generateSetReferenceValues(
+              concept, generationContext, ownReferences, hasExtendedConcept));
+      conceptClass.addMethod(
+          generateSetReferred(concept, generationContext, ownReferences, hasExtendedConcept));
+      conceptClass.addMethod(
+          generateSetResolveInfo(concept, generationContext, ownReferences, hasExtendedConcept));
     } catch (Exception e) {
       throw new RuntimeException(
           "Failed to generate class for concept " + concept.qualifiedName(), e);
@@ -482,7 +493,10 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
   }
 
   private static @Nonnull MethodSpec generateSetReferenceValues(
-      @Nonnull Concept concept, @Nonnull GenerationContext context) {
+      @Nonnull Concept concept,
+      @Nonnull GenerationContext context,
+      @Nonnull List<Reference> ownReferences,
+      boolean hasExtendedConcept) {
     MethodSpec.Builder setReferenceValues =
         MethodSpec.methodBuilder("setReferenceValues")
             .addAnnotation(Override.class)
@@ -498,35 +512,39 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         "$T.requireNonNull(reference, $S)", Objects.class, "reference cannot be null");
     setReferenceValues.addStatement(
         "$T.requireNonNull(values, $S)", Objects.class, "values cannot be null");
-    concept
-        .allReferences()
-        .forEach(
-            reference -> {
-              setReferenceValues.beginControlFlow(
-                  "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
-              if (reference.isMultiple()) {
-                setReferenceValues.addStatement("set$N(values)", pascalCase(reference.getName()));
-              } else {
-                setReferenceValues.addStatement(
-                    "if (values.size() > 0) throw new IllegalArgumentException($S)",
-                    "Cannot specifiy more than one value for a single-valued reference");
-                setReferenceValues.addStatement(
-                    "set$N(values.isEmpty() ? null : values.get(0))",
-                    pascalCase(reference.getName()));
-              }
-              setReferenceValues.addStatement("return");
-              setReferenceValues.endControlFlow();
-            });
-    setReferenceValues.addStatement(
-        "throw new $T($S + reference + $S)",
-        IllegalStateException.class,
-        "Reference ",
-        " not found.");
+    ownReferences.forEach(
+        reference -> {
+          setReferenceValues.beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
+          if (reference.isMultiple()) {
+            setReferenceValues.addStatement("set$N(values)", pascalCase(reference.getName()));
+          } else {
+            setReferenceValues.addStatement(
+                "if (values.size() > 0) throw new IllegalArgumentException($S)",
+                "Cannot specifiy more than one value for a single-valued reference");
+            setReferenceValues.addStatement(
+                "set$N(values.isEmpty() ? null : values.get(0))", pascalCase(reference.getName()));
+          }
+          setReferenceValues.addStatement("return");
+          setReferenceValues.endControlFlow();
+        });
+    if (hasExtendedConcept) {
+      setReferenceValues.addStatement("super.setReferenceValues(reference, values)");
+    } else {
+      setReferenceValues.addStatement(
+          "throw new $T($S + reference + $S)",
+          IllegalStateException.class,
+          "Reference ",
+          " not found.");
+    }
     return setReferenceValues.build();
   }
 
   private static @Nonnull MethodSpec generateSetReferred(
-      @Nonnull Concept concept, @Nonnull GenerationContext context) {
+      @Nonnull Concept concept,
+      @Nonnull GenerationContext context,
+      @Nonnull List<Reference> ownReferences,
+      boolean hasExtendedConcept) {
     MethodSpec.Builder setReferred =
         MethodSpec.methodBuilder("setReferred")
             .addAnnotation(Override.class)
@@ -541,45 +559,50 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         "$T.requireNonNull(reference, $S)", Objects.class, "reference cannot be null");
     setReferred.addStatement(
         "if (index < 0) throw new IllegalArgumentException($S);", "index should be non-negative");
-    concept
-        .allReferences()
-        .forEach(
-            reference -> {
-              setReferred.beginControlFlow(
-                  "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
-              if (reference.isMultiple()) {
-                setReferred.addStatement(
-                    "if (index >= $N.size()) throw new IllegalArgumentException($S);",
-                    camelCase(reference.getName()),
-                    "index should be less than the size of the list");
-                setReferred.addStatement(
-                    "ReferenceValue original = $N.get(index)", camelCase(reference.getName()));
-                setReferred.addStatement(
-                    "$N.set(index, original.withReferred(referredNode))",
-                    camelCase(reference.getName()));
-              } else {
-                setReferred.addStatement(
-                    "if (index >= 1 || $N == null) throw new IllegalArgumentException($S);",
-                    camelCase(reference.getName()),
-                    "index should be less than the size of the list");
-                setReferred.addStatement(
-                    "$N = $N.withReferred(referredNode)",
-                    camelCase(reference.getName()),
-                    camelCase(reference.getName()));
-              }
-              setReferred.addStatement("return");
-              setReferred.endControlFlow();
-            });
-    setReferred.addStatement(
-        "throw new $T($S + reference + $S)",
-        IllegalStateException.class,
-        "Reference ",
-        " not found.");
+    ownReferences.forEach(
+        reference -> {
+          setReferred.beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
+          if (reference.isMultiple()) {
+            setReferred.addStatement(
+                "if (index >= $N.size()) throw new IllegalArgumentException($S);",
+                camelCase(reference.getName()),
+                "index should be less than the size of the list");
+            setReferred.addStatement(
+                "ReferenceValue original = $N.get(index)", camelCase(reference.getName()));
+            setReferred.addStatement(
+                "$N.set(index, original.withReferred(referredNode))",
+                camelCase(reference.getName()));
+          } else {
+            setReferred.addStatement(
+                "if (index >= 1 || $N == null) throw new IllegalArgumentException($S);",
+                camelCase(reference.getName()),
+                "index should be less than the size of the list");
+            setReferred.addStatement(
+                "$N = $N.withReferred(referredNode)",
+                camelCase(reference.getName()),
+                camelCase(reference.getName()));
+          }
+          setReferred.addStatement("return");
+          setReferred.endControlFlow();
+        });
+    if (hasExtendedConcept) {
+      setReferred.addStatement("super.setReferred(reference, index, referredNode)");
+    } else {
+      setReferred.addStatement(
+          "throw new $T($S + reference + $S)",
+          IllegalStateException.class,
+          "Reference ",
+          " not found.");
+    }
     return setReferred.build();
   }
 
   private static @Nonnull MethodSpec generateSetResolveInfo(
-      @Nonnull Concept concept, @Nonnull GenerationContext context) {
+      @Nonnull Concept concept,
+      @Nonnull GenerationContext context,
+      @Nonnull List<Reference> ownReferences,
+      boolean hasExtendedConcept) {
     MethodSpec.Builder setResolveInfo =
         MethodSpec.methodBuilder("setResolveInfo")
             .addAnnotation(Override.class)
@@ -596,40 +619,42 @@ public class NodeClassesJavaCodeGenerator extends AbstractJavaCodeGenerator {
         "$T.requireNonNull(reference, $S)", Objects.class, "reference cannot be null");
     setResolveInfo.addStatement(
         "if (index < 0) throw new IllegalArgumentException($S);", "index should be non-negative");
-    concept
-        .allReferences()
-        .forEach(
-            reference -> {
-              setResolveInfo.beginControlFlow(
-                  "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
-              if (reference.isMultiple()) {
-                setResolveInfo.addStatement(
-                    "if (index >= $N.size()) throw new IllegalArgumentException($S);",
-                    camelCase(reference.getName()),
-                    "index should be less than the size of the list");
-                setResolveInfo.addStatement(
-                    "ReferenceValue original = $N.get(index)", camelCase(reference.getName()));
-                setResolveInfo.addStatement(
-                    "$N.set(index, original.withResolveInfo(resolveInfo))",
-                    camelCase(reference.getName()));
-              } else {
-                setResolveInfo.addStatement(
-                    "if (index >= 1 || $N == null) throw new IllegalArgumentException($S);",
-                    camelCase(reference.getName()),
-                    "index should be less than the size of the list");
-                setResolveInfo.addStatement(
-                    "$N = $N.withResolveInfo(resolveInfo)",
-                    camelCase(reference.getName()),
-                    camelCase(reference.getName()));
-              }
-              setResolveInfo.addStatement("return");
-              setResolveInfo.endControlFlow();
-            });
-    setResolveInfo.addStatement(
-        "throw new $T($S + reference + $S)",
-        IllegalStateException.class,
-        "Reference ",
-        " not found.");
+    ownReferences.forEach(
+        reference -> {
+          setResolveInfo.beginControlFlow(
+              "if ($T.equals(reference.getKey(), $S))", Objects.class, reference.getKey());
+          if (reference.isMultiple()) {
+            setResolveInfo.addStatement(
+                "if (index >= $N.size()) throw new IllegalArgumentException($S);",
+                camelCase(reference.getName()),
+                "index should be less than the size of the list");
+            setResolveInfo.addStatement(
+                "ReferenceValue original = $N.get(index)", camelCase(reference.getName()));
+            setResolveInfo.addStatement(
+                "$N.set(index, original.withResolveInfo(resolveInfo))",
+                camelCase(reference.getName()));
+          } else {
+            setResolveInfo.addStatement(
+                "if (index >= 1 || $N == null) throw new IllegalArgumentException($S);",
+                camelCase(reference.getName()),
+                "index should be less than the size of the list");
+            setResolveInfo.addStatement(
+                "$N = $N.withResolveInfo(resolveInfo)",
+                camelCase(reference.getName()),
+                camelCase(reference.getName()));
+          }
+          setResolveInfo.addStatement("return");
+          setResolveInfo.endControlFlow();
+        });
+    if (hasExtendedConcept) {
+      setResolveInfo.addStatement("super.setResolveInfo(reference, index, resolveInfo)");
+    } else {
+      setResolveInfo.addStatement(
+          "throw new $T($S + reference + $S)",
+          IllegalStateException.class,
+          "Reference ",
+          " not found.");
+    }
     return setResolveInfo.build();
   }
 
