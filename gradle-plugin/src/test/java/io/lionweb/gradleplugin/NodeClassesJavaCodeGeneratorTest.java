@@ -45,14 +45,10 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     return new String(Files.readAllBytes(file.toPath()), StandardCharsets.UTF_8);
   }
 
-  private void generateBoth(File dir, Language language) throws IOException {
+  private void generateBothLanguageAndNodeClasses(File dir, Language language) throws IOException {
     new LanguageJavaCodeGenerator(dir).generate(language, PACK);
     new NodeClassesJavaCodeGenerator(dir).generate(language, PACK);
   }
-
-  // ---------------------------------------------------------------------------
-  // Existing test
-  // ---------------------------------------------------------------------------
 
   @Test
   public void testStarlasuSpecsGeneration() throws IOException {
@@ -129,7 +125,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     dog.setExtendedConcept(animal);
 
     File dir = Files.createTempDirectory("gen-inheritance").toFile();
-    generateBoth(dir, buildLanguage("Animals", animal, dog));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Animals", animal, dog));
 
     String dogSrc = readGeneratedClass(dir, PACK, "Dog");
     assertTrue(dogSrc.contains("extends Animal"), "Dog should extend Animal");
@@ -142,7 +138,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-ctor").toFile();
-    generateBoth(dir, buildLanguage("Hierarchy", base, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Hierarchy", base, child));
 
     String childSrc = readGeneratedClass(dir, PACK, "Child");
     assertTrue(childSrc.contains("super(id)"), "Child constructor should call super(id)");
@@ -158,7 +154,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-prop").toFile();
-    generateBoth(dir, buildLanguage("Props", base, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Props", base, child));
 
     String childSrc = readGeneratedClass(dir, PACK, "Child");
     assertTrue(
@@ -176,7 +172,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-children").toFile();
-    generateBoth(dir, buildLanguage("ContHier", base, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("ContHier", base, child));
 
     String childSrc = readGeneratedClass(dir, PACK, "Child");
     assertTrue(
@@ -194,7 +190,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-refs").toFile();
-    generateBoth(dir, buildLanguage("RefHier", base, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("RefHier", base, child));
 
     String childSrc = readGeneratedClass(dir, PACK, "Child");
     assertTrue(
@@ -215,7 +211,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
         "title", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
 
     File dir = Files.createTempDirectory("gen-throws").toFile();
-    generateBoth(dir, buildLanguage("Throws", standalone));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Throws", standalone));
 
     String src = readGeneratedClass(dir, PACK, "Standalone");
     assertTrue(
@@ -235,7 +231,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
         "breed", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-compile-inherit").toFile();
-    generateBoth(dir, buildLanguage("Animals", animal, dog));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Animals", animal, dog));
 
     assertTrue(compileAllJavaFiles(dir), "Generated inheritance hierarchy must compile");
   }
@@ -251,7 +247,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
         "value", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
 
     File dir = Files.createTempDirectory("gen-observer").toFile();
-    generateBoth(dir, buildLanguage("Observer", node));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Observer", node));
 
     String src = readGeneratedClass(dir, PACK, "MyNode");
     assertTrue(
@@ -266,7 +262,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
         "title", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
 
     File dir = Files.createTempDirectory("gen-prop-accessors").toFile();
-    generateBoth(dir, buildLanguage("Items", node));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Items", node));
 
     String src = readGeneratedClass(dir, PACK, "Item");
     assertTrue(src.contains("getTitle()"), "Getter for 'title' must be generated");
@@ -284,7 +280,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("link", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-ref-values").toFile();
-    generateBoth(dir, buildLanguage("RefLang", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("RefLang", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Source");
     assertTrue(
@@ -298,7 +294,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("target", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-ref-dispatch").toFile();
-    generateBoth(dir, buildLanguage("Dispatch", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("Dispatch", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Owner");
     assertTrue(
@@ -312,7 +308,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("target", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-referred").toFile();
-    generateBoth(dir, buildLanguage("SetRef", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("SetRef", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Owner");
     assertTrue(src.contains("void setReferred("), "setReferred method must be generated");
@@ -328,7 +324,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("target", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-resolve-info").toFile();
-    generateBoth(dir, buildLanguage("ResolveInfo", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("ResolveInfo", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Owner");
     assertTrue(src.contains("void setResolveInfo("), "setResolveInfo method must be generated");
@@ -344,7 +340,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("targets", target, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-add-ref-idx").toFile();
-    generateBoth(dir, buildLanguage("AddRefIdx", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("AddRefIdx", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Owner");
     // Both addReferenceValue(Reference, ReferenceValue) and
@@ -362,7 +358,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("myRef", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-single-ref").toFile();
-    generateBoth(dir, buildLanguage("SingleRef", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("SingleRef", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Owner");
     assertTrue(src.contains("getMyRef()"), "Single-value reference getter must be generated");
@@ -380,7 +376,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("items", target, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-multi-ref").toFile();
-    generateBoth(dir, buildLanguage("MultiRef", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("MultiRef", node, target));
 
     String src = readGeneratedClass(dir, PACK, "Owner");
     assertTrue(src.contains("addToItems("), "addToItems must be generated for multiple reference");
@@ -399,7 +395,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     node.addReference("multi", target, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-ref-compile").toFile();
-    generateBoth(dir, buildLanguage("RefCompile", node, target));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("RefCompile", node, target));
 
     assertTrue(compileAllJavaFiles(dir), "Generated reference methods must compile");
   }
@@ -415,7 +411,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     parent.addContainment("children", child, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-multi-cont").toFile();
-    generateBoth(dir, buildLanguage("ContLang", parent, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("ContLang", parent, child));
 
     String src = readGeneratedClass(dir, PACK, "Parent");
     assertTrue(src.contains("addToChildren("), "addToChildren must be generated");
@@ -434,7 +430,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     parent.addContainment("leaf", child, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-single-cont").toFile();
-    generateBoth(dir, buildLanguage("TreeLang", parent, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("TreeLang", parent, child));
 
     String src = readGeneratedClass(dir, PACK, "Branch");
     assertTrue(src.contains("setLeaf("), "Setter for single containment must be generated");
@@ -450,7 +446,7 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
     parent.addContainment("leaves", child, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-cont-compile").toFile();
-    generateBoth(dir, buildLanguage("ContCompile", parent, child));
+    generateBothLanguageAndNodeClasses(dir, buildLanguage("ContCompile", parent, child));
 
     assertTrue(compileAllJavaFiles(dir), "Generated containment methods must compile");
   }
