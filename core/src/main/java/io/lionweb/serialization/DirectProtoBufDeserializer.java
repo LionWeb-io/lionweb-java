@@ -139,7 +139,12 @@ final class DirectProtoBufDeserializer {
 
     MetaPointer[] metaPointersArray = new MetaPointer[mpCount];
     for (int i = 0; i < mpCount; i++) {
-      LanguageVersion lv = safeGet(languagesArray, mpData[i * 2]);
+      int liLanguage = mpData[i * 2];
+      if (liLanguage != 0 && liLanguage >= languagesArray.length) {
+        throw new DeserializationException(
+            "Unable to deserialize meta pointer with language " + liLanguage);
+      }
+      LanguageVersion lv = safeGet(languagesArray, liLanguage);
       String key = safeGet(stringsArray, mpData[i * 2 + 1]);
       if (lv != null) {
         metaPointersArray[i] = MetaPointer.get(lv.getKey(), lv.getVersion(), key);

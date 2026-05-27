@@ -461,7 +461,8 @@ public class ProtobufSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithNullKey() {
+  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithNullKey()
+      throws IOException {
     // Build a minimal language with a concept implementing INamed to force inclusion of built-ins
     Language myLanguage = new Language();
     myLanguage.setKey("myLanguage-key");
@@ -477,7 +478,8 @@ public class ProtobufSerializationTest extends SerializationTest {
     SerializationChunk serializationChunk =
         protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
 
-    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
+    PBChunk pbChunk =
+        PBChunk.parseFrom(protoBufSerialization.serializeToByteArray(serializationChunk));
 
     // There must be at least one language (most likely two: built-ins + our language)
     int languagesCount = pbChunk.getInternedLanguagesCount();
@@ -500,7 +502,8 @@ public class ProtobufSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithProperKey() {
+  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithProperKey()
+      throws IOException {
     // Build a minimal language with a concept implementing INamed to force inclusion of built-ins
     Language myLanguage = new Language();
     myLanguage.setKey("myLanguage-key");
@@ -517,7 +520,8 @@ public class ProtobufSerializationTest extends SerializationTest {
     SerializationChunk serializationChunk =
         protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
 
-    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
+    PBChunk pbChunk =
+        PBChunk.parseFrom(protoBufSerialization.serializeToByteArray(serializationChunk));
 
     // There must be at least one language (most likely two: built-ins + our language)
     int languagesCount = pbChunk.getInternedLanguagesCount();
@@ -578,7 +582,8 @@ public class ProtobufSerializationTest extends SerializationTest {
         SerializationProvider.getStandardProtoBufSerialization();
     // This call should throw due to missing language for the metapointer
     assertThrows(
-        DeserializationException.class, () -> protoBufSerialization.deserializeToNodes(malformed));
+        DeserializationException.class,
+        () -> protoBufSerialization.deserializeToNodes(malformed.toByteArray()));
   }
 
   @Test

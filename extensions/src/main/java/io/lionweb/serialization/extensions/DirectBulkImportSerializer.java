@@ -160,12 +160,8 @@ final class DirectBulkImportSerializer {
 
     // interned_meta_pointers (field 2, repeated message)
     for (MetaPointer mp : state.metaPointers) {
-      int li =
-          state.languageIndex.get(mp.getLanguageVersion() != null ? mp.getLanguageVersion() : null);
-      int sk = state.stringIndex.get(mp.getKey() != null ? mp.getKey() : null);
-      // li and sk are already in the map since we indexed them in lang()/str()
-      li = state.lang(mp.getLanguageVersion());
-      sk = state.str(mp.getKey());
+      int li = state.lang(mp.getLanguageVersion());
+      int sk = state.str(mp.getKey());
       int body = u32fs(li) + u32fs(sk);
       totalSize += 1 + vs(body) + body;
     }

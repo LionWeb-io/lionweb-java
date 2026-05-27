@@ -328,8 +328,7 @@ final class DirectProtoBufSerializer {
       int siId = n.getID() != null ? state.stringIndexer(n.getID()) : 0;
       nodeSiId[ni] = siId;
 
-      // field 7: si_parent — indexed here (between id and classifier) to match legacy table
-      // ordering
+      // field 7: si_parent — indexed here (between id and classifier) to match table ordering
       int siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
       nodeSiParent[ni] = siParent;
 
@@ -347,7 +346,7 @@ final class DirectProtoBufSerializer {
       for (SerializedPropertyValue p : propList) {
         String value = p.getValue();
         if (serializeEmptyFeatures || value != null) {
-          // Match legacy SerializeHelper: value string indexed BEFORE meta-pointer
+          // value string indexed BEFORE meta-pointer to keep intern table ordering stable
           int siValue = state.stringIndexer(value);
           int mpi = p.getMetaPointer() != null ? state.metaPointerIndexer(p.getMetaPointer()) : 0;
           int pb = uint32FieldSize(mpi) + uint32FieldSize(siValue);
@@ -404,7 +403,7 @@ final class DirectProtoBufSerializer {
           int refBody = uint32FieldSize(mpi);
           for (int k = 0; k < nEntries; k++) {
             SerializedReferenceValue.Entry entry = entries.get(k);
-            // Match legacy: referred indexed before resolveInfo
+            // referred indexed before resolveInfo to keep intern table ordering stable
             int sr = entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
             int sri =
                 entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
@@ -431,7 +430,7 @@ final class DirectProtoBufSerializer {
       int annotCnt = annotations.size();
       int packed = 0;
       for (int k = 0; k < annotCnt; k++) {
-        // null annotation IDs map to index 0 (preserved from legacy getOrDefault behavior)
+        // null annotation IDs map to index 0
         int annIdx = state.stringIndexer(annotations.get(k));
         annotIndexes.add(annIdx);
         packed += varintSize(annIdx);
