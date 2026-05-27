@@ -7,6 +7,11 @@ plugins {
 
 project.group = "io.lionweb"
 
+val integrationTest by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + configurations["testRuntimeClasspath"]
+    runtimeClasspath += output + compileClasspath
+}
+
 gradlePlugin {
     website.set("https://github.com/LionWeb-io/lionweb-jvm")
     vcsUrl.set("https://github.com/LionWeb-io/lionweb-jvm.git")
@@ -19,15 +24,13 @@ gradlePlugin {
             implementationClass = "io.lionweb.gradleplugin.LionWebPlugin"
         }
     }
+    // Registers the integrationTest source set so java-gradle-plugin automatically wires
+    // plugin-under-test-metadata.properties onto its classpath (needed for withPluginClasspath()).
+    testSourceSets(integrationTest)
 }
 
 repositories {
     mavenCentral()
-}
-
-val integrationTest by sourceSets.creating {
-    compileClasspath += sourceSets.main.get().output + configurations["testRuntimeClasspath"]
-    runtimeClasspath += output + compileClasspath
 }
 
 configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
@@ -56,14 +59,9 @@ tasks.register<Test>("integrationTest") {
     description = "Runs integration tests against the full plugin pipeline."
     group = "verification"
     testClassesDirs = sourceSets["integrationTest"].output.classesDirs
-    // Include plugin-under-test-metadata.properties so withPluginClasspath() works for this
-    // custom source set (java-gradle-plugin only wires it into the 'test' source set by default).
-    classpath =
-        sourceSets["integrationTest"].runtimeClasspath +
-            files(tasks.named("pluginUnderTestMetadata").get().outputs.files)
+    classpath = sourceSets["integrationTest"].runtimeClasspath
     useJUnitPlatform()
     mustRunAfter(tasks.test)
-    dependsOn(tasks.named("pluginUnderTestMetadata"))
 }
 
 // In order to use JavaPoet, we cannot stick to Java 8
