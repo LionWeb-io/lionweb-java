@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
     - name: Test
-      run: ./gradlew integrationTest --stacktrace --info
+      run: ./gradlew :core:integrationTest --stacktrace --info
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v7
