@@ -21,7 +21,7 @@ val javadocConfig by configurations.creating {
 dependencies {
     implementation(project(":core"))
     implementation(project(":client"))
-    compileOnly("com.google.code.findbugs:jsr305:3.0.2")
+    compileOnly(libs.jsr305)
 
     implementation(libs.protobuf)
     implementation(libs.gson)

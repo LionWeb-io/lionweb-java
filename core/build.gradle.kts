@@ -50,6 +50,8 @@ dependencies {
     // on Maven
     javadocConfig(libs.mpsOpenApi)
     javadocConfig(libs.modelApi)
+    compileOnly(libs.jsr305)
+    testCompileOnly(libs.jsr305)
     implementation(libs.gson)
     implementation(libs.jsonSchemaValidator)
     implementation(libs.protobuf)

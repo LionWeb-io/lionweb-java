@@ -8,7 +8,6 @@ import io.lionweb.serialization.data.MetaPointer;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import org.checkerframework.checker.nullness.qual.NonNull;
 
 /**
  * This represents a group of elements that shares some characteristics.
@@ -444,7 +443,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   private final Set<String> featuresRelevantForCaching =
       new HashSet<>(Arrays.asList("extends", "implements", "features"));
 
-  private void considerClearingCaches(@NonNull String linkName) {
+  private void considerClearingCaches(@Nonnull String linkName) {
     if (featuresRelevantForCaching.contains(linkName)) {
       invalidateFeaturesCache();
     }
@@ -452,8 +451,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   @Override
   public int addReferenceValue(
-      @NonNull Reference reference,
-      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, @Nullable ReferenceValue referenceValue) {
     considerClearingCaches(reference.getName());
     int result = super.addReferenceValue(reference, referenceValue);
     considerClearingCaches(reference.getName());
@@ -462,9 +460,7 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   @Override
   public int addReferenceValue(
-      @NonNull Reference reference,
-      int index,
-      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue referenceValue) {
+      @Nonnull Reference reference, int index, @Nullable ReferenceValue referenceValue) {
     int result = super.addReferenceValue(reference, index, referenceValue);
     considerClearingCaches(reference.getName());
     return result;
@@ -472,16 +468,13 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
 
   @Override
   public void setReferenceValues(
-      @NonNull Reference reference, @NonNull List<? extends ReferenceValue> values) {
+      @Nonnull Reference reference, @Nonnull List<? extends ReferenceValue> values) {
     super.setReferenceValues(reference, values);
     considerClearingCaches(reference.getName());
   }
 
   @Override
-  public void setReferred(
-      @NonNull Reference reference,
-      int index,
-      @org.checkerframework.checker.nullness.qual.Nullable Node referredNode) {
+  public void setReferred(@Nonnull Reference reference, int index, @Nullable Node referredNode) {
     super.setReferred(reference, index, referredNode);
     considerClearingCaches(reference.getName());
   }
@@ -501,22 +494,20 @@ public abstract class Classifier<T extends M3Node> extends LanguageEntity<T>
   }
 
   @Override
-  protected void setReferenceSingleValue(
-      @NonNull String linkName,
-      @org.checkerframework.checker.nullness.qual.Nullable ReferenceValue value) {
+  protected void setReferenceSingleValue(@Nonnull String linkName, @Nullable ReferenceValue value) {
     super.setReferenceSingleValue(linkName, value);
     considerClearingCaches(linkName);
   }
 
   @Override
-  protected boolean addContainmentMultipleValue(@NonNull String linkName, Node value) {
+  protected boolean addContainmentMultipleValue(@Nonnull String linkName, Node value) {
     boolean result = super.addContainmentMultipleValue(linkName, value);
     considerClearingCaches(linkName);
     return result;
   }
 
   @Override
-  protected boolean addContainmentMultipleValue(@NonNull String linkName, Node value, int index) {
+  protected boolean addContainmentMultipleValue(@Nonnull String linkName, Node value, int index) {
     boolean result = super.addContainmentMultipleValue(linkName, value, index);
     considerClearingCaches(linkName);
     return result;

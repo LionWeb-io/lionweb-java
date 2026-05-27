@@ -244,7 +244,7 @@ public class ProtoBufSerialization extends AbstractSerialization {
     return DirectProtoBufSerializer.serialize(serializationChunk, serializeEmptyFeatures);
   }
 
-  protected class SerializeHelper {
+  public class SerializeHelper {
     // Replace HashMaps with ArrayList for better cache locality and faster access
     private final List<MetaPointer> metaPointers = new ArrayList<>();
     private final List<String> strings = new ArrayList<>();
