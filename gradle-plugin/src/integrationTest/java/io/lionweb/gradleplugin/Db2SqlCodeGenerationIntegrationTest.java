@@ -54,12 +54,19 @@ public class Db2SqlCodeGenerationIntegrationTest {
     copyResource(
         "/db2sql/comments.language.v1.json", new File(lionwebDir, "comments.language.v1.json"));
 
-    BuildResult result =
-        GradleRunner.create()
-            .withProjectDir(testProjectDir)
-            .withPluginClasspath()
-            .withArguments("generateLWLanguages", "generateLWNodeClasses", "--info")
-            .build();
+    BuildResult result;
+    try {
+      result =
+          GradleRunner.create()
+              .withProjectDir(testProjectDir)
+              .withPluginClasspath()
+              .withArguments(
+                  "generateLWLanguages", "generateLWNodeClasses", "--info", "--stacktrace")
+              .build();
+    } catch (Exception e) {
+      fail("Inner Gradle build failed:\n" + e.getMessage());
+      return;
+    }
 
     assertEquals(SUCCESS, result.task(":generateLWLanguages").getOutcome());
     assertEquals(SUCCESS, result.task(":generateLWNodeClasses").getOutcome());
