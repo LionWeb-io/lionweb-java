@@ -2,6 +2,10 @@
 
 ### Version 1.4.0 (in progress)
 
+**Breaking change:** JDK 8 support is dropped. The minimum supported runtime is now Java 11.
+Tested and supported Java versions: 11, 17, 21, and 25.
+
+* Drop JDK 8 support; minimum runtime is now Java 11; add Java 25 to the CI matrix
 * Bump dependencies: protobuf 4.35.0, Guava 33.6.0-jre, Jetbrains annotations 26.1.0, testcontainers 1.21.4, emfjson 2.3.0, javapoet 0.15.0, protobuf Gradle plugin 0.10.0, vanniktech publish plugin 0.36.0
 * Explicitly declare `jsr305` as `compileOnly`/`testCompileOnly` across all modules (fixes compilation after Guava removed its transitive JSR-305 dependency)
 * Remove all generated protobuf message classes (`PBChunk`, `PBNode`, `PBBulkImport`, etc.) — `ProtoBufSerialization` now delegates entirely to `DirectProtoBufSerializer` / `DirectProtoBufDeserializer`; proto files and the protobuf codegen Gradle plugin are removed from `core` and `extensions`
