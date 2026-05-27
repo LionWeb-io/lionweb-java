@@ -1,5 +1,13 @@
 # Changelog
 
+### Version 1.4.0 (in progress)
+
+* Bump dependencies: protobuf 4.35.0, Guava 33.6.0-jre, Jetbrains annotations 26.1.0, testcontainers 1.21.4, emfjson 2.3.0, javapoet 0.15.0, protobuf Gradle plugin 0.10.0, vanniktech publish plugin 0.36.0
+* Explicitly declare `jsr305` as `compileOnly`/`testCompileOnly` across all modules (fixes compilation after Guava removed its transitive JSR-305 dependency)
+* Remove all generated protobuf message classes (`PBChunk`, `PBNode`, `PBBulkImport`, etc.) — `ProtoBufSerialization` now delegates entirely to `DirectProtoBufSerializer` / `DirectProtoBufDeserializer`; proto files and the protobuf codegen Gradle plugin are removed from `core` and `extensions`
+* Add `DirectBulkImportSerializer` for bulk-import protobuf serialization without generated classes; `ExtraProtoBufSerialization.serializeBulkImportToBytes` now uses it
+* Improve `DirectProtoBufDeserializer` to throw `DeserializationException` when a metapointer references an out-of-bounds language index
+
 ### Version 1.3.17
 
 * Add end-to-end integration test for Gradle plugin code generation pipeline (db2sql language)
