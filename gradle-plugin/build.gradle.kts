@@ -7,6 +7,11 @@ plugins {
 
 project.group = "io.lionweb"
 
+val integrationTest by sourceSets.creating {
+    compileClasspath += sourceSets.main.get().output + configurations["testRuntimeClasspath"]
+    runtimeClasspath += output + compileClasspath
+}
+
 gradlePlugin {
     website.set("https://github.com/LionWeb-io/lionweb-jvm")
     vcsUrl.set("https://github.com/LionWeb-io/lionweb-jvm.git")
@@ -19,11 +24,17 @@ gradlePlugin {
             implementationClass = "io.lionweb.gradleplugin.LionWebPlugin"
         }
     }
+    // Registers the integrationTest source set so java-gradle-plugin automatically wires
+    // plugin-under-test-metadata.properties onto its classpath (needed for withPluginClasspath()).
+    testSourceSets(sourceSets["test"], integrationTest)
 }
 
 repositories {
     mavenCentral()
 }
+
+configurations["integrationTestImplementation"].extendsFrom(configurations.testImplementation.get())
+configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.testRuntimeOnly.get())
 
 dependencies {
     implementation(project(":core"))
@@ -34,10 +45,30 @@ dependencies {
     testImplementation(gradleTestKit())
     testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    "integrationTestImplementation"(gradleTestKit())
+    "integrationTestImplementation"("org.junit.jupiter:junit-jupiter:5.7.1")
+    "integrationTestImplementation"("com.google.code.findbugs:jsr305:3.0.2")
+    "integrationTestRuntimeOnly"("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.named<Test>("test") {
     useJUnitPlatform()
+}
+
+tasks.register<Test>("integrationTest") {
+    description = "Runs integration tests against the full plugin pipeline."
+    group = "verification"
+    testClassesDirs = sourceSets["integrationTest"].output.classesDirs
+    classpath = sourceSets["integrationTest"].runtimeClasspath
+    useJUnitPlatform()
+    mustRunAfter(tasks.test)
+    testLogging {
+        events("failed")
+        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        showExceptions = true
+        showCauses = true
+        showStackTraces = true
+    }
 }
 
 // In order to use JavaPoet, we cannot stick to Java 8

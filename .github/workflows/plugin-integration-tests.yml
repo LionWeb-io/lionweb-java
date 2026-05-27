@@ -1,15 +1,15 @@
-name: Integration
+name: Plugin Integration Tests
 
 on: [push]
 
 jobs:
-  build:
+  integration-test:
 
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: [ '17', '21' ]
-    name: Java ${{ matrix.Java }} Integration
+    name: Java ${{ matrix.java }} Plugin Integration Tests
 
     steps:
     - uses: actions/checkout@v6
@@ -18,12 +18,12 @@ jobs:
       with:
         distribution: 'temurin'
         java-version: ${{ matrix.java }}
-    - name: Test
-      run: ./gradlew :core:integrationTest --stacktrace --info
+    - name: Run plugin integration tests
+      run: ./gradlew :gradle-plugin:integrationTest
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v7
       with:
         name: integration-test-results-java-${{ matrix.java }}
-        path: '**/build/test-results/**/*.xml'
+        path: 'gradle-plugin/build/test-results/integrationTest/**/*.xml'
         retention-days: 7
