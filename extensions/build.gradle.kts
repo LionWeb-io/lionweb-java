@@ -4,7 +4,6 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
-    alias(libs.plugins.protobuf)
 }
 
 repositories {
@@ -97,31 +96,6 @@ java {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
-}
-
-val protobufVersion: String = libs.versions.protobufVersion.get()
-
-protobuf {
-    protoc {
-        protoc {
-            val arch = System.getProperty("os.arch")
-            val os = System.getProperty("os.name").lowercase()
-            val classifier = if (os.contains("mac") && arch == "aarch64") "osx-aarch_64" else ""
-
-            artifact = if (classifier.isNotEmpty())
-                "com.google.protobuf:protoc:4.32.0:$classifier"
-            else
-                "com.google.protobuf:protoc:4.32.0"
-        }
-    }
-    generateProtoTasks {
-        ofSourceSet("main").forEach {
-        }
-    }
-}
-
-tasks {
-    getByName("sourcesJar").dependsOn("generateProto")
 }
 
 tasks.withType<Test>().all {

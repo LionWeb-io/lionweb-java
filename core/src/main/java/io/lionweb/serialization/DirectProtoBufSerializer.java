@@ -8,27 +8,15 @@ import io.lionweb.serialization.data.*;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Serializes a {@link SerializationChunk} directly to the protobuf binary format without creating
- * intermediate protobuf message objects (PBChunk, PBNode, etc.).
- */
+/** Serializes a {@link SerializationChunk} directly to the LionWeb protobuf binary format. */
 final class DirectProtoBufSerializer {
-  // <p>Strategy:
+  // Strategy:
   //
-  // <ol>
-  //   <li>Traverse all nodes once to populate string / language / meta-pointer intern tables and
-  //       build a {@link SerializationPlan} containing every integer index and pre-computed body
-  // size
-  //       needed for writing.
-  //   <li>Build a {@link CachedTables} containing UTF-8 lengths, meta-pointer body sizes, and
-  //       language body sizes derived from the now-complete intern tables.
-  //   <li>Compute the exact total byte count without touching domain objects.
-  //   <li>Allocate one {@code byte[]} and write from the plan — zero HashMap lookups, zero domain-
-  //       object traversal.
-  // </ol>
-  //
-  // <p>The output is byte-for-byte identical to standard protobuf serialization of a PBChunk
-  // message.
+  // 1. Traverse all nodes once to populate string / language / meta-pointer intern tables and
+  //    build a plan containing every integer index and pre-computed body size.
+  // 2. Build cached tables (UTF-8 lengths, meta-pointer body sizes, language body sizes).
+  // 3. Compute the exact total byte count without touching domain objects.
+  // 4. Allocate one byte[] and write from the plan — zero HashMap lookups, zero domain traversal.
 
   private DirectProtoBufSerializer() {}
 

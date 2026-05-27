@@ -6,33 +6,30 @@ import io.lionweb.serialization.data.*;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Serializes a {@link BulkImport} directly to the protobuf binary format without creating
- * intermediate protobuf message objects (PBBulkImport, PBAttachPoint, etc.).
- */
+/** Serializes a {@link BulkImport} directly to the LionWeb protobuf binary format. */
 final class DirectBulkImportSerializer {
 
-  // PBBulkImport field numbers
+  // BulkImport message field numbers
   private static final int BI_INTERNED_STRINGS = 1;
   private static final int BI_INTERNED_META_POINTERS = 2;
   private static final int BI_ATTACH_POINTS = 3;
   private static final int BI_NODES = 4;
   private static final int BI_INTERNED_LANGUAGES = 5;
 
-  // PBAttachPoint field numbers
+  // AttachPoint field numbers
   private static final int AP_SI_CONTAINER = 1;
   private static final int AP_MPI_META_POINTER = 2;
   private static final int AP_SI_ROOT = 3;
 
-  // PBMetaPointer field numbers
+  // MetaPointer field numbers
   private static final int MP_LI_LANGUAGE = 1;
   private static final int MP_SI_KEY = 2;
 
-  // PBLanguage field numbers
+  // Language field numbers
   private static final int LANG_SI_KEY = 1;
   private static final int LANG_SI_VERSION = 2;
 
-  // PBNode field numbers
+  // Node field numbers
   private static final int N_SI_ID = 1;
   private static final int N_MPI_CLASSIFIER = 2;
   private static final int N_PROPERTIES = 3;
@@ -41,19 +38,19 @@ final class DirectBulkImportSerializer {
   private static final int N_SI_ANNOTATIONS = 6;
   private static final int N_SI_PARENT = 7;
 
-  // PBProperty field numbers
+  // Property field numbers
   private static final int PROP_MPI = 1;
   private static final int PROP_SI_VALUE = 2;
 
-  // PBContainment field numbers
+  // Containment field numbers
   private static final int CONT_MPI = 1;
   private static final int CONT_SI_CHILDREN = 2;
 
-  // PBReference field numbers
+  // Reference field numbers
   private static final int REF_MPI = 1;
   private static final int REF_ENTRIES = 2;
 
-  // PBReferenceValue field numbers
+  // ReferenceValue field numbers
   private static final int RV_SI_RESOLVE_INFO = 1;
   private static final int RV_SI_REFERRED = 2;
 

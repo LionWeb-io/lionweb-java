@@ -12,7 +12,6 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
-    alias(libs.plugins.protobuf)
 }
 
 repositories {
@@ -236,30 +235,6 @@ tasks.jacocoTestReport {
         xml.required.set(true)
         html.required.set(true)
     }
-}
-
-protobuf {
-    protoc {
-        protoc {
-            val arch = System.getProperty("os.arch")
-            val os = System.getProperty("os.name").lowercase()
-            val classifier = if (os.contains("mac") && arch == "aarch64") "osx-aarch_64" else ""
-
-            val protocVersion = libs.versions.protobufVersion.get()
-            artifact = if (classifier.isNotEmpty())
-                "com.google.protobuf:protoc:$protocVersion:$classifier"
-            else
-                "com.google.protobuf:protoc:$protocVersion"
-        }
-    }
-    generateProtoTasks {
-        ofSourceSet("main").forEach {
-        }
-    }
-}
-
-tasks {
-    getByName("sourcesJar").dependsOn("generateProto")
 }
 
 sourceSets {
