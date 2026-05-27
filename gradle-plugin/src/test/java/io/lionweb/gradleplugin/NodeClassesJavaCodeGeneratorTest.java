@@ -23,13 +23,14 @@ import org.junit.jupiter.api.Test;
 public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   private static final String PACK = "test.gen";
+  private static final LionWebVersion LW_VERSION_USED_IN_TESTS = LionWebVersion.v2023_1;
 
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
 
   private Language buildLanguage(String name, Concept... concepts) {
-    Language language = new Language(LionWebVersion.v2023_1, name);
+    Language language = new Language(LW_VERSION_USED_IN_TESTS, name);
     language.setVersion("v1");
     for (Concept c : concepts) {
       language.addElement(c);
@@ -80,9 +81,9 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
                 })
             .collect(Collectors.toSet());
     JsonSerialization serialization =
-        SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2023_1);
+        SerializationProvider.getStandardJsonSerialization(LW_VERSION_USED_IN_TESTS);
     Set<Language> languages =
-        new TopologicalLanguageSorter(LionWebVersion.v2023_1)
+        new TopologicalLanguageSorter(LW_VERSION_USED_IN_TESTS)
             .topologicalSort(chunks).stream()
                 .map(
                     chunk -> {
@@ -117,11 +118,11 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testConceptInheritanceExtendsParentClass() throws IOException {
-    Concept animal = new Concept(LionWebVersion.v2023_1, "Animal");
+    Concept animal = new Concept(LW_VERSION_USED_IN_TESTS, "Animal");
     animal.addProperty(
-        "name", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
+        "name", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.REQUIRED);
 
-    Concept dog = new Concept(LionWebVersion.v2023_1, "Dog");
+    Concept dog = new Concept(LW_VERSION_USED_IN_TESTS, "Dog");
     dog.setExtendedConcept(animal);
 
     File dir = Files.createTempDirectory("gen-inheritance").toFile();
@@ -133,8 +134,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testExtendedConceptConstructorCallsSuper() throws IOException {
-    Concept base = new Concept(LionWebVersion.v2023_1, "Base");
-    Concept child = new Concept(LionWebVersion.v2023_1, "Child");
+    Concept base = new Concept(LW_VERSION_USED_IN_TESTS, "Base");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Child");
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-ctor").toFile();
@@ -146,11 +147,11 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testExtendedConceptDelegatesToSuperForPropertyValue() throws IOException {
-    Concept base = new Concept(LionWebVersion.v2023_1, "Base");
+    Concept base = new Concept(LW_VERSION_USED_IN_TESTS, "Base");
     base.addProperty(
-        "label", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
+        "label", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.REQUIRED);
 
-    Concept child = new Concept(LionWebVersion.v2023_1, "Child");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Child");
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-prop").toFile();
@@ -167,8 +168,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testExtendedConceptDelegatesToSuperForChildren() throws IOException {
-    Concept base = new Concept(LionWebVersion.v2023_1, "Base");
-    Concept child = new Concept(LionWebVersion.v2023_1, "Child");
+    Concept base = new Concept(LW_VERSION_USED_IN_TESTS, "Base");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Child");
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-children").toFile();
@@ -185,8 +186,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testExtendedConceptDelegatesToSuperForReferences() throws IOException {
-    Concept base = new Concept(LionWebVersion.v2023_1, "Base");
-    Concept child = new Concept(LionWebVersion.v2023_1, "Child");
+    Concept base = new Concept(LW_VERSION_USED_IN_TESTS, "Base");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Child");
     child.setExtendedConcept(base);
 
     File dir = Files.createTempDirectory("gen-super-refs").toFile();
@@ -206,29 +207,29 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testBaseConceptThrowsForUnknownProperty() throws IOException {
-    Concept standalone = new Concept(LionWebVersion.v2023_1, "Standalone");
+    Concept standalone = new Concept(LW_VERSION_USED_IN_TESTS, "Standalone");
     standalone.addProperty(
-        "title", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
+        "title", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.REQUIRED);
 
     File dir = Files.createTempDirectory("gen-throws").toFile();
     generateBothLanguageAndNodeClasses(dir, buildLanguage("Throws", standalone));
 
     String src = readGeneratedClass(dir, PACK, "Standalone");
     assertTrue(
-        src.contains("throw new IllegalStateException"),
+        src.contains("hrow new IllegalStateException(\"Property \" + property + \" not found.\")"),
         "Base concept getPropertyValue must throw IllegalStateException for unknown property");
   }
 
   @Test
   public void testInheritanceCompilesSuccessfully() throws IOException {
-    Concept animal = new Concept(LionWebVersion.v2023_1, "Animal");
+    Concept animal = new Concept(LW_VERSION_USED_IN_TESTS, "Animal");
     animal.addProperty(
-        "name", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
+        "name", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.REQUIRED);
 
-    Concept dog = new Concept(LionWebVersion.v2023_1, "Dog");
+    Concept dog = new Concept(LW_VERSION_USED_IN_TESTS, "Dog");
     dog.setExtendedConcept(animal);
     dog.addProperty(
-        "breed", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.OPTIONAL);
+        "breed", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-compile-inherit").toFile();
     generateBothLanguageAndNodeClasses(dir, buildLanguage("Animals", animal, dog));
@@ -242,9 +243,9 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testPropertySetterNotifiesPartitionObserver() throws IOException {
-    Concept node = new Concept(LionWebVersion.v2023_1, "MyNode");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "MyNode");
     node.addProperty(
-        "value", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
+        "value", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.REQUIRED);
 
     File dir = Files.createTempDirectory("gen-observer").toFile();
     generateBothLanguageAndNodeClasses(dir, buildLanguage("Observer", node));
@@ -257,9 +258,9 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testPropertyGetterAndSetterGenerated() throws IOException {
-    Concept node = new Concept(LionWebVersion.v2023_1, "Item");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Item");
     node.addProperty(
-        "title", LionCoreBuiltins.getString(LionWebVersion.v2023_1), Multiplicity.REQUIRED);
+        "title", LionCoreBuiltins.getString(LW_VERSION_USED_IN_TESTS), Multiplicity.REQUIRED);
 
     File dir = Files.createTempDirectory("gen-prop-accessors").toFile();
     generateBothLanguageAndNodeClasses(dir, buildLanguage("Items", node));
@@ -275,8 +276,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testSetReferenceValuesMethodGenerated() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Source");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Source");
     node.addReference("link", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-ref-values").toFile();
@@ -289,8 +290,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testSetReferenceValuesDispatchesByKey() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("target", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-ref-dispatch").toFile();
@@ -303,8 +304,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testSetReferredMethodGenerated() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("target", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-referred").toFile();
@@ -319,8 +320,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testSetResolveInfoMethodGenerated() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("target", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-set-resolve-info").toFile();
@@ -335,8 +336,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testAddReferenceValueWithIndexOverloadGenerated() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("targets", target, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-add-ref-idx").toFile();
@@ -353,8 +354,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testSingleReferenceGetterReturnReferenceValue() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("myRef", target, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-single-ref").toFile();
@@ -371,8 +372,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testMultipleReferenceAddRemoveClearGenerated() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("items", target, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-multi-ref").toFile();
@@ -389,8 +390,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testReferenceMethodsCompile() throws IOException {
-    Concept target = new Concept(LionWebVersion.v2023_1, "Target");
-    Concept node = new Concept(LionWebVersion.v2023_1, "Owner");
+    Concept target = new Concept(LW_VERSION_USED_IN_TESTS, "Target");
+    Concept node = new Concept(LW_VERSION_USED_IN_TESTS, "Owner");
     node.addReference("single", target, Multiplicity.OPTIONAL);
     node.addReference("multi", target, Multiplicity.ZERO_OR_MORE);
 
@@ -406,8 +407,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testMultipleContainmentMethodsGenerated() throws IOException {
-    Concept child = new Concept(LionWebVersion.v2023_1, "Child");
-    Concept parent = new Concept(LionWebVersion.v2023_1, "Parent");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Child");
+    Concept parent = new Concept(LW_VERSION_USED_IN_TESTS, "Parent");
     parent.addContainment("children", child, Multiplicity.ZERO_OR_MORE);
 
     File dir = Files.createTempDirectory("gen-multi-cont").toFile();
@@ -425,8 +426,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testSingleContainmentSetterManagesParent() throws IOException {
-    Concept child = new Concept(LionWebVersion.v2023_1, "Leaf");
-    Concept parent = new Concept(LionWebVersion.v2023_1, "Branch");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Leaf");
+    Concept parent = new Concept(LW_VERSION_USED_IN_TESTS, "Branch");
     parent.addContainment("leaf", child, Multiplicity.OPTIONAL);
 
     File dir = Files.createTempDirectory("gen-single-cont").toFile();
@@ -440,8 +441,8 @@ public class NodeClassesJavaCodeGeneratorTest extends AbstractGeneratorTest {
 
   @Test
   public void testContainmentCompilesSuccessfully() throws IOException {
-    Concept child = new Concept(LionWebVersion.v2023_1, "Leaf");
-    Concept parent = new Concept(LionWebVersion.v2023_1, "Branch");
+    Concept child = new Concept(LW_VERSION_USED_IN_TESTS, "Leaf");
+    Concept parent = new Concept(LW_VERSION_USED_IN_TESTS, "Branch");
     parent.addContainment("leaf", child, Multiplicity.OPTIONAL);
     parent.addContainment("leaves", child, Multiplicity.ZERO_OR_MORE);
 
