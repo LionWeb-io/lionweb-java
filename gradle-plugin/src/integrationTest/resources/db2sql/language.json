@@ -114,7 +114,12 @@
             "version": "2023.1",
             "key": "Language-dependsOn"
           },
-          "targets": []
+          "targets": [
+            {
+              "resolveInfo": "com.strumenta.starlasu.comments",
+              "reference": "com-strumenta-starlasu-comments"
+            }
+          ]
         }
       ],
       "annotations": [],
