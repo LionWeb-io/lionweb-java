@@ -26,7 +26,7 @@ gradlePlugin {
     }
     // Registers the integrationTest source set so java-gradle-plugin automatically wires
     // plugin-under-test-metadata.properties onto its classpath (needed for withPluginClasspath()).
-    testSourceSets(integrationTest)
+    testSourceSets(sourceSets["test"], integrationTest)
 }
 
 repositories {
