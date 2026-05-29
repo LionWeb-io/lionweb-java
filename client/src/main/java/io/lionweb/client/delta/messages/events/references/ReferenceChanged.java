@@ -13,12 +13,12 @@ public class ReferenceChanged extends BaseDeltaEvent {
   public final MetaPointer reference;
   public final int index;
 
-  /** New target node id.*/
+  /** New target node id. */
   public final @Nullable String newReference;
 
   public final @Nullable String newResolveInfo;
 
-  /** Old target node id.*/
+  /** Old target node id. */
   public final @Nullable String oldReference;
 
   public final @Nullable String oldResolveInfo;

@@ -10,7 +10,7 @@ public class ReferenceAdded extends BaseDeltaEvent {
   public final MetaPointer reference;
   public final int index;
 
-  /** Target node id.*/
+  /** Target node id. */
   public final @Nullable String newReference;
 
   public final @Nullable String newResolveInfo;

@@ -13,9 +13,7 @@ public class ReferenceDeleted extends BaseDeltaEvent {
   public final MetaPointer reference;
   public final int index;
 
-  /**
-   * Deleted target node id.
-   */
+  /** Deleted target node id. */
   public final @Nullable String deletedReference;
 
   public final @Nullable String deletedResolveInfo;
