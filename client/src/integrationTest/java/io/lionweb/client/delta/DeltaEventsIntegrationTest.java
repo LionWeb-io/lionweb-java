@@ -3,6 +3,7 @@ package io.lionweb.client.delta;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
+import com.google.gson.JsonParser;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class DeltaEventsIntegrationTest {
 
-  private static final DeltaMessageDeserializer DESERIALIZER = new DeltaMessageDeserializer();
+  private static final DeltaMessageSerialization DESERIALIZER = new DeltaMessageSerialization();
 
   static Stream<Path> eventFiles() throws IOException {
     String dirEnv = System.getenv("deltaIntegrationTestingDir");
@@ -60,6 +61,11 @@ public class DeltaEventsIntegrationTest {
           base.sequenceNumber >= 0,
           "sequenceNumber must be non-negative in " + file.getFileName());
     }
+
+    assertEquals(
+        JsonParser.parseString(json),
+        JsonParser.parseString(DESERIALIZER.serialize(result)),
+        "Round-trip mismatch for " + file.getFileName());
   }
 
   private static String extractMessageKind(String json) {

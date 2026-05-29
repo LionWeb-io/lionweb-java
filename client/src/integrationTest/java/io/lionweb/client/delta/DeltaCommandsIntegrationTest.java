@@ -3,6 +3,7 @@ package io.lionweb.client.delta;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
+import com.google.gson.JsonParser;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -21,7 +22,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class DeltaCommandsIntegrationTest {
 
-  private static final DeltaMessageDeserializer DESERIALIZER = new DeltaMessageDeserializer();
+  private static final DeltaMessageSerialization DESERIALIZER = new DeltaMessageSerialization();
 
   static Stream<Path> commandFiles() throws IOException {
     String dirEnv = System.getenv("deltaIntegrationTestingDir");
@@ -57,6 +58,11 @@ public class DeltaCommandsIntegrationTest {
     DeltaCommand command = (DeltaCommand) result;
     assertNotNull(command.commandId, "commandId must not be null in " + file.getFileName());
     assertFalse(command.commandId.isEmpty(), "commandId must not be empty in " + file.getFileName());
+
+    assertEquals(
+        JsonParser.parseString(json),
+        JsonParser.parseString(DESERIALIZER.serialize(result)),
+        "Round-trip mismatch for " + file.getFileName());
   }
 
   private static String extractMessageKind(String json) {

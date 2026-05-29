@@ -3,6 +3,7 @@ package io.lionweb.client.delta;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
+import com.google.gson.JsonParser;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import java.io.IOException;
@@ -22,7 +23,7 @@ import org.junit.jupiter.params.provider.MethodSource;
  */
 public class DeltaQueriesIntegrationTest {
 
-  private static final DeltaMessageDeserializer DESERIALIZER = new DeltaMessageDeserializer();
+  private static final DeltaMessageSerialization DESERIALIZER = new DeltaMessageSerialization();
 
   static Stream<Path> queryFiles() throws IOException {
     String dirEnv = System.getenv("deltaIntegrationTestingDir");
@@ -66,6 +67,11 @@ public class DeltaQueriesIntegrationTest {
       assertFalse(
           response.queryId.isEmpty(), "queryId must not be empty in " + file.getFileName());
     }
+
+    assertEquals(
+        JsonParser.parseString(json),
+        JsonParser.parseString(DESERIALIZER.serialize(result)),
+        "Round-trip mismatch for " + file.getFileName());
   }
 
   private static String extractMessageKind(String json) {
