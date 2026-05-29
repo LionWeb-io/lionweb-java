@@ -1,16 +1,15 @@
 package io.lionweb.serialization;
 
+import static io.lionweb.serialization.ProtoBufFieldNumbers.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.google.protobuf.CodedOutputStream;
+import com.google.protobuf.WireFormat;
 import io.lionweb.LionWebVersion;
 import io.lionweb.language.*;
 import io.lionweb.model.*;
 import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.protobuf.PBChunk;
-import io.lionweb.protobuf.PBLanguage;
-import io.lionweb.protobuf.PBMetaPointer;
-import io.lionweb.protobuf.PBNode;
 import io.lionweb.serialization.data.*;
 import io.lionweb.serialization.refsmm.ContainerNode;
 import io.lionweb.serialization.refsmm.RefNode;
@@ -19,7 +18,7 @@ import io.lionweb.serialization.simplemath.IntLiteral;
 import io.lionweb.serialization.simplemath.SimpleMathLanguage;
 import io.lionweb.serialization.simplemath.Sum;
 import io.lionweb.utils.ModelComparator;
-import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -461,8 +460,8 @@ public class ProtobufSerializationTest extends SerializationTest {
   }
 
   @Test
-  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithNullKey() {
-    // Build a minimal language with a concept implementing INamed to force inclusion of built-ins
+  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithNullKey()
+      throws IOException {
     Language myLanguage = new Language();
     myLanguage.setKey("myLanguage-key");
     myLanguage.setVersion("3");
@@ -477,31 +476,18 @@ public class ProtobufSerializationTest extends SerializationTest {
     SerializationChunk serializationChunk =
         protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
 
-    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
+    byte[] bytes = protoBufSerialization.serializeToByteArray(serializationChunk);
+    SerializationChunk roundTripped = protoBufSerialization.deserializeToChunk(bytes);
 
-    // There must be at least one language (most likely two: built-ins + our language)
-    int languagesCount = pbChunk.getInternedLanguagesCount();
-    assertTrue(languagesCount >= 1, "Expected at least one interned language");
-
-    // Every metapointer must reference an existing language index
-    for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
-      int languageIndex = mp.getLiLanguage();
-      assertTrue(
-          languageIndex >= 0 && languageIndex <= languagesCount,
-          "PBMetaPointer.language index must be within interned languages table");
-
-      // Language key/version must point to valid entries in the interned strings table
-      PBLanguage lang = pbChunk.getInternedLanguages(languageIndex - 1);
-      String key = pbChunk.getInternedStrings(lang.getSiKey() - 1);
-      String version = pbChunk.getInternedStrings(lang.getSiVersion() - 1);
-      assertNotNull("Language key must resolve to a string", key);
-      assertNotNull("Language version must resolve to a string", version);
+    assertTrue(roundTripped.getLanguages().size() >= 1, "Expected at least one interned language");
+    for (SerializedClassifierInstance sci : roundTripped.getClassifierInstances()) {
+      assertNotNull(sci.getClassifier(), "Each instance must have a classifier metapointer");
     }
   }
 
   @Test
-  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithProperKey() {
-    // Build a minimal language with a concept implementing INamed to force inclusion of built-ins
+  public void internedLanguagesAreConsistentAndReferencedByMetaPointersConceptWithProperKey()
+      throws IOException {
     Language myLanguage = new Language();
     myLanguage.setKey("myLanguage-key");
     myLanguage.setVersion("3");
@@ -517,68 +503,52 @@ public class ProtobufSerializationTest extends SerializationTest {
     SerializationChunk serializationChunk =
         protoBufSerialization.serializeNodesToSerializationChunk(myInstance);
 
-    PBChunk pbChunk = protoBufSerialization.serialize(serializationChunk);
+    byte[] bytes = protoBufSerialization.serializeToByteArray(serializationChunk);
+    SerializationChunk roundTripped = protoBufSerialization.deserializeToChunk(bytes);
 
-    // There must be at least one language (most likely two: built-ins + our language)
-    int languagesCount = pbChunk.getInternedLanguagesCount();
-    assertTrue(languagesCount >= 1, "Expected at least one interned language");
-
-    // Every metapointer must reference an existing language index
-    for (PBMetaPointer mp : pbChunk.getInternedMetaPointersList()) {
-      int languageIndex = mp.getLiLanguage();
-      assertTrue(
-          languageIndex >= 0 && languageIndex <= languagesCount,
-          "PBMetaPointer.language index must be within interned languages table");
-
-      // Language key/version must point to valid entries in the interned strings table
-      PBLanguage lang = pbChunk.getInternedLanguages(languageIndex - 1);
-      String key = pbChunk.getInternedStrings(lang.getSiKey() - 1);
-      String version = pbChunk.getInternedStrings(lang.getSiVersion() - 1);
-      assertNotNull("Language key must resolve to a string", key);
-      assertNotNull("Language version must resolve to a string", version);
-
-      // Metapointer key must also resolve to a string
-      assertNotEquals(-1, mp.getSiKey());
-      String mpKey = pbChunk.getInternedStrings(mp.getSiKey() - 1);
-      assertNotNull("MetaPointer key must resolve to a string", mpKey);
+    assertTrue(roundTripped.getLanguages().size() >= 1, "Expected at least one interned language");
+    for (SerializedClassifierInstance sci : roundTripped.getClassifierInstances()) {
+      MetaPointer classifier = sci.getClassifier();
+      assertNotNull(classifier);
+      assertNotNull(classifier.getKey(), "MetaPointer key must be non-null");
     }
   }
 
   @Test
-  public void deserializationFailsWhenMetaPointerReferencesMissingLanguage() {
-    // Build a PBChunk with a meta pointer referencing a non-existent language index (0),
-    // and no languages in interned_languages. This should trigger a DeserializationException.
-    PBChunk.Builder chunkBuilder = PBChunk.newBuilder();
-    chunkBuilder.setSerializationFormatVersion("test");
+  public void deserializationFailsWhenMetaPointerReferencesMissingLanguage() throws IOException {
+    // Craft a protobuf binary with a metapointer referencing a non-existent language index (1)
+    // but with no interned_languages table. DirectProtoBufDeserializer must throw.
+    ByteArrayOutputStream mpBaos = new ByteArrayOutputStream();
+    CodedOutputStream mpCos = CodedOutputStream.newInstance(mpBaos);
+    mpCos.writeUInt32(META_POINTER_LI_LANGUAGE, 1); // language index 1 (non-existent)
+    mpCos.writeUInt32(META_POINTER_SI_KEY, 1); // string index 1 ("dummy-key")
+    mpCos.flush();
+    byte[] mpBytes = mpBaos.toByteArray();
 
-    // Add a dummy string at index 0, to use as a metapointer key
-    chunkBuilder.addInternedStrings("dummy-key");
+    ByteArrayOutputStream nodeBaos = new ByteArrayOutputStream();
+    CodedOutputStream nodeCos = CodedOutputStream.newInstance(nodeBaos);
+    nodeCos.writeUInt32(NODE_SI_ID, 1); // "dummy-key" as ID
+    nodeCos.flush();
+    byte[] nodeBytes = nodeBaos.toByteArray();
 
-    // No interned_languages added intentionally.
-
-    // Add a metapointer that references language index 0 (which doesn't exist)
-    PBMetaPointer badMetaPointer =
-        PBMetaPointer.newBuilder()
-            .setLiLanguage(1)
-            .setSiKey(1) // index into interned_strings ("dummy-key")
-            .build();
-    chunkBuilder.addInternedMetaPointers(badMetaPointer);
-
-    // Add a node referencing the bad metapointer as classifier
-    PBNode badNode =
-        PBNode.newBuilder()
-            .setSiId(1) // "dummy-key" as ID (not important for this test)
-            .setMpiClassifier(0) // index of the bad metapointer
-            .build();
-    chunkBuilder.addNodes(badNode);
-
-    PBChunk malformed = chunkBuilder.build();
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    CodedOutputStream cos = CodedOutputStream.newInstance(baos);
+    cos.writeString(CHUNK_SERIALIZATION_FORMAT_VERSION, "test");
+    cos.writeString(CHUNK_INTERNED_STRINGS, "dummy-key");
+    cos.writeTag(CHUNK_INTERNED_META_POINTERS, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+    cos.writeUInt32NoTag(mpBytes.length);
+    cos.writeRawBytes(mpBytes);
+    cos.writeTag(CHUNK_NODES, WireFormat.WIRETYPE_LENGTH_DELIMITED);
+    cos.writeUInt32NoTag(nodeBytes.length);
+    cos.writeRawBytes(nodeBytes);
+    cos.flush();
+    byte[] malformedBytes = baos.toByteArray();
 
     ProtoBufSerialization protoBufSerialization =
         SerializationProvider.getStandardProtoBufSerialization();
-    // This call should throw due to missing language for the metapointer
     assertThrows(
-        DeserializationException.class, () -> protoBufSerialization.deserializeToNodes(malformed));
+        DeserializationException.class,
+        () -> protoBufSerialization.deserializeToNodes(malformedBytes));
   }
 
   @Test
@@ -635,34 +605,18 @@ public class ProtobufSerializationTest extends SerializationTest {
     assertEquals(0, efficientBookB.getProperties().size());
     assertEquals(1, efficientBookB.getReferences().size());
 
-    PBChunk pbChunk = PBChunk.parseFrom(new ByteArrayInputStream(efficientBytes));
-    List<PBNode> nodesList = pbChunk.getNodesList();
-    PBNode pbLibA = nodesList.get(0);
-    assertEquals(1, pbLibA.getPropertiesCount());
-    assertEquals(0, pbLibA.getContainmentsCount());
-    PBNode pbBookA = nodesList.get(1);
-    assertEquals(0, pbBookA.getPropertiesCount());
-    assertEquals(0, pbBookA.getReferencesCount());
-    PBNode pbLibB = nodesList.get(2);
-    assertEquals(1, pbLibB.getPropertiesCount());
-    assertEquals(1, pbLibB.getContainmentsCount());
-    PBNode pbBookB = nodesList.get(3);
-    assertEquals(0, pbBookB.getPropertiesCount());
-    assertEquals(1, pbBookB.getReferencesCount());
-
     byte[] mixedBytes = efficientSerialization.serializeToByteArray(standardChunk);
-    PBChunk pbMixedChunk = PBChunk.parseFrom(new ByteArrayInputStream(mixedBytes));
-    List<PBNode> mixedNodesList = pbMixedChunk.getNodesList();
-    PBNode pbMixedLibA = mixedNodesList.get(0);
-    assertEquals(0, pbMixedLibA.getContainmentsCount());
-    PBNode pbMixedBookA = mixedNodesList.get(1);
-    assertEquals(0, pbMixedBookA.getPropertiesCount());
-    assertEquals(0, pbMixedBookA.getReferencesCount());
-    PBNode pbMixedLibB = mixedNodesList.get(2);
-    assertEquals(1, pbMixedLibB.getContainmentsCount());
-    PBNode pbMixedBookB = mixedNodesList.get(3);
-    assertEquals(0, pbMixedBookB.getPropertiesCount());
-    assertEquals(1, pbMixedBookB.getReferencesCount());
+    SerializationChunk mixedChunk = efficientSerialization.deserializeToChunk(mixedBytes);
+    SerializedClassifierInstance mixedLibA = mixedChunk.getInstanceByID("libA");
+    assertEquals(0, mixedLibA.getContainments().size());
+    SerializedClassifierInstance mixedBookA = mixedChunk.getInstanceByID("bookA");
+    assertEquals(0, mixedBookA.getProperties().size());
+    assertEquals(0, mixedBookA.getReferences().size());
+    SerializedClassifierInstance mixedLibB = mixedChunk.getInstanceByID("libB");
+    assertEquals(1, mixedLibB.getContainments().size());
+    SerializedClassifierInstance mixedBookB = mixedChunk.getInstanceByID("bookB");
+    assertEquals(0, mixedBookB.getProperties().size());
+    assertEquals(1, mixedBookB.getReferences().size());
 
     efficientSerialization.registerLanguage(LibraryLanguage.LIBRARY_MM);
     efficientSerialization.enableDynamicNodes();

@@ -1,28 +1,29 @@
 [versions]
-protobufVersion = "4.34.1"
+protobufVersion = "4.35.0"
 junitVersion="5.13.4"
-guavaVersion = "33.0.0-jre"
+guavaVersion = "33.6.0-jre"
 commonsMathVersion = "3.6.1"
 jsonSchemaValidatorVersion = "1.0.77"
 mpsOpenApiVersion = "2021.3.1"
 modelApiVersion = "1.3.2"
 kotlin ="2.3.20"
 kotest ="5.9.1"
-testcontainers ="1.21.3"
+testcontainers ="1.21.4"
 junitPlatform = "1.13.4"
 emfCommonVersion = "2.45.0"
 emfEcoreVersion = "2.42.0"
 emfEcoreXmiVersion = "2.40.0"
-emfjsonVersion = "2.2.0"
-annotationsVersion = "24.0.0"
+emfjsonVersion = "2.3.0"
+annotationsVersion = "26.1.0"
+jsr305Version = "3.0.2"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "8.3.6"}
-protobuf = { id = "com.google.protobuf", version = "0.9.6"}
+protobuf = { id = "com.google.protobuf", version = "0.10.0"}
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version = "13.1.0" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 dokka = { id = "org.jetbrains.dokka", version = "2.2.0" }
-vt-publish = { id = "com.vanniktech.maven.publish", version = "0.35.0" }
+vt-publish = { id = "com.vanniktech.maven.publish", version = "0.36.0" }
 build-config = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
 release = { id = "net.researchgate.release", version = "3.1.0"}
 versioncheck = { id="com.github.ben-manes.versions", version = "0.53.0" }
@@ -40,9 +41,10 @@ commonsMath3 = { module = "org.apache.commons:commons-math3", version.ref = "com
 jsonSchemaValidator = { module = "com.networknt:json-schema-validator", version.ref = "jsonSchemaValidatorVersion" }
 mpsOpenApi = { module = "com.jetbrains:mps-openapi", version.ref = "mpsOpenApiVersion" }
 modelApi = { module = "org.modelix:model-api", version.ref = "modelApiVersion" }
-javapoet = { module = "com.palantir.javapoet:javapoet", version ="0.8.0" }
+javapoet = { module = "com.palantir.javapoet:javapoet", version ="0.15.0" }
 gson = { group = "com.google.code.gson", name="gson", version="2.14.0" }
 annotations = { group = "org.jetbrains", name = "annotations", version.ref = "annotationsVersion" }
+jsr305 = { module = "com.google.code.findbugs:jsr305", version.ref = "jsr305Version" }
 emf-common = { module = "org.eclipse.emf:org.eclipse.emf.common", version.ref = "emfCommonVersion" }
 emf-ecore = { module = "org.eclipse.emf:org.eclipse.emf.ecore", version.ref = "emfEcoreVersion" }
 emf-ecore-xmi = { module = "org.eclipse.emf:org.eclipse.emf.ecore.xmi", version.ref = "emfEcoreXmiVersion" }

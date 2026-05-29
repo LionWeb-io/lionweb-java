@@ -8,25 +8,14 @@ import java.io.*;
 import java.util.*;
 
 /**
- * Deserializes protobuf binary data directly into a {@link SerializationChunk} without creating
- * intermediate protobuf message objects (PBChunk, PBNode, etc.).
+ * Deserializes LionWeb protobuf binary data directly into a {@link SerializationChunk}.
+ *
+ * <p>For {@code byte[]} input the implementation uses two passes over the same backing array (no
+ * copy): first to read strings/languages/meta-pointers, second to read node bodies inline using
+ * {@code pushLimit}/{@code popLimit}. For {@link java.io.InputStream} input the stream is drained
+ * into a {@code byte[]} first.
  */
 final class DirectProtoBufDeserializer {
-  // <p>For {@code byte[]} input the implementation uses two passes over the <em>same</em> backing
-  // array (no copy):
-  //
-  // <ol>
-  //   <li>Read all string, language, and meta-pointer fields; skip node bodies.
-  //   <li>Resolve the index tables, then read only the node fields inline using {@code
-  //       pushLimit}/{@code popLimit} — no per-node {@code byte[]} allocation.
-  // </ol>
-  //
-  // <p>For {@link InputStream} input the stream is first drained into a single {@code byte[]}, then
-  // the same two-pass strategy is applied.
-  //
-  // <p>The output is semantically equivalent to what {@code PBChunk.parseFrom(bytes)} followed by
-  // {@code ProtoBufSerialization.deserializeSerializationChunk(pbChunk)} would produce, but avoids
-  // creating any protobuf message objects.
 
   private DirectProtoBufDeserializer() {}
 
@@ -139,7 +128,12 @@ final class DirectProtoBufDeserializer {
 
     MetaPointer[] metaPointersArray = new MetaPointer[mpCount];
     for (int i = 0; i < mpCount; i++) {
-      LanguageVersion lv = safeGet(languagesArray, mpData[i * 2]);
+      int liLanguage = mpData[i * 2];
+      if (liLanguage != 0 && liLanguage >= languagesArray.length) {
+        throw new DeserializationException(
+            "Unable to deserialize meta pointer with language " + liLanguage);
+      }
+      LanguageVersion lv = safeGet(languagesArray, liLanguage);
       String key = safeGet(stringsArray, mpData[i * 2 + 1]);
       if (lv != null) {
         metaPointersArray[i] = MetaPointer.get(lv.getKey(), lv.getVersion(), key);

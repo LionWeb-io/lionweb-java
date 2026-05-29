@@ -24,6 +24,7 @@ dependencies {
 
     implementation(libs.gson)
     implementation(libs.annotations)
+    compileOnly(libs.jsr305)
 
     // Use JUnit test framework.
     testImplementation(libs.junit.api)

@@ -8,27 +8,15 @@ import io.lionweb.serialization.data.*;
 import java.io.IOException;
 import java.util.*;
 
-/**
- * Serializes a {@link SerializationChunk} directly to the protobuf binary format without creating
- * intermediate protobuf message objects (PBChunk, PBNode, etc.).
- */
+/** Serializes a {@link SerializationChunk} directly to the LionWeb protobuf binary format. */
 final class DirectProtoBufSerializer {
-  // <p>Strategy:
+  // Strategy:
   //
-  // <ol>
-  //   <li>Traverse all nodes once to populate string / language / meta-pointer intern tables and
-  //       build a {@link SerializationPlan} containing every integer index and pre-computed body
-  // size
-  //       needed for writing.
-  //   <li>Build a {@link CachedTables} containing UTF-8 lengths, meta-pointer body sizes, and
-  //       language body sizes derived from the now-complete intern tables.
-  //   <li>Compute the exact total byte count without touching domain objects.
-  //   <li>Allocate one {@code byte[]} and write from the plan — zero HashMap lookups, zero domain-
-  //       object traversal.
-  // </ol>
-  //
-  // <p>The output is byte-for-byte identical to standard protobuf serialization of a PBChunk
-  // message.
+  // 1. Traverse all nodes once to populate string / language / meta-pointer intern tables and
+  //    build a plan containing every integer index and pre-computed body size.
+  // 2. Build cached tables (UTF-8 lengths, meta-pointer body sizes, language body sizes).
+  // 3. Compute the exact total byte count without touching domain objects.
+  // 4. Allocate one byte[] and write from the plan — zero HashMap lookups, zero domain traversal.
 
   private DirectProtoBufSerializer() {}
 
@@ -328,8 +316,7 @@ final class DirectProtoBufSerializer {
       int siId = n.getID() != null ? state.stringIndexer(n.getID()) : 0;
       nodeSiId[ni] = siId;
 
-      // field 7: si_parent — indexed here (between id and classifier) to match legacy table
-      // ordering
+      // field 7: si_parent — indexed here (between id and classifier) to match table ordering
       int siParent = n.getParentNodeID() != null ? state.stringIndexer(n.getParentNodeID()) : 0;
       nodeSiParent[ni] = siParent;
 
@@ -347,7 +334,7 @@ final class DirectProtoBufSerializer {
       for (SerializedPropertyValue p : propList) {
         String value = p.getValue();
         if (serializeEmptyFeatures || value != null) {
-          // Match legacy SerializeHelper: value string indexed BEFORE meta-pointer
+          // value string indexed BEFORE meta-pointer to keep intern table ordering stable
           int siValue = state.stringIndexer(value);
           int mpi = p.getMetaPointer() != null ? state.metaPointerIndexer(p.getMetaPointer()) : 0;
           int pb = uint32FieldSize(mpi) + uint32FieldSize(siValue);
@@ -404,7 +391,7 @@ final class DirectProtoBufSerializer {
           int refBody = uint32FieldSize(mpi);
           for (int k = 0; k < nEntries; k++) {
             SerializedReferenceValue.Entry entry = entries.get(k);
-            // Match legacy: referred indexed before resolveInfo
+            // referred indexed before resolveInfo to keep intern table ordering stable
             int sr = entry.getReference() != null ? state.stringIndexer(entry.getReference()) : 0;
             int sri =
                 entry.getResolveInfo() != null ? state.stringIndexer(entry.getResolveInfo()) : 0;
@@ -431,7 +418,7 @@ final class DirectProtoBufSerializer {
       int annotCnt = annotations.size();
       int packed = 0;
       for (int k = 0; k < annotCnt; k++) {
-        // null annotation IDs map to index 0 (preserved from legacy getOrDefault behavior)
+        // null annotation IDs map to index 0
         int annIdx = state.stringIndexer(annotations.get(k));
         annotIndexes.add(annIdx);
         packed += varintSize(annIdx);

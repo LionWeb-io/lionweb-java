@@ -4,7 +4,6 @@ import static io.lionweb.serialization.extensions.CompressionSupport.considerCom
 
 import com.google.gson.*;
 import io.lionweb.client.RequestFailureException;
-import io.lionweb.protobuf.PBBulkImport;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.extensions.*;
@@ -132,8 +131,7 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
     pbSerialization.setInstantiator(jsonSerialization.getInstantiator());
     pbSerialization.setPrimitiveValuesSerialization(
         jsonSerialization.getPrimitiveValuesSerialization());
-    PBBulkImport pbBulkImport = pbSerialization.serializeBulkImport(bulkImport);
-    byte[] bytes = pbBulkImport.toByteArray();
+    byte[] bytes = pbSerialization.serializeBulkImportToBytes(bulkImport);
     RequestBody requestBody = RequestBody.create(PROTOBUF, bytes);
     requestBody = considerCompression(requestBody, compression);
     bulkImport(requestBody, compression);

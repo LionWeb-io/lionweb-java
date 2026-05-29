@@ -38,6 +38,7 @@ configurations["integrationTestRuntimeOnly"].extendsFrom(configurations.testRunt
 
 dependencies {
     implementation(project(":core"))
+    compileOnly(libs.jsr305)
     implementation(libs.gson)
     implementation(libs.protobuf)
     implementation(libs.javapoet)
@@ -47,7 +48,7 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
     "integrationTestImplementation"(gradleTestKit())
     "integrationTestImplementation"("org.junit.jupiter:junit-jupiter:5.7.1")
-    "integrationTestImplementation"("com.google.code.findbugs:jsr305:3.0.2")
+    "integrationTestCompileOnly"(libs.jsr305)
     "integrationTestRuntimeOnly"("org.junit.platform:junit-platform-launcher")
 }
 

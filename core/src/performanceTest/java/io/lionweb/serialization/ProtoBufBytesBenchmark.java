@@ -12,18 +12,8 @@ import org.openjdk.jmh.runner.options.Options;
 import org.openjdk.jmh.runner.options.OptionsBuilder;
 
 /**
- * JMH benchmark comparing the direct protobuf byte serialization/deserialization (via {@link
- * DirectProtoBufSerializer} / {@link DirectProtoBufDeserializer}) against the previous path that
- * went through protobuf-generated objects (PBChunk, PBNode, etc.).
- *
- * <p>Two pairs of benchmarks:
- *
- * <ul>
- *   <li>{@link #serializeDirect} / {@link #serializeViaPbChunk} — serialize a {@link
- *       SerializationChunk} to bytes.
- *   <li>{@link #deserializeDirect} / {@link #deserializeViaPbChunk} — parse bytes back to a {@link
- *       SerializationChunk}.
- * </ul>
+ * JMH benchmark for protobuf byte serialization/deserialization via {@link
+ * DirectProtoBufSerializer} / {@link DirectProtoBufDeserializer}.
  *
  * <p>Run with {@link #main} to include the GC allocation profiler.
  */
@@ -41,9 +31,6 @@ public class ProtoBufBytesBenchmark {
   /** Bytes produced by the direct serializer — the input to deserialization. */
   private byte[] serializedBytes;
 
-  /** Reusable ProtoBufSerialization instance. */
-  private ProtoBufSerialization pbSerialization;
-
   @Setup(Level.Trial)
   public void setup() throws IOException {
     InputStream is = getClass().getResourceAsStream("/serialization/LargeLanguage.json");
@@ -56,40 +43,18 @@ public class ProtoBufBytesBenchmark {
       json = reader.lines().collect(Collectors.joining("\n"));
     }
 
-    // Use low-level deserialization to stay at SerializationChunk level (no language registration)
     chunk = new LowLevelJsonSerialization().deserializeSerializationBlock(json);
-    pbSerialization = SerializationProvider.getStandardProtoBufSerialization();
-
-    // Pre-serialize so deserialization benchmarks measure only the parsing side
     serializedBytes = DirectProtoBufSerializer.serialize(chunk, true);
   }
 
-  // ---- Serialization benchmarks ----
-
-  /** Direct serializer: SerializationChunk → byte[] without creating PBChunk/PBNode objects. */
   @Benchmark
   public byte[] serializeDirect() {
     return DirectProtoBufSerializer.serialize(chunk, true);
   }
 
-  /** Legacy path: SerializationChunk → PBChunk → byte[]. */
-  @Benchmark
-  public byte[] serializeViaPbChunk() {
-    return pbSerialization.serialize(chunk).toByteArray();
-  }
-
-  // ---- Deserialization benchmarks ----
-
-  /** Direct deserializer: byte[] → SerializationChunk without creating PBChunk/PBNode objects. */
   @Benchmark
   public SerializationChunk deserializeDirect() throws IOException {
     return DirectProtoBufDeserializer.deserialize(serializedBytes, true);
-  }
-
-  /** Legacy path: byte[] → PBChunk → SerializationChunk. */
-  @Benchmark
-  public SerializationChunk deserializeViaPbChunk() throws IOException {
-    return pbSerialization.deserializeToChunkViaPbChunk(serializedBytes);
   }
 
   public static void main(String[] args) throws RunnerException {
