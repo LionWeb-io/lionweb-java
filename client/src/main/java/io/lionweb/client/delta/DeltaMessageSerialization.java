@@ -1,13 +1,6 @@
 package io.lionweb.client.delta;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonParser;
-import com.google.gson.TypeAdapter;
-import com.google.gson.TypeAdapterFactory;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -359,8 +352,8 @@ public class DeltaMessageSerialization {
           JsonObject result = new JsonObject();
           result.addProperty("messageKind", kind);
           for (Map.Entry<String, JsonElement> entry : src.entrySet()) {
-            // split is optional — omit it when null so it is absent rather than "split": null
-            if ("split".equals(entry.getKey()) && entry.getValue().isJsonNull()) {
+            // split is optional — omit it when false
+            if ("split".equals(entry.getKey()) && !entry.getValue().getAsBoolean()) {
               continue;
             }
             result.add(entry.getKey(), entry.getValue());
