@@ -568,14 +568,7 @@ public class DeltaMessageSerialization {
       out.name("message").value(info.message);
       if (info.data != null) {
         out.name("data");
-        out.beginArray();
-        for (AdditionalInfoData d : info.data) {
-          out.beginObject();
-          out.name("key").value(d.key);
-          out.name("value").value(d.value);
-          out.endObject();
-        }
-        out.endArray();
+        new Gson().toJson(info.data, out);
       }
       out.endObject();
     }
@@ -594,14 +587,7 @@ public class DeltaMessageSerialization {
         distribute = distributeEl.getAsBoolean();
       }
       String message = str(o, "message");
-      List<AdditionalInfoData> data = new ArrayList<>();
-      JsonElement dataEl = o.get("data");
-      if (dataEl != null && dataEl.isJsonArray()) {
-        for (JsonElement e : dataEl.getAsJsonArray()) {
-          JsonObject entry = e.getAsJsonObject();
-          data.add(new AdditionalInfoData(str(entry, "key"), str(entry, "value")));
-        }
-      }
+      JsonElement data = o.get("data");
       return new AdditionalInfo(kind, distribute, message, data);
     }
   }

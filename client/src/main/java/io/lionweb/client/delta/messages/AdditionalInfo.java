@@ -2,6 +2,8 @@ package io.lionweb.client.delta.messages;
 
 import java.util.List;
 import java.util.Objects;
+
+import com.google.gson.JsonElement;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -19,13 +21,13 @@ public class AdditionalInfo {
   public final boolean distribute;
 
   public final @NotNull String message;
-  public final @NotNull List<AdditionalInfoData> data;
+  public final @NotNull JsonElement data;
 
   public AdditionalInfo(
       @NotNull String kind,
       boolean distribute,
       @NotNull String message,
-      @NotNull List<AdditionalInfoData> data) {
+      @NotNull JsonElement data) {
     Objects.requireNonNull(kind, "kind must not be null");
     Objects.requireNonNull(message, "message must not be null");
     Objects.requireNonNull(data, "data must not be null");
