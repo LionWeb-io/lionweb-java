@@ -8,8 +8,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents the response for a query that lists partitions in the Delta framework.
  *
- * <p>This response includes information about the partitions returned by the server and
- * indicates whether the response is part of a split or chunked sequence.
+ * <p>This response includes information about the partitions returned by the server and indicates
+ * whether the response is part of a split or chunked sequence.
  *
  * <p>This class extends {@code DeltaQueryResponse}, inheriting its unique query identifier
  * functionality.
