@@ -14,9 +14,15 @@ public final class ChangeReference extends DeltaCommand {
   public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
   public final int index;
-  public final @Nullable String oldTarget;
+
+  /** Old target node id. */
+  public final @Nullable String oldReference;
+
   public final @Nullable String oldResolveInfo;
-  public final @Nullable String newTarget;
+
+  /** New target node id. */
+  public final @Nullable String newReference;
+
   public final @Nullable String newResolveInfo;
 
   public ChangeReference(
@@ -24,9 +30,9 @@ public final class ChangeReference extends DeltaCommand {
       @NotNull String parent,
       @NotNull MetaPointer reference,
       int index,
-      @Nullable String oldTarget,
+      @Nullable String oldReference,
       @Nullable String oldResolveInfo,
-      @Nullable String newTarget,
+      @Nullable String newReference,
       @Nullable String newResolveInfo) {
     super(commandId);
     Objects.requireNonNull(parent, "parent must not be null");
@@ -37,9 +43,9 @@ public final class ChangeReference extends DeltaCommand {
     this.parent = parent;
     this.reference = reference;
     this.index = index;
-    this.oldTarget = oldTarget;
+    this.oldReference = oldReference;
     this.oldResolveInfo = oldResolveInfo;
-    this.newTarget = newTarget;
+    this.newReference = newReference;
     this.newResolveInfo = newResolveInfo;
   }
 
@@ -53,14 +59,14 @@ public final class ChangeReference extends DeltaCommand {
         + reference
         + ", index="
         + index
-        + ", oldTarget='"
-        + oldTarget
+        + ", oldReference='"
+        + oldReference
         + '\''
         + ", oldResolveInfo='"
         + oldResolveInfo
         + '\''
-        + ", newTarget='"
-        + newTarget
+        + ", newReference='"
+        + newReference
         + '\''
         + ", newResolveInfo='"
         + newResolveInfo

@@ -1,11 +1,11 @@
 package io.lionweb.client.delta;
 
 /**
- * Represents various versions of the Delta protocol. Each version is associated
- * with a specific year and minor version, denoted as major.minor (e.g., 2026.1).
+ * Represents various versions of the Delta protocol. Each version is associated with a specific
+ * year and minor version, denoted as major.minor (e.g., 2026.1).
  *
- * The enum provides methods to convert between the wire-format string representation
- * and the corresponding enum constant.
+ * <p>The enum provides methods to convert between the wire-format string representation and the
+ * corresponding enum constant.
  */
 public enum DeltaProtocolVersion {
   v2025_1,

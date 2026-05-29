@@ -11,7 +11,16 @@ public final class AddReference extends DeltaCommand {
   public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
   public final int index;
-  public final @Nullable String newTarget;
+
+  /** Target node id. */
+  public final @Nullable String newReference;
+
+  /**
+   * Specifies the new resolve information for a reference being added.
+   *
+   * <p>If present, this provides auxiliary details or context needed to resolve the reference. It
+   * may be null to indicate that no additional resolve information is provided.
+   */
   public final @Nullable String newResolveInfo;
 
   public AddReference(
@@ -19,7 +28,7 @@ public final class AddReference extends DeltaCommand {
       @NotNull String parent,
       @NotNull MetaPointer reference,
       int index,
-      @Nullable String newTarget,
+      @Nullable String newReference,
       @Nullable String newResolveInfo) {
     super(commandId);
     Objects.requireNonNull(parent, "parent must not be null");
@@ -30,7 +39,7 @@ public final class AddReference extends DeltaCommand {
     this.parent = parent;
     this.reference = reference;
     this.index = index;
-    this.newTarget = newTarget;
+    this.newReference = newReference;
     this.newResolveInfo = newResolveInfo;
   }
 
@@ -44,8 +53,8 @@ public final class AddReference extends DeltaCommand {
         + reference
         + ", index="
         + index
-        + ", newTarget='"
-        + newTarget
+        + ", newReference='"
+        + newReference
         + '\''
         + ", newResolveInfo='"
         + newResolveInfo
