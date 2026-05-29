@@ -64,8 +64,7 @@ public class DeltaQueriesIntegrationTest {
     } else if (result instanceof DeltaQueryResponse) {
       DeltaQueryResponse response = (DeltaQueryResponse) result;
       assertNotNull(response.queryId, "queryId must not be null in " + file.getFileName());
-      assertFalse(
-          response.queryId.isEmpty(), "queryId must not be empty in " + file.getFileName());
+      assertFalse(response.queryId.isEmpty(), "queryId must not be empty in " + file.getFileName());
     }
 
     assertEquals(

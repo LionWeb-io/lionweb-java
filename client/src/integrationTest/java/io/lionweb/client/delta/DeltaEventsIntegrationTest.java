@@ -15,8 +15,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Integration tests verifying that delta event JSON examples from lionweb-integration-testing
- * can be deserialized to the correct Java classes.
+ * Integration tests verifying that delta event JSON examples from lionweb-integration-testing can
+ * be deserialized to the correct Java classes.
  *
  * <p>Many tests are expected to fail because the Java delta protocol implementation is incomplete.
  * Failures document what remains to be implemented.
@@ -58,8 +58,7 @@ public class DeltaEventsIntegrationTest {
     if (result instanceof BaseDeltaEvent) {
       BaseDeltaEvent<?> base = (BaseDeltaEvent<?>) result;
       assertTrue(
-          base.sequenceNumber >= 0,
-          "sequenceNumber must be non-negative in " + file.getFileName());
+          base.sequenceNumber >= 0, "sequenceNumber must be non-negative in " + file.getFileName());
     }
 
     assertEquals(

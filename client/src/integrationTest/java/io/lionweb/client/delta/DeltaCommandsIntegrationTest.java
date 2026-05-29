@@ -14,8 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 /**
- * Integration tests verifying that delta command JSON examples from lionweb-integration-testing
- * can be deserialized to the correct Java classes.
+ * Integration tests verifying that delta command JSON examples from lionweb-integration-testing can
+ * be deserialized to the correct Java classes.
  *
  * <p>Many tests are expected to fail because the Java delta protocol implementation is incomplete.
  * Failures document what remains to be implemented.
@@ -57,7 +57,8 @@ public class DeltaCommandsIntegrationTest {
 
     DeltaCommand command = (DeltaCommand) result;
     assertNotNull(command.commandId, "commandId must not be null in " + file.getFileName());
-    assertFalse(command.commandId.isEmpty(), "commandId must not be empty in " + file.getFileName());
+    assertFalse(
+        command.commandId.isEmpty(), "commandId must not be empty in " + file.getFileName());
 
     assertEquals(
         JsonParser.parseString(json),
