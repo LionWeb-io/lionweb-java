@@ -8,6 +8,7 @@ import java.util.List;
 public abstract class BaseDeltaEvent<T extends BaseDeltaEvent<?>> extends DeltaEvent {
   public final int sequenceNumber;
   public final List<CommandSource> originCommands = new LinkedList<>();
+
   /**
    * Whether this message is a continuation of a split/chunked sequence. Absent (null) or false
    * means this is a standalone message; true means more parts follow.
