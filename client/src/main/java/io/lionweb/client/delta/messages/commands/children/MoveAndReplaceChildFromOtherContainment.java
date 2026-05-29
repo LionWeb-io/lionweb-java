@@ -58,8 +58,8 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }
