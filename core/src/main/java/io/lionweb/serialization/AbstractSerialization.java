@@ -23,11 +23,6 @@ import javax.annotation.Nullable;
  */
 public abstract class AbstractSerialization {
 
-  /** You should use LionWebVersion.currentVersion.getVersionString() instead. */
-  @Deprecated
-  public static final String DEFAULT_SERIALIZATION_FORMAT =
-      LionWebVersion.currentVersion.getVersionString();
-
   protected ClassifierResolver classifierResolver;
   protected Instantiator instantiator;
   protected DataTypesValuesSerialization dataTypesValuesSerialization;
