@@ -27,26 +27,8 @@ public class ReferenceValue {
     return referred.getID();
   }
 
-  /**
-   * Note that changing a ReferenceValue directly will not trigger notifications to observers of the
-   * holding Node, if any. For this reason using this method is discouraged.
-   */
-  @Deprecated
-  public void setReferred(@Nullable Node referred) {
-    this.referred = referred;
-  }
-
   public @Nullable String getResolveInfo() {
     return resolveInfo;
-  }
-
-  /**
-   * Note that changing a ReferenceValue directly will not trigger notifications to observers of the
-   * holding Node, if any. For this reason using this method is discouraged.
-   */
-  @Deprecated
-  public void setResolveInfo(@Nullable String resolveInfo) {
-    this.resolveInfo = resolveInfo;
   }
 
   @Override

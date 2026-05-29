@@ -1,6 +1,6 @@
 plugins {
     `java-gradle-plugin`
-    id("com.gradle.plugin-publish") version "1.2.0"
+    alias(libs.plugins.gradle.publish)
     alias(libs.plugins.vt.publish)
     alias(libs.plugins.build.config)
 }
@@ -42,14 +42,18 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.protobuf)
     implementation(libs.javapoet)
-    implementation("org.jetbrains:annotations:17.0.0")
+    implementation(libs.annotations)
     testImplementation(gradleTestKit())
-    testImplementation("org.junit.jupiter:junit-jupiter:5.7.1")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation(libs.junit.api)
+    testImplementation(libs.junit.params)
+    testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.platform.launcher)
     "integrationTestImplementation"(gradleTestKit())
-    "integrationTestImplementation"("org.junit.jupiter:junit-jupiter:5.7.1")
+    "integrationTestImplementation"(libs.junit.api)
+    "integrationTestImplementation"(libs.junit.params)
+    "integrationTestRuntimeOnly"(libs.junit.engine)
     "integrationTestCompileOnly"(libs.jsr305)
-    "integrationTestRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+    "integrationTestRuntimeOnly"(libs.junit.platform.launcher)
 }
 
 tasks.named<Test>("test") {

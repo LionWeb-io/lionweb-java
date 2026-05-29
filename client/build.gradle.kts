@@ -152,8 +152,8 @@ dependencies {
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
-    add("performanceTestImplementation", "org.openjdk.jmh:jmh-core:1.37")
-    add("performanceTestAnnotationProcessor", "org.openjdk.jmh:jmh-generator-annprocess:1.37")
+    add("performanceTestImplementation", libs.jmh.core)
+    add("performanceTestAnnotationProcessor", libs.jmh.annprocess)
 
     "functionalTestImplementation"(project(":core"))
     "functionalTestImplementation"(project(":client"))

@@ -38,26 +38,6 @@ public class ReferenceValueTest {
   }
 
   @Test
-  public void setReferred_deprecated() {
-    ReferenceValue refValue = new ReferenceValue();
-    ProxyNode proxy = new ProxyNode("proxy-id");
-
-    refValue.setReferred(proxy);
-
-    assertEquals(proxy, refValue.getReferred());
-    assertEquals("proxy-id", refValue.getReferredID());
-  }
-
-  @Test
-  public void setResolveInfo_deprecated() {
-    ReferenceValue refValue = new ReferenceValue();
-
-    refValue.setResolveInfo("new-info");
-
-    assertEquals("new-info", refValue.getResolveInfo());
-  }
-
-  @Test
   public void equals_sameInstance() {
     ReferenceValue refValue = new ReferenceValue();
 

@@ -20,7 +20,7 @@ dependencies {
     api(libs.emf.ecore)
     api(libs.emf.ecore.xmi)
 
-    api(libs.emfjson)
+    implementation(libs.emfjson)
 
     implementation(libs.gson)
     implementation(libs.annotations)

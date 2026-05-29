@@ -11,6 +11,7 @@ Tested and supported Java versions: 11, 17, 21, and 25.
 * Remove all generated protobuf message classes (`PBChunk`, `PBNode`, `PBBulkImport`, etc.) — `ProtoBufSerialization` now delegates entirely to `DirectProtoBufSerializer` / `DirectProtoBufDeserializer`; proto files and the protobuf codegen Gradle plugin are removed from `core` and `extensions`
 * Add `DirectBulkImportSerializer` for bulk-import protobuf serialization without generated classes; `ExtraProtoBufSerialization.serializeBulkImportToBytes` now uses it
 * Improve `DirectProtoBufDeserializer` to throw `DeserializationException` when a metapointer references an out-of-bounds language index
+* Remove deprecated `ReferenceValue.setReferred()`/`setResolveInfo()` mutators (use `withReferred()`/`withResolveInfo()` builder methods instead) and `AbstractSerialization.DEFAULT_SERIALIZATION_FORMAT` constant
 
 ### Version 1.3.17
 
