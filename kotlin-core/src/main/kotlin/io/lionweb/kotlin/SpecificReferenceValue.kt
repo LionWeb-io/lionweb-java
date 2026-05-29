@@ -13,16 +13,14 @@ interface Deproxifier {
 
 class SpecificReferenceValue<T : Node>(
     val targetClass: KClass<T>,
-) : ReferenceValue() {
+    referred: Node? = null,
+    resolveInfo: String? = null,
+) : ReferenceValue(referred, resolveInfo) {
     companion object {
         inline fun <reified T : Node> create(
             resolveInfo: String?,
             referred: Node?,
-        ): SpecificReferenceValue<T> =
-            SpecificReferenceValue(T::class).apply {
-                this.resolveInfo = resolveInfo
-                this.referred = referred
-            }
+        ): SpecificReferenceValue<T> = SpecificReferenceValue(T::class, referred, resolveInfo)
 
         inline fun <reified T : Node> createNull(): SpecificReferenceValue<T> = create(null, null)
     }
@@ -30,26 +28,10 @@ class SpecificReferenceValue<T : Node>(
     fun getReferred(deproxifier: Deproxifier): T? {
         val value = super.getReferred()
         return when {
-            value == null -> {
-                null
-            }
-            value is ProxyNode -> {
-                deproxifier.deproxify(value)
-            }
-            targetClass.isInstance(value) -> {
-                value as T
-            }
-            else -> {
-                throw IllegalStateException("Referred node has an expected type: $value")
-            }
-        }
-    }
-
-    override fun setReferred(referred: Node?) {
-        if (referred == null || targetClass.isInstance(referred) || referred is ProxyNode) {
-            super.setReferred(referred)
-        } else {
-            throw IllegalArgumentException("Cannot set referred to $referred")
+            value == null -> null
+            value is ProxyNode -> deproxifier.deproxify(value)
+            targetClass.isInstance(value) -> value as T
+            else -> throw IllegalStateException("Referred node has an expected type: $value")
         }
     }
 }
