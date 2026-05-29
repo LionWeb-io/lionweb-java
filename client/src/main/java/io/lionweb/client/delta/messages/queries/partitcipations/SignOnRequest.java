@@ -6,8 +6,14 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public class SignOnRequest extends DeltaQuery {
+  /** The version string of the delta protocol (e.g. "2026.1"). */
   public final @NotNull DeltaProtocolVersion deltaProtocolVersion;
+
+  /** The identifier this client uses to identify itself. */
   public final @NotNull String clientId;
+
+  /** The identifier of the repository the client wants to connect to. */
+  public @NotNull String repositoryId;
 
   public SignOnRequest(
       @NotNull String queryId,
@@ -28,9 +34,14 @@ public class SignOnRequest extends DeltaQuery {
         + ", clientId='"
         + clientId
         + '\''
+        + ", repositoryId='"
+        + repositoryId
+        + '\''
         + ", queryId='"
         + queryId
         + '\''
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }
