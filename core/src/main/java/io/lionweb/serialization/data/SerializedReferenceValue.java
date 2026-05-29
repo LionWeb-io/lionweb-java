@@ -65,6 +65,7 @@ public class SerializedReferenceValue {
 
   @SerializedName("reference")
   private final MetaPointer metaPointer;
+
   @SerializedName("targets")
   private final List<Entry> value;
 

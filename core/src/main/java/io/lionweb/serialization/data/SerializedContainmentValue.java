@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 public class SerializedContainmentValue {
   @SerializedName("containment")
   private final MetaPointer metaPointer;
+
   @SerializedName("children")
   private final List<String> childrenIds;
 

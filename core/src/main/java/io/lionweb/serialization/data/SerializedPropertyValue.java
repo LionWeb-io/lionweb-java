@@ -35,6 +35,7 @@ public class SerializedPropertyValue {
 
   @SerializedName("property")
   private final MetaPointer metaPointer;
+
   private final String value;
 
   private SerializedPropertyValue(MetaPointer metaPointer, String value) {
