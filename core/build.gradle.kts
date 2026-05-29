@@ -262,8 +262,8 @@ configurations["performanceTestRuntimeOnly"]
     .extendsFrom(configurations["testRuntimeOnly"])
 
 dependencies {
-    add("performanceTestImplementation", "org.openjdk.jmh:jmh-core:1.37")
-    add("performanceTestAnnotationProcessor", "org.openjdk.jmh:jmh-generator-annprocess:1.37")
+    add("performanceTestImplementation", libs.jmh.core)
+    add("performanceTestAnnotationProcessor", libs.jmh.annprocess)
 }
 
 // Runs performance tests in src/performanceTest/java. Right-clicking a test in that
