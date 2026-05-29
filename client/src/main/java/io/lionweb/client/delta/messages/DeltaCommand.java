@@ -14,7 +14,16 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class DeltaCommand {
   public final @NotNull String commandId;
-  public final List<ProtocolMessage> protocolMessages = new LinkedList<>();
+  /**
+   * Whether this message is a continuation of a split/chunked sequence. Absent (null) or false
+   * means this is a standalone message; true means more parts follow.
+   */
+  public Boolean split;
+
+    /**
+     * Represents additional information associated with a protocol message in the Delta framework.
+     */
+  public final List<AdditionalInfo> additionalInfos = new LinkedList<>();
 
   public DeltaCommand(@NotNull String commandId) {
     Objects.requireNonNull(commandId, "commandId should not be null");
