@@ -82,7 +82,7 @@ jobs:
     strategy:
       matrix:
         java: [ '17', '21', '25' ]
-    name: Java ${{ matrix.java }} Core Integration Tests
+    name: Java ${{ matrix.java }} Client Integration Tests
 
     steps:
       - uses: actions/checkout@v6
