@@ -1,7 +1,6 @@
 package io.lionweb.client.delta.messages.commands.annotations;
 
 import io.lionweb.client.delta.messages.DeltaCommand;
-import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
@@ -11,17 +10,15 @@ import org.jetbrains.annotations.NotNull;
  * (including annotation instances). Does NOT change references to any of the deleted nodes.
  */
 public final class ReplaceAnnotation extends DeltaCommand {
-  public final @NotNull SerializationChunk newAnnotation;
   public final @NotNull String parent;
+  public final @NotNull SerializationChunk newAnnotation;
   public final int index;
-  public final @NotNull MetaPointer containment;
   public final @NotNull String replacedAnnotation;
 
   public ReplaceAnnotation(
       @NotNull String commandId,
       @NotNull SerializationChunk newAnnotation,
       @NotNull String parent,
-      @NotNull MetaPointer containment,
       int index,
       @NotNull String replacedAnnotation) {
     super(commandId);
@@ -30,11 +27,9 @@ public final class ReplaceAnnotation extends DeltaCommand {
     if (index < 0) {
       throw new IllegalArgumentException("index must be non-negative");
     }
-    Objects.requireNonNull(containment, "containment must not be null");
     Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
     this.newAnnotation = newAnnotation;
     this.parent = parent;
-    this.containment = containment;
     this.index = index;
     this.replacedAnnotation = replacedAnnotation;
   }
@@ -49,8 +44,6 @@ public final class ReplaceAnnotation extends DeltaCommand {
         + '\''
         + ", index="
         + index
-        + ", containment="
-        + containment
         + ", replacedAnnotation='"
         + replacedAnnotation
         + '\''
