@@ -51,8 +51,8 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

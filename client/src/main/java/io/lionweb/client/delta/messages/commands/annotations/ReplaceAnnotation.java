@@ -57,8 +57,8 @@ public final class ReplaceAnnotation extends DeltaCommand {
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

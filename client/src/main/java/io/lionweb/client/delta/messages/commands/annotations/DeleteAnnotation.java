@@ -44,8 +44,8 @@ public final class DeleteAnnotation extends DeltaCommand {
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }
