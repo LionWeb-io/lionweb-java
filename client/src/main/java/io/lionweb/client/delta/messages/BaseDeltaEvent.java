@@ -13,7 +13,15 @@ public abstract class BaseDeltaEvent<T extends BaseDeltaEvent<?>> extends DeltaE
    * Whether this message is a continuation of a split/chunked sequence. Absent (null) or false
    * means this is a standalone message; true means more parts follow.
    */
-  public Boolean split;
+  public boolean split;
+
+  public boolean isSplit() {
+    return split;
+  }
+
+  public void setSplit(boolean split) {
+    this.split = split;
+  }
 
   public BaseDeltaEvent(int sequenceNumber) {
     this.sequenceNumber = sequenceNumber;

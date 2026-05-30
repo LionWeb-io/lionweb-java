@@ -350,7 +350,9 @@ public class DeltaMessageSerialization {
           result.addProperty("messageKind", kind);
           for (Map.Entry<String, JsonElement> entry : src.entrySet()) {
             // split is optional — omit it when false
-            if ("split".equals(entry.getKey()) && !entry.getValue().getAsBoolean()) {
+            if ("split".equals(entry.getKey())
+                && entry.getValue().isJsonPrimitive()
+                && !entry.getValue().getAsBoolean()) {
               continue;
             }
             result.add(entry.getKey(), entry.getValue());
