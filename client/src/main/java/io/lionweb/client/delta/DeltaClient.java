@@ -5,6 +5,10 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.ChangeClassifier;
+import io.lionweb.client.delta.messages.commands.annotations.AddAnnotation;
+import io.lionweb.client.delta.messages.commands.annotations.DeleteAnnotation;
+import io.lionweb.client.delta.messages.commands.annotations.MoveAnnotationFromOtherParent;
+import io.lionweb.client.delta.messages.commands.annotations.MoveAnnotationInSameParent;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainment;
@@ -21,6 +25,10 @@ import io.lionweb.client.delta.messages.commands.references.ChangeReference;
 import io.lionweb.client.delta.messages.commands.references.DeleteReference;
 import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationAdded;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationDeleted;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedFromOtherParent;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedInSameParent;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainment;
@@ -50,6 +58,7 @@ import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartiti
 import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest;
 import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsResponse;
 import io.lionweb.language.Containment;
+import io.lionweb.language.Language;
 import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.*;
@@ -105,6 +114,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     this.serialization = SerializationProvider.getStandardJsonSerialization(lionWebVersion);
     this.serialization.setUnavailableParentPolicy(UnavailableNodePolicy.PROXY_NODES);
     this.serialization.setUnavailableReferenceTargetPolicy(UnavailableNodePolicy.PROXY_NODES);
+    this.serialization.enableDynamicNodes();
   }
 
   /**
@@ -153,7 +163,12 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         onChildMovedFromOtherContainment((ChildMovedFromOtherContainment) event);
       else if (event instanceof ChildReplaced) onChildReplaced((ChildReplaced) event);
       else if (event instanceof ClassifierChanged) onClassifierChanged((ClassifierChanged) event);
-      else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
+      else if (event instanceof AnnotationAdded) onAnnotationAdded((AnnotationAdded) event);
+      else if (event instanceof AnnotationDeleted) onAnnotationDeleted((AnnotationDeleted) event);
+      else if (event instanceof AnnotationMovedInSameParent
+          || event instanceof AnnotationMovedFromOtherParent) {
+        throw new UnsupportedOperationException();
+      } else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
       else if (event instanceof PartitionAdded || event instanceof PartitionDeleted) {
         /* no-op */
       } else
@@ -368,6 +383,28 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         });
   }
 
+  private void onAnnotationAdded(@NotNull AnnotationAdded event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          AnnotationInstance annotation =
+              (AnnotationInstance)
+                  serialization.deserializeSerializationChunk(event.newAnnotation).get(0);
+          instance.addAnnotation(annotation);
+        });
+  }
+
+  private void onAnnotationDeleted(@NotNull AnnotationDeleted event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          instance.getAnnotations().stream()
+              .filter(a -> event.deletedAnnotation.equals(a.getID()))
+              .findFirst()
+              .ifPresent(instance::removeAnnotation);
+        });
+  }
+
   private void onClassifierChanged(@NotNull ClassifierChanged event) {
     // Changing the runtime type of a local Java object is not possible.
     // Clients that need to act on classifier changes should re-fetch the node from the server.
@@ -378,6 +415,21 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(event, "event must not be null");
     // observer.paused is reset by the finally block in receiveEvent
     throw new ErrorEventReceivedException(event.errorCode, event.message);
+  }
+
+  /**
+   * Serializes an annotation instance into a chunk with the root's parentNodeID cleared. The
+   * receiver should not try to re-attach the parent from the chunk — the parent is conveyed by the
+   * enclosing command/event's explicit parent field.
+   */
+  @NotNull
+  private SerializationChunk serializeAnnotationChunk(@NotNull AnnotationInstance annotation) {
+    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(annotation);
+    chunk.getClassifierInstances().stream()
+        .filter(n -> annotation.getID().equals(n.getID()))
+        .findFirst()
+        .ifPresent(n -> n.setParentNodeID(null));
+    return chunk;
   }
 
   /** Applies {@code action} to every live local instance tracked under {@code nodeId}. */
@@ -470,9 +522,10 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     @Override
     public void annotationAdded(
         @NotNull ClassifierInstance<?> node, int index, @NotNull AnnotationInstance newAnnotation) {
-      Objects.requireNonNull(node, "node must not be null");
-      Objects.requireNonNull(newAnnotation, "newAnnotation must not be null");
-      throw new UnsupportedOperationException("Not supported yet.");
+      if (paused) return;
+      SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(newAnnotation);
+      channel.sendCommand(
+          participationId, commandId -> new AddAnnotation(commandId, node.getID(), chunk, index));
     }
 
     @Override
@@ -480,9 +533,11 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         @NotNull ClassifierInstance<?> node,
         int index,
         @NotNull AnnotationInstance removedAnnotation) {
-      Objects.requireNonNull(node, "node must not be null");
-      Objects.requireNonNull(removedAnnotation, "removedAnnotation must not be null");
-      throw new UnsupportedOperationException("Not supported yet.");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new DeleteAnnotation(commandId, node.getID(), index, removedAnnotation.getID()));
     }
 
     @Override
@@ -830,5 +885,83 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     channel.sendCommand(
         participationId,
         commandId -> new ReplaceChild(commandId, chunk, parent, containment, index, replacedChild));
+  }
+
+  /**
+   * Registers a language in this client's serialization context so that nodes and annotations of
+   * that language can be properly deserialized from incoming events.
+   *
+   * @param language the language to register
+   */
+  public void registerLanguage(@NotNull Language language) {
+    Objects.requireNonNull(language, "language must not be null");
+    this.serialization.registerLanguage(language);
+  }
+
+  /**
+   * Sends a command to add an annotation to a node at a given index.
+   *
+   * @param parentId node id of the node to annotate
+   * @param annotation the annotation instance to add
+   * @param index 0-based position in the parent's annotation list
+   */
+  public void sendAddAnnotationCommand(
+      @NotNull String parentId, @NotNull AnnotationInstance annotation, int index) {
+    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(annotation);
+    channel.sendCommand(
+        participationId, commandId -> new AddAnnotation(commandId, parentId, chunk, index));
+  }
+
+  /**
+   * Sends a command to delete an annotation from a node.
+   *
+   * @param parentId node id of the annotated node
+   * @param index 0-based position of the annotation to remove
+   * @param annotationId id of the annotation instance to remove
+   */
+  public void sendDeleteAnnotationCommand(
+      @NotNull String parentId, int index, @NotNull String annotationId) {
+    channel.sendCommand(
+        participationId,
+        commandId -> new DeleteAnnotation(commandId, parentId, index, annotationId));
+  }
+
+  /**
+   * Sends a command to move an annotation within the same parent's annotation list.
+   *
+   * @param parentId node id of the annotated node
+   * @param movedAnnotationId id of the annotation to move
+   * @param oldIndex current 0-based position
+   * @param newIndex desired final 0-based position
+   */
+  public void sendMoveAnnotationInSameParentCommand(
+      @NotNull String parentId, @NotNull String movedAnnotationId, int oldIndex, int newIndex) {
+    channel.sendCommand(
+        participationId,
+        commandId ->
+            new MoveAnnotationInSameParent(
+                commandId, newIndex, movedAnnotationId, parentId, oldIndex));
+  }
+
+  /**
+   * Sends a command to move an annotation from one node to another.
+   *
+   * @param oldParentId node id of the current annotated node
+   * @param newParentId node id of the target annotated node
+   * @param movedAnnotationId id of the annotation to move
+   * @param oldIndex current 0-based position in the old parent
+   * @param newIndex desired final 0-based position in the new parent
+   */
+  public void sendMoveAnnotationFromOtherParentCommand(
+      @NotNull String oldParentId,
+      @NotNull String newParentId,
+      @NotNull String movedAnnotationId,
+      int oldIndex,
+      int newIndex) {
+    channel.sendCommand(
+        participationId,
+        commandId ->
+            new MoveAnnotationFromOtherParent(
+                commandId, newParentId, newIndex, movedAnnotationId, oldParentId, oldIndex));
   }
 }

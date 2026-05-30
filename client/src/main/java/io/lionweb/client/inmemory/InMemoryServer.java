@@ -10,6 +10,11 @@ import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.ChangeClassifier;
+import io.lionweb.client.delta.messages.commands.annotations.AddAnnotation;
+import io.lionweb.client.delta.messages.commands.annotations.DeleteAnnotation;
+import io.lionweb.client.delta.messages.commands.annotations.MoveAnnotationFromOtherParent;
+import io.lionweb.client.delta.messages.commands.annotations.MoveAnnotationInSameParent;
+import io.lionweb.client.delta.messages.commands.annotations.ReplaceAnnotation;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainment;
@@ -27,6 +32,11 @@ import io.lionweb.client.delta.messages.commands.references.DeleteReference;
 import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationAdded;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationDeleted;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedFromOtherParent;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedInSameParent;
+import io.lionweb.client.delta.messages.events.annotations.AnnotationReplaced;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainment;
@@ -416,6 +426,17 @@ public class InMemoryServer {
           handleDeleteChild((DeleteChild) command, data, source);
         else if (command instanceof AddReference)
           handleAddReference((AddReference) command, data, source);
+        else if (command instanceof AddAnnotation)
+          handleAddAnnotation((AddAnnotation) command, data, source);
+        else if (command instanceof DeleteAnnotation)
+          handleDeleteAnnotation((DeleteAnnotation) command, data, source);
+        else if (command instanceof MoveAnnotationInSameParent)
+          handleMoveAnnotationInSameParent((MoveAnnotationInSameParent) command, data, source);
+        else if (command instanceof MoveAnnotationFromOtherParent)
+          handleMoveAnnotationFromOtherParent(
+              (MoveAnnotationFromOtherParent) command, data, source);
+        else if (command instanceof ReplaceAnnotation)
+          handleReplaceAnnotation((ReplaceAnnotation) command, data, source);
         else if (command instanceof MoveChildInSameContainment)
           handleMoveChildInSameContainment((MoveChildInSameContainment) command, data, source);
         else if (command instanceof MoveChildFromOtherContainmentInSameParent)
@@ -506,6 +527,129 @@ public class InMemoryServer {
                       cmd.index,
                       cmd.newReference,
                       cmd.newResolveInfo)
+                  .addSource(source));
+    }
+
+    private void handleAddAnnotation(
+        @NotNull AddAnnotation cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      Set<String> chunkIds =
+          cmd.newAnnotation.getClassifierInstances().stream()
+              .map(SerializedClassifierInstance::getID)
+              .collect(Collectors.toSet());
+      SerializedClassifierInstance annotationRoot =
+          cmd.newAnnotation.getClassifierInstances().stream()
+              .filter(n -> n.getParentNodeID() == null || !chunkIds.contains(n.getParentNodeID()))
+              .findFirst()
+              .orElseThrow(() -> new NodeNotFoundException("annotation root not found in chunk"));
+      annotationRoot.setParentNodeID(cmd.parent);
+      data.store(cmd.newAnnotation.getClassifierInstances());
+      List<String> annotations = new ArrayList<>(parent.getAnnotations());
+      annotations.add(cmd.index, annotationRoot.getID());
+      parent.setAnnotations(annotations);
+      channel.sendEvent(
+          seqNum ->
+              new AnnotationAdded(seqNum, cmd.parent, cmd.newAnnotation, cmd.index)
+                  .addSource(source));
+    }
+
+    private void handleDeleteAnnotation(
+        @NotNull DeleteAnnotation cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      List<String> descendants = new ArrayList<>();
+      collectDescendants(data, cmd.deletedAnnotation, descendants);
+      List<String> annotations = new ArrayList<>(parent.getAnnotations());
+      annotations.remove(cmd.index);
+      parent.setAnnotations(annotations);
+      data.deleteNodeAndDescendant(cmd.deletedAnnotation);
+      channel.sendEvent(
+          seqNum ->
+              new AnnotationDeleted(
+                      seqNum,
+                      cmd.deletedAnnotation,
+                      descendants.toArray(new String[0]),
+                      cmd.parent,
+                      cmd.index)
+                  .addSource(source));
+    }
+
+    private void handleMoveAnnotationInSameParent(
+        @NotNull MoveAnnotationInSameParent cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      List<String> annotations = new ArrayList<>(parent.getAnnotations());
+      String id = annotations.remove(cmd.oldIndex);
+      annotations.add(cmd.newIndex, id);
+      parent.setAnnotations(annotations);
+      channel.sendEvent(
+          seqNum ->
+              new AnnotationMovedInSameParent(
+                      seqNum, cmd.newIndex, cmd.movedAnnotation, cmd.parent, cmd.oldIndex)
+                  .addSource(source));
+    }
+
+    private void handleMoveAnnotationFromOtherParent(
+        @NotNull MoveAnnotationFromOtherParent cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance oldParent = requireNode(data, cmd.oldParent);
+      SerializedClassifierInstance newParent = requireNode(data, cmd.newParent);
+      SerializedClassifierInstance annotation = requireNode(data, cmd.movedAnnotation);
+      List<String> oldAnnotations = new ArrayList<>(oldParent.getAnnotations());
+      oldAnnotations.remove(cmd.oldIndex);
+      oldParent.setAnnotations(oldAnnotations);
+      annotation.setParentNodeID(cmd.newParent);
+      List<String> newAnnotations = new ArrayList<>(newParent.getAnnotations());
+      newAnnotations.add(cmd.newIndex, cmd.movedAnnotation);
+      newParent.setAnnotations(newAnnotations);
+      channel.sendEvent(
+          seqNum ->
+              new AnnotationMovedFromOtherParent(
+                      seqNum,
+                      cmd.newParent,
+                      cmd.newIndex,
+                      cmd.movedAnnotation,
+                      cmd.oldParent,
+                      cmd.oldIndex)
+                  .addSource(source));
+    }
+
+    private void handleReplaceAnnotation(
+        @NotNull ReplaceAnnotation cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      List<String> descendants = new ArrayList<>();
+      collectDescendants(data, cmd.replacedAnnotation, descendants);
+      Set<String> chunkIds =
+          cmd.newAnnotation.getClassifierInstances().stream()
+              .map(SerializedClassifierInstance::getID)
+              .collect(Collectors.toSet());
+      SerializedClassifierInstance newRoot =
+          cmd.newAnnotation.getClassifierInstances().stream()
+              .filter(n -> n.getParentNodeID() == null || !chunkIds.contains(n.getParentNodeID()))
+              .findFirst()
+              .orElseThrow(() -> new NodeNotFoundException("new annotation root not found"));
+      newRoot.setParentNodeID(cmd.parent);
+      List<String> annotations = new ArrayList<>(parent.getAnnotations());
+      annotations.remove(cmd.index);
+      parent.setAnnotations(annotations);
+      data.deleteNodeAndDescendant(cmd.replacedAnnotation);
+      data.store(cmd.newAnnotation.getClassifierInstances());
+      annotations.add(cmd.index, newRoot.getID());
+      parent.setAnnotations(annotations);
+      channel.sendEvent(
+          seqNum ->
+              new AnnotationReplaced(
+                      seqNum,
+                      cmd.newAnnotation,
+                      cmd.replacedAnnotation,
+                      descendants.toArray(new String[0]),
+                      cmd.parent,
+                      cmd.index)
                   .addSource(source));
     }
 
