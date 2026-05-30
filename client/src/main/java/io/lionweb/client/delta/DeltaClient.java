@@ -84,7 +84,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private String clientId;
   private String pendingReconnectParticipationId;
 
-  private enum ParticipationState {
+  public enum ParticipationState {
     NOT_CONNECTED,
     CONNECTED,
     SIGNED_OFF,
@@ -619,6 +619,10 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
    */
   public @Nullable String getParticipationId() {
     return participationId;
+  }
+
+  public ParticipationState getState() {
+    return state;
   }
 
   @Override

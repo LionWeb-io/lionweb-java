@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.HistorySupport;
-import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Language;
@@ -14,7 +12,7 @@ import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import org.junit.jupiter.api.Test;
 
-public class ConnectionManagementTest {
+public class DeltaConnectionManagementTest extends AbstractDeltaProtocolTest {
 
   /**
    * Scenario Start participation.
@@ -24,19 +22,17 @@ public class ConnectionManagementTest {
    */
   @Test
   public void startParticipation() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
-
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    InMemoryServer server = createServerWithRepository();
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client-1");
     assertNull(client.getParticipationId());
+    assertEquals(DeltaClient.ParticipationState.NOT_CONNECTED, client.getState());
 
     client.sendSignOnRequest();
 
     assertNotNull(client.getParticipationId());
+    assertEquals(DeltaClient.ParticipationState.CONNECTED, client.getState());
   }
 
   /**
@@ -47,12 +43,8 @@ public class ConnectionManagementTest {
    */
   @Test
   public void reconnectParticipation() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
-
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    InMemoryServer server = createServerWithRepository();
+    DeltaChannel channel = prepareChannel(server);
 
     // Original session: sign on
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
@@ -78,17 +70,14 @@ public class ConnectionManagementTest {
    */
   @Test
   public void endParticipation() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
+    InMemoryServer server = createServerWithRepository();
 
     JsonSerialization serialization =
         SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
     Language language = new Language("Language A", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", language, serialization);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client-1");
     client.sendSignOnRequest();
@@ -100,6 +89,7 @@ public class ConnectionManagementTest {
 
     // Sign off
     client.sendSignOffRequest();
+    assertEquals(DeltaClient.ParticipationState.SIGNED_OFF, client.getState());
 
     // Commands after sign-off are rejected with INVALID_PARTICIPATION
     try {

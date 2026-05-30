@@ -5,9 +5,8 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents a request to subscribe to the contents of a specific partition.
- * This class allows a client to request events pertaining to a given partition
- * identified by its node ID.
+ * Represents a request to subscribe to the contents of a specific partition. This class allows a
+ * client to request events pertaining to a given partition identified by its node ID.
  */
 public class SubscribeToPartitionContentsRequest extends DeltaQuery {
 
