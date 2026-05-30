@@ -9,12 +9,7 @@ import io.lionweb.client.delta.messages.commands.annotations.AddAnnotation;
 import io.lionweb.client.delta.messages.commands.annotations.DeleteAnnotation;
 import io.lionweb.client.delta.messages.commands.annotations.MoveAnnotationFromOtherParent;
 import io.lionweb.client.delta.messages.commands.annotations.MoveAnnotationInSameParent;
-import io.lionweb.client.delta.messages.commands.children.AddChild;
-import io.lionweb.client.delta.messages.commands.children.DeleteChild;
-import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainment;
-import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainmentInSameParent;
-import io.lionweb.client.delta.messages.commands.children.MoveChildInSameContainment;
-import io.lionweb.client.delta.messages.commands.children.ReplaceChild;
+import io.lionweb.client.delta.messages.commands.children.*;
 import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
 import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.AddProperty;
@@ -29,12 +24,7 @@ import io.lionweb.client.delta.messages.events.annotations.AnnotationAdded;
 import io.lionweb.client.delta.messages.events.annotations.AnnotationDeleted;
 import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedFromOtherParent;
 import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedInSameParent;
-import io.lionweb.client.delta.messages.events.children.ChildAdded;
-import io.lionweb.client.delta.messages.events.children.ChildDeleted;
-import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainment;
-import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainmentInSameParent;
-import io.lionweb.client.delta.messages.events.children.ChildMovedInSameContainment;
-import io.lionweb.client.delta.messages.events.children.ChildReplaced;
+import io.lionweb.client.delta.messages.events.children.*;
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
@@ -47,12 +37,7 @@ import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsReques
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
 import io.lionweb.client.delta.messages.queries.ListPartitionsRequest;
 import io.lionweb.client.delta.messages.queries.ListPartitionsResponse;
-import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest;
-import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectResponse;
-import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest;
-import io.lionweb.client.delta.messages.queries.partitcipations.SignOffResponse;
-import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
-import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
+import io.lionweb.client.delta.messages.queries.partitcipations.*;
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest;
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsResponse;
 import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest;
@@ -63,33 +48,36 @@ import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.*;
 import io.lionweb.model.impl.ProxyNode;
-import io.lionweb.serialization.*;
+import io.lionweb.serialization.AbstractSerialization;
+import io.lionweb.serialization.DataTypesValuesSerialization;
+import io.lionweb.serialization.SerializationProvider;
+import io.lionweb.serialization.UnavailableNodePolicy;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.lang.ref.WeakReference;
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * This Client processes communications received through a DeltaChannel and monitor nodes. Based on
+ * the events received, it will update the local nodes. Based on the changes observed on the local
+ * nodes, it will send the changes through the DeltaChannel.
+ */
 public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiver {
-  private LionWebVersion lionWebVersion;
-  private DeltaChannel channel;
-  private MonitoringObserver observer = new MonitoringObserver();
-  private String participationId;
-  private HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes = new HashMap<>();
-  private DataTypesValuesSerialization dataTypesValuesSerialization =
+  private final DeltaChannel channel;
+  private final MonitoringObserver observer = new MonitoringObserver();
+  private final HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes = new HashMap<>();
+  private final DataTypesValuesSerialization dataTypesValuesSerialization =
       new DataTypesValuesSerialization();
-  private AbstractSerialization serialization;
-  private Set<String> queriesSent = new HashSet<>();
-  private String clientId;
+  private final AbstractSerialization serialization;
+  private final Set<String> queriesSent = new HashSet<>();
+  private final String clientId;
+  private String participationId;
   private String pendingReconnectParticipationId;
-
-  public enum ParticipationState {
-    NOT_CONNECTED,
-    CONNECTED,
-    SIGNED_OFF,
-  }
-
   private ParticipationState state = ParticipationState.NOT_CONNECTED;
 
   public DeltaClient(@NotNull DeltaChannel channel, @NotNull String clientId) {
@@ -105,7 +93,6 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(clientId, "clientId must not be null");
 
     this.clientId = clientId;
-    this.lionWebVersion = lionWebVersion;
     this.channel = channel;
     this.channel.registerEventReceiver(this);
     this.channel.registerQueryResponseReceiver(this);
@@ -118,8 +105,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   /**
-   * It is responsibility of the caller to ensure that the partition is initially in sync with the
-   * server.
+   * It is the responsibility of the caller to ensure that the partition is initially in sync with
+   * the server.
    */
   public void monitor(@NotNull Node partition) {
     Objects.requireNonNull(partition, "partition should not be null");
@@ -440,174 +427,6 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     for (WeakReference<ClassifierInstance<?>> ref : refs) {
       ClassifierInstance<?> instance = ref.get();
       if (instance != null) action.accept(instance);
-    }
-  }
-
-  private class MonitoringObserver implements PartitionObserver {
-
-    public boolean paused = false;
-
-    @Override
-    public void propertyChanged(
-        @NotNull ClassifierInstance<?> classifierInstance,
-        @NotNull Property property,
-        @Nullable Object oldValue,
-        @Nullable Object newValue) {
-      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
-      Objects.requireNonNull(property, "property must not be null");
-      if (paused) return;
-      String typeId = property.getType() != null ? property.getType().getID() : null;
-      String serializedNew =
-          newValue != null ? dataTypesValuesSerialization.serialize(typeId, newValue) : null;
-      MetaPointer mp = MetaPointer.from(property);
-      String nodeId = classifierInstance.getID();
-      if (oldValue == null) {
-        channel.sendCommand(
-            participationId, commandId -> new AddProperty(commandId, nodeId, mp, serializedNew));
-      } else if (newValue == null) {
-        channel.sendCommand(
-            participationId, commandId -> new DeleteProperty(commandId, nodeId, mp));
-      } else {
-        channel.sendCommand(
-            participationId, commandId -> new ChangeProperty(commandId, nodeId, mp, serializedNew));
-      }
-    }
-
-    @Override
-    public void childAdded(
-        @NotNull ClassifierInstance<?> classifierInstance,
-        @NotNull Containment containment,
-        int index,
-        @NotNull Node newChild) {
-      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
-      Objects.requireNonNull(containment, "containment must not be null");
-      Objects.requireNonNull(newChild, "newChild must not be null");
-      if (paused) return;
-      SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
-      if (newChild.getID() == null) {
-        throw new IllegalStateException("Child id must not be null");
-      }
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new AddChild(
-                  commandId,
-                  classifierInstance.getID(),
-                  chunk,
-                  MetaPointer.from(containment),
-                  index));
-    }
-
-    @Override
-    public void childRemoved(
-        @NotNull ClassifierInstance<?> classifierInstance,
-        @NotNull Containment containment,
-        int index,
-        @NotNull Node removedChild) {
-      if (paused) return;
-      Objects.requireNonNull(removedChild, "removedChild must not be null");
-      String removedChildId = removedChild.getID();
-      Objects.requireNonNull(removedChildId, "removedChildId must not be null");
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new DeleteChild(
-                  commandId,
-                  classifierInstance.getID(),
-                  MetaPointer.from(containment),
-                  index,
-                  removedChildId));
-    }
-
-    @Override
-    public void annotationAdded(
-        @NotNull ClassifierInstance<?> node, int index, @NotNull AnnotationInstance newAnnotation) {
-      if (paused) return;
-      SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(newAnnotation);
-      channel.sendCommand(
-          participationId, commandId -> new AddAnnotation(commandId, node.getID(), chunk, index));
-    }
-
-    @Override
-    public void annotationRemoved(
-        @NotNull ClassifierInstance<?> node,
-        int index,
-        @NotNull AnnotationInstance removedAnnotation) {
-      if (paused) return;
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new DeleteAnnotation(commandId, node.getID(), index, removedAnnotation.getID()));
-    }
-
-    @Override
-    public void referenceValueAdded(
-        @NotNull ClassifierInstance<?> classifierInstance,
-        @NotNull Reference reference,
-        int index,
-        @NotNull ReferenceValue referenceValue) {
-      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
-      Objects.requireNonNull(reference, "reference must not be null");
-      Objects.requireNonNull(referenceValue, "referenceValue must not be null");
-      if (paused) return;
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new AddReference(
-                  commandId,
-                  classifierInstance.getID(),
-                  MetaPointer.from(reference),
-                  index,
-                  referenceValue.getReferredID(),
-                  referenceValue.getResolveInfo()));
-    }
-
-    @Override
-    public void referenceValueChanged(
-        @NotNull ClassifierInstance<?> classifierInstance,
-        @NotNull Reference reference,
-        int index,
-        @Nullable String oldReferred,
-        @Nullable String oldResolveInfo,
-        @Nullable String newReferred,
-        @Nullable String newResolveInfo) {
-      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
-      Objects.requireNonNull(reference, "reference must not be null");
-      if (paused) return;
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new ChangeReference(
-                  commandId,
-                  classifierInstance.getID(),
-                  MetaPointer.from(reference),
-                  index,
-                  oldReferred,
-                  oldResolveInfo,
-                  newReferred,
-                  newResolveInfo));
-    }
-
-    @Override
-    public void referenceValueRemoved(
-        @NotNull ClassifierInstance<?> classifierInstance,
-        @NotNull Reference reference,
-        int index,
-        @NotNull ReferenceValue referenceValue) {
-      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
-      Objects.requireNonNull(reference, "reference must not be null");
-      Objects.requireNonNull(referenceValue, "referenceValue must not be null");
-      if (paused) return;
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new DeleteReference(
-                  commandId,
-                  classifierInstance.getID(),
-                  MetaPointer.from(reference),
-                  index,
-                  referenceValue.getReferredID(),
-                  referenceValue.getResolveInfo()));
     }
   }
 
@@ -967,5 +786,179 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         commandId ->
             new MoveAnnotationFromOtherParent(
                 commandId, newParentId, newIndex, movedAnnotationId, oldParentId, oldIndex));
+  }
+
+  public enum ParticipationState {
+    NOT_CONNECTED,
+    CONNECTED,
+    SIGNED_OFF,
+  }
+
+  private class MonitoringObserver implements PartitionObserver {
+
+    public boolean paused = false;
+
+    @Override
+    public void propertyChanged(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Property property,
+        @Nullable Object oldValue,
+        @Nullable Object newValue) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(property, "property must not be null");
+      if (paused) return;
+      String typeId = property.getType() != null ? property.getType().getID() : null;
+      String serializedNew =
+          newValue != null ? dataTypesValuesSerialization.serialize(typeId, newValue) : null;
+      MetaPointer mp = MetaPointer.from(property);
+      String nodeId = classifierInstance.getID();
+      if (oldValue == null) {
+        channel.sendCommand(
+            participationId, commandId -> new AddProperty(commandId, nodeId, mp, serializedNew));
+      } else if (newValue == null) {
+        channel.sendCommand(
+            participationId, commandId -> new DeleteProperty(commandId, nodeId, mp));
+      } else {
+        channel.sendCommand(
+            participationId, commandId -> new ChangeProperty(commandId, nodeId, mp, serializedNew));
+      }
+    }
+
+    @Override
+    public void childAdded(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Containment containment,
+        int index,
+        @NotNull Node newChild) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(containment, "containment must not be null");
+      Objects.requireNonNull(newChild, "newChild must not be null");
+      if (paused) return;
+      SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
+      if (newChild.getID() == null) {
+        throw new IllegalStateException("Child id must not be null");
+      }
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new AddChild(
+                  commandId,
+                  classifierInstance.getID(),
+                  chunk,
+                  MetaPointer.from(containment),
+                  index));
+    }
+
+    @Override
+    public void childRemoved(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Containment containment,
+        int index,
+        @NotNull Node removedChild) {
+      if (paused) return;
+      Objects.requireNonNull(removedChild, "removedChild must not be null");
+      String removedChildId = removedChild.getID();
+      Objects.requireNonNull(removedChildId, "removedChildId must not be null");
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new DeleteChild(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(containment),
+                  index,
+                  removedChildId));
+    }
+
+    @Override
+    public void annotationAdded(
+        @NotNull ClassifierInstance<?> node, int index, @NotNull AnnotationInstance newAnnotation) {
+      if (paused) return;
+      SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(newAnnotation);
+      channel.sendCommand(
+          participationId, commandId -> new AddAnnotation(commandId, node.getID(), chunk, index));
+    }
+
+    @Override
+    public void annotationRemoved(
+        @NotNull ClassifierInstance<?> node,
+        int index,
+        @NotNull AnnotationInstance removedAnnotation) {
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new DeleteAnnotation(commandId, node.getID(), index, removedAnnotation.getID()));
+    }
+
+    @Override
+    public void referenceValueAdded(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
+        int index,
+        @NotNull ReferenceValue referenceValue) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(reference, "reference must not be null");
+      Objects.requireNonNull(referenceValue, "referenceValue must not be null");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new AddReference(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(reference),
+                  index,
+                  referenceValue.getReferredID(),
+                  referenceValue.getResolveInfo()));
+    }
+
+    @Override
+    public void referenceValueChanged(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
+        int index,
+        @Nullable String oldReferred,
+        @Nullable String oldResolveInfo,
+        @Nullable String newReferred,
+        @Nullable String newResolveInfo) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(reference, "reference must not be null");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new ChangeReference(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(reference),
+                  index,
+                  oldReferred,
+                  oldResolveInfo,
+                  newReferred,
+                  newResolveInfo));
+    }
+
+    @Override
+    public void referenceValueRemoved(
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
+        int index,
+        @NotNull ReferenceValue referenceValue) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(reference, "reference must not be null");
+      Objects.requireNonNull(referenceValue, "referenceValue must not be null");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new DeleteReference(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(reference),
+                  index,
+                  referenceValue.getReferredID(),
+                  referenceValue.getResolveInfo()));
+    }
   }
 }
