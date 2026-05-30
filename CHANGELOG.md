@@ -3,6 +3,7 @@
 ### Version 1.4.1
 
 * Align all delta messages to match the integration test expectations
+* Merged CommonChecks in IdUtils
 
 ### Version 1.4.0
 
@@ -349,7 +350,6 @@ Introducing support for LionWeb 2024.1
 
 * The JSON serialization is changed so that the meta-pointer under `"classifier"` appears directly after the `"id"` key-value pair.
 * The internal representation of serialized nodes was simplified.
-
 
 ## lionweb-java-2023.1-* - Version 0.2.0
 
