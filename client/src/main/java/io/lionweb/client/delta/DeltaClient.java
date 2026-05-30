@@ -7,6 +7,10 @@ import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.ChangeClassifier;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
+import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainment;
+import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainmentInSameParent;
+import io.lionweb.client.delta.messages.commands.children.MoveChildInSameContainment;
+import io.lionweb.client.delta.messages.commands.children.ReplaceChild;
 import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
 import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.AddProperty;
@@ -19,6 +23,10 @@ import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
+import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainment;
+import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainmentInSameParent;
+import io.lionweb.client.delta.messages.events.children.ChildMovedInSameContainment;
+import io.lionweb.client.delta.messages.events.children.ChildReplaced;
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
@@ -136,9 +144,16 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       else if (event instanceof ReferenceAdded) onReferenceAdded((ReferenceAdded) event);
       else if (event instanceof ReferenceChanged) onReferenceChanged((ReferenceChanged) event);
       else if (event instanceof ReferenceDeleted) onReferenceDeleted((ReferenceDeleted) event);
-      else if (event instanceof ClassifierChanged) {
-        throw new UnsupportedOperationException();
-      } else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
+      else if (event instanceof ChildMovedInSameContainment)
+        onChildMovedInSameContainment((ChildMovedInSameContainment) event);
+      else if (event instanceof ChildMovedFromOtherContainmentInSameParent)
+        onChildMovedFromOtherContainmentInSameParent(
+            (ChildMovedFromOtherContainmentInSameParent) event);
+      else if (event instanceof ChildMovedFromOtherContainment)
+        onChildMovedFromOtherContainment((ChildMovedFromOtherContainment) event);
+      else if (event instanceof ChildReplaced) onChildReplaced((ChildReplaced) event);
+      else if (event instanceof ClassifierChanged) onClassifierChanged((ClassifierChanged) event);
+      else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
       else if (event instanceof PartitionAdded || event instanceof PartitionDeleted) {
         /* no-op */
       } else
@@ -254,14 +269,120 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         });
   }
 
+  private void onChildMovedInSameContainment(@NotNull ChildMovedInSameContainment event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.parent,
+        instance -> {
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null)
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          Node child = instance.getChildren(containment).get(event.oldIndex);
+          instance.removeChild(containment, event.oldIndex);
+          instance.addChild(containment, child, event.newIndex);
+        });
+  }
+
+  private void onChildMovedFromOtherContainmentInSameParent(
+      @NotNull ChildMovedFromOtherContainmentInSameParent event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.parent,
+        instance -> {
+          Containment oldContainment =
+              instance.getClassifier().getContainmentByMetaPointer(event.oldContainment);
+          Containment newContainment =
+              instance.getClassifier().getContainmentByMetaPointer(event.newContainment);
+          if (oldContainment == null)
+            throw new IllegalStateException(
+                "Old containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.oldContainment);
+          if (newContainment == null)
+            throw new IllegalStateException(
+                "New containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.newContainment);
+          Node child = instance.getChildren(oldContainment).get(event.oldIndex);
+          instance.removeChild(oldContainment, event.oldIndex);
+          instance.addChild(newContainment, child, event.newIndex);
+        });
+  }
+
+  private void onChildMovedFromOtherContainment(@NotNull ChildMovedFromOtherContainment event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.oldParent,
+        oldInstance -> {
+          Containment oldContainment =
+              oldInstance.getClassifier().getContainmentByMetaPointer(event.oldContainment);
+          if (oldContainment == null)
+            throw new IllegalStateException(
+                "Old containment not found for "
+                    + oldInstance
+                    + " using metapointer "
+                    + event.oldContainment);
+          Node child = oldInstance.getChildren(oldContainment).get(event.oldIndex);
+          oldInstance.removeChild(oldContainment, event.oldIndex);
+          forEachNode(
+              event.newParent,
+              newInstance -> {
+                Containment newContainment =
+                    newInstance.getClassifier().getContainmentByMetaPointer(event.newContainment);
+                if (newContainment == null)
+                  throw new IllegalStateException(
+                      "New containment not found for "
+                          + newInstance
+                          + " using metapointer "
+                          + event.newContainment);
+                newInstance.addChild(newContainment, child, event.newIndex);
+                monitorNode(child);
+              });
+        });
+  }
+
+  private void onChildReplaced(@NotNull ChildReplaced event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.parent,
+        instance -> {
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null)
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          instance.removeChild(containment, event.index);
+          Node newChild = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+          monitorNode(newChild);
+          instance.addChild(containment, newChild, event.index);
+        });
+  }
+
+  private void onClassifierChanged(@NotNull ClassifierChanged event) {
+    // Changing the runtime type of a local Java object is not possible.
+    // Clients that need to act on classifier changes should re-fetch the node from the server.
+    throw new UnsupportedOperationException();
+  }
+
   private void onErrorEvent(@NotNull ErrorEvent event) {
+    Objects.requireNonNull(event, "event must not be null");
     // observer.paused is reset by the finally block in receiveEvent
     throw new ErrorEventReceivedException(event.errorCode, event.message);
   }
 
   /** Applies {@code action} to every live local instance tracked under {@code nodeId}. */
   private void forEachNode(
-      @NotNull String nodeId, java.util.function.Consumer<ClassifierInstance<?>> action) {
+      @NotNull String nodeId, @NotNull java.util.function.Consumer<ClassifierInstance<?>> action) {
     Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(nodeId);
     if (refs == null) return;
     for (WeakReference<ClassifierInstance<?>> ref : refs) {
@@ -593,5 +714,121 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(newClassifier, "newClassifier must not be null");
     channel.sendCommand(
         participationId, commandId -> new ChangeClassifier(commandId, nodeId, newClassifier));
+  }
+
+  /**
+   * Moves a child within its current containment from {@code oldIndex} to {@code newIndex}.
+   *
+   * @param parent id of the parent node
+   * @param containment MetaPointer of the containment feature
+   * @param movedChild id of the child to move
+   * @param oldIndex current 0-based position of the child
+   * @param newIndex desired final 0-based position after the move
+   */
+  public void sendMoveChildInSameContainmentCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer containment,
+      @NotNull String movedChild,
+      int oldIndex,
+      int newIndex) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    Objects.requireNonNull(movedChild, "movedChild must not be null");
+    channel.sendCommand(
+        participationId,
+        commandId ->
+            new MoveChildInSameContainment(
+                commandId, newIndex, movedChild, parent, containment, oldIndex));
+  }
+
+  /**
+   * Moves a child from one parent/containment to a different parent/containment.
+   *
+   * @param oldParent id of the old parent node
+   * @param oldContainment MetaPointer of the old containment feature
+   * @param oldIndex current position in the old containment
+   * @param newParent id of the new parent node
+   * @param newContainment MetaPointer of the new containment feature
+   * @param newIndex desired final position in the new containment
+   * @param movedChild id of the child to move
+   */
+  public void sendMoveChildFromOtherContainmentCommand(
+      @NotNull String oldParent,
+      @NotNull MetaPointer oldContainment,
+      int oldIndex,
+      @NotNull String newParent,
+      @NotNull MetaPointer newContainment,
+      int newIndex,
+      @NotNull String movedChild) {
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
+    Objects.requireNonNull(oldContainment, "oldContainment must not be null");
+    Objects.requireNonNull(newParent, "newParent must not be null");
+    Objects.requireNonNull(newContainment, "newContainment must not be null");
+    Objects.requireNonNull(movedChild, "movedChild must not be null");
+    channel.sendCommand(
+        participationId,
+        commandId ->
+            new MoveChildFromOtherContainment(
+                commandId,
+                newParent,
+                newContainment,
+                newIndex,
+                oldParent,
+                oldContainment,
+                oldIndex,
+                movedChild));
+  }
+
+  /**
+   * Moves a child between two containments of the same parent.
+   *
+   * @param parent id of the parent node
+   * @param oldContainment MetaPointer of the source containment feature
+   * @param oldIndex current position in the old containment
+   * @param newContainment MetaPointer of the target containment feature
+   * @param newIndex desired final position in the new containment
+   * @param movedChild id of the child to move
+   */
+  public void sendMoveChildFromOtherContainmentInSameParentCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer oldContainment,
+      int oldIndex,
+      @NotNull MetaPointer newContainment,
+      int newIndex,
+      @NotNull String movedChild) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(oldContainment, "oldContainment must not be null");
+    Objects.requireNonNull(newContainment, "newContainment must not be null");
+    Objects.requireNonNull(movedChild, "movedChild must not be null");
+    channel.sendCommand(
+        participationId,
+        commandId ->
+            new MoveChildFromOtherContainmentInSameParent(
+                commandId, newContainment, newIndex, movedChild, parent, oldContainment, oldIndex));
+  }
+
+  /**
+   * Replaces an existing child node with a new one at the same index.
+   *
+   * @param parent id of the parent node
+   * @param containment MetaPointer of the containment feature
+   * @param index position of the child to replace
+   * @param replacedChild id of the child node being removed
+   * @param newChild the new child node tree to insert
+   */
+  public void sendReplaceChildCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer containment,
+      int index,
+      @NotNull String replacedChild,
+      @NotNull Node newChild) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    Objects.requireNonNull(replacedChild, "replacedChild must not be null");
+    Objects.requireNonNull(newChild, "newChild must not be null");
+    SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
+    channel.sendCommand(
+        participationId,
+        commandId -> new ReplaceChild(commandId, chunk, parent, containment, index, replacedChild));
   }
 }

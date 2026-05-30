@@ -12,6 +12,10 @@ import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.ChangeClassifier;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
+import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainment;
+import io.lionweb.client.delta.messages.commands.children.MoveChildFromOtherContainmentInSameParent;
+import io.lionweb.client.delta.messages.commands.children.MoveChildInSameContainment;
+import io.lionweb.client.delta.messages.commands.children.ReplaceChild;
 import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
 import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.AddProperty;
@@ -25,6 +29,10 @@ import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
+import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainment;
+import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainmentInSameParent;
+import io.lionweb.client.delta.messages.events.children.ChildMovedInSameContainment;
+import io.lionweb.client.delta.messages.events.children.ChildReplaced;
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
@@ -408,6 +416,16 @@ public class InMemoryServer {
           handleDeleteChild((DeleteChild) command, data, source);
         else if (command instanceof AddReference)
           handleAddReference((AddReference) command, data, source);
+        else if (command instanceof MoveChildInSameContainment)
+          handleMoveChildInSameContainment((MoveChildInSameContainment) command, data, source);
+        else if (command instanceof MoveChildFromOtherContainmentInSameParent)
+          handleMoveChildFromOtherContainmentInSameParent(
+              (MoveChildFromOtherContainmentInSameParent) command, data, source);
+        else if (command instanceof MoveChildFromOtherContainment)
+          handleMoveChildFromOtherContainment(
+              (MoveChildFromOtherContainment) command, data, source);
+        else if (command instanceof ReplaceChild)
+          handleReplaceChild((ReplaceChild) command, data, source);
         else if (command instanceof AddProperty)
           handleAddProperty((AddProperty) command, data, source);
         else if (command instanceof DeleteProperty)
@@ -488,6 +506,94 @@ public class InMemoryServer {
                       cmd.index,
                       cmd.newReference,
                       cmd.newResolveInfo)
+                  .addSource(source));
+    }
+
+    private void handleMoveChildInSameContainment(
+        @NotNull MoveChildInSameContainment cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      parent.removeChild(cmd.movedChild);
+      parent.addChild(cmd.containment, cmd.movedChild, cmd.newIndex);
+      channel.sendEvent(
+          seqNum ->
+              new ChildMovedInSameContainment(
+                      seqNum,
+                      cmd.newIndex,
+                      cmd.movedChild,
+                      cmd.parent,
+                      cmd.containment,
+                      cmd.oldIndex)
+                  .addSource(source));
+    }
+
+    private void handleMoveChildFromOtherContainmentInSameParent(
+        @NotNull MoveChildFromOtherContainmentInSameParent cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      parent.removeChild(cmd.movedChild);
+      parent.addChild(cmd.newContainment, cmd.movedChild, cmd.newIndex);
+      channel.sendEvent(
+          seqNum -> {
+            ChildMovedFromOtherContainmentInSameParent event =
+                new ChildMovedFromOtherContainmentInSameParent(
+                    seqNum, cmd.newContainment, cmd.newIndex, cmd.movedChild);
+            event.parent = cmd.parent;
+            event.oldContainment = cmd.oldContainment;
+            event.oldIndex = cmd.oldIndex;
+            return event.addSource(source);
+          });
+    }
+
+    private void handleMoveChildFromOtherContainment(
+        @NotNull MoveChildFromOtherContainment cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance oldParent = requireNode(data, cmd.oldParent);
+      SerializedClassifierInstance newParent = requireNode(data, cmd.newParent);
+      SerializedClassifierInstance child = requireNode(data, cmd.movedChild);
+      oldParent.removeChild(cmd.movedChild);
+      child.setParentNodeID(cmd.newParent);
+      newParent.addChild(cmd.newContainment, cmd.movedChild, cmd.newIndex);
+      channel.sendEvent(
+          seqNum -> {
+            ChildMovedFromOtherContainment event =
+                new ChildMovedFromOtherContainment(
+                    seqNum, cmd.newParent, cmd.newContainment, cmd.newIndex, cmd.movedChild);
+            event.oldParent = cmd.oldParent;
+            event.oldContainment = cmd.oldContainment;
+            event.oldIndex = cmd.oldIndex;
+            return event.addSource(source);
+          });
+    }
+
+    private void handleReplaceChild(
+        @NotNull ReplaceChild cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      List<String> replacedDescendants = new ArrayList<>();
+      collectDescendants(data, cmd.replacedChild, replacedDescendants);
+      parent.removeChild(cmd.replacedChild);
+      data.deleteNodeAndDescendant(cmd.replacedChild);
+      data.store(cmd.newChild.getClassifierInstances());
+      String newChildId =
+          cmd.newChild.getClassifierInstances().stream()
+              .filter(n -> cmd.parent.equals(n.getParentNodeID()))
+              .findFirst()
+              .orElseThrow()
+              .getID();
+      parent.addChild(cmd.containment, newChildId, cmd.index);
+      channel.sendEvent(
+          seqNum ->
+              new ChildReplaced(
+                      seqNum,
+                      cmd.parent,
+                      cmd.newChild,
+                      cmd.replacedChild,
+                      replacedDescendants,
+                      cmd.containment,
+                      cmd.index)
                   .addSource(source));
     }
 
