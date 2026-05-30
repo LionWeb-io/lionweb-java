@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
  * <p>Covers: AddAnnotation / AnnotationAdded, DeleteAnnotation / AnnotationDeleted, and
  * MoveAnnotationInSameParent.
  */
-public class DeltaAnnotationsTest {
+public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
 
   private static final Language ANN_LANG =
       new Language("AnnotationTestLang", "ann-test-lang", "ann-test-lang-key");
@@ -31,13 +31,6 @@ public class DeltaAnnotationsTest {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
-
-  private InMemoryServer serverWithRepo() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
-    return server;
-  }
 
   private JsonSerialization serialization() {
     return SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
@@ -61,19 +54,18 @@ public class DeltaAnnotationsTest {
    */
   @Test
   public void addAnnotation() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    io.lionweb.language.Language lang1 =
-        new io.lionweb.language.Language("LangA", "lang-a", "lang-a-key");
+    Language lang1 =
+        new Language("LangA", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang1, ser);
 
-    io.lionweb.language.Language lang2 =
-        (io.lionweb.language.Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
+    Language lang2 =
+        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
     Assertions.assertNotNull(lang2);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client1 = signedOnClient(channel, "my-client-1");
     client1.monitor(lang1);
@@ -113,19 +105,18 @@ public class DeltaAnnotationsTest {
    */
   @Test
   public void deleteAnnotation() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    io.lionweb.language.Language lang1 =
-        new io.lionweb.language.Language("LangA", "lang-a", "lang-a-key");
+    Language lang1 =
+        new Language("LangA", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang1, ser);
 
-    io.lionweb.language.Language lang2 =
-        (io.lionweb.language.Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
+    Language lang2 =
+        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
     Assertions.assertNotNull(lang2);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel =  prepareChannel(server);
 
     DeltaClient client1 = signedOnClient(channel, "my-client-1");
     client1.monitor(lang1);
@@ -161,15 +152,14 @@ public class DeltaAnnotationsTest {
    */
   @Test
   public void moveAnnotationInSameParent() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    io.lionweb.language.Language lang =
-        new io.lionweb.language.Language("LangA", "lang-a", "lang-a-key");
+    Language lang =
+        new Language("LangA", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang, ser);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = signedOnClient(channel, "my-client");
     client.monitor(lang);
