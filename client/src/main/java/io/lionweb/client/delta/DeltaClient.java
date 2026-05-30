@@ -753,7 +753,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private void onClassifierChanged(@NotNull ClassifierChanged event) {
     // Changing the runtime type of a local Java object is not possible.
     // We perhaps could make it work for Dynamic Nodes
-    throw new UnsupportedOperationException("Classifier changes are not yet supported by LionWeb JVM");
+    throw new UnsupportedOperationException(
+        "Classifier changes are not yet supported by LionWeb JVM");
   }
 
   private void onErrorEvent(@NotNull ErrorEvent event) {
