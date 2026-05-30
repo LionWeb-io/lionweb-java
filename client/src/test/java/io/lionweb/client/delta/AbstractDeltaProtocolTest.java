@@ -4,6 +4,8 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
+import io.lionweb.serialization.JsonSerialization;
+import io.lionweb.serialization.SerializationProvider;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractDeltaProtocolTest {
@@ -19,5 +21,9 @@ public abstract class AbstractDeltaProtocolTest {
     DeltaChannel channel = new InMemoryDeltaChannel();
     server.monitorDeltaChannel("MyRepo", channel);
     return channel;
+  }
+
+  protected JsonSerialization serialization() {
+    return SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
   }
 }

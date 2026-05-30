@@ -2,13 +2,11 @@ package io.lionweb.client.delta;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.lionweb.LionWebVersion;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Annotation;
 import io.lionweb.language.Language;
 import io.lionweb.model.impl.DynamicAnnotationInstance;
 import io.lionweb.serialization.JsonSerialization;
-import io.lionweb.serialization.SerializationProvider;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -29,10 +27,6 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
   // ---------------------------------------------------------------------------
   // Helpers
   // ---------------------------------------------------------------------------
-
-  private JsonSerialization serialization() {
-    return SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
-  }
 
   private DeltaClient signedOnClient(DeltaChannel channel, String clientId) {
     DeltaClient client = new DeltaClient(channel, clientId);

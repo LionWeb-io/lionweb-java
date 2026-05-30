@@ -2,14 +2,10 @@ package io.lionweb.client.delta;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.HistorySupport;
-import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
-import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.Arrays;
 import java.util.List;
@@ -22,26 +18,7 @@ import org.junit.jupiter.api.Test;
  * <p>Covers: MoveChildInSameContainment, MoveChildFromOtherContainment,
  * MoveChildFromOtherContainmentInSameParent, and ReplaceChild.
  */
-public class DeltaChildMoveTest {
-
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
-
-  private InMemoryServer serverWithRepo() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
-    return server;
-  }
-
-  private JsonSerialization serialization() {
-    return SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Move child within the same containment
-  // ---------------------------------------------------------------------------
+public class DeltaChildMoveTest extends AbstractDeltaProtocolTest {
 
   /**
    * A client can reorder children within a containment using MoveChildInSameContainment. Both
@@ -49,7 +26,7 @@ public class DeltaChildMoveTest {
    */
   @Test
   public void moveChildInSameContainment() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -112,7 +89,7 @@ public class DeltaChildMoveTest {
    */
   @Test
   public void moveChildInSameContainmentToHigherIndex() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -167,17 +144,13 @@ public class DeltaChildMoveTest {
     assertEquals("ca", storedChildren.get(2));
   }
 
-  // ---------------------------------------------------------------------------
-  // Replace child
-  // ---------------------------------------------------------------------------
-
   /**
    * A client can replace an existing child node with a new one at the same containment index using
    * ReplaceChild. Both clients see the updated child after the event is processed.
    */
   @Test
   public void replaceChild() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -235,17 +208,13 @@ public class DeltaChildMoveTest {
     assertEquals("cb", lang2.getElements().get(1).getID());
   }
 
-  // ---------------------------------------------------------------------------
-  // Move child from one parent to another
-  // ---------------------------------------------------------------------------
-
   /**
    * A client can move a child from one parent node to a different parent node using
    * MoveChildFromOtherContainment. The server's stored state reflects the move.
    */
   @Test
   public void moveChildFromOtherContainment() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     // Two sibling partitions act as the old and new parents
