@@ -19,6 +19,11 @@ import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
+import io.lionweb.client.delta.messages.queries.ErrorResponse;
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest;
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectResponse;
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest;
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOffResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
 import io.lionweb.model.ClassifierInstance;
@@ -65,6 +70,9 @@ public class InMemoryServer {
   }
 
   private int nextParticipationId = 1;
+
+  /** Participations that are currently active (signed on, not yet signed off). */
+  private final Set<String> activeParticipations = Collections.synchronizedSet(new HashSet<>());
 
   public @NotNull RepositoryConfiguration getRepositoryConfiguration(
       @NotNull String repositoryName) {
@@ -271,8 +279,11 @@ public class InMemoryServer {
 
   private class DeltaQueryReceiverImpl implements DeltaQueryReceiver {
 
-    private String repositoryName;
-    private DeltaChannel channel;
+    private final String repositoryName;
+    private final DeltaChannel channel;
+
+    /** The participationId currently bound to this channel session; null before sign-on. */
+    private String currentParticipationId;
 
     private DeltaQueryReceiverImpl(String repositoryName, DeltaChannel channel) {
       this.repositoryName = repositoryName;
@@ -283,7 +294,25 @@ public class InMemoryServer {
     public DeltaQueryResponse receiveQuery(DeltaQuery query) {
       if (query instanceof SignOnRequest) {
         SignOnRequest signOnRequest = (SignOnRequest) query;
-        return new SignOnResponse(signOnRequest.queryId, "participation-" + nextParticipationId++);
+        String participationId = "participation-" + nextParticipationId++;
+        activeParticipations.add(participationId);
+        currentParticipationId = participationId;
+        return new SignOnResponse(signOnRequest.queryId, participationId);
+      } else if (query instanceof SignOffRequest) {
+        SignOffRequest signOffRequest = (SignOffRequest) query;
+        activeParticipations.remove(currentParticipationId);
+        currentParticipationId = null;
+        return new SignOffResponse(signOffRequest.queryId);
+      } else if (query instanceof ReconnectRequest) {
+        ReconnectRequest reconnectRequest = (ReconnectRequest) query;
+        if (!activeParticipations.contains(reconnectRequest.participationId)) {
+          ErrorResponse error = new ErrorResponse(reconnectRequest.queryId);
+          error.errorCode = StandardErrorCode.INVALID_PARTICIPATION.code;
+          error.message = "Unknown participation: " + reconnectRequest.participationId;
+          return error;
+        }
+        currentParticipationId = reconnectRequest.participationId;
+        return new ReconnectResponse(reconnectRequest.queryId, 0);
       }
       throw new UnsupportedOperationException("Not supported yet.");
     }
@@ -300,6 +329,15 @@ public class InMemoryServer {
 
     @Override
     public void receiveCommand(String participationId, DeltaCommand command) {
+      if (!activeParticipations.contains(participationId)) {
+        channel.sendEvent(
+            sequenceNumber ->
+                new ErrorEvent(
+                    sequenceNumber,
+                    StandardErrorCode.INVALID_PARTICIPATION,
+                    "Invalid participation: " + participationId));
+        return;
+      }
       CommandSource source = new CommandSource(participationId, command.commandId);
       if (command instanceof ChangeProperty) {
         ChangeProperty changeProperty = (ChangeProperty) command;

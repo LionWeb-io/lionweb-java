@@ -13,6 +13,10 @@ import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest;
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectResponse;
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest;
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOffResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
 import io.lionweb.language.Containment;
@@ -26,6 +30,7 @@ import io.lionweb.serialization.data.SerializationChunk;
 import java.lang.ref.WeakReference;
 import java.util.*;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiver {
   private LionWebVersion lionWebVersion;
@@ -38,6 +43,15 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private AbstractSerialization serialization;
   private Set<String> queriesSent = new HashSet<>();
   private String clientId;
+  private String pendingReconnectParticipationId;
+
+  private static enum ParticipationState {
+    NOT_CONNECTED,
+    CONNECTED,
+    SIGNED_OFF,
+  }
+
+  private ParticipationState state = ParticipationState.NOT_CONNECTED;
 
   public DeltaClient(DeltaChannel channel, String clientId) {
     this(LionWebVersion.currentVersion, channel, clientId);
@@ -300,12 +314,31 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
+  /**
+   * Retrieves the participation ID associated with the current session.
+   *
+   * @return the participation ID if available, or {@code null} if no participation ID has been set
+   *     or the client is not currently participating.
+   */
+  public @Nullable String getParticipationId() {
+    return participationId;
+  }
+
   @Override
   public void receiveQueryResponse(DeltaQueryResponse queryResponse) {
     if (!queriesSent.contains(queryResponse.queryId)) return;
     if (queryResponse instanceof SignOnResponse) {
       SignOnResponse signOnResponse = (SignOnResponse) queryResponse;
       this.participationId = signOnResponse.participationId;
+      this.state = ParticipationState.CONNECTED;
+      return;
+    } else if (queryResponse instanceof SignOffResponse) {
+      this.state = ParticipationState.SIGNED_OFF;
+      return;
+    } else if (queryResponse instanceof ReconnectResponse) {
+      this.participationId = pendingReconnectParticipationId;
+      this.pendingReconnectParticipationId = null;
+      this.state = ParticipationState.CONNECTED;
       return;
     }
     throw new UnsupportedOperationException("Not supported yet.");
@@ -316,6 +349,31 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         queryId -> {
           queriesSent.add(queryId);
           return new SignOnRequest(queryId, DeltaProtocolVersion.v2025_1, clientId);
+        });
+  }
+
+  /** Sends a SignOffRequest to terminate the current participation. */
+  public void sendSignOffRequest() {
+    channel.sendQuery(
+        queryId -> {
+          queriesSent.add(queryId);
+          return new SignOffRequest(queryId);
+        });
+  }
+
+  /**
+   * Resumes a prior participation after a transport-level disconnect.
+   *
+   * @param existingParticipationId the participationId from the previous session
+   * @param lastReceivedSequenceNumber the sequence number of the last event the client received
+   */
+  public void sendReconnectRequest(
+      String existingParticipationId, long lastReceivedSequenceNumber) {
+    this.pendingReconnectParticipationId = existingParticipationId;
+    channel.sendQuery(
+        queryId -> {
+          queriesSent.add(queryId);
+          return new ReconnectRequest(queryId, existingParticipationId, lastReceivedSequenceNumber);
         });
   }
 }
