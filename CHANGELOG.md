@@ -1,6 +1,10 @@
 # Changelog
 
-### Version 1.4.0 (in progress)
+### Version 1.4.1
+
+* Align all delta messages to match the integration test expectations
+
+### Version 1.4.0
 
 **Breaking change:** JDK 8 support is dropped. The minimum supported runtime is now Java 11.
 Tested and supported Java versions: 11, 17, 21, and 25.
