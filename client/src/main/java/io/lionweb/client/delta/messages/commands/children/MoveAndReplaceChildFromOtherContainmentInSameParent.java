@@ -17,25 +17,39 @@ public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends D
   public final int newIndex;
   public final @NotNull String replacedChild;
   public final @NotNull String movedChild;
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer oldContainment;
+  public final int oldIndex;
 
   public MoveAndReplaceChildFromOtherContainmentInSameParent(
       @NotNull String commandId,
       @NotNull MetaPointer newContainment,
       int newIndex,
       @NotNull String replacedChild,
-      @NotNull String movedChild) {
+      @NotNull String movedChild,
+      @NotNull String parent,
+      @NotNull MetaPointer oldContainment,
+      int oldIndex) {
     super(commandId);
 
     Objects.requireNonNull(newContainment, "newContainment must not be null");
     if (newIndex < 0) {
       throw new IllegalArgumentException("newIndex must be non-negative");
     }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex must be non-negative");
+    }
     Objects.requireNonNull(replacedChild, "replacedChild must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(oldContainment, "oldContainment must not be null");
     this.newContainment = newContainment;
     this.newIndex = newIndex;
     this.replacedChild = replacedChild;
     this.movedChild = movedChild;
+    this.parent = parent;
+    this.oldContainment = oldContainment;
+    this.oldIndex = oldIndex;
   }
 
   @Override
@@ -51,6 +65,20 @@ public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends D
         + ", movedChild='"
         + movedChild
         + '\''
+        + ", parent='"
+        + parent
+        + '\''
+        + ", oldContainment="
+        + oldContainment
+        + ", oldIndex="
+        + oldIndex
+        + ", commandId='"
+        + commandId
+        + '\''
+        + ", split="
+        + split
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

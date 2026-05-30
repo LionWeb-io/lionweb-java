@@ -19,7 +19,7 @@ public abstract class DeltaCommand {
    * Whether this message is a continuation of a split/chunked sequence. Absent (null) or false
    * means this is a standalone message; true means more parts follow.
    */
-  public final boolean split;
+  public boolean split;
 
   /**
    * Represents additional information associated with a protocol message in the Delta framework.
@@ -46,5 +46,13 @@ public abstract class DeltaCommand {
   @Override
   public int hashCode() {
     return Objects.hashCode(commandId);
+  }
+
+  public boolean isSplit() {
+    return split;
+  }
+
+  public void setSplit(boolean split) {
+    this.split = split;
   }
 }

@@ -6,7 +6,6 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import io.lionweb.client.delta.messages.AdditionalInfo;
-import io.lionweb.client.delta.messages.AdditionalInfoData;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.client.delta.messages.DeltaEvent;
@@ -22,9 +21,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 

@@ -82,6 +82,13 @@ public class DeltaCommandsIntegrationTest {
       if (actual.isJsonObject()) {
         Set<String> expectedKeys = expected.getAsJsonObject().keySet();
         Set<String> actualKeys = actual.getAsJsonObject().keySet();
+
+        // Canonicize
+        if (expectedKeys.contains("split")
+            && !expected.getAsJsonObject().get("split").getAsBoolean()) {
+          expectedKeys.remove("split");
+        }
+
         if (expectedKeys.equals(actualKeys)) {
           List<String> diffs = new LinkedList<>();
           for (String key : expectedKeys) {

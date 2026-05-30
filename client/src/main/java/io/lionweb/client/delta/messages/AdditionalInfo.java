@@ -1,9 +1,7 @@
 package io.lionweb.client.delta.messages;
 
-import java.util.List;
-import java.util.Objects;
-
 import com.google.gson.JsonElement;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
