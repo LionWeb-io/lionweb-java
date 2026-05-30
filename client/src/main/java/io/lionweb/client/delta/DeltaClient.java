@@ -6,19 +6,31 @@ import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
+import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
+import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.commands.references.AddReference;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
+import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
+import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
+import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsRequest;
+import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
+import io.lionweb.client.delta.messages.queries.ListPartitionsRequest;
+import io.lionweb.client.delta.messages.queries.ListPartitionsResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOffResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest;
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsResponse;
+import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest;
+import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsResponse;
 import io.lionweb.language.Containment;
 import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
@@ -189,6 +201,11 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                   new ProxyNode(referenceAdded.newReference), referenceAdded.newResolveInfo));
         }
       }
+    } else if (event instanceof PartitionAdded) {
+      // Acknowledged — the client learns a new partition exists.
+      // Monitoring it requires an explicit SubscribeToPartitionContents call.
+    } else if (event instanceof PartitionDeleted) {
+      // Acknowledged — the client learns the partition was removed.
     } else {
       observer.paused = false;
       throw new UnsupportedOperationException(
@@ -340,6 +357,11 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       this.pendingReconnectParticipationId = null;
       this.state = ParticipationState.CONNECTED;
       return;
+    } else if (queryResponse instanceof ListPartitionsResponse
+        || queryResponse instanceof ListAndSubscribePartitionsResponse
+        || queryResponse instanceof SubscribeToPartitionContentsResponse
+        || queryResponse instanceof UnsubscribeFromPartitionContentsResponse) {
+      return; // Callers receive these via the return value of the send methods
     }
     throw new UnsupportedOperationException("Not supported yet.");
   }
@@ -368,12 +390,89 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
    * @param lastReceivedSequenceNumber the sequence number of the last event the client received
    */
   public void sendReconnectRequest(
-      String existingParticipationId, long lastReceivedSequenceNumber) {
+      @NotNull String existingParticipationId, long lastReceivedSequenceNumber) {
+    Objects.requireNonNull(existingParticipationId, "existingParticipationId must not be null");
     this.pendingReconnectParticipationId = existingParticipationId;
     channel.sendQuery(
         queryId -> {
           queriesSent.add(queryId);
           return new ReconnectRequest(queryId, existingParticipationId, lastReceivedSequenceNumber);
         });
+  }
+
+  /** Requests the list of partitions currently held in the repository. */
+  public @NotNull ListPartitionsResponse sendListPartitionsRequest() {
+    return (ListPartitionsResponse)
+        channel.sendQuery(
+            queryId -> {
+              queriesSent.add(queryId);
+              return new ListPartitionsRequest(queryId);
+            });
+  }
+
+  /**
+   * Requests the list of partitions and registers the participation for future partition-lifecycle
+   * events.
+   */
+  public @NotNull ListAndSubscribePartitionsResponse sendListAndSubscribePartitionsRequest() {
+    return (ListAndSubscribePartitionsResponse)
+        channel.sendQuery(
+            queryId -> {
+              queriesSent.add(queryId);
+              return new ListAndSubscribePartitionsRequest(queryId);
+            });
+  }
+
+  /**
+   * Subscribes to a specific partition, returning its current contents.
+   *
+   * @param partitionId node id of the partition to subscribe to
+   */
+  public @NotNull SubscribeToPartitionContentsResponse sendSubscribeToPartitionContentsRequest(
+      @NotNull String partitionId) {
+    Objects.requireNonNull(partitionId, "partitionId must not be null");
+    return (SubscribeToPartitionContentsResponse)
+        channel.sendQuery(
+            queryId -> {
+              queriesSent.add(queryId);
+              return new SubscribeToPartitionContentsRequest(queryId, partitionId);
+            });
+  }
+
+  /**
+   * Unsubscribes from a previously subscribed partition.
+   *
+   * @param partitionId node id of the partition to unsubscribe from
+   */
+  public @NotNull UnsubscribeFromPartitionContentsResponse
+      sendUnsubscribeFromPartitionContentsRequest(@NotNull String partitionId) {
+    Objects.requireNonNull(partitionId, "partitionId must not be null");
+    return (UnsubscribeFromPartitionContentsResponse)
+        channel.sendQuery(
+            queryId -> {
+              queriesSent.add(queryId);
+              return new UnsubscribeFromPartitionContentsRequest(queryId, partitionId);
+            });
+  }
+
+  /**
+   * Sends a command to create a new partition in the repository.
+   *
+   * @param partition the root node of the partition to add
+   */
+  public void sendAddPartitionCommand(@NotNull Node partition) {
+    Objects.requireNonNull(partition, "partition must not be null");
+    SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(partition);
+    channel.sendCommand(participationId, commandId -> new AddPartition(commandId, chunk));
+  }
+
+  /**
+   * Sends a command to delete an existing partition from the repository.
+   *
+   * @param partitionId node id of the partition to delete
+   */
+  public void sendDeletePartitionCommand(@NotNull String partitionId) {
+    Objects.requireNonNull(partitionId, "partitionId must not be null");
+    channel.sendCommand(participationId, commandId -> new DeletePartition(commandId, partitionId));
   }
 }

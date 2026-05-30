@@ -11,21 +11,33 @@ import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
+import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
+import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.commands.references.AddReference;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
+import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
+import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
 import io.lionweb.client.delta.messages.queries.ErrorResponse;
+import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsRequest;
+import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
+import io.lionweb.client.delta.messages.queries.ListPartitionsRequest;
+import io.lionweb.client.delta.messages.queries.ListPartitionsResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOffResponse;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest;
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse;
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest;
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsResponse;
+import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest;
+import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsResponse;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.serialization.AbstractSerialization;
@@ -313,8 +325,46 @@ public class InMemoryServer {
         }
         currentParticipationId = reconnectRequest.participationId;
         return new ReconnectResponse(reconnectRequest.queryId, 0);
+      } else if (query instanceof ListPartitionsRequest) {
+        ListPartitionsRequest req = (ListPartitionsRequest) query;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        SerializationChunk chunk = buildPartitionRootsChunk(repositoryData);
+        return new ListPartitionsResponse(req.queryId, chunk);
+      } else if (query instanceof ListAndSubscribePartitionsRequest) {
+        ListAndSubscribePartitionsRequest req = (ListAndSubscribePartitionsRequest) query;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        SerializationChunk chunk = buildPartitionRootsChunk(repositoryData);
+        return new ListAndSubscribePartitionsResponse(req.queryId, chunk, false);
+      } else if (query instanceof SubscribeToPartitionContentsRequest) {
+        SubscribeToPartitionContentsRequest req = (SubscribeToPartitionContentsRequest) query;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<SerializedClassifierInstance> nodes = new ArrayList<>();
+        repositoryData.retrieve(req.partition, Integer.MAX_VALUE, nodes);
+        LionWebVersion version = repositoryData.configuration.getLionWebVersion();
+        SerializationChunk chunk = SerializationChunk.fromNodes(version, nodes);
+        return new SubscribeToPartitionContentsResponse(req.queryId, chunk);
+      } else if (query instanceof UnsubscribeFromPartitionContentsRequest) {
+        UnsubscribeFromPartitionContentsRequest req =
+            (UnsubscribeFromPartitionContentsRequest) query;
+        return new UnsubscribeFromPartitionContentsResponse(req.queryId);
       }
       throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    private @NotNull SerializationChunk buildPartitionRootsChunk(
+        @NotNull RepositoryData repositoryData) {
+      List<SerializedClassifierInstance> roots =
+          repositoryData.partitionIDs.stream()
+              .map(id -> repositoryData.nodesByID.get(id))
+              .filter(java.util.Objects::nonNull)
+              .collect(Collectors.toList());
+      if (roots.isEmpty()) {
+        SerializationChunk empty = new SerializationChunk();
+        empty.setSerializationFormatVersion(
+            repositoryData.configuration.getLionWebVersion().getVersionString());
+        return empty;
+      }
+      return SerializationChunk.fromNodes(repositoryData.configuration.getLionWebVersion(), roots);
     }
   }
 
@@ -458,10 +508,42 @@ public class InMemoryServer {
                         addReference.newResolveInfo)
                     .addSource(source));
         return;
+      } else if (command instanceof AddPartition) {
+        AddPartition addPartition = (AddPartition) command;
+        createPartitionFromChunk(
+            repositoryName, addPartition.newPartition.getClassifierInstances());
+        channel.sendEvent(
+            sequenceNumber ->
+                new PartitionAdded(sequenceNumber, addPartition.newPartition).addSource(source));
+        return;
+      } else if (command instanceof DeletePartition) {
+        DeletePartition deletePartition = (DeletePartition) command;
+        RepositoryData repositoryData = getRepository(repositoryName);
+        List<String> descendants = new ArrayList<>();
+        collectDescendants(repositoryData, deletePartition.deletedPartition, descendants);
+        deletePartitions(
+            repositoryName, Collections.singletonList(deletePartition.deletedPartition));
+        channel.sendEvent(
+            sequenceNumber ->
+                new PartitionDeleted(sequenceNumber, deletePartition.deletedPartition, descendants)
+                    .addSource(source));
+        return;
       }
 
       throw new UnsupportedOperationException(
           "Unsupported command type: " + command.getClass().getName());
+    }
+
+    private void collectDescendants(
+        @NotNull RepositoryData data, @NotNull String nodeId, @NotNull List<String> descendants) {
+      SerializedClassifierInstance node = data.nodesByID.get(nodeId);
+      if (node == null) return;
+      node.getChildren()
+          .forEach(
+              childId -> {
+                descendants.add(childId);
+                collectDescendants(data, childId, descendants);
+              });
     }
   }
 

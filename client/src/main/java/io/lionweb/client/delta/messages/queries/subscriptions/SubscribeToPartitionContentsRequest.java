@@ -6,8 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class SubscribeToPartitionContentsRequest extends DeltaQuery {
 
-  /** TargetNode Node id of the partition this client wants to receive events of. */
-  private @NotNull String partition;
+  /** Node id of the partition this client wants to receive events of. */
+  public @NotNull String partition;
 
   public SubscribeToPartitionContentsRequest(@NotNull String queryId, @NotNull String partition) {
     super(queryId);
