@@ -576,14 +576,19 @@ public class InMemoryServer {
       collectDescendants(data, cmd.replacedChild, replacedDescendants);
       parent.removeChild(cmd.replacedChild);
       data.deleteNodeAndDescendant(cmd.replacedChild);
-      data.store(cmd.newChild.getClassifierInstances());
-      String newChildId =
+      // Find the root of the new child subtree: the node whose parent is NOT inside this chunk.
+      Set<String> chunkIds =
           cmd.newChild.getClassifierInstances().stream()
-              .filter(n -> cmd.parent.equals(n.getParentNodeID()))
+              .map(SerializedClassifierInstance::getID)
+              .collect(Collectors.toSet());
+      SerializedClassifierInstance newChildRoot =
+          cmd.newChild.getClassifierInstances().stream()
+              .filter(n -> n.getParentNodeID() == null || !chunkIds.contains(n.getParentNodeID()))
               .findFirst()
-              .orElseThrow()
-              .getID();
-      parent.addChild(cmd.containment, newChildId, cmd.index);
+              .orElseThrow(() -> new NodeNotFoundException("root of replacement chunk not found"));
+      newChildRoot.setParentNodeID(cmd.parent);
+      data.store(cmd.newChild.getClassifierInstances());
+      parent.addChild(cmd.containment, newChildRoot.getID(), cmd.index);
       channel.sendEvent(
           seqNum ->
               new ChildReplaced(

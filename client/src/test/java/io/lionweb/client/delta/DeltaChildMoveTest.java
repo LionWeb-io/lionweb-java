@@ -92,15 +92,19 @@ public class DeltaChildMoveTest {
     // Move C (index 2) to index 0: expected [C, A, B]
     client1.sendMoveChildInSameContainmentCommand("lang-a", elementsMp, "cc", 2, 0);
 
-    List<io.lionweb.language.LanguageEntity> elements1 = lang1.getElements();
-    assertEquals("cc", elements1.get(0).getID());
-    assertEquals("ca", elements1.get(1).getID());
-    assertEquals("cb", elements1.get(2).getID());
-
+    // client2 (the receiver) reflects the reordering
     List<io.lionweb.language.LanguageEntity> elements2 = lang2.getElements();
     assertEquals("cc", elements2.get(0).getID());
     assertEquals("ca", elements2.get(1).getID());
     assertEquals("cb", elements2.get(2).getID());
+
+    // The server's stored state also reflects the reordering
+    var containmentsAfter =
+        server.retrieve("MyRepo", List.of("lang-a"), 0).get(0).getContainments();
+    var storedChildren = containmentsAfter.get(0).getChildrenIds();
+    assertEquals("cc", storedChildren.get(0));
+    assertEquals("ca", storedChildren.get(1));
+    assertEquals("cb", storedChildren.get(2));
   }
 
   /**
@@ -146,15 +150,21 @@ public class DeltaChildMoveTest {
     // Move A (index 0) to index 2: expected [B, C, A]
     client1.sendMoveChildInSameContainmentCommand("lang-a", elementsMp, "ca", 0, 2);
 
-    List<io.lionweb.language.LanguageEntity> elements1 = lang1.getElements();
-    assertEquals("cb", elements1.get(0).getID());
-    assertEquals("cc", elements1.get(1).getID());
-    assertEquals("ca", elements1.get(2).getID());
-
     List<io.lionweb.language.LanguageEntity> elements2 = lang2.getElements();
     assertEquals("cb", elements2.get(0).getID());
     assertEquals("cc", elements2.get(1).getID());
     assertEquals("ca", elements2.get(2).getID());
+
+    var storedChildren =
+        server
+            .retrieve("MyRepo", List.of("lang-a"), 0)
+            .get(0)
+            .getContainments()
+            .get(0)
+            .getChildrenIds();
+    assertEquals("cb", storedChildren.get(0));
+    assertEquals("cc", storedChildren.get(1));
+    assertEquals("ca", storedChildren.get(2));
   }
 
   // ---------------------------------------------------------------------------
@@ -204,8 +214,11 @@ public class DeltaChildMoveTest {
             .get(0)
             .getMetaPointer();
 
-    // Replace conceptA (at index 0) with a new concept C
-    Concept conceptC = new Concept(lang1, "Concept C", "cc", "cc");
+    // Replace conceptA (at index 0) with a new concept C.
+    // We create it inside an unmonitored scratch language so it has a proper (non-null) parent
+    // and is not a partition, but no observer fires on lang1.
+    Language scratchLang = new Language("scratch", "scratch-lang", "scratch-key");
+    Concept conceptC = new Concept(scratchLang, "Concept C", "cc", "cc");
     client1.sendReplaceChildCommand("lang-a", elementsMp, 0, "ca", conceptC);
 
     // client1: local model still has 2 elements (ca was removed, cc added by client side)
