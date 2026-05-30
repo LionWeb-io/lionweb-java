@@ -9,6 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * A utility class for comparing models, nodes, annotations, and instances of classifiers.
+ *
+ * <p>This class provides methods for determining the equivalence or differences between various
+ * objects in a structured model, such as {@link ClassifierInstance}, {@link Node}, and {@link
+ * AnnotationInstance}.
+ */
 public class ModelComparator {
 
   public static class ComparisonResult {

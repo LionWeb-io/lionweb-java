@@ -6,6 +6,10 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents an issue or problem encountered during a process. An issue encapsulates information
+ * about its severity, message, and an optional associated subject.
+ */
 public class Issue {
   private final String message;
   private final IssueSeverity severity;

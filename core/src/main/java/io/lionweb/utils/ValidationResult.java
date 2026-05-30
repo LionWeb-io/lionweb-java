@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents the result of a validation process. This class encapsulates a collection of issues
+ * encountered during validation and provides methods to evaluate and manage them.
+ */
 public class ValidationResult {
   private final Set<Issue> issues = new HashSet<>();
 
@@ -20,20 +24,20 @@ public class ValidationResult {
     return issues.stream().noneMatch(issue -> issue.getSeverity() == IssueSeverity.Error);
   }
 
-  public ValidationResult addError(
+  public @Nonnull ValidationResult addError(
       @Nonnull String message, @Nullable ClassifierInstance<?> subject) {
     Objects.requireNonNull(message, "message should not be null");
     issues.add(new Issue(IssueSeverity.Error, message, subject));
     return this;
   }
 
-  public ValidationResult addError(@Nonnull String message, @Nullable String subject) {
+  public @Nonnull ValidationResult addError(@Nonnull String message, @Nullable String subject) {
     Objects.requireNonNull(message, "message should not be null");
     issues.add(new Issue(IssueSeverity.Error, message, subject));
     return this;
   }
 
-  public ValidationResult addError(@Nonnull String message) {
+  public @Nonnull ValidationResult addError(@Nonnull String message) {
     return addError(message, (String) null);
   }
 
@@ -48,7 +52,7 @@ public class ValidationResult {
    *     true
    * @throws NullPointerException if the message is null
    */
-  public <S extends ClassifierInstance<?>> ValidationResult addErrorIf(
+  public <S extends ClassifierInstance<?>> @Nonnull ValidationResult addErrorIf(
       boolean check, @Nonnull String message, @Nullable S subject) {
     Objects.requireNonNull(message, "message should not be null");
     if (check) {
@@ -69,7 +73,7 @@ public class ValidationResult {
    *     condition was true
    * @throws NullPointerException if the message is null
    */
-  public ValidationResult addErrorIf(
+  public @Nonnull ValidationResult addErrorIf(
       boolean check, @Nonnull String message, @Nullable String subject) {
     Objects.requireNonNull(message, "message should not be null");
     if (check) {
@@ -88,11 +92,11 @@ public class ValidationResult {
    *     condition was true
    * @throws NullPointerException if the message is null
    */
-  public ValidationResult addErrorIf(boolean check, @Nonnull String message) {
+  public @Nonnull ValidationResult addErrorIf(boolean check, @Nonnull String message) {
     return addErrorIf(check, message, (String) null);
   }
 
-  public ValidationResult addErrorIf(
+  public @Nonnull ValidationResult addErrorIf(
       boolean check,
       @Nonnull Supplier<String> messageSupplier,
       @Nullable ClassifierInstance<?> subject) {
@@ -102,7 +106,8 @@ public class ValidationResult {
     return this;
   }
 
-  public ValidationResult addErrorIf(boolean check, @Nonnull Supplier<String> messageSupplier) {
+  public @Nonnull ValidationResult addErrorIf(
+      boolean check, @Nonnull Supplier<String> messageSupplier) {
     return addErrorIf(check, messageSupplier, null);
   }
 

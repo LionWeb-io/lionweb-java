@@ -18,6 +18,13 @@ public class CompositeClassifierInstanceResolver implements ClassifierInstanceRe
     }
   }
 
+  /**
+   * Adds a {@link ClassifierInstanceResolver} to this composite resolver.
+   *
+   * @param classifierInstanceResolver the {@link ClassifierInstanceResolver} to be added
+   * @return the current instance of {@code CompositeClassifierInstanceResolver}, allowing for
+   *     method chaining
+   */
   public CompositeClassifierInstanceResolver add(
       ClassifierInstanceResolver classifierInstanceResolver) {
     classifierInstanceResolvers.add(classifierInstanceResolver);
@@ -26,7 +33,10 @@ public class CompositeClassifierInstanceResolver implements ClassifierInstanceRe
 
   @Nullable
   @Override
-  public ClassifierInstance<?> resolve(String instanceID) {
+  public ClassifierInstance<?> resolve(@Nullable String instanceID) {
+    if (instanceID == null) {
+      return null;
+    }
     for (ClassifierInstanceResolver classifierInstanceResolver : classifierInstanceResolvers) {
       ClassifierInstance<?> instance = classifierInstanceResolver.resolve(instanceID);
       if (instance != null) {

@@ -10,6 +10,15 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+/**
+ * LanguageValidator is responsible for validating objects of type {@code Language}. It ensures that
+ * a given language conforms to a comprehensive set of validation rules encompassing structural,
+ * naming, dependency, and logical consistency checks.
+ *
+ * <p>This class provides functionalities for detecting issues such as circular references, invalid
+ * language dependencies, inconsistent versions, non-unique names or keys, and improper ancestor or
+ * interface hierarchy.
+ */
 public class LanguageValidator extends Validator<Language> {
 
   public static void ensureIsValid(Language language) {
@@ -103,7 +112,7 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   @Override
-  public ValidationResult validate(Language language) {
+  public @Nonnull ValidationResult validate(@Nonnull Language language) {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 

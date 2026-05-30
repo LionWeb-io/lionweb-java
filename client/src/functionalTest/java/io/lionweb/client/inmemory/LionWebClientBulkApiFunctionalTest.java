@@ -11,7 +11,7 @@ import io.lionweb.client.testing.AbstractClientInMemoryFunctionalTest;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
-import io.lionweb.utils.CommonChecks;
+import io.lionweb.utils.IdUtils;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -119,14 +119,14 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientInMemoryFu
 
     List<String> ids1 = client.ids(78);
     assertEquals(78, ids1.size());
-    assertTrue(ids1.stream().allMatch(CommonChecks::isValidID));
+    assertTrue(ids1.stream().allMatch(IdUtils::isValidID));
 
     List<String> ids2 = client.ids(0);
     assertEquals(0, ids2.size());
 
     List<String> ids3 = client.ids(1);
     assertEquals(1, ids3.size());
-    assertTrue(ids3.stream().allMatch(CommonChecks::isValidID));
+    assertTrue(ids3.stream().allMatch(IdUtils::isValidID));
   }
 
   @Test

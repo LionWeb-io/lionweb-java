@@ -3,10 +3,7 @@ package io.lionweb.api;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -19,24 +16,40 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
 
   public LocalClassifierInstanceResolver() {}
 
-  public LocalClassifierInstanceResolver(ClassifierInstance<?>... instances) {
+  public LocalClassifierInstanceResolver(@Nonnull ClassifierInstance<?>... instances) {
     this(Arrays.asList(instances));
   }
 
-  public LocalClassifierInstanceResolver(List<ClassifierInstance<?>> instances) {
-    instances.forEach(n -> add(n));
+  public LocalClassifierInstanceResolver(@Nonnull List<ClassifierInstance<?>> instances) {
+    instances.forEach(this::add);
   }
 
+  /**
+   * Adds a classifier instance to the list of instances considered for resolution.
+   *
+   * @param instance the classifier instance to be added. Must not be null. The instance's ID,
+   *     obtained via {@code getID()}, will be used to look for the instance during resolution.
+   */
   public void add(@Nonnull ClassifierInstance<?> instance) {
     instances.put(instance.getID(), instance);
   }
 
   @Nullable
   @Override
-  public ClassifierInstance<?> resolve(String instanceID) {
+  public ClassifierInstance<?> resolve(@Nullable String instanceID) {
+    if (instanceID == null) {
+      return null;
+    }
     return instances.get(instanceID);
   }
 
+  /**
+   * Adds all the provided classifier instances to the list of ClassifierInstances considered for
+   * resolution.
+   *
+   * @param instances the list of classifier instances to be added. Each instance must not be null,
+   *     and the list itself must not be null.
+   */
   public void addAll(@Nonnull List<? extends ClassifierInstance<?>> instances) {
     instances.forEach(n -> add(n));
   }
@@ -46,6 +59,12 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
     return "LocalClassifierInstanceResolver(" + instances.keySet() + ")";
   }
 
+  /**
+   * Recursively adds a root node and all its descendants to the classifiers to be considered for
+   * resolution.
+   *
+   * @param root the root node to be added, along with its descendants. Must not be null.
+   */
   public void addTree(@Nonnull Node root) {
     add(root);
     ClassifierInstanceUtils.getChildren(root).forEach(c -> addTree(c));

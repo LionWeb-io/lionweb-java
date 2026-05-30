@@ -18,7 +18,7 @@ public abstract class Validator<E> {
    * @return a {@link ValidationResult} containing the validation outcomes, including any issues
    *     found
    */
-  public abstract @Nonnull ValidationResult validate(E element);
+  public abstract @Nonnull ValidationResult validate(@Nonnull E element);
 
   /**
    * Checks if the given element of type {@code E} passes all validation rules. This method

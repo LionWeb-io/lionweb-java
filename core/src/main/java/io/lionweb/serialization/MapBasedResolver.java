@@ -4,6 +4,8 @@ import io.lionweb.api.ClassifierInstanceResolver;
 import io.lionweb.model.ClassifierInstance;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
@@ -15,13 +17,17 @@ class MapBasedResolver implements ClassifierInstanceResolver {
 
   public MapBasedResolver() {}
 
-  public MapBasedResolver(Map<String, ClassifierInstance<?>> instancesByID) {
+  public MapBasedResolver(@Nonnull Map<String, ClassifierInstance<?>> instancesByID) {
+    Objects.requireNonNull(instancesByID, "instancesByID should not be null");
     this.instancesByID.putAll(instancesByID);
   }
 
   @Nullable
   @Override
-  public ClassifierInstance<?> resolve(String instanceID) {
+  public ClassifierInstance<?> resolve(@Nullable String instanceID) {
+    if (instanceID == null) {
+      return null;
+    }
     return instancesByID.get(instanceID);
   }
 }
