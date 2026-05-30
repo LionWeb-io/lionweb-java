@@ -13,21 +13,31 @@ public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
   public final int newIndex;
   public final @NotNull String replacedAnnotation;
   public final @NotNull String movedAnnotation;
+  public final @NotNull String parent;
+  public final int oldIndex;
 
   public MoveAndReplaceAnnotationInSameParent(
       @NotNull String commandId,
       int newIndex,
       @NotNull String replacedAnnotation,
-      @NotNull String movedAnnotation) {
+      @NotNull String movedAnnotation,
+      @NotNull String parent,
+      int oldIndex) {
     super(commandId);
     Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
     Objects.requireNonNull(movedAnnotation, "movedAnnotation must not be null");
     if (newIndex < 0) {
       throw new IllegalArgumentException("newIndex must be non-negative");
     }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex must be non-negative");
+    }
+    Objects.requireNonNull(parent, "parent must not be null");
     this.newIndex = newIndex;
     this.replacedAnnotation = replacedAnnotation;
     this.movedAnnotation = movedAnnotation;
+    this.parent = parent;
+    this.oldIndex = oldIndex;
   }
 
   @Override
@@ -41,9 +51,16 @@ public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
         + ", movedAnnotation='"
         + movedAnnotation
         + '\''
+        + ", parent='"
+        + parent
+        + '\''
+        + ", oldIndex="
+        + oldIndex
         + ", commandId='"
         + commandId
         + '\''
+        + ", split="
+        + split
         + ", additionalInfos="
         + additionalInfos
         + '}';

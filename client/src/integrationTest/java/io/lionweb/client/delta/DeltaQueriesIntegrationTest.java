@@ -1,9 +1,10 @@
 package io.lionweb.client.delta;
 
+import static io.lionweb.client.delta.JsonComparison.assertJSONEquivalence;
+import static io.lionweb.client.delta.JsonComparison.extractMessageKind;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assumptions.*;
 
-import com.google.gson.JsonParser;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import java.io.IOException;
@@ -67,18 +68,7 @@ public class DeltaQueriesIntegrationTest {
       assertFalse(response.queryId.isEmpty(), "queryId must not be empty in " + file.getFileName());
     }
 
-    assertEquals(
-        JsonParser.parseString(json),
-        JsonParser.parseString(DESERIALIZER.serialize(result)),
-        "Round-trip mismatch for " + file.getFileName());
-  }
-
-  private static String extractMessageKind(String json) {
-    int idx = json.indexOf("\"messageKind\"");
-    if (idx < 0) return "";
-    int colon = json.indexOf(':', idx);
-    int quote1 = json.indexOf('"', colon);
-    int quote2 = json.indexOf('"', quote1 + 1);
-    return json.substring(quote1 + 1, quote2);
+    assertJSONEquivalence(
+        json, DESERIALIZER.serialize(result), "Round-trip mismatch for " + file.getFileName());
   }
 }
