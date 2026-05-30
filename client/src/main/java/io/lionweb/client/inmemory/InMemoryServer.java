@@ -369,8 +369,8 @@ public class InMemoryServer {
   }
 
   private class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
-    private String repositoryName;
-    private DeltaChannel channel;
+    private final String repositoryName;
+    private final DeltaChannel channel;
 
     private DeltaCommandReceiverImpl(String repositoryName, DeltaChannel channel) {
       this.repositoryName = repositoryName;
@@ -389,153 +389,115 @@ public class InMemoryServer {
         return;
       }
       CommandSource source = new CommandSource(participationId, command.commandId);
-      if (command instanceof ChangeProperty) {
-        ChangeProperty changeProperty = (ChangeProperty) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
-        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-        try {
-          repositoryData.retrieve(changeProperty.node, 0, retrieved);
-        } catch (IllegalArgumentException e) {
-          channel.sendEvent(
-              sequenceNumber ->
-                  new ErrorEvent(
-                      sequenceNumber,
-                      StandardErrorCode.UNKNOWN_NODE,
-                      "Node with id " + changeProperty.node + " not found"));
-          return;
-        }
-        SerializedClassifierInstance node = retrieved.get(0);
-        String oldValue = node.getPropertyValue(((ChangeProperty) command).property);
-        retrieved.get(0);
-        node.setPropertyValue(((ChangeProperty) command).property, changeProperty.newValue);
-        String newValue = node.getPropertyValue(((ChangeProperty) command).property);
-        channel.sendEvent(
-            sequenceNumber ->
-                new PropertyChanged(
-                        sequenceNumber, node.getID(), changeProperty.property, newValue, oldValue)
-                    .addSource(source));
-        return;
-      } else if (command instanceof AddChild) {
-        AddChild addChild = (AddChild) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
-        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-        try {
-          repositoryData.retrieve(addChild.parent, 0, retrieved);
-        } catch (IllegalArgumentException e) {
-          channel.sendEvent(
-              sequenceNumber ->
-                  new ErrorEvent(
-                      sequenceNumber,
-                      StandardErrorCode.UNKNOWN_NODE,
-                      "Node with id " + addChild.parent + " not found"));
-          return;
-        }
-        SerializedClassifierInstance node = retrieved.get(0);
-        repositoryData.store(addChild.newChild.getClassifierInstances());
-        String childId =
-            addChild.newChild.getClassifierInstances().stream()
-                .filter(n -> n.getParentNodeID().equals(addChild.parent))
-                .findFirst()
-                .get()
-                .getID();
-        node.addChild(addChild.containment, childId, addChild.index);
-        channel.sendEvent(
-            sequenceNumber ->
-                new ChildAdded(
-                        sequenceNumber,
-                        addChild.parent,
-                        addChild.newChild,
-                        addChild.containment,
-                        addChild.index)
-                    .addSource(source));
-        return;
-      } else if (command instanceof DeleteChild) {
-        DeleteChild deleteChild = (DeleteChild) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
-        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-        try {
-          repositoryData.retrieve(deleteChild.parent, 0, retrieved);
-        } catch (IllegalArgumentException e) {
-          channel.sendEvent(
-              sequenceNumber ->
-                  new ErrorEvent(
-                      sequenceNumber,
-                      StandardErrorCode.UNKNOWN_NODE,
-                      "Node with id " + deleteChild.parent + " not found"));
-          return;
-        }
-        SerializedClassifierInstance node = retrieved.get(0);
-        channel.sendEvent(
-            sequenceNumber ->
-                new ChildDeleted(
-                        sequenceNumber,
-                        deleteChild.parent,
-                        deleteChild.deletedChild,
-                        java.util.Collections.emptyList(),
-                        deleteChild.index,
-                        deleteChild.containment)
-                    .addSource(source));
-        return;
-      } else if (command instanceof AddReference) {
-        AddReference addReference = (AddReference) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
-        List<SerializedClassifierInstance> retrieved = new ArrayList<>();
-        try {
-          repositoryData.retrieve(addReference.parent, 0, retrieved);
-        } catch (IllegalArgumentException e) {
-          channel.sendEvent(
-              sequenceNumber ->
-                  new ErrorEvent(
-                      sequenceNumber,
-                      StandardErrorCode.UNKNOWN_NODE,
-                      "Node with id " + addReference.parent + " not found"));
-          return;
-        }
-        SerializedClassifierInstance node = retrieved.get(0);
-        node.addReferenceValue(
-            addReference.reference,
-            addReference.index,
-            new SerializedReferenceValue.Entry(
-                addReference.newReference, addReference.newResolveInfo));
-        channel.sendEvent(
-            sequenceNumber ->
-                new ReferenceAdded(
-                        sequenceNumber,
-                        addReference.parent,
-                        addReference.reference,
-                        addReference.index,
-                        addReference.newReference,
-                        addReference.newResolveInfo)
-                    .addSource(source));
-        return;
-      } else if (command instanceof AddPartition) {
-        AddPartition addPartition = (AddPartition) command;
-        createPartitionFromChunk(
-            repositoryName, addPartition.newPartition.getClassifierInstances());
-        channel.sendEvent(
-            sequenceNumber ->
-                new PartitionAdded(sequenceNumber, addPartition.newPartition).addSource(source));
-        return;
-      } else if (command instanceof DeletePartition) {
-        DeletePartition deletePartition = (DeletePartition) command;
-        RepositoryData repositoryData = getRepository(repositoryName);
-        List<String> descendants = new ArrayList<>();
-        collectDescendants(repositoryData, deletePartition.deletedPartition, descendants);
-        deletePartitions(
-            repositoryName, Collections.singletonList(deletePartition.deletedPartition));
-        channel.sendEvent(
-            sequenceNumber ->
-                new PartitionDeleted(sequenceNumber, deletePartition.deletedPartition, descendants)
-                    .addSource(source));
-        return;
+      RepositoryData data = getRepository(repositoryName);
+      try {
+        if (command instanceof ChangeProperty)
+          handleChangeProperty((ChangeProperty) command, data, source);
+        else if (command instanceof AddChild) handleAddChild((AddChild) command, data, source);
+        else if (command instanceof DeleteChild)
+          handleDeleteChild((DeleteChild) command, data, source);
+        else if (command instanceof AddReference)
+          handleAddReference((AddReference) command, data, source);
+        else if (command instanceof AddPartition)
+          handleAddPartition((AddPartition) command, source);
+        else if (command instanceof DeletePartition)
+          handleDeletePartition((DeletePartition) command, data, source);
+        else
+          throw new UnsupportedOperationException(
+              "Unsupported command type: " + command.getClass().getName());
+      } catch (NodeNotFoundException e) {
+        String msg = e.getMessage();
+        channel.sendEvent(seqNum -> new ErrorEvent(seqNum, StandardErrorCode.UNKNOWN_NODE, msg));
       }
-
-      throw new UnsupportedOperationException(
-          "Unsupported command type: " + command.getClass().getName());
     }
 
-    private void collectDescendants(
-        @NotNull RepositoryData data, @NotNull String nodeId, @NotNull List<String> descendants) {
+    private void handleChangeProperty(
+        ChangeProperty cmd, RepositoryData data, CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.node);
+      String oldValue = node.getPropertyValue(cmd.property);
+      node.setPropertyValue(cmd.property, cmd.newValue);
+      String newValue = node.getPropertyValue(cmd.property);
+      channel.sendEvent(
+          seqNum ->
+              new PropertyChanged(seqNum, node.getID(), cmd.property, newValue, oldValue)
+                  .addSource(source));
+    }
+
+    private void handleAddChild(AddChild cmd, RepositoryData data, CommandSource source) {
+      SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+      data.store(cmd.newChild.getClassifierInstances());
+      String childId =
+          cmd.newChild.getClassifierInstances().stream()
+              .filter(n -> cmd.parent.equals(n.getParentNodeID()))
+              .findFirst()
+              .orElseThrow()
+              .getID();
+      parent.addChild(cmd.containment, childId, cmd.index);
+      channel.sendEvent(
+          seqNum ->
+              new ChildAdded(seqNum, cmd.parent, cmd.newChild, cmd.containment, cmd.index)
+                  .addSource(source));
+    }
+
+    private void handleDeleteChild(DeleteChild cmd, RepositoryData data, CommandSource source) {
+      requireNode(data, cmd.parent);
+      channel.sendEvent(
+          seqNum ->
+              new ChildDeleted(
+                      seqNum,
+                      cmd.parent,
+                      cmd.deletedChild,
+                      Collections.emptyList(),
+                      cmd.index,
+                      cmd.containment)
+                  .addSource(source));
+    }
+
+    private void handleAddReference(AddReference cmd, RepositoryData data, CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.parent);
+      node.addReferenceValue(
+          cmd.reference,
+          cmd.index,
+          new SerializedReferenceValue.Entry(cmd.newReference, cmd.newResolveInfo));
+      channel.sendEvent(
+          seqNum ->
+              new ReferenceAdded(
+                      seqNum,
+                      cmd.parent,
+                      cmd.reference,
+                      cmd.index,
+                      cmd.newReference,
+                      cmd.newResolveInfo)
+                  .addSource(source));
+    }
+
+    private void handleAddPartition(AddPartition cmd, CommandSource source) {
+      createPartitionFromChunk(repositoryName, cmd.newPartition.getClassifierInstances());
+      channel.sendEvent(seqNum -> new PartitionAdded(seqNum, cmd.newPartition).addSource(source));
+    }
+
+    private void handleDeletePartition(
+        DeletePartition cmd, RepositoryData data, CommandSource source) {
+      List<String> descendants = new ArrayList<>();
+      collectDescendants(data, cmd.deletedPartition, descendants);
+      deletePartitions(repositoryName, Collections.singletonList(cmd.deletedPartition));
+      channel.sendEvent(
+          seqNum ->
+              new PartitionDeleted(seqNum, cmd.deletedPartition, descendants).addSource(source));
+    }
+
+    /** Returns the node or throws {@link NodeNotFoundException} if it does not exist. */
+    private SerializedClassifierInstance requireNode(RepositoryData data, String nodeId) {
+      List<SerializedClassifierInstance> retrieved = new ArrayList<>();
+      try {
+        data.retrieve(nodeId, 0, retrieved);
+      } catch (IllegalArgumentException e) {
+        throw new NodeNotFoundException(nodeId);
+      }
+      return retrieved.get(0);
+    }
+
+    private void collectDescendants(RepositoryData data, String nodeId, List<String> descendants) {
       SerializedClassifierInstance node = data.nodesByID.get(nodeId);
       if (node == null) return;
       node.getChildren()
@@ -544,6 +506,12 @@ public class InMemoryServer {
                 descendants.add(childId);
                 collectDescendants(data, childId, descendants);
               });
+    }
+
+    private class NodeNotFoundException extends RuntimeException {
+      NodeNotFoundException(String nodeId) {
+        super("Node with id " + nodeId + " not found");
+      }
     }
   }
 
