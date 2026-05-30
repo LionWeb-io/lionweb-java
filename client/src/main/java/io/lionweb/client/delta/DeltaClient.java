@@ -108,7 +108,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
    * It is the responsibility of the caller to ensure that the partition is initially in sync with
    * the server.
    */
-  public void monitor(@NotNull Node partition) {
+  public void monitorPartition(@NotNull Node partition) {
     Objects.requireNonNull(partition, "partition should not be null");
     synchronized (partition) {
       partition
@@ -120,11 +120,6 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                       .add(new WeakReference<>(n)));
       partition.registerPartitionObserver(observer);
     }
-  }
-
-  protected void monitorNode(@NotNull Node node) {
-    Objects.requireNonNull(node, "node must not be null");
-    nodes.computeIfAbsent(node.getID(), id -> new HashSet<>()).add(new WeakReference<>(node));
   }
 
   @Override
@@ -163,270 +158,6 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
             "Unsupported event type: " + event.getClass().getName());
     } finally {
       observer.paused = false;
-    }
-  }
-
-  private boolean isFromOwnParticipation(@NotNull DeltaEvent event) {
-    if (!(event instanceof BaseDeltaEvent)) return false;
-    return ((BaseDeltaEvent<?>) event)
-        .originCommands.stream().anyMatch(src -> src.participationId.equals(this.participationId));
-  }
-
-  private void onPropertyChanged(@NotNull PropertyChanged event) {
-    forEachNode(
-        event.node,
-        instance ->
-            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-                instance, event.property, event.newValue));
-  }
-
-  private void onChildAdded(@NotNull ChildAdded event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Node child = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
-      monitorNode(child);
-      Containment containment =
-          instance.getClassifier().getContainmentByMetaPointer(event.containment);
-      if (containment == null) {
-        throw new IllegalStateException(
-            "Containment not found for " + instance + " using metapointer " + event.containment);
-      }
-      instance.addChild(containment, child, event.index);
-    }
-  }
-
-  private void onChildDeleted(@NotNull ChildDeleted event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Containment containment =
-          instance.getClassifier().getContainmentByMetaPointer(event.containment);
-      if (containment == null) {
-        throw new IllegalStateException(
-            "Containment not found for " + instance + " using metapointer " + event.containment);
-      }
-      instance.removeChild(containment, event.index);
-    }
-  }
-
-  private void onReferenceAdded(@NotNull ReferenceAdded event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
-      if (reference == null) {
-        throw new IllegalStateException(
-            "Reference not found for " + instance + " using metapointer " + event.reference);
-      }
-      instance.addReferenceValue(
-          reference,
-          event.index,
-          new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
-    }
-  }
-
-  private void onPropertyAdded(@NotNull PropertyAdded event) {
-    forEachNode(
-        event.node,
-        instance ->
-            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-                instance, event.property, event.newValue));
-  }
-
-  private void onPropertyDeleted(@NotNull PropertyDeleted event) {
-    forEachNode(
-        event.node,
-        instance ->
-            ClassifierInstanceUtils.setPropertyValueByMetaPointer(instance, event.property, null));
-  }
-
-  private void onReferenceChanged(@NotNull ReferenceChanged event) {
-    forEachNode(
-        event.parent,
-        instance -> {
-          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
-          if (reference == null) {
-            throw new IllegalStateException(
-                "Reference not found for " + instance + " using metapointer " + event.reference);
-          }
-          instance.removeReferenceValue(reference, event.index);
-          instance.addReferenceValue(
-              reference,
-              event.index,
-              new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
-        });
-  }
-
-  private void onReferenceDeleted(@NotNull ReferenceDeleted event) {
-    forEachNode(
-        event.parent,
-        instance -> {
-          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
-          if (reference == null) {
-            throw new IllegalStateException(
-                "Reference not found for " + instance + " using metapointer " + event.reference);
-          }
-          instance.removeReferenceValue(reference, event.index);
-        });
-  }
-
-  private void onChildMovedInSameContainment(@NotNull ChildMovedInSameContainment event) {
-    Objects.requireNonNull(event, "event must not be null");
-    forEachNode(
-        event.parent,
-        instance -> {
-          Containment containment =
-              instance.getClassifier().getContainmentByMetaPointer(event.containment);
-          if (containment == null)
-            throw new IllegalStateException(
-                "Containment not found for "
-                    + instance
-                    + " using metapointer "
-                    + event.containment);
-          Node child = instance.getChildren(containment).get(event.oldIndex);
-          instance.removeChild(containment, event.oldIndex);
-          instance.addChild(containment, child, event.newIndex);
-        });
-  }
-
-  private void onChildMovedFromOtherContainmentInSameParent(
-      @NotNull ChildMovedFromOtherContainmentInSameParent event) {
-    Objects.requireNonNull(event, "event must not be null");
-    forEachNode(
-        event.parent,
-        instance -> {
-          Containment oldContainment =
-              instance.getClassifier().getContainmentByMetaPointer(event.oldContainment);
-          Containment newContainment =
-              instance.getClassifier().getContainmentByMetaPointer(event.newContainment);
-          if (oldContainment == null)
-            throw new IllegalStateException(
-                "Old containment not found for "
-                    + instance
-                    + " using metapointer "
-                    + event.oldContainment);
-          if (newContainment == null)
-            throw new IllegalStateException(
-                "New containment not found for "
-                    + instance
-                    + " using metapointer "
-                    + event.newContainment);
-          Node child = instance.getChildren(oldContainment).get(event.oldIndex);
-          instance.removeChild(oldContainment, event.oldIndex);
-          instance.addChild(newContainment, child, event.newIndex);
-        });
-  }
-
-  private void onChildMovedFromOtherContainment(@NotNull ChildMovedFromOtherContainment event) {
-    Objects.requireNonNull(event, "event must not be null");
-    forEachNode(
-        event.oldParent,
-        oldInstance -> {
-          Containment oldContainment =
-              oldInstance.getClassifier().getContainmentByMetaPointer(event.oldContainment);
-          if (oldContainment == null)
-            throw new IllegalStateException(
-                "Old containment not found for "
-                    + oldInstance
-                    + " using metapointer "
-                    + event.oldContainment);
-          Node child = oldInstance.getChildren(oldContainment).get(event.oldIndex);
-          oldInstance.removeChild(oldContainment, event.oldIndex);
-          forEachNode(
-              event.newParent,
-              newInstance -> {
-                Containment newContainment =
-                    newInstance.getClassifier().getContainmentByMetaPointer(event.newContainment);
-                if (newContainment == null)
-                  throw new IllegalStateException(
-                      "New containment not found for "
-                          + newInstance
-                          + " using metapointer "
-                          + event.newContainment);
-                newInstance.addChild(newContainment, child, event.newIndex);
-                monitorNode(child);
-              });
-        });
-  }
-
-  private void onChildReplaced(@NotNull ChildReplaced event) {
-    Objects.requireNonNull(event, "event must not be null");
-    forEachNode(
-        event.parent,
-        instance -> {
-          Containment containment =
-              instance.getClassifier().getContainmentByMetaPointer(event.containment);
-          if (containment == null)
-            throw new IllegalStateException(
-                "Containment not found for "
-                    + instance
-                    + " using metapointer "
-                    + event.containment);
-          instance.removeChild(containment, event.index);
-          Node newChild = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
-          monitorNode(newChild);
-          instance.addChild(containment, newChild, event.index);
-        });
-  }
-
-  private void onAnnotationAdded(@NotNull AnnotationAdded event) {
-    forEachNode(
-        event.parent,
-        instance -> {
-          AnnotationInstance annotation =
-              (AnnotationInstance)
-                  serialization.deserializeSerializationChunk(event.newAnnotation).get(0);
-          instance.addAnnotation(annotation);
-        });
-  }
-
-  private void onAnnotationDeleted(@NotNull AnnotationDeleted event) {
-    forEachNode(
-        event.parent,
-        instance -> {
-          instance.getAnnotations().stream()
-              .filter(a -> event.deletedAnnotation.equals(a.getID()))
-              .findFirst()
-              .ifPresent(instance::removeAnnotation);
-        });
-  }
-
-  private void onClassifierChanged(@NotNull ClassifierChanged event) {
-    // Changing the runtime type of a local Java object is not possible.
-    // Clients that need to act on classifier changes should re-fetch the node from the server.
-    throw new UnsupportedOperationException();
-  }
-
-  private void onErrorEvent(@NotNull ErrorEvent event) {
-    Objects.requireNonNull(event, "event must not be null");
-    // observer.paused is reset by the finally block in receiveEvent
-    throw new ErrorEventReceivedException(event.errorCode, event.message);
-  }
-
-  /**
-   * Serializes an annotation instance into a chunk with the root's parentNodeID cleared. The
-   * receiver should not try to re-attach the parent from the chunk — the parent is conveyed by the
-   * enclosing command/event's explicit parent field.
-   */
-  @NotNull
-  private SerializationChunk serializeAnnotationChunk(@NotNull AnnotationInstance annotation) {
-    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(annotation);
-    chunk.getClassifierInstances().stream()
-        .filter(n -> annotation.getID().equals(n.getID()))
-        .findFirst()
-        .ifPresent(n -> n.setParentNodeID(null));
-    return chunk;
-  }
-
-  /** Applies {@code action} to every live local instance tracked under {@code nodeId}. */
-  private void forEachNode(
-      @NotNull String nodeId, @NotNull java.util.function.Consumer<ClassifierInstance<?>> action) {
-    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(nodeId);
-    if (refs == null) return;
-    for (WeakReference<ClassifierInstance<?>> ref : refs) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance != null) action.accept(instance);
     }
   }
 
@@ -786,6 +517,259 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         commandId ->
             new MoveAnnotationFromOtherParent(
                 commandId, newParentId, newIndex, movedAnnotationId, oldParentId, oldIndex));
+  }
+
+  protected void monitorNode(@NotNull Node node) {
+    Objects.requireNonNull(node, "node must not be null");
+    nodes.computeIfAbsent(node.getID(), id -> new HashSet<>()).add(new WeakReference<>(node));
+  }
+
+  private boolean isFromOwnParticipation(@NotNull DeltaEvent event) {
+    if (!(event instanceof BaseDeltaEvent)) return false;
+    return ((BaseDeltaEvent<?>) event)
+        .originCommands.stream().anyMatch(src -> src.participationId.equals(this.participationId));
+  }
+
+  private void onPropertyChanged(@NotNull PropertyChanged event) {
+    forEachNode(
+        event.node,
+        instance ->
+            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+                instance, event.property, event.newValue));
+  }
+
+  private void onChildAdded(@NotNull ChildAdded event) {
+    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance == null) continue;
+      Node child = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+      monitorNode(child);
+      Containment containment =
+          instance.getClassifier().getContainmentByMetaPointer(event.containment);
+      if (containment == null) {
+        throw new IllegalStateException(
+            "Containment not found for " + instance + " using metapointer " + event.containment);
+      }
+      instance.addChild(containment, child, event.index);
+    }
+  }
+
+  private void onChildDeleted(@NotNull ChildDeleted event) {
+    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance == null) continue;
+      Containment containment =
+          instance.getClassifier().getContainmentByMetaPointer(event.containment);
+      if (containment == null) {
+        throw new IllegalStateException(
+            "Containment not found for " + instance + " using metapointer " + event.containment);
+      }
+      instance.removeChild(containment, event.index);
+    }
+  }
+
+  private void onReferenceAdded(@NotNull ReferenceAdded event) {
+    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance == null) continue;
+      Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+      if (reference == null) {
+        throw new IllegalStateException(
+            "Reference not found for " + instance + " using metapointer " + event.reference);
+      }
+      instance.addReferenceValue(
+          reference,
+          event.index,
+          new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
+    }
+  }
+
+  private void onPropertyAdded(@NotNull PropertyAdded event) {
+    forEachNode(
+        event.node,
+        instance ->
+            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+                instance, event.property, event.newValue));
+  }
+
+  private void onPropertyDeleted(@NotNull PropertyDeleted event) {
+    forEachNode(
+        event.node,
+        instance ->
+            ClassifierInstanceUtils.setPropertyValueByMetaPointer(instance, event.property, null));
+  }
+
+  private void onReferenceChanged(@NotNull ReferenceChanged event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for " + instance + " using metapointer " + event.reference);
+          }
+          instance.removeReferenceValue(reference, event.index);
+          instance.addReferenceValue(
+              reference,
+              event.index,
+              new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
+        });
+  }
+
+  private void onReferenceDeleted(@NotNull ReferenceDeleted event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for " + instance + " using metapointer " + event.reference);
+          }
+          instance.removeReferenceValue(reference, event.index);
+        });
+  }
+
+  private void onChildMovedInSameContainment(@NotNull ChildMovedInSameContainment event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.parent,
+        instance -> {
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null)
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          Node child = instance.getChildren(containment).get(event.oldIndex);
+          instance.removeChild(containment, event.oldIndex);
+          instance.addChild(containment, child, event.newIndex);
+        });
+  }
+
+  private void onChildMovedFromOtherContainmentInSameParent(
+      @NotNull ChildMovedFromOtherContainmentInSameParent event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.parent,
+        instance -> {
+          Containment oldContainment =
+              instance.getClassifier().getContainmentByMetaPointer(event.oldContainment);
+          Containment newContainment =
+              instance.getClassifier().getContainmentByMetaPointer(event.newContainment);
+          if (oldContainment == null)
+            throw new IllegalStateException(
+                "Old containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.oldContainment);
+          if (newContainment == null)
+            throw new IllegalStateException(
+                "New containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.newContainment);
+          Node child = instance.getChildren(oldContainment).get(event.oldIndex);
+          instance.removeChild(oldContainment, event.oldIndex);
+          instance.addChild(newContainment, child, event.newIndex);
+        });
+  }
+
+  private void onChildMovedFromOtherContainment(@NotNull ChildMovedFromOtherContainment event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.oldParent,
+        oldInstance -> {
+          Containment oldContainment =
+              oldInstance.getClassifier().getContainmentByMetaPointer(event.oldContainment);
+          if (oldContainment == null)
+            throw new IllegalStateException(
+                "Old containment not found for "
+                    + oldInstance
+                    + " using metapointer "
+                    + event.oldContainment);
+          Node child = oldInstance.getChildren(oldContainment).get(event.oldIndex);
+          oldInstance.removeChild(oldContainment, event.oldIndex);
+          forEachNode(
+              event.newParent,
+              newInstance -> {
+                Containment newContainment =
+                    newInstance.getClassifier().getContainmentByMetaPointer(event.newContainment);
+                if (newContainment == null)
+                  throw new IllegalStateException(
+                      "New containment not found for "
+                          + newInstance
+                          + " using metapointer "
+                          + event.newContainment);
+                newInstance.addChild(newContainment, child, event.newIndex);
+                monitorNode(child);
+              });
+        });
+  }
+
+  private void onChildReplaced(@NotNull ChildReplaced event) {
+    Objects.requireNonNull(event, "event must not be null");
+    forEachNode(
+        event.parent,
+        instance -> {
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null)
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          instance.removeChild(containment, event.index);
+          Node newChild = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+          monitorNode(newChild);
+          instance.addChild(containment, newChild, event.index);
+        });
+  }
+
+  private void onAnnotationAdded(@NotNull AnnotationAdded event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          AnnotationInstance annotation =
+              (AnnotationInstance)
+                  serialization.deserializeSerializationChunk(event.newAnnotation).get(0);
+          instance.addAnnotation(annotation);
+        });
+  }
+
+  private void onAnnotationDeleted(@NotNull AnnotationDeleted event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          instance.getAnnotations().stream()
+              .filter(a -> event.deletedAnnotation.equals(a.getID()))
+              .findFirst()
+              .ifPresent(instance::removeAnnotation);
+        });
+  }
+
+  private void onClassifierChanged(@NotNull ClassifierChanged event) {
+    // Changing the runtime type of a local Java object is not possible.
+    // We perhaps could make it work for Dynamic Nodes
+    throw new UnsupportedOperationException("Classifier changes are not yet supported by LionWeb JVM");
+  }
+
+  private void onErrorEvent(@NotNull ErrorEvent event) {
+    Objects.requireNonNull(event, "event must not be null");
+    throw new ErrorEventReceivedException(event.errorCode, event.message);
+  }
+
+  /** Applies {@code action} to every live local instance tracked under {@code nodeId}. */
+  private void forEachNode(
+      @NotNull String nodeId, @NotNull java.util.function.Consumer<ClassifierInstance<?>> action) {
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(nodeId);
+    if (refs == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : refs) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance != null) action.accept(instance);
+    }
   }
 
   public enum ParticipationState {

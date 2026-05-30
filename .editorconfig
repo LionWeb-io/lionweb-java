@@ -10,6 +10,11 @@ trim_trailing_whitespace = true
 [*.{java,kt,kts,gradle}]
 indent_size = 4
 
+[*.java]
+ij_java_arrangement_group_getters_and_setters = true
+ij_java_arrangement_keep_dependent_methods_together = false
+ij_java_arrangement_matching_rules = public fields|protected fields|package_private fields|private fields|public constructors|protected constructors|package_private constructors|private constructors|public methods|protected methods|package_private methods|private methods
+
 [*.{yml,yaml,json,toml}]
 indent_size = 2
 

@@ -65,11 +65,11 @@ public class DeltaNodeMutationsTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     assertNull(lang1.getName());
     assertNull(lang2.getName());
@@ -100,11 +100,11 @@ public class DeltaNodeMutationsTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     assertEquals("Language A", lang1.getName());
     assertEquals("Language A", lang2.getName());
@@ -139,11 +139,11 @@ public class DeltaNodeMutationsTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     // Set up a concept that uses a reference (extendedConcept)
     Concept concept1 = new Concept(lang1, "Concept A", "concept-a", "ca");
@@ -196,11 +196,11 @@ public class DeltaNodeMutationsTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     Concept concept1 = new Concept(lang1, "Concept A", "concept-a", "ca");
     lang1.addElement(concept1);

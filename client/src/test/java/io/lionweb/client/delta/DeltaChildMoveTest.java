@@ -40,11 +40,11 @@ public class DeltaChildMoveTest extends AbstractDeltaProtocolTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     // Populate: A, B, C
     Concept conceptA = new Concept(lang1, "Concept A", "ca", "ca");
@@ -103,11 +103,11 @@ public class DeltaChildMoveTest extends AbstractDeltaProtocolTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     Concept conceptA = new Concept(lang1, "Concept A", "ca", "ca");
     Concept conceptB = new Concept(lang1, "Concept B", "cb", "cb");
@@ -164,11 +164,11 @@ public class DeltaChildMoveTest extends AbstractDeltaProtocolTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     Concept conceptA = new Concept(lang1, "Concept A", "ca", "ca");
     Concept conceptB = new Concept(lang1, "Concept B", "cb", "cb");
@@ -228,8 +228,8 @@ public class DeltaChildMoveTest extends AbstractDeltaProtocolTest {
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();
-    client.monitor(langA);
-    client.monitor(langB);
+    client.monitorPartition(langA);
+    client.monitorPartition(langB);
 
     // Add a concept to langA
     Concept concept = new Concept(langA, "Concept X", "cx", "cx");

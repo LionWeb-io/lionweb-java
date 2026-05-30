@@ -40,10 +40,10 @@ public class DeltaClientAndServerTest {
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
-    client1.monitor(language1);
+    client1.monitorPartition(language1);
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
-    client2.monitor(language2);
+    client2.monitorPartition(language2);
 
     assertEquals("Language A", language1.getName());
     assertEquals("Language A", language2.getName());
@@ -78,7 +78,7 @@ public class DeltaClientAndServerTest {
     DeltaClient client = new DeltaClient(channel, "my-client-1");
     client.sendSignOnRequest();
 
-    client.monitor(language1);
+    client.monitorPartition(language1);
     try {
       language1.setName("Language B");
     } catch (ErrorEventReceivedException e) {
@@ -115,8 +115,8 @@ public class DeltaClientAndServerTest {
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
 
-    client1.monitor(language1);
-    client2.monitor(language2);
+    client1.monitorPartition(language1);
+    client2.monitorPartition(language2);
 
     assertEquals(Collections.emptyList(), language1.getElements());
     assertEquals(Collections.emptyList(), language2.getElements());
@@ -157,8 +157,8 @@ public class DeltaClientAndServerTest {
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
 
-    client1.monitor(language1);
-    client2.monitor(language2);
+    client1.monitorPartition(language1);
+    client2.monitorPartition(language2);
 
     Concept concept1 = new Concept(language1, "Concept A", "concept-a", "a");
     language1.addElement(concept1);
@@ -212,8 +212,8 @@ public class DeltaClientAndServerTest {
     DeltaClient client2 = new DeltaClient(channel, "my-client-2");
     client2.sendSignOnRequest();
 
-    client1.monitor(language1);
-    client2.monitor(language2);
+    client1.monitorPartition(language1);
+    client2.monitorPartition(language2);
 
     // HERE DO A LOT OF OPERATIONS CREATING A LANGUAGE AND CHANGING IT
 

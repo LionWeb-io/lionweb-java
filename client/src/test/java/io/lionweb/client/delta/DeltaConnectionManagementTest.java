@@ -81,7 +81,7 @@ public class DeltaConnectionManagementTest extends AbstractDeltaProtocolTest {
 
     DeltaClient client = new DeltaClient(channel, "my-client-1");
     client.sendSignOnRequest();
-    client.monitor(language);
+    client.monitorPartition(language);
 
     // Normal operation works before sign-off
     language.setName("Language B");

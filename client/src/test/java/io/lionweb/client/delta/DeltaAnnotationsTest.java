@@ -58,10 +58,10 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
     DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client1 = signedOnClient(channel, "my-client-1");
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = signedOnClient(channel, "my-client-2");
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     assertTrue(lang1.getAnnotations().isEmpty());
     assertTrue(lang2.getAnnotations().isEmpty());
@@ -107,10 +107,10 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
     DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client1 = signedOnClient(channel, "my-client-1");
-    client1.monitor(lang1);
+    client1.monitorPartition(lang1);
 
     DeltaClient client2 = signedOnClient(channel, "my-client-2");
-    client2.monitor(lang2);
+    client2.monitorPartition(lang2);
 
     // Add annotation first
     DynamicAnnotationInstance ann = new DynamicAnnotationInstance("ann-1", COMMENT_ANN);
@@ -149,7 +149,7 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
     DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = signedOnClient(channel, "my-client");
-    client.monitor(lang);
+    client.monitorPartition(lang);
 
     // Add three annotations
     lang.addAnnotation(new DynamicAnnotationInstance("ann-1", COMMENT_ANN));
