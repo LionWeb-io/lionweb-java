@@ -3,8 +3,6 @@ package io.lionweb.client.delta;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.HistorySupport;
-import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Annotation;
 import io.lionweb.language.Language;
@@ -57,12 +55,10 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
     InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    Language lang1 =
-        new Language("LangA", "lang-a", "lang-a-key");
+    Language lang1 = new Language("LangA", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang1, ser);
 
-    Language lang2 =
-        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
+    Language lang2 = (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
     Assertions.assertNotNull(lang2);
 
     DeltaChannel channel = prepareChannel(server);
@@ -108,15 +104,13 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
     InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    Language lang1 =
-        new Language("LangA", "lang-a", "lang-a-key");
+    Language lang1 = new Language("LangA", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang1, ser);
 
-    Language lang2 =
-        (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
+    Language lang2 = (Language) server.retrieveAsClassifierInstance("MyRepo", "lang-a", ser);
     Assertions.assertNotNull(lang2);
 
-    DeltaChannel channel =  prepareChannel(server);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client1 = signedOnClient(channel, "my-client-1");
     client1.monitor(lang1);
@@ -155,8 +149,7 @@ public class DeltaAnnotationsTest extends AbstractDeltaProtocolTest {
     InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    Language lang =
-        new Language("LangA", "lang-a", "lang-a-key");
+    Language lang = new Language("LangA", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang, ser);
 
     DeltaChannel channel = prepareChannel(server);
