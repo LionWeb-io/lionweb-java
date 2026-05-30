@@ -4,19 +4,29 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.client.delta.messages.DeltaEvent;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
+import io.lionweb.client.delta.messages.commands.ChangeClassifier;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
 import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
+import io.lionweb.client.delta.messages.commands.properties.AddProperty;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.commands.properties.DeleteProperty;
 import io.lionweb.client.delta.messages.commands.references.AddReference;
+import io.lionweb.client.delta.messages.commands.references.ChangeReference;
+import io.lionweb.client.delta.messages.commands.references.DeleteReference;
+import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
+import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
+import io.lionweb.client.delta.messages.events.properties.PropertyDeleted;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
+import io.lionweb.client.delta.messages.events.references.ReferenceChanged;
+import io.lionweb.client.delta.messages.events.references.ReferenceDeleted;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsRequest;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
 import io.lionweb.client.delta.messages.queries.ListPartitionsRequest;
@@ -57,7 +67,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private String clientId;
   private String pendingReconnectParticipationId;
 
-  private static enum ParticipationState {
+  private enum ParticipationState {
     NOT_CONNECTED,
     CONNECTED,
     SIGNED_OFF,
@@ -65,11 +75,18 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
 
   private ParticipationState state = ParticipationState.NOT_CONNECTED;
 
-  public DeltaClient(DeltaChannel channel, String clientId) {
+  public DeltaClient(@NotNull DeltaChannel channel, @NotNull String clientId) {
     this(LionWebVersion.currentVersion, channel, clientId);
   }
 
-  public DeltaClient(LionWebVersion lionWebVersion, DeltaChannel channel, String clientId) {
+  public DeltaClient(
+      @NotNull LionWebVersion lionWebVersion,
+      @NotNull DeltaChannel channel,
+      @NotNull String clientId) {
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion must not be null");
+    Objects.requireNonNull(channel, "channel must not be null");
+    Objects.requireNonNull(clientId, "clientId must not be null");
+
     this.clientId = clientId;
     this.lionWebVersion = lionWebVersion;
     this.channel = channel;
@@ -100,20 +117,28 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
-  protected void monitorNode(Node node) {
+  protected void monitorNode(@NotNull Node node) {
+    Objects.requireNonNull(node, "node must not be null");
     nodes.computeIfAbsent(node.getID(), id -> new HashSet<>()).add(new WeakReference<>(node));
   }
 
   @Override
-  public void receiveEvent(DeltaEvent event) {
+  public void receiveEvent(@NotNull DeltaEvent event) {
+    Objects.requireNonNull(event, "event must not be null");
     if (isFromOwnParticipation(event)) return;
     observer.paused = true;
     try {
       if (event instanceof PropertyChanged) onPropertyChanged((PropertyChanged) event);
+      else if (event instanceof PropertyAdded) onPropertyAdded((PropertyAdded) event);
+      else if (event instanceof PropertyDeleted) onPropertyDeleted((PropertyDeleted) event);
       else if (event instanceof ChildAdded) onChildAdded((ChildAdded) event);
       else if (event instanceof ChildDeleted) onChildDeleted((ChildDeleted) event);
       else if (event instanceof ReferenceAdded) onReferenceAdded((ReferenceAdded) event);
-      else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
+      else if (event instanceof ReferenceChanged) onReferenceChanged((ReferenceChanged) event);
+      else if (event instanceof ReferenceDeleted) onReferenceDeleted((ReferenceDeleted) event);
+      else if (event instanceof ClassifierChanged) {
+        throw new UnsupportedOperationException();
+      } else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
       else if (event instanceof PartitionAdded || event instanceof PartitionDeleted) {
         /* no-op */
       } else
@@ -124,25 +149,21 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
-  private boolean isFromOwnParticipation(DeltaEvent event) {
+  private boolean isFromOwnParticipation(@NotNull DeltaEvent event) {
     if (!(event instanceof BaseDeltaEvent)) return false;
     return ((BaseDeltaEvent<?>) event)
         .originCommands.stream().anyMatch(src -> src.participationId.equals(this.participationId));
   }
 
-  private void onPropertyChanged(PropertyChanged event) {
-    Set<WeakReference<ClassifierInstance<?>>> matchingNodes = this.nodes.get(event.node);
-    if (matchingNodes == null) return;
-    for (WeakReference<ClassifierInstance<?>> ref : matchingNodes) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance != null) {
-        ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-            instance, event.property, event.newValue);
-      }
-    }
+  private void onPropertyChanged(@NotNull PropertyChanged event) {
+    forEachNode(
+        event.node,
+        instance ->
+            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+                instance, event.property, event.newValue));
   }
 
-  private void onChildAdded(ChildAdded event) {
+  private void onChildAdded(@NotNull ChildAdded event) {
     for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
@@ -158,7 +179,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
-  private void onChildDeleted(ChildDeleted event) {
+  private void onChildDeleted(@NotNull ChildDeleted event) {
     for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
@@ -172,7 +193,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
-  private void onReferenceAdded(ReferenceAdded event) {
+  private void onReferenceAdded(@NotNull ReferenceAdded event) {
     for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
@@ -188,9 +209,65 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
-  private void onErrorEvent(ErrorEvent event) {
+  private void onPropertyAdded(@NotNull PropertyAdded event) {
+    forEachNode(
+        event.node,
+        instance ->
+            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+                instance, event.property, event.newValue));
+  }
+
+  private void onPropertyDeleted(@NotNull PropertyDeleted event) {
+    forEachNode(
+        event.node,
+        instance ->
+            ClassifierInstanceUtils.setPropertyValueByMetaPointer(instance, event.property, null));
+  }
+
+  private void onReferenceChanged(@NotNull ReferenceChanged event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for " + instance + " using metapointer " + event.reference);
+          }
+          instance.removeReferenceValue(reference, event.index);
+          instance.addReferenceValue(
+              reference,
+              event.index,
+              new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
+        });
+  }
+
+  private void onReferenceDeleted(@NotNull ReferenceDeleted event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for " + instance + " using metapointer " + event.reference);
+          }
+          instance.removeReferenceValue(reference, event.index);
+        });
+  }
+
+  private void onErrorEvent(@NotNull ErrorEvent event) {
     // observer.paused is reset by the finally block in receiveEvent
     throw new ErrorEventReceivedException(event.errorCode, event.message);
+  }
+
+  /** Applies {@code action} to every live local instance tracked under {@code nodeId}. */
+  private void forEachNode(
+      @NotNull String nodeId, java.util.function.Consumer<ClassifierInstance<?>> action) {
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(nodeId);
+    if (refs == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : refs) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance != null) action.accept(instance);
+    }
   }
 
   private class MonitoringObserver implements PartitionObserver {
@@ -199,27 +276,39 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
 
     @Override
     public void propertyChanged(
-        ClassifierInstance<?> classifierInstance,
-        Property property,
-        Object oldValue,
-        Object newValue) {
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Property property,
+        @Nullable Object oldValue,
+        @Nullable Object newValue) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(property, "property must not be null");
       if (paused) return;
-      channel.sendCommand(
-          participationId,
-          commandId ->
-              new ChangeProperty(
-                  commandId,
-                  classifierInstance.getID(),
-                  MetaPointer.from(property),
-                  dataTypesValuesSerialization.serialize(property.getType().getID(), newValue)));
+      String typeId = property.getType() != null ? property.getType().getID() : null;
+      String serializedNew =
+          newValue != null ? dataTypesValuesSerialization.serialize(typeId, newValue) : null;
+      MetaPointer mp = MetaPointer.from(property);
+      String nodeId = classifierInstance.getID();
+      if (oldValue == null) {
+        channel.sendCommand(
+            participationId, commandId -> new AddProperty(commandId, nodeId, mp, serializedNew));
+      } else if (newValue == null) {
+        channel.sendCommand(
+            participationId, commandId -> new DeleteProperty(commandId, nodeId, mp));
+      } else {
+        channel.sendCommand(
+            participationId, commandId -> new ChangeProperty(commandId, nodeId, mp, serializedNew));
+      }
     }
 
     @Override
     public void childAdded(
-        ClassifierInstance<?> classifierInstance,
-        Containment containment,
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Containment containment,
         int index,
-        Node newChild) {
+        @NotNull Node newChild) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(containment, "containment must not be null");
+      Objects.requireNonNull(newChild, "newChild must not be null");
       if (paused) return;
       SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
       if (newChild.getID() == null) {
@@ -238,8 +327,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
 
     @Override
     public void childRemoved(
-        ClassifierInstance<?> classifierInstance,
-        Containment containment,
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Containment containment,
         int index,
         @NotNull Node removedChild) {
       if (paused) return;
@@ -259,22 +348,31 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
 
     @Override
     public void annotationAdded(
-        ClassifierInstance<?> node, int index, AnnotationInstance newAnnotation) {
+        @NotNull ClassifierInstance<?> node, int index, @NotNull AnnotationInstance newAnnotation) {
+      Objects.requireNonNull(node, "node must not be null");
+      Objects.requireNonNull(newAnnotation, "newAnnotation must not be null");
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void annotationRemoved(
-        ClassifierInstance<?> node, int index, AnnotationInstance removedAnnotation) {
+        @NotNull ClassifierInstance<?> node,
+        int index,
+        @NotNull AnnotationInstance removedAnnotation) {
+      Objects.requireNonNull(node, "node must not be null");
+      Objects.requireNonNull(removedAnnotation, "removedAnnotation must not be null");
       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void referenceValueAdded(
-        ClassifierInstance<?> classifierInstance,
-        Reference reference,
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
         int index,
-        ReferenceValue referenceValue) {
+        @NotNull ReferenceValue referenceValue) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(reference, "reference must not be null");
+      Objects.requireNonNull(referenceValue, "referenceValue must not be null");
       if (paused) return;
       channel.sendCommand(
           participationId,
@@ -290,23 +388,50 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
 
     @Override
     public void referenceValueChanged(
-        ClassifierInstance<?> classifierInstance,
-        Reference reference,
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
         int index,
-        String oldReferred,
-        String oldResolveInfo,
-        String newReferred,
-        String newResolveInfo) {
-      throw new UnsupportedOperationException("Not supported yet.");
+        @Nullable String oldReferred,
+        @Nullable String oldResolveInfo,
+        @Nullable String newReferred,
+        @Nullable String newResolveInfo) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(reference, "reference must not be null");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new ChangeReference(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(reference),
+                  index,
+                  oldReferred,
+                  oldResolveInfo,
+                  newReferred,
+                  newResolveInfo));
     }
 
     @Override
     public void referenceValueRemoved(
-        ClassifierInstance<?> classifierInstance,
-        Reference reference,
+        @NotNull ClassifierInstance<?> classifierInstance,
+        @NotNull Reference reference,
         int index,
-        ReferenceValue referenceValue) {
-      throw new UnsupportedOperationException("Not supported yet.");
+        @NotNull ReferenceValue referenceValue) {
+      Objects.requireNonNull(classifierInstance, "classifierInstance must not be null");
+      Objects.requireNonNull(reference, "reference must not be null");
+      Objects.requireNonNull(referenceValue, "referenceValue must not be null");
+      if (paused) return;
+      channel.sendCommand(
+          participationId,
+          commandId ->
+              new DeleteReference(
+                  commandId,
+                  classifierInstance.getID(),
+                  MetaPointer.from(reference),
+                  index,
+                  referenceValue.getReferredID(),
+                  referenceValue.getResolveInfo()));
     }
   }
 
@@ -321,7 +446,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   @Override
-  public void receiveQueryResponse(DeltaQueryResponse queryResponse) {
+  public void receiveQueryResponse(@NotNull DeltaQueryResponse queryResponse) {
+    Objects.requireNonNull(queryResponse, "queryResponse must not be null");
     if (!queriesSent.contains(queryResponse.queryId)) return;
     if (queryResponse instanceof SignOnResponse) {
       SignOnResponse signOnResponse = (SignOnResponse) queryResponse;
@@ -453,5 +579,19 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   public void sendDeletePartitionCommand(@NotNull String partitionId) {
     Objects.requireNonNull(partitionId, "partitionId must not be null");
     channel.sendCommand(participationId, commandId -> new DeletePartition(commandId, partitionId));
+  }
+
+  /**
+   * Sends a command to change the classifier of a node.
+   *
+   * @param nodeId id of the node whose classifier should be replaced
+   * @param newClassifier the new classifier MetaPointer
+   */
+  public void sendChangeClassifierCommand(
+      @NotNull String nodeId, @NotNull MetaPointer newClassifier) {
+    Objects.requireNonNull(nodeId, "nodeId must not be null");
+    Objects.requireNonNull(newClassifier, "newClassifier must not be null");
+    channel.sendCommand(
+        participationId, commandId -> new ChangeClassifier(commandId, nodeId, newClassifier));
   }
 }

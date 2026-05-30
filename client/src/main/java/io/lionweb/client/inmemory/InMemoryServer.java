@@ -9,20 +9,30 @@ import io.lionweb.client.delta.DeltaQueryReceiver;
 import io.lionweb.client.delta.messages.DeltaCommand;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
+import io.lionweb.client.delta.messages.commands.ChangeClassifier;
 import io.lionweb.client.delta.messages.commands.children.AddChild;
 import io.lionweb.client.delta.messages.commands.children.DeleteChild;
 import io.lionweb.client.delta.messages.commands.partitions.AddPartition;
 import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
+import io.lionweb.client.delta.messages.commands.properties.AddProperty;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
+import io.lionweb.client.delta.messages.commands.properties.DeleteProperty;
 import io.lionweb.client.delta.messages.commands.references.AddReference;
+import io.lionweb.client.delta.messages.commands.references.ChangeReference;
+import io.lionweb.client.delta.messages.commands.references.DeleteReference;
+import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.events.children.ChildAdded;
 import io.lionweb.client.delta.messages.events.children.ChildDeleted;
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded;
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
+import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
+import io.lionweb.client.delta.messages.events.properties.PropertyDeleted;
 import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
+import io.lionweb.client.delta.messages.events.references.ReferenceChanged;
+import io.lionweb.client.delta.messages.events.references.ReferenceDeleted;
 import io.lionweb.client.delta.messages.queries.ErrorResponse;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsRequest;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
@@ -398,6 +408,16 @@ public class InMemoryServer {
           handleDeleteChild((DeleteChild) command, data, source);
         else if (command instanceof AddReference)
           handleAddReference((AddReference) command, data, source);
+        else if (command instanceof AddProperty)
+          handleAddProperty((AddProperty) command, data, source);
+        else if (command instanceof DeleteProperty)
+          handleDeleteProperty((DeleteProperty) command, data, source);
+        else if (command instanceof ChangeReference)
+          handleChangeReference((ChangeReference) command, data, source);
+        else if (command instanceof DeleteReference)
+          handleDeleteReference((DeleteReference) command, data, source);
+        else if (command instanceof ChangeClassifier)
+          handleChangeClassifier((ChangeClassifier) command, data, source);
         else if (command instanceof AddPartition)
           handleAddPartition((AddPartition) command, source);
         else if (command instanceof DeletePartition)
@@ -471,13 +491,86 @@ public class InMemoryServer {
                   .addSource(source));
     }
 
-    private void handleAddPartition(AddPartition cmd, CommandSource source) {
+    private void handleAddProperty(
+        @NotNull AddProperty cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.node);
+      node.setPropertyValue(cmd.property, cmd.newValue);
+      channel.sendEvent(
+          seqNum ->
+              new PropertyAdded(seqNum, cmd.node, cmd.property, cmd.newValue).addSource(source));
+    }
+
+    private void handleDeleteProperty(
+        @NotNull DeleteProperty cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.node);
+      String oldValue = node.getPropertyValue(cmd.property);
+      node.setPropertyValue(cmd.property, null);
+      channel.sendEvent(
+          seqNum ->
+              new PropertyDeleted(seqNum, cmd.node, cmd.property, oldValue).addSource(source));
+    }
+
+    private void handleChangeReference(
+        @NotNull ChangeReference cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.parent);
+      List<SerializedReferenceValue.Entry> entries =
+          new ArrayList<>(node.getReferenceValues(cmd.reference));
+      entries.set(
+          cmd.index, new SerializedReferenceValue.Entry(cmd.newReference, cmd.newResolveInfo));
+      node.setReferenceValue(cmd.reference, entries);
+      channel.sendEvent(
+          seqNum ->
+              new ReferenceChanged(
+                      seqNum,
+                      cmd.parent,
+                      cmd.reference,
+                      cmd.index,
+                      cmd.newReference,
+                      cmd.newResolveInfo,
+                      cmd.oldReference,
+                      cmd.oldResolveInfo)
+                  .addSource(source));
+    }
+
+    private void handleDeleteReference(
+        @NotNull DeleteReference cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.parent);
+      List<SerializedReferenceValue.Entry> entries =
+          new ArrayList<>(node.getReferenceValues(cmd.reference));
+      entries.remove(cmd.index);
+      node.setReferenceValue(cmd.reference, entries);
+      channel.sendEvent(
+          seqNum ->
+              new ReferenceDeleted(
+                      seqNum,
+                      cmd.parent,
+                      cmd.reference,
+                      cmd.index,
+                      cmd.deletedReference,
+                      cmd.deletedResolveInfo)
+                  .addSource(source));
+    }
+
+    private void handleChangeClassifier(
+        @NotNull ChangeClassifier cmd,
+        @NotNull RepositoryData data,
+        @NotNull CommandSource source) {
+      SerializedClassifierInstance node = requireNode(data, cmd.node);
+      io.lionweb.serialization.data.MetaPointer oldClassifier = node.getClassifier();
+      node.setClassifier(cmd.newClassifier);
+      channel.sendEvent(
+          seqNum ->
+              new ClassifierChanged(seqNum, cmd.node, cmd.newClassifier, oldClassifier)
+                  .addSource(source));
+    }
+
+    private void handleAddPartition(@NotNull AddPartition cmd, @NotNull CommandSource source) {
       createPartitionFromChunk(repositoryName, cmd.newPartition.getClassifierInstances());
       channel.sendEvent(seqNum -> new PartitionAdded(seqNum, cmd.newPartition).addSource(source));
     }
 
     private void handleDeletePartition(
-        DeletePartition cmd, RepositoryData data, CommandSource source) {
+        @NotNull DeletePartition cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
       List<String> descendants = new ArrayList<>();
       collectDescendants(data, cmd.deletedPartition, descendants);
       deletePartitions(repositoryName, Collections.singletonList(cmd.deletedPartition));
@@ -487,7 +580,8 @@ public class InMemoryServer {
     }
 
     /** Returns the node or throws {@link NodeNotFoundException} if it does not exist. */
-    private SerializedClassifierInstance requireNode(RepositoryData data, String nodeId) {
+    private SerializedClassifierInstance requireNode(
+        @NotNull RepositoryData data, @NotNull String nodeId) {
       List<SerializedClassifierInstance> retrieved = new ArrayList<>();
       try {
         data.retrieve(nodeId, 0, retrieved);
@@ -497,7 +591,8 @@ public class InMemoryServer {
       return retrieved.get(0);
     }
 
-    private void collectDescendants(RepositoryData data, String nodeId, List<String> descendants) {
+    private void collectDescendants(
+        @NotNull RepositoryData data, @NotNull String nodeId, @NotNull List<String> descendants) {
       SerializedClassifierInstance node = data.nodesByID.get(nodeId);
       if (node == null) return;
       node.getChildren()
