@@ -16,11 +16,6 @@ import org.junit.jupiter.api.Test;
 
 public class ConnectionManagementTest {
 
-  // ---------------------------------------------------------------------------
-  // Wave 1 — Session / Connection Management
-  // Spec scenarios: 1 (start participation), 5 (reconnect), 6 (end participation)
-  // ---------------------------------------------------------------------------
-
   /**
    * Scenario Start participation.
    *
