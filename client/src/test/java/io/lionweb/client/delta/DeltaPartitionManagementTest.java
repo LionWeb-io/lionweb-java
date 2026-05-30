@@ -2,9 +2,6 @@ package io.lionweb.client.delta;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.HistorySupport;
-import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
 import io.lionweb.client.delta.messages.queries.ListPartitionsResponse;
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsResponse;
@@ -12,7 +9,6 @@ import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPar
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Language;
 import io.lionweb.serialization.JsonSerialization;
-import io.lionweb.serialization.SerializationProvider;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -22,26 +18,7 @@ import org.junit.jupiter.api.Test;
  * contents, creating a partition via the delta command, and deleting a partition via the delta
  * command.
  */
-public class DeltaPartitionManagementTest {
-
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
-
-  private InMemoryServer serverWithRepo() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
-    return server;
-  }
-
-  private JsonSerialization serialization() {
-    return SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
-  }
-
-  // ---------------------------------------------------------------------------
-  // List partitions
-  // ---------------------------------------------------------------------------
+public class DeltaPartitionManagementTest extends AbstractDeltaProtocolTest {
 
   /**
    * A signed-on client can query the current list of partitions. The response contains all
@@ -49,7 +26,7 @@ public class DeltaPartitionManagementTest {
    */
   @Test
   public void listPartitions() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -72,10 +49,9 @@ public class DeltaPartitionManagementTest {
   /** When the repository is empty, the list-partitions response contains no nodes. */
   @Test
   public void listPartitionsWhenEmpty() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();
@@ -86,24 +62,19 @@ public class DeltaPartitionManagementTest {
     assertEquals(0, response.partitions.getClassifierInstances().size());
   }
 
-  // ---------------------------------------------------------------------------
-  // List-and-subscribe partitions
-  // ---------------------------------------------------------------------------
-
   /**
    * A signed-on client can list all existing partitions and register for future partition-lifecycle
    * events in a single request. The response carries the current partitions.
    */
   @Test
   public void listAndSubscribePartitions() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang = new Language("Language A", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang, ser);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();
@@ -115,24 +86,19 @@ public class DeltaPartitionManagementTest {
     assertEquals("lang-a", response.partitions.getClassifierInstances().get(0).getID());
   }
 
-  // ---------------------------------------------------------------------------
-  // Subscribe / unsubscribe to partition contents
-  // ---------------------------------------------------------------------------
-
   /**
    * A client can subscribe to a specific partition and receive its current contents as the
    * subscription response.
    */
   @Test
   public void subscribeToPartitionContents() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang = new Language("Language A", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang, ser);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();
@@ -155,14 +121,13 @@ public class DeltaPartitionManagementTest {
    */
   @Test
   public void unsubscribeFromPartitionContents() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang = new Language("Language A", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang, ser);
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();
@@ -174,21 +139,16 @@ public class DeltaPartitionManagementTest {
     assertNotNull(response);
   }
 
-  // ---------------------------------------------------------------------------
-  // Create partition via delta command
-  // ---------------------------------------------------------------------------
-
   /**
    * A client can add a new partition to the repository via the AddPartition command. After the
    * command is processed the server holds the new partition and its nodes.
    */
   @Test
   public void createPartitionViaDeltaCommand() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();
@@ -208,10 +168,9 @@ public class DeltaPartitionManagementTest {
    */
   @Test
   public void createPartitionNotifiesOtherClients() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client1 = new DeltaClient(channel, "my-client-1");
     client1.sendSignOnRequest();
@@ -231,25 +190,20 @@ public class DeltaPartitionManagementTest {
     // (no UnsupportedOperationException)
   }
 
-  // ---------------------------------------------------------------------------
-  // Delete partition via delta command
-  // ---------------------------------------------------------------------------
-
   /**
    * A client can delete an existing partition via the DeletePartition command. After the command is
    * processed the partition is no longer present in the repository.
    */
   @Test
   public void deletePartitionViaDeltaCommand() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang = new Language("Language A", "lang-a", "lang-a-key");
     server.createPartition("MyRepo", lang, ser);
     assertTrue(server.listPartitionIDs("MyRepo").contains("lang-a"));
 
-    DeltaChannel channel = new InMemoryDeltaChannel();
-    server.monitorDeltaChannel("MyRepo", channel);
+    DeltaChannel channel = prepareChannel(server);
 
     DeltaClient client = new DeltaClient(channel, "my-client");
     client.sendSignOnRequest();

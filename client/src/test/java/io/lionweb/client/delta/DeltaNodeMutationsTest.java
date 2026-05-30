@@ -2,47 +2,19 @@ package io.lionweb.client.delta;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import io.lionweb.LionWebVersion;
-import io.lionweb.client.api.HistorySupport;
-import io.lionweb.client.api.RepositoryConfiguration;
 import io.lionweb.client.inmemory.InMemoryServer;
 import io.lionweb.language.Concept;
 import io.lionweb.language.Language;
 import io.lionweb.language.Reference;
 import io.lionweb.model.ReferenceValue;
 import io.lionweb.serialization.JsonSerialization;
-import io.lionweb.serialization.SerializationProvider;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-/**
- * Tests for Wave 3 of the Delta protocol implementation: property, reference, and classifier
- * mutations beyond the already-covered ChangeProperty / AddChild / DeleteChild / AddReference.
- *
- * <p>Covers: AddProperty, DeleteProperty, ChangeReference, DeleteReference, ChangeClassifier.
- */
-public class DeltaNodeMutationsTest {
-
-  // ---------------------------------------------------------------------------
-  // Helpers
-  // ---------------------------------------------------------------------------
-
-  private InMemoryServer serverWithRepo() {
-    InMemoryServer server = new InMemoryServer();
-    server.createRepository(
-        new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED));
-    return server;
-  }
-
-  private JsonSerialization serialization() {
-    return SerializationProvider.getStandardJsonSerialization(LionWebVersion.v2024_1);
-  }
-
-  // ---------------------------------------------------------------------------
-  // Property mutations
-  // ---------------------------------------------------------------------------
+/** Tests for Delta protocol implementation: property, reference, and classifier mutations. */
+public class DeltaNodeMutationsTest extends AbstractDeltaProtocolTest {
 
   /**
    * When a property transitions from null to a value, the client sends AddProperty. Both clients
@@ -50,7 +22,7 @@ public class DeltaNodeMutationsTest {
    */
   @Test
   public void addProperty() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -86,7 +58,7 @@ public class DeltaNodeMutationsTest {
    */
   @Test
   public void deleteProperty() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -115,17 +87,13 @@ public class DeltaNodeMutationsTest {
     assertNull(lang2.getName());
   }
 
-  // ---------------------------------------------------------------------------
-  // Reference mutations
-  // ---------------------------------------------------------------------------
-
   /**
    * When a reference entry is replaced (same index, different target), the client sends
    * ChangeReference. Both clients see the updated reference after the event is processed.
    */
   @Test
   public void changeReference() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -182,7 +150,7 @@ public class DeltaNodeMutationsTest {
    */
   @Test
   public void deleteReference() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang1 = new Language("Language A", "lang-a", "lang-a-key");
@@ -223,10 +191,6 @@ public class DeltaNodeMutationsTest {
     assertNull(concept1OnClient2.getExtendedConcept());
   }
 
-  // ---------------------------------------------------------------------------
-  // Classifier mutation
-  // ---------------------------------------------------------------------------
-
   /**
    * A client can send ChangeClassifier directly. The server updates the stored classifier and
    * broadcasts a ClassifierChanged event. Other clients acknowledge the event without throwing.
@@ -234,7 +198,7 @@ public class DeltaNodeMutationsTest {
   @Test
   @Disabled
   public void changeClassifier() {
-    InMemoryServer server = serverWithRepo();
+    InMemoryServer server = createServerWithRepository();
     JsonSerialization ser = serialization();
 
     Language lang = new Language("Language A", "lang-a", "lang-a-key");
