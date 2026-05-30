@@ -11,7 +11,11 @@ public final class DeleteReference extends DeltaCommand {
   public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
   public final int index;
-  public final @Nullable String deletedTarget;
+
+  /** Deleted target node id. */
+  public final @Nullable String deletedReference;
+
+  /** Deleted resolve information. */
   public final @Nullable String deletedResolveInfo;
 
   public DeleteReference(
@@ -19,7 +23,7 @@ public final class DeleteReference extends DeltaCommand {
       @NotNull String parent,
       @NotNull MetaPointer reference,
       int index,
-      @Nullable String deletedTarget,
+      @Nullable String deletedReference,
       @Nullable String deletedResolveInfo) {
     super(commandId);
     Objects.requireNonNull(parent, "parent must not be null");
@@ -30,7 +34,7 @@ public final class DeleteReference extends DeltaCommand {
     this.parent = parent;
     this.reference = reference;
     this.index = index;
-    this.deletedTarget = deletedTarget;
+    this.deletedReference = deletedReference;
     this.deletedResolveInfo = deletedResolveInfo;
   }
 
@@ -44,8 +48,8 @@ public final class DeleteReference extends DeltaCommand {
         + reference
         + ", index="
         + index
-        + ", deletedTarget='"
-        + deletedTarget
+        + ", deletedReference='"
+        + deletedReference
         + '\''
         + ", deletedResolveInfo='"
         + deletedResolveInfo

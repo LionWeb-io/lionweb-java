@@ -1,11 +1,15 @@
 package io.lionweb.serialization.data;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.*;
 import javax.annotation.Nonnull;
 
 /** This represents the serialization of the values of a containment link in a Node. */
 public class SerializedContainmentValue {
+  @SerializedName("containment")
   private final MetaPointer metaPointer;
+
+  @SerializedName("children")
   private final List<String> childrenIds;
 
   /**

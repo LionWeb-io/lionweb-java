@@ -14,13 +14,17 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
   public final int newIndex;
   public final @NotNull String replacedAnnotation;
   public final @NotNull String movedAnnotation;
+  public final @NotNull String oldParent;
+  public final int oldIndex;
 
   public MoveAndReplaceAnnotationFromOtherParent(
       @NotNull String commandId,
       @NotNull String newParent,
       int newIndex,
       @NotNull String replacedAnnotation,
-      @NotNull String movedAnnotation) {
+      @NotNull String movedAnnotation,
+      @NotNull String oldParent,
+      int oldIndex) {
     super(commandId);
     Objects.requireNonNull(newParent, "newParent must not be null");
     Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
@@ -28,10 +32,16 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
     if (newIndex < 0) {
       throw new IllegalArgumentException("newIndex must be non-negative");
     }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex must be non-negative");
+    }
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
     this.newParent = newParent;
     this.newIndex = newIndex;
     this.replacedAnnotation = replacedAnnotation;
     this.movedAnnotation = movedAnnotation;
+    this.oldParent = oldParent;
+    this.oldIndex = oldIndex;
   }
 
   @Override
@@ -48,11 +58,18 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
         + ", movedAnnotation='"
         + movedAnnotation
         + '\''
+        + ", oldParent='"
+        + oldParent
+        + '\''
+        + ", oldIndex="
+        + oldIndex
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", split="
+        + split
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

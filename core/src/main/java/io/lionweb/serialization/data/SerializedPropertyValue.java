@@ -1,5 +1,6 @@
 package io.lionweb.serialization.data;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,7 +33,9 @@ public class SerializedPropertyValue {
         value, v -> new SerializedPropertyValue(metaPointer, v));
   }
 
+  @SerializedName("property")
   private final MetaPointer metaPointer;
+
   private final String value;
 
   private SerializedPropertyValue(MetaPointer metaPointer, String value) {

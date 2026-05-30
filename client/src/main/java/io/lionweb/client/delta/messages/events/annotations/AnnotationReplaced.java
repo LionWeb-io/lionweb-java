@@ -9,10 +9,10 @@ import java.util.Arrays;
  * index has been replaced with new node newAnnotation.
  */
 public class AnnotationReplaced extends BaseDeltaEvent {
+  public final String parent;
   public final SerializationChunk newAnnotation;
   public final String replacedAnnotation;
   public final String[] replacedDescendants;
-  public final String parent;
   public final int index;
 
   public AnnotationReplaced(

@@ -14,6 +14,9 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
   public final @NotNull String newParent;
   public final @NotNull MetaPointer newContainment;
   public final int newIndex;
+  public final @NotNull String oldParent;
+  public final @NotNull MetaPointer oldContainment;
+  public final int oldIndex;
   public final @NotNull String replacedChild;
   public final @NotNull String movedChild;
 
@@ -22,13 +25,21 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
       @NotNull String newParent,
       @NotNull MetaPointer newContainment,
       int newIndex,
+      @NotNull String oldParent,
+      @NotNull MetaPointer oldContainment,
+      int oldIndex,
       @NotNull String replacedChild,
       @NotNull String movedChild) {
     super(commandId);
     Objects.requireNonNull(newParent, "newParent must not be null");
     Objects.requireNonNull(newContainment, "newContainment must not be null");
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
+    Objects.requireNonNull(oldContainment, "oldContainment must not be null");
     if (newIndex < 0) {
       throw new IllegalArgumentException("newIndex must be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex must be non-negative");
     }
     Objects.requireNonNull(replacedChild, "replacedChild must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
@@ -37,6 +48,9 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
     this.newIndex = newIndex;
     this.replacedChild = replacedChild;
     this.movedChild = movedChild;
+    this.oldParent = oldParent;
+    this.oldContainment = oldContainment;
+    this.oldIndex = oldIndex;
   }
 
   @Override
@@ -49,6 +63,13 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
         + newContainment
         + ", newIndex="
         + newIndex
+        + ", oldParent='"
+        + oldParent
+        + '\''
+        + ", oldContainment="
+        + oldContainment
+        + ", oldIndex="
+        + oldIndex
         + ", replacedChild='"
         + replacedChild
         + '\''
@@ -58,8 +79,10 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", split="
+        + split
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

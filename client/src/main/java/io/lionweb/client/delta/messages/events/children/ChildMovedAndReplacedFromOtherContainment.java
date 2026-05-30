@@ -1,23 +1,39 @@
 package io.lionweb.client.delta.messages.events.children;
 
-import io.lionweb.client.delta.messages.DeltaCommand;
+import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.List;
-import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedFromOtherContainment extends DeltaCommand {
+public final class ChildMovedAndReplacedFromOtherContainment extends BaseDeltaEvent {
+  /** The new parent node after the move. */
   public final String newParent;
+
+  /** The new containment link after the move. */
   public final MetaPointer newContainment;
+
+  /** The new index in the containment after the move. */
   public final int newIndex;
+
+  /** The ID of the child node that was moved. */
   public final String movedChild;
+
+  /** The old parent node before the move. */
   public final String oldParent;
+
+  /** The old containment link before the move. */
   public final MetaPointer oldContainment;
+
+  /** The old index in the containment before the move. */
   public final int oldIndex;
+
+  /** The ID of the child that was replaced. */
   public final String replacedChild;
+
+  /** The IDs of all descendants of the replaced child. */
   public final List<String> replacedDescendants;
 
   public ChildMovedAndReplacedFromOtherContainment(
-      @NotNull String commandId,
+      int sequenceNumber,
       String newParent,
       MetaPointer newContainment,
       int newIndex,
@@ -27,7 +43,7 @@ public final class ChildMovedAndReplacedFromOtherContainment extends DeltaComman
       int oldIndex,
       String replacedChild,
       List<String> replacedDescendants) {
-    super(commandId);
+    super(sequenceNumber);
     this.newParent = newParent;
     this.newContainment = newContainment;
     this.newIndex = newIndex;

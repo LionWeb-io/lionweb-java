@@ -1,5 +1,6 @@
 package io.lionweb.serialization.data;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,6 +28,7 @@ public class SerializedClassifierInstance {
   /** Given most nodes have no annotations, we avoid the instantiation, unless it is necessary. */
   private @Nullable List<String> annotations;
 
+  @SerializedName("parent")
   private String parentNodeID;
 
   //

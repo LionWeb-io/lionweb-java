@@ -1,5 +1,6 @@
 package io.lionweb.serialization.data;
 
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -62,7 +63,10 @@ public class SerializedReferenceValue {
     }
   }
 
+  @SerializedName("reference")
   private final MetaPointer metaPointer;
+
+  @SerializedName("targets")
   private final List<Entry> value;
 
   public SerializedReferenceValue(MetaPointer metaPointer) {

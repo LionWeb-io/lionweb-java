@@ -12,18 +12,11 @@ public class SubscribeToChangingPartitionsRequest extends DeltaQuery {
   /** Whether this client wants to receive events on deleted partitions (true), or not (false). */
   private boolean deletion;
 
-  /**
-   * Whether this client wants to automatically subscribe to newly created partitions (true), or not
-   * (false).
-   */
-  private boolean partitions;
-
   public SubscribeToChangingPartitionsRequest(
-      @NotNull String queryId, boolean creation, boolean deletion, boolean partitions) {
+      @NotNull String queryId, boolean creation, boolean deletion) {
     super(queryId);
     this.creation = creation;
     this.deletion = deletion;
-    this.partitions = partitions;
   }
 
   @Override
@@ -33,8 +26,6 @@ public class SubscribeToChangingPartitionsRequest extends DeltaQuery {
         + creation
         + ", deletion="
         + deletion
-        + ", partitions="
-        + partitions
         + '}';
   }
 }

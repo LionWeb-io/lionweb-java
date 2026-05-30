@@ -10,22 +10,24 @@ import org.jetbrains.annotations.NotNull;
  * nodes.
  */
 public final class DeleteAnnotation extends DeltaCommand {
-  public @NotNull final String node;
+  /** The parent node whose annotation is being deleted. */
+  public @NotNull final String parent;
+
   public final int index;
   public @NotNull final String deletedAnnotation;
 
   public DeleteAnnotation(
       @NotNull String commandId,
-      @NotNull String node,
+      @NotNull String parent,
       int index,
       @NotNull String deletedAnnotation) {
     super(commandId);
-    Objects.requireNonNull(node, "node must not be null");
+    Objects.requireNonNull(parent, "parent must not be null");
     Objects.requireNonNull(deletedAnnotation, "deletedAnnotation must not be null");
     if (index < 0) {
       throw new IllegalArgumentException("index must be non-negative");
     }
-    this.node = node;
+    this.parent = parent;
     this.index = index;
     this.deletedAnnotation = deletedAnnotation;
   }
@@ -33,8 +35,8 @@ public final class DeleteAnnotation extends DeltaCommand {
   @Override
   public String toString() {
     return "DeleteAnnotation{"
-        + "node='"
-        + node
+        + "parent='"
+        + parent
         + '\''
         + ", index="
         + index
@@ -44,8 +46,8 @@ public final class DeleteAnnotation extends DeltaCommand {
         + ", commandId='"
         + commandId
         + '\''
-        + ", protocolMessages="
-        + protocolMessages
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

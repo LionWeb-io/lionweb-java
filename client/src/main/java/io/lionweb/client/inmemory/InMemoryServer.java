@@ -382,9 +382,10 @@ public class InMemoryServer {
                 new ChildDeleted(
                         sequenceNumber,
                         deleteChild.parent,
-                        deleteChild.containment,
+                        deleteChild.deletedChild,
+                        java.util.Collections.emptyList(),
                         deleteChild.index,
-                        deleteChild.deletedChild)
+                        deleteChild.containment)
                     .addSource(source));
         return;
       } else if (command instanceof AddReference) {
@@ -407,7 +408,7 @@ public class InMemoryServer {
             addReference.reference,
             addReference.index,
             new SerializedReferenceValue.Entry(
-                addReference.newTarget, addReference.newResolveInfo));
+                addReference.newReference, addReference.newResolveInfo));
         channel.sendEvent(
             sequenceNumber ->
                 new ReferenceAdded(
@@ -415,7 +416,7 @@ public class InMemoryServer {
                         addReference.parent,
                         addReference.reference,
                         addReference.index,
-                        addReference.newTarget,
+                        addReference.newReference,
                         addReference.newResolveInfo)
                     .addSource(source));
         return;

@@ -172,7 +172,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
               reference,
               referenceAdded.index,
               new ReferenceValue(
-                  new ProxyNode(referenceAdded.newTarget), referenceAdded.newResolveInfo));
+                  new ProxyNode(referenceAdded.newReference), referenceAdded.newResolveInfo));
         }
       }
     } else {

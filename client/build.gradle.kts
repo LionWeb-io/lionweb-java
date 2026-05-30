@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
+    id("integration-test-conventions")
 }
 
 repositories {
@@ -145,6 +146,16 @@ tasks.register<Test>("performanceTest") {
     }
 }
 
+tasks.named<Test>("integrationTest") {
+    dependsOn(project(":core").tasks.named("downloadIntegrationTestResources"))
+    description = "Runs delta protocol integration tests against the lionweb-integration-testing examples"
+    val deltaDir =
+        File(
+            project(":core").layout.buildDirectory.get().asFile,
+            "integrationTestResources/delta")
+    environment("deltaIntegrationTestingDir", deltaDir.absolutePath)
+}
+
 dependencies {
     implementation(project(":core"))
     implementation(libs.okhttp)
@@ -152,6 +163,9 @@ dependencies {
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
     testRuntimeOnly(libs.junit.platform.launcher)
+    add("integrationTestImplementation", libs.junit.api)
+    add("integrationTestRuntimeOnly", libs.junit.engine)
+    add("integrationTestRuntimeOnly", libs.junit.platform.launcher)
     add("performanceTestImplementation", libs.jmh.core)
     add("performanceTestAnnotationProcessor", libs.jmh.annprocess)
 

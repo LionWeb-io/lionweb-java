@@ -12,9 +12,15 @@ public class ReferenceChanged extends BaseDeltaEvent {
   public final String parent;
   public final MetaPointer reference;
   public final int index;
-  public final @Nullable String newTarget;
+
+  /** New target node id. */
+  public final @Nullable String newReference;
+
   public final @Nullable String newResolveInfo;
-  public final @Nullable String oldTarget;
+
+  /** Old target node id. */
+  public final @Nullable String oldReference;
+
   public final @Nullable String oldResolveInfo;
 
   public ReferenceChanged(
@@ -22,17 +28,17 @@ public class ReferenceChanged extends BaseDeltaEvent {
       String parent,
       MetaPointer reference,
       int index,
-      @Nullable String newTarget,
+      @Nullable String newReference,
       @Nullable String newResolveInfo,
-      @Nullable String oldTarget,
+      @Nullable String oldReference,
       @Nullable String oldResolveInfo) {
     super(sequenceNumber);
     this.parent = parent;
     this.reference = reference;
     this.index = index;
-    this.newTarget = newTarget;
+    this.newReference = newReference;
     this.newResolveInfo = newResolveInfo;
-    this.oldTarget = oldTarget;
+    this.oldReference = oldReference;
     this.oldResolveInfo = oldResolveInfo;
   }
 
@@ -46,14 +52,14 @@ public class ReferenceChanged extends BaseDeltaEvent {
         + reference
         + ", index="
         + index
-        + ", newTarget='"
-        + newTarget
+        + ", newReference='"
+        + newReference
         + '\''
         + ", newResolveInfo='"
         + newResolveInfo
         + '\''
-        + ", oldTarget='"
-        + oldTarget
+        + ", oldReference='"
+        + oldReference
         + '\''
         + ", oldResolveInfo='"
         + oldResolveInfo

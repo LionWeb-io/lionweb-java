@@ -11,8 +11,8 @@ import org.jetbrains.annotations.NotNull;
  * (including annotation instances). Does NOT change references to any of the deleted nodes
  */
 public final class ReplaceChild extends DeltaCommand {
-  public final @NotNull SerializationChunk newChild;
   public final @NotNull String parent;
+  public final @NotNull SerializationChunk newChild;
   public final @NotNull MetaPointer containment;
   public final int index;
   public final @NotNull String replacedChild;

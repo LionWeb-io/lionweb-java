@@ -9,5 +9,8 @@ import java.util.List;
  * messages.
  */
 public abstract class DeltaEvent {
-  public final List<ProtocolMessage> protocolMessages = new LinkedList<>();
+  /**
+   * Represents additional information associated with a protocol message in the Delta framework.
+   */
+  public final List<AdditionalInfo> additionalInfos = new LinkedList<>();
 }

@@ -9,7 +9,10 @@ public class ReferenceAdded extends BaseDeltaEvent {
   public final String parent;
   public final MetaPointer reference;
   public final int index;
-  public final @Nullable String newTarget;
+
+  /** Target node id. */
+  public final @Nullable String newReference;
+
   public final @Nullable String newResolveInfo;
 
   public ReferenceAdded(
@@ -17,13 +20,13 @@ public class ReferenceAdded extends BaseDeltaEvent {
       String parent,
       MetaPointer reference,
       int index,
-      @Nullable String newTarget,
+      @Nullable String newReference,
       @Nullable String newResolveInfo) {
     super(sequenceNumber);
     this.parent = parent;
     this.reference = reference;
     this.index = index;
-    this.newTarget = newTarget;
+    this.newReference = newReference;
     this.newResolveInfo = newResolveInfo;
   }
 
@@ -37,8 +40,8 @@ public class ReferenceAdded extends BaseDeltaEvent {
         + reference
         + ", index="
         + index
-        + ", newTarget='"
-        + newTarget
+        + ", newReference='"
+        + newReference
         + '\''
         + ", newResolveInfo='"
         + newResolveInfo

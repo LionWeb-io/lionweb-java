@@ -11,23 +11,37 @@ public final class MoveChildFromOtherContainment extends DeltaCommand {
   public final @NotNull MetaPointer newContainment;
   public final int newIndex;
   public final @NotNull String movedChild;
+  public final @NotNull String oldParent;
+  public final @NotNull MetaPointer oldContainment;
+  public final int oldIndex;
 
   public MoveChildFromOtherContainment(
       @NotNull String commandId,
       @NotNull String newParent,
       @NotNull MetaPointer newContainment,
       int newIndex,
+      @NotNull String oldParent,
+      @NotNull MetaPointer oldContainment,
+      int oldIndex,
       @NotNull String movedChild) {
     super(commandId);
     Objects.requireNonNull(newParent, "newParent must not be null");
     Objects.requireNonNull(newContainment, "newContainment must not be null");
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
+    Objects.requireNonNull(oldContainment, "oldContainment must not be null");
     if (newIndex < 0) {
       throw new IllegalArgumentException("newIndex must be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex must be non-negative");
     }
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     this.newParent = newParent;
     this.newContainment = newContainment;
     this.newIndex = newIndex;
+    this.oldParent = oldParent;
+    this.oldContainment = oldContainment;
+    this.oldIndex = oldIndex;
     this.movedChild = movedChild;
   }
 
@@ -44,6 +58,20 @@ public final class MoveChildFromOtherContainment extends DeltaCommand {
         + ", movedChild='"
         + movedChild
         + '\''
+        + ", oldParent='"
+        + oldParent
+        + '\''
+        + ", oldContainment="
+        + oldContainment
+        + ", oldIndex="
+        + oldIndex
+        + ", commandId='"
+        + commandId
+        + '\''
+        + ", split="
+        + split
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

@@ -3,44 +3,67 @@ package io.lionweb.client.delta.messages.events.children;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
+import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 public final class ChildReplaced extends BaseDeltaEvent {
-  public final SerializationChunk newChild;
-  public final String parent;
-  public final MetaPointer containment;
+  /** The parent node containing the replaced child. */
+  public final @NotNull String parent;
+
+  /** The new child node that replaces the old one. */
+  public final @NotNull SerializationChunk newChild;
+
+  /** The ID of the child node that was replaced. */
+  public final @NotNull String replacedChild;
+
+  /** The IDs of the descendants of the replaced child that were also removed. */
+  public final @NotNull List<String> replacedDescendants;
+
+  public final @NotNull MetaPointer containment;
   public final int index;
-  public final String replacedChild;
 
   public ChildReplaced(
       int sequenceNumber,
-      SerializationChunk newChild,
-      String parent,
-      MetaPointer containment,
-      int index,
-      String replacedChild) {
+      @NotNull String parent,
+      @NotNull SerializationChunk newChild,
+      @NotNull String replacedChild,
+      @NotNull List<String> replacedDescendants,
+      @NotNull MetaPointer containment,
+      int index) {
     super(sequenceNumber);
-    this.newChild = newChild;
     this.parent = parent;
+    this.newChild = newChild;
+    this.replacedChild = replacedChild;
+    this.replacedDescendants = replacedDescendants;
     this.containment = containment;
     this.index = index;
-    this.replacedChild = replacedChild;
   }
 
   @Override
   public String toString() {
     return "ChildReplaced{"
-        + "newChild="
-        + newChild
-        + ", parent='"
+        + "parent='"
         + parent
         + '\''
+        + ", newChild="
+        + newChild
+        + ", replacedChild='"
+        + replacedChild
+        + '\''
+        + ", replacedDescendants="
+        + replacedDescendants
         + ", containment="
         + containment
         + ", index="
         + index
-        + ", replacedChild='"
-        + replacedChild
-        + '\''
+        + ", sequenceNumber="
+        + sequenceNumber
+        + ", originCommands="
+        + originCommands
+        + ", split="
+        + split
+        + ", additionalInfos="
+        + additionalInfos
         + '}';
   }
 }

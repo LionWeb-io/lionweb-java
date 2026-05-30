@@ -12,7 +12,10 @@ public class ReferenceDeleted extends BaseDeltaEvent {
   public final String parent;
   public final MetaPointer reference;
   public final int index;
-  public final @Nullable String deletedTarget;
+
+  /** Deleted target node id. */
+  public final @Nullable String deletedReference;
+
   public final @Nullable String deletedResolveInfo;
 
   public ReferenceDeleted(
@@ -20,13 +23,13 @@ public class ReferenceDeleted extends BaseDeltaEvent {
       String parent,
       MetaPointer reference,
       int index,
-      @Nullable String deletedTarget,
+      @Nullable String deletedReference,
       @Nullable String deletedResolveInfo) {
     super(sequenceNumber);
     this.parent = parent;
     this.reference = reference;
     this.index = index;
-    this.deletedTarget = deletedTarget;
+    this.deletedReference = deletedReference;
     this.deletedResolveInfo = deletedResolveInfo;
   }
 
@@ -40,8 +43,8 @@ public class ReferenceDeleted extends BaseDeltaEvent {
         + reference
         + ", index="
         + index
-        + ", deletedTarget='"
-        + deletedTarget
+        + ", deletedReference='"
+        + deletedReference
         + '\''
         + ", deletedResolveInfo='"
         + deletedResolveInfo
