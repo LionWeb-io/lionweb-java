@@ -18,10 +18,6 @@ import javax.annotation.Nonnull;
  * <p>This class provides functionalities for detecting issues such as circular references, invalid
  * language dependencies, inconsistent versions, non-unique names or keys, and improper ancestor or
  * interface hierarchy.
- *
- * <p>LanguageValidator extends {@code io.lionweb.utils.Validator} and implements the {@link
- * #validate(Language)} method to provide detailed validation results, as well as a convenience
- * method to check the validity of a language through {@link #isLanguageValid(Language)}.
  */
 public class LanguageValidator extends Validator<Language> {
 

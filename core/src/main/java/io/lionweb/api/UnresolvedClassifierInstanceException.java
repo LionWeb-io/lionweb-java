@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 public class UnresolvedClassifierInstanceException extends RuntimeException {
   private @Nonnull String instanceID;
 
-  /** Retrieves the instance ID of the classifier instance that could not be */
+  /** Retrieves the instance ID of the classifier instance that could not be resolved. */
   public @Nonnull String getInstanceID() {
     return instanceID;
   }

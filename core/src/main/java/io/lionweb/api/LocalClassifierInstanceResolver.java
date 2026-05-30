@@ -25,10 +25,10 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
   }
 
   /**
-   * Adds a classifier instance to the internal collection using its unique identifier.
+   * Adds a classifier instance to the list of instances considered for resolution.
    *
    * @param instance the classifier instance to be added. Must not be null. The instance's ID,
-   *     obtained via {@code getID()}, will act as the key in the internal collection.
+   *     obtained via {@code getID()}, will be used to look for the instance during resolution.
    */
   public void add(@Nonnull ClassifierInstance<?> instance) {
     instances.put(instance.getID(), instance);
@@ -44,7 +44,8 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
   }
 
   /**
-   * Adds all the provided classifier instances to the internal collection.
+   * Adds all the provided classifier instances to the list of ClassifierInstances considered for
+   * resolution.
    *
    * @param instances the list of classifier instances to be added. Each instance must not be null,
    *     and the list itself must not be null.
@@ -59,8 +60,8 @@ public class LocalClassifierInstanceResolver implements ClassifierInstanceResolv
   }
 
   /**
-   * Recursively adds a root node and all its descendants to the internal map of classifier
-   * instances.
+   * Recursively adds a root node and all its descendants to the classifiers to be considered for
+   * resolution.
    *
    * @param root the root node to be added, along with its descendants. Must not be null.
    */
