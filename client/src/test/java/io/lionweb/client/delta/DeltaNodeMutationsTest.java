@@ -14,6 +14,7 @@ import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.SerializationProvider;
 import java.util.List;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -230,7 +231,8 @@ public class DeltaNodeMutationsTest {
    * A client can send ChangeClassifier directly. The server updates the stored classifier and
    * broadcasts a ClassifierChanged event. Other clients acknowledge the event without throwing.
    */
-  // @Test
+  @Test
+  @Disabled
   public void changeClassifier() {
     InMemoryServer server = serverWithRepo();
     JsonSerialization ser = serialization();
