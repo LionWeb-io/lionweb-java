@@ -106,112 +106,91 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
 
   @Override
   public void receiveEvent(DeltaEvent event) {
-    if (event instanceof BaseDeltaEvent) {
-      BaseDeltaEvent<?> baseDeltaEvent = (BaseDeltaEvent<?>) event;
-
-      if (baseDeltaEvent.originCommands.stream()
-          .anyMatch(
-              (CommandSource originCommand) ->
-                  originCommand.participationId.equals(this.participationId))) {
-        return;
-      }
-    }
+    if (isFromOwnParticipation(event)) return;
     observer.paused = true;
-    if (event instanceof PropertyChanged) {
-      PropertyChanged propertyChanged = (PropertyChanged) event;
-      Set<WeakReference<ClassifierInstance<?>>> matchingNodes =
-          this.nodes.get(propertyChanged.node);
-      if (matchingNodes != null) {
-        for (WeakReference<ClassifierInstance<?>> classifierInstanceRef : matchingNodes) {
-          ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-          if (classifierInstance != null) {
-            ClassifierInstanceUtils.setPropertyValueByMetaPointer(
-                classifierInstance, propertyChanged.property, propertyChanged.newValue);
-          }
-        }
-      }
-    } else if (event instanceof ChildAdded) {
-      ChildAdded childAdded = (ChildAdded) event;
-      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-          nodes.get(childAdded.parent)) {
-        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-        if (classifierInstance != null) {
-          Node child =
-              (Node) serialization.deserializeSerializationChunk(childAdded.newChild).get(0);
-          monitorNode(child);
-          Containment containment =
-              classifierInstance
-                  .getClassifier()
-                  .getContainmentByMetaPointer(childAdded.containment);
-          if (containment == null) {
-            throw new IllegalStateException(
-                "Containment not found for "
-                    + classifierInstance
-                    + " using metapointer "
-                    + childAdded.containment);
-          }
-          classifierInstance.addChild(containment, child, childAdded.index);
-        }
-      }
-    } else if (event instanceof ChildDeleted) {
-      ChildDeleted childDeleted = (ChildDeleted) event;
-      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-          nodes.get(childDeleted.parent)) {
-        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-        if (classifierInstance != null) {
-          Containment containment =
-              classifierInstance
-                  .getClassifier()
-                  .getContainmentByMetaPointer(childDeleted.containment);
-          if (containment == null) {
-            throw new IllegalStateException(
-                "Containment not found for "
-                    + classifierInstance
-                    + " using metapointer "
-                    + childDeleted.containment);
-          }
-          classifierInstance.removeChild(containment, childDeleted.index);
-        }
-      }
-    } else if (event instanceof ErrorEvent) {
-      ErrorEvent errorEvent = (ErrorEvent) event;
+    try {
+      if (event instanceof PropertyChanged) onPropertyChanged((PropertyChanged) event);
+      else if (event instanceof ChildAdded) onChildAdded((ChildAdded) event);
+      else if (event instanceof ChildDeleted) onChildDeleted((ChildDeleted) event);
+      else if (event instanceof ReferenceAdded) onReferenceAdded((ReferenceAdded) event);
+      else if (event instanceof ErrorEvent) onErrorEvent((ErrorEvent) event);
+      else if (event instanceof PartitionAdded || event instanceof PartitionDeleted) {
+        /* no-op */
+      } else
+        throw new UnsupportedOperationException(
+            "Unsupported event type: " + event.getClass().getName());
+    } finally {
       observer.paused = false;
-      throw new ErrorEventReceivedException(errorEvent.errorCode, errorEvent.message);
-    } else if (event instanceof ReferenceAdded) {
-      ReferenceAdded referenceAdded = (ReferenceAdded) event;
-      for (WeakReference<ClassifierInstance<?>> classifierInstanceRef :
-          nodes.get(referenceAdded.parent)) {
-        ClassifierInstance<?> classifierInstance = classifierInstanceRef.get();
-        if (classifierInstance != null) {
-          Reference reference =
-              classifierInstance
-                  .getClassifier()
-                  .getReferenceByMetaPointer(referenceAdded.reference);
-          if (reference == null) {
-            throw new IllegalStateException(
-                "Reference not found for "
-                    + classifierInstance
-                    + " using metapointer "
-                    + referenceAdded.reference);
-          }
-          classifierInstance.addReferenceValue(
-              reference,
-              referenceAdded.index,
-              new ReferenceValue(
-                  new ProxyNode(referenceAdded.newReference), referenceAdded.newResolveInfo));
-        }
-      }
-    } else if (event instanceof PartitionAdded) {
-      // Acknowledged — the client learns a new partition exists.
-      // Monitoring it requires an explicit SubscribeToPartitionContents call.
-    } else if (event instanceof PartitionDeleted) {
-      // Acknowledged — the client learns the partition was removed.
-    } else {
-      observer.paused = false;
-      throw new UnsupportedOperationException(
-          "Unsupported event type: " + event.getClass().getName());
     }
-    observer.paused = false;
+  }
+
+  private boolean isFromOwnParticipation(DeltaEvent event) {
+    if (!(event instanceof BaseDeltaEvent)) return false;
+    return ((BaseDeltaEvent<?>) event)
+        .originCommands.stream().anyMatch(src -> src.participationId.equals(this.participationId));
+  }
+
+  private void onPropertyChanged(PropertyChanged event) {
+    Set<WeakReference<ClassifierInstance<?>>> matchingNodes = this.nodes.get(event.node);
+    if (matchingNodes == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : matchingNodes) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance != null) {
+        ClassifierInstanceUtils.setPropertyValueByMetaPointer(
+            instance, event.property, event.newValue);
+      }
+    }
+  }
+
+  private void onChildAdded(ChildAdded event) {
+    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance == null) continue;
+      Node child = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+      monitorNode(child);
+      Containment containment =
+          instance.getClassifier().getContainmentByMetaPointer(event.containment);
+      if (containment == null) {
+        throw new IllegalStateException(
+            "Containment not found for " + instance + " using metapointer " + event.containment);
+      }
+      instance.addChild(containment, child, event.index);
+    }
+  }
+
+  private void onChildDeleted(ChildDeleted event) {
+    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance == null) continue;
+      Containment containment =
+          instance.getClassifier().getContainmentByMetaPointer(event.containment);
+      if (containment == null) {
+        throw new IllegalStateException(
+            "Containment not found for " + instance + " using metapointer " + event.containment);
+      }
+      instance.removeChild(containment, event.index);
+    }
+  }
+
+  private void onReferenceAdded(ReferenceAdded event) {
+    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+      ClassifierInstance<?> instance = ref.get();
+      if (instance == null) continue;
+      Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+      if (reference == null) {
+        throw new IllegalStateException(
+            "Reference not found for " + instance + " using metapointer " + event.reference);
+      }
+      instance.addReferenceValue(
+          reference,
+          event.index,
+          new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
+    }
+  }
+
+  private void onErrorEvent(ErrorEvent event) {
+    // observer.paused is reset by the finally block in receiveEvent
+    throw new ErrorEventReceivedException(event.errorCode, event.message);
   }
 
   private class MonitoringObserver implements PartitionObserver {
