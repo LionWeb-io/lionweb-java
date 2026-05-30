@@ -16,7 +16,7 @@ import javax.annotation.Nonnull;
 public class PartitionChunkValidator extends ChunkValidator {
 
   @Override
-  public ValidationResult validate(@Nonnull SerializationChunk chunk) {
+  public @Nonnull ValidationResult validate(@Nonnull SerializationChunk chunk) {
     Objects.requireNonNull(chunk, "chunk should not be null");
     ValidationResult validationResult = super.validate(chunk);
 

@@ -10,7 +10,7 @@ import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.Node;
 import io.lionweb.model.impl.ProxyNode;
-import io.lionweb.utils.CommonChecks;
+import io.lionweb.utils.IdUtils;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -88,7 +88,7 @@ public class ClientForBulkAPIs extends BulkAPIsLionWebClientImplHelper implement
       return Collections.emptyList();
     }
     List<String> invalidIDs =
-        nodeIds.stream().filter(id -> !CommonChecks.isValidID(id)).collect(Collectors.toList());
+        nodeIds.stream().filter(id -> !IdUtils.isValidID(id)).collect(Collectors.toList());
     if (!invalidIDs.isEmpty()) {
       throw new IllegalArgumentException("IDs must all be valid. Invalid IDs found: " + invalidIDs);
     }

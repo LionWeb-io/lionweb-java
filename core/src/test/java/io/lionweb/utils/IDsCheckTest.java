@@ -9,67 +9,67 @@ public class IDsCheckTest {
 
   @Test
   public void positiveCase() {
-    assertTrue(CommonChecks.isValidID("foo"));
+    assertTrue(IdUtils.isValidID("foo"));
   }
 
   @Test
   public void emptyIDIsInvalid() {
-    assertFalse(CommonChecks.isValidID(""));
+    assertFalse(IdUtils.isValidID(""));
   }
 
   @Test
   public void idsWithUmlautsAreInvalid() {
-    assertFalse(CommonChecks.isValidID("foö"));
+    assertFalse(IdUtils.isValidID("foö"));
   }
 
   @Test
   public void idsWithAccentsAreInvalid() {
-    assertFalse(CommonChecks.isValidID("foò"));
-    assertFalse(CommonChecks.isValidID("foó"));
+    assertFalse(IdUtils.isValidID("foò"));
+    assertFalse(IdUtils.isValidID("foó"));
   }
 
   @Test
   public void nullIDIsInvalid() {
-    assertFalse(CommonChecks.isValidID(null));
+    assertFalse(IdUtils.isValidID(null));
   }
 
   @Test
   public void singleLetterIsValid() {
-    assertTrue(CommonChecks.isValidID("a"));
-    assertTrue(CommonChecks.isValidID("Z"));
+    assertTrue(IdUtils.isValidID("a"));
+    assertTrue(IdUtils.isValidID("Z"));
   }
 
   @Test
   public void singleDigitIsValid() {
-    assertTrue(CommonChecks.isValidID("0"));
-    assertTrue(CommonChecks.isValidID("9"));
+    assertTrue(IdUtils.isValidID("0"));
+    assertTrue(IdUtils.isValidID("9"));
   }
 
   @Test
   public void dashIsValidInID() {
-    assertTrue(CommonChecks.isValidID("foo-bar"));
-    assertTrue(CommonChecks.isValidID("-"));
+    assertTrue(IdUtils.isValidID("foo-bar"));
+    assertTrue(IdUtils.isValidID("-"));
   }
 
   @Test
   public void underscoreIsValidInID() {
-    assertTrue(CommonChecks.isValidID("foo_bar"));
-    assertTrue(CommonChecks.isValidID("_"));
+    assertTrue(IdUtils.isValidID("foo_bar"));
+    assertTrue(IdUtils.isValidID("_"));
   }
 
   @Test
   public void mixedValidCharsAreValid() {
-    assertTrue(CommonChecks.isValidID("abc-123_XYZ"));
+    assertTrue(IdUtils.isValidID("abc-123_XYZ"));
   }
 
   @Test
   public void spaceIsInvalid() {
-    assertFalse(CommonChecks.isValidID("foo bar"));
-    assertFalse(CommonChecks.isValidID(" "));
+    assertFalse(IdUtils.isValidID("foo bar"));
+    assertFalse(IdUtils.isValidID(" "));
   }
 
   @Test
   public void dotIsInvalid() {
-    assertFalse(CommonChecks.isValidID("foo.bar"));
+    assertFalse(IdUtils.isValidID("foo.bar"));
   }
 }

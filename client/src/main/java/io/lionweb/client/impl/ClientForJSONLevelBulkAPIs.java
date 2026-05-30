@@ -8,7 +8,7 @@ import io.lionweb.client.CompressionSupport;
 import io.lionweb.client.RequestFailureException;
 import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
-import io.lionweb.utils.CommonChecks;
+import io.lionweb.utils.IdUtils;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
@@ -79,7 +79,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
   @Override
   public String rawRetrieve(@NotNull List<String> nodeIds, int limit) throws IOException {
     List<String> invalidIDs =
-        nodeIds.stream().filter(id -> !CommonChecks.isValidID(id)).collect(Collectors.toList());
+        nodeIds.stream().filter(id -> !IdUtils.isValidID(id)).collect(Collectors.toList());
     if (!invalidIDs.isEmpty()) {
       throw new IllegalArgumentException("IDs must all be valid. Invalid IDs found: " + invalidIDs);
     }

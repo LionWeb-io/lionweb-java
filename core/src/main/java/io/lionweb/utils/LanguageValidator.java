@@ -103,7 +103,7 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   @Override
-  public ValidationResult validate(Language language) {
+  public @Nonnull ValidationResult validate(@Nonnull Language language) {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 

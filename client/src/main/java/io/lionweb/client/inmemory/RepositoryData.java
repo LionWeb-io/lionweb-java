@@ -7,7 +7,7 @@ import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedContainmentValue;
-import io.lionweb.utils.CommonChecks;
+import io.lionweb.utils.IdUtils;
 import io.lionweb.utils.ValidationResult;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -322,7 +322,7 @@ class RepositoryData {
 
     // Check for invalid node IDs
     for (String nodeId : nodesByID.keySet()) {
-      if (!CommonChecks.isValidID(nodeId)) {
+      if (!IdUtils.isValidID(nodeId)) {
         result.addError("Invalid node id: " + nodeId);
       }
     }

@@ -14,7 +14,7 @@ import javax.annotation.Nonnull;
 public class ChunkValidator extends Validator<SerializationChunk> {
 
   @Override
-  public ValidationResult validate(@Nonnull SerializationChunk chunk) {
+  public @Nonnull ValidationResult validate(@Nonnull SerializationChunk chunk) {
     Objects.requireNonNull(chunk, "chunk should not be null");
     ValidationResult validationResult = new ValidationResult();
 
@@ -22,7 +22,7 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       // Verifying IDs are valid
-      if (!CommonChecks.isValidID(node.getID())) {
+      if (!IdUtils.isValidID(node.getID())) {
         validationResult.addError("Invalid node id: " + node.getID(), node.getID());
       }
 

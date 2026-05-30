@@ -4,10 +4,11 @@ import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import java.util.HashMap;
 import java.util.Map;
+import javax.annotation.Nonnull;
 
 public class NodeTreeValidator extends Validator<Node> {
   @Override
-  public ValidationResult validate(Node element) {
+  public @Nonnull ValidationResult validate(@Nonnull Node element) {
     ValidationResult validationResult = new ValidationResult();
     validateNodeAndDescendants(element, validationResult);
     validateIDsAreUnique(element, validationResult);
@@ -17,7 +18,7 @@ public class NodeTreeValidator extends Validator<Node> {
   private void validateNodeAndDescendants(Node node, ValidationResult validationResult) {
     if (node.getID() != null) {
       // It does not make sense to make the same ID as null and invalid
-      validationResult.addErrorIf(!CommonChecks.isValidID(node.getID()), "Invalid ID", node);
+      validationResult.addErrorIf(!IdUtils.isValidID(node.getID()), "Invalid ID", node);
     }
     if (node.isRoot()) {
       validationResult.addErrorIf(
