@@ -10,6 +10,19 @@ import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+/**
+ * LanguageValidator is responsible for validating objects of type {@code Language}. It ensures that
+ * a given language conforms to a comprehensive set of validation rules encompassing structural,
+ * naming, dependency, and logical consistency checks.
+ *
+ * <p>This class provides functionalities for detecting issues such as circular references, invalid
+ * language dependencies, inconsistent versions, non-unique names or keys, and improper ancestor or
+ * interface hierarchy.
+ *
+ * <p>LanguageValidator extends {@code io.lionweb.utils.Validator} and implements the {@link
+ * #validate(Language)} method to provide detailed validation results, as well as a convenience
+ * method to check the validity of a language through {@link #isLanguageValid(Language)}.
+ */
 public class LanguageValidator extends Validator<Language> {
 
   public static void ensureIsValid(Language language) {

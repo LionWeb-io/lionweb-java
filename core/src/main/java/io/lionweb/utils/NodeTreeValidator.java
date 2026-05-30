@@ -6,6 +6,18 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.Nonnull;
 
+/**
+ * The {@code NodeTreeValidator} class is responsible for validating a hierarchy of {@link Node}
+ * instances. It performs a set of checks to ensure the structural, semantic, and uniqueness
+ * correctness of {@link Node} trees.
+ *
+ * <ul>
+ *   <li>It validates each node's ID to ensure it conforms to predefined rules.
+ *   <li>It ensures root nodes belong to an appropriate classifier.
+ *   <li>It checks containment rules, such as required and single features, are correctly satisfied.
+ *   <li>It verifies that all node IDs within the hierarchy are unique.
+ * </ul>
+ */
 public class NodeTreeValidator extends Validator<Node> {
   @Override
   public @Nonnull ValidationResult validate(@Nonnull Node element) {

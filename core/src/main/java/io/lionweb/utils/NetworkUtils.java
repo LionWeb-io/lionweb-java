@@ -10,6 +10,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
+/**
+ * Utility class for network-related operations, including retrieving and processing content from
+ * URLs. This class is not intended to be instantiated.
+ */
 public class NetworkUtils {
 
   private NetworkUtils() {
