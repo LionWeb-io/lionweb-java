@@ -35,13 +35,14 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
             RepositoryConfiguration(repository, LionWebVersion.v2024_1, HistorySupport.DISABLED),
         )
 
-        val wsServer = WebSocketDeltaServer(port, inMemoryServer, repository)
+        val messageLog = MessageLog()
+        val wsServer = WebSocketDeltaServer(port, inMemoryServer, repository, messageLog)
         wsServer.start()
 
         echo("LionWeb server listening on port $port (repository: $repository)")
 
         if (webUi) {
-            val uiServer = WebUIServer(httpPort, inMemoryServer)
+            val uiServer = WebUIServer(httpPort, inMemoryServer, messageLog)
             uiServer.start()
             echo("Web UI available at http://localhost:$httpPort")
         }

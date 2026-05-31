@@ -31,6 +31,7 @@ class WebSocketDeltaServer(
     port: Int,
     inMemoryServer: InMemoryServer,
     repositoryName: String,
+    val messageLog: MessageLog? = null,
 ) : WebSocketServer(InetSocketAddress(port)) {
     private val serialization = DeltaMessageSerialization()
     val broadcastChannel = BroadcastChannel()
@@ -68,6 +69,16 @@ class WebSocketDeltaServer(
                 // Commands carry participationId as an extra wire field injected by
                 // WebSocketDeltaChannel.sendCommand – strip it before deserializing.
                 val participationId = root.get("participationId")?.asString ?: return
+                messageLog?.add(
+                    MessageLogEntry(
+                        timestamp = System.currentTimeMillis(),
+                        direction = "received",
+                        category = "command",
+                        messageKind = kind,
+                        participationId = participationId,
+                        json = message,
+                    ),
+                )
                 root.remove("participationId")
                 val command = serialization.deserialize(root.toString()) as? DeltaCommand ?: return
                 broadcastChannel.commandReceiver?.receiveCommand(participationId, command)
@@ -75,10 +86,29 @@ class WebSocketDeltaServer(
             DeltaMessageSerialization.isQueryClass(targetClass) -> {
                 // Queries (including ReconnectRequest which has a participationId field
                 // of its own) are routed purely by messageKind, not by participationId.
+                messageLog?.add(
+                    MessageLogEntry(
+                        timestamp = System.currentTimeMillis(),
+                        direction = "received",
+                        category = "query",
+                        messageKind = kind,
+                        json = message,
+                    ),
+                )
                 val query = serialization.deserialize(message) as? DeltaQuery ?: return
                 val response = broadcastChannel.queryReceiver?.receiveQuery(query)
                 if (response != null) {
-                    conn.send(serialization.serialize(response))
+                    val responseJson = serialization.serialize(response)
+                    messageLog?.add(
+                        MessageLogEntry(
+                            timestamp = System.currentTimeMillis(),
+                            direction = "sent",
+                            category = "response",
+                            messageKind = response.javaClass.simpleName,
+                            json = responseJson,
+                        ),
+                    )
+                    conn.send(responseJson)
                 }
             }
         }
@@ -116,6 +146,15 @@ class WebSocketDeltaServer(
         override fun sendEvent(eventProducer: Function<Int, DeltaEvent>) {
             val event = eventProducer.apply(nextEventId.getAndIncrement())
             val json = serialization.serialize(event)
+            messageLog?.add(
+                MessageLogEntry(
+                    timestamp = System.currentTimeMillis(),
+                    direction = "sent",
+                    category = "event",
+                    messageKind = event.javaClass.simpleName,
+                    json = json,
+                ),
+            )
             connections.forEach { if (it.isOpen) it.send(json) }
             eventReceivers.forEach { it.receiveEvent(event) }
         }

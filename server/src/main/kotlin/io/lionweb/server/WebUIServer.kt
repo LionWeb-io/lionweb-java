@@ -8,6 +8,7 @@ import java.net.InetSocketAddress
 class WebUIServer(
     private val port: Int,
     private val inMemoryServer: InMemoryServer,
+    private val messageLog: MessageLog? = null,
 ) {
     private val gson = Gson()
 
@@ -18,6 +19,18 @@ class WebUIServer(
             exchange.responseHeaders.set("Access-Control-Allow-Origin", "*")
             if (exchange.requestMethod == "GET") {
                 val bytes = gson.toJson(buildData()).toByteArray(Charsets.UTF_8)
+                exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
+                exchange.sendResponseHeaders(200, bytes.size.toLong())
+                exchange.responseBody.use { it.write(bytes) }
+            } else {
+                exchange.sendResponseHeaders(405, -1)
+            }
+        }
+
+        server.createContext("/api/messages") { exchange ->
+            exchange.responseHeaders.set("Access-Control-Allow-Origin", "*")
+            if (exchange.requestMethod == "GET") {
+                val bytes = gson.toJson(messageLog?.getAll() ?: emptyList<MessageLogEntry>()).toByteArray(Charsets.UTF_8)
                 exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                 exchange.sendResponseHeaders(200, bytes.size.toLong())
                 exchange.responseBody.use { it.write(bytes) }
