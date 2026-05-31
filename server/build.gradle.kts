@@ -17,8 +17,9 @@ kotlin {
     jvmToolchain(jvmVersion.toInt())
 }
 
+// To run with the web flag: ./gradlew :server:run --args="--web-ui"
 application {
-    mainClass.set("io.lionweb.server.LionWebServerKt")
+    mainClass.set("io.lionweb.server.LionWebServer")
 }
 
 tasks.withType<Test>().all {
@@ -33,6 +34,36 @@ sourceSets {
     val integrationTest by getting {
         kotlin.srcDirs("src/integrationTest/kotlin")
     }
+}
+
+val buildWebUI =
+    tasks.register<Exec>("buildWebUI") {
+        description = "Builds the Svelte web UI frontend"
+        group = "build"
+        workingDir(layout.projectDirectory.dir("web-ui"))
+        val isWindows = System.getProperty("os.name").lowercase().contains("win")
+        if (isWindows) {
+            commandLine("cmd", "/c", "npm install && npm run build")
+        } else {
+            commandLine("sh", "-c", "npm install && npm run build")
+        }
+        inputs.dir(layout.projectDirectory.dir("web-ui/src"))
+        inputs.file(layout.projectDirectory.file("web-ui/package.json"))
+        inputs.file(layout.projectDirectory.file("web-ui/vite.config.ts"))
+        outputs.dir(layout.projectDirectory.dir("web-ui/dist"))
+    }
+
+val copyWebUI =
+    tasks.register<Copy>("copyWebUI") {
+        description = "Copies the built web UI into the classpath resources"
+        group = "build"
+        dependsOn(buildWebUI)
+        from(layout.projectDirectory.dir("web-ui/dist"))
+        into(layout.buildDirectory.dir("resources/main/webui"))
+    }
+
+tasks.withType<Jar>().configureEach {
+    dependsOn(copyWebUI)
 }
 
 dependencies {

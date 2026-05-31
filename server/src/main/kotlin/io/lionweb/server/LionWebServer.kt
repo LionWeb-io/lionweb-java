@@ -4,6 +4,7 @@ package io.lionweb.server
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.validate
 import com.github.ajalt.clikt.parameters.types.int
@@ -21,6 +22,13 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
         .default("repo")
         .validate { require(it.isNotBlank()) { "The repository name should not be blank" } }
 
+    private val webUi by option("--web-ui", help = "Enable the web UI (HTTP dashboard)")
+        .flag(default = false)
+
+    private val httpPort by option("--http-port", help = "HTTP port for the web UI (requires --web-ui)")
+        .int()
+        .default(9241)
+
     override fun run() {
         val inMemoryServer = InMemoryServer()
         inMemoryServer.createRepository(
@@ -31,6 +39,12 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
         wsServer.start()
 
         echo("LionWeb server listening on port $port (repository: $repository)")
+
+        if (webUi) {
+            val uiServer = WebUIServer(httpPort, inMemoryServer)
+            uiServer.start()
+            echo("Web UI available at http://localhost:$httpPort")
+        }
 
         // Block until interrupted
         Thread.currentThread().join()

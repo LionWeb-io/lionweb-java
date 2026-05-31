@@ -19,3 +19,7 @@ build
 .vscode
 .java-version
 .claude
+
+# Web UI build artifacts
+server/web-ui/node_modules/
+server/web-ui/dist/
