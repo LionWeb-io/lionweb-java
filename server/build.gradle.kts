@@ -17,7 +17,6 @@ kotlin {
     jvmToolchain(jvmVersion.toInt())
 }
 
-// To run with the web flag: ./gradlew :server:run --args="--web-ui"
 application {
     mainClass.set("io.lionweb.server.LionWebServer")
 }
@@ -86,6 +85,8 @@ val copyWebUI =
 tasks.withType<Jar>().configureEach {
     dependsOn(copyWebUI)
 }
+
+tasks["build"].dependsOn("buildWebUI")
 
 dependencies {
     implementation(project(":client"))
