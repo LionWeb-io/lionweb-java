@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
  *   Process 3 – TestClientApp client2 (debug port [CLIENT2_DEBUG_PORT])
  */
 class ConnectionTest : BaseIntegrationTest() {
-
     // ── Sign-on ──────────────────────────────────────────────────────────────
 
     @Test

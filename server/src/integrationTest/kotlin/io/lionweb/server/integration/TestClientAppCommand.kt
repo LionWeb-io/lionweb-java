@@ -1,4 +1,5 @@
 @file:JvmName("TestClientApp")
+
 package io.lionweb.server.integration
 
 import com.github.ajalt.clikt.core.CliktCommand
@@ -18,7 +19,6 @@ import java.net.URI
  * (SIGN_ON, SEND, STORE, …) and read back responses without needing stdin/stdout redirection.
  */
 class TestClientAppCommand : CliktCommand(name = "test-client") {
-
     private val serverUrl by option(
         "--server-url",
         help = "WebSocket URL of the LionWeb delta server",
