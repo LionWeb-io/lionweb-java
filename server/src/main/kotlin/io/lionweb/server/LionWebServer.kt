@@ -39,6 +39,12 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
         val messageLog = MessageLog()
         val wsServer = WebSocketDeltaServer(port, inMemoryServer, repository, messageLog)
         wsServer.start()
+        try {
+            wsServer.awaitStart()
+        } catch (e: IllegalStateException) {
+            echo("Failed to start WebSocket server on port $port: ${e.cause?.message ?: e.message}", err = true)
+            return
+        }
 
         echo("LionWeb server listening on port $port (repository: $repository)")
 

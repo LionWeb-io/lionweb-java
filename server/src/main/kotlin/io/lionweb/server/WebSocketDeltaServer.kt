@@ -22,7 +22,10 @@ import org.java_websocket.server.WebSocketServer
 import java.net.InetSocketAddress
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Function
 
 /**
@@ -40,6 +43,8 @@ class WebSocketDeltaServer(
 ) : WebSocketServer(InetSocketAddress(port)) {
     private val serialization = DeltaMessageSerialization()
     val broadcastChannel = BroadcastChannel()
+    private val startLatch = CountDownLatch(1)
+    private val startError = AtomicReference<Exception?>(null)
     private val connectionClientIds = ConcurrentHashMap<WebSocket, String>()
     private val connectionParticipations = ConcurrentHashMap<WebSocket, String>()
 
@@ -142,11 +147,28 @@ class WebSocketDeltaServer(
         conn: WebSocket?,
         ex: Exception,
     ) {
-        System.err.println("WebSocket error on ${conn?.remoteSocketAddress}: ${ex.message}")
+        if (conn == null) {
+            // Server-level error (e.g. port already in use) — signal startup failure.
+            startError.set(ex)
+            startLatch.countDown()
+        } else {
+            System.err.println("WebSocket error on ${conn.remoteSocketAddress}: ${ex.message}")
+        }
     }
 
     override fun onStart() {
-        // nothing extra needed on startup
+        startLatch.countDown()
+    }
+
+    /**
+     * Waits until the server has either bound successfully or failed, then throws if it failed.
+     * Call this immediately after [start] to get a reliable "is it actually listening?" answer.
+     */
+    fun awaitStart(timeoutSeconds: Long = 5) {
+        if (!startLatch.await(timeoutSeconds, TimeUnit.SECONDS)) {
+            throw IllegalStateException("WebSocket server did not start within ${timeoutSeconds}s")
+        }
+        startError.get()?.let { throw IllegalStateException("WebSocket server failed to start: ${it.message}", it) }
     }
 
     /**
