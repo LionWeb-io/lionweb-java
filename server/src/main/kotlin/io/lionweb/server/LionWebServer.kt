@@ -49,7 +49,10 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
             } catch (e: IllegalStateException) {
                 val reason = e.cause?.message ?: e.message
                 if (attempt < maxAttempts) {
-                    echo("Failed to start WebSocket server on port $port ($reason), retrying in 5s… (attempt $attempt/$maxAttempts)", err = true)
+                    echo(
+                        "Failed to start WebSocket server on port $port ($reason), retrying in 5s… (attempt $attempt/$maxAttempts)",
+                        err = true,
+                    )
                     Thread.sleep(5_000)
                 } else {
                     echo("Failed to start WebSocket server on port $port after $maxAttempts attempts: $reason", err = true)

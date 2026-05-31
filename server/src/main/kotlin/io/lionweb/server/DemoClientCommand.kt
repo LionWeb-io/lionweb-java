@@ -236,9 +236,12 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
             }
         }
 
+        // Subscribe to partition lifecycle events (PartitionAdded/Deleted) and get initial list.
+        // Content events (ChildAdded, PropertyChanged, etc.) only arrive after explicitly
+        // calling sendSubscribeToPartitionContentsRequest for each partition.
         val listResp = deltaClient.sendListAndSubscribePartitionsRequest()
-        val allInstances = listResp.partitions.getClassifierInstances()
-        allInstances
+        listResp.partitions
+            .getClassifierInstances()
             .filter { it.parentNodeID == null }
             .forEach { root ->
                 val id = root.id ?: return@forEach
@@ -251,9 +254,21 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
                     ),
                 )
             }
-        addAllNodesFromChunk(allInstances, null, null, null, null)
 
-        DemoClientWebServer(httpPort, clientId, serverWsUrl, deltaClient, messageLog, partitions, nodes, knownLanguages).start()
+        // Tracks which partitions this client has subscribed to for content events
+        val subscribedPartitions = ConcurrentHashMap.newKeySet<String>()
+
+        DemoClientWebServer(
+            httpPort,
+            clientId,
+            serverWsUrl,
+            deltaClient,
+            messageLog,
+            partitions,
+            nodes,
+            subscribedPartitions,
+            knownLanguages,
+        ).start()
 
         echo("Demo client '$clientId' connected to $serverWsUrl, web UI at http://localhost:$httpPort")
 

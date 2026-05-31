@@ -64,6 +64,7 @@
     clientId: string
     serverUrl: string
     partitions: PartitionInfo[]
+    subscribedPartitions: string[]
     messages: MessageLogEntry[]
     concepts: ConceptInfo[]
     nodes: NodeInfo[]
@@ -125,6 +126,32 @@
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ type: 'create', conceptKey, languageKey }),
+      })
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+      await loadState()
+    } catch (e) { actionError = e instanceof Error ? e.message : String(e) }
+  }
+
+  async function subscribeToPartition(partitionId: string) {
+    actionError = null
+    try {
+      const resp = await fetch('./api/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'subscribe', partitionId }),
+      })
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
+      await loadState()
+    } catch (e) { actionError = e instanceof Error ? e.message : String(e) }
+  }
+
+  async function unsubscribeFromPartition(partitionId: string) {
+    actionError = null
+    try {
+      const resp = await fetch('./api/action', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'unsubscribe', partitionId }),
       })
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
       await loadState()
@@ -417,29 +444,39 @@
         <div class="empty-state"><p>No partitions yet. Create one above.</p></div>
       {:else}
         {@const allNodes = getNodesMap()}
+        {@const subSet = new Set(state.subscribedPartitions)}
         <div class="partition-list">
           {#each state.partitions as partition}
+            {@const isSubscribed = subSet.has(partition.id)}
             {@const rootNode = allNodes.get(partition.id)}
             {@const rootConcept = rootNode ? conceptFor(rootNode) : undefined}
             <div class="partition-card">
               <div class="partition-row">
                 <div class="partition-info">
                   <code class="partition-id">{partition.id}</code>
-                  {#if partition.classifierKey}
-                    <span class="partition-classifier">{rootConcept?.name ?? partition.classifierKey}</span>
-                  {/if}
+                  <div class="partition-meta">
+                    {#if partition.classifierKey}
+                      <span class="partition-classifier">{rootConcept?.name ?? partition.classifierKey}</span>
+                    {/if}
+                    {#if isSubscribed}
+                      <span class="badge-subscribed">subscribed</span>
+                    {/if}
+                  </div>
                 </div>
                 <div class="partition-actions">
-                  {#if rootNode}
+                  {#if isSubscribed}
                     <button class="btn-icon" onclick={() => toggleExpanded(partition.id)}>
                       {expandedNodes.has(partition.id) ? '▲' : '▼'}
                     </button>
+                    <button class="btn-secondary-sm" onclick={() => unsubscribeFromPartition(partition.id)}>Unsubscribe</button>
+                  {:else}
+                    <button class="btn-primary-sm" onclick={() => subscribeToPartition(partition.id)}>Subscribe</button>
                   {/if}
                   <button class="btn-danger" onclick={() => deletePartition(partition.id)}>Delete</button>
                 </div>
               </div>
 
-              {#if expandedNodes.has(partition.id) && rootNode}
+              {#if expandedNodes.has(partition.id) && isSubscribed && rootNode}
                 <div class="node-body">
                   {@render renderNode(rootNode, allNodes, 0)}
                 </div>
@@ -548,10 +585,27 @@
     padding: 10px 14px; gap: 1rem;
   }
 
-  .partition-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
+  .partition-info { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
   .partition-id { font-size: 0.825rem; word-break: break-all; }
+  .partition-meta { display: flex; align-items: center; gap: 8px; }
   .partition-classifier { font-size: 0.75rem; color: var(--color-primary); font-weight: 500; }
+  .badge-subscribed {
+    font-size: 0.68rem; font-weight: 600; padding: 1px 7px; border-radius: 99px;
+    background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0;
+  }
   .partition-actions { display: flex; gap: 6px; align-items: center; }
+  .btn-primary-sm {
+    padding: 4px 12px; background: var(--color-primary); color: #fff;
+    border: none; border-radius: var(--radius); font-size: 0.8rem;
+    font-weight: 500; cursor: pointer; white-space: nowrap;
+  }
+  .btn-primary-sm:hover { background: var(--color-primary-dark); }
+  .btn-secondary-sm {
+    padding: 4px 12px; background: var(--color-surface); color: var(--color-text);
+    border: 1px solid var(--color-border); border-radius: var(--radius);
+    font-size: 0.8rem; font-weight: 500; cursor: pointer; white-space: nowrap;
+  }
+  .btn-secondary-sm:hover { background: var(--color-badge); }
 
   .node-body { border-top: 1px solid var(--color-border); padding: 10px 14px; }
 

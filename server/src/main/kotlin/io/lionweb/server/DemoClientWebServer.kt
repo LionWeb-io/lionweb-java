@@ -20,6 +20,7 @@ class DemoClientWebServer(
     private val messageLog: MessageLog,
     private val partitions: ConcurrentHashMap<String, Map<String, String?>>,
     private val nodes: ConcurrentHashMap<String, NodeInfo>,
+    private val subscribedPartitions: MutableSet<String>,
     private val knownLanguages: List<Language> = emptyList(),
 ) {
     private val gson = Gson()
@@ -101,6 +102,7 @@ class DemoClientWebServer(
                         "clientId" to clientId,
                         "serverUrl" to serverUrl,
                         "partitions" to partitions.values.toList(),
+                        "subscribedPartitions" to subscribedPartitions.toList(),
                         "messages" to messageLog.getAll(),
                         "concepts" to concepts,
                         "nodes" to serializedNodes,
@@ -158,6 +160,7 @@ class DemoClientWebServer(
                                 containmentLanguageKey = null,
                                 containmentLanguageVersion = null,
                             )
+                        subscribedPartitions.add(id)
                         val resp = gson.toJson(mapOf("id" to id)).toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                         exchange.sendResponseHeaders(200, resp.size.toLong())
@@ -250,6 +253,89 @@ class DemoClientWebServer(
                                 nodeInfo.properties.remove(propertyKey)
                             }
                         }
+                        val resp = "{}".toByteArray(Charsets.UTF_8)
+                        exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
+                        exchange.sendResponseHeaders(200, resp.size.toLong())
+                        exchange.responseBody.use { it.write(resp) }
+                    }
+                    "subscribe" -> {
+                        val partitionId =
+                            json.get("partitionId")?.asString ?: run {
+                                exchange.sendResponseHeaders(400, -1)
+                                return@createContext
+                            }
+                        val subResp = deltaClient.sendSubscribeToPartitionContentsRequest(partitionId)
+                        val instances = subResp.contents.getClassifierInstances()
+                        // Load partition root info (may already exist from ListAndSubscribe)
+                        instances
+                            .filter { it.parentNodeID == null }
+                            .forEach { root ->
+                                val id = root.id ?: return@forEach
+                                partitions[id] =
+                                    mapOf(
+                                        "id" to id,
+                                        "classifierKey" to root.classifier?.key,
+                                        "classifierLanguageKey" to root.classifier?.language,
+                                    )
+                            }
+                        // Load all nodes from subscription response
+                        val byId = instances.associateBy { it.id }
+                        instances.forEach { inst ->
+                            val parentId = inst.parentNodeID
+                            val cv =
+                                if (parentId !=
+                                    null
+                                ) {
+                                    byId[parentId]?.containments?.firstOrNull { it.childrenIds.contains(inst.id) }
+                                } else {
+                                    null
+                                }
+                            val props = java.util.concurrent.ConcurrentHashMap<String, PropertyValue>()
+                            inst.properties.forEach { pv ->
+                                val key = pv.metaPointer?.key ?: return@forEach
+                                props[key] = PropertyValue(key, pv.metaPointer?.language, pv.metaPointer?.version, pv.value)
+                            }
+                            val children = java.util.concurrent.ConcurrentHashMap<String, MutableList<String>>()
+                            inst.containments?.forEach { c ->
+                                val cKey = c.metaPointer?.key ?: return@forEach
+                                children[cKey] = c.childrenIds.toMutableList()
+                            }
+                            nodes[inst.id ?: return@forEach] =
+                                NodeInfo(
+                                    id = inst.id!!,
+                                    classifierKey = inst.classifier?.key,
+                                    classifierLanguageKey = inst.classifier?.language,
+                                    classifierLanguageVersion = inst.classifier?.version,
+                                    parentId = parentId,
+                                    containmentKey = cv?.metaPointer?.key,
+                                    containmentLanguageKey = cv?.metaPointer?.language,
+                                    containmentLanguageVersion = cv?.metaPointer?.version,
+                                    properties = props,
+                                    children = children,
+                                )
+                        }
+                        subscribedPartitions.add(partitionId)
+                        val resp = "{}".toByteArray(Charsets.UTF_8)
+                        exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
+                        exchange.sendResponseHeaders(200, resp.size.toLong())
+                        exchange.responseBody.use { it.write(resp) }
+                    }
+                    "unsubscribe" -> {
+                        val partitionId =
+                            json.get("partitionId")?.asString ?: run {
+                                exchange.sendResponseHeaders(400, -1)
+                                return@createContext
+                            }
+                        deltaClient.sendUnsubscribeFromPartitionContentsRequest(partitionId)
+                        subscribedPartitions.remove(partitionId)
+                        // Remove all nodes belonging to this partition
+                        nodes.keys
+                            .filter { nodeId ->
+                                var n = nodes[nodeId]
+                                while (n != null && n.parentId != null) n = nodes[n.parentId]
+                                n?.id == partitionId
+                            }.forEach { nodes.remove(it) }
+                        nodes.remove(partitionId)
                         val resp = "{}".toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                         exchange.sendResponseHeaders(200, resp.size.toLong())
