@@ -3,7 +3,7 @@
 ![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb/lionweb-2024.1-core)
 ![Build](https://github.com/LionWeb-io/lionweb-java/actions/workflows/ci.yml/badge.svg)
 
-The libraries produced by this project requires Java 11 or higher. We support and test on Java 11, 17, 21, and 25.
+The libraries produced by this project requires Java 11 or higher.
 
 The actual execution of the project requires Java 17 or higher. We support and test on Java 17, 21, and 25.
 
