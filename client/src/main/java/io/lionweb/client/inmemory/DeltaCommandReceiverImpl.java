@@ -34,6 +34,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Implementation of {@link DeltaCommandReceiver} that receives commands from the server
+ * and applies them to the in-memory server.
+ */
 class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
   private final @NotNull String repositoryName;
   private final @NotNull DeltaChannel channel;

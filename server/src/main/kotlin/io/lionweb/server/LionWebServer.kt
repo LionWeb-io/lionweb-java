@@ -19,7 +19,7 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
         .int()
         .default(9240)
 
-    private val repository by option("--repository", help = "Repository name to serve")
+    private val repository by option("--repository", help = "Repository name to create on startup")
         .default("repo")
         .validate { require(it.isNotBlank()) { "The repository name should not be blank" } }
 

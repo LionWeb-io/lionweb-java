@@ -531,9 +531,15 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
    * serializationFormatVersion set before passing it to the standard serialization layer. The delta
    * protocol omits this field, so we inject the version this client was configured with.
    */
-  private SerializationChunk taggedChunk(@NotNull SerializationChunk chunk) {
+  private SerializationChunk withSerializationFormatVersion(@NotNull SerializationChunk chunk) {
     if (chunk.getSerializationFormatVersion() == null) {
       chunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    } else if (!chunk.getSerializationFormatVersion().equals(lionWebVersion.getVersionString())) {
+      throw new IllegalStateException(
+          "Received chunk with incompatible serialization format version: "
+              + chunk.getSerializationFormatVersion()
+              + ", expected: "
+              + lionWebVersion.getVersionString());
     }
     return chunk;
   }
@@ -557,7 +563,10 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
       Node child =
-          (Node) serialization.deserializeSerializationChunk(taggedChunk(event.newChild)).get(0);
+          (Node)
+              serialization
+                  .deserializeSerializationChunk(withSerializationFormatVersion(event.newChild))
+                  .get(0);
       monitorNode(child);
       Containment containment =
           instance.getClassifier().getContainmentByMetaPointer(event.containment);
@@ -739,7 +748,9 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
           instance.removeChild(containment, event.index);
           Node newChild =
               (Node)
-                  serialization.deserializeSerializationChunk(taggedChunk(event.newChild)).get(0);
+                  serialization
+                      .deserializeSerializationChunk(withSerializationFormatVersion(event.newChild))
+                      .get(0);
           monitorNode(newChild);
           instance.addChild(containment, newChild, event.index);
         });
@@ -752,7 +763,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
           AnnotationInstance annotation =
               (AnnotationInstance)
                   serialization
-                      .deserializeSerializationChunk(taggedChunk(event.newAnnotation))
+                      .deserializeSerializationChunk(
+                          withSerializationFormatVersion(event.newAnnotation))
                       .get(0);
           instance.addAnnotation(annotation);
         });
