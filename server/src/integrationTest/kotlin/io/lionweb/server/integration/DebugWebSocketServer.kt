@@ -3,6 +3,8 @@ package io.lionweb.server.integration
 import io.lionweb.client.delta.DeltaClient
 import io.lionweb.client.delta.DeltaMessageSerialization
 import io.lionweb.client.delta.messages.DeltaCommand
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectResponse
 import io.lionweb.server.WebSocketDeltaChannel
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
@@ -75,17 +77,15 @@ class DebugWebSocketServer(
             message.startsWith("RECONNECT ") -> {
                 val parts = message.removePrefix("RECONNECT ").trim().split(" ", limit = 2)
                 if (parts.size != 2) return "ERROR:usage: RECONNECT <participationId> <lastSeqNum>"
-                val participationId = parts[0]
+                val pid = parts[0]
                 val lastSeqNum =
                     parts[1].toLongOrNull()
                         ?: return "ERROR:lastSeqNum must be a number"
-                deltaClient.sendReconnectRequest(participationId, lastSeqNum)
-                // The server returns an ErrorResponse when the participation is unknown or
-                // inactive; DeltaClient leaves state unchanged in that case.
-                if (deltaClient.getState() != DeltaClient.ParticipationState.CONNECTED) {
-                    return "ERROR:reconnect rejected by server (state=${deltaClient.getState()})"
-                }
-                "OK:${deltaClient.getParticipationId()}"
+                // Call channel.sendQuery directly so we can inspect the typed response.
+                // DeltaClient.sendReconnectRequest discards the return value, making
+                // success/failure indistinguishable when starting from a CONNECTED state.
+                val response = channel.sendQuery { queryId -> ReconnectRequest(queryId, pid, lastSeqNum) }
+                if (response is ReconnectResponse) "OK:$pid" else "ERROR:reconnect rejected"
             }
 
             message == "GET_STATE" -> {
