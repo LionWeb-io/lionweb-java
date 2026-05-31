@@ -133,12 +133,14 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
         ) {
             val byId = instances.associateBy { it.id }
             instances.forEach { inst ->
-                val parentId = if (inst.parentNodeID == null) rootParentId else inst.parentNodeID
+                // A node is the root of this chunk if its parent is not inside the chunk itself:
+                // either parentNodeID is null (detached node) or points outside the chunk.
+                val isChunkRoot = inst.parentNodeID == null || !byId.containsKey(inst.parentNodeID)
+                val parentId = if (isChunkRoot) (inst.parentNodeID ?: rootParentId) else inst.parentNodeID
                 val (cKey, cLangKey, cLangVer) =
-                    if (inst.parentNodeID == null) {
+                    if (isChunkRoot) {
                         Triple(rootContainmentKey, rootContainmentLanguageKey, rootContainmentLanguageVersion)
                     } else {
-                        // Find the containment by looking at parent's containments in the chunk
                         val parent = byId[inst.parentNodeID]
                         val cv = parent?.containments?.firstOrNull { it.childrenIds.contains(inst.id) }
                         Triple(cv?.metaPointer?.key, cv?.metaPointer?.language, cv?.metaPointer?.version)
@@ -186,7 +188,8 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
                     nodes[event.parent]?.let { parent ->
                         val cKey = event.containment.key ?: return@let
                         val list = parent.children.getOrPut(cKey) { mutableListOf() }
-                        val rootInst = instances.firstOrNull { it.parentNodeID == null }
+                        val byId = instances.associateBy { it.id }
+                        val rootInst = instances.firstOrNull { it.parentNodeID == null || !byId.containsKey(it.parentNodeID) }
                         val rootId = rootInst?.id ?: return@let
                         if (!list.contains(rootId)) {
                             val idx = minOf(event.index, list.size)
