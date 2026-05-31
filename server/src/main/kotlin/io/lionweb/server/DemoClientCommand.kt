@@ -8,11 +8,17 @@ import com.google.gson.Gson
 import io.lionweb.LionWebVersion
 import io.lionweb.client.delta.DeltaClient
 import io.lionweb.client.delta.DeltaMessageSerialization
+import io.lionweb.client.delta.messages.events.children.ChildAdded
+import io.lionweb.client.delta.messages.events.children.ChildDeleted
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted
+import io.lionweb.client.delta.messages.events.properties.PropertyAdded
+import io.lionweb.client.delta.messages.events.properties.PropertyChanged
+import io.lionweb.client.delta.messages.events.properties.PropertyDeleted
 import io.lionweb.language.Language
 import io.lionweb.language.LionCoreBuiltins
 import io.lionweb.lioncore.LionCore
+import io.lionweb.serialization.data.SerializedClassifierInstance
 import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
 
@@ -74,36 +80,165 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
 
         deltaClient.sendSignOnRequest()
 
-        // Maps partition ID → {id, classifierKey, classifierLanguageKey}
+        // Maps partition ID → partition info
         val partitions = ConcurrentHashMap<String, Map<String, String?>>()
+        // Maps node ID → node info (all nodes, including partition roots)
+        val nodes = ConcurrentHashMap<String, NodeInfo>()
 
-        fun partitionEntryFrom(
-            instances: Iterable<io.lionweb.serialization.data.SerializedClassifierInstance>,
-        ): Pair<String, Map<String, String?>>? {
-            val root = instances.firstOrNull { it.parentNodeID == null } ?: return null
-            val id = root.id ?: return null
-            return id to
-                mapOf(
-                    "id" to id,
-                    "classifierKey" to root.classifier?.key,
-                    "classifierLanguageKey" to root.classifier?.language,
+        fun addNodeFromSerialized(
+            instance: SerializedClassifierInstance,
+            parentId: String?,
+            containmentKey: String?,
+            containmentLanguageKey: String?,
+            containmentLanguageVersion: String?,
+        ) {
+            val id = instance.id ?: return
+            val props = ConcurrentHashMap<String, PropertyValue>()
+            instance.properties.forEach { pv ->
+                val key = pv.metaPointer?.key ?: return@forEach
+                props[key] =
+                    PropertyValue(
+                        key = key,
+                        languageKey = pv.metaPointer?.language,
+                        languageVersion = pv.metaPointer?.version,
+                        value = pv.value,
+                    )
+            }
+            val childrenByContainment = ConcurrentHashMap<String, MutableList<String>>()
+            instance.containments?.forEach { cv ->
+                val cKey = cv.metaPointer?.key ?: return@forEach
+                childrenByContainment.getOrPut(cKey) { mutableListOf() }.addAll(cv.childrenIds)
+            }
+            nodes[id] =
+                NodeInfo(
+                    id = id,
+                    classifierKey = instance.classifier?.key,
+                    classifierLanguageKey = instance.classifier?.language,
+                    classifierLanguageVersion = instance.classifier?.version,
+                    parentId = parentId,
+                    containmentKey = containmentKey,
+                    containmentLanguageKey = containmentLanguageKey,
+                    containmentLanguageVersion = containmentLanguageVersion,
+                    properties = props,
+                    children = childrenByContainment,
                 )
+        }
+
+        fun addAllNodesFromChunk(
+            instances: Iterable<SerializedClassifierInstance>,
+            rootParentId: String?,
+            rootContainmentKey: String?,
+            rootContainmentLanguageKey: String?,
+            rootContainmentLanguageVersion: String?,
+        ) {
+            val byId = instances.associateBy { it.id }
+            instances.forEach { inst ->
+                val parentId = if (inst.parentNodeID == null) rootParentId else inst.parentNodeID
+                val (cKey, cLangKey, cLangVer) =
+                    if (inst.parentNodeID == null) {
+                        Triple(rootContainmentKey, rootContainmentLanguageKey, rootContainmentLanguageVersion)
+                    } else {
+                        // Find the containment by looking at parent's containments in the chunk
+                        val parent = byId[inst.parentNodeID]
+                        val cv = parent?.containments?.firstOrNull { it.childrenIds.contains(inst.id) }
+                        Triple(cv?.metaPointer?.key, cv?.metaPointer?.language, cv?.metaPointer?.version)
+                    }
+                addNodeFromSerialized(inst, parentId, cKey, cLangKey, cLangVer)
+            }
         }
 
         channel.registerEventReceiver { event ->
             when (event) {
                 is PartitionAdded -> {
-                    partitionEntryFrom(event.newPartition.getClassifierInstances())
-                        ?.let { (id, entry) -> partitions.putIfAbsent(id, entry) }
+                    val instances = event.newPartition.getClassifierInstances()
+                    val root = instances.firstOrNull { it.parentNodeID == null } ?: return@registerEventReceiver
+                    val id = root.id ?: return@registerEventReceiver
+                    partitions.putIfAbsent(
+                        id,
+                        mapOf(
+                            "id" to id,
+                            "classifierKey" to root.classifier?.key,
+                            "classifierLanguageKey" to root.classifier?.language,
+                        ),
+                    )
+                    addAllNodesFromChunk(instances, null, null, null, null)
                 }
-                is PartitionDeleted -> partitions.remove(event.deletedPartition)
+                is PartitionDeleted -> {
+                    partitions.remove(event.deletedPartition)
+                    nodes.keys
+                        .filter { nodeId ->
+                            var n = nodes[nodeId]
+                            while (n != null && n.parentId != null) n = nodes[n.parentId]
+                            n?.id == event.deletedPartition
+                        }.forEach { nodes.remove(it) }
+                    nodes.remove(event.deletedPartition)
+                }
+                is ChildAdded -> {
+                    val instances = event.newChild.getClassifierInstances()
+                    addAllNodesFromChunk(
+                        instances,
+                        event.parent,
+                        event.containment.key,
+                        event.containment.language,
+                        event.containment.version,
+                    )
+                    // Update parent's children map
+                    nodes[event.parent]?.let { parent ->
+                        val cKey = event.containment.key ?: return@let
+                        val list = parent.children.getOrPut(cKey) { mutableListOf() }
+                        val rootInst = instances.firstOrNull { it.parentNodeID == null }
+                        val rootId = rootInst?.id ?: return@let
+                        if (!list.contains(rootId)) {
+                            val idx = minOf(event.index, list.size)
+                            list.add(idx, rootId)
+                        }
+                    }
+                }
+                is ChildDeleted -> {
+                    val allDeleted = listOf(event.deletedChild) + event.deletedDescendants
+                    allDeleted.forEach { nodes.remove(it) }
+                    nodes[event.parent]?.let { parent ->
+                        val cKey = event.containment.key ?: return@let
+                        parent.children[cKey]?.remove(event.deletedChild)
+                    }
+                }
+                is PropertyAdded -> {
+                    nodes[event.node]?.let { node ->
+                        val key = event.property.key ?: return@let
+                        node.properties[key] =
+                            PropertyValue(
+                                key = key,
+                                languageKey = event.property.language,
+                                languageVersion = event.property.version,
+                                value = event.newValue,
+                            )
+                    }
+                }
+                is PropertyChanged -> {
+                    nodes[event.node]?.let { node ->
+                        val key = event.property.key ?: return@let
+                        node.properties[key] =
+                            PropertyValue(
+                                key = key,
+                                languageKey = event.property.language,
+                                languageVersion = event.property.version,
+                                value = event.newValue,
+                            )
+                    }
+                }
+                is PropertyDeleted -> {
+                    nodes[event.node]?.let { node ->
+                        val key = event.property.key ?: return@let
+                        node.properties.remove(key)
+                    }
+                }
                 else -> {}
             }
         }
 
         val listResp = deltaClient.sendListAndSubscribePartitionsRequest()
-        listResp.partitions
-            .getClassifierInstances()
+        val allInstances = listResp.partitions.getClassifierInstances()
+        allInstances
             .filter { it.parentNodeID == null }
             .forEach { root ->
                 val id = root.id ?: return@forEach
@@ -116,8 +251,9 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
                     ),
                 )
             }
+        addAllNodesFromChunk(allInstances, null, null, null, null)
 
-        DemoClientWebServer(httpPort, clientId, serverWsUrl, deltaClient, messageLog, partitions, knownLanguages).start()
+        DemoClientWebServer(httpPort, clientId, serverWsUrl, deltaClient, messageLog, partitions, nodes, knownLanguages).start()
 
         echo("Demo client '$clientId' connected to $serverWsUrl, web UI at http://localhost:$httpPort")
 

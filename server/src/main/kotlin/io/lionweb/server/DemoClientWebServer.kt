@@ -7,6 +7,7 @@ import io.lionweb.client.delta.DeltaClient
 import io.lionweb.language.Concept
 import io.lionweb.language.Language
 import io.lionweb.model.impl.DynamicNode
+import io.lionweb.serialization.data.MetaPointer
 import java.net.InetSocketAddress
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -18,6 +19,7 @@ class DemoClientWebServer(
     private val deltaClient: DeltaClient,
     private val messageLog: MessageLog,
     private val partitions: ConcurrentHashMap<String, Map<String, String?>>,
+    private val nodes: ConcurrentHashMap<String, NodeInfo>,
     private val knownLanguages: List<Language> = emptyList(),
 ) {
     private val gson = Gson()
@@ -34,6 +36,31 @@ class DemoClientWebServer(
                             .filterIsInstance<Concept>()
                             .filter { !it.isAbstract }
                             .map { c ->
+                                val containments =
+                                    c.allContainments().map { cont ->
+                                        mapOf(
+                                            "key" to cont.key,
+                                            "name" to cont.name,
+                                            "languageKey" to cont.declaringLanguage?.key,
+                                            "languageVersion" to cont.declaringLanguage?.version,
+                                            "multiple" to cont.isMultiple,
+                                            "optional" to cont.isOptional,
+                                            "typeKey" to cont.type?.key,
+                                            "typeLanguageKey" to cont.type?.language?.key,
+                                        )
+                                    }
+                                val properties =
+                                    c.allProperties().map { prop ->
+                                        mapOf(
+                                            "key" to prop.key,
+                                            "name" to prop.name,
+                                            "languageKey" to prop.declaringLanguage?.key,
+                                            "languageVersion" to prop.declaringLanguage?.version,
+                                            "optional" to prop.isOptional,
+                                            "typeKey" to prop.type?.key,
+                                            "typeName" to prop.type?.name,
+                                        )
+                                    }
                                 mapOf(
                                     "key" to c.key,
                                     "name" to c.name,
@@ -41,8 +68,33 @@ class DemoClientWebServer(
                                     "languageKey" to lang.key,
                                     "languageVersion" to lang.version,
                                     "isPartition" to c.isPartition,
+                                    "containments" to containments,
+                                    "properties" to properties,
                                 )
                             }
+                    }
+                val serializedNodes =
+                    nodes.values.map { node ->
+                        mapOf(
+                            "id" to node.id,
+                            "classifierKey" to node.classifierKey,
+                            "classifierLanguageKey" to node.classifierLanguageKey,
+                            "classifierLanguageVersion" to node.classifierLanguageVersion,
+                            "parentId" to node.parentId,
+                            "containmentKey" to node.containmentKey,
+                            "containmentLanguageKey" to node.containmentLanguageKey,
+                            "containmentLanguageVersion" to node.containmentLanguageVersion,
+                            "properties" to
+                                node.properties.values.map { pv ->
+                                    mapOf(
+                                        "key" to pv.key,
+                                        "languageKey" to pv.languageKey,
+                                        "languageVersion" to pv.languageVersion,
+                                        "value" to pv.value,
+                                    )
+                                },
+                            "children" to node.children,
+                        )
                     }
                 val state =
                     mapOf(
@@ -51,6 +103,7 @@ class DemoClientWebServer(
                         "partitions" to partitions.values.toList(),
                         "messages" to messageLog.getAll(),
                         "concepts" to concepts,
+                        "nodes" to serializedNodes,
                     )
                 val bytes = gson.toJson(state).toByteArray(Charsets.UTF_8)
                 exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
@@ -94,6 +147,17 @@ class DemoClientWebServer(
                                 "classifierKey" to concept.key,
                                 "classifierLanguageKey" to concept.language?.key,
                             )
+                        nodes[id] =
+                            NodeInfo(
+                                id = id,
+                                classifierKey = concept.key,
+                                classifierLanguageKey = concept.language?.key,
+                                classifierLanguageVersion = concept.language?.version,
+                                parentId = null,
+                                containmentKey = null,
+                                containmentLanguageKey = null,
+                                containmentLanguageVersion = null,
+                            )
                         val resp = gson.toJson(mapOf("id" to id)).toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                         exchange.sendResponseHeaders(200, resp.size.toLong())
@@ -107,6 +171,106 @@ class DemoClientWebServer(
                             }
                         deltaClient.sendDeletePartitionCommand(partitionId)
                         partitions.remove(partitionId)
+                        nodes.remove(partitionId)
+                        val resp = "{}".toByteArray(Charsets.UTF_8)
+                        exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
+                        exchange.sendResponseHeaders(200, resp.size.toLong())
+                        exchange.responseBody.use { it.write(resp) }
+                    }
+                    "addChild" -> {
+                        val parentId = json.get("parentId")?.asString
+                        val containmentKey = json.get("containmentKey")?.asString
+                        val containmentLanguageKey = json.get("containmentLanguageKey")?.asString
+                        val containmentLanguageVersion = json.get("containmentLanguageVersion")?.asString
+                        val conceptKey = json.get("conceptKey")?.asString
+                        val languageKey = json.get("languageKey")?.asString
+                        if (parentId == null || containmentKey == null || conceptKey == null || languageKey == null) {
+                            exchange.sendResponseHeaders(400, -1)
+                            return@createContext
+                        }
+                        val concept =
+                            knownLanguages
+                                .firstOrNull { it.key == languageKey }
+                                ?.elements
+                                ?.filterIsInstance<Concept>()
+                                ?.firstOrNull { it.key == conceptKey }
+                        if (concept == null) {
+                            exchange.sendResponseHeaders(400, -1)
+                            return@createContext
+                        }
+                        val childId = UUID.randomUUID().toString()
+                        val child = DynamicNode(childId, concept)
+                        val containmentMeta =
+                            MetaPointer.get(containmentLanguageKey, containmentLanguageVersion, containmentKey)
+                        val parentNode = nodes[parentId]
+                        val index = parentNode?.children?.get(containmentKey)?.size ?: 0
+                        deltaClient.sendAddChildCommand(parentId, containmentMeta, child, index)
+                        nodes[childId] =
+                            NodeInfo(
+                                id = childId,
+                                classifierKey = concept.key,
+                                classifierLanguageKey = concept.language?.key,
+                                classifierLanguageVersion = concept.language?.version,
+                                parentId = parentId,
+                                containmentKey = containmentKey,
+                                containmentLanguageKey = containmentLanguageKey,
+                                containmentLanguageVersion = containmentLanguageVersion,
+                            )
+                        parentNode?.children?.getOrPut(containmentKey) { mutableListOf() }?.add(childId)
+                        val resp = gson.toJson(mapOf("id" to childId)).toByteArray(Charsets.UTF_8)
+                        exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
+                        exchange.sendResponseHeaders(200, resp.size.toLong())
+                        exchange.responseBody.use { it.write(resp) }
+                    }
+                    "setProperty" -> {
+                        val nodeId = json.get("nodeId")?.asString
+                        val propertyKey = json.get("propertyKey")?.asString
+                        val propertyLanguageKey = json.get("propertyLanguageKey")?.asString
+                        val propertyLanguageVersion = json.get("propertyLanguageVersion")?.asString
+                        val value = json.get("value")?.takeIf { !it.isJsonNull }?.asString
+                        if (nodeId == null || propertyKey == null) {
+                            exchange.sendResponseHeaders(400, -1)
+                            return@createContext
+                        }
+                        val nodeInfo = nodes[nodeId]
+                        val alreadySet = nodeInfo?.properties?.containsKey(propertyKey) == true
+                        val propertyMeta =
+                            MetaPointer.get(propertyLanguageKey, propertyLanguageVersion, propertyKey)
+                        deltaClient.sendSetPropertyCommand(nodeId, propertyMeta, value, alreadySet)
+                        if (nodeInfo != null) {
+                            if (value != null) {
+                                nodeInfo.properties[propertyKey] =
+                                    PropertyValue(
+                                        key = propertyKey,
+                                        languageKey = propertyLanguageKey,
+                                        languageVersion = propertyLanguageVersion,
+                                        value = value,
+                                    )
+                            } else {
+                                nodeInfo.properties.remove(propertyKey)
+                            }
+                        }
+                        val resp = "{}".toByteArray(Charsets.UTF_8)
+                        exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
+                        exchange.sendResponseHeaders(200, resp.size.toLong())
+                        exchange.responseBody.use { it.write(resp) }
+                    }
+                    "deleteChild" -> {
+                        val nodeId = json.get("nodeId")?.asString
+                        val parentId = json.get("parentId")?.asString
+                        val containmentKey = json.get("containmentKey")?.asString
+                        val containmentLanguageKey = json.get("containmentLanguageKey")?.asString
+                        val containmentLanguageVersion = json.get("containmentLanguageVersion")?.asString
+                        val index = json.get("index")?.asInt
+                        if (nodeId == null || parentId == null || containmentKey == null || index == null) {
+                            exchange.sendResponseHeaders(400, -1)
+                            return@createContext
+                        }
+                        val containmentMeta =
+                            MetaPointer.get(containmentLanguageKey, containmentLanguageVersion, containmentKey)
+                        deltaClient.sendDeleteChildCommand(parentId, containmentMeta, index, nodeId)
+                        nodes.remove(nodeId)
+                        nodes[parentId]?.children?.get(containmentKey)?.removeAt(index)
                         val resp = "{}".toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                         exchange.sendResponseHeaders(200, resp.size.toLong())
@@ -114,6 +278,10 @@ class DemoClientWebServer(
                     }
                     else -> exchange.sendResponseHeaders(400, -1)
                 }
+            } else if (exchange.requestMethod == "OPTIONS") {
+                exchange.responseHeaders.set("Access-Control-Allow-Methods", "POST, OPTIONS")
+                exchange.responseHeaders.set("Access-Control-Allow-Headers", "Content-Type")
+                exchange.sendResponseHeaders(204, -1)
             } else {
                 exchange.sendResponseHeaders(405, -1)
             }

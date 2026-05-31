@@ -444,6 +444,72 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   /**
+   * Sends a command to add a new child node to a parent in the given containment at the given
+   * index.
+   *
+   * @param parentId id of the parent node
+   * @param containment MetaPointer of the containment feature
+   * @param child the new child node to add
+   * @param index 0-based position at which to insert the child
+   */
+  public void sendAddChildCommand(
+      @NotNull String parentId, @NotNull MetaPointer containment, @NotNull Node child, int index) {
+    Objects.requireNonNull(parentId, "parentId must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    Objects.requireNonNull(child, "child must not be null");
+    SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(child);
+    channel.sendCommand(
+        participationId, commandId -> new AddChild(commandId, parentId, chunk, containment, index));
+  }
+
+  /**
+   * Sends a command to delete a child node from a parent's containment.
+   *
+   * @param parentId id of the parent node
+   * @param containment MetaPointer of the containment feature
+   * @param index 0-based position of the child to delete
+   * @param childId id of the child node to delete
+   */
+  public void sendDeleteChildCommand(
+      @NotNull String parentId,
+      @NotNull MetaPointer containment,
+      int index,
+      @NotNull String childId) {
+    Objects.requireNonNull(parentId, "parentId must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    Objects.requireNonNull(childId, "childId must not be null");
+    channel.sendCommand(
+        participationId,
+        commandId -> new DeleteChild(commandId, parentId, containment, index, childId));
+  }
+
+  /**
+   * Sends a command to set a property value on a node. Uses AddProperty if the property is not yet
+   * set, ChangeProperty otherwise.
+   *
+   * @param nodeId id of the node
+   * @param property MetaPointer of the property feature
+   * @param newValue the new value (as serialized string), or null to unset
+   * @param propertyAlreadySet true if the property already has a value (sends ChangeProperty),
+   *     false if it is unset (sends AddProperty)
+   */
+  public void sendSetPropertyCommand(
+      @NotNull String nodeId,
+      @NotNull MetaPointer property,
+      @Nullable String newValue,
+      boolean propertyAlreadySet) {
+    Objects.requireNonNull(nodeId, "nodeId must not be null");
+    Objects.requireNonNull(property, "property must not be null");
+    if (propertyAlreadySet) {
+      channel.sendCommand(
+          participationId, commandId -> new ChangeProperty(commandId, nodeId, property, newValue));
+    } else {
+      channel.sendCommand(
+          participationId, commandId -> new AddProperty(commandId, nodeId, property, newValue));
+    }
+  }
+
+  /**
    * Registers a language in this client's serialization context so that nodes and annotations of
    * that language can be properly deserialized from incoming events.
    *
