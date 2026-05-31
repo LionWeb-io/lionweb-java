@@ -1,3 +1,4 @@
+@file:JvmName("LionWebServer")
 package io.lionweb.server
 
 import com.github.ajalt.clikt.core.CliktCommand
