@@ -101,7 +101,11 @@ class WebSocketDeltaServer(
                     val responseJson = serialization.serialize(response)
                     val responseParticipationId =
                         runCatching {
-                            JsonParser.parseString(responseJson).asJsonObject.get("participationId")?.asString
+                            JsonParser
+                                .parseString(responseJson)
+                                .asJsonObject
+                                .get("participationId")
+                                ?.asString
                         }.getOrNull()
                     messageLog?.add(
                         MessageLogEntry(
