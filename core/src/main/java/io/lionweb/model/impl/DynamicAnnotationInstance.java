@@ -3,10 +3,13 @@ package io.lionweb.model.impl;
 import io.lionweb.language.Annotation;
 import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.ClassifierInstance;
+import io.lionweb.model.HasSettableParent;
 import java.util.Objects;
+import org.jspecify.annotations.NonNull;
+import org.jspecify.annotations.Nullable;
 
 public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotation>
-    implements AnnotationInstance {
+    implements AnnotationInstance, HasSettableParent {
 
   private Annotation annotation;
   private ClassifierInstance<?> annotated;
@@ -99,5 +102,15 @@ public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotat
         + ", annotated="
         + annotatedDesc
         + '}';
+  }
+
+  @Override
+  public @NonNull ClassifierInstance<?> setParent(@Nullable ClassifierInstance<?> parent) {
+    if (this.annotated != null) {
+      this.annotated.removeAnnotation(this);
+    }
+    this.annotated = parent;
+    parent.addAnnotation(this);
+    return this;
   }
 }

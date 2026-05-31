@@ -586,6 +586,8 @@ public abstract class AbstractSerialization {
             AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
             if (abstractClassifierInstance != null) {
               abstractClassifierInstance.addAnnotation(annotationInstance);
+            } else if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
+              // Nothing to do
             } else {
               throw new IllegalStateException(
                   "Cannot resolved annotated node " + annotationInstance.getParent());
