@@ -57,7 +57,11 @@ class WebSocketDeltaChannel(
         pendingQueries.clear()
     }
 
-    override fun onError(ex: Exception): Unit = throw RuntimeException("WebSocketDeltaChannel error: ${ex.message}")
+    override fun onError(ex: Exception) {
+        System.err.println("WebSocketDeltaChannel error: ${ex.message}")
+        pendingQueries.values.forEach { it.completeExceptionally(ex) }
+        pendingQueries.clear()
+    }
 
     override fun onMessage(message: String) {
         val msg = serialization.deserialize(message) ?: return
