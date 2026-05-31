@@ -240,7 +240,11 @@ class DebugWebSocketServer(
     ): String {
         val deadline = System.currentTimeMillis() + timeoutMs
         while (System.currentTimeMillis() < deadline) {
-            val ids = deltaClient.sendListPartitionsRequest().partitions.classifierInstances.map { it.id }
+            val ids =
+                deltaClient
+                    .sendListPartitionsRequest()
+                    .partitions.classifierInstances
+                    .map { it.id }
             val condition = if (present) ids.contains(partitionId) else !ids.contains(partitionId)
             if (condition) return "OK"
             Thread.sleep(50)

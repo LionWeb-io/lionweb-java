@@ -22,6 +22,27 @@ application {
     mainClass.set("io.lionweb.server.LionWebServer")
 }
 
+tasks.register("runServerWeb", JavaExec::class) {
+    description = "Run the LionWeb server with the web UI"
+    mainClass.set("io.lionweb.server.LionWebServer")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args = listOf("--web-ui")
+}
+
+tasks.register("runDemoClient1", JavaExec::class) {
+    description = "Run the Demo Client 1"
+    mainClass.set("io.lionweb.server.DemoClientApp")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args = listOf("--http-port=9001", "--client-id=client1")
+}
+
+tasks.register("runDemoClient2", JavaExec::class) {
+    description = "Run the Demo Client 2"
+    mainClass.set("io.lionweb.server.DemoClientApp")
+    classpath = sourceSets.main.get().runtimeClasspath
+    args = listOf("--http-port=9002", "--client-id=client2")
+}
+
 tasks.withType<Test>().all {
     testLogging {
         showStandardStreams = true

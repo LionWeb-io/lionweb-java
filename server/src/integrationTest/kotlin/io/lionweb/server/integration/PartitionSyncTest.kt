@@ -14,7 +14,6 @@ import org.junit.jupiter.api.Test
  *   Process 3 – TestClientApp client2 (debug port [CLIENT2_DEBUG_PORT])
  */
 class PartitionSyncTest : BaseIntegrationTest() {
-
     /**
      * End-to-end scenario for partition creation and node synchronisation:
      * 1. Client2 subscribes to partition-list events.
