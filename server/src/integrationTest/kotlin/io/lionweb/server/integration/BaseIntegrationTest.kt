@@ -51,6 +51,10 @@ abstract class BaseIntegrationTest {
     @AfterEach
     fun tearDown() {
         processes.forEach { it.destroyForcibly() }
+        // waitFor() with no timeout blocks until the process actually exits.
+        // A timed waitFor() that returns false would leave processes alive and
+        // their ports bound, breaking the next @BeforeEach.
+        processes.forEach { it.waitFor() }
         processes.clear()
     }
 

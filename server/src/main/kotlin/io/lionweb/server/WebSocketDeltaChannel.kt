@@ -59,11 +59,17 @@ class WebSocketDeltaChannel(serverUri: URI) : WebSocketClient(serverUri), DeltaC
         val msg = serialization.deserialize(message) ?: return
         when (msg) {
             is DeltaQueryResponse -> {
-                // Notify receivers BEFORE completing the future so that, by the time
-                // sendQuery() unblocks on the calling thread, the client state
-                // (e.g. participationId in DeltaClient) is already set.
-                queryResponseReceivers.forEach { it.receiveQueryResponse(msg) }
-                pendingQueries.remove(msg.queryId)?.complete(msg)
+                // Notify receivers BEFORE completing the future so that by the time
+                // sendQuery() unblocks the client state (e.g. participationId) is set.
+                // Use try/finally so the future is always completed even if a receiver
+                // throws (e.g. DeltaClient throws UnsupportedOperationException for
+                // ErrorResponse), which would otherwise cause sendQuery() to hang.
+                try {
+                    queryResponseReceivers.forEach { it.receiveQueryResponse(msg) }
+                } catch (_: Exception) {
+                } finally {
+                    pendingQueries.remove(msg.queryId)?.complete(msg)
+                }
             }
             is DeltaEvent -> {
                 eventReceivers.forEach { it.receiveEvent(msg) }

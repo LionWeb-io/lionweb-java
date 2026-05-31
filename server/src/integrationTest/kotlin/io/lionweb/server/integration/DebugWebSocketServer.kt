@@ -53,6 +53,30 @@ class DebugWebSocketServer(
             "OK:${deltaClient.getParticipationId()}"
         }
 
+        message == "SIGN_OFF" -> {
+            deltaClient.sendSignOffRequest()
+            "OK:${deltaClient.getState()}"
+        }
+
+        message.startsWith("RECONNECT ") -> {
+            val parts = message.removePrefix("RECONNECT ").trim().split(" ", limit = 2)
+            if (parts.size != 2) return "ERROR:usage: RECONNECT <participationId> <lastSeqNum>"
+            val participationId = parts[0]
+            val lastSeqNum = parts[1].toLongOrNull()
+                ?: return "ERROR:lastSeqNum must be a number"
+            deltaClient.sendReconnectRequest(participationId, lastSeqNum)
+            // The server returns an ErrorResponse when the participation is unknown or
+            // inactive; DeltaClient leaves state unchanged in that case.
+            if (deltaClient.getState() != DeltaClient.ParticipationState.CONNECTED) {
+                return "ERROR:reconnect rejected by server (state=${deltaClient.getState()})"
+            }
+            "OK:${deltaClient.getParticipationId()}"
+        }
+
+        message == "GET_STATE" -> {
+            "OK:${deltaClient.getState()}:${deltaClient.getParticipationId()}"
+        }
+
         message.startsWith("SEND ") -> {
             val json = message.removePrefix("SEND ").trim()
             val command = serialization.deserialize(json) as? DeltaCommand
