@@ -84,14 +84,14 @@ class WebSocketDeltaServer(
                 broadcastChannel.commandReceiver?.receiveCommand(participationId, command)
             }
             DeltaMessageSerialization.isQueryClass(targetClass) -> {
-                // Queries (including ReconnectRequest which has a participationId field
-                // of its own) are routed purely by messageKind, not by participationId.
+                val queryParticipationId = root.get("participationId")?.asString
                 messageLog?.add(
                     MessageLogEntry(
                         timestamp = System.currentTimeMillis(),
                         direction = "received",
                         category = "query",
                         messageKind = kind,
+                        participationId = queryParticipationId,
                         json = message,
                     ),
                 )
@@ -99,12 +99,17 @@ class WebSocketDeltaServer(
                 val response = broadcastChannel.queryReceiver?.receiveQuery(query)
                 if (response != null) {
                     val responseJson = serialization.serialize(response)
+                    val responseParticipationId =
+                        runCatching {
+                            JsonParser.parseString(responseJson).asJsonObject.get("participationId")?.asString
+                        }.getOrNull()
                     messageLog?.add(
                         MessageLogEntry(
                             timestamp = System.currentTimeMillis(),
                             direction = "sent",
                             category = "response",
                             messageKind = response.javaClass.simpleName,
+                            participationId = responseParticipationId,
                             json = responseJson,
                         ),
                     )

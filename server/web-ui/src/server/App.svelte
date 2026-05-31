@@ -27,21 +27,13 @@
   let lastRefresh = $state<Date | null>(null)
   let messages = $state<MessageLogEntry[]>([])
 
-  async function loadData() {
+  async function loadRepositories() {
     loading = true
     error = null
     try {
-      const [dataResp, msgResp] = await Promise.all([
-        fetch('./api/data'),
-        fetch('./api/messages'),
-      ])
-      if (!dataResp.ok) {
-        throw new Error(`HTTP ${dataResp.status}: ${dataResp.statusText}`)
-      }
-      data = await dataResp.json()
-      if (msgResp.ok) {
-        messages = await msgResp.json()
-      }
+      const resp = await fetch('./api/data')
+      if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`)
+      data = await resp.json()
       lastRefresh = new Date()
     } catch (e) {
       error = e instanceof Error ? e.message : String(e)
@@ -50,12 +42,24 @@
     }
   }
 
+  async function loadMessages() {
+    try {
+      const resp = await fetch('./api/messages')
+      if (resp.ok) messages = await resp.json()
+    } catch {
+      // silently ignore polling errors
+    }
+  }
+
   function totalNodes(repo: RepositoryInfo): number {
     return repo.classifiers.reduce((sum, c) => sum + c.totalCount, 0)
   }
 
   $effect(() => {
-    loadData()
+    loadRepositories()
+    loadMessages()
+    const interval = setInterval(loadMessages, 2000)
+    return () => clearInterval(interval)
   })
 </script>
 
@@ -72,19 +76,6 @@
           <line x1="16" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
         </svg>
         <span>LionWeb Server</span>
-      </div>
-      <div class="topbar-actions">
-        {#if lastRefresh}
-          <span class="last-refresh">
-            Refreshed {lastRefresh.toLocaleTimeString()}
-          </span>
-        {/if}
-        <button onclick={loadData} disabled={loading} class="btn-refresh">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class:spinning={loading}>
-            <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
-          </svg>
-          {loading ? 'Loading…' : 'Refresh'}
-        </button>
       </div>
     </div>
   </header>
@@ -119,6 +110,17 @@
       <div class="section-header">
         <h2>Repositories</h2>
         <span class="count-badge">{data.repositories.length}</span>
+        <div class="section-actions">
+          {#if lastRefresh}
+            <span class="last-refresh">Refreshed {lastRefresh.toLocaleTimeString()}</span>
+          {/if}
+          <button onclick={loadRepositories} disabled={loading} class="btn-refresh">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class:spinning={loading}>
+              <path d="M21 2v6h-6M3 12a9 9 0 0 1 15-6.7L21 8M3 22v-6h6M21 12a9 9 0 0 1-15 6.7L3 16"/>
+            </svg>
+            {loading ? 'Loading…' : 'Refresh'}
+          </button>
+        </div>
       </div>
 
       {#if data.repositories.length === 0}
@@ -239,41 +241,6 @@
     flex-shrink: 0;
   }
 
-  .topbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-  }
-
-  .last-refresh {
-    font-size: 0.8rem;
-    color: var(--color-text-muted);
-  }
-
-  .btn-refresh {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 14px;
-    background: var(--color-primary);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-
-  .btn-refresh:hover:not(:disabled) {
-    background: var(--color-primary-dark);
-  }
-
-  .btn-refresh:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
   @keyframes spin {
     to { transform: rotate(360deg); }
   }
@@ -371,6 +338,42 @@
     font-weight: 600;
     padding: 2px 8px;
     border-radius: 99px;
+  }
+
+  .section-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-left: auto;
+  }
+
+  .last-refresh {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+  }
+
+  .btn-refresh {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    background: var(--color-primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius);
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+
+  .btn-refresh:hover:not(:disabled) {
+    background: var(--color-primary-dark);
+  }
+
+  .btn-refresh:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 
   /* ── Empty state ── */
