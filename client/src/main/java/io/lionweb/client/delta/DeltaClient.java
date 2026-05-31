@@ -76,6 +76,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private final AbstractSerialization serialization;
   private final Set<String> queriesSent = new HashSet<>();
   private final String clientId;
+  private final LionWebVersion lionWebVersion;
   private String participationId;
   private String pendingReconnectParticipationId;
   private ParticipationState state = ParticipationState.NOT_CONNECTED;
@@ -93,6 +94,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(clientId, "clientId must not be null");
 
     this.clientId = clientId;
+    this.lionWebVersion = lionWebVersion;
     this.channel = channel;
     this.channel.registerEventReceiver(this);
     this.channel.registerQueryResponseReceiver(this);
@@ -524,6 +526,18 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     nodes.computeIfAbsent(node.getID(), id -> new HashSet<>()).add(new WeakReference<>(node));
   }
 
+  /**
+   * Ensures a SerializationChunk received via the delta wire format has its
+   * serializationFormatVersion set before passing it to the standard serialization layer. The delta
+   * protocol omits this field, so we inject the version this client was configured with.
+   */
+  private SerializationChunk taggedChunk(@NotNull SerializationChunk chunk) {
+    if (chunk.getSerializationFormatVersion() == null) {
+      chunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    }
+    return chunk;
+  }
+
   private boolean isFromOwnParticipation(@NotNull DeltaEvent event) {
     if (!(event instanceof BaseDeltaEvent)) return false;
     return ((BaseDeltaEvent<?>) event)
@@ -542,7 +556,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
-      Node child = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+      Node child =
+          (Node) serialization.deserializeSerializationChunk(taggedChunk(event.newChild)).get(0);
       monitorNode(child);
       Containment containment =
           instance.getClassifier().getContainmentByMetaPointer(event.containment);
@@ -722,7 +737,9 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                     + " using metapointer "
                     + event.containment);
           instance.removeChild(containment, event.index);
-          Node newChild = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+          Node newChild =
+              (Node)
+                  serialization.deserializeSerializationChunk(taggedChunk(event.newChild)).get(0);
           monitorNode(newChild);
           instance.addChild(containment, newChild, event.index);
         });
@@ -734,7 +751,9 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         instance -> {
           AnnotationInstance annotation =
               (AnnotationInstance)
-                  serialization.deserializeSerializationChunk(event.newAnnotation).get(0);
+                  serialization
+                      .deserializeSerializationChunk(taggedChunk(event.newAnnotation))
+                      .get(0);
           instance.addAnnotation(annotation);
         });
   }

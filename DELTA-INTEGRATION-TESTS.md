@@ -1,7 +1,7 @@
 # Delta Protocol Integration Test Scenarios
 
 This document defines integration test scenarios for the LionWeb delta protocol. Each scenario
-involves one server and two clients (Client1 and Client2) connected via an `InMemoryDeltaChannel`.
+involves one server and two clients (Client1 and Client2).
 
 The scenarios verify that a command issued from Client1 causes:
 1. The server to reach the correct internal state.
@@ -9,20 +9,6 @@ The scenarios verify that a command issued from Client1 causes:
 
 ## Infrastructure and Conventions
 
-### Setup pattern (shared by all scenarios)
-
-All scenarios start from this base setup unless stated otherwise:
-
-```
-server  = new InMemoryServer()
-server.createRepository(new RepositoryConfiguration("MyRepo", LionWebVersion.v2024_1, HistorySupport.DISABLED))
-channel = new InMemoryDeltaChannel()
-server.monitorDeltaChannel("MyRepo", channel)
-client1 = new DeltaClient(channel, "client-1")
-client2 = new DeltaClient(channel, "client-2")
-client1.sendSignOnRequest()
-client2.sendSignOnRequest()
-```
 
 ### Language / model used
 
@@ -34,37 +20,6 @@ Where annotation scenarios need a custom annotation classifier, a minimal `Annot
 `"Comment"` is declared in a helper language and pre-registered on both clients via
 `client.registerLanguage(...)`.
 
-### Monitoring vs subscribing
-
-`client.monitorPartition(node)` sets up a local observer that automatically fires delta commands
-whenever the Java object is mutated (property change, child add/remove, etc.). Both Client1 and
-Client2 call `monitorPartition` on their respective copies of the same partition so that incoming
-events are applied back to their local object.
-
-### Pre-loading a partition
-
-When a partition must exist before clients connect, create it directly on the server:
-
-```
-Language partition = new Language("MyLang", "my-lang-id", "my-lang-key")
-server.createPartition("MyRepo", partition, serialization())
-```
-
-Then retrieve a second independent copy for Client2:
-
-```
-Language partitionForClient2 = (Language) server.retrieveAsClassifierInstance("MyRepo", "my-lang-id", serialization())
-```
-
-### Assertions
-
-Every scenario ends with two layers of assertions:
-
-- **Client2 local model** – the Java object held by Client2 has the expected structure/values.
-- **Server state** – `server.retrieve("MyRepo", List.of(id), Integer.MAX_VALUE)` or
-  `server.listPartitionIDs("MyRepo")` returns the expected data.
-
----
 
 ## Category 1 – Partition Management
 
