@@ -9,7 +9,7 @@ import io.lionweb.language.Language
 import io.lionweb.model.impl.DynamicNode
 import java.net.InetSocketAddress
 import java.util.UUID
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.ConcurrentHashMap
 
 class DemoClientWebServer(
     private val port: Int,
@@ -17,7 +17,7 @@ class DemoClientWebServer(
     private val serverUrl: String,
     private val deltaClient: DeltaClient,
     private val messageLog: MessageLog,
-    private val partitionIds: CopyOnWriteArrayList<String>,
+    private val partitions: ConcurrentHashMap<String, Map<String, String?>>,
     private val knownLanguages: List<Language> = emptyList(),
 ) {
     private val gson = Gson()
@@ -48,7 +48,7 @@ class DemoClientWebServer(
                     mapOf(
                         "clientId" to clientId,
                         "serverUrl" to serverUrl,
-                        "partitions" to partitionIds.map { mapOf("id" to it) },
+                        "partitions" to partitions.values.toList(),
                         "messages" to messageLog.getAll(),
                         "concepts" to concepts,
                     )
@@ -88,7 +88,12 @@ class DemoClientWebServer(
                         val id = UUID.randomUUID().toString()
                         val node = DynamicNode(id, concept)
                         deltaClient.sendAddPartitionCommand(node)
-                        partitionIds.add(id)
+                        partitions[id] =
+                            mapOf(
+                                "id" to id,
+                                "classifierKey" to concept.key,
+                                "classifierLanguageKey" to concept.language?.key,
+                            )
                         val resp = gson.toJson(mapOf("id" to id)).toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                         exchange.sendResponseHeaders(200, resp.size.toLong())
@@ -101,7 +106,7 @@ class DemoClientWebServer(
                                 return@createContext
                             }
                         deltaClient.sendDeletePartitionCommand(partitionId)
-                        partitionIds.remove(partitionId)
+                        partitions.remove(partitionId)
                         val resp = "{}".toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
                         exchange.sendResponseHeaders(200, resp.size.toLong())

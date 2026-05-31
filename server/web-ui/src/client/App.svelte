@@ -4,6 +4,8 @@
 
   interface PartitionInfo {
     id: string
+    classifierKey?: string | null
+    classifierLanguageKey?: string | null
   }
 
   interface ConceptInfo {
@@ -149,7 +151,12 @@
         <div class="partition-list">
           {#each state.partitions as partition}
             <div class="partition-row">
-              <code class="partition-id">{partition.id}</code>
+              <div class="partition-info">
+                <code class="partition-id">{partition.id}</code>
+                {#if partition.classifierKey}
+                  <span class="partition-classifier">{partition.classifierKey}</span>
+                {/if}
+              </div>
               <button
                 class="btn-danger"
                 onclick={() => deletePartition(partition.id)}
@@ -329,10 +336,23 @@
     gap: 1rem;
   }
 
+  .partition-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+  }
+
   .partition-id {
     font-size: 0.825rem;
     word-break: break-all;
-    flex: 1;
+  }
+
+  .partition-classifier {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    font-weight: 500;
   }
 
   .btn-danger {

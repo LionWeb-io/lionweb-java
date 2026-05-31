@@ -74,7 +74,19 @@ class WebUIServer(
         val repos =
             inMemoryServer.listRepositories().map { config ->
                 val name = config.name
-                val partitionIds = inMemoryServer.listPartitionIDs(name)
+                val partitions =
+                    inMemoryServer.listPartitionIDs(name).map { id ->
+                        val classifier =
+                            inMemoryServer
+                                .retrieve(name, listOf(id), 0)
+                                .firstOrNull()
+                                ?.classifier
+                        mapOf(
+                            "id" to id,
+                            "classifierKey" to classifier?.key,
+                            "classifierLanguageKey" to classifier?.language,
+                        )
+                    }
                 val classifiers =
                     inMemoryServer.nodesByClassifier(name).map { (key, result) ->
                         mapOf(
@@ -88,7 +100,7 @@ class WebUIServer(
                     "name" to name,
                     "lionWebVersion" to config.lionWebVersion.toString(),
                     "historySupport" to config.historySupport.toString(),
-                    "partitionIds" to partitionIds,
+                    "partitions" to partitions,
                     "classifiers" to classifiers,
                 )
             }

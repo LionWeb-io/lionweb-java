@@ -9,11 +9,17 @@
     sampleIds: string[]
   }
 
+  interface PartitionInfo {
+    id: string
+    classifierKey?: string | null
+    classifierLanguageKey?: string | null
+  }
+
   interface RepositoryInfo {
     name: string
     lionWebVersion: string
     historySupport: string
-    partitionIds: string[]
+    partitions: PartitionInfo[]
     classifiers: ClassifierInfo[]
   }
 
@@ -141,7 +147,7 @@
 
               <div class="stats-row">
                 <div class="stat-box">
-                  <span class="stat-num">{repo.partitionIds.length}</span>
+                  <span class="stat-num">{repo.partitions.length}</span>
                   <span class="stat-lbl">Partitions</span>
                 </div>
                 <div class="stat-box">
@@ -154,12 +160,17 @@
                 </div>
               </div>
 
-              {#if repo.partitionIds.length > 0}
+              {#if repo.partitions.length > 0}
                 <details class="collapsible">
-                  <summary>Partition IDs ({repo.partitionIds.length})</summary>
+                  <summary>Partitions ({repo.partitions.length})</summary>
                   <ul class="id-list">
-                    {#each repo.partitionIds as id}
-                      <li><code>{id}</code></li>
+                    {#each repo.partitions as p}
+                      <li>
+                        <code>{p.id}</code>
+                        {#if p.classifierKey}
+                          <span class="partition-classifier">{p.classifierKey}</span>
+                        {/if}
+                      </li>
                     {/each}
                   </ul>
                 </details>
@@ -525,6 +536,15 @@
   .id-list li {
     font-size: 0.825rem;
     padding: 2px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .partition-classifier {
+    font-size: 0.75rem;
+    color: var(--color-primary);
+    font-weight: 500;
   }
 
   /* ── Table ── */
