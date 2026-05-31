@@ -168,7 +168,7 @@
         </div>
       {/if}
 
-      <MessageLogPanel messages={state.messages} />
+      <MessageLogPanel messages={state.messages} myClientId={state.clientId} />
     {/if}
   </main>
 </div>

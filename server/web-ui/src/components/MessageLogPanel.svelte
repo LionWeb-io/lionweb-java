@@ -9,7 +9,7 @@
     json: string
   }
 
-  let { messages = [] }: { messages: MessageLogEntry[] } = $props()
+  let { messages = [], myClientId = null }: { messages: MessageLogEntry[], myClientId?: string | null } = $props()
 
   function formatTime(ts: number): string {
     return new Date(ts).toLocaleTimeString()
@@ -19,6 +19,10 @@
     if (entry.category === 'error') return 'entry-error'
     if (entry.direction === 'sent') return 'entry-sent'
     return 'entry-received'
+  }
+
+  function isMine(entry: MessageLogEntry): boolean {
+    return myClientId != null && entry.clientId === myClientId
   }
 
   let expanded = $state<Record<number, boolean>>({})
@@ -46,16 +50,18 @@
   {:else}
     <div class="log-list">
       {#each messages as entry, idx}
-        <div class="log-entry {directionColor(entry)}">
+        <div class="log-entry {directionColor(entry)}" class:entry-mine={isMine(entry)} class:entry-other={myClientId != null && !isMine(entry)}>
           <button class="entry-toggle" onclick={() => toggle(idx)}>
             <span class="entry-time">{formatTime(entry.timestamp)}</span>
             <span class="entry-dir">{entry.direction}</span>
             <span class="entry-kind">{entry.messageKind}</span>
-            {#if entry.clientId}
-              <span class="entry-client">{entry.clientId}</span>
-            {/if}
-            {#if entry.participationId}
-              <span class="entry-pid">{entry.participationId}</span>
+            {#if myClientId == null}
+              {#if entry.clientId}
+                <span class="entry-client">{entry.clientId}</span>
+              {/if}
+              {#if entry.participationId}
+                <span class="entry-pid">{entry.participationId}</span>
+              {/if}
             {/if}
             <span class="entry-caret">{expanded[idx] ? '▲' : '▼'}</span>
           </button>
@@ -132,6 +138,18 @@
 
   .entry-error {
     border-left: 3px solid #ef4444;
+  }
+
+  .entry-mine {
+    background: #f0f7ff;
+  }
+
+  .entry-mine .entry-toggle:hover {
+    background: #e0efff;
+  }
+
+  .entry-other {
+    opacity: 0.55;
   }
 
   .entry-toggle {

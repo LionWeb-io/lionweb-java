@@ -57,9 +57,18 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
             )
         knownLanguages.forEach { deltaClient.registerLanguage(it) }
 
-        val connected = channel.connectBlocking()
+        val maxAttempts = 10
+        var connected = false
+        for (attempt in 1..maxAttempts) {
+            connected = if (attempt == 1) channel.connectBlocking() else channel.reconnectBlocking()
+            if (connected) break
+            if (attempt < maxAttempts) {
+                echo("Connection attempt $attempt failed, retrying in 1s…")
+                Thread.sleep(1000)
+            }
+        }
         if (!connected) {
-            echo("Cannot connect to server at $serverWsUrl — is it running?", err = true)
+            echo("Cannot connect to server at $serverWsUrl after $maxAttempts attempts — is it running?", err = true)
             return
         }
 
