@@ -98,4 +98,19 @@ abstract class BaseIntegrationTest {
         }
         error("'$label' at $url did not become available within ${timeoutMs}ms")
     }
+
+    protected fun operateOnClients(operation: (DebugClient, DebugClient) -> Unit) {
+        val debug1 = DebugClient(URI("ws://localhost:$CLIENT1_DEBUG_PORT"))
+        val debug2 = DebugClient(URI("ws://localhost:$CLIENT2_DEBUG_PORT"))
+        try {
+            debug1.connectBlocking()
+            debug2.connectBlocking()
+
+            operation(debug1, debug2)
+
+        } finally {
+            debug1.close()
+            debug2.close()
+        }
+    }
 }
