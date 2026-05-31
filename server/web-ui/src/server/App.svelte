@@ -75,7 +75,7 @@
           <line x1="2" y1="12" x2="8" y2="12" stroke="currentColor" stroke-width="2"/>
           <line x1="16" y1="12" x2="22" y2="12" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <span>LionWeb Server</span>
+        <span>LionWeb JVM Server</span>
       </div>
     </div>
   </header>

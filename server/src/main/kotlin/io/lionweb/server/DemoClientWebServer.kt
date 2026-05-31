@@ -4,7 +4,9 @@ import com.google.gson.Gson
 import com.google.gson.JsonParser
 import com.sun.net.httpserver.HttpServer
 import io.lionweb.client.delta.DeltaClient
+import io.lionweb.language.Concept
 import io.lionweb.language.Language
+import io.lionweb.model.impl.DynamicNode
 import java.net.InetSocketAddress
 import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
@@ -16,6 +18,7 @@ class DemoClientWebServer(
     private val deltaClient: DeltaClient,
     private val messageLog: MessageLog,
     private val partitionIds: CopyOnWriteArrayList<String>,
+    private val knownLanguages: List<Language> = emptyList(),
 ) {
     private val gson = Gson()
 
@@ -25,12 +28,29 @@ class DemoClientWebServer(
         server.createContext("/api/state") { exchange ->
             exchange.responseHeaders.set("Access-Control-Allow-Origin", "*")
             if (exchange.requestMethod == "GET") {
+                val concepts =
+                    knownLanguages.flatMap { lang ->
+                        lang.elements
+                            .filterIsInstance<Concept>()
+                            .filter { !it.isAbstract }
+                            .map { c ->
+                                mapOf(
+                                    "key" to c.key,
+                                    "name" to c.name,
+                                    "languageName" to lang.name,
+                                    "languageKey" to lang.key,
+                                    "languageVersion" to lang.version,
+                                    "isPartition" to c.isPartition,
+                                )
+                            }
+                    }
                 val state =
                     mapOf(
                         "clientId" to clientId,
                         "serverUrl" to serverUrl,
                         "partitions" to partitionIds.map { mapOf("id" to it) },
                         "messages" to messageLog.getAll(),
+                        "concepts" to concepts,
                     )
                 val bytes = gson.toJson(state).toByteArray(Charsets.UTF_8)
                 exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")
@@ -49,10 +69,25 @@ class DemoClientWebServer(
                 val type = json.get("type")?.asString
                 when (type) {
                     "create" -> {
-                        val name = json.get("name")?.asString ?: "Partition"
+                        val conceptKey = json.get("conceptKey")?.asString
+                        val languageKey = json.get("languageKey")?.asString
+                        val concept: Concept? =
+                            if (conceptKey != null && languageKey != null) {
+                                knownLanguages
+                                    .firstOrNull { it.key == languageKey }
+                                    ?.elements
+                                    ?.filterIsInstance<Concept>()
+                                    ?.firstOrNull { it.key == conceptKey }
+                            } else {
+                                null
+                            }
+                        if (concept == null) {
+                            exchange.sendResponseHeaders(400, -1)
+                            return@createContext
+                        }
                         val id = UUID.randomUUID().toString()
-                        val language = Language(name, id, id)
-                        deltaClient.sendAddPartitionCommand(language)
+                        val node = DynamicNode(id, concept)
+                        deltaClient.sendAddPartitionCommand(node)
                         partitionIds.add(id)
                         val resp = gson.toJson(mapOf("id" to id)).toByteArray(Charsets.UTF_8)
                         exchange.responseHeaders.set("Content-Type", "application/json; charset=utf-8")

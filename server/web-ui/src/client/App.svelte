@@ -6,17 +6,35 @@
     id: string
   }
 
+  interface ConceptInfo {
+    key: string
+    name: string
+    languageName: string
+    languageKey: string
+    languageVersion: string
+    isPartition: boolean
+  }
+
   interface ClientState {
     clientId: string
     serverUrl: string
     partitions: PartitionInfo[]
     messages: MessageLogEntry[]
+    concepts: ConceptInfo[]
   }
 
   let state = $state<ClientState | null>(null)
   let error = $state<string | null>(null)
-  let newPartitionName = $state('')
+  let selectedConceptKey = $state<string>('')
   let actionError = $state<string | null>(null)
+
+  // Auto-select the first partition concept (or first concept) once concepts load
+  $effect(() => {
+    if (state?.concepts && state.concepts.length > 0 && !selectedConceptKey) {
+      const partitionConcept = state.concepts.find(c => c.isPartition)
+      selectedConceptKey = (partitionConcept ?? state.concepts[0]).key + '|' + (partitionConcept ?? state.concepts[0]).languageKey
+    }
+  })
 
   async function loadState() {
     try {
@@ -30,15 +48,18 @@
 
   async function createPartition() {
     actionError = null
-    const name = newPartitionName.trim() || 'New Partition'
+    const [conceptKey, languageKey] = selectedConceptKey.split('|')
+    if (!conceptKey || !languageKey) {
+      actionError = 'Please select a concept'
+      return
+    }
     try {
       const resp = await fetch('./api/action', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ type: 'create', name }),
+        body: JSON.stringify({ type: 'create', conceptKey, languageKey }),
       })
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`)
-      newPartitionName = ''
       await loadState()
     } catch (e) {
       actionError = e instanceof Error ? e.message : String(e)
@@ -75,7 +96,7 @@
           <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
           <path d="M8 12h8M12 8v8" stroke="currentColor" stroke-width="2"/>
         </svg>
-        <span>LionWeb Demo Client</span>
+        <span>LionWeb JVM Demo Client</span>
       </div>
       {#if state}
         <div class="conn-info">
@@ -105,14 +126,18 @@
     </div>
 
     <div class="create-row">
-      <input
-        type="text"
-        placeholder="Partition name"
-        bind:value={newPartitionName}
-        class="partition-input"
-        onkeydown={(e) => e.key === 'Enter' && createPartition()}
-      />
-      <button onclick={createPartition} class="btn-primary">Create Partition</button>
+      <select bind:value={selectedConceptKey} class="concept-select">
+        {#if state?.concepts}
+          {#each state.concepts.slice().sort((a, b) => (b.isPartition ? 1 : 0) - (a.isPartition ? 1 : 0)) as c}
+            <option value="{c.key}|{c.languageKey}">
+              {c.isPartition ? '★ ' : ''}{c.name} ({c.languageName})
+            </option>
+          {/each}
+        {/if}
+      </select>
+      <button onclick={createPartition} class="btn-primary" disabled={!selectedConceptKey}>
+        Create Partition
+      </button>
     </div>
 
     {#if state}
@@ -243,17 +268,20 @@
     margin-bottom: 1.25rem;
   }
 
-  .partition-input {
+  .concept-select {
     flex: 1;
     padding: 8px 12px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius);
     font-size: 0.875rem;
+    background: var(--color-surface);
+    color: var(--color-text);
     outline: none;
+    cursor: pointer;
     transition: border-color 0.15s;
   }
 
-  .partition-input:focus {
+  .concept-select:focus {
     border-color: var(--color-primary);
   }
 

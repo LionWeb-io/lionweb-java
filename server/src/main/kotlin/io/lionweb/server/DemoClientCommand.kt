@@ -10,6 +10,9 @@ import io.lionweb.client.delta.DeltaClient
 import io.lionweb.client.delta.DeltaMessageSerialization
 import io.lionweb.client.delta.messages.events.partitions.PartitionAdded
 import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted
+import io.lionweb.language.Language
+import io.lionweb.language.LionCoreBuiltins
+import io.lionweb.lioncore.LionCore
 import java.net.URI
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -47,6 +50,13 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
         val loggingChannel = LoggingDeltaChannel(channel, messageLog, serialization)
         val deltaClient = DeltaClient(LionWebVersion.v2024_1, loggingChannel, clientId)
 
+        val knownLanguages: List<Language> =
+            listOf(
+                LionCore.getInstance(LionWebVersion.v2024_1),
+                LionCoreBuiltins.getInstance(LionWebVersion.v2024_1),
+            )
+        knownLanguages.forEach { deltaClient.registerLanguage(it) }
+
         channel.connectBlocking()
 
         deltaClient.sendSignOnRequest()
@@ -79,7 +89,7 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
                 }
         partitionIds.addAllAbsent(initialIds)
 
-        DemoClientWebServer(httpPort, clientId, serverWsUrl, deltaClient, messageLog, partitionIds).start()
+        DemoClientWebServer(httpPort, clientId, serverWsUrl, deltaClient, messageLog, partitionIds, knownLanguages).start()
 
         echo("Demo client '$clientId' connected to $serverWsUrl, web UI at http://localhost:$httpPort")
 
