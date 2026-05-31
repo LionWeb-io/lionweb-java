@@ -107,7 +107,6 @@ abstract class BaseIntegrationTest {
             debug2.connectBlocking()
 
             operation(debug1, debug2)
-
         } finally {
             debug1.close()
             debug2.close()
