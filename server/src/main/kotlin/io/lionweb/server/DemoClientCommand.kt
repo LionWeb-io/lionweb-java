@@ -35,12 +35,11 @@ class DemoClientCommand : CliktCommand(name = "demo-client") {
         channel.registerEventReceiver { event ->
             messageLog.add(
                 MessageLogEntry(
-                    System.currentTimeMillis(),
-                    "received",
-                    "event",
-                    event.javaClass.simpleName,
-                    null,
-                    gson.toJson(event),
+                    timestamp = System.currentTimeMillis(),
+                    direction = "received",
+                    category = "event",
+                    messageKind = event.javaClass.simpleName,
+                    json = gson.toJson(event),
                 ),
             )
         }

@@ -4,6 +4,7 @@
     direction: string
     category: string
     messageKind: string
+    clientId?: string | null
     participationId?: string | null
     json: string
   }
@@ -50,6 +51,9 @@
             <span class="entry-time">{formatTime(entry.timestamp)}</span>
             <span class="entry-dir">{entry.direction}</span>
             <span class="entry-kind">{entry.messageKind}</span>
+            {#if entry.clientId}
+              <span class="entry-client">{entry.clientId}</span>
+            {/if}
             {#if entry.participationId}
               <span class="entry-pid">{entry.participationId}</span>
             {/if}
@@ -174,6 +178,13 @@
     font-family: 'SFMono-Regular', Consolas, monospace;
     font-size: 0.78rem;
     flex: 1;
+  }
+
+  .entry-client {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--color-text);
+    font-family: 'SFMono-Regular', Consolas, monospace;
   }
 
   .entry-pid {

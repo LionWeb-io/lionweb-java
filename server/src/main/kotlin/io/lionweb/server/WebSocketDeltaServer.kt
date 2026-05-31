@@ -11,11 +11,16 @@ import io.lionweb.client.delta.messages.DeltaCommand
 import io.lionweb.client.delta.messages.DeltaEvent
 import io.lionweb.client.delta.messages.DeltaQuery
 import io.lionweb.client.delta.messages.DeltaQueryResponse
+import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest
+import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse
 import io.lionweb.client.inmemory.InMemoryServer
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
 import java.net.InetSocketAddress
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Function
@@ -35,6 +40,8 @@ class WebSocketDeltaServer(
 ) : WebSocketServer(InetSocketAddress(port)) {
     private val serialization = DeltaMessageSerialization()
     val broadcastChannel = BroadcastChannel()
+    private val connectionClientIds = ConcurrentHashMap<WebSocket, String>()
+    private val connectionParticipations = ConcurrentHashMap<WebSocket, String>()
 
     init {
         inMemoryServer.monitorDeltaChannel(repositoryName, broadcastChannel)
@@ -54,6 +61,8 @@ class WebSocketDeltaServer(
         remote: Boolean,
     ) {
         broadcastChannel.removeConnection(conn)
+        connectionClientIds.remove(conn)
+        connectionParticipations.remove(conn)
     }
 
     override fun onMessage(
@@ -75,6 +84,7 @@ class WebSocketDeltaServer(
                         direction = "received",
                         category = "command",
                         messageKind = kind,
+                        clientId = connectionClientIds[conn],
                         participationId = participationId,
                         json = message,
                     ),
@@ -84,36 +94,41 @@ class WebSocketDeltaServer(
                 broadcastChannel.commandReceiver?.receiveCommand(participationId, command)
             }
             DeltaMessageSerialization.isQueryClass(targetClass) -> {
-                val queryParticipationId = root.get("participationId")?.asString
+                val query = serialization.deserialize(message) as? DeltaQuery ?: return
+                // Update connection maps from typed message objects — no JSON parsing needed.
+                when (query) {
+                    is SignOnRequest -> connectionClientIds[conn] = query.clientId
+                    is ReconnectRequest -> {
+                        connectionClientIds[conn] = query.clientId
+                        connectionParticipations[conn] = query.participationId
+                    }
+                    is SignOffRequest -> connectionParticipations.remove(conn)
+                }
                 messageLog?.add(
                     MessageLogEntry(
                         timestamp = System.currentTimeMillis(),
                         direction = "received",
                         category = "query",
                         messageKind = kind,
-                        participationId = queryParticipationId,
+                        clientId = connectionClientIds[conn],
+                        participationId = connectionParticipations[conn],
                         json = message,
                     ),
                 )
-                val query = serialization.deserialize(message) as? DeltaQuery ?: return
                 val response = broadcastChannel.queryReceiver?.receiveQuery(query)
                 if (response != null) {
+                    if (response is SignOnResponse) {
+                        connectionParticipations[conn] = response.participationId
+                    }
                     val responseJson = serialization.serialize(response)
-                    val responseParticipationId =
-                        runCatching {
-                            JsonParser
-                                .parseString(responseJson)
-                                .asJsonObject
-                                .get("participationId")
-                                ?.asString
-                        }.getOrNull()
                     messageLog?.add(
                         MessageLogEntry(
                             timestamp = System.currentTimeMillis(),
                             direction = "sent",
                             category = "response",
                             messageKind = response.javaClass.simpleName,
-                            participationId = responseParticipationId,
+                            clientId = connectionClientIds[conn],
+                            participationId = connectionParticipations[conn],
                             json = responseJson,
                         ),
                     )

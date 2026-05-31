@@ -7,6 +7,7 @@ data class MessageLogEntry(
     val direction: String,
     val category: String,
     val messageKind: String,
+    val clientId: String? = null,
     val participationId: String? = null,
     val json: String,
 )

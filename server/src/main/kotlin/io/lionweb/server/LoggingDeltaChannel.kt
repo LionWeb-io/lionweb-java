@@ -27,12 +27,11 @@ class LoggingDeltaChannel(
                 val q = queryProducer.apply(id)
                 log.add(
                     MessageLogEntry(
-                        System.currentTimeMillis(),
-                        "sent",
-                        "query",
-                        q.javaClass.simpleName,
-                        null,
-                        trySer(q),
+                        timestamp = System.currentTimeMillis(),
+                        direction = "sent",
+                        category = "query",
+                        messageKind = q.javaClass.simpleName,
+                        json = trySer(q),
                     ),
                 )
                 q
@@ -41,12 +40,11 @@ class LoggingDeltaChannel(
         if (response != null) {
             log.add(
                 MessageLogEntry(
-                    System.currentTimeMillis(),
-                    "received",
-                    "response",
-                    response.javaClass.simpleName,
-                    null,
-                    trySer(response),
+                    timestamp = System.currentTimeMillis(),
+                    direction = "received",
+                    category = "response",
+                    messageKind = response.javaClass.simpleName,
+                    json = trySer(response),
                 ),
             )
         }
@@ -62,12 +60,12 @@ class LoggingDeltaChannel(
                 val c = commandProducer.apply(id)
                 log.add(
                     MessageLogEntry(
-                        System.currentTimeMillis(),
-                        "sent",
-                        "command",
-                        c.javaClass.simpleName,
-                        participationId,
-                        trySer(c),
+                        timestamp = System.currentTimeMillis(),
+                        direction = "sent",
+                        category = "command",
+                        messageKind = c.javaClass.simpleName,
+                        participationId = participationId,
+                        json = trySer(c),
                     ),
                 )
                 c
