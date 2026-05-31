@@ -12,13 +12,13 @@ import io.lionweb.client.delta.messages.DeltaEvent
 import io.lionweb.client.delta.messages.DeltaQuery
 import io.lionweb.client.delta.messages.DeltaQueryResponse
 import io.lionweb.client.inmemory.InMemoryServer
+import org.java_websocket.WebSocket
+import org.java_websocket.handshake.ClientHandshake
+import org.java_websocket.server.WebSocketServer
 import java.net.InetSocketAddress
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Function
-import org.java_websocket.WebSocket
-import org.java_websocket.handshake.ClientHandshake
-import org.java_websocket.server.WebSocketServer
 
 /**
  * Accepts WebSocket connections from delta-protocol clients and routes messages through a shared
@@ -32,7 +32,6 @@ class WebSocketDeltaServer(
     inMemoryServer: InMemoryServer,
     repositoryName: String,
 ) : WebSocketServer(InetSocketAddress(port)) {
-
     private val serialization = DeltaMessageSerialization()
     val broadcastChannel = BroadcastChannel()
 
@@ -40,33 +39,55 @@ class WebSocketDeltaServer(
         inMemoryServer.monitorDeltaChannel(repositoryName, broadcastChannel)
     }
 
-    override fun onOpen(conn: WebSocket, handshake: ClientHandshake) {
+    override fun onOpen(
+        conn: WebSocket,
+        handshake: ClientHandshake,
+    ) {
         broadcastChannel.addConnection(conn)
     }
 
-    override fun onClose(conn: WebSocket, code: Int, reason: String, remote: Boolean) {
+    override fun onClose(
+        conn: WebSocket,
+        code: Int,
+        reason: String,
+        remote: Boolean,
+    ) {
         broadcastChannel.removeConnection(conn)
     }
 
-    override fun onMessage(conn: WebSocket, message: String) {
+    override fun onMessage(
+        conn: WebSocket,
+        message: String,
+    ) {
         val root = JsonParser.parseString(message).asJsonObject
+        val kind = root.get("messageKind")?.asString ?: return
+        val targetClass = serialization.getClassForKind(kind) ?: return
 
-        val participationId = root.get("participationId")?.takeIf { !it.isJsonNull }?.asString
-        if (participationId != null) {
-            // Strip the extra field before handing to DeltaMessageSerialization
-            root.remove("participationId")
-            val command = serialization.deserialize(root.toString()) as? DeltaCommand ?: return
-            broadcastChannel.commandReceiver?.receiveCommand(participationId, command)
-        } else {
-            val query = serialization.deserialize(message) as? DeltaQuery ?: return
-            val response = broadcastChannel.queryReceiver?.receiveQuery(query)
-            if (response != null) {
-                conn.send(serialization.serialize(response))
+        when {
+            DeltaMessageSerialization.isCommandClass(targetClass) -> {
+                // Commands carry participationId as an extra wire field injected by
+                // WebSocketDeltaChannel.sendCommand – strip it before deserializing.
+                val participationId = root.get("participationId")?.asString ?: return
+                root.remove("participationId")
+                val command = serialization.deserialize(root.toString()) as? DeltaCommand ?: return
+                broadcastChannel.commandReceiver?.receiveCommand(participationId, command)
+            }
+            DeltaMessageSerialization.isQueryClass(targetClass) -> {
+                // Queries (including ReconnectRequest which has a participationId field
+                // of its own) are routed purely by messageKind, not by participationId.
+                val query = serialization.deserialize(message) as? DeltaQuery ?: return
+                val response = broadcastChannel.queryReceiver?.receiveQuery(query)
+                if (response != null) {
+                    conn.send(serialization.serialize(response))
+                }
             }
         }
     }
 
-    override fun onError(conn: WebSocket?, ex: Exception) {
+    override fun onError(
+        conn: WebSocket?,
+        ex: Exception,
+    ) {
         System.err.println("WebSocket error on ${conn?.remoteSocketAddress}: ${ex.message}")
     }
 
@@ -80,7 +101,6 @@ class WebSocketDeltaServer(
      * (wired by [InMemoryServer.monitorDeltaChannel]).
      */
     inner class BroadcastChannel : DeltaChannel {
-
         private val connections = CopyOnWriteArrayList<WebSocket>()
         private val eventReceivers = CopyOnWriteArrayList<DeltaEventReceiver>()
         private val queryResponseReceivers = CopyOnWriteArrayList<DeltaQueryResponseReceiver>()
@@ -102,22 +122,41 @@ class WebSocketDeltaServer(
 
         override fun sendQuery(queryProducer: Function<String, DeltaQuery>): DeltaQueryResponse? = null
 
-        override fun sendCommand(participationId: String, commandProducer: Function<String, DeltaCommand>) {}
+        override fun sendCommand(
+            participationId: String,
+            commandProducer: Function<String, DeltaCommand>,
+        ) {}
 
-        override fun registerEventReceiver(r: DeltaEventReceiver) { eventReceivers.add(r) }
+        override fun registerEventReceiver(r: DeltaEventReceiver) {
+            eventReceivers.add(r)
+        }
 
-        override fun unregisterEventReceiver(r: DeltaEventReceiver) { eventReceivers.remove(r) }
+        override fun unregisterEventReceiver(r: DeltaEventReceiver) {
+            eventReceivers.remove(r)
+        }
 
-        override fun registerCommandReceiver(r: DeltaCommandReceiver) { commandReceiver = r }
+        override fun registerCommandReceiver(r: DeltaCommandReceiver) {
+            commandReceiver = r
+        }
 
-        override fun unregisterCommandReceiver(r: DeltaCommandReceiver) { if (commandReceiver === r) commandReceiver = null }
+        override fun unregisterCommandReceiver(r: DeltaCommandReceiver) {
+            if (commandReceiver === r) commandReceiver = null
+        }
 
-        override fun registerQueryReceiver(r: DeltaQueryReceiver) { queryReceiver = r }
+        override fun registerQueryReceiver(r: DeltaQueryReceiver) {
+            queryReceiver = r
+        }
 
-        override fun unregisterQueryReceiver(r: DeltaQueryReceiver) { if (queryReceiver === r) queryReceiver = null }
+        override fun unregisterQueryReceiver(r: DeltaQueryReceiver) {
+            if (queryReceiver === r) queryReceiver = null
+        }
 
-        override fun registerQueryResponseReceiver(r: DeltaQueryResponseReceiver) { queryResponseReceivers.add(r) }
+        override fun registerQueryResponseReceiver(r: DeltaQueryResponseReceiver) {
+            queryResponseReceivers.add(r)
+        }
 
-        override fun unregisterQueryResponseReceiver(r: DeltaQueryResponseReceiver) { queryResponseReceivers.remove(r) }
+        override fun unregisterQueryResponseReceiver(r: DeltaQueryResponseReceiver) {
+            queryResponseReceivers.remove(r)
+        }
     }
 }

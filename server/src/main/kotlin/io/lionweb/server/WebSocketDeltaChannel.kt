@@ -12,6 +12,8 @@ import io.lionweb.client.delta.messages.DeltaCommand
 import io.lionweb.client.delta.messages.DeltaEvent
 import io.lionweb.client.delta.messages.DeltaQuery
 import io.lionweb.client.delta.messages.DeltaQueryResponse
+import org.java_websocket.client.WebSocketClient
+import org.java_websocket.handshake.ServerHandshake
 import java.net.URI
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
@@ -19,8 +21,6 @@ import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Function
-import org.java_websocket.client.WebSocketClient
-import org.java_websocket.handshake.ServerHandshake
 
 /**
  * A [DeltaChannel] backed by a WebSocket connection to a [WebSocketDeltaServer].
@@ -30,8 +30,10 @@ import org.java_websocket.handshake.ServerHandshake
  * - Incoming messages are dispatched to registered [DeltaEventReceiver]s or to a waiting query
  *   future.
  */
-class WebSocketDeltaChannel(serverUri: URI) : WebSocketClient(serverUri), DeltaChannel {
-
+class WebSocketDeltaChannel(
+    serverUri: URI,
+) : WebSocketClient(serverUri),
+    DeltaChannel {
     private val serialization = DeltaMessageSerialization()
     private val gson = Gson()
 
@@ -45,15 +47,17 @@ class WebSocketDeltaChannel(serverUri: URI) : WebSocketClient(serverUri), DeltaC
         // connection ready
     }
 
-    override fun onClose(code: Int, reason: String, remote: Boolean) {
+    override fun onClose(
+        code: Int,
+        reason: String,
+        remote: Boolean,
+    ) {
         // cancel any pending query futures
         pendingQueries.values.forEach { it.cancel(true) }
         pendingQueries.clear()
     }
 
-    override fun onError(ex: Exception) {
-        throw RuntimeException("WebSocketDeltaChannel error: ${ex.message}")
-    }
+    override fun onError(ex: Exception): Unit = throw RuntimeException("WebSocketDeltaChannel error: ${ex.message}")
 
     override fun onMessage(message: String) {
         val msg = serialization.deserialize(message) ?: return
@@ -88,7 +92,10 @@ class WebSocketDeltaChannel(serverUri: URI) : WebSocketClient(serverUri), DeltaC
         return future.get(30, TimeUnit.SECONDS)
     }
 
-    override fun sendCommand(participationId: String, commandProducer: Function<String, DeltaCommand>) {
+    override fun sendCommand(
+        participationId: String,
+        commandProducer: Function<String, DeltaCommand>,
+    ) {
         val commandId = "cmd-${nextCommandId.getAndIncrement()}"
         val command = commandProducer.apply(commandId)
         // Merge participationId into the serialized JSON so the server can extract it
@@ -101,9 +108,13 @@ class WebSocketDeltaChannel(serverUri: URI) : WebSocketClient(serverUri), DeltaC
         // clients do not send events
     }
 
-    override fun registerEventReceiver(r: DeltaEventReceiver) { eventReceivers.add(r) }
+    override fun registerEventReceiver(r: DeltaEventReceiver) {
+        eventReceivers.add(r)
+    }
 
-    override fun unregisterEventReceiver(r: DeltaEventReceiver) { eventReceivers.remove(r) }
+    override fun unregisterEventReceiver(r: DeltaEventReceiver) {
+        eventReceivers.remove(r)
+    }
 
     override fun registerCommandReceiver(r: DeltaCommandReceiver) {}
 
@@ -113,7 +124,11 @@ class WebSocketDeltaChannel(serverUri: URI) : WebSocketClient(serverUri), DeltaC
 
     override fun unregisterQueryReceiver(r: DeltaQueryReceiver) {}
 
-    override fun registerQueryResponseReceiver(r: DeltaQueryResponseReceiver) { queryResponseReceivers.add(r) }
+    override fun registerQueryResponseReceiver(r: DeltaQueryResponseReceiver) {
+        queryResponseReceivers.add(r)
+    }
 
-    override fun unregisterQueryResponseReceiver(r: DeltaQueryResponseReceiver) { queryResponseReceivers.remove(r) }
+    override fun unregisterQueryResponseReceiver(r: DeltaQueryResponseReceiver) {
+        queryResponseReceivers.remove(r)
+    }
 }
