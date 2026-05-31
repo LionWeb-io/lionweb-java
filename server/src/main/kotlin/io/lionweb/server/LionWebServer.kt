@@ -37,15 +37,26 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
         )
 
         val messageLog = MessageLog()
-        val wsServer = WebSocketDeltaServer(port, inMemoryServer, repository, messageLog)
-        wsServer.start()
-        try {
-            wsServer.awaitStart()
-        } catch (e: IllegalStateException) {
-            echo("Failed to start WebSocket server on port $port: ${e.cause?.message ?: e.message}", err = true)
-            return
+        val maxAttempts = 10
+        var wsServer: WebSocketDeltaServer? = null
+        for (attempt in 1..maxAttempts) {
+            val candidate = WebSocketDeltaServer(port, inMemoryServer, repository, messageLog)
+            candidate.start()
+            try {
+                candidate.awaitStart()
+                wsServer = candidate
+                break
+            } catch (e: IllegalStateException) {
+                val reason = e.cause?.message ?: e.message
+                if (attempt < maxAttempts) {
+                    echo("Failed to start WebSocket server on port $port ($reason), retrying in 5s… (attempt $attempt/$maxAttempts)", err = true)
+                    Thread.sleep(5_000)
+                } else {
+                    echo("Failed to start WebSocket server on port $port after $maxAttempts attempts: $reason", err = true)
+                    return
+                }
+            }
         }
-
         echo("LionWeb server listening on port $port (repository: $repository)")
 
         if (webUi) {

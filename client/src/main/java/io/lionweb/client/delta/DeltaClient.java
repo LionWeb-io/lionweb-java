@@ -458,6 +458,14 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(containment, "containment must not be null");
     Objects.requireNonNull(child, "child must not be null");
     SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(child);
+    // The server validates that any node with parentNodeID=null is a registered partition.
+    // For AddChild, the root of the subtree being added must have its parentNodeID set to the
+    // parent so the server can place it correctly in the tree.
+    io.lionweb.serialization.data.SerializedClassifierInstance rootInst =
+        chunk.getClassifierInstancesByID().get(child.getID());
+    if (rootInst != null && rootInst.getParentNodeID() == null) {
+      rootInst.setParentNodeID(parentId);
+    }
     channel.sendCommand(
         participationId, commandId -> new AddChild(commandId, parentId, chunk, containment, index));
   }
