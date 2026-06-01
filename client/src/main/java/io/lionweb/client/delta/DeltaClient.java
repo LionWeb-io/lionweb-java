@@ -54,11 +54,13 @@ import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.UnavailableNodePolicy;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -461,8 +463,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     // The server validates that any node with parentNodeID=null is a registered partition.
     // For AddChild, the root of the subtree being added must have its parentNodeID set to the
     // parent so the server can place it correctly in the tree.
-    io.lionweb.serialization.data.SerializedClassifierInstance rootInst =
-        chunk.getClassifierInstancesByID().get(child.getID());
+    SerializedClassifierInstance rootInst = chunk.getClassifierInstancesByID().get(child.getID());
     if (rootInst != null && rootInst.getParentNodeID() == null) {
       rootInst.setParentNodeID(parentId);
     }
@@ -632,60 +633,78 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                 instance, event.property, event.newValue));
   }
 
-  private void onChildAdded(@NotNull ChildAdded event) {
-    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(event.parent);
+  /**
+   * We are processing an event affecting a certain node. If the node is not relevant for us
+   * (because we are not monitoring it), we can ignore it.
+   *
+   * @param nodeId the id of the node that was affected by the event
+   */
+  private void processRelevantNode(
+      @Nullable String nodeId, Consumer<ClassifierInstance<?>> nodeOperation) {
+    if (nodeId == null) return;
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(nodeId);
     if (refs == null) return;
     for (WeakReference<ClassifierInstance<?>> ref : refs) {
       ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Node child =
-          (Node)
-              serialization
-                  .deserializeSerializationChunk(withSerializationFormatVersion(event.newChild))
-                  .get(0);
-      monitorNode(child);
-      Containment containment =
-          instance.getClassifier().getContainmentByMetaPointer(event.containment);
-      if (containment == null) {
-        throw new IllegalStateException(
-            "Containment not found for " + instance + " using metapointer " + event.containment);
-      }
-      instance.addChild(containment, child, event.index);
+      if (instance == null) return;
+      nodeOperation.accept(instance);
     }
+  }
+
+  private void onChildAdded(@NotNull ChildAdded event) {
+    processRelevantNode(
+        event.parent,
+        instance -> {
+          Node child =
+              (Node)
+                  serialization
+                      .deserializeSerializationChunk(withSerializationFormatVersion(event.newChild))
+                      .get(0);
+          monitorNode(child);
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null) {
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          }
+          instance.addChild(containment, child, event.index);
+        });
   }
 
   private void onChildDeleted(@NotNull ChildDeleted event) {
-    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(event.parent);
-    if (refs == null) return;
-    for (WeakReference<ClassifierInstance<?>> ref : refs) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Containment containment =
-          instance.getClassifier().getContainmentByMetaPointer(event.containment);
-      if (containment == null) {
-        throw new IllegalStateException(
-            "Containment not found for " + instance + " using metapointer " + event.containment);
-      }
-      instance.removeChild(containment, event.index);
-    }
+    processRelevantNode(
+        event.parent,
+        instance -> {
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null) {
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          }
+          instance.removeChild(containment, event.index);
+        });
   }
 
   private void onReferenceAdded(@NotNull ReferenceAdded event) {
-    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(event.parent);
-    if (refs == null) return;
-    for (WeakReference<ClassifierInstance<?>> ref : refs) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
-      if (reference == null) {
-        throw new IllegalStateException(
-            "Reference not found for " + instance + " using metapointer " + event.reference);
-      }
-      instance.addReferenceValue(
-          reference,
-          event.index,
-          new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
-    }
+    processRelevantNode(
+        event.parent,
+        instance -> {
+          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for " + instance + " using metapointer " + event.reference);
+          }
+          instance.addReferenceValue(
+              reference,
+              event.index,
+              new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
+        });
   }
 
   private void onPropertyAdded(@NotNull PropertyAdded event) {
