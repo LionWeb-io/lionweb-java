@@ -143,6 +143,7 @@ class DemoClientWebServer(
                         val id = UUID.randomUUID().toString()
                         val node = DynamicNode(id, concept)
                         deltaClient.sendAddPartitionCommand(node)
+                        deltaClient.sendSubscribeToPartitionContentsRequest(id)
                         partitions[id] =
                             mapOf(
                                 "id" to id,

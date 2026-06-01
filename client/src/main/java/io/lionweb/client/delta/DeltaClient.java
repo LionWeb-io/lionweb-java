@@ -633,7 +633,9 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   private void onChildAdded(@NotNull ChildAdded event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(event.parent);
+    if (refs == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : refs) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
       Node child =
@@ -653,7 +655,9 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   private void onChildDeleted(@NotNull ChildDeleted event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(event.parent);
+    if (refs == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : refs) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
       Containment containment =
@@ -667,7 +671,9 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   private void onReferenceAdded(@NotNull ReferenceAdded event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(event.parent);
+    if (refs == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : refs) {
       ClassifierInstance<?> instance = ref.get();
       if (instance == null) continue;
       Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);

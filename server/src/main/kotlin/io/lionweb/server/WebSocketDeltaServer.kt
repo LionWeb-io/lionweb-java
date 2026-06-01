@@ -11,10 +11,33 @@ import io.lionweb.client.delta.messages.DeltaCommand
 import io.lionweb.client.delta.messages.DeltaEvent
 import io.lionweb.client.delta.messages.DeltaQuery
 import io.lionweb.client.delta.messages.DeltaQueryResponse
+import io.lionweb.client.delta.messages.events.ClassifierChanged
+import io.lionweb.client.delta.messages.events.annotations.AnnotationAdded
+import io.lionweb.client.delta.messages.events.annotations.AnnotationDeleted
+import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedFromOtherParent
+import io.lionweb.client.delta.messages.events.annotations.AnnotationMovedInSameParent
+import io.lionweb.client.delta.messages.events.annotations.AnnotationReplaced
+import io.lionweb.client.delta.messages.events.children.ChildAdded
+import io.lionweb.client.delta.messages.events.children.ChildDeleted
+import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainment
+import io.lionweb.client.delta.messages.events.children.ChildMovedFromOtherContainmentInSameParent
+import io.lionweb.client.delta.messages.events.children.ChildMovedInSameContainment
+import io.lionweb.client.delta.messages.events.children.ChildReplaced
+import io.lionweb.client.delta.messages.events.partitions.PartitionAdded
+import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted
+import io.lionweb.client.delta.messages.events.properties.PropertyAdded
+import io.lionweb.client.delta.messages.events.properties.PropertyChanged
+import io.lionweb.client.delta.messages.events.properties.PropertyDeleted
+import io.lionweb.client.delta.messages.events.references.ReferenceAdded
+import io.lionweb.client.delta.messages.events.references.ReferenceChanged
+import io.lionweb.client.delta.messages.events.references.ReferenceDeleted
+import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest
+import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest
 import io.lionweb.client.inmemory.InMemoryServer
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
@@ -37,8 +60,8 @@ import java.util.function.Function
  */
 class WebSocketDeltaServer(
     port: Int,
-    inMemoryServer: InMemoryServer,
-    repositoryName: String,
+    private val inMemoryServer: InMemoryServer,
+    private val repositoryName: String,
     val messageLog: MessageLog? = null,
 ) : WebSocketServer(InetSocketAddress(port)) {
     private val serialization = DeltaMessageSerialization()
@@ -47,6 +70,12 @@ class WebSocketDeltaServer(
     private val startError = AtomicReference<Exception?>(null)
     private val connectionClientIds = ConcurrentHashMap<WebSocket, String>()
     private val connectionParticipations = ConcurrentHashMap<WebSocket, String>()
+
+    // Tracks which connections have subscribed to partition lifecycle events (PartitionAdded/Deleted).
+    private val lifecycleSubscribers = CopyOnWriteArrayList<WebSocket>()
+
+    // Tracks which partition IDs each connection has subscribed to for content events.
+    private val contentSubscriptions = ConcurrentHashMap<WebSocket, MutableSet<String>>()
 
     init {
         inMemoryServer.monitorDeltaChannel(repositoryName, broadcastChannel)
@@ -68,6 +97,8 @@ class WebSocketDeltaServer(
         broadcastChannel.removeConnection(conn)
         connectionClientIds.remove(conn)
         connectionParticipations.remove(conn)
+        lifecycleSubscribers.remove(conn)
+        contentSubscriptions.remove(conn)
     }
 
     override fun onMessage(
@@ -108,6 +139,11 @@ class WebSocketDeltaServer(
                         connectionParticipations[conn] = query.participationId
                     }
                     is SignOffRequest -> connectionParticipations.remove(conn)
+                    is ListAndSubscribePartitionsRequest -> lifecycleSubscribers.add(conn)
+                    is SubscribeToPartitionContentsRequest ->
+                        contentSubscriptions.getOrPut(conn) { ConcurrentHashMap.newKeySet() }.add(query.partition)
+                    is UnsubscribeFromPartitionContentsRequest ->
+                        contentSubscriptions[conn]?.remove(query.partition)
                 }
                 messageLog?.add(
                     MessageLogEntry(
@@ -172,9 +208,65 @@ class WebSocketDeltaServer(
     }
 
     /**
-     * A [DeltaChannel] that broadcasts events to all currently connected WebSocket clients.
-     * Commands and queries received over WebSocket are dispatched to the registered receivers
-     * (wired by [InMemoryServer.monitorDeltaChannel]).
+     * Walks the in-memory node tree upward from [nodeId] to find the partition root ID.
+     * Returns null if the node is not found.
+     */
+    private fun findPartitionOf(nodeId: String): String? {
+        val partitionIds =
+            try {
+                inMemoryServer.listPartitionIDs(repositoryName).toHashSet()
+            } catch (_: Exception) {
+                return null
+            }
+        var current = nodeId
+        while (true) {
+            if (current in partitionIds) return current
+            val nodes =
+                try {
+                    inMemoryServer.retrieve(repositoryName, listOf(current), 0)
+                } catch (_: Exception) {
+                    return null
+                }
+            val parent = nodes.firstOrNull()?.parentNodeID ?: return null
+            current = parent
+        }
+    }
+
+    /**
+     * Returns the set of partition IDs relevant to [event] for subscription filtering.
+     * An empty set means no content-based filtering applies (send to all or use lifecycle logic).
+     */
+    private fun relevantPartitionsForEvent(event: DeltaEvent): Set<String> =
+        when (event) {
+            is PropertyChanged -> setOfNotNull(findPartitionOf(event.node))
+            is PropertyAdded -> setOfNotNull(findPartitionOf(event.node))
+            is PropertyDeleted -> setOfNotNull(findPartitionOf(event.node))
+            is ClassifierChanged -> setOfNotNull(findPartitionOf(event.node))
+            is ChildAdded -> setOfNotNull(findPartitionOf(event.parent))
+            is ChildDeleted -> setOfNotNull(findPartitionOf(event.parent))
+            is ChildMovedInSameContainment -> setOfNotNull(findPartitionOf(event.parent))
+            is ChildMovedFromOtherContainmentInSameParent -> setOfNotNull(findPartitionOf(event.parent))
+            is ChildMovedFromOtherContainment ->
+                setOfNotNull(findPartitionOf(event.oldParent), findPartitionOf(event.newParent))
+            is ChildReplaced -> setOfNotNull(findPartitionOf(event.parent))
+            is ReferenceAdded -> setOfNotNull(findPartitionOf(event.parent))
+            is ReferenceChanged -> setOfNotNull(findPartitionOf(event.parent))
+            is ReferenceDeleted -> setOfNotNull(findPartitionOf(event.parent))
+            is AnnotationAdded -> setOfNotNull(findPartitionOf(event.parent))
+            is AnnotationDeleted -> setOfNotNull(findPartitionOf(event.parent))
+            is AnnotationMovedInSameParent -> setOfNotNull(findPartitionOf(event.parent))
+            is AnnotationReplaced -> setOfNotNull(findPartitionOf(event.parent))
+            is AnnotationMovedFromOtherParent ->
+                setOfNotNull(findPartitionOf(event.oldParent), findPartitionOf(event.newParent))
+            else -> emptySet()
+        }
+
+    /**
+     * A [DeltaChannel] that routes events only to connections that have subscribed to the
+     * relevant partition. Partition lifecycle events (PartitionAdded/Deleted) are delivered only
+     * to connections that called ListAndSubscribePartitions. Content events are delivered only to
+     * connections subscribed to the affected partition(s). Unknown event types fall back to
+     * broadcasting to all connections.
      */
     inner class BroadcastChannel : DeltaChannel {
         private val connections = CopyOnWriteArrayList<WebSocket>()
@@ -201,7 +293,22 @@ class WebSocketDeltaServer(
                     json = json,
                 ),
             )
-            connections.forEach { if (it.isOpen) it.send(json) }
+            val targets: List<WebSocket> =
+                when (event) {
+                    is PartitionAdded, is PartitionDeleted ->
+                        lifecycleSubscribers.filter { it.isOpen }
+                    else -> {
+                        val partitions = relevantPartitionsForEvent(event)
+                        if (partitions.isEmpty()) {
+                            connections.filter { it.isOpen }
+                        } else {
+                            connections.filter { conn ->
+                                conn.isOpen && contentSubscriptions[conn]?.any { it in partitions } == true
+                            }
+                        }
+                    }
+                }
+            targets.forEach { it.send(json) }
             eventReceivers.forEach { it.receiveEvent(event) }
         }
 
