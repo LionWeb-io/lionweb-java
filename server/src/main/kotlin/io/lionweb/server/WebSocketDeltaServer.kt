@@ -135,7 +135,7 @@ class WebSocketDeltaServer(
                 when (query) {
                     is SignOnRequest -> connectionClientIds[conn] = query.clientId
                     is ReconnectRequest -> {
-                        connectionClientIds[conn] = query.clientId
+                        query.clientId?.let { connectionClientIds[conn] = it }
                         connectionParticipations[conn] = query.participationId
                     }
                     is SignOffRequest -> connectionParticipations.remove(conn)
