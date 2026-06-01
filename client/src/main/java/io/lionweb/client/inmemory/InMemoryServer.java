@@ -242,7 +242,21 @@ public class InMemoryServer {
   // Delta methods
   //
 
-  public void monitorDeltaChannel(String repositoryName, @NotNull DeltaChannel channel) {
+  /**
+   * Monitors the specified {@link DeltaChannel} to handle command and query operations for a given
+   * repository.
+   *
+   * <p>This method sets up the provided DeltaChannel by registering command and query receivers
+   * that are tailored to the context of the specified repository. The command receiver is
+   * responsible for processing client-initiated commands, while the query receiver handles queries
+   * requesting information from the repository.
+   *
+   * @param repositoryName the name of the repository associated with the DeltaChannel
+   * @param channel the DeltaChannel to monitor; must not be null
+   * @throws NullPointerException if the specified channel is null
+   */
+  public void monitorDeltaChannel(@NotNull String repositoryName, @NotNull DeltaChannel channel) {
+    Objects.requireNonNull(repositoryName, "RepositoryName should not be null");
     Objects.requireNonNull(channel, "Channel should not be null");
     channel.registerCommandReceiver(
         new DeltaCommandReceiverImpl(repositoryName, channel, participationManager, this));

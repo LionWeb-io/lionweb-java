@@ -54,11 +54,13 @@ import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.UnavailableNodePolicy;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
+import io.lionweb.serialization.data.SerializedClassifierInstance;
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,6 +78,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   private final AbstractSerialization serialization;
   private final Set<String> queriesSent = new HashSet<>();
   private final String clientId;
+  private final LionWebVersion lionWebVersion;
   private String participationId;
   private String pendingReconnectParticipationId;
   private ParticipationState state = ParticipationState.NOT_CONNECTED;
@@ -93,6 +96,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(clientId, "clientId must not be null");
 
     this.clientId = clientId;
+    this.lionWebVersion = lionWebVersion;
     this.channel = channel;
     this.channel.registerEventReceiver(this);
     this.channel.registerQueryResponseReceiver(this);
@@ -442,6 +446,79 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   }
 
   /**
+   * Sends a command to add a new child node to a parent in the given containment at the given
+   * index.
+   *
+   * @param parentId id of the parent node
+   * @param containment MetaPointer of the containment feature
+   * @param child the new child node to add
+   * @param index 0-based position at which to insert the child
+   */
+  public void sendAddChildCommand(
+      @NotNull String parentId, @NotNull MetaPointer containment, @NotNull Node child, int index) {
+    Objects.requireNonNull(parentId, "parentId must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    Objects.requireNonNull(child, "child must not be null");
+    SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(child);
+    // The server validates that any node with parentNodeID=null is a registered partition.
+    // For AddChild, the root of the subtree being added must have its parentNodeID set to the
+    // parent so the server can place it correctly in the tree.
+    SerializedClassifierInstance rootInst = chunk.getClassifierInstancesByID().get(child.getID());
+    if (rootInst != null && rootInst.getParentNodeID() == null) {
+      rootInst.setParentNodeID(parentId);
+    }
+    channel.sendCommand(
+        participationId, commandId -> new AddChild(commandId, parentId, chunk, containment, index));
+  }
+
+  /**
+   * Sends a command to delete a child node from a parent's containment.
+   *
+   * @param parentId id of the parent node
+   * @param containment MetaPointer of the containment feature
+   * @param index 0-based position of the child to delete
+   * @param childId id of the child node to delete
+   */
+  public void sendDeleteChildCommand(
+      @NotNull String parentId,
+      @NotNull MetaPointer containment,
+      int index,
+      @NotNull String childId) {
+    Objects.requireNonNull(parentId, "parentId must not be null");
+    Objects.requireNonNull(containment, "containment must not be null");
+    Objects.requireNonNull(childId, "childId must not be null");
+    channel.sendCommand(
+        participationId,
+        commandId -> new DeleteChild(commandId, parentId, containment, index, childId));
+  }
+
+  /**
+   * Sends a command to set a property value on a node. Uses AddProperty if the property is not yet
+   * set, ChangeProperty otherwise.
+   *
+   * @param nodeId id of the node
+   * @param property MetaPointer of the property feature
+   * @param newValue the new value (as serialized string), or null to unset
+   * @param propertyAlreadySet true if the property already has a value (sends ChangeProperty),
+   *     false if it is unset (sends AddProperty)
+   */
+  public void sendSetPropertyCommand(
+      @NotNull String nodeId,
+      @NotNull MetaPointer property,
+      @Nullable String newValue,
+      boolean propertyAlreadySet) {
+    Objects.requireNonNull(nodeId, "nodeId must not be null");
+    Objects.requireNonNull(property, "property must not be null");
+    if (propertyAlreadySet) {
+      channel.sendCommand(
+          participationId, commandId -> new ChangeProperty(commandId, nodeId, property, newValue));
+    } else {
+      channel.sendCommand(
+          participationId, commandId -> new AddProperty(commandId, nodeId, property, newValue));
+    }
+  }
+
+  /**
    * Registers a language in this client's serialization context so that nodes and annotations of
    * that language can be properly deserialized from incoming events.
    *
@@ -524,6 +601,24 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     nodes.computeIfAbsent(node.getID(), id -> new HashSet<>()).add(new WeakReference<>(node));
   }
 
+  /**
+   * Ensures a SerializationChunk received via the delta wire format has its
+   * serializationFormatVersion set before passing it to the standard serialization layer. The delta
+   * protocol omits this field, so we inject the version this client was configured with.
+   */
+  private SerializationChunk withSerializationFormatVersion(@NotNull SerializationChunk chunk) {
+    if (chunk.getSerializationFormatVersion() == null) {
+      chunk.setSerializationFormatVersion(lionWebVersion.getVersionString());
+    } else if (!chunk.getSerializationFormatVersion().equals(lionWebVersion.getVersionString())) {
+      throw new IllegalStateException(
+          "Received chunk with incompatible serialization format version: "
+              + chunk.getSerializationFormatVersion()
+              + ", expected: "
+              + lionWebVersion.getVersionString());
+    }
+    return chunk;
+  }
+
   private boolean isFromOwnParticipation(@NotNull DeltaEvent event) {
     if (!(event instanceof BaseDeltaEvent)) return false;
     return ((BaseDeltaEvent<?>) event)
@@ -538,50 +633,78 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                 instance, event.property, event.newValue));
   }
 
-  private void onChildAdded(@NotNull ChildAdded event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
+  /**
+   * We are processing an event affecting a certain node. If the node is not relevant for us
+   * (because we are not monitoring it), we can ignore it.
+   *
+   * @param nodeId the id of the node that was affected by the event
+   */
+  private void processRelevantNode(
+      @Nullable String nodeId, Consumer<ClassifierInstance<?>> nodeOperation) {
+    if (nodeId == null) return;
+    Set<WeakReference<ClassifierInstance<?>>> refs = nodes.get(nodeId);
+    if (refs == null) return;
+    for (WeakReference<ClassifierInstance<?>> ref : refs) {
       ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Node child = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
-      monitorNode(child);
-      Containment containment =
-          instance.getClassifier().getContainmentByMetaPointer(event.containment);
-      if (containment == null) {
-        throw new IllegalStateException(
-            "Containment not found for " + instance + " using metapointer " + event.containment);
-      }
-      instance.addChild(containment, child, event.index);
+      if (instance == null) return;
+      nodeOperation.accept(instance);
     }
+  }
+
+  private void onChildAdded(@NotNull ChildAdded event) {
+    processRelevantNode(
+        event.parent,
+        instance -> {
+          Node child =
+              (Node)
+                  serialization
+                      .deserializeSerializationChunk(withSerializationFormatVersion(event.newChild))
+                      .get(0);
+          monitorNode(child);
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null) {
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          }
+          instance.addChild(containment, child, event.index);
+        });
   }
 
   private void onChildDeleted(@NotNull ChildDeleted event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Containment containment =
-          instance.getClassifier().getContainmentByMetaPointer(event.containment);
-      if (containment == null) {
-        throw new IllegalStateException(
-            "Containment not found for " + instance + " using metapointer " + event.containment);
-      }
-      instance.removeChild(containment, event.index);
-    }
+    processRelevantNode(
+        event.parent,
+        instance -> {
+          Containment containment =
+              instance.getClassifier().getContainmentByMetaPointer(event.containment);
+          if (containment == null) {
+            throw new IllegalStateException(
+                "Containment not found for "
+                    + instance
+                    + " using metapointer "
+                    + event.containment);
+          }
+          instance.removeChild(containment, event.index);
+        });
   }
 
   private void onReferenceAdded(@NotNull ReferenceAdded event) {
-    for (WeakReference<ClassifierInstance<?>> ref : nodes.get(event.parent)) {
-      ClassifierInstance<?> instance = ref.get();
-      if (instance == null) continue;
-      Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
-      if (reference == null) {
-        throw new IllegalStateException(
-            "Reference not found for " + instance + " using metapointer " + event.reference);
-      }
-      instance.addReferenceValue(
-          reference,
-          event.index,
-          new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
-    }
+    processRelevantNode(
+        event.parent,
+        instance -> {
+          Reference reference = instance.getClassifier().getReferenceByMetaPointer(event.reference);
+          if (reference == null) {
+            throw new IllegalStateException(
+                "Reference not found for " + instance + " using metapointer " + event.reference);
+          }
+          instance.addReferenceValue(
+              reference,
+              event.index,
+              new ReferenceValue(new ProxyNode(event.newReference), event.newResolveInfo));
+        });
   }
 
   private void onPropertyAdded(@NotNull PropertyAdded event) {
@@ -722,7 +845,11 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                     + " using metapointer "
                     + event.containment);
           instance.removeChild(containment, event.index);
-          Node newChild = (Node) serialization.deserializeSerializationChunk(event.newChild).get(0);
+          Node newChild =
+              (Node)
+                  serialization
+                      .deserializeSerializationChunk(withSerializationFormatVersion(event.newChild))
+                      .get(0);
           monitorNode(newChild);
           instance.addChild(containment, newChild, event.index);
         });
@@ -734,7 +861,10 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         instance -> {
           AnnotationInstance annotation =
               (AnnotationInstance)
-                  serialization.deserializeSerializationChunk(event.newAnnotation).get(0);
+                  serialization
+                      .deserializeSerializationChunk(
+                          withSerializationFormatVersion(event.newAnnotation))
+                      .get(0);
           instance.addAnnotation(annotation);
         });
   }

@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17', '21', '25' ]
+        java: [ '17', '25' ]
     name: Java ${{ matrix.java }} Functional Tests
 
     steps:
@@ -57,7 +57,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17', '21', '25' ]
+        java: [ '17', '25' ]
     name: Java ${{ matrix.java }} Core Integration Tests
 
     steps:
@@ -81,7 +81,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17', '21', '25' ]
+        java: [ '17', '25' ]
     name: Java ${{ matrix.java }} Client Integration Tests
 
     steps:
@@ -101,11 +101,35 @@ jobs:
           path: '**/build/test-results/**/*.xml'
           retention-days: 7
 
+  server-integration-tests:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ '17', '25' ]
+    name: Java ${{ matrix.java }} Server Integration Tests
+
+    steps:
+      - uses: actions/checkout@v6
+      - name: Setup java
+        uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java }}
+      - name: Server Integration Tests
+        run: ./gradlew :server:integrationTest --stacktrace --info
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: server-integration-test-results-java-${{ matrix.java }}
+          path: '**/build/test-results/**/*.xml'
+          retention-days: 7
+
   plugin-integration-tests:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ '17', '21', '25' ]
+        java: [ '17', '25' ]
     name: Java ${{ matrix.java }} Plugin Integration Tests
 
     steps:

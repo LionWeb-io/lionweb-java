@@ -4,7 +4,8 @@
 
 * Align all delta messages to match the integration test expectations
 * Merged CommonChecks in IdUtils
-* Add support for common delta command in DeltaClient (no transport layer support yet)
+* Add support for common delta commands in DeltaClient
+* Add demo utilities to validate the behavior of the delta server
 
 ### Version 1.4.0
 
