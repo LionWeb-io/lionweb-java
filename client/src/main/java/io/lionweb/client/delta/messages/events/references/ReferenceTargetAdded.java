@@ -10,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
  * newTarget has been added as target to existing entry inside parent's reference at index with
  * resolveInfo.
  */
-public class ReferenceTargetAdded extends BaseDeltaEvent {
-  public final String parent;
-  public final MetaPointer reference;
+public class ReferenceTargetAdded extends BaseDeltaEvent<ReferenceTargetAdded> {
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer reference;
   public final int index;
-  public final String newTarget;
-  public final String resolveInfo;
+  public final @NotNull String newTarget;
+  public final @Nullable String resolveInfo;
 
   public ReferenceTargetAdded(
       int sequenceNumber,
@@ -25,9 +25,12 @@ public class ReferenceTargetAdded extends BaseDeltaEvent {
       @NotNull String newTarget,
       @Nullable String resolveInfo) {
     super(sequenceNumber);
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(reference, "reference cannot be null");
-    Objects.requireNonNull(newTarget, "newTarget cannot be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(reference, "reference should not be null");
+    Objects.requireNonNull(newTarget, "newTarget should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.reference = reference;
     this.index = index;

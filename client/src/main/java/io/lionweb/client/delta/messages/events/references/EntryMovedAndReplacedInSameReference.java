@@ -11,7 +11,8 @@ import org.jetbrains.annotations.Nullable;
  * oldIndex) has replaced existing replacedTarget/replacedResolveInfo at parent's reference at
  * newIndex.
  */
-public class EntryMovedAndReplacedInSameReference extends BaseDeltaEvent<EntryMovedAndReplacedInSameReference> {
+public class EntryMovedAndReplacedInSameReference
+    extends BaseDeltaEvent<EntryMovedAndReplacedInSameReference> {
   public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
   public final int newIndex;

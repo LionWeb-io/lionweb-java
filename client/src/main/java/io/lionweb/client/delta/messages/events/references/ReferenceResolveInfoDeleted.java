@@ -11,11 +11,11 @@ import org.jetbrains.annotations.Nullable;
  * index with target.
  */
 public class ReferenceResolveInfoDeleted extends BaseDeltaEvent<ReferenceResolveInfoDeleted> {
-  public final String parent;
-  public final MetaPointer reference;
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer reference;
   public final int index;
-  public final String target;
-  public final String deletedResolveInfo;
+  public final @Nullable String target;
+  public final @NotNull String deletedResolveInfo;
 
   public ReferenceResolveInfoDeleted(
       int sequenceNumber,
@@ -25,9 +25,12 @@ public class ReferenceResolveInfoDeleted extends BaseDeltaEvent<ReferenceResolve
       @Nullable String target,
       @NotNull String deletedResolveInfo) {
     super(sequenceNumber);
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(reference, "reference cannot be null");
-    Objects.requireNonNull(deletedResolveInfo, "deletedResolveInfo cannot be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(reference, "reference should not be null");
+    Objects.requireNonNull(deletedResolveInfo, "deletedResolveInfo should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.reference = reference;
     this.index = index;
