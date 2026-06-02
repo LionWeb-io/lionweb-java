@@ -3,6 +3,8 @@ package io.lionweb.serialization.data;
 import com.google.gson.annotations.SerializedName;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * This represents the serialization of the value of a property in a Node. This class is immutable
@@ -16,7 +18,8 @@ public class SerializedPropertyValue {
       INSTANCES_BY_METAPOINTER = new ConcurrentHashMap<>();
 
   /** This will avoid most unnecessary duplicate instantiations, but this is not guaranteed. */
-  public static SerializedPropertyValue get(MetaPointer metaPointer, String value) {
+  public static @Nonnull SerializedPropertyValue get(
+      @Nullable MetaPointer metaPointer, @Nullable String value) {
     // Large values are expected to be more rarely reused, therefore we do not prevent their
     // duplication.
     // We are interested in preventing the duplication of very common values like "false", "true",
@@ -43,11 +46,11 @@ public class SerializedPropertyValue {
     this.value = value;
   }
 
-  public MetaPointer getMetaPointer() {
+  public @Nullable MetaPointer getMetaPointer() {
     return metaPointer;
   }
 
-  public String getValue() {
+  public @Nullable String getValue() {
     return value;
   }
 

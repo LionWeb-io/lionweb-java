@@ -4,6 +4,7 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.model.impl.M3Node;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A LanguageEntity is an element with an identity within a {@link Language}.
@@ -80,7 +81,7 @@ public abstract class LanguageEntity<T extends M3Node> extends M3Node<T>
   }
 
   @Override
-  public T setKey(String key) {
+  public @NonNull T setKey(@Nullable String key) {
     setPropertyValue("key", key);
     return (T) this;
   }

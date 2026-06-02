@@ -13,6 +13,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A Language will provide the {@link Concept}s necessary to describe data in a particular domain
@@ -86,7 +87,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   }
 
   @Override
-  public Language setKey(String key) {
+  public @NonNull Language setKey(@Nullable String key) {
     setPropertyValue("key", key);
     return this;
   }
