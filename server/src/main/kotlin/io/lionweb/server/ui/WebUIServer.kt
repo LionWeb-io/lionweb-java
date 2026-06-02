@@ -1,4 +1,4 @@
-package io.lionweb.server
+package io.lionweb.server.ui
 
 import com.google.gson.Gson
 import com.sun.net.httpserver.HttpServer

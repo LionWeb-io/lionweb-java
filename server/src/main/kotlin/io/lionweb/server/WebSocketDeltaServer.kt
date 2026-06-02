@@ -39,6 +39,8 @@ import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest
 import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest
 import io.lionweb.client.inmemory.InMemoryServer
+import io.lionweb.server.ui.MessageLog
+import io.lionweb.server.ui.MessageLogEntry
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer

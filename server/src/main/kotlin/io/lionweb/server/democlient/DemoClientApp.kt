@@ -1,6 +1,6 @@
 @file:JvmName("DemoClientApp")
 
-package io.lionweb.server
+package io.lionweb.server.democlient
 
 import com.github.ajalt.clikt.core.main
 

@@ -1,4 +1,4 @@
-package io.lionweb.server
+package io.lionweb.server.ui
 
 import java.util.concurrent.ConcurrentHashMap
 

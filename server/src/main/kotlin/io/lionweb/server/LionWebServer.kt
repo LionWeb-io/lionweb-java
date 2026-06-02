@@ -13,6 +13,8 @@ import io.lionweb.LionWebVersion
 import io.lionweb.client.api.HistorySupport
 import io.lionweb.client.api.RepositoryConfiguration
 import io.lionweb.client.inmemory.InMemoryServer
+import io.lionweb.server.ui.MessageLog
+import io.lionweb.server.ui.WebUIServer
 
 class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
     private val port by option("--port", help = "WebSocket port for the delta protocol")
@@ -38,13 +40,11 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
 
         val messageLog = MessageLog()
         val maxAttempts = 10
-        var wsServer: WebSocketDeltaServer? = null
         for (attempt in 1..maxAttempts) {
             val candidate = WebSocketDeltaServer(port, inMemoryServer, repository, messageLog)
             candidate.start()
             try {
                 candidate.awaitStart()
-                wsServer = candidate
                 break
             } catch (e: IllegalStateException) {
                 val reason = e.cause?.message ?: e.message

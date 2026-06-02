@@ -1,4 +1,4 @@
-package io.lionweb.server
+package io.lionweb.server.democlient
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.parameters.options.default
@@ -19,6 +19,12 @@ import io.lionweb.language.Language
 import io.lionweb.language.LionCoreBuiltins
 import io.lionweb.lioncore.LionCore
 import io.lionweb.serialization.data.SerializedClassifierInstance
+import io.lionweb.server.WebSocketDeltaChannel
+import io.lionweb.server.ui.LoggingDeltaChannel
+import io.lionweb.server.ui.MessageLog
+import io.lionweb.server.ui.MessageLogEntry
+import io.lionweb.server.ui.NodeInfo
+import io.lionweb.server.ui.PropertyValue
 import java.net.URI
 import java.util.concurrent.ConcurrentHashMap
 
