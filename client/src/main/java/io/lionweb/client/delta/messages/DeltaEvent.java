@@ -4,8 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Abstract base for events broadcast by the server to subscribed clients in the LionWeb Delta
- * protocol.
+ * Abstract base for events sent by the server to subscribed clients in the LionWeb Delta protocol.
  *
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
