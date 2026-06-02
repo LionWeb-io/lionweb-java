@@ -2,7 +2,6 @@
 
 ### Version 1.4.2
 
-* Modernize Java 9+ collection factory methods: replace `Collections.emptyList/singletonList/emptyMap/emptySet` and `Arrays.asList` (for constant data) with `List.of`, `Map.of`, and `Set.of` across production sources
 * Reorganize server package structure; introduce `HTTPBulkServer` with full RESTful bulk and inspection API endpoints
 * Add integration tests for `HTTPBulkServer` bulk and inspection APIs
 * Rename `LionWebClient` to `LionWebBulkClient`; remove deprecated classes and interfaces
@@ -10,6 +9,7 @@
 * Add `@NotNull`/`@Nullable` annotations across client APIs (`BulkRequestFailureException`, `DeltaClient`, and others) for improved null safety
 * Refactor `DeltaClient` with stricter participation checks
 * Bump dependencies: Kotlin 2.3.21, kotest 6.1.11, javapoet 0.16.0, OkHttp 5.3.2
+* Modernize Java 9+ collection factory methods: replace `Collections.emptyList/singletonList/emptyMap/emptySet` and `Arrays.asList` (for constant data) with `List.of`, `Map.of`, and `Set.of` across production sources
 
 ### Version 1.4.1
 
