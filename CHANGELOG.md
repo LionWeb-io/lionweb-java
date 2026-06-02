@@ -1,10 +1,5 @@
 # Changelog
 
-### Version 1.4.2 (unreleased)
-
-* Add class-level Javadoc to all public classes and interfaces across `core`, `client`, `client-testing`, `emf`, `extensions`, and `gradle-plugin` modules
-* Add `@see` links to the [LionWeb Delta API specification](https://lionweb.io/specification/delta/delta-api.html) on all delta protocol message classes
-
 ### Version 1.4.2
 
 * Reorganize server package structure; introduce `HTTPBulkServer` with full RESTful bulk and inspection API endpoints
@@ -14,6 +9,8 @@
 * Add `@NotNull`/`@Nullable` annotations across client APIs (`BulkRequestFailureException`, `DeltaClient`, and others) for improved null safety
 * Refactor `DeltaClient` with stricter participation checks
 * Bump dependencies: Kotlin 2.3.21, kotest 6.1.11, javapoet 0.16.0, OkHttp 5.3.2
+* Add class-level Javadoc to all public classes and interfaces across `core`, `client`, `client-testing`, `emf`, `extensions`, and `gradle-plugin` modules
+* Add `@see` links to the [LionWeb Delta API specification](https://lionweb.io/specification/delta/delta-api.html) on all delta protocol message classes
 
 ### Version 1.4.1
 
