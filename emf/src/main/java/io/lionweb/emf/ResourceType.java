@@ -1,5 +1,7 @@
 package io.lionweb.emf;
 
+import org.jetbrains.annotations.NotNull;
+
 /** EMF Resource type. */
 public enum ResourceType {
   XML("xml"),
@@ -7,11 +9,11 @@ public enum ResourceType {
   ECORE("ecore");
   private final String extension;
 
-  ResourceType(String extension) {
+  ResourceType(@NotNull String extension) {
     this.extension = extension;
   }
 
-  public String getExtension() {
+  public @NotNull String getExtension() {
     return this.extension;
   }
 }
