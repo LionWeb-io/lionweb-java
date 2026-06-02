@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedInSameContainment extends BaseDeltaEvent<ChildMovedAndReplacedInSameContainment> {
+public final class ChildMovedAndReplacedInSameContainment
+    extends BaseDeltaEvent<ChildMovedAndReplacedInSameContainment> {
   public final int newIndex;
   public final @NotNull String movedChild;
   public final @NotNull String parent;

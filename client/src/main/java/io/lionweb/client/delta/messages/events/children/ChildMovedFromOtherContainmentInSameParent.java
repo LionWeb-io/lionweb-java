@@ -6,7 +6,8 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public final class ChildMovedFromOtherContainmentInSameParent extends BaseDeltaEvent<ChildMovedFromOtherContainmentInSameParent> {
+public final class ChildMovedFromOtherContainmentInSameParent
+    extends BaseDeltaEvent<ChildMovedFromOtherContainmentInSameParent> {
   /** The new containment link after the move. */
   public final @NotNull MetaPointer newContainment;
 

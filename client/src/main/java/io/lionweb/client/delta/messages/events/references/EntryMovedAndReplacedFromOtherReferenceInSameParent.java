@@ -2,6 +2,8 @@ package io.lionweb.client.delta.messages.events.references;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -9,29 +11,39 @@ import org.jetbrains.annotations.Nullable;
  * oldIndex) has replaced existing replacedTarget/replacedResolveInfo at parent's newReference at
  * newIndex.
  */
-public class EntryMovedAndReplacedFromOtherReferenceInSameParent extends BaseDeltaEvent {
-  public final String parent;
-  public final MetaPointer newReference;
+public class EntryMovedAndReplacedFromOtherReferenceInSameParent
+    extends BaseDeltaEvent<EntryMovedAndReplacedFromOtherReferenceInSameParent> {
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer newReference;
   public final int newIndex;
   public final @Nullable String movedTarget;
   public final @Nullable String movedResolveInfo;
-  public final MetaPointer oldReference;
+  public final @NotNull MetaPointer oldReference;
   public final int oldIndex;
   public final @Nullable String replacedTarget;
   public final @Nullable String replacedResolveInfo;
 
   public EntryMovedAndReplacedFromOtherReferenceInSameParent(
       int sequenceNumber,
-      String parent,
-      MetaPointer newReference,
+      @NotNull String parent,
+      @NotNull MetaPointer newReference,
       int newIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo,
-      MetaPointer oldReference,
+      @NotNull MetaPointer oldReference,
       int oldIndex,
       @Nullable String replacedTarget,
       @Nullable String replacedResolveInfo) {
     super(sequenceNumber);
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(newReference, "newReference should not be null");
+    Objects.requireNonNull(oldReference, "oldReference should not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex should be non-negative");
+    }
     this.parent = parent;
     this.newReference = newReference;
     this.newIndex = newIndex;

@@ -6,7 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedFromOtherContainment extends BaseDeltaEvent<ChildMovedAndReplacedFromOtherContainment> {
+public final class ChildMovedAndReplacedFromOtherContainment
+    extends BaseDeltaEvent<ChildMovedAndReplacedFromOtherContainment> {
   /** The new parent node after the move. */
   public final @NotNull String newParent;
 

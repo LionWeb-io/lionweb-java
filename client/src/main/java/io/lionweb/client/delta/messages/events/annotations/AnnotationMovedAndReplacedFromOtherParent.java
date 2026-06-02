@@ -9,7 +9,8 @@ import org.jetbrains.annotations.NotNull;
  * Existing node movedAnnotation (previously inside oldParent's annotations at oldIndex) has
  * replaced the existing replacedAnnotation inside newParent's annotations at newIndex.
  */
-public class AnnotationMovedAndReplacedFromOtherParent extends BaseDeltaEvent<AnnotationMovedAndReplacedFromOtherParent> {
+public class AnnotationMovedAndReplacedFromOtherParent
+    extends BaseDeltaEvent<AnnotationMovedAndReplacedFromOtherParent> {
   public final @NotNull String newParent;
   public final int newIndex;
   public final @NotNull String movedAnnotation;
