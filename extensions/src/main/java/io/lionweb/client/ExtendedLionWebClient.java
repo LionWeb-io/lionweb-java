@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * A higher-level LionWeb client that adds extension APIs (bulk import, node tree inspection) on top
+ * A LionWeb client that adds extension APIs (bulk import, node tree inspection) on top
  * of the standard bulk API.
  */
 public class ExtendedLionWebClient extends LionWebBulkClient implements AdditionalAPIClient {
