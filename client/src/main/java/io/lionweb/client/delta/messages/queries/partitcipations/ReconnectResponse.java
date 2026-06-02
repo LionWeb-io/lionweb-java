@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.queries.partitcipations;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import org.jetbrains.annotations.NotNull;
 
+/** Response to {@link ReconnectRequest} confirming the last sequence number sent by the server. */
 public class ReconnectResponse extends DeltaQueryResponse {
   public final long lastSentSequenceNumber;
 

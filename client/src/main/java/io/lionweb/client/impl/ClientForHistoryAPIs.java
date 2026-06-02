@@ -15,6 +15,7 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
+/** HTTP client implementation of {@link HistoryAPIClient} for retrieving historical versions of nodes. */
 public class ClientForHistoryAPIs extends LionWebClientImplHelper implements HistoryAPIClient {
 
   public ClientForHistoryAPIs(ClientConfiguration clientConfiguration) {

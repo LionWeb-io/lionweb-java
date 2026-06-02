@@ -5,6 +5,7 @@ import io.lionweb.client.delta.messages.DeltaQuery;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** Query sent by a client to resume an interrupted participation, replaying missed events. */
 public class ReconnectRequest extends DeltaQuery {
   /** The version of the delta protocol (e.g. "2026.1"). */
   public DeltaProtocolVersion deltaProtocolVersion;

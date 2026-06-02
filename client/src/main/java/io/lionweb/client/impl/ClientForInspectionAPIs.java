@@ -11,6 +11,7 @@ import java.util.*;
 import okhttp3.Request;
 import org.jetbrains.annotations.Nullable;
 
+/** HTTP client implementation of {@link io.lionweb.client.api.InspectionAPIClient} for querying node counts and IDs by classifier. */
 public class ClientForInspectionAPIs extends LionWebClientImplHelper
     implements InspectionAPIClient {
 

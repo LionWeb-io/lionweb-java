@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.queries;
 import io.lionweb.client.delta.messages.DeltaQuery;
 import org.jetbrains.annotations.NotNull;
 
+/** Query asking the server to reserve a given number of fresh node IDs for the client. */
 public class GetAvailableIdsRequest extends DeltaQuery {
   public int count;
 

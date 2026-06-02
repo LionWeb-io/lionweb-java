@@ -1,5 +1,6 @@
 package io.lionweb.client.delta.messages.events;
 
+/** Well-known error codes that may appear in {@link ErrorEvent} messages. */
 public enum StandardErrorCode {
   INVALID_PARTICIPATION("invalidParticipation"),
   NODE_ALREADY_EXISTS("nodeAlreadyExists"),

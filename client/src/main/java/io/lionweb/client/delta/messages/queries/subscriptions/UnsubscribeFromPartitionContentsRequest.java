@@ -4,6 +4,7 @@ import io.lionweb.client.delta.messages.DeltaQuery;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** Query asking to stop receiving change events for a specific partition's contents. */
 public class UnsubscribeFromPartitionContentsRequest extends DeltaQuery {
 
   public final @NotNull String partition;

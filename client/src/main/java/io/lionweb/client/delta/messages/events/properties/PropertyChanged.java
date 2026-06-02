@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.events.properties;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
+/** Delta event fired when an existing property value on a node is replaced. */
 public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
 
   public final String node;

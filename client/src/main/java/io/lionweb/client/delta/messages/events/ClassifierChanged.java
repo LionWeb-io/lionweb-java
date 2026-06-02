@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.events;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
+/** Delta event fired when a node's classifier is changed to a different type. */
 public class ClassifierChanged extends BaseDeltaEvent {
   public String node;
   public MetaPointer newClassifier;

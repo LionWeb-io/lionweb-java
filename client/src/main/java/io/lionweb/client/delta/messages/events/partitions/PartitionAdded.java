@@ -3,6 +3,7 @@ package io.lionweb.client.delta.messages.events.partitions;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.SerializationChunk;
 
+/** Delta event fired when a new partition is added to the repository. */
 public class PartitionAdded extends BaseDeltaEvent {
 
   public final SerializationChunk newPartition;

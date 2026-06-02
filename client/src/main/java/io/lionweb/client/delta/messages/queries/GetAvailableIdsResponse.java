@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** Response to {@link GetAvailableIdsRequest} carrying the reserved node IDs. */
 public class GetAvailableIdsResponse extends DeltaQueryResponse {
 
   private final @NotNull String[] ids;

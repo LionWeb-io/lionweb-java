@@ -24,6 +24,7 @@ import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** HTTP client implementation of {@link io.lionweb.client.api.JSONLevelBulkAPIClient} that exchanges raw JSON payloads without deserializing them into model objects. */
 public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
     implements JSONLevelBulkAPIClient {
 

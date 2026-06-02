@@ -4,6 +4,7 @@ import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** Response to {@link SignOnRequest} carrying the assigned participation ID. */
 public class SignOnResponse extends DeltaQueryResponse {
 
   public final @NotNull String participationId;

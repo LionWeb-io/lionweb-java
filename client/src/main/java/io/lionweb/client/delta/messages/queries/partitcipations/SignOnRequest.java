@@ -5,6 +5,7 @@ import io.lionweb.client.delta.messages.DeltaQuery;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** Query sent by a client to establish a new participation in the delta protocol. */
 public class SignOnRequest extends DeltaQuery {
   /** The version string of the delta protocol (e.g. "2026.1"). */
   public final @NotNull DeltaProtocolVersion deltaProtocolVersion;
