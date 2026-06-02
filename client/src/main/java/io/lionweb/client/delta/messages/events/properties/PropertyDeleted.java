@@ -11,7 +11,11 @@ public class PropertyDeleted extends BaseDeltaEvent {
   public final MetaPointer property;
   public final String oldValue;
 
-  public PropertyDeleted(int sequenceNumber, @NotNull String node, @NotNull MetaPointer property, @NotNull String oldValue) {
+  public PropertyDeleted(
+      int sequenceNumber,
+      @NotNull String node,
+      @NotNull MetaPointer property,
+      @NotNull String oldValue) {
     super(sequenceNumber);
     Objects.requireNonNull(node, "node cannot be null");
     Objects.requireNonNull(property, "property cannot be null");

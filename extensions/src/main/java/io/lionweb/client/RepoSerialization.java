@@ -18,12 +18,14 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import kotlin.text.Charsets;
+import org.jetbrains.annotations.NotNull;
 
 /** This class contains the logic to store and retrieve entire repositories at once. */
 public class RepoSerialization {
@@ -36,7 +38,9 @@ public class RepoSerialization {
    * directory one file per partition is created. The file is in JSON format.
    */
   public <C extends JSONLevelBulkAPIClient & BulkAPIClient> void downloadRepoAsDirectory(
-      C apiClient, File directory) throws IOException {
+      @NotNull C apiClient, @NotNull File directory) throws IOException {
+    Objects.requireNonNull(apiClient, "apiClient cannot be null");
+    Objects.requireNonNull(directory, "directory cannot be null");
     for (String partitionID : apiClient.listPartitionsIDs()) {
       String partitionData =
           apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
@@ -54,7 +58,9 @@ public class RepoSerialization {
    * zip file, one entry per partition is created. The entry is in JSON format.
    */
   public <C extends JSONLevelBulkAPIClient & BulkAPIClient> void downloadRepoAsZip(
-      C apiClient, File zipFile) throws IOException {
+      @NotNull C apiClient, @NotNull File zipFile) throws IOException {
+    Objects.requireNonNull(apiClient, "apiClient cannot be null");
+    Objects.requireNonNull(zipFile, "zipFile cannot be null");
     try (FileOutputStream fos = new FileOutputStream(zipFile);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
         ZipOutputStream zos = new ZipOutputStream(bos)) {
@@ -79,8 +85,10 @@ public class RepoSerialization {
    * not the more performant bulk import). The directory and all the subdirectories are examined,
    * looking for files with extension ".json" (ignoring case).
    */
-  public void simpleUploadDirectoryToRepo(JSONLevelBulkAPIClient apiClient, File directory)
+  public void simpleUploadDirectoryToRepo(@NotNull JSONLevelBulkAPIClient apiClient, @NotNull File directory)
       throws IOException {
+    Objects.requireNonNull(apiClient, "apiClient cannot be null");
+    Objects.requireNonNull(directory, "directory cannot be null");
     if (!directory.isDirectory()) {
       throw new IllegalArgumentException(
           "Provided file is not a directory: " + directory.getAbsolutePath());
@@ -115,8 +123,10 @@ public class RepoSerialization {
    * (and not the standard bulk operations). The directory and all the subdirectories are examined,
    * looking for files with extension ".json" (ignoring case).
    */
-  public void uploadDirectoryToRepoUsingBulkImport(AdditionalAPIClient apiClient, File directory)
+  public void uploadDirectoryToRepoUsingBulkImport(@NotNull AdditionalAPIClient apiClient, @NotNull File directory)
       throws IOException {
+    Objects.requireNonNull(apiClient, "apiClient cannot be null");
+    Objects.requireNonNull(directory, "directory cannot be null");
     if (!directory.isDirectory()) {
       throw new IllegalArgumentException(
           "Provided file is not a directory: " + directory.getAbsolutePath());
@@ -143,7 +153,9 @@ public class RepoSerialization {
    * more performant bulk import). All the zip is examined, looking for entries with extension
    * ".json" (ignoring case).
    */
-  public void simpleUploadZipToRepo(JSONLevelBulkAPIClient apiClient, File zip) throws IOException {
+  public void simpleUploadZipToRepo(@NotNull JSONLevelBulkAPIClient apiClient, @NotNull File zip) throws IOException {
+    Objects.requireNonNull(apiClient, "apiClient cannot be null");
+    Objects.requireNonNull(zip, "zip cannot be null");
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
           "Provided path is not a valid zip file: " + zip.getAbsolutePath());
@@ -197,8 +209,10 @@ public class RepoSerialization {
    * the standard bulk operations). All the zip is examined, looking for entries with extension
    * ".json" (ignoring case).
    */
-  public void uploadZipToRepoUsingBulkImport(AdditionalAPIClient apiClient, File zip)
+  public void uploadZipToRepoUsingBulkImport(@NotNull AdditionalAPIClient apiClient, @NotNull File zip)
       throws IOException {
+    Objects.requireNonNull(apiClient, "apiClient cannot be null");
+    Objects.requireNonNull(zip, "zip cannot be null");
     if (!zip.isFile()) {
       throw new IllegalArgumentException(
           "Provided path is not a valid zip file: " + zip.getAbsolutePath());

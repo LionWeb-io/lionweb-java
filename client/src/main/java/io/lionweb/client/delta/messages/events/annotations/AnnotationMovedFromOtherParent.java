@@ -1,6 +1,8 @@
 package io.lionweb.client.delta.messages.events.annotations;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Existing node movedAnnotation (previously inside oldParent's annotations at oldIndex) has been
@@ -15,12 +17,15 @@ public class AnnotationMovedFromOtherParent extends BaseDeltaEvent {
 
   public AnnotationMovedFromOtherParent(
       int sequenceNumber,
-      String newParent,
+      @NotNull String newParent,
       int newIndex,
-      String movedAnnotation,
-      String oldParent,
+      @NotNull String movedAnnotation,
+      @NotNull String oldParent,
       int oldIndex) {
     super(sequenceNumber);
+    Objects.requireNonNull(newParent, "newParent cannot be null");
+    Objects.requireNonNull(movedAnnotation, "movedAnnotation cannot be null");
+    Objects.requireNonNull(oldParent, "oldParent cannot be null");
     this.newParent = newParent;
     this.newIndex = newIndex;
     this.movedAnnotation = movedAnnotation;

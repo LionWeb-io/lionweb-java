@@ -11,7 +11,11 @@ public class PropertyAdded extends BaseDeltaEvent {
   public final MetaPointer property;
   public final String newValue;
 
-  public PropertyAdded(int sequenceNumber, @NotNull String node, @NotNull MetaPointer property, @NotNull String newValue) {
+  public PropertyAdded(
+      int sequenceNumber,
+      @NotNull String node,
+      @NotNull MetaPointer property,
+      @NotNull String newValue) {
     super(sequenceNumber);
     Objects.requireNonNull(node, "node cannot be null");
     Objects.requireNonNull(property, "property cannot be null");

@@ -5,7 +5,9 @@ import io.lionweb.model.Node;
 import io.lionweb.model.impl.DynamicNode;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import org.eclipse.emf.ecore.EObject;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * This knows how to instantiate a Node, given the information provided by the deserialization
@@ -14,11 +16,12 @@ import org.eclipse.emf.ecore.EObject;
 public class NodeInstantiator {
 
   public interface ConceptSpecificNodeInstantiator<T extends Node> {
+    @NotNull
     T instantiate(
-        Concept concept,
-        EObject emfObject,
-        Map<String, Node> deserializedNodesByID,
-        Map<Property, Object> propertiesValues);
+        @NotNull Concept concept,
+        @NotNull EObject emfObject,
+        @NotNull Map<String, Node> deserializedNodesByID,
+        @NotNull Map<Property, Object> propertiesValues);
   }
 
   private final Map<String, ConceptSpecificNodeInstantiator<?>> customDeserializers =
@@ -30,18 +33,22 @@ public class NodeInstantiator {
                 "Unable to deserialize node with concept " + concept);
           };
 
-  public NodeInstantiator enableDynamicNodes() {
+  public @NotNull NodeInstantiator enableDynamicNodes() {
     defaultNodeDeserializer =
         (concept, emfObject, deserializedNodesByID, propertiesValues) ->
             new DynamicNode(null, concept);
     return this;
   }
 
-  public Node instantiate(
-      Concept concept,
-      EObject eObject,
-      Map<String, Node> deserializedNodesByID,
-      Map<Property, Object> propertiesValues) {
+  public @NotNull Node instantiate(
+      @NotNull Concept concept,
+      @NotNull EObject eObject,
+      @NotNull Map<String, Node> deserializedNodesByID,
+      @NotNull Map<Property, Object> propertiesValues) {
+    Objects.requireNonNull(concept, "concept cannot be null");
+    Objects.requireNonNull(eObject, "eObject cannot be null");
+    Objects.requireNonNull(deserializedNodesByID, "deserializedNodesByID cannot be null");
+    Objects.requireNonNull(propertiesValues, "propertiesValues cannot be null");
     if (customDeserializers.containsKey(concept.getID())) {
       return customDeserializers
           .get(concept.getID())
@@ -52,8 +59,12 @@ public class NodeInstantiator {
     }
   }
 
-  public NodeInstantiator registerCustomDeserializer(
-      String conceptID, ConceptSpecificNodeInstantiator<?> conceptSpecificNodeInstantiator) {
+  public @NotNull NodeInstantiator registerCustomDeserializer(
+      @NotNull String conceptID,
+      @NotNull ConceptSpecificNodeInstantiator<?> conceptSpecificNodeInstantiator) {
+    Objects.requireNonNull(conceptID, "conceptID cannot be null");
+    Objects.requireNonNull(
+        conceptSpecificNodeInstantiator, "conceptSpecificNodeInstantiator cannot be null");
     customDeserializers.put(conceptID, conceptSpecificNodeInstantiator);
     return this;
   }

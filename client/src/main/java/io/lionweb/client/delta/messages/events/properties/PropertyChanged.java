@@ -14,7 +14,11 @@ public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
   public final String oldValue;
 
   public PropertyChanged(
-      int sequenceNumber, @NotNull String node, @NotNull MetaPointer property, @Nullable String newValue, @Nullable String oldValue) {
+      int sequenceNumber,
+      @NotNull String node,
+      @NotNull MetaPointer property,
+      @Nullable String newValue,
+      @Nullable String oldValue) {
     super(sequenceNumber);
     Objects.requireNonNull(node, "node cannot be null");
     Objects.requireNonNull(property, "property cannot be null");
