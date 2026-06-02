@@ -8,6 +8,8 @@ import io.lionweb.model.ReferenceValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * A utility class for comparing models, nodes, annotations, and instances of classifiers.
@@ -21,7 +23,7 @@ public class ModelComparator {
   public static class ComparisonResult {
     private final List<String> differences = new ArrayList<>();
 
-    public List<String> getDifferences() {
+    public @Nonnull List<String> getDifferences() {
       return differences;
     }
 
@@ -29,16 +31,24 @@ public class ModelComparator {
       return differences.isEmpty();
     }
 
-    public void markDifferentIDs(String context, String idA, String idB) {
+    public void markDifferentIDs(
+        @Nonnull String context, @Nullable String idA, @Nullable String idB) {
+      Objects.requireNonNull(context, "context cannot be null");
       differences.add(context + ": different ids, a=" + idA + ", b=" + idB);
     }
 
-    public void markDifferentAnnotated(String context, String idA, String idB) {
+    public void markDifferentAnnotated(
+        @Nonnull String context, @Nullable String idA, @Nullable String idB) {
+      Objects.requireNonNull(context, "context cannot be null");
       differences.add(context + ": different annotated ids, a=" + idA + ", b=" + idB);
     }
 
     public void markDifferentConcept(
-        String context, String nodeID, String conceptIDa, String conceptIDb) {
+        @Nonnull String context,
+        @Nullable String nodeID,
+        @Nullable String conceptIDa,
+        @Nullable String conceptIDb) {
+      Objects.requireNonNull(context, "context cannot be null");
       differences.add(
           context
               + " (id="
@@ -50,7 +60,13 @@ public class ModelComparator {
     }
 
     public void markDifferentPropertyValue(
-        String context, String nodeID, String propertyName, Object valueA, Object valueB) {
+        @Nonnull String context,
+        @Nullable String nodeID,
+        @Nonnull String propertyName,
+        @Nullable Object valueA,
+        @Nullable Object valueB) {
+      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(propertyName, "propertyName cannot be null");
       differences.add(
           context
               + " (id="
@@ -64,7 +80,13 @@ public class ModelComparator {
     }
 
     public void markDifferentNumberOfChildren(
-        String context, String nodeID, String containmentName, int childrenA, int childrenB) {
+        @Nonnull String context,
+        @Nullable String nodeID,
+        @Nonnull String containmentName,
+        int childrenA,
+        int childrenB) {
+      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(containmentName, "containmentName cannot be null");
       differences.add(
           context
               + " (id="
@@ -78,7 +100,13 @@ public class ModelComparator {
     }
 
     public void markDifferentNumberOfReferences(
-        String context, String nodeID, String referenceName, int childrenA, int childrenB) {
+        @Nonnull String context,
+        @Nullable String nodeID,
+        @Nonnull String referenceName,
+        int childrenA,
+        int childrenB) {
+      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(referenceName, "referenceName cannot be null");
       differences.add(
           context
               + " (id="
@@ -92,12 +120,14 @@ public class ModelComparator {
     }
 
     public void markDifferentReferredID(
-        String context,
-        String nodeID,
-        String referenceName,
+        @Nonnull String context,
+        @Nullable String nodeID,
+        @Nonnull String referenceName,
         int index,
-        String referredA,
-        String referredB) {
+        @Nullable String referredA,
+        @Nullable String referredB) {
+      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(referenceName, "referenceName cannot be null");
       differences.add(
           context
               + " (id="
@@ -113,12 +143,14 @@ public class ModelComparator {
     }
 
     public void markDifferentResolveInfo(
-        String context,
-        String nodeID,
-        String referenceName,
+        @Nonnull String context,
+        @Nullable String nodeID,
+        @Nonnull String referenceName,
         int index,
-        String resolveInfoA,
-        String resolveInfoB) {
+        @Nullable String resolveInfoA,
+        @Nullable String resolveInfoB) {
+      Objects.requireNonNull(context, "context cannot be null");
+      Objects.requireNonNull(referenceName, "referenceName cannot be null");
       differences.add(
           context
               + " (id="
@@ -134,20 +166,22 @@ public class ModelComparator {
     }
 
     @Override
-    public String toString() {
+    public @Nonnull String toString() {
       return "ComparisonResult: " + differences;
     }
 
-    public ComparisonResult markIncompatible() {
+    public @Nonnull ComparisonResult markIncompatible() {
       differences.add("incompatible instances");
       return this;
     }
 
-    public void markDifferentNumberOfAnnotations(String context, int na, int nb) {
+    public void markDifferentNumberOfAnnotations(@Nonnull String context, int na, int nb) {
+      Objects.requireNonNull(context, "context cannot be null");
       differences.add(context + " different number of annotations (" + na + " != " + nb + ")");
     }
 
-    public void markDifferentAnnotation(String context, int i) {
+    public void markDifferentAnnotation(@Nonnull String context, int i) {
+      Objects.requireNonNull(context, "context cannot be null");
       differences.add(context + " annotation " + i + " is different");
     }
   }
@@ -160,7 +194,10 @@ public class ModelComparator {
    * @return {@code true} if the two {@link ClassifierInstance} objects are equivalent, {@code
    *     false} otherwise
    */
-  public static boolean areEquivalent(ClassifierInstance<?> a, ClassifierInstance<?> b) {
+  public static boolean areEquivalent(
+      @Nonnull ClassifierInstance<?> a, @Nonnull ClassifierInstance<?> b) {
+    Objects.requireNonNull(a, "a cannot be null");
+    Objects.requireNonNull(b, "b cannot be null");
     ModelComparator modelComparator = new ModelComparator();
     ModelComparator.ComparisonResult comparisonResult = modelComparator.compare(a, b);
     return comparisonResult.areEquivalent();
@@ -177,7 +214,9 @@ public class ModelComparator {
    * @return {@code true} if the two lists are equivalent, {@code false} otherwise
    */
   public static <A extends ClassifierInstance<?>, B extends ClassifierInstance<?>>
-      boolean areEquivalent(List<A> as, List<B> bs) {
+      boolean areEquivalent(@Nonnull List<A> as, @Nonnull List<B> bs) {
+    Objects.requireNonNull(as, "as cannot be null");
+    Objects.requireNonNull(bs, "bs cannot be null");
     if (as.size() != bs.size()) {
       return false;
     }
@@ -200,7 +239,9 @@ public class ModelComparator {
    * @param nodeB the second node to compare
    * @return a {@link ComparisonResult} object containing the results of the comparison
    */
-  public ComparisonResult compare(Node nodeA, Node nodeB) {
+  public @Nonnull ComparisonResult compare(@Nonnull Node nodeA, @Nonnull Node nodeB) {
+    Objects.requireNonNull(nodeA, "nodeA cannot be null");
+    Objects.requireNonNull(nodeB, "nodeB cannot be null");
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
     return comparisonResult;
@@ -217,7 +258,10 @@ public class ModelComparator {
    * @param nodeB the second {@link AnnotationInstance} object to compare
    * @return a {@link ComparisonResult} object that encapsulates the results of the comparison
    */
-  public ComparisonResult compare(AnnotationInstance nodeA, AnnotationInstance nodeB) {
+  public @Nonnull ComparisonResult compare(
+      @Nonnull AnnotationInstance nodeA, @Nonnull AnnotationInstance nodeB) {
+    Objects.requireNonNull(nodeA, "nodeA cannot be null");
+    Objects.requireNonNull(nodeB, "nodeB cannot be null");
     ComparisonResult comparisonResult = new ComparisonResult();
     compare(nodeA, nodeB, comparisonResult, "<root>");
     return comparisonResult;
@@ -237,7 +281,10 @@ public class ModelComparator {
    * @return a {@link ComparisonResult} object containing the results of the comparison, or marked
    *     as incompatible if the two objects cannot be compared.
    */
-  public ComparisonResult compare(ClassifierInstance<?> nodeA, ClassifierInstance<?> nodeB) {
+  public @Nonnull ComparisonResult compare(
+      @Nonnull ClassifierInstance<?> nodeA, @Nonnull ClassifierInstance<?> nodeB) {
+    Objects.requireNonNull(nodeA, "nodeA cannot be null");
+    Objects.requireNonNull(nodeB, "nodeB cannot be null");
     if (nodeA instanceof Node && nodeB instanceof Node) {
       return compare((Node) nodeA, (Node) nodeB);
     } else if (nodeA instanceof AnnotationInstance && nodeB instanceof AnnotationInstance) {

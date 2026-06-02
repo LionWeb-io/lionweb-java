@@ -2,6 +2,9 @@ package io.lionweb.client.delta.messages.events.references;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * newTarget has been added as target to existing entry inside parent's reference at index with
@@ -16,12 +19,15 @@ public class ReferenceTargetAdded extends BaseDeltaEvent {
 
   public ReferenceTargetAdded(
       int sequenceNumber,
-      String parent,
-      MetaPointer reference,
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
       int index,
-      String newTarget,
-      String resolveInfo) {
+      @NotNull String newTarget,
+      @Nullable String resolveInfo) {
     super(sequenceNumber);
+    Objects.requireNonNull(parent, "parent cannot be null");
+    Objects.requireNonNull(reference, "reference cannot be null");
+    Objects.requireNonNull(newTarget, "newTarget cannot be null");
     this.parent = parent;
     this.reference = reference;
     this.index = index;

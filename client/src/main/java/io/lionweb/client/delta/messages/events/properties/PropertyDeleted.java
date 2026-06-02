@@ -2,6 +2,8 @@ package io.lionweb.client.delta.messages.events.properties;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public class PropertyDeleted extends BaseDeltaEvent {
 
@@ -9,8 +11,11 @@ public class PropertyDeleted extends BaseDeltaEvent {
   public final MetaPointer property;
   public final String oldValue;
 
-  public PropertyDeleted(int sequenceNumber, String node, MetaPointer property, String oldValue) {
+  public PropertyDeleted(int sequenceNumber, @NotNull String node, @NotNull MetaPointer property, @NotNull String oldValue) {
     super(sequenceNumber);
+    Objects.requireNonNull(node, "node cannot be null");
+    Objects.requireNonNull(property, "property cannot be null");
+    Objects.requireNonNull(oldValue, "oldValue cannot be null");
     this.node = node;
     this.property = property;
     this.oldValue = oldValue;
