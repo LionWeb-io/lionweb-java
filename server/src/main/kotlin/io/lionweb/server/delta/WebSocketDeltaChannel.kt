@@ -1,4 +1,4 @@
-package io.lionweb.server
+package io.lionweb.server.delta
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser

@@ -19,7 +19,7 @@ import io.lionweb.language.Language
 import io.lionweb.language.LionCoreBuiltins
 import io.lionweb.lioncore.LionCore
 import io.lionweb.serialization.data.SerializedClassifierInstance
-import io.lionweb.server.WebSocketDeltaChannel
+import io.lionweb.server.delta.WebSocketDeltaChannel
 import io.lionweb.server.ui.LoggingDeltaChannel
 import io.lionweb.server.ui.MessageLog
 import io.lionweb.server.ui.MessageLogEntry

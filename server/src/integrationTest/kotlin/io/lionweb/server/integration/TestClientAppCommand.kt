@@ -9,7 +9,7 @@ import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.int
 import io.lionweb.client.delta.DeltaClient
 import io.lionweb.client.delta.DeltaMessageSerialization
-import io.lionweb.server.WebSocketDeltaChannel
+import io.lionweb.server.delta.WebSocketDeltaChannel
 import java.net.URI
 
 /**

@@ -12,7 +12,7 @@ import io.lionweb.language.Language
 import io.lionweb.model.Node
 import io.lionweb.serialization.SerializationProvider
 import io.lionweb.serialization.UnavailableNodePolicy
-import io.lionweb.server.WebSocketDeltaChannel
+import io.lionweb.server.delta.WebSocketDeltaChannel
 import org.java_websocket.WebSocket
 import org.java_websocket.handshake.ClientHandshake
 import org.java_websocket.server.WebSocketServer
