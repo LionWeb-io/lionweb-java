@@ -162,8 +162,7 @@ public class RepositoryStorage {
         .forEach(
             partitionId -> {
               List<SerializedClassifierInstance> serializedNodes =
-                  server.retrieve(
-                      repositoryName, Collections.singletonList(partitionId), Integer.MAX_VALUE);
+                  server.retrieve(repositoryName, List.of(partitionId), Integer.MAX_VALUE);
               boolean outOfBound = false;
               if (languagesOutOfBound) {
                 SerializedClassifierInstance root =

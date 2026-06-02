@@ -458,8 +458,7 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
       @NotNull DeletePartition cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
     List<String> descendants = new ArrayList<>();
     collectDescendants(data, cmd.deletedPartition, descendants);
-    inMemoryServer.deletePartitions(
-        repositoryName, List.of(cmd.deletedPartition));
+    inMemoryServer.deletePartitions(repositoryName, List.of(cmd.deletedPartition));
     channel.sendEvent(
         seqNum ->
             new PartitionDeleted(seqNum, cmd.deletedPartition, descendants).addSource(source));
