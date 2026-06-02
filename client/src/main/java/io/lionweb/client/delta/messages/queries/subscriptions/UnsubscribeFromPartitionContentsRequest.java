@@ -4,7 +4,11 @@ import io.lionweb.client.delta.messages.DeltaQuery;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-/** Query asking to stop receiving change events for a specific partition's contents. */
+/**
+ * Query asking to stop receiving change events for a specific partition's contents.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ */
 public class UnsubscribeFromPartitionContentsRequest extends DeltaQuery {
 
   public final @NotNull String partition;

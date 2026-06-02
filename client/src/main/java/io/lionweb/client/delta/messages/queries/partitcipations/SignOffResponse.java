@@ -3,7 +3,11 @@ package io.lionweb.client.delta.messages.queries.partitcipations;
 import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import org.jetbrains.annotations.NotNull;
 
-/** Response acknowledging a {@link SignOffRequest}. */
+/**
+ * Response acknowledging a {@link SignOffRequest}.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ */
 public class SignOffResponse extends DeltaQueryResponse {
 
   public SignOffResponse(@NotNull String queryId) {
