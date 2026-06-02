@@ -8,12 +8,16 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.Nonnull;
 
 public class SerializedJsonComparisonUtils {
 
   private SerializedJsonComparisonUtils() {}
 
-  public static void assertEquivalentLionWebJson(JsonObject expected, JsonObject actual) {
+  public static void assertEquivalentLionWebJson(
+      @Nonnull JsonObject expected, @Nonnull JsonObject actual) {
+    Objects.requireNonNull(expected, "expected cannot be null");
+    Objects.requireNonNull(actual, "actual cannot be null");
     Set<String> keys =
         new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "languages"));
     if (!expected.keySet().equals(keys)) {

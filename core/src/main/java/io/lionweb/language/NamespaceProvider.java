@@ -1,5 +1,7 @@
 package io.lionweb.language;
 
+import javax.annotation.Nullable;
+
 /**
  * Something which can act as the namespace for contained named things.
  *
@@ -7,5 +9,6 @@ package io.lionweb.language;
  * therefore have the qualifiedName com.foo.Accounting.Invoice.
  */
 public interface NamespaceProvider {
+  @Nullable
   String namespaceQualifier();
 }
