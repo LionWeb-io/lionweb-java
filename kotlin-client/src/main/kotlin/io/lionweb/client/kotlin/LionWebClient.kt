@@ -4,6 +4,8 @@ import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import io.lionweb.LionWebVersion
 import io.lionweb.client.ExtendedLionWebClient
+import io.lionweb.client.api.ClassifierKey
+import io.lionweb.client.api.ClassifierResult
 import io.lionweb.client.api.HistorySupport
 import io.lionweb.client.api.RepositoryConfiguration
 import io.lionweb.kotlin.children
@@ -43,20 +45,6 @@ class LionWebClient(
     val repository: String = "default",
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) {
-    @Deprecated("We should use jRepoClient instead")
-    private val lowLevelRepoClient =
-        LowLevelRepoClient(
-            hostname = hostname,
-            port = port,
-            authorizationToken = authorizationToken,
-            clientID = clientID,
-            repository = repository,
-            connectTimeOutInSeconds = connectTimeOutInSeconds,
-            callTimeoutInSeconds = callTimeoutInSeconds,
-            debug = debug,
-            lionWebVersion = lionWebVersion,
-        )
-
     private val jRepoClient =
         ExtendedLionWebClient(
             lionWebVersion,
@@ -193,7 +181,7 @@ class LionWebClient(
     fun isNodeExisting(nodeID: String): Boolean {
         require(nodeID.isNotBlank())
 
-        val data = lowLevelRepoClient.retrieve(listOf(nodeID), limit = 0)
+        val data = jRepoClient.rawRetrieve(listOf(nodeID), 0)
         return processChunkResponse(data) { chunk ->
             val nodes = chunk.asJsonObject.get("nodes").asJsonArray
             !nodes.isEmpty
@@ -202,7 +190,7 @@ class LionWebClient(
 
     fun getParentId(nodeID: String): String? {
         require(nodeID.isNotBlank())
-        val data = lowLevelRepoClient.retrieve(listOf(nodeID), limit = 0)
+        val data = jRepoClient.rawRetrieve(listOf(nodeID), 0)
         return processChunkResponse(data) { chunk ->
             val nodes = chunk.asJsonObject.get("nodes").asJsonArray
             if (nodes.size() != 1) {
@@ -445,7 +433,7 @@ class LionWebClient(
         storeTree(updatedNode)
     }
 
-    fun nodesByClassifier(limit: Int? = null): Map<ClassifierKey, ClassifierResult> = lowLevelRepoClient.nodesByClassifier(limit = limit)
+    fun nodesByClassifier(limit: Int? = null): Map<ClassifierKey, ClassifierResult> = jRepoClient.nodesByClassifier(limit)
 
     fun childrenInContainment(
         containerId: String,

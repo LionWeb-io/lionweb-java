@@ -1,6 +1,7 @@
 package io.lionweb.client.kotlin
 
 import io.lionweb.LionWebVersion
+import io.lionweb.client.api.ClassifierKey
 import io.lionweb.client.testing.AbstractClientFunctionalTest
 import io.lionweb.kotlin.dynamicNode
 import io.lionweb.kotlin.setPropertyValueByName
