@@ -191,9 +191,9 @@ public class ClassifierInstanceUtils {
       @Nullable ReferenceValue value) {
     Objects.requireNonNull(_this, "_this should not be null");
     if (value == null) {
-      _this.setReferenceValues(reference, Collections.emptyList());
+      _this.setReferenceValues(reference, List.of());
     } else {
-      _this.setReferenceValues(reference, Arrays.asList(value));
+      _this.setReferenceValues(reference, List.of(value));
     }
   }
 

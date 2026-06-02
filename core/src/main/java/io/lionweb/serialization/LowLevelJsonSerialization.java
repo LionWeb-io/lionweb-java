@@ -9,7 +9,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ public class LowLevelJsonSerialization {
     SerializationChunk serializationChunk = new SerializationChunk();
     if (jsonElement.isJsonObject()) {
       JsonObject topLevel = jsonElement.getAsJsonObject();
-      checkNoExtraKeys(topLevel, Arrays.asList("nodes", "serializationFormatVersion", "languages"));
+      checkNoExtraKeys(topLevel, List.of("nodes", "serializationFormatVersion", "languages"));
       readSerializationFormatVersion(serializationChunk, topLevel);
       readLanguages(serializationChunk, topLevel);
       deserializeClassifierInstances(serializationChunk, topLevel);
@@ -189,7 +188,7 @@ public class LowLevelJsonSerialization {
                   LanguageVersion languageKeyVersion;
                   if (element.isJsonObject()) {
                     JsonObject jsonObject = element.getAsJsonObject();
-                    checkNoExtraKeys(jsonObject, Arrays.asList("key", "version"));
+                    checkNoExtraKeys(jsonObject, List.of("key", "version"));
                     if (!jsonObject.has("key") || !jsonObject.has("version")) {
                       throw new IllegalArgumentException(
                           "Language should have keys key and version. Found: " + element);

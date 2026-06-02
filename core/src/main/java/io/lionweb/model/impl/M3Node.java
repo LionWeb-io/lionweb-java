@@ -256,8 +256,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     if (partitionObserverCache != null) {
-      List<ReferenceValue> current =
-          referenceValues.getOrDefault(reference.getName(), List.of());
+      List<ReferenceValue> current = referenceValues.getOrDefault(reference.getName(), List.of());
       for (int i = 0; i < current.size(); i++) {
         partitionObserverCache.referenceValueRemoved(this, reference, i, current.get(i));
       }
