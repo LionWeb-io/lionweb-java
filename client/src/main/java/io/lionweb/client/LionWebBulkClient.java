@@ -16,7 +16,8 @@ import okhttp3.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class LionWebClient
+/** LionWeb Client to operate on all the bulk APIs. */
+public class LionWebBulkClient
     implements JSONLevelBulkAPIClient,
         ChunkLevelBulkAPIClient,
         BulkAPIClient,
@@ -24,7 +25,7 @@ public class LionWebClient
         InspectionAPIClient,
         HistoryAPIClient {
 
-  public class Builder {
+  public static class Builder {
     protected LionWebVersion lionWebVersion = LionWebVersion.currentVersion;
     protected String hostname = "localhost";
     protected int port = 3005;
@@ -74,8 +75,8 @@ public class LionWebClient
       return this;
     }
 
-    public LionWebClient build() {
-      return new LionWebClient(
+    public LionWebBulkClient build() {
+      return new LionWebBulkClient(
           lionWebVersion,
           hostname,
           port,
@@ -109,12 +110,12 @@ public class LionWebClient
   // Constructors
   //
 
-  public LionWebClient(
+  public LionWebBulkClient(
       @NotNull LionWebVersion lionWebVersion, String hostname, int port, String repository) {
     this(lionWebVersion, hostname, port, null, "GenericJavaBasedLionWebClient", repository, 60, 60);
   }
 
-  public LionWebClient(
+  public LionWebBulkClient(
       @NotNull LionWebVersion lionWebVersion,
       @NotNull String hostname,
       int port,
@@ -224,10 +225,12 @@ public class LionWebClient
     return bulkAPIs.listPartitions();
   }
 
+  @NotNull
   public List<String> listPartitionsIDs() throws IOException {
     return listPartitions().stream().map(Node::getID).collect(Collectors.toList());
   }
 
+  @NotNull
   @Override
   public List<String> ids(int count) throws IOException {
     return bulkAPIs.ids(count);
@@ -344,14 +347,20 @@ public class LionWebClient
   // History APIs
   //
 
+  @NotNull
   @Override
-  public List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException {
+  public List<Node> listPartitions(@NotNull RepositoryVersionToken repoVersion) throws IOException {
+    Objects.requireNonNull(repoVersion, "repoVersion cannot be null");
     return historyAPIs.listPartitions(repoVersion);
   }
 
+  @NotNull
   @Override
-  public List<Node> retrieve(RepositoryVersionToken repoVersion, List<String> nodeIds, int limit)
+  public List<Node> retrieve(
+      @NotNull RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
       throws IOException {
+    Objects.requireNonNull(repoVersion, "repoVersion cannot be null");
+    Objects.requireNonNull(nodeIds, "nodeIds cannot be null");
     return historyAPIs.retrieve(repoVersion, nodeIds, limit);
   }
 }

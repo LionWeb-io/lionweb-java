@@ -1,4 +1,4 @@
-package io.lionweb.client;
+package io.lionweb.client.impl;
 
 import java.io.IOException;
 import okhttp3.MediaType;
@@ -8,10 +8,9 @@ import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
 
-public class CompressionSupport {
+class CompressionSupport {
 
   public static final MediaType JSON = MediaType.get("application/json");
-  public static final MediaType PROTOBUF = MediaType.get("application/protobuf");
 
   /** Converts a String to a compressed RequestBody using JSON MediaType. */
   public static RequestBody compress(String content) {

@@ -2,7 +2,7 @@ package io.lionweb.client.impl;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.client.RequestFailureException;
+import io.lionweb.client.BulkRequestFailureException;
 import io.lionweb.client.api.HistoryAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.model.Node;
@@ -22,7 +22,9 @@ public class ClientForHistoryAPIs extends LionWebClientImplHelper implements His
   }
 
   @Override
-  public @NotNull List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException {
+  public @NotNull List<Node> listPartitions(@NotNull RepositoryVersionToken repoVersion)
+      throws IOException {
+    Objects.requireNonNull(repoVersion, "repoVersion should not be null");
     Map<String, String> params = new HashMap<>();
     params.put("repoVersion", repoVersion.getToken());
     Request.Builder rq = buildRequest("/history/listPartitions", true, true, true, params);
@@ -35,7 +37,7 @@ public class ClientForHistoryAPIs extends LionWebClientImplHelper implements His
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return conf.getJsonSerialization().deserializeToNodes(responseData.get("chunk"));
@@ -44,8 +46,10 @@ public class ClientForHistoryAPIs extends LionWebClientImplHelper implements His
 
   @Override
   public @NotNull List<Node> retrieve(
-      RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
+      @NotNull RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
       throws IOException {
+    Objects.requireNonNull(repoVersion, "repoVersion should not be null");
+    Objects.requireNonNull(nodeIds, "nodeIds should not be null");
     if (nodeIds.isEmpty()) {
       return Collections.emptyList();
     }
@@ -71,7 +75,7 @@ public class ClientForHistoryAPIs extends LionWebClientImplHelper implements His
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           List<Node> allNodes =

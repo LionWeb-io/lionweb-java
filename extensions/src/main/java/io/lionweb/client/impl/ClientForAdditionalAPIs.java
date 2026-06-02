@@ -3,7 +3,7 @@ package io.lionweb.client.impl;
 import static io.lionweb.serialization.extensions.CompressionSupport.considerCompression;
 
 import com.google.gson.*;
-import io.lionweb.client.RequestFailureException;
+import io.lionweb.client.BulkRequestFailureException;
 import io.lionweb.serialization.JsonSerialization;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.extensions.*;
@@ -65,7 +65,7 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           JsonArray data = responseData.get("data").getAsJsonArray();
@@ -151,7 +151,7 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return null;

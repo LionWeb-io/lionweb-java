@@ -56,7 +56,7 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
   }
 
   @Override
-  public void receiveCommand(String participationId, DeltaCommand command) {
+  public void receiveCommand(@NotNull String participationId, @NotNull DeltaCommand command) {
     if (!participationManager.isActiveParticipation(participationId)) {
       channel.sendEvent(
           sequenceNumber ->

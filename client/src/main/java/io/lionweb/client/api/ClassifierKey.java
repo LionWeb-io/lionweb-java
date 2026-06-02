@@ -2,6 +2,7 @@ package io.lionweb.client.api;
 
 import java.util.Objects;
 
+/** Immutable key object used to uniquely identify a classifier. */
 public final class ClassifierKey {
   private final String languageKey;
   private final String classifierKey;

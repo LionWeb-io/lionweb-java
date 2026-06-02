@@ -32,16 +32,16 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
 
   @Test
   public void noPartitionsOnNewModelRepository() throws IOException {
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
     List<Node> partitions = client.listPartitions();
     assertEquals(Collections.emptyList(), partitions);
   }
 
   @Test
   public void partitionsCRUD() throws IOException {
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     // Create partition
@@ -88,8 +88,8 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void partitionsCRUDUsingChunkLevelAPIs() throws IOException {
     String repoName = "repo_partitionsCRUDUsingChunkLevelAPIs";
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -122,8 +122,8 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void storeOnCustomRepository() throws IOException {
     String repoName = "my_repo";
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
@@ -153,8 +153,8 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
 
   @Test
   public void ids() throws IOException {
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
 
     List<String> ids1 = client.ids(78);
     assertEquals(78, ids1.size());
@@ -170,8 +170,8 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
 
   @Test
   public void storeAndRetrieve() throws IOException {
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), "default");
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);
 
     DynamicNode p1 = new DynamicNode("p1", PropertiesLanguage.propertiesPartition);
@@ -194,8 +194,8 @@ public class LionWebClientBulkApiFunctionalTest extends AbstractClientFunctional
   @Test
   public void storeAtChunkLevelAndRetrieve() throws IOException {
     String repoName = "repo_storeAtChunkLevelAndRetrieve";
-    LionWebClient client =
-        new LionWebClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
+    LionWebBulkClient client =
+        new LionWebBulkClient(LionWebVersion.v2023_1, "localhost", getServerPort(), repoName);
     client.createRepository(
         new RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED));
     client.getJsonSerialization().registerLanguage(PropertiesLanguage.propertiesLanguage);

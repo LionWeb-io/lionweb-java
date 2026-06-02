@@ -4,8 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.CompressionSupport;
-import io.lionweb.client.RequestFailureException;
+import io.lionweb.client.BulkRequestFailureException;
 import io.lionweb.client.api.JSONLevelBulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.utils.IdUtils;
@@ -69,13 +68,14 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return getRepoVersionFromResponse(responseBody);
         });
   }
 
+  @NotNull
   @Override
   public String rawRetrieve(@NotNull List<String> nodeIds, int limit) throws IOException {
     List<String> invalidIDs =
@@ -99,7 +99,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           JsonElement chunkAsJson = responseData.get("chunk");
@@ -122,7 +122,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
       try (Response response = conf.getHttpClient().newCall(request).execute()) {
         String responseBody = response.body() != null ? response.body().string() : null;
         if (response.code() != HttpURLConnection.HTTP_OK) {
-          throw new RequestFailureException(url, response.code(), responseBody);
+          throw new BulkRequestFailureException(url, response.code(), responseBody);
         } else {
           return getRepoVersionFromResponse(responseBody);
         }

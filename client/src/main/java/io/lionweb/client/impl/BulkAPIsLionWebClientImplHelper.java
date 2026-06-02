@@ -3,7 +3,7 @@ package io.lionweb.client.impl;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import io.lionweb.client.RequestFailureException;
+import io.lionweb.client.BulkRequestFailureException;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
@@ -23,7 +24,7 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
     super(clientConfiguration);
   }
 
-  public List<String> ids(int count) throws IOException {
+  public @NotNull List<String> ids(int count) throws IOException {
     if (count < 0) {
       throw new IllegalArgumentException("Count should be greater or equal to zero");
     }
@@ -40,7 +41,7 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return responseData.get("ids").getAsJsonArray().asList().stream()
@@ -60,7 +61,7 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           SerializationChunk serializationBlock =

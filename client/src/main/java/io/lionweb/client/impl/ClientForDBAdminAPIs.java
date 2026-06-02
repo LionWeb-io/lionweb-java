@@ -3,8 +3,7 @@ package io.lionweb.client.impl;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.LionWebVersion;
-import io.lionweb.client.RequestFailureException;
-import io.lionweb.client.api.*;
+import io.lionweb.client.BulkRequestFailureException;
 import io.lionweb.client.api.DBAdminAPIClient;
 import io.lionweb.client.api.HistorySupport;
 import io.lionweb.client.api.RepositoryConfiguration;
@@ -38,7 +37,7 @@ public class ClientForDBAdminAPIs extends LionWebClientImplHelper implements DBA
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return null;
@@ -59,7 +58,7 @@ public class ClientForDBAdminAPIs extends LionWebClientImplHelper implements DBA
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return null;
@@ -77,7 +76,7 @@ public class ClientForDBAdminAPIs extends LionWebClientImplHelper implements DBA
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return null;
@@ -95,7 +94,7 @@ public class ClientForDBAdminAPIs extends LionWebClientImplHelper implements DBA
           JsonObject responseData = JsonParser.parseString(responseBody).getAsJsonObject();
           boolean success = responseData.get("success").getAsBoolean();
           if (!success) {
-            throw new RequestFailureException(
+            throw new BulkRequestFailureException(
                 request.url().toString(), response.code(), responseBody);
           }
           return responseData.get("repositories").getAsJsonArray().asList().stream()

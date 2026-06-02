@@ -13,11 +13,19 @@ import io.lionweb.LionWebVersion
 import io.lionweb.client.api.HistorySupport
 import io.lionweb.client.api.RepositoryConfiguration
 import io.lionweb.client.inmemory.InMemoryServer
+import io.lionweb.server.bulk.HTTPBulkServer
+import io.lionweb.server.delta.WebSocketDeltaServer
+import io.lionweb.server.ui.MessageLog
+import io.lionweb.server.ui.WebUIServer
 
 class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
-    private val port by option("--port", help = "WebSocket port for the delta protocol")
+    private val wsPort by option("--ws-port", help = "WebSocket port for the delta protocol")
         .int()
         .default(9240)
+
+    private val httpPort by option("--http-port", help = "HTTP port for the bulk protocol")
+        .int()
+        .default(9239)
 
     private val repository by option("--repository", help = "Repository name to create on startup")
         .default("repo")
@@ -26,7 +34,7 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
     private val webUi by option("--web-ui", help = "Enable the web UI (HTTP dashboard)")
         .flag(default = false)
 
-    private val httpPort by option("--http-port", help = "HTTP port for the web UI (requires --web-ui)")
+    private val webUIPort by option("--web-port", help = "HTTP port for the web UI (requires --web-ui)")
         .int()
         .default(9241)
 
@@ -38,34 +46,40 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
 
         val messageLog = MessageLog()
         val maxAttempts = 10
-        var wsServer: WebSocketDeltaServer? = null
         for (attempt in 1..maxAttempts) {
-            val candidate = WebSocketDeltaServer(port, inMemoryServer, repository, messageLog)
+            val candidate = WebSocketDeltaServer(wsPort, inMemoryServer, repository, messageLog)
             candidate.start()
             try {
                 candidate.awaitStart()
-                wsServer = candidate
                 break
             } catch (e: IllegalStateException) {
                 val reason = e.cause?.message ?: e.message
                 if (attempt < maxAttempts) {
                     echo(
-                        "Failed to start WebSocket server on port $port ($reason), retrying in 5s… (attempt $attempt/$maxAttempts)",
+                        "Failed to start WebSocket server on port $wsPort ($reason), retrying in 5s… (attempt $attempt/$maxAttempts)",
                         err = true,
                     )
                     Thread.sleep(5_000)
                 } else {
-                    echo("Failed to start WebSocket server on port $port after $maxAttempts attempts: $reason", err = true)
+                    echo("Failed to start WebSocket server on port $wsPort after $maxAttempts attempts: $reason", err = true)
                     return
                 }
             }
         }
-        echo("LionWeb server listening on port $port (repository: $repository)")
+        echo("LionWeb Delta Server listening on port $wsPort (repository: $repository)")
+
+        val httpBulkServer = HTTPBulkServer(inMemoryServer, httpPort)
+        httpBulkServer.start()
+        Runtime.getRuntime().addShutdownHook(
+            Thread {
+                httpBulkServer.stop()
+            },
+        )
 
         if (webUi) {
-            val uiServer = WebUIServer(httpPort, inMemoryServer, messageLog)
+            val uiServer = WebUIServer(webUIPort, inMemoryServer, messageLog)
             uiServer.start()
-            echo("Web UI available at http://localhost:$httpPort")
+            echo("Web UI available at http://localhost:$webUIPort")
         }
 
         // Block until interrupted

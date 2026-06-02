@@ -4,6 +4,10 @@ import java.io.IOException;
 import java.util.Map;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * InspectionAPIClient provides methods for querying information about nodes grouped by classifiers
+ * or languages.
+ */
 public interface InspectionAPIClient {
   default Map<ClassifierKey, ClassifierResult> nodesByClassifier() throws IOException {
     return nodesByClassifier((Integer) null);

@@ -25,8 +25,8 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
 
   @Test
   public void nodesByClassifier() throws IOException {
-    LionWebClient client =
-        new LionWebClient(
+    LionWebBulkClient client =
+        new LionWebBulkClient(
             LionWebVersion.v2023_1, "localhost", getServerPort(), "repo_nodesByClassifier");
     client.createRepository(
         new RepositoryConfiguration(
@@ -67,8 +67,8 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
 
   @Test
   public void nodesByClassifierWithLimit() throws IOException {
-    LionWebClient client =
-        new LionWebClient(
+    LionWebBulkClient client =
+        new LionWebBulkClient(
             LionWebVersion.v2023_1,
             "localhost",
             getServerPort(),
@@ -126,8 +126,8 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
 
   @Test
   public void nodesByLanguage() throws IOException {
-    LionWebClient client =
-        new LionWebClient(
+    LionWebBulkClient client =
+        new LionWebBulkClient(
             LionWebVersion.v2023_1, "localhost", getServerPort(), "repo_nodesByLanguage");
     client.createRepository(
         new RepositoryConfiguration(
@@ -161,8 +161,8 @@ public class LionWebClientInspectionApiFunctionalTest extends AbstractClientFunc
 
   @Test
   public void nodesByLanguageWithLimit() throws IOException {
-    LionWebClient client =
-        new LionWebClient(
+    LionWebBulkClient client =
+        new LionWebBulkClient(
             LionWebVersion.v2023_1, "localhost", getServerPort(), "repo_nodesByLanguageWithLimit");
     client.createRepository(
         new RepositoryConfiguration(

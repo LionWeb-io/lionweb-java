@@ -1,5 +1,15 @@
 # Changelog
 
+### Version 1.4.2
+
+* Reorganize server package structure; introduce `HTTPBulkServer` with full RESTful bulk and inspection API endpoints
+* Add integration tests for `HTTPBulkServer` bulk and inspection APIs
+* Rename `LionWebClient` to `LionWebBulkClient`; remove deprecated classes and interfaces
+* Remove unused `AdditionalInfoData` class
+* Add `@NotNull`/`@Nullable` annotations across client APIs (`BulkRequestFailureException`, `DeltaClient`, and others) for improved null safety
+* Refactor `DeltaClient` with stricter participation checks
+* Bump dependencies: Kotlin 2.3.21, kotest 6.1.11, javapoet 0.16.0, OkHttp 5.3.2
+
 ### Version 1.4.1
 
 * Align all delta messages to match the integration test expectations

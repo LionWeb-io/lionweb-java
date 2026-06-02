@@ -36,8 +36,9 @@ class DeltaQueryReceiverImpl implements DeltaQueryReceiver {
     this.inMemoryServer = inMemoryServer;
   }
 
+  @NotNull
   @Override
-  public DeltaQueryResponse receiveQuery(DeltaQuery query) {
+  public DeltaQueryResponse receiveQuery(@NotNull DeltaQuery query) {
     if (query instanceof SignOnRequest) {
       SignOnRequest signOnRequest = (SignOnRequest) query;
       currentParticipationId = participationManager.createParticipationId();

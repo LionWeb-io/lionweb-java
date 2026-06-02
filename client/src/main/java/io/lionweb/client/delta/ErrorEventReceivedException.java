@@ -1,22 +1,29 @@
 package io.lionweb.client.delta;
 
 import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+/**
+ * A custom exception that represents an error event received with a specific code and corresponding
+ * error message.
+ */
 public class ErrorEventReceivedException extends RuntimeException {
-  private String code;
-  private String errorMessage;
+  private final @NotNull String code;
+  private final @Nullable String errorMessage;
 
-  public ErrorEventReceivedException(String code, String errorMessage) {
+  public ErrorEventReceivedException(@NotNull String code, @Nullable String errorMessage) {
     super("code=" + code + " message=" + errorMessage);
+    Objects.requireNonNull(code, "code must not be null");
     this.code = code;
     this.errorMessage = errorMessage;
   }
 
-  public String getCode() {
+  public @NotNull String getCode() {
     return code;
   }
 
-  public String getErrorMessage() {
+  public @Nullable String getErrorMessage() {
     return errorMessage;
   }
 

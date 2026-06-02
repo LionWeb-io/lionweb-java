@@ -12,11 +12,11 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class ExtendedLionWebClient extends LionWebClient implements AdditionalAPIClient {
+public class ExtendedLionWebClient extends LionWebBulkClient implements AdditionalAPIClient {
 
   private final ClientForAdditionalAPIs additionalAPIs;
 
-  public class Builder extends LionWebClient.Builder {
+  public class Builder extends LionWebBulkClient.Builder {
     @Override
     public ExtendedLionWebClient build() {
       return new ExtendedLionWebClient(

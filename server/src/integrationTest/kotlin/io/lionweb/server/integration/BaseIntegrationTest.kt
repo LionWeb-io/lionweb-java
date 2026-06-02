@@ -32,7 +32,7 @@ abstract class BaseIntegrationTest {
         val server =
             spawnProcess(
                 "io.lionweb.server.LionWebServer",
-                "--port",
+                "--ws-port",
                 "$serverPort",
                 "--repository",
                 REPOSITORY,

@@ -1,4 +1,4 @@
-package io.lionweb.server
+package io.lionweb.server.democlient
 
 import com.google.gson.Gson
 import com.google.gson.JsonParser
@@ -8,6 +8,9 @@ import io.lionweb.language.Concept
 import io.lionweb.language.Language
 import io.lionweb.model.impl.DynamicNode
 import io.lionweb.serialization.data.MetaPointer
+import io.lionweb.server.ui.MessageLog
+import io.lionweb.server.ui.NodeInfo
+import io.lionweb.server.ui.PropertyValue
 import java.net.InetSocketAddress
 import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
@@ -291,12 +294,13 @@ class DemoClientWebServer(
                                 } else {
                                     null
                                 }
-                            val props = java.util.concurrent.ConcurrentHashMap<String, PropertyValue>()
+                            val props = ConcurrentHashMap<String, PropertyValue>()
                             inst.properties.forEach { pv ->
                                 val key = pv.metaPointer?.key ?: return@forEach
-                                props[key] = PropertyValue(key, pv.metaPointer?.language, pv.metaPointer?.version, pv.value)
+                                props[key] =
+                                    PropertyValue(key, pv.metaPointer?.language, pv.metaPointer?.version, pv.value)
                             }
-                            val children = java.util.concurrent.ConcurrentHashMap<String, MutableList<String>>()
+                            val children = ConcurrentHashMap<String, MutableList<String>>()
                             inst.containments?.forEach { c ->
                                 val cKey = c.metaPointer?.key ?: return@forEach
                                 children[cKey] = c.childrenIds.toMutableList()

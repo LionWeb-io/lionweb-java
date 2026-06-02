@@ -2,17 +2,20 @@ package io.lionweb.client.api;
 
 import java.util.Objects;
 import java.util.Set;
+import org.jetbrains.annotations.NotNull;
 
 public class ClassifierResult {
-  private final Set<String> ids;
+  private final @NotNull Set<String> ids;
   private final int size;
 
-  public ClassifierResult(Set<String> ids, int size) {
+  public ClassifierResult(@NotNull Set<String> ids, int size) {
+    Objects.requireNonNull(ids, "ids must not be null");
+    if (size < 0) throw new IllegalArgumentException("size must not be negative");
     this.ids = ids;
     this.size = size;
   }
 
-  public Set<String> getIds() {
+  public @NotNull Set<String> getIds() {
     return ids;
   }
 

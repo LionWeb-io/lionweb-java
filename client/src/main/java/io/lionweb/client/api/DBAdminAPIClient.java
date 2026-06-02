@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Interface for interacting with a database administration API. This interface provides methods to
+ * manage repositories and trigger database creation. It allows clients to perform operations like
+ * creating and deleting repositories, as well as listing available repositories.
+ */
 public interface DBAdminAPIClient {
   void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration)
       throws IOException;

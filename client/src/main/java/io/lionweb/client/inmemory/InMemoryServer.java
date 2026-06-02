@@ -199,6 +199,7 @@ public class InMemoryServer {
 
   public Map<String, ClassifierResult> nodesByLanguage(
       @NotNull String repositoryName, @Nullable Integer limit) {
+    int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
     RepositoryData repositoryData = getRepository(repositoryName);
     Map<String, List<SerializedClassifierInstance>> byMetapointer =
         repositoryData.nodesByID.values().stream()
@@ -208,7 +209,7 @@ public class InMemoryServer {
       ClassifierResult cr =
           new ClassifierResult(
               entry.getValue().stream()
-                  .limit(limit)
+                  .limit(actualLimit)
                   .map(n -> n.getID())
                   .collect(Collectors.toSet()),
               entry.getValue().size());
