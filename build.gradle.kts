@@ -76,7 +76,7 @@ release {
 }
 
 tasks.wrapper {
-    gradleVersion = "8.14.4"
+    gradleVersion = "9.5.1"
     distributionType = Wrapper.DistributionType.ALL
 }
 

@@ -6,8 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * A custom exception that represents an error event received with a specific code and corresponding
- * error message. This exception extends {@code RuntimeException} and provides additional context
- * through code and errorMessage fields.
+ * error message.
  */
 public class ErrorEventReceivedException extends RuntimeException {
   private final @NotNull String code;
