@@ -49,8 +49,7 @@ public class AbstractClientFunctionalTest {
   public void setup() {
     String versionKey = lionWebVersion.getVersionString();
 
-    Network network =
-        networkCache.computeIfAbsent(versionKey, k -> Network.newNetwork());
+    Network network = networkCache.computeIfAbsent(versionKey, k -> Network.newNetwork());
 
     db =
         dbCache.computeIfAbsent(
