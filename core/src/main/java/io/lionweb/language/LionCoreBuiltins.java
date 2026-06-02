@@ -6,6 +6,10 @@ import java.util.*;
 import java.util.function.Consumer;
 import javax.annotation.Nonnull;
 
+/**
+ * The built-in primitive types defined by LionCore (String, Boolean, Integer, JSON). One singleton
+ * instance exists per supported {@link LionWebVersion} and is initialised lazily.
+ */
 public class LionCoreBuiltins extends Language {
   // We may have one instance of this class per LionWeb version, and we initialize
   // them lazily

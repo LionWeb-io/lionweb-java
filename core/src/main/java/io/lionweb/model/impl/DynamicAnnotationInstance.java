@@ -8,6 +8,10 @@ import java.util.Objects;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 
+/**
+ * A dynamically-typed annotation instance whose {@link Annotation} type is set at runtime rather
+ * than being encoded in a static Java class hierarchy.
+ */
 public class DynamicAnnotationInstance extends DynamicClassifierInstance<Annotation>
     implements AnnotationInstance, HasSettableParent {
 

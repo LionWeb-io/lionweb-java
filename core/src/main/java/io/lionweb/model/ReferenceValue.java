@@ -3,6 +3,14 @@ package io.lionweb.model;
 import java.util.Objects;
 import javax.annotation.Nullable;
 
+/**
+ * Represents a single value of a {@link io.lionweb.language.Reference} feature. A reference value
+ * pairs an optional resolved {@link Node} with optional resolve-info text that can be used to
+ * locate the target node when the full model is not yet available.
+ *
+ * <p>Instances are immutable once constructed; use {@link #withReferred} and {@link
+ * #withResolveInfo} to derive modified copies.
+ */
 public class ReferenceValue {
   private Node referred;
   private String resolveInfo;

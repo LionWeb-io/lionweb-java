@@ -4,6 +4,10 @@ import io.lionweb.language.*;
 import java.util.*;
 import java.util.function.Consumer;
 
+/**
+ * Caches the feature lists and language IDs seen during a single serialization pass. Re-using
+ * these lists avoids repeated reflective lookups on the same classifier across many nodes.
+ */
 public class SerializationStatus {
   private final IdentityHashMap<String, List<Property>> properties = new IdentityHashMap<>();
   private final IdentityHashMap<String, List<Containment>> containments = new IdentityHashMap<>();
