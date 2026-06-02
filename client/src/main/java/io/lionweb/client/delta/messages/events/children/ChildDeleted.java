@@ -3,9 +3,10 @@ package io.lionweb.client.delta.messages.events.children;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.List;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildDeleted extends BaseDeltaEvent {
+public final class ChildDeleted extends BaseDeltaEvent<ChildDeleted> {
   /** The parent node whose child was deleted. */
   public final @NotNull String parent;
 
@@ -26,6 +27,13 @@ public final class ChildDeleted extends BaseDeltaEvent {
       int index,
       @NotNull MetaPointer containment) {
     super(sequenceNumber);
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(deletedChild, "deletedChild should not be null");
+    Objects.requireNonNull(deletedDescendants, "deletedDescendants should not be null");
+    Objects.requireNonNull(containment, "containment should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.deletedChild = deletedChild;
     this.deletedDescendants = deletedDescendants;

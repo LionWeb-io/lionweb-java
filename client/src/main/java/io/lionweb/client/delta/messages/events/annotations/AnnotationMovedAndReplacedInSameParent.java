@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
  * Existing node movedAnnotation (previously inside parent's annotations at oldIndex) has replaced
  * the existing replacedAnnotation inside parent's annotations at newIndex.
  */
-public class AnnotationMovedAndReplacedInSameParent extends BaseDeltaEvent {
+public class AnnotationMovedAndReplacedInSameParent extends BaseDeltaEvent<AnnotationMovedAndReplacedInSameParent> {
   public final int newIndex;
   public final @NotNull String movedAnnotation;
   public final @NotNull String parent;
@@ -26,15 +26,15 @@ public class AnnotationMovedAndReplacedInSameParent extends BaseDeltaEvent {
       @NotNull String replacedAnnotation,
       @NotNull String[] replacedDescendants) {
     super(sequenceNumber);
-    Objects.requireNonNull(movedAnnotation, "movedAnnotation cannot be null");
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(replacedAnnotation, "replacedAnnotation cannot be null");
-    Objects.requireNonNull(replacedDescendants, "replacedDescendants cannot be null");
+    Objects.requireNonNull(movedAnnotation, "movedAnnotation should not be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(replacedAnnotation, "replacedAnnotation should not be null");
+    Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
     if (oldIndex < 0) {
-      throw new IllegalArgumentException("oldIndex should be positive");
+      throw new IllegalArgumentException("oldIndex should be non-negative");
     }
     if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex should be positive");
+      throw new IllegalArgumentException("newIndex should be non-negative");
     }
     this.newIndex = newIndex;
     this.movedAnnotation = movedAnnotation;

@@ -30,7 +30,7 @@ public abstract class BaseDeltaEvent<T extends BaseDeltaEvent<?>> extends DeltaE
   }
 
   public @NotNull T addSource(@NotNull CommandSource source) {
-    Objects.requireNonNull(source, "source cannot be null");
+    Objects.requireNonNull(source, "source should not be null");
     originCommands.add(source);
     return (T) this;
   }

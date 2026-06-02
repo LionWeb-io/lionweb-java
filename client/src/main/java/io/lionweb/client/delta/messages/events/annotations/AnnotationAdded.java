@@ -7,8 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 /** New node newAnnotation has been added to parent's annotations at index. */
 public class AnnotationAdded extends BaseDeltaEvent<AnnotationAdded> {
-  public final String parent;
-  public final SerializationChunk newAnnotation;
+  public final @NotNull String parent;
+  public final @NotNull SerializationChunk newAnnotation;
   public final int index;
 
   public AnnotationAdded(
@@ -17,8 +17,11 @@ public class AnnotationAdded extends BaseDeltaEvent<AnnotationAdded> {
       @NotNull SerializationChunk newAnnotation,
       int index) {
     super(sequenceNumber);
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(newAnnotation, "newAnnotation cannot be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(newAnnotation, "newAnnotation should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.newAnnotation = newAnnotation;
     this.index = index;
