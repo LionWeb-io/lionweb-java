@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.4.2 (unreleased)
+
+* Add class-level Javadoc to all public classes and interfaces across `core`, `client`, `client-testing`, `emf`, `extensions`, and `gradle-plugin` modules
+* Add `@see` links to the [LionWeb Delta API specification](https://lionweb.io/specification/delta/delta-api.html) on all delta protocol message classes
+
 ### Version 1.4.2
 
 * Reorganize server package structure; introduce `HTTPBulkServer` with full RESTful bulk and inspection API endpoints
