@@ -75,6 +75,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
         });
   }
 
+  @NotNull
   @Override
   public String rawRetrieve(@NotNull List<String> nodeIds, int limit) throws IOException {
     List<String> invalidIDs =

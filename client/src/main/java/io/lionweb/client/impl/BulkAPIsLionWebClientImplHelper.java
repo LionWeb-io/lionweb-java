@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
@@ -23,7 +24,7 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
     super(clientConfiguration);
   }
 
-  public List<String> ids(int count) throws IOException {
+  public @NotNull List<String> ids(int count) throws IOException {
     if (count < 0) {
       throw new IllegalArgumentException("Count should be greater or equal to zero");
     }

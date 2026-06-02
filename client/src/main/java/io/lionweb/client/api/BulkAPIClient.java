@@ -8,6 +8,10 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Provides methods for creating, deleting, storing, listing, and retrieving data partitions and
+ * nodes within a repository.
+ */
 public interface BulkAPIClient {
 
   @NotNull

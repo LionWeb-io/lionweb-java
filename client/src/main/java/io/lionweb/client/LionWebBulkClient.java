@@ -225,10 +225,12 @@ public class LionWebBulkClient
     return bulkAPIs.listPartitions();
   }
 
+  @NotNull
   public List<String> listPartitionsIDs() throws IOException {
     return listPartitions().stream().map(Node::getID).collect(Collectors.toList());
   }
 
+  @NotNull
   @Override
   public List<String> ids(int count) throws IOException {
     return bulkAPIs.ids(count);
@@ -345,13 +347,16 @@ public class LionWebBulkClient
   // History APIs
   //
 
+  @NotNull
   @Override
   public List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException {
     return historyAPIs.listPartitions(repoVersion);
   }
 
+  @NotNull
   @Override
-  public List<Node> retrieve(RepositoryVersionToken repoVersion, List<String> nodeIds, int limit)
+  public List<Node> retrieve(
+      RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
       throws IOException {
     return historyAPIs.retrieve(repoVersion, nodeIds, limit);
   }
