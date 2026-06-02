@@ -11,10 +11,8 @@ import io.lionweb.utils.IdUtils
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest() {
-
     @Test
     fun noPartitionsOnNewModelRepository() {
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, "default")
@@ -48,7 +46,7 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         assertEquals(3, nodes2.size)
         assertEquals(
             setOf("f1", "f2", "f3"),
-            client.listPartitionsIDs().toSet()
+            client.listPartitionsIDs().toSet(),
         )
 
         // Delete partitions
@@ -75,14 +73,14 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         val repoName = "repo_partitionsCRUDUsingChunkLevelAPIs"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
         // Create partition
         val f1 = DynamicNode("f1", PropertiesLanguage.propertiesPartition)
         client.createPartitionsFromChunk(
-            client.jsonSerialization.serializeNodesToSerializationChunk(f1).classifierInstances
+            client.jsonSerialization.serializeNodesToSerializationChunk(f1).classifierInstances,
         )
 
         // Check list
@@ -96,7 +94,7 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         val f2 = DynamicNode("f2", PropertiesLanguage.propertiesPartition)
         val f3 = DynamicNode("f3", PropertiesLanguage.propertiesPartition)
         client.createPartitionsFromChunk(
-            client.jsonSerialization.serializeNodesToSerializationChunk(f2, f3).classifierInstances
+            client.jsonSerialization.serializeNodesToSerializationChunk(f2, f3).classifierInstances,
         )
 
         // Check list
@@ -104,7 +102,7 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         assertEquals(3, nodes2.size)
         assertEquals(
             setOf("f1", "f2", "f3"),
-            client.listPartitionsIDs().toSet()
+            client.listPartitionsIDs().toSet(),
         )
     }
 
@@ -113,7 +111,7 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         val repoName = "my_repo"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
@@ -183,13 +181,13 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         val repoName = "repo_storeAtChunkLevelAndRetrieve"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
         val p1 = DynamicNode("p1", PropertiesLanguage.propertiesPartition)
         client.createPartitionsFromChunk(
-            client.jsonSerialization.serializeTreeToSerializationChunk(p1).classifierInstances
+            client.jsonSerialization.serializeTreeToSerializationChunk(p1).classifierInstances,
         )
 
         val f1 = DynamicNode("f1", PropertiesLanguage.propertiesFile)
@@ -207,7 +205,7 @@ class HTTPBulkServerBulkApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest
         val retrievedNodes1 =
             client.jsonSerialization
                 .deserializeSerializationChunk(
-                    SerializationChunk.fromNodes(LionWebVersion.v2023_1, retrievedNodes1Chunk)
+                    SerializationChunk.fromNodes(LionWebVersion.v2023_1, retrievedNodes1Chunk),
                 )
         assertEquals(1, retrievedNodes1.size)
         assertEquals(p1, retrievedNodes1[0])

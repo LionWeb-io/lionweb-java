@@ -19,9 +19,9 @@ abstract class AbstractHTTPBulkServerFunctionalTest {
         inMemoryServer = InMemoryServer()
         // We create a default repository as some tests expect it
         inMemoryServer.createRepository(
-            RepositoryConfiguration("default", LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration("default", LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
-        
+
         httpBulkServer = HTTPBulkServer(inMemoryServer, 0)
         val server = httpBulkServer.start()
         serverPort = server.address.port

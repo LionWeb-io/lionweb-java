@@ -1,7 +1,12 @@
 package io.lionweb.server.bulk
 
 import io.lionweb.LionWebVersion
-import io.lionweb.language.*
+import io.lionweb.language.Classifier
+import io.lionweb.language.Concept
+import io.lionweb.language.Containment
+import io.lionweb.language.Language
+import io.lionweb.language.LionCoreBuiltins
+import io.lionweb.language.Property
 
 object PropertiesLanguage {
     val propertiesPartition: Concept
@@ -36,12 +41,16 @@ object PropertiesLanguage {
         property.addImplementedInterface(LionCoreBuiltins.getINamed())
     }
 
-    private fun createConcept(language: Language, name: String): Concept {
-        val concept = Concept(
-            language,
-            name,
-            language.id!!.replace("language-", "").replace("-id", "") + "-" + name + "-id"
-        )
+    private fun createConcept(
+        language: Language,
+        name: String,
+    ): Concept {
+        val concept =
+            Concept(
+                language,
+                name,
+                language.id!!.replace("language-", "").replace("-id", "") + "-" + name + "-id",
+            )
         concept.setKey(language.key!!.replace("language-", "").replace("-key", "") + "-" + name + "-key")
         language.addElement(concept)
         return concept
@@ -51,7 +60,7 @@ object PropertiesLanguage {
         owner: Classifier<*>,
         name: String,
         target: Classifier<*>,
-        multiplicity: Multiplicity
+        multiplicity: Multiplicity,
     ): Containment {
         val containment = Containment(lionWebVersionUsed)
         containment.name = name
@@ -64,10 +73,13 @@ object PropertiesLanguage {
         return containment
     }
 
-    enum class Multiplicity(val optional: Boolean, val multiple: Boolean) {
+    enum class Multiplicity(
+        val optional: Boolean,
+        val multiple: Boolean,
+    ) {
         OPTIONAL(true, false),
         SINGLE(false, false),
         ZERO_TO_MANY(true, true),
-        ONE_TO_MANY(false, true);
+        ONE_TO_MANY(false, true),
     }
 }

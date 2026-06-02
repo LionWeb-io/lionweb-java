@@ -10,16 +10,14 @@ import io.lionweb.model.ClassifierInstanceUtils
 import io.lionweb.model.impl.DynamicNode
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.util.*
 
 class HTTPBulkServerInspectionApiFunctionalTest : AbstractHTTPBulkServerFunctionalTest() {
-
     @Test
     fun nodesByClassifier() {
         val repoName = "repo_nodesByClassifier"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
@@ -42,14 +40,18 @@ class HTTPBulkServerInspectionApiFunctionalTest : AbstractHTTPBulkServerFunction
         // Get data after insertion
         val res2 = client.nodesByClassifier()
         val exp2 = mutableMapOf<ClassifierKey, ClassifierResult>()
-        exp2[ClassifierKey(
-            PropertiesLanguage.propertiesLanguage.key!!,
-            PropertiesLanguage.propertiesPartition.key!!
-        )] = ClassifierResult(setOf("p1"), 1)
-        exp2[ClassifierKey(
-            PropertiesLanguage.propertiesLanguage.key!!,
-            PropertiesLanguage.propertiesFile.key!!
-        )] = ClassifierResult(setOf("f1", "f2"), 2)
+        exp2[
+            ClassifierKey(
+                PropertiesLanguage.propertiesLanguage.key!!,
+                PropertiesLanguage.propertiesPartition.key!!,
+            ),
+        ] = ClassifierResult(setOf("p1"), 1)
+        exp2[
+            ClassifierKey(
+                PropertiesLanguage.propertiesLanguage.key!!,
+                PropertiesLanguage.propertiesFile.key!!,
+            ),
+        ] = ClassifierResult(setOf("f1", "f2"), 2)
         assertEquals(exp2, res2)
     }
 
@@ -58,7 +60,7 @@ class HTTPBulkServerInspectionApiFunctionalTest : AbstractHTTPBulkServerFunction
         val repoName = "repo_nodesByClassifierWithLimit"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
@@ -81,26 +83,34 @@ class HTTPBulkServerInspectionApiFunctionalTest : AbstractHTTPBulkServerFunction
         // Get data after insertion
         val res2a = client.nodesByClassifier(1)
         val exp2a = mutableMapOf<ClassifierKey, ClassifierResult>()
-        exp2a[ClassifierKey(
-            PropertiesLanguage.propertiesLanguage.key!!,
-            PropertiesLanguage.propertiesPartition.key!!
-        )] = ClassifierResult(setOf("p1"), 1)
-        exp2a[ClassifierKey(
-            PropertiesLanguage.propertiesLanguage.key!!,
-            PropertiesLanguage.propertiesFile.key!!
-        )] = ClassifierResult(setOf("f1"), 2)
+        exp2a[
+            ClassifierKey(
+                PropertiesLanguage.propertiesLanguage.key!!,
+                PropertiesLanguage.propertiesPartition.key!!,
+            ),
+        ] = ClassifierResult(setOf("p1"), 1)
+        exp2a[
+            ClassifierKey(
+                PropertiesLanguage.propertiesLanguage.key!!,
+                PropertiesLanguage.propertiesFile.key!!,
+            ),
+        ] = ClassifierResult(setOf("f1"), 2)
         assertEquals(exp2a, res2a)
 
         val res2b = client.nodesByClassifier(2)
         val exp2b = mutableMapOf<ClassifierKey, ClassifierResult>()
-        exp2b[ClassifierKey(
-            PropertiesLanguage.propertiesLanguage.key!!,
-            PropertiesLanguage.propertiesPartition.key!!
-        )] = ClassifierResult(setOf("p1"), 1)
-        exp2b[ClassifierKey(
-            PropertiesLanguage.propertiesLanguage.key!!,
-            PropertiesLanguage.propertiesFile.key!!
-        )] = ClassifierResult(setOf("f1", "f2"), 2)
+        exp2b[
+            ClassifierKey(
+                PropertiesLanguage.propertiesLanguage.key!!,
+                PropertiesLanguage.propertiesPartition.key!!,
+            ),
+        ] = ClassifierResult(setOf("p1"), 1)
+        exp2b[
+            ClassifierKey(
+                PropertiesLanguage.propertiesLanguage.key!!,
+                PropertiesLanguage.propertiesFile.key!!,
+            ),
+        ] = ClassifierResult(setOf("f1", "f2"), 2)
         assertEquals(exp2b, res2b)
     }
 
@@ -109,7 +119,7 @@ class HTTPBulkServerInspectionApiFunctionalTest : AbstractHTTPBulkServerFunction
         val repoName = "repo_nodesByLanguage"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
@@ -142,7 +152,7 @@ class HTTPBulkServerInspectionApiFunctionalTest : AbstractHTTPBulkServerFunction
         val repoName = "repo_nodesByLanguageWithLimit"
         val client = LionWebBulkClient(LionWebVersion.v2023_1, "localhost", serverPort, repoName)
         client.createRepository(
-            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED)
+            RepositoryConfiguration(repoName, LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
         client.jsonSerialization.registerLanguage(PropertiesLanguage.propertiesLanguage)
 
