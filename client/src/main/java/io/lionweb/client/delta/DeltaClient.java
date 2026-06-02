@@ -70,18 +70,19 @@ import org.jetbrains.annotations.Nullable;
  * nodes, it will send the changes through the DeltaChannel.
  */
 public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiver {
-  private final DeltaChannel channel;
-  private final MonitoringObserver observer = new MonitoringObserver();
-  private final HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes = new HashMap<>();
-  private final DataTypesValuesSerialization dataTypesValuesSerialization =
+  private final @NotNull DeltaChannel channel;
+  private final @NotNull MonitoringObserver observer = new MonitoringObserver();
+  private final @NotNull HashMap<String, Set<WeakReference<ClassifierInstance<?>>>> nodes =
+      new HashMap<>();
+  private final @NotNull DataTypesValuesSerialization dataTypesValuesSerialization =
       new DataTypesValuesSerialization();
-  private final AbstractSerialization serialization;
-  private final Set<String> queriesSent = new HashSet<>();
-  private final String clientId;
-  private final LionWebVersion lionWebVersion;
-  private String participationId;
-  private String pendingReconnectParticipationId;
-  private ParticipationState state = ParticipationState.NOT_CONNECTED;
+  private final @NotNull AbstractSerialization serialization;
+  private final @NotNull Set<String> queriesSent = new HashSet<>();
+  private final @NotNull String clientId;
+  private final @NotNull LionWebVersion lionWebVersion;
+  private @Nullable String participationId;
+  private @Nullable String pendingReconnectParticipationId;
+  private @NotNull ParticipationState state = ParticipationState.NOT_CONNECTED;
 
   public DeltaClient(@NotNull DeltaChannel channel, @NotNull String clientId) {
     this(LionWebVersion.currentVersion, channel, clientId);
@@ -175,7 +176,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     return participationId;
   }
 
-  public ParticipationState getState() {
+  public @NotNull ParticipationState getState() {
     return state;
   }
 
@@ -302,7 +303,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   public void sendAddPartitionCommand(@NotNull Node partition) {
     Objects.requireNonNull(partition, "partition must not be null");
     SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(partition);
-    channel.sendCommand(participationId, commandId -> new AddPartition(commandId, chunk));
+    channel.sendCommand(ensureParticipation(), commandId -> new AddPartition(commandId, chunk));
   }
 
   /**
@@ -312,7 +313,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
    */
   public void sendDeletePartitionCommand(@NotNull String partitionId) {
     Objects.requireNonNull(partitionId, "partitionId must not be null");
-    channel.sendCommand(participationId, commandId -> new DeletePartition(commandId, partitionId));
+    channel.sendCommand(
+        ensureParticipation(), commandId -> new DeletePartition(commandId, partitionId));
   }
 
   /**
@@ -326,7 +328,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(nodeId, "nodeId must not be null");
     Objects.requireNonNull(newClassifier, "newClassifier must not be null");
     channel.sendCommand(
-        participationId, commandId -> new ChangeClassifier(commandId, nodeId, newClassifier));
+        ensureParticipation(), commandId -> new ChangeClassifier(commandId, nodeId, newClassifier));
   }
 
   /**
@@ -348,7 +350,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(containment, "containment must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId ->
             new MoveChildInSameContainment(
                 commandId, newIndex, movedChild, parent, containment, oldIndex));
@@ -379,7 +381,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(newContainment, "newContainment must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId ->
             new MoveChildFromOtherContainment(
                 commandId,
@@ -414,7 +416,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(newContainment, "newContainment must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId ->
             new MoveChildFromOtherContainmentInSameParent(
                 commandId, newContainment, newIndex, movedChild, parent, oldContainment, oldIndex));
@@ -441,7 +443,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(newChild, "newChild must not be null");
     SerializationChunk chunk = serialization.serializeNodesToSerializationChunk(newChild);
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId -> new ReplaceChild(commandId, chunk, parent, containment, index, replacedChild));
   }
 
@@ -468,7 +470,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       rootInst.setParentNodeID(parentId);
     }
     channel.sendCommand(
-        participationId, commandId -> new AddChild(commandId, parentId, chunk, containment, index));
+        ensureParticipation(),
+        commandId -> new AddChild(commandId, parentId, chunk, containment, index));
   }
 
   /**
@@ -488,7 +491,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(containment, "containment must not be null");
     Objects.requireNonNull(childId, "childId must not be null");
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId -> new DeleteChild(commandId, parentId, containment, index, childId));
   }
 
@@ -511,10 +514,12 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     Objects.requireNonNull(property, "property must not be null");
     if (propertyAlreadySet) {
       channel.sendCommand(
-          participationId, commandId -> new ChangeProperty(commandId, nodeId, property, newValue));
+          ensureParticipation(),
+          commandId -> new ChangeProperty(commandId, nodeId, property, newValue));
     } else {
       channel.sendCommand(
-          participationId, commandId -> new AddProperty(commandId, nodeId, property, newValue));
+          ensureParticipation(),
+          commandId -> new AddProperty(commandId, nodeId, property, newValue));
     }
   }
 
@@ -540,7 +545,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       @NotNull String parentId, @NotNull AnnotationInstance annotation, int index) {
     SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(annotation);
     channel.sendCommand(
-        participationId, commandId -> new AddAnnotation(commandId, parentId, chunk, index));
+        ensureParticipation(), commandId -> new AddAnnotation(commandId, parentId, chunk, index));
   }
 
   /**
@@ -553,7 +558,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   public void sendDeleteAnnotationCommand(
       @NotNull String parentId, int index, @NotNull String annotationId) {
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId -> new DeleteAnnotation(commandId, parentId, index, annotationId));
   }
 
@@ -568,7 +573,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
   public void sendMoveAnnotationInSameParentCommand(
       @NotNull String parentId, @NotNull String movedAnnotationId, int oldIndex, int newIndex) {
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId ->
             new MoveAnnotationInSameParent(
                 commandId, newIndex, movedAnnotationId, parentId, oldIndex));
@@ -590,7 +595,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       int oldIndex,
       int newIndex) {
     channel.sendCommand(
-        participationId,
+        ensureParticipation(),
         commandId ->
             new MoveAnnotationFromOtherParent(
                 commandId, newParentId, newIndex, movedAnnotationId, oldParentId, oldIndex));
@@ -649,6 +654,13 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       if (instance == null) return;
       nodeOperation.accept(instance);
     }
+  }
+
+  private @NotNull String ensureParticipation() {
+    if (participationId == null) {
+      throw new IllegalStateException("Participation not set");
+    }
+    return this.participationId;
   }
 
   private void onChildAdded(@NotNull ChildAdded event) {
@@ -903,6 +915,12 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
     }
   }
 
+  /**
+   * Represents the participation state of a user or entity in a system.
+   *
+   * <p>This enum defines the various states that indicate whether a user or entity is connected,
+   * disconnected, or signed off from a system or session.
+   */
   public enum ParticipationState {
     NOT_CONNECTED,
     CONNECTED,
@@ -929,13 +947,15 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       String nodeId = classifierInstance.getID();
       if (oldValue == null) {
         channel.sendCommand(
-            participationId, commandId -> new AddProperty(commandId, nodeId, mp, serializedNew));
+            ensureParticipation(),
+            commandId -> new AddProperty(commandId, nodeId, mp, serializedNew));
       } else if (newValue == null) {
         channel.sendCommand(
-            participationId, commandId -> new DeleteProperty(commandId, nodeId, mp));
+            ensureParticipation(), commandId -> new DeleteProperty(commandId, nodeId, mp));
       } else {
         channel.sendCommand(
-            participationId, commandId -> new ChangeProperty(commandId, nodeId, mp, serializedNew));
+            ensureParticipation(),
+            commandId -> new ChangeProperty(commandId, nodeId, mp, serializedNew));
       }
     }
 
@@ -954,7 +974,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         throw new IllegalStateException("Child id must not be null");
       }
       channel.sendCommand(
-          participationId,
+          ensureParticipation(),
           commandId ->
               new AddChild(
                   commandId,
@@ -975,7 +995,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       String removedChildId = removedChild.getID();
       Objects.requireNonNull(removedChildId, "removedChildId must not be null");
       channel.sendCommand(
-          participationId,
+          ensureParticipation(),
           commandId ->
               new DeleteChild(
                   commandId,
@@ -991,7 +1011,8 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       if (paused) return;
       SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(newAnnotation);
       channel.sendCommand(
-          participationId, commandId -> new AddAnnotation(commandId, node.getID(), chunk, index));
+          ensureParticipation(),
+          commandId -> new AddAnnotation(commandId, node.getID(), chunk, index));
     }
 
     @Override
@@ -1001,7 +1022,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         @NotNull AnnotationInstance removedAnnotation) {
       if (paused) return;
       channel.sendCommand(
-          participationId,
+          ensureParticipation(),
           commandId ->
               new DeleteAnnotation(commandId, node.getID(), index, removedAnnotation.getID()));
     }
@@ -1017,7 +1038,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       Objects.requireNonNull(referenceValue, "referenceValue must not be null");
       if (paused) return;
       channel.sendCommand(
-          participationId,
+          ensureParticipation(),
           commandId ->
               new AddReference(
                   commandId,
@@ -1041,7 +1062,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       Objects.requireNonNull(reference, "reference must not be null");
       if (paused) return;
       channel.sendCommand(
-          participationId,
+          ensureParticipation(),
           commandId ->
               new ChangeReference(
                   commandId,
@@ -1065,7 +1086,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       Objects.requireNonNull(referenceValue, "referenceValue must not be null");
       if (paused) return;
       channel.sendCommand(
-          participationId,
+          ensureParticipation(),
           commandId ->
               new DeleteReference(
                   commandId,

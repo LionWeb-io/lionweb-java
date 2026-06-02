@@ -2,6 +2,8 @@ package io.lionweb.client.delta;
 
 import io.lionweb.client.delta.messages.*;
 import java.util.function.Function;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The DeltaChannel must be a specific link between a Client and the Server. Different clients
@@ -15,7 +17,8 @@ public interface DeltaChannel {
    * The repository might reply invalid queries with a failure message. We also use queries for
    * managing participations.
    */
-  DeltaQueryResponse sendQuery(Function<String, DeltaQuery> queryProducer);
+  @Nullable
+  DeltaQueryResponse sendQuery(@NotNull Function<String, DeltaQuery> queryProducer);
 
   /**
    * Commands initiated/requested by the client, with synchronous response by the repository. A
@@ -23,23 +26,26 @@ public interface DeltaChannel {
    * the command, or rejects a failed command.[5] However, the repository processes the command
    * asynchronously, and eventually broadcasts the effect(s) as event.
    */
-  void sendCommand(String participationId, Function<String, DeltaCommand> commandProducer);
+  void sendCommand(
+      @NotNull String participationId, @NotNull Function<String, DeltaCommand> commandProducer);
 
-  void sendEvent(Function<Integer, DeltaEvent> eventProducer);
+  void sendEvent(@NotNull Function<Integer, DeltaEvent> eventProducer);
 
-  void registerEventReceiver(DeltaEventReceiver deltaEventReceiver);
+  void registerEventReceiver(@NotNull DeltaEventReceiver deltaEventReceiver);
 
-  void unregisterEventReceiver(DeltaEventReceiver deltaEventReceiver);
+  void unregisterEventReceiver(@NotNull DeltaEventReceiver deltaEventReceiver);
 
-  void registerCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
+  void registerCommandReceiver(@NotNull DeltaCommandReceiver deltaCommandReceiver);
 
-  void unregisterCommandReceiver(DeltaCommandReceiver deltaCommandReceiver);
+  void unregisterCommandReceiver(@NotNull DeltaCommandReceiver deltaCommandReceiver);
 
-  void registerQueryReceiver(DeltaQueryReceiver deltaQueryReceiver);
+  void registerQueryReceiver(@NotNull DeltaQueryReceiver deltaQueryReceiver);
 
-  void unregisterQueryReceiver(DeltaQueryReceiver deltaQueryReceiver);
+  void unregisterQueryReceiver(@NotNull DeltaQueryReceiver deltaQueryReceiver);
 
-  void registerQueryResponseReceiver(DeltaQueryResponseReceiver deltaQueryResponseReceiver);
+  void registerQueryResponseReceiver(
+      @NotNull DeltaQueryResponseReceiver deltaQueryResponseReceiver);
 
-  void unregisterQueryResponseReceiver(DeltaQueryResponseReceiver deltaQueryResponseReceiver);
+  void unregisterQueryResponseReceiver(
+      @NotNull DeltaQueryResponseReceiver deltaQueryResponseReceiver);
 }

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -163,7 +164,7 @@ public class DeltaMessageSerialization {
    * @return the deserialized object, or null if the messageKind is unknown/unimplemented
    */
   @Nullable
-  public Object deserialize(String json) {
+  public Object deserialize(@NotNull String json) {
     return deserialize(JsonParser.parseString(json));
   }
 
@@ -173,7 +174,7 @@ public class DeltaMessageSerialization {
    * @return the deserialized object, or null if the messageKind is unknown/unimplemented
    */
   @Nullable
-  public Object deserialize(Reader reader) {
+  public Object deserialize(@NotNull Reader reader) {
     return deserialize(JsonParser.parseReader(reader));
   }
 
@@ -183,7 +184,7 @@ public class DeltaMessageSerialization {
    * @return the deserialized object, or null if the messageKind is unknown/unimplemented
    */
   @Nullable
-  public Object deserialize(File file) throws IOException {
+  public Object deserialize(@NotNull File file) throws IOException {
     try (FileReader reader = new FileReader(file)) {
       return deserialize(reader);
     }
@@ -222,7 +223,7 @@ public class DeltaMessageSerialization {
   }
 
   @Nullable
-  private Object deserialize(JsonElement element) {
+  private Object deserialize(@NotNull JsonElement element) {
     if (!element.isJsonObject()) {
       throw new JsonParseException("Delta message must be a JSON object");
     }
