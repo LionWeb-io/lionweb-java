@@ -288,11 +288,11 @@ public class LionWebArchive {
     // Pre-serialize chunks in parallel (now with per-thread ProtoBufSerialization)
     List<ZipChunk> languageEntries =
         languageChunks == null
-            ? Collections.emptyList()
+            ? List.of()
             : serializeChunksToZipEntries(lionWebVersion, languageChunks, "languages");
     List<ZipChunk> partitionEntries =
         partitionChunks == null
-            ? Collections.emptyList()
+            ? List.of()
             : serializeChunksToZipEntries(lionWebVersion, partitionChunks, "partitions");
 
     // Write zip sequentially
@@ -357,7 +357,7 @@ public class LionWebArchive {
     }
     final int size = list.size();
     if (size == 0) {
-      return Collections.emptyList();
+      return List.of();
     }
 
     // For a single chunk, avoid thread pool overhead.

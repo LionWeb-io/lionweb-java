@@ -101,7 +101,7 @@ class RepositoryData {
     int actualLimit = (limit != null) ? limit : Integer.MAX_VALUE;
     List<String> allIds;
     if (materializeClassifierIndex) {
-      allIds = classifierIndex.getOrDefault(key, Collections.emptyList());
+      allIds = classifierIndex.getOrDefault(key, List.of());
     } else {
       allIds = new ArrayList<>();
       for (SerializedClassifierInstance node : nodesByID.values()) {

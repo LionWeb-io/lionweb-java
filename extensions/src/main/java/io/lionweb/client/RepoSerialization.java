@@ -39,7 +39,7 @@ public class RepoSerialization {
       C apiClient, File directory) throws IOException {
     for (String partitionID : apiClient.listPartitionsIDs()) {
       String partitionData =
-          apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
+          apiClient.rawRetrieve(List.of(partitionID), Integer.MAX_VALUE);
       File partitionFile = new File(directory, partitionID + ".json");
       Files.write(
           partitionFile.toPath(),
@@ -61,7 +61,7 @@ public class RepoSerialization {
 
       for (String partitionID : apiClient.listPartitionsIDs()) {
         String partitionData =
-            apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
+            apiClient.rawRetrieve(List.of(partitionID), Integer.MAX_VALUE);
 
         ZipEntry entry = new ZipEntry(partitionID + ".json");
         zos.putNextEntry(entry);
@@ -100,7 +100,7 @@ public class RepoSerialization {
       root.clearContainments();
       SerializationChunk limitedSerializationChunk =
           groupNodesIntoSerializationBlock(
-              Collections.singletonList(root), apiClient.getLionWebVersion());
+              List.of(root), apiClient.getLionWebVersion());
       String limitedJson =
           lowLevelJsonSerialization.serializeToJsonString(limitedSerializationChunk);
 
@@ -179,7 +179,7 @@ public class RepoSerialization {
         root.clearContainments();
         SerializationChunk limitedSerializationChunk =
             groupNodesIntoSerializationBlock(
-                Collections.singletonList(root), apiClient.getLionWebVersion());
+                List.of(root), apiClient.getLionWebVersion());
         String limitedJson =
             lowLevelJsonSerialization.serializeToJsonString(limitedSerializationChunk);
 

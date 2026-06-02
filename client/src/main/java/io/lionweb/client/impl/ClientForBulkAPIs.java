@@ -85,7 +85,7 @@ public class ClientForBulkAPIs extends BulkAPIsLionWebClientImplHelper implement
   @Override
   public List<Node> retrieve(List<String> nodeIds, int limit) throws IOException {
     if (nodeIds.isEmpty()) {
-      return Collections.emptyList();
+      return List.of();
     }
     List<String> invalidIDs =
         nodeIds.stream().filter(id -> !IdUtils.isValidID(id)).collect(Collectors.toList());
