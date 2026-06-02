@@ -19,7 +19,10 @@ import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-/** HTTP client implementation of {@link BulkAPIClient}, mapping high-level node operations to bulk REST calls. */
+/**
+ * HTTP client implementation of {@link BulkAPIClient}, mapping high-level node operations to bulk
+ * REST calls.
+ */
 public class ClientForBulkAPIs extends BulkAPIsLionWebClientImplHelper implements BulkAPIClient {
 
   private final JSONLevelBulkAPIClient jsonLevelClient;

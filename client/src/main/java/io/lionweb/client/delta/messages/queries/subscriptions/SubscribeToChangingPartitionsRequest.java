@@ -4,9 +4,11 @@ import io.lionweb.client.delta.messages.DeltaQuery;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Query asking to receive {@link io.lionweb.client.delta.messages.events.partitions.PartitionAdded} and/or {@link io.lionweb.client.delta.messages.events.partitions.PartitionDeleted} events.
+ * Query asking to receive {@link io.lionweb.client.delta.messages.events.partitions.PartitionAdded}
+ * and/or {@link io.lionweb.client.delta.messages.events.partitions.PartitionDeleted} events.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class SubscribeToChangingPartitionsRequest extends DeltaQuery {
   /**

@@ -13,7 +13,10 @@ import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-/** Base class for functional tests that start an actual LionWeb HTTP server inside a Docker container and exercise the client API against it. */
+/**
+ * Base class for functional tests that start an actual LionWeb HTTP server inside a Docker
+ * container and exercise the client API against it.
+ */
 public class AbstractClientFunctionalTest {
   private static final int DB_CONTAINER_PORT = 5432;
 

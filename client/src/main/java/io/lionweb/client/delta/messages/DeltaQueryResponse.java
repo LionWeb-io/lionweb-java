@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
  * Abstract base for response messages returned by the server in reply to {@link DeltaQuery}
  * messages in the LionWeb Delta protocol.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public abstract class DeltaQueryResponse {
   /**

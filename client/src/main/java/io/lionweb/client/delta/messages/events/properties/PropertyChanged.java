@@ -6,7 +6,8 @@ import io.lionweb.serialization.data.MetaPointer;
 /**
  * Delta event fired when an existing property value on a node is replaced.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
 

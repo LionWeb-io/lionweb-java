@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Query sent by a client to resume an interrupted participation, replaying missed events.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class ReconnectRequest extends DeltaQuery {
   /** The version of the delta protocol (e.g. "2026.1"). */

@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Response to {@link SignOnRequest} carrying the assigned participation ID.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class SignOnResponse extends DeltaQueryResponse {
 

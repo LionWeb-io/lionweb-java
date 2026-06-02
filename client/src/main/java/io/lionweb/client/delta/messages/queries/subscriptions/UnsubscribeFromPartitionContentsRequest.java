@@ -7,7 +7,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Query asking to stop receiving change events for a specific partition's contents.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class UnsubscribeFromPartitionContentsRequest extends DeltaQuery {
 

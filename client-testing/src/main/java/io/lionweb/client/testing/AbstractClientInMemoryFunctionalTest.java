@@ -11,7 +11,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.TestInstance;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-/** Base class for functional tests that use an in-memory LionWeb server instead of a Docker container, allowing faster execution without external dependencies. */
+/** Base class for functional tests that use an in-memory LionWeb server. */
 public class AbstractClientInMemoryFunctionalTest {
   protected LionWebVersion lionWebVersion;
   private InMemoryServer server;

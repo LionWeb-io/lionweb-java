@@ -16,7 +16,8 @@ import org.jetbrains.annotations.NotNull;
  * Abstract base for commands sent by a client to request model changes via the LionWeb Delta
  * protocol.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public abstract class DeltaCommand {
   public final @NotNull String commandId;

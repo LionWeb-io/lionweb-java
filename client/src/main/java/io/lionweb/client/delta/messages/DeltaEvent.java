@@ -7,7 +7,8 @@ import java.util.List;
  * Abstract base for events broadcast by the server to subscribed clients in the LionWeb Delta
  * protocol.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public abstract class DeltaEvent {
   /**

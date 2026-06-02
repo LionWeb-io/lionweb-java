@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Response acknowledging a {@link SubscribeToChangingPartitionsRequest}.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class SubscribeToChangingPartitionsResponse extends DeltaQueryResponse {
   public SubscribeToChangingPartitionsResponse(@NotNull String queryId) {

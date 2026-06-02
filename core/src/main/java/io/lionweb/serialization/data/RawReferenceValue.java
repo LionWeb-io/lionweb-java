@@ -3,8 +3,8 @@ package io.lionweb.serialization.data;
 import java.util.Objects;
 
 /**
- * A raw, unresolved reference value as it appears in a serialized LionWeb payload — carrying only
- * a {@code referredId} string and optional {@code resolveInfo}, before the referred node has been
+ * A raw, unresolved reference value as it appears in a serialized LionWeb payload — carrying only a
+ * {@code referredId} string and optional {@code resolveInfo}, before the referred node has been
  * looked up in the deserialized model.
  */
 public class RawReferenceValue {

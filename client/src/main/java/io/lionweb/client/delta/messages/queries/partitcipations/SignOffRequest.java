@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Query sent by a client to end its current participation in the delta protocol.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class SignOffRequest extends DeltaQuery {
 

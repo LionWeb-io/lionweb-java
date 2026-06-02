@@ -41,7 +41,9 @@ public class DataTypesValuesSerialization {
     dynamicNodesEnabled = true;
   }
 
-  /** Converts a data-type value to its string representation for inclusion in a serialized payload. */
+  /**
+   * Converts a data-type value to its string representation for inclusion in a serialized payload.
+   */
   public interface DataTypeSerializer<V> {
     @Nullable
     String serialize(@Nullable V value);

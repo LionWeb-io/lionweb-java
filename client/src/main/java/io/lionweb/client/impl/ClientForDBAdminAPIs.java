@@ -14,7 +14,10 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import org.jetbrains.annotations.NotNull;
 
-/** HTTP client implementation of {@link io.lionweb.client.api.DBAdminAPIClient} for repository administration operations such as creating and deleting repositories. */
+/**
+ * HTTP client implementation of {@link io.lionweb.client.api.DBAdminAPIClient} for repository
+ * administration operations such as creating and deleting repositories.
+ */
 public class ClientForDBAdminAPIs extends LionWebClientImplHelper implements DBAdminAPIClient {
 
   public ClientForDBAdminAPIs(ClientConfiguration clientConfiguration) {

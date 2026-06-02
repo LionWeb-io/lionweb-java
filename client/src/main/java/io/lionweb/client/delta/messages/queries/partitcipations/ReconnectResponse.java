@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Response to {@link ReconnectRequest} confirming the last sequence number sent by the server.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class ReconnectResponse extends DeltaQueryResponse {
   public final long lastSentSequenceNumber;

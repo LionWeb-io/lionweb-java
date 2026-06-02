@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Query asking the server to reserve a given number of fresh node IDs for the client.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class GetAvailableIdsRequest extends DeltaQuery {
   public int count;

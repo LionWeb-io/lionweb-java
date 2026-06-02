@@ -5,7 +5,8 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 /**
  * A no-operation delta event used to advance the sequence number without any model change.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class NoOp extends BaseDeltaEvent {
 

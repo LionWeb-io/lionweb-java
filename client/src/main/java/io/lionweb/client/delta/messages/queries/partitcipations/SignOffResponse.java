@@ -6,7 +6,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Response acknowledging a {@link SignOffRequest}.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class SignOffResponse extends DeltaQueryResponse {
 

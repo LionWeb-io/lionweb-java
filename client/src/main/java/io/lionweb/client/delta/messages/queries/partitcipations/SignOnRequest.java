@@ -8,7 +8,8 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Query sent by a client to establish a new participation in the delta protocol.
  *
- * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
  */
 public class SignOnRequest extends DeltaQuery {
   /** The version string of the delta protocol (e.g. "2026.1"). */
