@@ -144,14 +144,14 @@ public class SerializedClassifierInstance {
 
   public List<SerializedContainmentValue> getContainments() {
     if (containments == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     return Collections.unmodifiableList(this.containments);
   }
 
   public List<String> getChildren() {
     if (containments == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     List<String> children = new ArrayList<>();
     this.containments.forEach(c -> children.addAll(c.getChildrenIds()));
@@ -165,7 +165,7 @@ public class SerializedClassifierInstance {
         return Collections.unmodifiableList(cv.getChildrenIds());
       }
     }
-    return Collections.emptyList();
+    return List.of();
   }
 
   /**
@@ -287,7 +287,7 @@ public class SerializedClassifierInstance {
 
   public List<SerializedReferenceValue> getReferences() {
     if (this.references == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     return Collections.unmodifiableList(this.references);
   }
@@ -310,7 +310,7 @@ public class SerializedClassifierInstance {
         return Collections.unmodifiableList(rv.getValue());
       }
     }
-    return Collections.emptyList();
+    return List.of();
   }
 
   /**
@@ -431,7 +431,7 @@ public class SerializedClassifierInstance {
 
   public List<String> getAnnotations() {
     if (this.annotations == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     return Collections.unmodifiableList(this.annotations);
   }

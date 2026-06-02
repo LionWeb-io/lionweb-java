@@ -377,7 +377,7 @@ public class LionCore {
     } else if (node instanceof Classifier) {
       return ((Classifier) node).getFeatures();
     } else if (node instanceof Feature) {
-      return Collections.emptyList();
+      return List.of();
     } else {
       throw new UnsupportedOperationException("Unsupported " + node);
     }
