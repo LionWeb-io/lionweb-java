@@ -2,6 +2,8 @@ package io.lionweb.client.delta.messages.events.properties;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Delta event fired when a property value is removed from a node.
@@ -9,14 +11,21 @@ import io.lionweb.serialization.data.MetaPointer;
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
  */
-public class PropertyDeleted extends BaseDeltaEvent {
+public class PropertyDeleted extends BaseDeltaEvent<PropertyDeleted> {
 
-  public final String node;
-  public final MetaPointer property;
-  public final String oldValue;
+  public final @NotNull String node;
+  public final @NotNull MetaPointer property;
+  public final @NotNull String oldValue;
 
-  public PropertyDeleted(int sequenceNumber, String node, MetaPointer property, String oldValue) {
+  public PropertyDeleted(
+      int sequenceNumber,
+      @NotNull String node,
+      @NotNull MetaPointer property,
+      @NotNull String oldValue) {
     super(sequenceNumber);
+    Objects.requireNonNull(node, "node should not be null");
+    Objects.requireNonNull(property, "property should not be null");
+    Objects.requireNonNull(oldValue, "oldValue should not be null");
     this.node = node;
     this.property = property;
     this.oldValue = oldValue;

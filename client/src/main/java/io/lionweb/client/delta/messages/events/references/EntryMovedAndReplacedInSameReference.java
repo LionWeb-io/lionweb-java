@@ -2,6 +2,8 @@ package io.lionweb.client.delta.messages.events.references;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -9,9 +11,10 @@ import org.jetbrains.annotations.Nullable;
  * oldIndex) has replaced existing replacedTarget/replacedResolveInfo at parent's reference at
  * newIndex.
  */
-public class EntryMovedAndReplacedInSameReference extends BaseDeltaEvent {
-  public final String parent;
-  public final MetaPointer reference;
+public class EntryMovedAndReplacedInSameReference
+    extends BaseDeltaEvent<EntryMovedAndReplacedInSameReference> {
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer reference;
   public final int newIndex;
   public final @Nullable String movedTarget;
   public final @Nullable String movedResolveInfo;
@@ -21,8 +24,8 @@ public class EntryMovedAndReplacedInSameReference extends BaseDeltaEvent {
 
   public EntryMovedAndReplacedInSameReference(
       int sequenceNumber,
-      String parent,
-      MetaPointer reference,
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
       int newIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo,
@@ -30,6 +33,14 @@ public class EntryMovedAndReplacedInSameReference extends BaseDeltaEvent {
       @Nullable String replacedTarget,
       @Nullable String replacedResolveInfo) {
     super(sequenceNumber);
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(reference, "reference should not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex should be non-negative");
+    }
     this.parent = parent;
     this.reference = reference;
     this.newIndex = newIndex;

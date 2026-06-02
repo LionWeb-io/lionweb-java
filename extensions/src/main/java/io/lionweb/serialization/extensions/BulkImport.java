@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /** A bulk-import request payload, grouping nodes to import together with optional attach points. */
 public class BulkImport {
@@ -29,7 +31,10 @@ public class BulkImport {
     this(new LinkedList<>(), new LinkedList<>());
   }
 
-  public BulkImport(List<AttachPoint> attachPoints, List<ClassifierInstance<?>> nodes) {
+  public BulkImport(
+      @NotNull List<AttachPoint> attachPoints, @NotNull List<ClassifierInstance<?>> nodes) {
+    Objects.requireNonNull(attachPoints, "attachPoints cannot be null");
+    Objects.requireNonNull(nodes, "nodes cannot be null");
     this.attachPoints = attachPoints;
     if (nodes.isEmpty()) {
       this.nodes = new LinkedList<>();
@@ -41,7 +46,8 @@ public class BulkImport {
     }
   }
 
-  public void addNode(ClassifierInstance<?> classifierInstance) {
+  public void addNode(@NotNull ClassifierInstance<?> classifierInstance) {
+    Objects.requireNonNull(classifierInstance, "classifierInstance cannot be null");
     JsonSerialization jsonSerialization =
         getJsonSerialization(classifierInstance.getClassifier().getLionWebVersion());
     nodes.addAll(
@@ -50,15 +56,16 @@ public class BulkImport {
             .getClassifierInstances());
   }
 
-  public void addAttachPoint(AttachPoint attachPoint) {
+  public void addAttachPoint(@NotNull AttachPoint attachPoint) {
+    Objects.requireNonNull(attachPoint, "attachPoint cannot be null");
     attachPoints.add(attachPoint);
   }
 
-  public List<AttachPoint> getAttachPoints() {
+  public @NotNull List<AttachPoint> getAttachPoints() {
     return attachPoints;
   }
 
-  public List<SerializedClassifierInstance> getNodes() {
+  public @NotNull List<SerializedClassifierInstance> getNodes() {
     return nodes;
   }
 
@@ -70,7 +77,8 @@ public class BulkImport {
     return nodes.isEmpty();
   }
 
-  public void addNodes(List<SerializedClassifierInstance> classifierInstances) {
+  public void addNodes(@NotNull List<SerializedClassifierInstance> classifierInstances) {
+    Objects.requireNonNull(classifierInstances, "classifierInstances cannot be null");
     nodes.addAll(classifierInstances);
   }
 
@@ -84,13 +92,21 @@ public class BulkImport {
     public MetaPointer containment;
     public String rootId;
 
-    public AttachPoint(String container, MetaPointer containment, String rootId) {
+    public AttachPoint(
+        @NotNull String container, @NotNull MetaPointer containment, @NotNull String rootId) {
+      Objects.requireNonNull(container, "container cannot be null");
+      Objects.requireNonNull(containment, "containment cannot be null");
+      Objects.requireNonNull(rootId, "rootId cannot be null");
       this.container = container;
       this.containment = containment;
       this.rootId = rootId;
     }
 
-    public AttachPoint(String container, Containment containment, String rootId) {
+    public AttachPoint(
+        @NotNull String container, @NotNull Containment containment, @NotNull String rootId) {
+      Objects.requireNonNull(container, "container cannot be null");
+      Objects.requireNonNull(containment, "containment cannot be null");
+      Objects.requireNonNull(rootId, "rootId cannot be null");
       this.container = container;
       this.containment = MetaPointer.from(containment);
       this.rootId = rootId;

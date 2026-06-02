@@ -3,6 +3,7 @@ package io.lionweb.serialization;
 import io.lionweb.language.*;
 import java.util.*;
 import java.util.function.Consumer;
+import javax.annotation.Nonnull;
 
 /**
  * Caches the feature lists and language IDs seen during a single serialization pass. Re-using these
@@ -17,19 +18,25 @@ public class SerializationStatus {
   // but as a set, for faster access
   private final Set<String> consideredLanguageIDs = new HashSet<>();
 
-  public Iterable<Property> allProperties(Classifier<?> classifier) {
+  public @Nonnull Iterable<Property> allProperties(@Nonnull Classifier<?> classifier) {
+    Objects.requireNonNull(classifier, "classifier cannot be null");
     return properties.computeIfAbsent(classifier.getID(), id -> classifier.allProperties());
   }
 
-  public Iterable<Containment> allContainments(Classifier<?> classifier) {
+  public @Nonnull Iterable<Containment> allContainments(@Nonnull Classifier<?> classifier) {
+    Objects.requireNonNull(classifier, "classifier cannot be null");
     return containments.computeIfAbsent(classifier.getID(), id -> classifier.allContainments());
   }
 
-  public Iterable<Reference> allReferences(Classifier<?> classifier) {
+  public @Nonnull Iterable<Reference> allReferences(@Nonnull Classifier<?> classifier) {
+    Objects.requireNonNull(classifier, "classifier cannot be null");
     return references.computeIfAbsent(classifier.getID(), id -> classifier.allReferences());
   }
 
-  public void considerLanguageDuringSerialization(Consumer<Language> consumer, Language language) {
+  public void considerLanguageDuringSerialization(
+      @Nonnull Consumer<Language> consumer, @Nonnull Language language) {
+    Objects.requireNonNull(consumer, "consumer cannot be null");
+    Objects.requireNonNull(language, "language cannot be null");
     if (consideredLanguageIDs.contains(language.getID())) {
       return;
     }

@@ -247,9 +247,9 @@ class WebSocketDeltaServer(
             is ChildAdded -> setOfNotNull(findPartitionOf(event.parent))
             is ChildDeleted -> setOfNotNull(findPartitionOf(event.parent))
             is ChildMovedInSameContainment -> setOfNotNull(findPartitionOf(event.parent))
-            is ChildMovedFromOtherContainmentInSameParent -> setOfNotNull(findPartitionOf(event.parent))
+            is ChildMovedFromOtherContainmentInSameParent -> setOfNotNull(findPartitionOf(event.parent ?: throw IllegalStateException()))
             is ChildMovedFromOtherContainment ->
-                setOfNotNull(findPartitionOf(event.oldParent), findPartitionOf(event.newParent))
+                setOfNotNull(findPartitionOf(event.oldParent ?: throw IllegalStateException()), findPartitionOf(event.newParent))
             is ChildReplaced -> setOfNotNull(findPartitionOf(event.parent))
             is ReferenceAdded -> setOfNotNull(findPartitionOf(event.parent))
             is ReferenceChanged -> setOfNotNull(findPartitionOf(event.parent))

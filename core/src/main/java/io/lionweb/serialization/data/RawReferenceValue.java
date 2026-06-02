@@ -1,6 +1,7 @@
 package io.lionweb.serialization.data;
 
 import java.util.Objects;
+import javax.annotation.Nullable;
 
 /**
  * A raw, unresolved reference value as it appears in a serialized LionWeb payload — carrying only a
@@ -11,23 +12,23 @@ public class RawReferenceValue {
   public String referredId;
   public String resolveInfo;
 
-  public String getReferredId() {
+  public @Nullable String getReferredId() {
     return referredId;
   }
 
-  public void setReferredId(String referredId) {
+  public void setReferredId(@Nullable String referredId) {
     this.referredId = referredId;
   }
 
-  public String getResolveInfo() {
+  public @Nullable String getResolveInfo() {
     return resolveInfo;
   }
 
-  public void setResolveInfo(String resolveInfo) {
+  public void setResolveInfo(@Nullable String resolveInfo) {
     this.resolveInfo = resolveInfo;
   }
 
-  public RawReferenceValue(String referredId, String resolveInfo) {
+  public RawReferenceValue(@Nullable String referredId, @Nullable String resolveInfo) {
     this.referredId = referredId;
     this.resolveInfo = resolveInfo;
   }

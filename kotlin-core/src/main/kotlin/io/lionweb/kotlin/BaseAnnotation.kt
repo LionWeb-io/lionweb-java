@@ -13,8 +13,9 @@ import kotlin.properties.ReadWriteProperty
 abstract class BaseAnnotation(
     val lionWebVersion: LionWebVersion = LionWebVersion.currentVersion,
 ) : DynamicAnnotationInstance(null) {
-    override fun getClassifier(): Annotation? =
+    override fun getClassifier(): Annotation =
         super.getAnnotationDefinition() ?: DefaultMetamodelRegistry.getAnnotation(this.javaClass.kotlin, lionWebVersion)
+            ?: throw IllegalStateException("Unknown annotation class ${this.javaClass.kotlin}")
 
     inline fun <P : BaseAnnotation, reified T : Node> singleReference(
         referenceName: String,

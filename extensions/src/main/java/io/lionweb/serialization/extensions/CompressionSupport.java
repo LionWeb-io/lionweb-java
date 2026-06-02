@@ -1,18 +1,22 @@
 package io.lionweb.serialization.extensions;
 
 import java.io.IOException;
+import java.util.Objects;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 import okio.Buffer;
 import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
+import org.jetbrains.annotations.NotNull;
 
 /** Utility methods for applying or stripping HTTP body compression. */
 public class CompressionSupport {
 
-  public static RequestBody considerCompression(RequestBody original, Compression compression)
-      throws IOException {
+  public static @NotNull RequestBody considerCompression(
+      @NotNull RequestBody original, @NotNull Compression compression) throws IOException {
+    Objects.requireNonNull(original, "original cannot be null");
+    Objects.requireNonNull(compression, "compression cannot be null");
     return compression == Compression.ENABLED ? forceContentLength(gzip(original)) : original;
   }
 

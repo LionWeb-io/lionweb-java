@@ -1,6 +1,7 @@
 package io.lionweb.model.impl;
 
 import io.lionweb.language.EnumerationLiteral;
+import javax.annotation.Nonnull;
 
 /**
  * An enumeration value represented through this interface can be automatically supported by the
@@ -8,5 +9,6 @@ import io.lionweb.language.EnumerationLiteral;
  * specific serializers and deserializers should be registered.
  */
 public interface EnumerationValue {
+  @Nonnull
   EnumerationLiteral getEnumerationLiteral();
 }

@@ -1,5 +1,7 @@
 package io.lionweb.client.delta.messages.events;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Well-known error codes that may appear in {@link ErrorEvent} messages.
  *
@@ -16,9 +18,9 @@ public enum StandardErrorCode {
   INVALID_MOVE("invalidMove"),
   UNDEFINED_REFERENCE_TARGET("undefinedReferenceTarget");
 
-  public final String code;
+  public final @NotNull String code;
 
-  StandardErrorCode(String code) {
+  StandardErrorCode(@NotNull String code) {
     this.code = code;
   }
 }

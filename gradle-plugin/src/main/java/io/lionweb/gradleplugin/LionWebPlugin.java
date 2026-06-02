@@ -3,12 +3,14 @@ package io.lionweb.gradleplugin;
 import io.lionweb.gradleplugin.tasks.GenerateLanguageTask;
 import io.lionweb.gradleplugin.tasks.GenerateNodeClassesTask;
 import java.io.File;
+import java.util.Objects;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The `LionWebPlugin` is a custom Gradle plugin for projects that utilize LionWeb for language
@@ -36,7 +38,8 @@ import org.gradle.api.tasks.bundling.Jar;
  */
 public class LionWebPlugin implements Plugin<Project> {
   @Override
-  public void apply(Project project) {
+  public void apply(@NotNull Project project) {
+    Objects.requireNonNull(project, "project cannot be null");
     project.getLogger().info("Applying LionWeb plugin");
     // Create extension and set sensible defaults (conventions)
     LionWebPluginExtension ext =

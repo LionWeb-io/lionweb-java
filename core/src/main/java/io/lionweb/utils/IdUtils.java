@@ -1,5 +1,9 @@
 package io.lionweb.utils;
 
+import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 /**
  * Utility class providing methods for processing and sanitizing strings. This class is designed to
  * centralize reusable logic related to identifier handling.
@@ -20,7 +24,8 @@ public class IdUtils {
    * @return a sanitized version of the input string where invalid characters are replaced with a
    *     hyphen
    */
-  public static String cleanString(String string) {
+  public static @Nonnull String cleanString(@Nonnull String string) {
+    Objects.requireNonNull(string, "string cannot be null");
     return string.replaceAll("[^a-zA-Z0-9_-]", "-");
   }
 
@@ -32,7 +37,7 @@ public class IdUtils {
    * @param id the string to be validated as an identifier
    * @return {@code true} if the string is a valid identifier; {@code false} otherwise
    */
-  public static boolean isValidID(String id) {
+  public static boolean isValidID(@Nullable String id) {
     if (id == null || id.isEmpty()) {
       return false;
     }

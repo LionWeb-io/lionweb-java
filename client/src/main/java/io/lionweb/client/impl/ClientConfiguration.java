@@ -2,7 +2,10 @@ package io.lionweb.client.impl;
 
 import io.lionweb.client.Protocol;
 import io.lionweb.serialization.JsonSerialization;
+import java.util.Objects;
 import okhttp3.OkHttpClient;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /** Connection and authentication settings shared by all HTTP client implementations. */
 public class ClientConfiguration {
@@ -16,14 +19,20 @@ public class ClientConfiguration {
   private final JsonSerialization jsonSerialization;
 
   public ClientConfiguration(
-      Protocol protocol,
-      String hostname,
+      @NotNull Protocol protocol,
+      @NotNull String hostname,
       int port,
-      String authorizationToken,
-      String clientID,
-      String repository,
-      OkHttpClient httpClient,
-      JsonSerialization jsonSerialization) {
+      @Nullable String authorizationToken,
+      @NotNull String clientID,
+      @NotNull String repository,
+      @NotNull OkHttpClient httpClient,
+      @NotNull JsonSerialization jsonSerialization) {
+    Objects.requireNonNull(protocol, "protocol cannot be null");
+    Objects.requireNonNull(hostname, "hostname cannot be null");
+    Objects.requireNonNull(clientID, "clientID cannot be null");
+    Objects.requireNonNull(repository, "repository cannot be null");
+    Objects.requireNonNull(httpClient, "httpClient cannot be null");
+    Objects.requireNonNull(jsonSerialization, "jsonSerialization cannot be null");
     this.protocol = protocol;
     this.hostname = hostname;
     this.port = port;
@@ -34,11 +43,11 @@ public class ClientConfiguration {
     this.jsonSerialization = jsonSerialization;
   }
 
-  public Protocol getProtocol() {
+  public @NotNull Protocol getProtocol() {
     return protocol;
   }
 
-  public String getHostname() {
+  public @NotNull String getHostname() {
     return hostname;
   }
 
@@ -46,23 +55,23 @@ public class ClientConfiguration {
     return port;
   }
 
-  public String getClientID() {
+  public @NotNull String getClientID() {
     return clientID;
   }
 
-  public String getRepository() {
+  public @NotNull String getRepository() {
     return repository;
   }
 
-  public String getAuthorizationToken() {
+  public @Nullable String getAuthorizationToken() {
     return authorizationToken;
   }
 
-  public OkHttpClient getHttpClient() {
+  public @NotNull OkHttpClient getHttpClient() {
     return httpClient;
   }
 
-  public JsonSerialization getJsonSerialization() {
+  public @NotNull JsonSerialization getJsonSerialization() {
     return jsonSerialization;
   }
 }
