@@ -1,19 +1,27 @@
 package io.lionweb.client.delta.messages.events;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ErrorEvent extends BaseDeltaEvent {
   public String errorCode;
   public String message;
 
-  public ErrorEvent(int sequenceNumber, String errorCode, String message) {
+  public ErrorEvent(int sequenceNumber, @NotNull String errorCode, @Nullable String message) {
     super(sequenceNumber);
+    Objects.requireNonNull(errorCode, "errorCode cannot be null");
     this.errorCode = errorCode;
     this.message = message;
   }
 
-  public ErrorEvent(int sequenceNumber, StandardErrorCode standardErrorCode, String message) {
-    this(sequenceNumber, standardErrorCode.code, message);
+  public ErrorEvent(
+      int sequenceNumber, @NotNull StandardErrorCode standardErrorCode, @Nullable String message) {
+    this(
+        sequenceNumber,
+        Objects.requireNonNull(standardErrorCode, "standardErrorCode cannot be null").code,
+        message);
   }
 
   @Override
