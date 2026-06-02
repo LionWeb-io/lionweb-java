@@ -17,7 +17,6 @@ abstract class AbstractHTTPBulkServerFunctionalTest {
     @BeforeAll
     fun setup() {
         inMemoryServer = InMemoryServer()
-        // We create a default repository as some tests expect it
         inMemoryServer.createRepository(
             RepositoryConfiguration("default", LionWebVersion.v2023_1, HistorySupport.DISABLED),
         )
