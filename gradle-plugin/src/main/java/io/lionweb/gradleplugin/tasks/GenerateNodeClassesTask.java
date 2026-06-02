@@ -43,9 +43,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
     try {
       List<SerializationChunk> dependenciesChunks = loadDependenciesChunks();
       List<SerializationChunk> projectChunks =
-          languagesDirectory == null
-              ? List.of()
-              : loadProjectChunks(languagesDirectory);
+          languagesDirectory == null ? List.of() : loadProjectChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
           .forEach(
               lionWebVersion -> {
