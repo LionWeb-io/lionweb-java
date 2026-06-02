@@ -95,6 +95,7 @@ The project is currently maintained by Federico Tomassetti with contributions fr
 * Meinte Boersma
 * Niko Stotz
 * Tiago Baptista
+* Alessio Stalla
 
 Contributions include support in the design, code contributions, code reviews, 
 and bug reports.
