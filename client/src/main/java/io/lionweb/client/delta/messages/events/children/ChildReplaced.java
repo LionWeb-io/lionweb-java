@@ -4,9 +4,10 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.util.List;
+import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildReplaced extends BaseDeltaEvent {
+public final class ChildReplaced extends BaseDeltaEvent<ChildReplaced> {
   /** The parent node containing the replaced child. */
   public final @NotNull String parent;
 
@@ -31,6 +32,14 @@ public final class ChildReplaced extends BaseDeltaEvent {
       @NotNull MetaPointer containment,
       int index) {
     super(sequenceNumber);
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(newChild, "newChild should not be null");
+    Objects.requireNonNull(replacedChild, "replacedChild should not be null");
+    Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
+    Objects.requireNonNull(containment, "containment should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.newChild = newChild;
     this.replacedChild = replacedChild;

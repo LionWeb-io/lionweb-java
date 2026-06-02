@@ -14,10 +14,10 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
 
-  public final String node;
-  public final MetaPointer property;
-  public final String newValue;
-  public final String oldValue;
+  public final @NotNull String node;
+  public final @NotNull MetaPointer property;
+  public final @Nullable String newValue;
+  public final @Nullable String oldValue;
 
   public PropertyChanged(
       int sequenceNumber,
@@ -26,8 +26,8 @@ public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
       @Nullable String newValue,
       @Nullable String oldValue) {
     super(sequenceNumber);
-    Objects.requireNonNull(node, "node cannot be null");
-    Objects.requireNonNull(property, "property cannot be null");
+    Objects.requireNonNull(node, "node should not be null");
+    Objects.requireNonNull(property, "property should not be null");
     this.node = node;
     this.property = property;
     this.newValue = newValue;

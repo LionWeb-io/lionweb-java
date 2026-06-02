@@ -6,14 +6,14 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedInSameContainment extends BaseDeltaEvent {
+public final class ChildMovedAndReplacedInSameContainment extends BaseDeltaEvent<ChildMovedAndReplacedInSameContainment> {
   public final int newIndex;
-  public final String movedChild;
-  public final String parent;
-  public final MetaPointer containment;
+  public final @NotNull String movedChild;
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer containment;
   public final int oldIndex;
-  public final String replacedChild;
-  public final List<String> replacedDescendants;
+  public final @NotNull String replacedChild;
+  public final @NotNull List<String> replacedDescendants;
 
   public ChildMovedAndReplacedInSameContainment(
       int sequenceNumber,
@@ -25,11 +25,17 @@ public final class ChildMovedAndReplacedInSameContainment extends BaseDeltaEvent
       @NotNull String replacedChild,
       @NotNull List<String> replacedDescendants) {
     super(sequenceNumber);
-    Objects.requireNonNull(movedChild, "movedChild cannot be null");
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(containment, "containment cannot be null");
-    Objects.requireNonNull(replacedChild, "replacedChild cannot be null");
-    Objects.requireNonNull(replacedDescendants, "replacedDescendants cannot be null");
+    Objects.requireNonNull(movedChild, "movedChild should not be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(containment, "containment should not be null");
+    Objects.requireNonNull(replacedChild, "replacedChild should not be null");
+    Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex should be non-negative");
+    }
     this.newIndex = newIndex;
     this.movedChild = movedChild;
     this.parent = parent;

@@ -11,13 +11,13 @@ import org.jetbrains.annotations.NotNull;
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
  */
-public class PartitionAdded extends BaseDeltaEvent {
+public class PartitionAdded extends BaseDeltaEvent<PartitionAdded> {
 
-  public final SerializationChunk newPartition;
+  public final @NotNull SerializationChunk newPartition;
 
   public PartitionAdded(int sequenceNumber, @NotNull SerializationChunk newPartition) {
     super(sequenceNumber);
-    Objects.requireNonNull(newPartition, "newPartition cannot be null");
+    Objects.requireNonNull(newPartition, "newPartition should not be null");
     this.newPartition = newPartition;
   }
 
