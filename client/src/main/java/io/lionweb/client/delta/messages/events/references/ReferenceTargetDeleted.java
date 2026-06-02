@@ -10,12 +10,12 @@ import org.jetbrains.annotations.Nullable;
  * Target deletedTarget has been deleted from existing entry inside parent's reference at index with
  * resolveInfo.
  */
-public class ReferenceTargetDeleted extends BaseDeltaEvent {
-  public final String parent;
-  public final MetaPointer reference;
+public class ReferenceTargetDeleted extends BaseDeltaEvent<ReferenceTargetDeleted> {
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer reference;
   public final int index;
-  public final String resolveInfo;
-  public final String deletedTarget;
+  public final @Nullable String resolveInfo;
+  public final @NotNull String deletedTarget;
 
   public ReferenceTargetDeleted(
       int sequenceNumber,
@@ -25,9 +25,12 @@ public class ReferenceTargetDeleted extends BaseDeltaEvent {
       @Nullable String resolveInfo,
       @NotNull String deletedTarget) {
     super(sequenceNumber);
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(reference, "reference cannot be null");
-    Objects.requireNonNull(deletedTarget, "deletedTarget cannot be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(reference, "reference should not be null");
+    Objects.requireNonNull(deletedTarget, "deletedTarget should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.reference = reference;
     this.index = index;
