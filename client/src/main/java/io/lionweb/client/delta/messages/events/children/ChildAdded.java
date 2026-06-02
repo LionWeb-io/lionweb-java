@@ -7,9 +7,9 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 public final class ChildAdded extends BaseDeltaEvent<ChildAdded> {
-  public final String parent;
-  public final SerializationChunk newChild;
-  public final MetaPointer containment;
+  public final @NotNull String parent;
+  public final @NotNull SerializationChunk newChild;
+  public final @NotNull MetaPointer containment;
   public final int index;
 
   public ChildAdded(
@@ -19,9 +19,12 @@ public final class ChildAdded extends BaseDeltaEvent<ChildAdded> {
       @NotNull MetaPointer containment,
       int index) {
     super(sequenceNumber);
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(newChild, "newChild cannot be null");
-    Objects.requireNonNull(containment, "containment cannot be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(newChild, "newChild should not be null");
+    Objects.requireNonNull(containment, "containment should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.parent = parent;
     this.newChild = newChild;
     this.containment = containment;

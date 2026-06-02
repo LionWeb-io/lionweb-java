@@ -10,11 +10,11 @@ import org.jetbrains.annotations.NotNull;
  * Existing node replacedAnnotation, and all its replacedDescendants, inside parent's annotations at
  * index has been replaced with new node newAnnotation.
  */
-public class AnnotationReplaced extends BaseDeltaEvent {
-  public final String parent;
-  public final SerializationChunk newAnnotation;
-  public final String replacedAnnotation;
-  public final String[] replacedDescendants;
+public class AnnotationReplaced extends BaseDeltaEvent<AnnotationReplaced> {
+  public final @NotNull String parent;
+  public final @NotNull SerializationChunk newAnnotation;
+  public final @NotNull String replacedAnnotation;
+  public final @NotNull String[] replacedDescendants;
   public final int index;
 
   public AnnotationReplaced(
@@ -25,10 +25,13 @@ public class AnnotationReplaced extends BaseDeltaEvent {
       @NotNull String parent,
       int index) {
     super(sequenceNumber);
-    Objects.requireNonNull(newAnnotation, "newAnnotation cannot be null");
-    Objects.requireNonNull(replacedAnnotation, "replacedAnnotation cannot be null");
-    Objects.requireNonNull(replacedDescendants, "replacedDescendants cannot be null");
-    Objects.requireNonNull(parent, "parent cannot be null");
+    Objects.requireNonNull(newAnnotation, "newAnnotation should not be null");
+    Objects.requireNonNull(replacedAnnotation, "replacedAnnotation should not be null");
+    Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be non-negative");
+    }
     this.newAnnotation = newAnnotation;
     this.replacedAnnotation = replacedAnnotation;
     this.replacedDescendants = replacedDescendants;

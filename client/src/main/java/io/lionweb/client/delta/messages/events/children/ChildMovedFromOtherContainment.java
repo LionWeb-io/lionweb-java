@@ -4,25 +4,26 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class ChildMovedFromOtherContainment extends BaseDeltaEvent {
+public final class ChildMovedFromOtherContainment extends BaseDeltaEvent<ChildMovedFromOtherContainment> {
   /** The new parent node after the move. */
-  public final String newParent;
+  public final @NotNull String newParent;
 
   /** The new containment link after the move. */
-  public final MetaPointer newContainment;
+  public final @NotNull MetaPointer newContainment;
 
   /** The new index in the containment after the move. */
   public final int newIndex;
 
   /** The ID of the child node that was moved. */
-  public final String movedChild;
+  public final @NotNull String movedChild;
 
   /** The old parent node before the move. */
-  public String oldParent;
+  public @Nullable String oldParent;
 
   /** The old containment link before the move. */
-  public MetaPointer oldContainment;
+  public @Nullable MetaPointer oldContainment;
 
   /** The old index in the containment before the move. */
   public int oldIndex;
@@ -34,9 +35,12 @@ public final class ChildMovedFromOtherContainment extends BaseDeltaEvent {
       int newIndex,
       @NotNull String movedChild) {
     super(sequenceNumber);
-    Objects.requireNonNull(newParent, "newParent cannot be null");
-    Objects.requireNonNull(newContainment, "newContainment cannot be null");
-    Objects.requireNonNull(movedChild, "movedChild cannot be null");
+    Objects.requireNonNull(newParent, "newParent should not be null");
+    Objects.requireNonNull(newContainment, "newContainment should not be null");
+    Objects.requireNonNull(movedChild, "movedChild should not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
+    }
     this.newParent = newParent;
     this.newContainment = newContainment;
     this.newIndex = newIndex;

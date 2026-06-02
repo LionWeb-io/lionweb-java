@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
  * Existing node movedAnnotation (previously inside oldParent's annotations at oldIndex) has been
  * moved inside newParent's annotations at newIndex.
  */
-public class AnnotationMovedFromOtherParent extends BaseDeltaEvent {
-  public final String newParent;
+public class AnnotationMovedFromOtherParent extends BaseDeltaEvent<AnnotationMovedFromOtherParent> {
+  public final @NotNull String newParent;
   public final int newIndex;
-  public final String movedAnnotation;
-  public final String oldParent;
+  public final @NotNull String movedAnnotation;
+  public final @NotNull String oldParent;
   public final int oldIndex;
 
   public AnnotationMovedFromOtherParent(
@@ -23,9 +23,15 @@ public class AnnotationMovedFromOtherParent extends BaseDeltaEvent {
       @NotNull String oldParent,
       int oldIndex) {
     super(sequenceNumber);
-    Objects.requireNonNull(newParent, "newParent cannot be null");
-    Objects.requireNonNull(movedAnnotation, "movedAnnotation cannot be null");
-    Objects.requireNonNull(oldParent, "oldParent cannot be null");
+    Objects.requireNonNull(newParent, "newParent should not be null");
+    Objects.requireNonNull(movedAnnotation, "movedAnnotation should not be null");
+    Objects.requireNonNull(oldParent, "oldParent should not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex should be non-negative");
+    }
     this.newParent = newParent;
     this.newIndex = newIndex;
     this.movedAnnotation = movedAnnotation;

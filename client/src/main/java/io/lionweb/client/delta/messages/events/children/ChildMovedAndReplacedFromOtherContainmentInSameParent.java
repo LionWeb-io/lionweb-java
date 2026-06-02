@@ -6,15 +6,15 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedFromOtherContainmentInSameParent extends BaseDeltaEvent {
-  public final MetaPointer newContainment;
+public final class ChildMovedAndReplacedFromOtherContainmentInSameParent extends BaseDeltaEvent<ChildMovedAndReplacedFromOtherContainmentInSameParent> {
+  public final @NotNull MetaPointer newContainment;
   public final int newIndex;
-  public final String movedChild;
-  public final String parent;
-  public final MetaPointer oldContainment;
+  public final @NotNull String movedChild;
+  public final @NotNull String parent;
+  public final @NotNull MetaPointer oldContainment;
   public final int oldIndex;
-  public final String replacedChild;
-  public final List<String> replacedDescendants;
+  public final @NotNull String replacedChild;
+  public final @NotNull List<String> replacedDescendants;
 
   public ChildMovedAndReplacedFromOtherContainmentInSameParent(
       int sequenceNumber,
@@ -27,12 +27,18 @@ public final class ChildMovedAndReplacedFromOtherContainmentInSameParent extends
       @NotNull String replacedChild,
       @NotNull List<String> replacedDescendants) {
     super(sequenceNumber);
-    Objects.requireNonNull(newContainment, "newContainment cannot be null");
-    Objects.requireNonNull(movedChild, "movedChild cannot be null");
-    Objects.requireNonNull(parent, "parent cannot be null");
-    Objects.requireNonNull(oldContainment, "oldContainment cannot be null");
-    Objects.requireNonNull(replacedChild, "replacedChild cannot be null");
-    Objects.requireNonNull(replacedDescendants, "replacedDescendants cannot be null");
+    Objects.requireNonNull(newContainment, "newContainment should not be null");
+    Objects.requireNonNull(movedChild, "movedChild should not be null");
+    Objects.requireNonNull(parent, "parent should not be null");
+    Objects.requireNonNull(oldContainment, "oldContainment should not be null");
+    Objects.requireNonNull(replacedChild, "replacedChild should not be null");
+    Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
+    }
+    if (oldIndex < 0) {
+      throw new IllegalArgumentException("oldIndex should be non-negative");
+    }
     this.newContainment = newContainment;
     this.newIndex = newIndex;
     this.movedChild = movedChild;
