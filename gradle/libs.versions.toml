@@ -19,7 +19,7 @@ emfjsonVersion = "2.3.0"
 annotationsVersion = "26.1.0"
 jsr305Version = "3.0.2"
 jmhVersion = "1.37"
-gradlePublishPluginVersion = "1.2.0"
+gradlePublishPluginVersion = "2.1.1"
 
 [plugins]
 shadow = { id = "com.gradleup.shadow", version = "9.4.2"}
