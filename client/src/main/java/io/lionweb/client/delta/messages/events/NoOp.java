@@ -8,7 +8,7 @@ import io.lionweb.client.delta.messages.BaseDeltaEvent;
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
  */
-public class NoOp extends BaseDeltaEvent {
+public class NoOp extends BaseDeltaEvent<NoOp> {
 
   public NoOp(int sequenceNumber) {
     super(sequenceNumber);

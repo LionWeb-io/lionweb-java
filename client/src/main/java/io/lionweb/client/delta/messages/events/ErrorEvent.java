@@ -11,13 +11,13 @@ import org.jetbrains.annotations.Nullable;
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
  */
-public class ErrorEvent extends BaseDeltaEvent {
-  public String errorCode;
-  public String message;
+public class ErrorEvent extends BaseDeltaEvent<ErrorEvent> {
+  public @NotNull String errorCode;
+  public @Nullable String message;
 
   public ErrorEvent(int sequenceNumber, @NotNull String errorCode, @Nullable String message) {
     super(sequenceNumber);
-    Objects.requireNonNull(errorCode, "errorCode cannot be null");
+    Objects.requireNonNull(errorCode, "errorCode should not be null");
     this.errorCode = errorCode;
     this.message = message;
   }
@@ -26,7 +26,7 @@ public class ErrorEvent extends BaseDeltaEvent {
       int sequenceNumber, @NotNull StandardErrorCode standardErrorCode, @Nullable String message) {
     this(
         sequenceNumber,
-        Objects.requireNonNull(standardErrorCode, "standardErrorCode cannot be null").code,
+        Objects.requireNonNull(standardErrorCode, "standardErrorCode should not be null").code,
         message);
   }
 

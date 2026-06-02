@@ -12,7 +12,7 @@ public class CompositeEvent extends BaseDeltaEvent<CompositeEvent> {
 
   public CompositeEvent(int sequenceNumber, @NotNull List<BaseDeltaEvent<?>> parts) {
     super(sequenceNumber);
-    Objects.requireNonNull(parts, "parts cannot be null");
+    Objects.requireNonNull(parts, "parts should not be null");
     this.parts = parts;
   }
 

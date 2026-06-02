@@ -11,11 +11,11 @@ import org.jetbrains.annotations.NotNull;
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
  */
-public class PropertyDeleted extends BaseDeltaEvent {
+public class PropertyDeleted extends BaseDeltaEvent<PropertyDeleted> {
 
-  public final String node;
-  public final MetaPointer property;
-  public final String oldValue;
+  public final @NotNull String node;
+  public final @NotNull MetaPointer property;
+  public final @NotNull String oldValue;
 
   public PropertyDeleted(
       int sequenceNumber,
@@ -23,9 +23,9 @@ public class PropertyDeleted extends BaseDeltaEvent {
       @NotNull MetaPointer property,
       @NotNull String oldValue) {
     super(sequenceNumber);
-    Objects.requireNonNull(node, "node cannot be null");
-    Objects.requireNonNull(property, "property cannot be null");
-    Objects.requireNonNull(oldValue, "oldValue cannot be null");
+    Objects.requireNonNull(node, "node should not be null");
+    Objects.requireNonNull(property, "property should not be null");
+    Objects.requireNonNull(oldValue, "oldValue should not be null");
     this.node = node;
     this.property = property;
     this.oldValue = oldValue;

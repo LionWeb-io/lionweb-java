@@ -11,10 +11,10 @@ import org.jetbrains.annotations.NotNull;
  * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
  *     specification</a>
  */
-public class ClassifierChanged extends BaseDeltaEvent {
-  public String node;
-  public MetaPointer newClassifier;
-  public MetaPointer oldClassifier;
+public class ClassifierChanged extends BaseDeltaEvent<ClassifierChanged> {
+  public @NotNull String node;
+  public @NotNull MetaPointer newClassifier;
+  public @NotNull MetaPointer oldClassifier;
 
   public ClassifierChanged(
       int sequenceNumber,
@@ -22,9 +22,9 @@ public class ClassifierChanged extends BaseDeltaEvent {
       @NotNull MetaPointer newClassifier,
       @NotNull MetaPointer oldClassifier) {
     super(sequenceNumber);
-    Objects.requireNonNull(node, "node cannot be null");
-    Objects.requireNonNull(newClassifier, "newClassifier cannot be null");
-    Objects.requireNonNull(oldClassifier, "oldClassifier cannot be null");
+    Objects.requireNonNull(node, "node should not be null");
+    Objects.requireNonNull(newClassifier, "newClassifier should not be null");
+    Objects.requireNonNull(oldClassifier, "oldClassifier should not be null");
     this.node = node;
     this.newClassifier = newClassifier;
     this.oldClassifier = oldClassifier;
