@@ -6,6 +6,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** Abstract base for all statically-typed {@link io.lionweb.model.Node} implementations, providing observer wiring and common node operations. */
 public abstract class AbstractNode extends AbstractClassifierInstance<Concept> implements Node {
 
   /**

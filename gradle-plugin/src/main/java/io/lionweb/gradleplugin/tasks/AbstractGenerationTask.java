@@ -24,6 +24,7 @@ import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.Optional;
 
 @CacheableTask
+/** Base Gradle task providing shared language-loading logic for all LionWeb code-generation tasks. */
 public abstract class AbstractGenerationTask extends DefaultTask {
   @InputDirectory
   @Optional
