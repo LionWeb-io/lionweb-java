@@ -30,7 +30,8 @@ public class BulkImport {
     this(new LinkedList<>(), new LinkedList<>());
   }
 
-  public BulkImport(@NotNull List<AttachPoint> attachPoints, @NotNull List<ClassifierInstance<?>> nodes) {
+  public BulkImport(
+      @NotNull List<AttachPoint> attachPoints, @NotNull List<ClassifierInstance<?>> nodes) {
     Objects.requireNonNull(attachPoints, "attachPoints cannot be null");
     Objects.requireNonNull(nodes, "nodes cannot be null");
     this.attachPoints = attachPoints;
@@ -90,13 +91,21 @@ public class BulkImport {
     public MetaPointer containment;
     public String rootId;
 
-    public AttachPoint(String container, MetaPointer containment, String rootId) {
+    public AttachPoint(
+        @NotNull String container, @NotNull MetaPointer containment, @NotNull String rootId) {
+      Objects.requireNonNull(container, "container cannot be null");
+      Objects.requireNonNull(containment, "containment cannot be null");
+      Objects.requireNonNull(rootId, "rootId cannot be null");
       this.container = container;
       this.containment = containment;
       this.rootId = rootId;
     }
 
-    public AttachPoint(String container, Containment containment, String rootId) {
+    public AttachPoint(
+        @NotNull String container, @NotNull Containment containment, @NotNull String rootId) {
+      Objects.requireNonNull(container, "container cannot be null");
+      Objects.requireNonNull(containment, "containment cannot be null");
+      Objects.requireNonNull(rootId, "rootId cannot be null");
       this.container = container;
       this.containment = MetaPointer.from(containment);
       this.rootId = rootId;

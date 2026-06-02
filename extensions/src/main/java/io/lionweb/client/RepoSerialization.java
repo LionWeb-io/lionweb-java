@@ -85,8 +85,8 @@ public class RepoSerialization {
    * not the more performant bulk import). The directory and all the subdirectories are examined,
    * looking for files with extension ".json" (ignoring case).
    */
-  public void simpleUploadDirectoryToRepo(@NotNull JSONLevelBulkAPIClient apiClient, @NotNull File directory)
-      throws IOException {
+  public void simpleUploadDirectoryToRepo(
+      @NotNull JSONLevelBulkAPIClient apiClient, @NotNull File directory) throws IOException {
     Objects.requireNonNull(apiClient, "apiClient cannot be null");
     Objects.requireNonNull(directory, "directory cannot be null");
     if (!directory.isDirectory()) {
@@ -123,8 +123,8 @@ public class RepoSerialization {
    * (and not the standard bulk operations). The directory and all the subdirectories are examined,
    * looking for files with extension ".json" (ignoring case).
    */
-  public void uploadDirectoryToRepoUsingBulkImport(@NotNull AdditionalAPIClient apiClient, @NotNull File directory)
-      throws IOException {
+  public void uploadDirectoryToRepoUsingBulkImport(
+      @NotNull AdditionalAPIClient apiClient, @NotNull File directory) throws IOException {
     Objects.requireNonNull(apiClient, "apiClient cannot be null");
     Objects.requireNonNull(directory, "directory cannot be null");
     if (!directory.isDirectory()) {
@@ -153,7 +153,8 @@ public class RepoSerialization {
    * more performant bulk import). All the zip is examined, looking for entries with extension
    * ".json" (ignoring case).
    */
-  public void simpleUploadZipToRepo(@NotNull JSONLevelBulkAPIClient apiClient, @NotNull File zip) throws IOException {
+  public void simpleUploadZipToRepo(@NotNull JSONLevelBulkAPIClient apiClient, @NotNull File zip)
+      throws IOException {
     Objects.requireNonNull(apiClient, "apiClient cannot be null");
     Objects.requireNonNull(zip, "zip cannot be null");
     if (!zip.isFile()) {
@@ -209,8 +210,8 @@ public class RepoSerialization {
    * the standard bulk operations). All the zip is examined, looking for entries with extension
    * ".json" (ignoring case).
    */
-  public void uploadZipToRepoUsingBulkImport(@NotNull AdditionalAPIClient apiClient, @NotNull File zip)
-      throws IOException {
+  public void uploadZipToRepoUsingBulkImport(
+      @NotNull AdditionalAPIClient apiClient, @NotNull File zip) throws IOException {
     Objects.requireNonNull(apiClient, "apiClient cannot be null");
     Objects.requireNonNull(zip, "zip cannot be null");
     if (!zip.isFile()) {
