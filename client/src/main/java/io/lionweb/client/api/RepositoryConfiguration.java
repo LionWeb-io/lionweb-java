@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents the configuration details for a repository. This class encapsulates the repository
- * name, the LionWeb version it conforms to, and the history support status.
+ * name, the LionWeb version it conforms to, and its support for versioning (history).
  */
 public class RepositoryConfiguration {
   private @NotNull String name;

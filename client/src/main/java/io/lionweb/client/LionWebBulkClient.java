@@ -349,15 +349,18 @@ public class LionWebBulkClient
 
   @NotNull
   @Override
-  public List<Node> listPartitions(RepositoryVersionToken repoVersion) throws IOException {
+  public List<Node> listPartitions(@NotNull RepositoryVersionToken repoVersion) throws IOException {
+    Objects.requireNonNull(repoVersion, "repoVersion cannot be null");
     return historyAPIs.listPartitions(repoVersion);
   }
 
   @NotNull
   @Override
   public List<Node> retrieve(
-      RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
+      @NotNull RepositoryVersionToken repoVersion, @NotNull List<String> nodeIds, int limit)
       throws IOException {
+    Objects.requireNonNull(repoVersion, "repoVersion cannot be null");
+    Objects.requireNonNull(nodeIds, "nodeIds cannot be null");
     return historyAPIs.retrieve(repoVersion, nodeIds, limit);
   }
 }
