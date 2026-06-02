@@ -2,6 +2,7 @@
 
 ### Version 1.4.2
 
+* Modernize Java 9+ collection factory methods: replace `Collections.emptyList/singletonList/emptyMap/emptySet` and `Arrays.asList` (for constant data) with `List.of`, `Map.of`, and `Set.of` across production sources
 * Reorganize server package structure; introduce `HTTPBulkServer` with full RESTful bulk and inspection API endpoints
 * Add integration tests for `HTTPBulkServer` bulk and inspection APIs
 * Rename `LionWebClient` to `LionWebBulkClient`; remove deprecated classes and interfaces
