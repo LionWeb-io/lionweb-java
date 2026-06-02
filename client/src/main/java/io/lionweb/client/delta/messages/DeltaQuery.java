@@ -5,7 +5,11 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-/** Represents an abstract base class for a Delta Query in the Delta framework. */
+/**
+ * Abstract base for query messages sent by a client to the server in the LionWeb Delta protocol.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
+ */
 public abstract class DeltaQuery {
   /** Represents the unique identifier for this Delta Query. */
   public final @NotNull String queryId;

@@ -4,9 +4,10 @@ import java.util.*;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Represents an abstract base class for handling responses to Delta Query objects in the Delta
- * framework. A DeltaQueryResponse is uniquely identified by a `queryId` and includes properties to
- * store protocol messages and arbitrary values.
+ * Abstract base for response messages returned by the server in reply to {@link DeltaQuery}
+ * messages in the LionWeb Delta protocol.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API specification</a>
  */
 public abstract class DeltaQueryResponse {
   /**
