@@ -1,5 +1,6 @@
 package io.lionweb.client;
 
+/** Enum representing communication protocols for commonly used protocols HTTP and HTTPS. */
 public enum Protocol {
   HTTP("http"),
   HTTPS("https");

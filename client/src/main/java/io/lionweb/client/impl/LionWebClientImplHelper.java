@@ -1,7 +1,7 @@
 package io.lionweb.client.impl;
 
 import com.google.gson.*;
-import io.lionweb.client.RequestFailureException;
+import io.lionweb.client.BulkRequestFailureException;
 import io.lionweb.client.api.RepositoryVersionToken;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -76,7 +76,7 @@ abstract class LionWebClientImplHelper {
       if (response.code() == HttpURLConnection.HTTP_OK) {
         return responseHandler.handleResponse(response, body);
       } else {
-        throw new RequestFailureException(request.url().toString(), response.code(), body);
+        throw new BulkRequestFailureException(request.url().toString(), response.code(), body);
       }
     }
   }
