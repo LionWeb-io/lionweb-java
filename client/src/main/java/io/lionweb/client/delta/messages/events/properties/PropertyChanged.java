@@ -6,6 +6,12 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * Delta event fired when an existing property value on a node is replaced.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public class PropertyChanged extends BaseDeltaEvent<PropertyChanged> {
 
   public final String node;

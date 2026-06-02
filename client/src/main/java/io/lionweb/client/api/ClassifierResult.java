@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.jetbrains.annotations.NotNull;
 
+/** The result of an inspection query: the IDs of matching nodes and a total-count hint. */
 public class ClassifierResult {
   private final @NotNull Set<String> ids;
   private final int size;

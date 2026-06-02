@@ -5,6 +5,12 @@ import io.lionweb.serialization.data.SerializationChunk;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Delta event fired when a new partition is added to the repository.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public class PartitionAdded extends BaseDeltaEvent {
 
   public final SerializationChunk newPartition;

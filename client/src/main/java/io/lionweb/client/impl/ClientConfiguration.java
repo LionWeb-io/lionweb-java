@@ -7,6 +7,7 @@ import okhttp3.OkHttpClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/** Connection and authentication settings shared by all HTTP client implementations. */
 public class ClientConfiguration {
   protected final Protocol protocol;
   private final String hostname;

@@ -2,6 +2,7 @@ package io.lionweb.language;
 
 import javax.annotation.Nullable;
 
+/** Marks a language element that carries a human-readable name. */
 public interface INamed {
   /**
    * This value may be null either because the element can have an optional name or because

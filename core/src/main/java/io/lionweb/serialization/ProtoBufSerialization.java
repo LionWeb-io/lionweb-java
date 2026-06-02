@@ -9,6 +9,7 @@ import java.io.*;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/** Serializes and deserializes LionWeb models to and from Protocol Buffers binary format. */
 public class ProtoBufSerialization extends AbstractSerialization {
 
   public ProtoBufSerialization() {

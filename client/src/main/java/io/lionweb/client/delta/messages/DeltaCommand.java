@@ -12,6 +12,13 @@ import org.jetbrains.annotations.NotNull;
  * <p>Usage: It is designed to be extended by subclasses that define specific types of delta
  * operations.
  */
+/**
+ * Abstract base for commands sent by a client to request model changes via the LionWeb Delta
+ * protocol.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public abstract class DeltaCommand {
   public final @NotNull String commandId;
 

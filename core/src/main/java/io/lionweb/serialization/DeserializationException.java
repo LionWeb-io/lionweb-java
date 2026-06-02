@@ -3,6 +3,7 @@ package io.lionweb.serialization;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
+/** Thrown when a serialized LionWeb payload cannot be parsed or mapped to model instances. */
 public class DeserializationException extends RuntimeException {
   public DeserializationException(@Nonnull String message) {
     super(

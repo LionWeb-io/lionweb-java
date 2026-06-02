@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** A bulk-import request payload, grouping nodes to import together with optional attach points. */
 public class BulkImport {
 
   private static final Map<LionWebVersion, JsonSerialization> jsonSerializations = new HashMap<>();

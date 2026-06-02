@@ -7,6 +7,7 @@ import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** A {@link DataType} whose values are a fixed set of named literals. */
 public class Enumeration extends DataType<Enumeration> implements NamespaceProvider {
   public Enumeration(@Nonnull LionWebVersion lionWebVersion) {
     super(lionWebVersion);

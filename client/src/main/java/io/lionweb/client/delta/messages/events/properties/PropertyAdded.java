@@ -5,6 +5,12 @@ import io.lionweb.serialization.data.MetaPointer;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Delta event fired when a property value is set for the first time on a node.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public class PropertyAdded extends BaseDeltaEvent {
 
   public final String node;

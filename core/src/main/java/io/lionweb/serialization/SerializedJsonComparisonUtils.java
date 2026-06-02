@@ -10,6 +10,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
+/**
+ * Assertion helpers for comparing two LionWeb JSON serialization payloads for semantic equivalence.
+ * Nodes and reference values are compared by ID regardless of their order in the arrays, so that
+ * serialization order differences do not cause spurious test failures.
+ */
 public class SerializedJsonComparisonUtils {
 
   private SerializedJsonComparisonUtils() {}

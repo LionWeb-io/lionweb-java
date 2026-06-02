@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
  */
 public class NodeInstantiator {
 
+  /** Creates a concrete {@link Node} subtype for a specific Concept during EMF import. */
   public interface ConceptSpecificNodeInstantiator<T extends Node> {
     @NotNull
     T instantiate(

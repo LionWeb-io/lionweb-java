@@ -6,6 +6,10 @@ import java.util.function.Function;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An in-process {@link DeltaChannel} that routes messages directly between registered receivers
+ * without any network or serialization overhead. Useful for testing and single-JVM deployments.
+ */
 public class InMemoryDeltaChannel implements DeltaChannel {
   private final @NotNull Set<DeltaEventReceiver> eventReceivers = new HashSet<>();
   private @Nullable DeltaCommandReceiver commandReceiver;

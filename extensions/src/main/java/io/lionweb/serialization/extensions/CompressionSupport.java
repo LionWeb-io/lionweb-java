@@ -10,6 +10,7 @@ import okio.GzipSink;
 import okio.Okio;
 import org.jetbrains.annotations.NotNull;
 
+/** Utility methods for applying or stripping HTTP body compression. */
 public class CompressionSupport {
 
   public static @NotNull RequestBody considerCompression(

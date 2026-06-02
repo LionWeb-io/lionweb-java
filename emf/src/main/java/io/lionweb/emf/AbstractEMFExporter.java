@@ -5,6 +5,10 @@ import io.lionweb.emf.mapping.LanguageEntitiesToEElementsMapping;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
+/**
+ * Base class for EMF exporters, providing shared configuration (LionWeb version and
+ * entity-to-EElement mapping).
+ */
 public abstract class AbstractEMFExporter {
   protected final LanguageEntitiesToEElementsMapping entitiesToEElementsMapping;
   private LionWebVersion lionWebVersion;

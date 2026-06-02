@@ -3,6 +3,10 @@ package io.lionweb.language;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
+/**
+ * Static helpers for producing human-readable representations of language elements, safe to call
+ * even when the element is in an inconsistent state (e.g. inside {@code toString} methods).
+ */
 public class DebugUtils {
 
   private DebugUtils() {
