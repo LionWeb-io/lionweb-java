@@ -70,7 +70,9 @@ class LionWebServerCommand : CliktCommand(name = "lionweb-server") {
 
         val httpBulkServer = HTTPBulkServer(inMemoryServer, httpPort)
         httpBulkServer.start()
-        // TODO stop HTTP server on shutdown
+        Runtime.getRuntime().addShutdownHook(Thread {
+            httpBulkServer.stop()
+        })
 
         if (webUi) {
             val uiServer = WebUIServer(webUIPort, inMemoryServer, messageLog)
