@@ -6,6 +6,12 @@ import io.lionweb.lioncore.LionCore;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 
+/**
+ * Factory methods for creating pre-configured {@link JsonSerialization} and {@link
+ * ProtoBufSerialization} instances. The <em>standard</em> variants register LionCore and
+ * LionCoreBuiltins support automatically; the <em>basic</em> variants leave that registration to
+ * the caller.
+ */
 public class SerializationProvider {
 
   /** This has specific support for LionCore or LionCoreBuiltins. */

@@ -10,6 +10,10 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Skeletal implementation of {@link io.lionweb.model.ClassifierInstance} that manages annotations
+ * and delegates feature access to subclasses.
+ */
 public abstract class AbstractClassifierInstance<T extends Classifier<T>>
     implements ClassifierInstance<T> {
   /**

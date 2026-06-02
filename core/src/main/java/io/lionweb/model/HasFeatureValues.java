@@ -7,6 +7,12 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Provides read and write access to all feature values (properties, containments, and references)
+ * of a classifier instance. Implementations are expected to validate feature compatibility and
+ * throw {@link IllegalArgumentException} when the supplied value or node does not conform to the
+ * feature's declared type or multiplicity.
+ */
 public interface HasFeatureValues {
   /** Get the property value associated with the specified property. */
   @Nullable

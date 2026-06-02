@@ -2,6 +2,12 @@ package io.lionweb.client.delta.messages.events;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 
+/**
+ * Delta event signalling that an error occurred during command processing.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public class ErrorEvent extends BaseDeltaEvent {
   public String errorCode;
   public String message;

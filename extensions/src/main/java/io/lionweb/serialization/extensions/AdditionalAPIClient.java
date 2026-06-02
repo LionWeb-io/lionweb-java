@@ -6,6 +6,7 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** Client API for LionWeb extension endpoints not part of the core bulk API specification. */
 public interface AdditionalAPIClient {
   void bulkImport(BulkImport bulkImport, TransferFormat transferFormat, Compression compression)
       throws IOException;

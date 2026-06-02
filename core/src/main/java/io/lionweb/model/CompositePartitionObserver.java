@@ -7,6 +7,11 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * A {@link PartitionObserver} that fans out all notifications to a flat set of delegate observers.
+ * Use {@link #combine(PartitionObserver, PartitionObserver)} to compose two observers; the result
+ * is automatically flattened so nested composites are never created.
+ */
 public class CompositePartitionObserver implements PartitionObserver {
 
   private final Set<PartitionObserver> elements;

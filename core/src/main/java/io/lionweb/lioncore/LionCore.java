@@ -7,6 +7,12 @@ import io.lionweb.utils.IdUtils;
 import java.util.*;
 import javax.annotation.Nonnull;
 
+/**
+ * Provides access to the LionCore meta-metamodel — the language that describes languages. One
+ * singleton {@link Language} instance exists per supported {@link LionWebVersion} and is
+ * initialised lazily. Accessors such as {@link #getConcept()} and {@link #getProperty()} return the
+ * {@link Concept} nodes for the corresponding meta-metamodel elements.
+ */
 public class LionCore {
 
   private LionCore() {

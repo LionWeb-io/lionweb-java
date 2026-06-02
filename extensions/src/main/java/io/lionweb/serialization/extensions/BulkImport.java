@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/** A bulk-import request payload, grouping nodes to import together with optional attach points. */
 public class BulkImport {
 
   private static final Map<LionWebVersion, JsonSerialization> jsonSerializations = new HashMap<>();

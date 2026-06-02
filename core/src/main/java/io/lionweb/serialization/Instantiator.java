@@ -18,6 +18,9 @@ import javax.annotation.Nonnull;
  */
 public class Instantiator {
 
+  /**
+   * Creates a concrete {@link ClassifierInstance} for a specific classifier during deserialization.
+   */
   public interface ClassifierSpecificInstantiator<T extends ClassifierInstance<?>> {
     T instantiate(
         Classifier<?> classifier,

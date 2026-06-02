@@ -6,6 +6,10 @@ import java.util.*;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Abstract base for dynamically-typed classifier instances that store feature values in maps rather
+ * than statically-typed fields.
+ */
 public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     extends AbstractClassifierInstance<T> implements ClassifierInstance<T>, HasSettableID {
   /** The ID should _eventually_ be not null. */

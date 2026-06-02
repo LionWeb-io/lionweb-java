@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.EObject;
  */
 public class NodeInstantiator {
 
+  /** Creates a concrete {@link Node} subtype for a specific Concept during EMF import. */
   public interface ConceptSpecificNodeInstantiator<T extends Node> {
     T instantiate(
         Concept concept,

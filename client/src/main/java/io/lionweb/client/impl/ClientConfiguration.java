@@ -4,6 +4,7 @@ import io.lionweb.client.Protocol;
 import io.lionweb.serialization.JsonSerialization;
 import okhttp3.OkHttpClient;
 
+/** Connection and authentication settings shared by all HTTP client implementations. */
 public class ClientConfiguration {
   protected final Protocol protocol;
   private final String hostname;

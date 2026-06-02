@@ -3,6 +3,12 @@ package io.lionweb.client.delta.messages.events.properties;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
 
+/**
+ * Delta event fired when a property value is removed from a node.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public class PropertyDeleted extends BaseDeltaEvent {
 
   public final String node;

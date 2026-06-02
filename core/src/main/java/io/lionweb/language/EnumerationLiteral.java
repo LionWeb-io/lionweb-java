@@ -7,6 +7,7 @@ import io.lionweb.model.impl.M3Node;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/** One named value within an {@link Enumeration}. */
 public class EnumerationLiteral extends M3Node<EnumerationLiteral>
     implements NamespacedEntity, IKeyed<EnumerationLiteral> {
 
