@@ -1,23 +1,29 @@
 package io.lionweb.client;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Objects;
+
 /**
  * This exception is thrown to signal that a request has failed. It includes relevant details about
  * the failed request, such as the URL, response code, and the response body to provide context for
  * the failure.
  */
 public class BulkRequestFailureException extends RuntimeException {
-  private final String url;
+  private final @NotNull String url;
   private final int responseCode;
-  private final String responseBody;
+  private final @Nullable String responseBody;
 
-  public BulkRequestFailureException(String url, int responseCode, String responseBody) {
+  public BulkRequestFailureException(@NotNull String url, int responseCode, @Nullable String responseBody) {
     super("Request to " + url + " failed with code " + responseCode + ": " + responseBody);
+    Objects.requireNonNull(url, "url must not be null");
     this.url = url;
     this.responseCode = responseCode;
     this.responseBody = responseBody;
   }
 
-  public String getUrl() {
+  public @NotNull String getUrl() {
     return url;
   }
 
@@ -25,7 +31,7 @@ public class BulkRequestFailureException extends RuntimeException {
     return responseCode;
   }
 
-  public String getResponseBody() {
+  public @Nullable String getResponseBody() {
     return responseBody;
   }
 
