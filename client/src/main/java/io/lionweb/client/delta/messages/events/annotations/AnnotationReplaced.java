@@ -3,6 +3,8 @@ package io.lionweb.client.delta.messages.events.annotations;
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.util.Arrays;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Existing node replacedAnnotation, and all its replacedDescendants, inside parent's annotations at
@@ -17,12 +19,16 @@ public class AnnotationReplaced extends BaseDeltaEvent {
 
   public AnnotationReplaced(
       int sequenceNumber,
-      SerializationChunk newAnnotation,
-      String replacedAnnotation,
-      String[] replacedDescendants,
-      String parent,
+      @NotNull SerializationChunk newAnnotation,
+      @NotNull String replacedAnnotation,
+      @NotNull String[] replacedDescendants,
+      @NotNull String parent,
       int index) {
     super(sequenceNumber);
+    Objects.requireNonNull(newAnnotation, "newAnnotation cannot be null");
+    Objects.requireNonNull(replacedAnnotation, "replacedAnnotation cannot be null");
+    Objects.requireNonNull(replacedDescendants, "replacedDescendants cannot be null");
+    Objects.requireNonNull(parent, "parent cannot be null");
     this.newAnnotation = newAnnotation;
     this.replacedAnnotation = replacedAnnotation;
     this.replacedDescendants = replacedDescendants;

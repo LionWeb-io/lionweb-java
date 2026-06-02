@@ -3,6 +3,8 @@ package io.lionweb.client.delta.messages;
 import io.lionweb.client.delta.CommandSource;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /** Base class used by most delta events. */
 public abstract class BaseDeltaEvent<T extends BaseDeltaEvent<?>> extends DeltaEvent {
@@ -27,7 +29,8 @@ public abstract class BaseDeltaEvent<T extends BaseDeltaEvent<?>> extends DeltaE
     this.sequenceNumber = sequenceNumber;
   }
 
-  public T addSource(CommandSource source) {
+  public @NotNull T addSource(@NotNull CommandSource source) {
+    Objects.requireNonNull(source, "source cannot be null");
     originCommands.add(source);
     return (T) this;
   }

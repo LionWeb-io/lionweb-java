@@ -2,6 +2,8 @@ package io.lionweb.client.delta.messages.events.children;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 public final class ChildMovedFromOtherContainmentInSameParent extends BaseDeltaEvent {
   /** The new containment link after the move. */
@@ -23,8 +25,13 @@ public final class ChildMovedFromOtherContainmentInSameParent extends BaseDeltaE
   public int oldIndex;
 
   public ChildMovedFromOtherContainmentInSameParent(
-      int sequenceNumber, MetaPointer newContainment, int newIndex, String movedChild) {
+      int sequenceNumber,
+      @NotNull MetaPointer newContainment,
+      int newIndex,
+      @NotNull String movedChild) {
     super(sequenceNumber);
+    Objects.requireNonNull(newContainment, "newContainment cannot be null");
+    Objects.requireNonNull(movedChild, "movedChild cannot be null");
     this.newContainment = newContainment;
     this.newIndex = newIndex;
     this.movedChild = movedChild;
