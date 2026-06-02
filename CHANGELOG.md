@@ -13,6 +13,7 @@
 * Add `@see` links to the [LionWeb Delta API specification](https://lionweb.io/specification/delta/delta-api.html) on all delta protocol message classes
 * Revised nullability annotations in the entire codebase
 * Modernize Java 9+ collection factory methods: replace `Collections.emptyList/singletonList/emptyMap/emptySet` and `Arrays.asList` (for constant data) with `List.of`, `Map.of`, and `Set.of` across production sources
+* Remove deprecated `lowLevelRepoClient` from `LionWebClient` (Kotlin); migrate `isNodeExisting`, `getParentId`, and `nodesByClassifier` to use `jRepoClient` directly; delete now-unused `LowLevelRepoClient`, and Kotlin-specific `ClassifierKey`/`ClassifierResult` duplicates in favour of the canonical `io.lionweb.client.api` types
 
 ### Version 1.4.1
 
