@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
 
+/** Exports LionWeb model nodes to EMF {@link org.eclipse.emf.ecore.resource.Resource} instances. */
 public class EMFModelExporter extends AbstractEMFExporter {
 
   public EMFModelExporter() {

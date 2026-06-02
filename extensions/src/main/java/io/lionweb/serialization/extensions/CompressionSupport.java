@@ -8,6 +8,7 @@ import okio.BufferedSink;
 import okio.GzipSink;
 import okio.Okio;
 
+/** Utility methods for applying or stripping HTTP body compression. */
 public class CompressionSupport {
 
   public static RequestBody considerCompression(RequestBody original, Compression compression)

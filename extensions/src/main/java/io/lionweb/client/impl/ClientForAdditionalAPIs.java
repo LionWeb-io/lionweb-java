@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import okhttp3.*;
 
+/** HTTP client implementation of {@link io.lionweb.serialization.extensions.AdditionalAPIClient} for extension endpoints (bulk import, node tree). */
 public class ClientForAdditionalAPIs extends LionWebClientImplHelper
     implements AdditionalAPIClient {
 

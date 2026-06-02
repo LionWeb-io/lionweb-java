@@ -13,6 +13,7 @@ import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.xml.type.impl.XMLTypePackageImpl;
 import org.jetbrains.annotations.Nullable;
 
+/** Bidirectional mapping between LionWeb language entities (Concepts, Properties, etc.) and their corresponding EMF ECore elements. */
 public class LanguageEntitiesToEElementsMapping {
 
   private final Map<EPackage, Language> ePackagesToLanguages = new HashMap<>();
