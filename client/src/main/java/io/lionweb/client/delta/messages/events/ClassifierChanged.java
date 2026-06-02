@@ -2,15 +2,29 @@ package io.lionweb.client.delta.messages.events;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import io.lionweb.serialization.data.MetaPointer;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
-public class ClassifierChanged extends BaseDeltaEvent {
-  public String node;
-  public MetaPointer newClassifier;
-  public MetaPointer oldClassifier;
+/**
+ * Delta event fired when a node's classifier is changed to a different type.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
+public class ClassifierChanged extends BaseDeltaEvent<ClassifierChanged> {
+  public @NotNull String node;
+  public @NotNull MetaPointer newClassifier;
+  public @NotNull MetaPointer oldClassifier;
 
   public ClassifierChanged(
-      int sequenceNumber, String node, MetaPointer newClassifier, MetaPointer oldClassifier) {
+      int sequenceNumber,
+      @NotNull String node,
+      @NotNull MetaPointer newClassifier,
+      @NotNull MetaPointer oldClassifier) {
     super(sequenceNumber);
+    Objects.requireNonNull(node, "node should not be null");
+    Objects.requireNonNull(newClassifier, "newClassifier should not be null");
+    Objects.requireNonNull(oldClassifier, "oldClassifier should not be null");
     this.node = node;
     this.newClassifier = newClassifier;
     this.oldClassifier = oldClassifier;

@@ -2,6 +2,7 @@ package io.lionweb.serialization;
 
 import io.lionweb.language.Classifier;
 import io.lionweb.serialization.data.MetaPointer;
+import javax.annotation.Nonnull;
 
 /** Interface for handling inconsistent data during serialization and deserialization. */
 public interface InconsistentDataHandler {
@@ -13,7 +14,7 @@ public interface InconsistentDataHandler {
    * @param metaPointer The {@code MetaPointer} referencing the metadata or structure of the missing
    *     property.
    */
-  void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer);
+  void handleMissingProperty(@Nonnull Classifier<?> classifier, @Nonnull MetaPointer metaPointer);
 
   /**
    * Handles scenarios where a required classifier is missing during serialization or
@@ -23,5 +24,5 @@ public interface InconsistentDataHandler {
    *     the missing classifier.
    * @param id A unique identifier associated with the classifier being processed.
    */
-  void handleMissingClassifier(MetaPointer serializedClassifier, String id);
+  void handleMissingClassifier(@Nonnull MetaPointer serializedClassifier, @Nonnull String id);
 }

@@ -18,6 +18,11 @@ import java.util.stream.Collectors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * An in-memory implementation of {@link BulkAPIClient}, {@link DBAdminAPIClient}, and {@link
+ * InspectionAPIClient} that stores all nodes in a {@link ChunkLevelInMemoryServerClient}. Intended
+ * for tests and single-JVM use cases where no HTTP server is needed.
+ */
 public class NodesLevelInMemoryServerClient
     implements BulkAPIClient, DBAdminAPIClient, InspectionAPIClient {
   private final @NotNull ChunkLevelInMemoryServerClient chunkLevel;

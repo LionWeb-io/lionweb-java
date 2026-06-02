@@ -11,6 +11,11 @@ import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Static utility methods that operate on {@link ClassifierInstance} objects. Covers property,
+ * child, reference, and annotation access by name or meta-pointer, as well as common traversal
+ * helpers.
+ */
 public class ClassifierInstanceUtils {
 
   private ClassifierInstanceUtils() {

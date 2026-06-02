@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * This is a common ancestor to all Serialization classes. It contains logic to move between the
@@ -36,7 +37,8 @@ public abstract class AbstractSerialization {
       new InconsistentDataHandler() {
 
         @Override
-        public void handleMissingProperty(Classifier<?> classifier, MetaPointer metaPointer) {
+        public void handleMissingProperty(
+            @NonNull Classifier<?> classifier, @NonNull MetaPointer metaPointer) {
           throw new NullPointerException(
               "Property with metaPointer "
                   + metaPointer
@@ -49,7 +51,8 @@ public abstract class AbstractSerialization {
         }
 
         @Override
-        public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+        public void handleMissingClassifier(
+            @NonNull MetaPointer serializedClassifier, @NonNull String id) {
           throw new RuntimeException(
               "No metaPointer available for " + serializedClassifier + " for node " + id);
         }

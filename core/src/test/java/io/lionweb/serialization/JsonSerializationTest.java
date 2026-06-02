@@ -27,6 +27,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.jspecify.annotations.NonNull;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.function.Executable;
 
@@ -1109,12 +1110,13 @@ public class JsonSerializationTest extends SerializationTest {
         new InconsistentDataHandler() {
           @Override
           public void handleMissingProperty(
-              Classifier<?> classifier, MetaPointer missingMetaPointer) {
+              @NonNull Classifier<?> classifier, @NonNull MetaPointer missingMetaPointer) {
             capturedMissingProperties.add(missingMetaPointer.getKey());
           }
 
           @Override
-          public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+          public void handleMissingClassifier(
+              @NonNull MetaPointer serializedClassifier, @NonNull String id) {
             throw new RuntimeException("Unexpected missing classifier for id: " + id);
           }
         };
@@ -1152,12 +1154,13 @@ public class JsonSerializationTest extends SerializationTest {
         new InconsistentDataHandler() {
           @Override
           public void handleMissingProperty(
-              Classifier<?> classifier, MetaPointer missingMetaPointer) {
+              @NonNull Classifier<?> classifier, @NonNull MetaPointer missingMetaPointer) {
             throw new RuntimeException("Unexpected missing property");
           }
 
           @Override
-          public void handleMissingClassifier(MetaPointer serializedClassifier, String id) {
+          public void handleMissingClassifier(
+              @NonNull MetaPointer serializedClassifier, @NonNull String id) {
             capturedMissingClassifierIds.add(id);
           }
         };

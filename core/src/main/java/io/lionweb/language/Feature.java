@@ -5,6 +5,7 @@ import io.lionweb.model.impl.M3Node;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
 
 /**
  * A Feature represents a characteristic or some form of data associated with a particular concept.
@@ -101,7 +102,7 @@ public abstract class Feature<T extends M3Node> extends M3Node<T>
   }
 
   @Override
-  public T setKey(String key) {
+  public @NonNull T setKey(@Nullable String key) {
     setPropertyValue("key", key);
     return (T) this;
   }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/** Client API for accessing historical snapshots of a LionWeb repository. */
 public interface HistoryAPIClient {
   @NotNull
   List<Node> listPartitions(@NotNull RepositoryVersionToken repoVersion) throws IOException;

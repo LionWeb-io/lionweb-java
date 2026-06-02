@@ -11,6 +11,7 @@ import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * We have issues using the JSON resource factory part of EMF-Cloud, so we provide our own
@@ -18,7 +19,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
  */
 public class JSONResourceFactory implements Resource.Factory {
   @Override
-  public Resource createResource(URI uri) {
+  public @NotNull Resource createResource(@NotNull URI uri) {
     return new ResourceImpl() {
       @Override
       protected void doLoad(InputStream inputStream, Map<?, ?> options) {

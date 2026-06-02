@@ -8,6 +8,14 @@ import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
+/**
+ * Represents an instance of a {@link Classifier} — either a {@link Node} or an {@link
+ * AnnotationInstance}. Provides access to the node's ID, classifier type, parent, annotations, and
+ * all feature values (properties, containments, references) inherited from {@link
+ * HasFeatureValues}.
+ *
+ * @param <T> the concrete {@link Classifier} type that describes this instance
+ */
 public interface ClassifierInstance<T extends Classifier<T>> extends HasFeatureValues {
   /** Return all the annotations associated to this ClassifierInstance. */
   @Nonnull

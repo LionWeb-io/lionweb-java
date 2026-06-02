@@ -16,6 +16,7 @@ import org.gradle.api.GradleException;
 import org.gradle.api.tasks.*;
 
 @CacheableTask
+/** Gradle task that generates Java node classes from serialized LionWeb language files. */
 public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
 
   @TaskAction

@@ -14,6 +14,10 @@ import java.util.List;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * HTTP client implementation of {@link io.lionweb.client.api.ChunkLevelBulkAPIClient}, exchanging
+ * serialization chunks directly without further object mapping.
+ */
 public class ClientForChunkLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
     implements ChunkLevelBulkAPIClient {
 

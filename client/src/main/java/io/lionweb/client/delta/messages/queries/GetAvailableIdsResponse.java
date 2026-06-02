@@ -5,6 +5,12 @@ import java.util.Arrays;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * Response to {@link GetAvailableIdsRequest} carrying the reserved node IDs.
+ *
+ * @see <a href="https://lionweb.io/specification/delta/delta-api.html">LionWeb Delta API
+ *     specification</a>
+ */
 public class GetAvailableIdsResponse extends DeltaQueryResponse {
 
   private final @NotNull String[] ids;

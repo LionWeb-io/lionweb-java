@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /** This represents the serialization of the values of a reference link in a Node. */
 public class SerializedReferenceValue {
@@ -15,24 +17,24 @@ public class SerializedReferenceValue {
 
     public Entry() {}
 
-    public Entry(String reference, String resolveInfo) {
+    public Entry(@Nullable String reference, @Nullable String resolveInfo) {
       this.resolveInfo = resolveInfo;
       this.reference = reference;
     }
 
-    public String getResolveInfo() {
+    public @Nullable String getResolveInfo() {
       return resolveInfo;
     }
 
-    public void setResolveInfo(String resolveInfo) {
+    public void setResolveInfo(@Nullable String resolveInfo) {
       this.resolveInfo = resolveInfo;
     }
 
-    public String getReference() {
+    public @Nullable String getReference() {
       return reference;
     }
 
-    public void setReference(String reference) {
+    public void setReference(@Nullable String reference) {
       this.reference = reference;
     }
 
@@ -69,30 +71,33 @@ public class SerializedReferenceValue {
   @SerializedName("targets")
   private final List<Entry> value;
 
-  public SerializedReferenceValue(MetaPointer metaPointer) {
+  public SerializedReferenceValue(@Nullable MetaPointer metaPointer) {
     this.metaPointer = metaPointer;
     value = new ArrayList<>(1);
   }
 
-  public SerializedReferenceValue(MetaPointer metaPointer, List<Entry> value) {
+  public SerializedReferenceValue(@Nullable MetaPointer metaPointer, @Nonnull List<Entry> value) {
+    Objects.requireNonNull(value, "value cannot be null");
     this.metaPointer = metaPointer;
     this.value = new ArrayList<>(value);
   }
 
-  public MetaPointer getMetaPointer() {
+  public @Nullable MetaPointer getMetaPointer() {
     return metaPointer;
   }
 
-  public List<Entry> getValue() {
+  public @Nonnull List<Entry> getValue() {
     return Collections.unmodifiableList(value);
   }
 
-  public void setValue(List<Entry> value) {
+  public void setValue(@Nonnull List<Entry> value) {
+    Objects.requireNonNull(value, "value cannot be null");
     this.value.clear();
     this.value.addAll(value);
   }
 
-  public void addValue(Entry value) {
+  public void addValue(@Nonnull Entry value) {
+    Objects.requireNonNull(value, "value cannot be null");
     this.value.add(value);
   }
 

@@ -4,6 +4,7 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Gradle extension for configuring the LionWeb Gradle plugin.
@@ -59,7 +60,7 @@ public abstract class LionWebPluginExtension {
    * #getLanguagesSpecificPackages()}. If you do not provide a default package, then every language
    * that is generated must have an entry in {@link #getLanguagesSpecificPackages()}.
    */
-  public abstract Property<String> getDefaultPackageName();
+  public abstract @NotNull Property<String> getDefaultPackageName();
 
   /**
    * Directory containing LionWeb language definitions to load from the project.
@@ -71,7 +72,7 @@ public abstract class LionWebPluginExtension {
    * <p>When creating the project's JAR, the plugin also packages these language files under {@code
    * META-INF/lionweb}.
    */
-  public abstract DirectoryProperty getLanguagesDirectory();
+  public abstract @NotNull DirectoryProperty getLanguagesDirectory();
 
   /**
    * Destination directory for generated Java sources.
@@ -79,7 +80,7 @@ public abstract class LionWebPluginExtension {
    * <p>Both {@code generateLWLanguages} and {@code generateLWNodeClasses} write output to this
    * directory.
    */
-  public abstract DirectoryProperty getGenerationDirectory();
+  public abstract @NotNull DirectoryProperty getGenerationDirectory();
 
   /**
    * Maps LionWeb primitive type IDs to Java fully qualified class names.
@@ -89,7 +90,7 @@ public abstract class LionWebPluginExtension {
    * java.time.Instant}. This mapping is used by {@code generateLWNodeClasses} when generating
    * fields for primitive-typed properties.
    */
-  public abstract MapProperty<String, String> getPrimitiveTypes();
+  public abstract @NotNull MapProperty<String, String> getPrimitiveTypes();
 
   /**
    * Maps LionWeb language IDs to the Java package in which code for that language should be
@@ -98,14 +99,14 @@ public abstract class LionWebPluginExtension {
    * <p>When a language ID is not present in this map, {@link #getDefaultPackageName()} is used
    * instead.
    */
-  public abstract MapProperty<String, String> getLanguagesSpecificPackages();
+  public abstract @NotNull MapProperty<String, String> getLanguagesSpecificPackages();
 
   /**
    * Maps LionWeb language IDs to the class name of the generated {@code Language} Java class.
    *
    * <p>If a language ID is not present, the default naming strategy is used.
    */
-  public abstract MapProperty<String, String> getLanguagesClassNames();
+  public abstract @NotNull MapProperty<String, String> getLanguagesClassNames();
 
   /**
    * Restricts generation to a subset of languages.
@@ -113,7 +114,7 @@ public abstract class LionWebPluginExtension {
    * <p>Entries can be language names, IDs, or keys. If unset, the generators produce code for all
    * languages loaded from the project language files.
    */
-  public abstract SetProperty<String> getLanguagesToGenerate();
+  public abstract @NotNull SetProperty<String> getLanguagesToGenerate();
 
   /**
    * Maps LionWeb classifier qualified names to Java fully qualified class names.
@@ -122,12 +123,12 @@ public abstract class LionWebPluginExtension {
    * plugin (for example, concepts or interfaces from external languages). The key must match {@code
    * classifier.qualifiedName()} from the LionWeb language model.
    */
-  public abstract MapProperty<String, String> getMappings();
+  public abstract @NotNull MapProperty<String, String> getMappings();
 
   /**
    * Configures whether the compilation tasks should be enabled for the generated Java sources.
    *
    * @return a {@code Property<Boolean>} indicating if compilation tasks are configured and enabled.
    */
-  public abstract Property<Boolean> getConfigureCompilation();
+  public abstract @NotNull Property<Boolean> getConfigureCompilation();
 }

@@ -9,6 +9,8 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Objects;
+import javax.annotation.Nonnull;
 
 /**
  * Utility class for network-related operations, including retrieving and processing content from
@@ -20,11 +22,15 @@ public class NetworkUtils {
     // Prevent instantiation
   }
 
-  public static String getStringFromUrl(URL url, Charset charset) throws IOException {
+  public static @Nonnull String getStringFromUrl(@Nonnull URL url, @Nonnull Charset charset)
+      throws IOException {
+    Objects.requireNonNull(url, "url cannot be null");
+    Objects.requireNonNull(charset, "charset cannot be null");
     return inputStreamToString(urlToInputStream(url, null), charset);
   }
 
-  public static String getStringFromUrl(URL url) throws IOException {
+  public static @Nonnull String getStringFromUrl(@Nonnull URL url) throws IOException {
+    Objects.requireNonNull(url, "url cannot be null");
     return getStringFromUrl(url, StandardCharsets.UTF_8);
   }
 
