@@ -2,24 +2,32 @@ package io.lionweb.client.delta.messages.events.annotations;
 
 import io.lionweb.client.delta.messages.BaseDeltaEvent;
 import java.util.Arrays;
+import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Existing node deletedAnnotation, and all its deletedDescendants, have been deleted from parent's
  * annotations at index.
  */
 public class AnnotationDeleted extends BaseDeltaEvent {
-  public final String deletedAnnotation;
-  public final String[] deletedDescendants;
-  public final String parent;
+  public final @NotNull String deletedAnnotation;
+  public final @NotNull String[] deletedDescendants;
+  public final @NotNull String parent;
   public final int index;
 
   public AnnotationDeleted(
       int sequenceNumber,
-      String deletedAnnotation,
-      String[] deletedDescendants,
-      String parent,
+      @NotNull String deletedAnnotation,
+      @NotNull String[] deletedDescendants,
+      @NotNull String parent,
       int index) {
     super(sequenceNumber);
+    Objects.requireNonNull(deletedAnnotation, "deletedAnnotation cannot be null");
+    Objects.requireNonNull(deletedDescendants, "deletedDescendants cannot be null");
+    Objects.requireNonNull(parent, "parent cannot be null");
+    if (index < 0) {
+      throw new IllegalArgumentException("index should be positive");
+    }
     this.deletedAnnotation = deletedAnnotation;
     this.deletedDescendants = deletedDescendants;
     this.parent = parent;

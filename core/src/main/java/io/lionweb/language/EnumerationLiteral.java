@@ -6,6 +6,7 @@ import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.impl.M3Node;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import org.jspecify.annotations.NonNull;
 
 public class EnumerationLiteral extends M3Node<EnumerationLiteral>
     implements NamespacedEntity, IKeyed<EnumerationLiteral> {
@@ -74,7 +75,7 @@ public class EnumerationLiteral extends M3Node<EnumerationLiteral>
   }
 
   @Override
-  public EnumerationLiteral setKey(String key) {
+  public @NonNull EnumerationLiteral setKey(@Nullable String key) {
     setPropertyValue("key", key);
     return this;
   }

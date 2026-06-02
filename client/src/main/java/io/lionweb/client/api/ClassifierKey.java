@@ -1,6 +1,7 @@
 package io.lionweb.client.api;
 
 import java.util.Objects;
+import org.jetbrains.annotations.Nullable;
 
 /** Immutable key object used to uniquely identify a classifier. */
 public final class ClassifierKey {
@@ -8,7 +9,7 @@ public final class ClassifierKey {
   private final String classifierKey;
   private final int hashCode;
 
-  public ClassifierKey(String languageKey, String classifierKey) {
+  public ClassifierKey(@Nullable String languageKey, @Nullable String classifierKey) {
     this.languageKey = languageKey;
     this.classifierKey = classifierKey;
     // This is equivalent to Objects.hash
@@ -17,11 +18,11 @@ public final class ClassifierKey {
             + (classifierKey == null ? 0 : classifierKey.hashCode());
   }
 
-  public String getLanguageKey() {
+  public @Nullable String getLanguageKey() {
     return languageKey;
   }
 
-  public String getClassifierKey() {
+  public @Nullable String getClassifierKey() {
     return classifierKey;
   }
 
