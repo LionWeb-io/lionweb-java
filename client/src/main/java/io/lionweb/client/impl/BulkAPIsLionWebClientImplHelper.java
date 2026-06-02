@@ -8,7 +8,6 @@ import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,7 +28,7 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
       throw new IllegalArgumentException("Count should be greater or equal to zero");
     }
     if (count == 0) {
-      return Collections.emptyList();
+      return List.of();
     }
     Map<String, String> params = new HashMap<>();
     params.put("count", Integer.toString(count));

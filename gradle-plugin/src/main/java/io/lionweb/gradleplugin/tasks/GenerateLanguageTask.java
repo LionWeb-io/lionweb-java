@@ -67,9 +67,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
       List<SerializationChunk> dependenciesChunks = loadDependenciesChunks();
       getLogger().info("GenerateLanguageTask - Dependencies chunks: " + dependenciesChunks.size());
       List<SerializationChunk> projectChunks =
-          languagesDirectory == null
-              ? Collections.emptyList()
-              : loadProjectChunks(languagesDirectory);
+          languagesDirectory == null ? List.of() : loadProjectChunks(languagesDirectory);
       getLogger().info("GenerateLanguageTask - Project chunks: " + projectChunks.size());
       Arrays.stream(LionWebVersion.values())
           .forEach(
@@ -172,7 +170,7 @@ public abstract class GenerateLanguageTask extends AbstractGenerationTask {
     languageJavaCodeGenerator.generate(
         languagesToGenerate,
         getDefaultPackageName().getOrNull(),
-        getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
-        getLanguagesClassNames().getOrElse(Collections.emptyMap()));
+        getLanguagesSpecificPackages().getOrElse(Map.of()),
+        getLanguagesClassNames().getOrElse(Map.of()));
   }
 }

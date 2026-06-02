@@ -43,9 +43,7 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
     try {
       List<SerializationChunk> dependenciesChunks = loadDependenciesChunks();
       List<SerializationChunk> projectChunks =
-          languagesDirectory == null
-              ? Collections.emptyList()
-              : loadProjectChunks(languagesDirectory);
+          languagesDirectory == null ? List.of() : loadProjectChunks(languagesDirectory);
       Arrays.stream(LionWebVersion.values())
           .forEach(
               lionWebVersion -> {
@@ -160,8 +158,8 @@ public abstract class GenerateNodeClassesTask extends AbstractGenerationTask {
     nodeClassesJavaCodeGenerator.generate(
         languagesToGenerate,
         getDefaultPackageName().getOrNull(),
-        getLanguagesSpecificPackages().getOrElse(Collections.emptyMap()),
-        getPrimitiveTypes().getOrElse(Collections.emptyMap()),
-        getLanguagesClassNames().getOrElse(Collections.emptyMap()));
+        getLanguagesSpecificPackages().getOrElse(Map.of()),
+        getPrimitiveTypes().getOrElse(Map.of()),
+        getLanguagesClassNames().getOrElse(Map.of()));
   }
 }

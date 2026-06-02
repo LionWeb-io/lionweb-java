@@ -28,7 +28,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   @Override
   public @Nonnull List<AnnotationInstance> getAnnotations() {
     if (annotations == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     return Collections.unmodifiableList(annotations);
   }
@@ -40,7 +40,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
   @Override
   public @Nonnull List<AnnotationInstance> getAnnotations(@Nonnull Annotation annotation) {
     if (annotations == null) {
-      return Collections.emptyList();
+      return List.of();
     }
     return annotations.stream()
         .filter(a -> a.getAnnotationDefinition() == annotation)

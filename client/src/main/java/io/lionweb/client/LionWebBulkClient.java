@@ -212,7 +212,7 @@ public class LionWebBulkClient
 
   public @Nullable RepositoryVersionToken createPartition(@NotNull Node partition)
       throws IOException {
-    return createPartitions(Collections.singletonList(partition));
+    return createPartitions(List.of(partition));
   }
 
   @Override
@@ -242,7 +242,7 @@ public class LionWebBulkClient
   }
 
   public @Nullable RepositoryVersionToken store(@NotNull Node node) throws IOException {
-    return store(Collections.singletonList(node));
+    return store(List.of(node));
   }
 
   public List<Node> retrieve(List<String> nodeIds) throws IOException {
@@ -251,7 +251,7 @@ public class LionWebBulkClient
 
   public @NotNull Node retrieve(@NotNull String nodeId) throws IOException {
     Objects.requireNonNull(nodeId, "nodeId should not be null");
-    List<Node> nodes = retrieve(Collections.singletonList(nodeId), Integer.MAX_VALUE);
+    List<Node> nodes = retrieve(List.of(nodeId), Integer.MAX_VALUE);
     List<Node> matchingNodes =
         nodes.stream().filter(n -> nodeId.equals(n.getID())).collect(Collectors.toList());
     if (matchingNodes.size() != 1) {

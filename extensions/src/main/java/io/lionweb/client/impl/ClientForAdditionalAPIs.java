@@ -49,7 +49,7 @@ public class ClientForAdditionalAPIs extends LionWebClientImplHelper
   public List<NodeInfo> getNodeTree(
       List<String> nodeIDs, @javax.annotation.Nullable Integer depthLimit) throws IOException {
     if (nodeIDs.isEmpty()) {
-      return Collections.emptyList();
+      return List.of();
     }
     Map<String, String> params = new HashMap<>();
     if (depthLimit != null) {

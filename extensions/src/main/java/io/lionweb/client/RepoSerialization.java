@@ -42,8 +42,7 @@ public class RepoSerialization {
     Objects.requireNonNull(apiClient, "apiClient cannot be null");
     Objects.requireNonNull(directory, "directory cannot be null");
     for (String partitionID : apiClient.listPartitionsIDs()) {
-      String partitionData =
-          apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
+      String partitionData = apiClient.rawRetrieve(List.of(partitionID), Integer.MAX_VALUE);
       File partitionFile = new File(directory, partitionID + ".json");
       Files.write(
           partitionFile.toPath(),
@@ -66,8 +65,7 @@ public class RepoSerialization {
         ZipOutputStream zos = new ZipOutputStream(bos)) {
 
       for (String partitionID : apiClient.listPartitionsIDs()) {
-        String partitionData =
-            apiClient.rawRetrieve(Collections.singletonList(partitionID), Integer.MAX_VALUE);
+        String partitionData = apiClient.rawRetrieve(List.of(partitionID), Integer.MAX_VALUE);
 
         ZipEntry entry = new ZipEntry(partitionID + ".json");
         zos.putNextEntry(entry);
@@ -107,8 +105,7 @@ public class RepoSerialization {
               .get();
       root.clearContainments();
       SerializationChunk limitedSerializationChunk =
-          groupNodesIntoSerializationBlock(
-              Collections.singletonList(root), apiClient.getLionWebVersion());
+          groupNodesIntoSerializationBlock(List.of(root), apiClient.getLionWebVersion());
       String limitedJson =
           lowLevelJsonSerialization.serializeToJsonString(limitedSerializationChunk);
 
@@ -191,8 +188,7 @@ public class RepoSerialization {
                 .get();
         root.clearContainments();
         SerializationChunk limitedSerializationChunk =
-            groupNodesIntoSerializationBlock(
-                Collections.singletonList(root), apiClient.getLionWebVersion());
+            groupNodesIntoSerializationBlock(List.of(root), apiClient.getLionWebVersion());
         String limitedJson =
             lowLevelJsonSerialization.serializeToJsonString(limitedSerializationChunk);
 

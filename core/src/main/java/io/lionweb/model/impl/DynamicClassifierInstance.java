@@ -99,7 +99,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (containmentValues != null && containmentValues.containsKey(containment.getKey())) {
       return containmentValues.get(containment.getKey());
     } else {
-      return Collections.emptyList();
+      return List.of();
     }
   }
 
@@ -200,7 +200,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
     if (referenceValues != null && referenceValues.containsKey(reference.getKey())) {
       return referenceValues.get(reference.getKey());
     } else {
-      return Collections.emptyList();
+      return List.of();
     }
   }
 

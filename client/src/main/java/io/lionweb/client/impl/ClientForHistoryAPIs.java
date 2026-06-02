@@ -55,7 +55,7 @@ public class ClientForHistoryAPIs extends LionWebClientImplHelper implements His
     Objects.requireNonNull(repoVersion, "repoVersion should not be null");
     Objects.requireNonNull(nodeIds, "nodeIds should not be null");
     if (nodeIds.isEmpty()) {
-      return Collections.emptyList();
+      return List.of();
     }
     List<String> invalidIDs =
         nodeIds.stream().filter(id -> !IdUtils.isValidID(id)).collect(Collectors.toList());

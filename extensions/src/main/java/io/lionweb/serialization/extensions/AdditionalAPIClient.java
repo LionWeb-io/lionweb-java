@@ -1,7 +1,6 @@
 package io.lionweb.serialization.extensions;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.List;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,6 +17,6 @@ public interface AdditionalAPIClient {
   }
 
   default List<NodeInfo> getNodeTree(@Nonnull String nodeID) throws IOException {
-    return getNodeTree(Collections.singletonList(nodeID));
+    return getNodeTree(List.of(nodeID));
   }
 }

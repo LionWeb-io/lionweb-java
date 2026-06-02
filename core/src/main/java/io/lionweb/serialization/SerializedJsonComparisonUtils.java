@@ -23,8 +23,7 @@ public class SerializedJsonComparisonUtils {
       @Nonnull JsonObject expected, @Nonnull JsonObject actual) {
     Objects.requireNonNull(expected, "expected cannot be null");
     Objects.requireNonNull(actual, "actual cannot be null");
-    Set<String> keys =
-        new HashSet<>(Arrays.asList("serializationFormatVersion", "nodes", "languages"));
+    Set<String> keys = Set.of("serializationFormatVersion", "nodes", "languages");
     if (!expected.keySet().equals(keys)) {
       throw new RuntimeException("The expected object has irregular keys: " + expected.keySet());
     }

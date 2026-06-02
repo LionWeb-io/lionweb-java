@@ -121,7 +121,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }
-    return containmentValues.getOrDefault(containment.getName(), Collections.emptyList());
+    return containmentValues.getOrDefault(containment.getName(), List.of());
   }
 
   @Override
@@ -198,7 +198,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
     if (!getClassifier().allReferences().contains(reference)) {
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
-    return referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
+    return referenceValues.getOrDefault(reference.getName(), List.of());
   }
 
   /**
@@ -256,8 +256,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       throw new IllegalArgumentException("Reference not belonging to this concept");
     }
     if (partitionObserverCache != null) {
-      List<ReferenceValue> current =
-          referenceValues.getOrDefault(reference.getName(), Collections.emptyList());
+      List<ReferenceValue> current = referenceValues.getOrDefault(reference.getName(), List.of());
       for (int i = 0; i < current.size(); i++) {
         partitionObserverCache.referenceValueRemoved(this, reference, i, current.get(i));
       }
@@ -362,7 +361,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
       List<V> values = (List<V>) containmentValues.get(linkName);
       return values;
     } else {
-      return Collections.emptyList();
+      return List.of();
     }
   }
 
@@ -375,7 +374,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
                   .collect(Collectors.toList());
       return values;
     } else {
-      return Collections.emptyList();
+      return List.of();
     }
   }
 

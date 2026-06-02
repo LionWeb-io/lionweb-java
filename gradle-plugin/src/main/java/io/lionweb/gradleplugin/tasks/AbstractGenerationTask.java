@@ -58,7 +58,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
 
   protected List<SerializationChunk> loadDependenciesChunks() throws IOException {
     List<SerializationChunk> dependenciesChunks = new LinkedList<>();
-    Set<File> classpath = Collections.emptySet();
+    Set<File> classpath = Set.of();
     try {
       classpath = getProject().getConfigurations().getByName("compileClasspath").resolve();
     } catch (UnknownConfigurationException e) {
@@ -115,7 +115,7 @@ public abstract class AbstractGenerationTask extends DefaultTask {
               .collect(Collectors.toList());
       if (files.isEmpty()) {
         getLogger().warn("GenerateLanguageTask - No files found");
-        return Collections.emptyList();
+        return List.of();
       }
       getLogger().lifecycle("Language files found: " + files.size());
       List<SerializationChunk> projectChunks =

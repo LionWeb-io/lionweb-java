@@ -247,7 +247,7 @@ final class DirectProtoBufDeserializer {
               }
             }
             cis.popLimit(oldLimit);
-            if (children == null) children = Collections.emptyList();
+            if (children == null) children = List.of();
             if (serializeEmptyFeatures || !children.isEmpty()) {
               MetaPointer mp = safeGet(metaPointers, mpiIndex);
               sci.unsafeAppendContainmentValue(new SerializedContainmentValue(mp, children));
@@ -289,7 +289,7 @@ final class DirectProtoBufDeserializer {
               }
             }
             cis.popLimit(oldLimit);
-            if (entries == null) entries = Collections.emptyList();
+            if (entries == null) entries = List.of();
             if (serializeEmptyFeatures || !entries.isEmpty()) {
               MetaPointer mp = safeGet(metaPointers, mpiIndex);
               sci.unsafeAppendReferenceValue(new SerializedReferenceValue(mp, entries));
