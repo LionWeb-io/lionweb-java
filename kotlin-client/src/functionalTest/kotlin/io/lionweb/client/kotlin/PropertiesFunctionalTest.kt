@@ -9,28 +9,35 @@ import io.lionweb.model.ClassifierInstanceUtils
 import io.lionweb.serialization.extensions.NodeInfo
 import org.junit.jupiter.api.assertThrows
 import org.testcontainers.junit.jupiter.Testcontainers
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Testcontainers
 class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
+    companion object {
+        private val counter = AtomicInteger(0)
+    }
+
+    private var repoName = ""
+
     @BeforeTest
     fun prepare() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
-        client.deleteRepository("default")
-        client.createRepository(name = "default", lionWebVersion = lionWebVersion, history = false)
+        repoName = "repo_test_${counter.getAndIncrement()}"
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
+        client.createRepository(name = repoName, lionWebVersion = lionWebVersion, history = false)
     }
 
     @Test
     fun noPartitionsOnNewModelRepository() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         assertEquals(emptyList(), client.getPartitionIDs())
     }
 
     @Test
     fun isNodeExisting() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         assertEquals(false, client.isNodeExisting("pp1"))
         assertEquals(false, client.isNodeExisting("pf1"))
         assertEquals(false, client.isNodeExisting("prop1"))
@@ -83,7 +90,7 @@ class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
 
     @Test
     fun gettingPartitionsAfterStoringPartitions() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         client.registerLanguage(propertiesLanguage)
 
         val pp1 = propertiesPartition.dynamicNode("pp1")
@@ -95,7 +102,7 @@ class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
 
     @Test
     fun gettingNodesAfterStoringNodes() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         client.registerLanguage(propertiesLanguage)
 
         val pp1 = propertiesPartition.dynamicNode("pp1")
@@ -130,7 +137,7 @@ class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
 
     @Test
     fun getNodesByClassifier() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         client.registerLanguage(propertiesLanguage)
 
         val pp1 = propertiesPartition.dynamicNode("pp1")
@@ -170,15 +177,15 @@ class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
 
     @Test
     fun gettingParentIdOfUnexistingNode() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         assertThrows<UnexistingNodeException> { client.getParentId("my-unexistingNode") }
     }
 
     @Test
     fun getNodesWithProxyParent() {
-        val repoName = "repo_getNodesWithProxyParent"
-        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
-        client.createRepository(repoName, LionWebVersion.v2024_1, false)
+        val proxyRepoName = "repo_getNodesWithProxyParent_${counter.get()}"
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = proxyRepoName)
+        client.createRepository(proxyRepoName, LionWebVersion.v2024_1, false)
         client.registerLanguage(propertiesLanguage)
 
         val pp1 = propertiesPartition.dynamicNode("pp1")
@@ -203,7 +210,7 @@ class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
                 setPropertyValueByName("name", "Prop3")
                 pf.addChild(pf.classifier.getContainmentByName("properties")!!, this)
             }
-        val repos = client.listRepositiories()
+        client.listRepositiories()
         client.storeTree(pp1)
 
         val prop3retrievedWithProxyParent = client.retrieve("prop3")
@@ -212,7 +219,7 @@ class PropertiesFunctionalTest : AbstractClientFunctionalTest() {
 
     @Test
     fun getNodeTree() {
-        val client = LionWebClient(port = server!!.firstMappedPort)
+        val client = LionWebClient(port = server!!.firstMappedPort, repository = repoName)
         client.registerLanguage(propertiesLanguage)
 
         val pp1 = propertiesPartition.dynamicNode("pp1")

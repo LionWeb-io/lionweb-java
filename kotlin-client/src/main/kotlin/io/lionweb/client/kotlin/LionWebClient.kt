@@ -1,6 +1,5 @@
 package io.lionweb.client.kotlin
 
-import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import io.lionweb.LionWebVersion
 import io.lionweb.client.ExtendedLionWebClient
@@ -180,35 +179,26 @@ class LionWebClient(
 
     fun isNodeExisting(nodeID: String): Boolean {
         require(nodeID.isNotBlank())
-
-        val data = jRepoClient.rawRetrieve(listOf(nodeID), 0)
-        return processChunkResponse(data) { chunk ->
-            val nodes = chunk.asJsonObject.get("nodes").asJsonArray
-            !nodes.isEmpty
-        }
+        val chunk = JsonParser.parseString(jRepoClient.rawRetrieve(listOf(nodeID), 0))
+        val nodes = chunk.asJsonObject.get("nodes").asJsonArray
+        return !nodes.isEmpty
     }
 
     fun getParentId(nodeID: String): String? {
         require(nodeID.isNotBlank())
-        val data = jRepoClient.rawRetrieve(listOf(nodeID), 0)
-        return processChunkResponse(data) { chunk ->
-            val nodes = chunk.asJsonObject.get("nodes").asJsonArray
-            if (nodes.size() != 1) {
-                throw UnexistingNodeException(
-                    nodeID,
-                    "When asking for the parent Id of $nodeID we were expecting to get one node back. " +
-                        "We got ${nodes.size()}",
-                )
-            }
-            val node = nodes.get(0).asJsonObject
-            require(nodeID == node.get("id").asString)
-            val parentNode = node.get("parent")
-            if (parentNode.isJsonNull) {
-                null
-            } else {
-                parentNode.asString
-            }
+        val chunk = JsonParser.parseString(jRepoClient.rawRetrieve(listOf(nodeID), 0))
+        val nodes = chunk.asJsonObject.get("nodes").asJsonArray
+        if (nodes.size() != 1) {
+            throw UnexistingNodeException(
+                nodeID,
+                "When asking for the parent Id of $nodeID we were expecting to get one node back. " +
+                    "We got ${nodes.size()}",
+            )
         }
+        val node = nodes.get(0).asJsonObject
+        require(nodeID == node.get("id").asString)
+        val parentNode = node.get("parent")
+        return if (parentNode.isJsonNull) null else parentNode.asString
     }
 
     fun listRepositiories(): Set<RepositoryConfiguration> = jRepoClient.listRepositories()
@@ -475,29 +465,4 @@ class LionWebClient(
         transferFormat: TransferFormat = TransferFormat.PROTOBUF,
         compress: Boolean = false,
     ) = jRepoClient.bulkImport(bulkImport, transferFormat, if (compress) Compression.ENABLED else Compression.DISABLED)
-
-    // Private methods
-
-    private fun log(message: String) {
-        if (debug) {
-            println(message)
-        }
-    }
-
-    private fun <T> processChunkResponse(
-        data: String,
-        chunkProcessor: (JsonElement) -> T,
-    ): T {
-        val json = JsonParser.parseString(data).asJsonObject
-        val success = json.get("success").asBoolean
-        val messages = json.get("messages").asJsonArray
-        if (!messages.isEmpty) {
-            log("Messages received: $messages")
-        }
-        if (!success) {
-            throw RuntimeException("Request failed. Messages: $messages")
-        }
-        val chunkJson = json.get("chunk")
-        return chunkProcessor.invoke(chunkJson)
-    }
 }
