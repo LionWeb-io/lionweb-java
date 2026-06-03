@@ -1,7 +1,7 @@
 plugins {
     id("java-library")
     alias(libs.plugins.vt.publish)
-    id("signing")
+    id("lionweb-publish-conventions")
 }
 
 repositories {
@@ -34,7 +34,6 @@ dependencies {
 }
 
 val jvmVersion = extra["jvmVersion"] as String
-val specsVersion = extra["specsVersion"] as String
 
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
@@ -65,50 +64,9 @@ tasks.register<Jar>("sourcesJar") {
 }
 
 mavenPublishing {
-    coordinates(
-        groupId = "io.lionweb",
-        artifactId = "lionweb-${specsVersion}-" + project.name,
-        version = project.version as String,
-    )
-
     pom {
-        name.set("lionweb-" + project.name)
         description.set("EMF compatibility layer for LionWeb")
-        version = project.version as String
-        packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-jvm")
-
-        scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
-            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
-        }
-
-        licenses {
-            license {
-                name.set("Apache License V2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                distribution.set("repo")
-            }
-        }
-
-        // The developers entry is strictly required by Maven Central
         developers {
-            developer {
-                id.set("ftomassetti")
-                name.set("Federico Tomassetti")
-                email.set("federico@strumenta.com")
-            }
-            developer {
-                id.set("dslmeinte")
-                name.set("Meinte Boersma")
-                email.set("meinte.boersma@gmail.com")
-            }
-            developer {
-                id.set("enikao")
-                name.set("Niko Stotz")
-                email.set("github-public@nikostotz.de")
-            }
             developer {
                 id.set("Ulyana-F1re")
                 name.set("Ulyana Tikhonova")
@@ -116,6 +74,6 @@ mavenPublishing {
             }
         }
     }
-    publishToMavenCentral(true)
+    publishToMavenCentral(automaticRelease = true)
     signAllPublications()
 }

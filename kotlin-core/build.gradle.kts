@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.ktlint)
     id("java-library")
     alias(libs.plugins.vt.publish)
+    id("lionweb-publish-conventions")
 }
 
 repositories {
@@ -18,14 +19,6 @@ repositories {
     }
     mavenLocal()
     mavenCentral()
-}
-
-tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
 }
 
 ktlint {
@@ -50,47 +43,11 @@ dependencies {
     testImplementation(libs.ktest.junit)
 }
 
-val specsVersion: String by project
-
 mavenPublishing {
-
-    coordinates(
-        groupId = "io.lionweb",
-        artifactId = "lionweb-$specsVersion-" + project.name,
-        version = project.version as String,
-    )
-
     pom {
-        name.set("lionweb-kotlin-" + project.name)
         description.set("Bindings to facilitate usage of LionWeb Java from Kotlin")
-        version = project.version as String
-        packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-jvm")
-
-        scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
-            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
-        }
-
-        licenses {
-            license {
-                name.set("Apache License V2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                distribution.set("repo")
-            }
-        }
-
-        // The developers entry is strictly required by Maven Central
-        developers {
-            developer {
-                id.set("ftomassetti")
-                name.set("Federico Tomassetti")
-                email.set("federico@strumenta.com")
-            }
-        }
     }
-    publishToMavenCentral(true)
+    publishToMavenCentral(automaticRelease = true)
     signAllPublications()
 }
 

@@ -2,8 +2,10 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.shadow)
+    alias(libs.plugins.vt.publish)
     id("integration-test-conventions")
     id("application")
+    id("lionweb-publish-conventions")
 }
 
 val jvmVersion = extra["jvmVersion"] as String
@@ -40,14 +42,6 @@ tasks.register("runDemoClient2", JavaExec::class) {
     mainClass.set("io.lionweb.server.DemoClientApp")
     classpath = sourceSets.main.get().runtimeClasspath
     args = listOf("--http-port=9002", "--client-id=client2")
-}
-
-tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
 }
 
 sourceSets {
@@ -87,6 +81,27 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks["build"].dependsOn("buildWebUI")
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveClassifier.set("all")
+    mergeServiceFiles()
+    manifest {
+        attributes["Main-Class"] = "io.lionweb.server.LionWebServer"
+    }
+}
+
+mavenPublishing {
+    pom {
+        description.set("LionWeb Server - a standalone LionWeb repository server")
+    }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
+}
 
 dependencies {
     implementation(project(":client"))
