@@ -74,4 +74,6 @@ mavenPublishing {
             }
         }
     }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 }

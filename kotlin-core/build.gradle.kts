@@ -21,14 +21,6 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
-}
-
 ktlint {
     filter {
         exclude { element ->
@@ -55,6 +47,8 @@ mavenPublishing {
     pom {
         description.set("Bindings to facilitate usage of LionWeb Java from Kotlin")
     }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 }
 
 java {

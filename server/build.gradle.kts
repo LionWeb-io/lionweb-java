@@ -5,11 +5,10 @@ plugins {
     alias(libs.plugins.vt.publish)
     id("integration-test-conventions")
     id("application")
-    id("signing")
+    id("lionweb-publish-conventions")
 }
 
 val jvmVersion = extra["jvmVersion"] as String
-val specsVersion = extra["specsVersion"] as String
 
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
@@ -43,14 +42,6 @@ tasks.register("runDemoClient2", JavaExec::class) {
     mainClass.set("io.lionweb.server.DemoClientApp")
     classpath = sourceSets.main.get().runtimeClasspath
     args = listOf("--http-port=9002", "--client-id=client2")
-}
-
-tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
 }
 
 sourceSets {
@@ -105,50 +96,8 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
 }
 
 mavenPublishing {
-    coordinates(
-        groupId = "io.lionweb",
-        artifactId = "lionweb-$specsVersion-" + project.name,
-        version = project.version as String,
-    )
-
     pom {
-        name.set("lionweb-" + project.name)
         description.set("LionWeb Server - a standalone LionWeb repository server")
-        version = project.version as String
-        packaging = "jar"
-        url.set("https://github.com/LionWeb-io/lionweb-jvm")
-
-        scm {
-            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
-            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
-            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
-        }
-
-        licenses {
-            license {
-                name.set("Apache License V2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0")
-                distribution.set("repo")
-            }
-        }
-
-        developers {
-            developer {
-                id.set("ftomassetti")
-                name.set("Federico Tomassetti")
-                email.set("federico@strumenta.com")
-            }
-            developer {
-                id.set("dslmeinte")
-                name.set("Meinte Boersma")
-                email.set("meinte.boersma@gmail.com")
-            }
-            developer {
-                id.set("enikao")
-                name.set("Niko Stotz")
-                email.set("github-public@nikostotz.de")
-            }
-        }
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()

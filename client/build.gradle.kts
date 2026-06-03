@@ -33,6 +33,8 @@ mavenPublishing {
     pom {
         description.set("Java APIs for the LionWeb system")
     }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 }
 
 java {
@@ -45,11 +47,6 @@ tasks.jacocoTestReport {
 }
 
 tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
     // Set the environment variable so that Testcontainers can reuse containers between test runs
     environment("TESTCONTAINERS_REUSE_ENABLE", "true")
 }

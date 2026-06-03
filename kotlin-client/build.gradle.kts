@@ -22,14 +22,6 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
-}
-
 ktlint {
     filter {
         exclude { element ->
@@ -93,6 +85,8 @@ mavenPublishing {
     pom {
         description.set("Client library to connect to the LionWeb Repository")
     }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 }
 
 java {

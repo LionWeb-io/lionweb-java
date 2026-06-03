@@ -117,6 +117,8 @@ mavenPublishing {
             }
         }
     }
+    publishToMavenCentral(true)
+    signAllPublications()
 }
 
 task setup() {

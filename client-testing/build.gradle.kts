@@ -19,13 +19,6 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<Test>().all {
-    testLogging {
-        showStandardStreams = true
-        showExceptions = true
-        exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
-    }
-}
 
 dependencies {
     implementation(libs.okhttp)
@@ -61,6 +54,8 @@ mavenPublishing {
     pom {
         description.set("Java APIs for the LionWeb system")
     }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 }
 
 tasks.named("sourcesJar") {

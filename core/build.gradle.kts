@@ -87,6 +87,8 @@ mavenPublishing {
     pom {
         description.set("Java APIs for the LionWeb system")
     }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
 }
 
 java {
