@@ -67,6 +67,7 @@ release {
             ":client:publishAllPublicationsToMavenCentralRepository",
             ":kotlin-core:publishAllPublicationsToMavenCentralRepository",
             ":kotlin-client:publishAllPublicationsToMavenCentralRepository",
+            ":server:publishAllPublicationsToMavenCentralRepository",
         )
     versionPropertyFile = "./gradle.properties"
     git {

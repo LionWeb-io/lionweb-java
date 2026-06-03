@@ -2,11 +2,14 @@ plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.shadow)
+    alias(libs.plugins.vt.publish)
     id("integration-test-conventions")
     id("application")
+    id("signing")
 }
 
 val jvmVersion = extra["jvmVersion"] as String
+val specsVersion = extra["specsVersion"] as String
 
 java {
     sourceCompatibility = JavaVersion.toVersion(jvmVersion)
@@ -87,6 +90,69 @@ tasks.withType<Jar>().configureEach {
 }
 
 tasks["build"].dependsOn("buildWebUI")
+
+tasks.register<Jar>("sourcesJar") {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveClassifier.set("all")
+    mergeServiceFiles()
+    manifest {
+        attributes["Main-Class"] = "io.lionweb.server.LionWebServer"
+    }
+}
+
+mavenPublishing {
+    coordinates(
+        groupId = "io.lionweb",
+        artifactId = "lionweb-$specsVersion-" + project.name,
+        version = project.version as String,
+    )
+
+    pom {
+        name.set("lionweb-" + project.name)
+        description.set("LionWeb Server - a standalone LionWeb repository server")
+        version = project.version as String
+        packaging = "jar"
+        url.set("https://github.com/LionWeb-io/lionweb-jvm")
+
+        scm {
+            connection.set("scm:git:https://github.com/LionWeb-io/lionweb-jvm.git")
+            developerConnection.set("scm:git:git@github.com:LionWeb-io/lionweb-jvm.git")
+            url.set("https://github.com/LionWeb-io/lionweb-jvm.git")
+        }
+
+        licenses {
+            license {
+                name.set("Apache License V2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0")
+                distribution.set("repo")
+            }
+        }
+
+        developers {
+            developer {
+                id.set("ftomassetti")
+                name.set("Federico Tomassetti")
+                email.set("federico@strumenta.com")
+            }
+            developer {
+                id.set("dslmeinte")
+                name.set("Meinte Boersma")
+                email.set("meinte.boersma@gmail.com")
+            }
+            developer {
+                id.set("enikao")
+                name.set("Niko Stotz")
+                email.set("github-public@nikostotz.de")
+            }
+        }
+    }
+    publishToMavenCentral(automaticRelease = true)
+    signAllPublications()
+}
 
 dependencies {
     implementation(project(":client"))
