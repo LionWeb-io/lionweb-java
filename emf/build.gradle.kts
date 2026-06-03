@@ -1,5 +1,6 @@
 plugins {
     id("java-library")
+    alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
 }
 

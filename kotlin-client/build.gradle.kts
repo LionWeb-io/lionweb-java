@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
+    alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.build.config)

@@ -2,6 +2,7 @@ plugins {
     `jvm-test-suite`
     id("java-library")
     alias(libs.plugins.build.config)
+    alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
 }
 

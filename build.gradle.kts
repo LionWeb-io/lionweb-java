@@ -4,7 +4,6 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     alias(libs.plugins.release)
-    alias(libs.plugins.vt.publish) apply (false)
     alias(libs.plugins.kotlin.jvm) apply (false)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.dokka) apply (false)
@@ -29,6 +28,11 @@ subprojects {
 
     tasks.withType<Test>().configureEach {
         useJUnitPlatform()
+        testLogging {
+            showStandardStreams = true
+            showExceptions = true
+            exceptionFormat = org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
+        }
     }
 
     tasks.withType<Javadoc>().configureEach {
