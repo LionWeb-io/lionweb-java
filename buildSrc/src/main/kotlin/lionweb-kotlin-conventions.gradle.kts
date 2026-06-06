@@ -1,4 +1,5 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
@@ -18,4 +19,10 @@ kotlin {
     jvmToolchain {
         languageVersion.set(JavaLanguageVersion.of(jvmVersion.toInt()))
     }
+}
+
+// Extend the sourcesJar registered by lionweb-java-conventions to also include Kotlin sources
+val kotlinMain = the<KotlinJvmProjectExtension>().sourceSets.getByName("main")
+tasks.named<Jar>("sourcesJar") {
+    from(kotlinMain.kotlin.srcDirs)
 }

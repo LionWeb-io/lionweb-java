@@ -71,11 +71,6 @@ tasks.withType<Jar>().configureEach {
 
 tasks["build"].dependsOn("buildWebUI")
 
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    from(sourceSets.getByName("main").allSource)
-}
-
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveClassifier.set("all")
     mergeServiceFiles()
