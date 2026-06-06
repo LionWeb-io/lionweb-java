@@ -8,6 +8,7 @@ plugins {
     alias(libs.plugins.dokka) apply (false)
     alias(libs.plugins.versioncheck)
     alias(libs.plugins.spotless)
+    alias(libs.plugins.vt.publish) apply (false)
     id("java")
 }
 
