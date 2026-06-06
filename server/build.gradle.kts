@@ -1,22 +1,11 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
+    id("lionweb-kotlin-conventions")
     alias(libs.plugins.ktlint)
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     id("integration-test-conventions")
     id("application")
     id("lionweb-publish-conventions")
-}
-
-val jvmVersion = extra["jvmVersion"] as String
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-
-kotlin {
-    jvmToolchain(jvmVersion.toInt())
 }
 
 application {

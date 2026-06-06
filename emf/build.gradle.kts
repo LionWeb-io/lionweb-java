@@ -2,6 +2,7 @@ plugins {
     id("java-library")
     alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
 
 repositories {
@@ -33,12 +34,6 @@ dependencies {
     testImplementation(libs.gson)
 }
 
-val jvmVersion = extra["jvmVersion"] as String
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
 tasks.register<Javadoc>("myJavadoc") {
     source = sourceSets.main.get().allJava
     classpath = javadocConfig

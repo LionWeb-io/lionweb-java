@@ -6,6 +6,7 @@ plugins {
     jacoco
     id("integration-test-conventions")
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
 
 repositories {
@@ -13,8 +14,6 @@ repositories {
 }
 
 val lionwebServerCommitID: String by project
-
-val jvmVersion = extra["jvmVersion"] as String
 
 tasks.withType<Jar>().configureEach {
     manifest {
@@ -35,11 +34,6 @@ mavenPublishing {
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 tasks.jacocoTestReport {

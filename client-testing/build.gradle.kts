@@ -4,15 +4,8 @@ plugins {
     alias(libs.plugins.build.config)
     alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
-
-val jvmVersion = extra["jvmVersion"] as String
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-
 
 repositories {
     mavenLocal()

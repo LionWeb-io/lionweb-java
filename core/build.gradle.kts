@@ -10,6 +10,7 @@ plugins {
     jacoco
     id("integration-test-conventions")
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
 
 repositories {
@@ -19,8 +20,6 @@ repositories {
         url = URI("https://artifacts.itemis.cloud/repository/maven-mps/")
     }
 }
-
-val jvmVersion = extra["jvmVersion"] as String
 
 val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
@@ -89,11 +88,6 @@ mavenPublishing {
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 val integrationTestResources : File = File(project.layout.buildDirectory.get().asFile, "integrationTestResources")

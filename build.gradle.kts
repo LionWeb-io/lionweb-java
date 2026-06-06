@@ -4,7 +4,6 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 
 plugins {
     alias(libs.plugins.release)
-    alias(libs.plugins.kotlin.jvm) apply (false)
     alias(libs.plugins.ktlint)
     alias(libs.plugins.dokka) apply (false)
     alias(libs.plugins.versioncheck)

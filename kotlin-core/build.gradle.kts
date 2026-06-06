@@ -1,8 +1,6 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     `jvm-test-suite`
-    alias(libs.plugins.kotlin.jvm)
+    id("lionweb-kotlin-conventions")
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
@@ -33,8 +31,6 @@ ktlint {
     }
 }
 
-val jvmVersion = extra["jvmVersion"] as String
-
 dependencies {
     implementation(libs.okhttp)
     implementation(project(":core"))
@@ -49,23 +45,6 @@ mavenPublishing {
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(jvmVersion))
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(jvmVersion.removePrefix("1.")))
-    }
 }
 
 afterEvaluate {

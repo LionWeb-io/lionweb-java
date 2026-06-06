@@ -4,13 +4,12 @@ plugins {
     alias(libs.plugins.vt.publish)
     jacoco
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
 
 repositories {
     mavenCentral()
 }
-
-val jvmVersion = extra["jvmVersion"] as String
 
 val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
@@ -43,11 +42,6 @@ mavenPublishing {
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 tasks.jacocoTestReport {
