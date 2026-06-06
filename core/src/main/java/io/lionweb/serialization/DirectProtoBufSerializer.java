@@ -12,11 +12,14 @@ import java.util.*;
 final class DirectProtoBufSerializer {
   // Strategy:
   //
-  // 1. Traverse all nodes once to count reference frequencies for strings, languages, and
-  //    meta-pointers, then sort each intern table by descending frequency so the most-referenced
-  //    items get the smallest varint indices (index 1–127 encodes in 1 byte vs. 2+ bytes).
-  // 2. Traverse all nodes a second time to populate the pre-sorted intern tables and build a
-  //    flat plan containing every integer index and pre-computed body size.
+  // 1. Traverse all nodes once to populate string / language / meta-pointer intern tables and
+  //    build a flat plan containing every integer index and pre-computed body size.
+  //    Reference frequencies for strings and meta-pointers are tracked in parallel int[] arrays
+  //    inside SerializeState at no extra pass cost.
+  // 2. Sort the interned_strings and interned_meta_pointers tables by descending frequency so
+  //    the most-referenced items get the smallest varint indices (1–127 encode in 1 byte vs 2+).
+  //    Build oldIndex→newIndex remap arrays and apply them to the plan int[] arrays (no domain
+  //    objects touched).  Recompute body sizes from the remapped plan arrays.
   // 3. Build cached tables (UTF-8 lengths, meta-pointer body sizes, language body sizes).
   // 4. Compute the exact total byte count without touching domain objects.
   // 5. Allocate one byte[] and write from the plan — zero HashMap lookups, zero domain traversal.
@@ -25,7 +28,7 @@ final class DirectProtoBufSerializer {
 
   // ---- Inner types ----
 
-  /** Mutable intern tables built during the first traversal. */
+  /** Mutable intern tables built during the traversal, with parallel frequency counters. */
   static final class SerializeState {
     final List<String> strings;
     final Map<String, Integer> stringIndex;
@@ -33,6 +36,11 @@ final class DirectProtoBufSerializer {
     final Map<LanguageVersion, Integer> languageIndex;
     final List<MetaPointer> metaPointers;
     final Map<MetaPointer, Integer> metaPointerIndex;
+
+    /** stringFreq[i] = number of binary references to strings[i] (i >= 1). */
+    int[] stringFreq;
+    /** mpFreq[i] = number of binary references to metaPointers[i] (i >= 0). */
+    int[] mpFreq;
 
     SerializeState(int estimatedStrings, int estimatedLanguages, int estimatedMetaPointers) {
       strings = new ArrayList<>(estimatedStrings + 1);
@@ -45,15 +53,22 @@ final class DirectProtoBufSerializer {
       stringIndex.put(null, 0);
       languages.add(null);
       languageIndex.put(null, 0);
+      stringFreq = new int[estimatedStrings + 2];
+      mpFreq = new int[Math.max(estimatedMetaPointers, 4)];
     }
 
     int stringIndexer(String s) {
       if (s == null) return 0;
       Integer idx = stringIndex.get(s);
-      if (idx != null) return idx;
+      if (idx != null) {
+        stringFreq[idx]++;
+        return idx;
+      }
       int index = strings.size();
       strings.add(s);
       stringIndex.put(s, index);
+      if (index >= stringFreq.length) stringFreq = Arrays.copyOf(stringFreq, index * 2 + 2);
+      stringFreq[index] = 1;
       return index;
     }
 
@@ -72,42 +87,18 @@ final class DirectProtoBufSerializer {
     int metaPointerIndexer(MetaPointer mp) {
       if (mp == null) return 0;
       Integer idx = metaPointerIndex.get(mp);
-      if (idx != null) return idx;
+      if (idx != null) {
+        mpFreq[idx]++;
+        return idx;
+      }
       languageIndexer(mp.getLanguageVersion());
       stringIndexer(mp.getKey());
       int index = metaPointers.size();
       metaPointers.add(mp);
       metaPointerIndex.put(mp, index);
+      if (index >= mpFreq.length) mpFreq = Arrays.copyOf(mpFreq, index * 2 + 2);
+      mpFreq[index] = 1;
       return index;
-    }
-  }
-
-  /** Frequency counters for strings, languages, and meta-pointers collected in a first pass. */
-  private static final class FreqState {
-    final HashMap<String, int[]> str = new HashMap<>();
-    final HashMap<LanguageVersion, int[]> lang = new HashMap<>();
-    final HashMap<MetaPointer, int[]> mp = new HashMap<>();
-
-    void countStr(String s) {
-      if (s != null) str.computeIfAbsent(s, k -> new int[1])[0]++;
-    }
-
-    void countMp(MetaPointer m) {
-      if (m == null) return;
-      boolean isNew = !mp.containsKey(m);
-      mp.computeIfAbsent(m, k -> new int[1])[0]++;
-      if (isNew) {
-        LanguageVersion lv = m.getLanguageVersion();
-        if (lv != null) {
-          boolean isNewLang = !lang.containsKey(lv);
-          lang.computeIfAbsent(lv, k -> new int[1])[0]++;
-          if (isNewLang) {
-            countStr(lv.getKey());
-            countStr(lv.getVersion());
-          }
-        }
-        countStr(m.getKey());
-      }
     }
   }
 
@@ -275,15 +266,17 @@ final class DirectProtoBufSerializer {
     int estimatedStrings = Math.max(16, nodeCount * 4);
     int estimatedMetaPointers = Math.max(16, nodeCount / 2);
 
-    SerializeState state =
-        buildSortedSerializeState(
-            instances,
-            chunk.getLanguages(),
-            serializeEmptyFeatures,
-            estimatedStrings,
-            8,
-            estimatedMetaPointers);
-    return serializeWithState(chunk, instances, serializeEmptyFeatures, state);
+    SerializeState state = new SerializeState(estimatedStrings, 8, estimatedMetaPointers);
+
+    // Pre-seed languages in the chunk's declared order so round-trips preserve language ordering.
+    for (LanguageVersion lv : chunk.getLanguages()) state.languageIndexer(lv);
+
+    SerializationPlan plan = buildSerializationPlan(state, instances, serializeEmptyFeatures);
+
+    // Sort intern tables by frequency and remap plan indices (no domain-object traversal).
+    sortAndRemap(state, plan);
+
+    return finishSerialize(chunk, state, plan);
   }
 
   /** Serializes without frequency sorting — used by benchmarks to measure the unsorted baseline. */
@@ -294,15 +287,14 @@ final class DirectProtoBufSerializer {
     int estimatedMetaPointers = Math.max(16, nodeCount / 2);
 
     SerializeState state = new SerializeState(estimatedStrings, 8, estimatedMetaPointers);
-    return serializeWithState(chunk, instances, serializeEmptyFeatures, state);
+    for (LanguageVersion lv : chunk.getLanguages()) state.languageIndexer(lv);
+
+    SerializationPlan plan = buildSerializationPlan(state, instances, serializeEmptyFeatures);
+    return finishSerialize(chunk, state, plan);
   }
 
-  private static byte[] serializeWithState(
-      SerializationChunk chunk,
-      List<SerializedClassifierInstance> instances,
-      boolean serializeEmptyFeatures,
-      SerializeState state) {
-    SerializationPlan plan = buildSerializationPlan(state, instances, serializeEmptyFeatures);
+  private static byte[] finishSerialize(
+      SerializationChunk chunk, SerializeState state, SerializationPlan plan) {
     CachedTables cached = new CachedTables(state);
     int totalSize = computeChunkSize(chunk, cached, plan);
     byte[] result = new byte[totalSize];
@@ -315,78 +307,213 @@ final class DirectProtoBufSerializer {
     return result;
   }
 
+  // ---- Frequency sort + remap ----
+
   /**
-   * First pass: count how many times each string, language, and meta-pointer index will appear in
-   * the binary, then build a {@link SerializeState} with the intern tables pre-sorted by descending
-   * frequency. Items used most often get the smallest indices, which encode as shorter varints.
+   * Sorts interned_strings and interned_meta_pointers tables by descending reference frequency,
+   * applies old→new index remaps to all plan arrays, then recomputes body sizes.
    */
-  private static SerializeState buildSortedSerializeState(
-      List<SerializedClassifierInstance> instances,
-      List<LanguageVersion> declaredLanguages,
-      boolean serializeEmptyFeatures,
-      int estimatedStrings,
-      int estimatedLanguages,
-      int estimatedMetaPointers) {
-
-    FreqState freq = new FreqState();
-
-    for (SerializedClassifierInstance n : instances) {
-      freq.countStr(n.getID());
-      freq.countStr(n.getParentNodeID());
-      freq.countMp(n.getClassifier());
-
-      for (SerializedPropertyValue p : n.getProperties()) {
-        if (serializeEmptyFeatures || p.getValue() != null) {
-          freq.countStr(p.getValue());
-          freq.countMp(p.getMetaPointer());
-        }
-      }
-
-      for (SerializedContainmentValue c : n.getContainments()) {
-        if (serializeEmptyFeatures || !c.getChildrenIds().isEmpty()) {
-          for (String child : c.getChildrenIds()) freq.countStr(child);
-          freq.countMp(c.getMetaPointer());
-        }
-      }
-
-      for (SerializedReferenceValue r : n.getReferences()) {
-        if (serializeEmptyFeatures || !r.getValue().isEmpty()) {
-          for (SerializedReferenceValue.Entry e : r.getValue()) {
-            freq.countStr(e.getReference());
-            freq.countStr(e.getResolveInfo());
-          }
-          freq.countMp(r.getMetaPointer());
-        }
-      }
-
-      for (String ann : n.getAnnotations()) freq.countStr(ann);
-    }
-
-    SerializeState state =
-        new SerializeState(estimatedStrings, estimatedLanguages, estimatedMetaPointers);
-
-    // Seed strings sorted by descending frequency; tie-break alphabetically for determinism.
-    freq.str.entrySet().stream()
-        .sorted(
-            Comparator.<Map.Entry<String, int[]>>comparingInt(e -> -e.getValue()[0])
-                .thenComparing(Map.Entry.comparingByKey()))
-        .forEach(e -> state.stringIndexer(e.getKey()));
-
-    // Seed languages in the chunk's declared order so round-trips preserve language ordering.
-    // (Strings are already seeded above, so language key/version strings already have optimal
-    // indices when languageIndexer is called here.)
-    for (LanguageVersion lv : declaredLanguages) {
-      state.languageIndexer(lv);
-    }
-
-    // Seed meta-pointers sorted by descending frequency.
-    // Languages are already indexed, so metaPointerIndexer only looks them up, never reorders.
-    freq.mp.entrySet().stream()
-        .sorted(Comparator.comparingInt((Map.Entry<MetaPointer, int[]> e) -> -e.getValue()[0]))
-        .forEach(e -> state.metaPointerIndexer(e.getKey()));
-
-    return state;
+  private static void sortAndRemap(SerializeState state, SerializationPlan plan) {
+    int[] stringRemap = buildSortedStringRemap(state);
+    int[] mpRemap = buildSortedMpRemap(state);
+    applyStringRemap(plan, stringRemap);
+    applyMpRemap(plan, mpRemap);
+    recomputeBodySizes(plan);
   }
+
+  /**
+   * Sorts {@code state.strings} (indices 1..n) by descending frequency, rebuilds
+   * {@code state.stringIndex}, and returns an oldIndex→newIndex remap array (remap[0] = 0).
+   */
+  private static int[] buildSortedStringRemap(SerializeState state) {
+    int n = state.strings.size() - 1;
+    if (n == 0) return new int[1];
+
+    int[] freq = state.stringFreq;
+    Integer[] order = new Integer[n];
+    for (int i = 0; i < n; i++) order[i] = i + 1;
+    List<String> strs = state.strings;
+    Arrays.sort(
+        order,
+        (a, b) -> {
+          int diff = freq[b] - freq[a];
+          if (diff != 0) return diff;
+          // Alphabetical tie-break for determinism
+          String sa = strs.get(a), sb = strs.get(b);
+          if (sa == null) return sb == null ? 0 : 1;
+          if (sb == null) return -1;
+          return sa.compareTo(sb);
+        });
+
+    int[] remap = new int[n + 1]; // remap[0] = 0 (null stays at 0)
+    List<String> newStrings = new ArrayList<>(n + 1);
+    newStrings.add(null);
+    for (int newIdx = 1; newIdx <= n; newIdx++) {
+      int oldIdx = order[newIdx - 1];
+      remap[oldIdx] = newIdx;
+      newStrings.add(strs.get(oldIdx));
+    }
+
+    state.strings.clear();
+    state.strings.addAll(newStrings);
+    state.stringIndex.clear();
+    state.stringIndex.put(null, 0);
+    for (int i = 1; i <= n; i++) state.stringIndex.put(state.strings.get(i), i);
+
+    return remap;
+  }
+
+  /**
+   * Sorts {@code state.metaPointers} (indices 0..n-1) by descending frequency, rebuilds
+   * {@code state.metaPointerIndex}, and returns an oldIndex→newIndex remap array.
+   */
+  private static int[] buildSortedMpRemap(SerializeState state) {
+    int n = state.metaPointers.size();
+    if (n == 0) return new int[0];
+
+    int[] freq = state.mpFreq;
+    Integer[] order = new Integer[n];
+    for (int i = 0; i < n; i++) order[i] = i;
+    Arrays.sort(order, (a, b) -> freq[b] - freq[a]);
+
+    int[] remap = new int[n];
+    List<MetaPointer> newMps = new ArrayList<>(n);
+    for (int newIdx = 0; newIdx < n; newIdx++) {
+      int oldIdx = order[newIdx];
+      remap[oldIdx] = newIdx;
+      newMps.add(state.metaPointers.get(oldIdx));
+    }
+
+    state.metaPointers.clear();
+    state.metaPointers.addAll(newMps);
+    state.metaPointerIndex.clear();
+    for (int i = 0; i < n; i++) state.metaPointerIndex.put(state.metaPointers.get(i), i);
+
+    return remap;
+  }
+
+  /** Remaps all string index references in the plan using the provided oldIdx→newIdx array. */
+  private static void applyStringRemap(SerializationPlan plan, int[] remap) {
+    for (int ni = 0; ni < plan.nodeCount; ni++) {
+      plan.nodeSiId[ni] = remap[plan.nodeSiId[ni]];
+      plan.nodeSiParent[ni] = remap[plan.nodeSiParent[ni]];
+
+      int propEnd = plan.nodePropStart[ni] + plan.nodePropCount[ni];
+      for (int i = plan.nodePropStart[ni]; i < propEnd; i++) {
+        plan.propSiValue[i] = remap[plan.propSiValue[i]];
+      }
+
+      int contEnd = plan.nodeContStart[ni] + plan.nodeContCount[ni];
+      for (int i = plan.nodeContStart[ni]; i < contEnd; i++) {
+        int childEnd = plan.contChildStart[i] + plan.contChildCount[i];
+        for (int k = plan.contChildStart[i]; k < childEnd; k++) {
+          plan.childIndexes[k] = remap[plan.childIndexes[k]];
+        }
+      }
+
+      int refEnd = plan.nodeRefStart[ni] + plan.nodeRefCount[ni];
+      for (int i = plan.nodeRefStart[ni]; i < refEnd; i++) {
+        int entryEnd = plan.refEntryStart[i] + plan.refEntryCount[i];
+        for (int k = plan.refEntryStart[i]; k < entryEnd; k++) {
+          plan.refEntrySiResolveInfo[k] = remap[plan.refEntrySiResolveInfo[k]];
+          plan.refEntrySiReferred[k] = remap[plan.refEntrySiReferred[k]];
+        }
+      }
+
+      int annotEnd = plan.nodeAnnotStart[ni] + plan.nodeAnnotCount[ni];
+      for (int k = plan.nodeAnnotStart[ni]; k < annotEnd; k++) {
+        plan.annotIndexes[k] = remap[plan.annotIndexes[k]];
+      }
+    }
+  }
+
+  /** Remaps all meta-pointer index references in the plan using the provided oldIdx→newIdx array. */
+  private static void applyMpRemap(SerializationPlan plan, int[] remap) {
+    if (remap.length == 0) return;
+    for (int ni = 0; ni < plan.nodeCount; ni++) {
+      plan.nodeMpiClassifier[ni] = remap[plan.nodeMpiClassifier[ni]];
+
+      int propEnd = plan.nodePropStart[ni] + plan.nodePropCount[ni];
+      for (int i = plan.nodePropStart[ni]; i < propEnd; i++) {
+        plan.propMpi[i] = remap[plan.propMpi[i]];
+      }
+
+      int contEnd = plan.nodeContStart[ni] + plan.nodeContCount[ni];
+      for (int i = plan.nodeContStart[ni]; i < contEnd; i++) {
+        plan.contMpi[i] = remap[plan.contMpi[i]];
+      }
+
+      int refEnd = plan.nodeRefStart[ni] + plan.nodeRefCount[ni];
+      for (int i = plan.nodeRefStart[ni]; i < refEnd; i++) {
+        plan.refMpi[i] = remap[plan.refMpi[i]];
+      }
+    }
+  }
+
+  /**
+   * Recomputes all pre-computed body sizes in the plan from the (remapped) index values.
+   * Operates entirely on int[] arrays — no domain-object access.
+   */
+  private static void recomputeBodySizes(SerializationPlan plan) {
+    for (int ni = 0; ni < plan.nodeCount; ni++) {
+      int bodySize =
+          uint32FieldSize(plan.nodeSiId[ni])
+              + uint32FieldSize(plan.nodeMpiClassifier[ni])
+              + uint32FieldSize(plan.nodeSiParent[ni]);
+
+      int propEnd = plan.nodePropStart[ni] + plan.nodePropCount[ni];
+      for (int i = plan.nodePropStart[ni]; i < propEnd; i++) {
+        int pb = uint32FieldSize(plan.propMpi[i]) + uint32FieldSize(plan.propSiValue[i]);
+        plan.propBodySize[i] = pb;
+        bodySize += 1 + varintSize(pb) + pb;
+      }
+
+      int contEnd = plan.nodeContStart[ni] + plan.nodeContCount[ni];
+      for (int i = plan.nodeContStart[ni]; i < contEnd; i++) {
+        int nChildren = plan.contChildCount[i];
+        int packed = 0;
+        int childEnd = plan.contChildStart[i] + nChildren;
+        for (int k = plan.contChildStart[i]; k < childEnd; k++) {
+          packed += varintSize(plan.childIndexes[k]);
+        }
+        plan.contPackedRawSize[i] = packed;
+        int packedFieldSize = nChildren == 0 ? 0 : (1 + varintSize(packed) + packed);
+        int cb = uint32FieldSize(plan.contMpi[i]) + packedFieldSize;
+        plan.contBodySize[i] = cb;
+        bodySize += 1 + varintSize(cb) + cb;
+      }
+
+      int refEnd = plan.nodeRefStart[ni] + plan.nodeRefCount[ni];
+      for (int i = plan.nodeRefStart[ni]; i < refEnd; i++) {
+        int refBody = uint32FieldSize(plan.refMpi[i]);
+        int entryEnd = plan.refEntryStart[i] + plan.refEntryCount[i];
+        for (int k = plan.refEntryStart[i]; k < entryEnd; k++) {
+          int rvBody =
+              uint32FieldSize(plan.refEntrySiResolveInfo[k])
+                  + uint32FieldSize(plan.refEntrySiReferred[k]);
+          plan.refEntryBodySize[k] = rvBody;
+          refBody += 1 + varintSize(rvBody) + rvBody;
+        }
+        plan.refBodySize[i] = refBody;
+        bodySize += 1 + varintSize(refBody) + refBody;
+      }
+
+      int annotCnt = plan.nodeAnnotCount[ni];
+      if (annotCnt > 0) {
+        int packed = 0;
+        int annotEnd = plan.nodeAnnotStart[ni] + annotCnt;
+        for (int k = plan.nodeAnnotStart[ni]; k < annotEnd; k++) {
+          packed += varintSize(plan.annotIndexes[k]);
+        }
+        plan.nodeAnnotPackedRawSize[ni] = packed;
+        bodySize += 1 + varintSize(packed) + packed;
+      }
+
+      plan.nodeBodySize[ni] = bodySize;
+    }
+  }
+
+  // ---- Plan construction ----
 
   private static SerializationPlan buildSerializationPlan(
       SerializeState state,
