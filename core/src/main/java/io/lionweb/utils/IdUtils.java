@@ -1,5 +1,7 @@
 package io.lionweb.utils;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 import java.util.Objects;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -52,5 +54,34 @@ public class IdUtils {
       }
     }
     return true;
+  }
+
+  /**
+   * Encodes an arbitrary string into a valid LionWeb ID using Base64 URL encoding without padding.
+   * This guarantees a lossless round-trip: the original string can be recovered via {@link
+   * #decodeFromValidId(String)}. Unlike {@link #cleanString(String)}, this method avoids collisions
+   * between different source strings.
+   *
+   * @param string the input string to encode; must not be null
+   * @return a Base64 URL-encoded string that is a valid LionWeb identifier
+   */
+  public static @Nonnull String encodeToValidId(@Nonnull String string) {
+    Objects.requireNonNull(string, "string cannot be null");
+    return Base64.getUrlEncoder()
+        .withoutPadding()
+        .encodeToString(string.getBytes(StandardCharsets.UTF_8));
+  }
+
+  /**
+   * Decodes a Base64 URL-encoded string produced by {@link #encodeToValidId(String)} back to the
+   * original string.
+   *
+   * @param id the Base64 URL-encoded identifier to decode; must not be null
+   * @return the original string that was encoded
+   * @throws IllegalArgumentException if the input is not valid Base64 URL-encoded data
+   */
+  public static @Nonnull String decodeFromValidId(@Nonnull String id) {
+    Objects.requireNonNull(id, "id cannot be null");
+    return new String(Base64.getUrlDecoder().decode(id), StandardCharsets.UTF_8);
   }
 }
