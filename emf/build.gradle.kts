@@ -2,10 +2,7 @@ plugins {
     id("java-library")
     alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
-}
-
-repositories {
-    mavenCentral()
+    id("lionweb-java-conventions")
 }
 
 val javadocConfig by configurations.creating {
@@ -33,12 +30,6 @@ dependencies {
     testImplementation(libs.gson)
 }
 
-val jvmVersion = extra["jvmVersion"] as String
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
 tasks.register<Javadoc>("myJavadoc") {
     source = sourceSets.main.get().allJava
     classpath = javadocConfig
@@ -54,13 +45,6 @@ tasks.register<Jar>("javadocJar") {
     dependsOn("myJavadoc")
     from(tasks.getByName("myJavadoc")/*.destinationDir*/)
     archiveClassifier.set("javadoc")
-}
-
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
-    // Without the closure, parent sources are used for children too
-    from(sourceSets.getByName("main").java.srcDirs)
 }
 
 mavenPublishing {

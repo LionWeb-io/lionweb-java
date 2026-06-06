@@ -1,32 +1,20 @@
 plugins {
-    `jvm-test-suite`
     id("java-library")
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
     id("integration-test-conventions")
+    id("lionweb-functional-test-conventions")
     id("lionweb-publish-conventions")
-}
-
-repositories {
-    mavenCentral()
+    id("lionweb-java-conventions")
 }
 
 val lionwebServerCommitID: String by project
-
-val jvmVersion = extra["jvmVersion"] as String
 
 tasks.withType<Jar>().configureEach {
     manifest {
         attributes["lionwebServerCommitID"] = lionwebServerCommitID
     }
-}
-
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
-    // Without the closure, parent sources are used for children too
-    from(sourceSets.getByName("main").java.srcDirs)
 }
 
 mavenPublishing {
@@ -37,11 +25,6 @@ mavenPublishing {
     signAllPublications()
 }
 
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-
 tasks.jacocoTestReport {
     dependsOn(tasks.test) // tests are required to run before generating the report
 }
@@ -49,25 +32,6 @@ tasks.jacocoTestReport {
 tasks.withType<Test>().all {
     // Set the environment variable so that Testcontainers can reuse containers between test runs
     environment("TESTCONTAINERS_REUSE_ENABLE", "true")
-}
-
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
-        }
-    }
 }
 
 val performanceTestSourceSet = sourceSets.create("performanceTest") {
@@ -86,7 +50,6 @@ tasks.register<Test>("performanceTest") {
     shouldRunAfter(tasks.test)
     testClassesDirs = performanceTestSourceSet.output.classesDirs
     classpath = performanceTestSourceSet.runtimeClasspath
-    useJUnitPlatform()
     testLogging {
         events(
             org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,

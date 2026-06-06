@@ -3,14 +3,10 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
+    id("lionweb-functional-test-conventions")
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
-
-repositories {
-    mavenCentral()
-}
-
-val jvmVersion = extra["jvmVersion"] as String
 
 val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
@@ -30,24 +26,12 @@ dependencies {
     testImplementation(libs.junit.api)
 }
 
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
-    // Without the closure, parent sources are used for children too
-    from(sourceSets.getByName("main").java.srcDirs)
-}
-
 mavenPublishing {
     pom {
         description.set("Java APIs for the LionWeb system")
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 tasks.jacocoTestReport {
@@ -57,25 +41,6 @@ tasks.jacocoTestReport {
 tasks.withType<Test>().all {
     // Set the environment variable so that Testcontainers can reuse containers between test runs
     environment("TESTCONTAINERS_REUSE_ENABLE", "true")
-}
-
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
-        }
-    }
 }
 
 dependencies {

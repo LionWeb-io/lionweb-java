@@ -1,13 +1,11 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    `jvm-test-suite`
+    id("lionweb-kotlin-conventions")
+    id("lionweb-functional-test-conventions")
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
     alias(libs.plugins.vt.publish)
     id("lionweb-publish-conventions")
-    alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.build.config)
 }
 
@@ -18,8 +16,6 @@ repositories {
             snapshotsOnly()
         }
     }
-    mavenLocal()
-    mavenCentral()
 }
 
 ktlint {
@@ -30,27 +26,6 @@ ktlint {
                 .absolutePath
                 .split(File.separator)
                 .contains("build")
-        }
-    }
-}
-
-val jvmVersion = extra["jvmVersion"] as String
-
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
         }
     }
 }
@@ -89,37 +64,10 @@ mavenPublishing {
     signAllPublications()
 }
 
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
-}
-
-tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
-    compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(jvmVersion))
-    }
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(jvmVersion.removePrefix("1.")))
-    }
-}
-
 afterEvaluate {
     tasks {
         named("generateMetadataFileForMavenPublication") {
             dependsOn("kotlinSourcesJar")
         }
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
-tasks.withType<Test> {
-    testLogging {
-        events("standardOut", "passed", "skipped", "failed")
     }
 }

@@ -336,7 +336,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
   }
 
   public @Nullable LanguageEntity<?> getElementByName(@Nonnull String name) {
-    Objects.requireNonNull(name);
+    Objects.requireNonNull(name, "name should not be null");
     if (elementsByNameCache == null) {
       Map<String, LanguageEntity<?>> cache = new HashMap<>();
       for (LanguageEntity<?> element : getElements()) {
@@ -365,7 +365,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    *     PrimitiveType}
    */
   public @Nullable PrimitiveType getPrimitiveTypeByName(@Nonnull String name) {
-    Objects.requireNonNull(name);
+    Objects.requireNonNull(name, "name should not be null");
     LanguageEntity<?> element = this.getElementByName(name);
     if (element == null) {
       return null;
@@ -391,7 +391,7 @@ public class Language extends M3Node<Language> implements NamespaceProvider, IKe
    *     DataType}
    */
   public @Nullable DataType<?> getDataTypeByName(@Nonnull String name) {
-    Objects.requireNonNull(name);
+    Objects.requireNonNull(name, "name should not be null");
     LanguageEntity<?> element = this.getElementByName(name);
     if (element == null) {
       return null;

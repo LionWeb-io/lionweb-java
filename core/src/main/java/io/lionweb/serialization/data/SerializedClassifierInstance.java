@@ -197,8 +197,8 @@ public class SerializedClassifierInstance {
   }
 
   public void addChild(@Nonnull MetaPointer metaPointer, @Nonnull String childID) {
-    Objects.requireNonNull(metaPointer);
-    Objects.requireNonNull(childID);
+    Objects.requireNonNull(metaPointer, "metaPointer should not be null");
+    Objects.requireNonNull(childID, "childID should not be null");
     initContainments();
     Optional<SerializedContainmentValue> entry =
         this.containments.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
@@ -247,7 +247,7 @@ public class SerializedClassifierInstance {
   }
 
   public boolean removeContainmentValue(@Nonnull MetaPointer metaPointer) {
-    Objects.requireNonNull(metaPointer);
+    Objects.requireNonNull(metaPointer, "metaPointer should not be null");
     if (this.containments == null) {
       return false;
     }
@@ -337,8 +337,8 @@ public class SerializedClassifierInstance {
    */
   public void addReferenceValue(
       @Nonnull MetaPointer metaPointer, @Nonnull SerializedReferenceValue.Entry referenceValue) {
-    Objects.requireNonNull(metaPointer);
-    Objects.requireNonNull(referenceValue);
+    Objects.requireNonNull(metaPointer, "metaPointer should not be null");
+    Objects.requireNonNull(referenceValue, "referenceValue should not be null");
     initReferences();
     Optional<SerializedReferenceValue> entry =
         this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
@@ -377,8 +377,8 @@ public class SerializedClassifierInstance {
     if (index < 0) {
       throw new IllegalArgumentException("Index must be greater than or equal to zero");
     }
-    Objects.requireNonNull(metaPointer);
-    Objects.requireNonNull(referenceValue);
+    Objects.requireNonNull(metaPointer, "metaPointer should not be null");
+    Objects.requireNonNull(referenceValue, "referenceValue should not be null");
     initReferences();
     Optional<SerializedReferenceValue> entry =
         this.references.stream().filter(c -> c.getMetaPointer().equals(metaPointer)).findFirst();
@@ -412,7 +412,7 @@ public class SerializedClassifierInstance {
   }
 
   public void setReferenceValue(@Nonnull SerializedReferenceValue referenceValue) {
-    Objects.requireNonNull(referenceValue);
+    Objects.requireNonNull(referenceValue, "referenceValue should not be null");
     initReferences();
     for (int i = 0; i < this.references.size(); i++) {
       SerializedReferenceValue entry = this.references.get(i);

@@ -309,7 +309,7 @@ public class JSONResourceFactory implements Resource.Factory {
       EClass expectedEClass,
       EPackage.Registry packagesRegistry,
       ReferencePostponer referencePostponer) {
-    Objects.requireNonNull(jsonObject);
+    Objects.requireNonNull(jsonObject, "jsonObject should not be null");
     String eClassURI = null;
     if (jsonObject.has("eClass")) {
       eClassURI = jsonObject.get("eClass").getAsString();

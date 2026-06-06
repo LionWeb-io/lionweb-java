@@ -10,17 +10,15 @@ plugins {
     jacoco
     id("integration-test-conventions")
     id("lionweb-publish-conventions")
+    id("lionweb-java-conventions")
 }
 
 repositories {
-    mavenCentral()
     // Required for MPS OpenAPI and Modelix's Model API
     maven {
         url = URI("https://artifacts.itemis.cloud/repository/maven-mps/")
     }
 }
-
-val jvmVersion = extra["jvmVersion"] as String
 
 val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
@@ -76,24 +74,12 @@ tasks.register<Jar>("javadocJar") {
     archiveClassifier.set("javadoc")
 }
 
-tasks.register<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    // See https://discuss.gradle.org/t/why-subproject-sourceset-dirs-project-sourceset-dirs/7376/5
-    // Without the closure, parent sources are used for children too
-    from(sourceSets.getByName("main").java.srcDirs)
-}
-
 mavenPublishing {
     pom {
         description.set("Java APIs for the LionWeb system")
     }
     publishToMavenCentral(automaticRelease = true)
     signAllPublications()
-}
-
-java {
-    sourceCompatibility = JavaVersion.toVersion(jvmVersion)
-    targetCompatibility = JavaVersion.toVersion(jvmVersion)
 }
 
 val integrationTestResources : File = File(project.layout.buildDirectory.get().asFile, "integrationTestResources")
@@ -147,7 +133,6 @@ tasks.jacocoTestReport {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport) // run report after tests
-    useJUnitPlatform()
 }
 
 val performanceTestSourceSet = sourceSets.create("performanceTest") {
@@ -173,7 +158,6 @@ tasks.register<Test>("performanceTest") {
     shouldRunAfter(tasks.test)
     testClassesDirs = performanceTestSourceSet.output.classesDirs
     classpath = performanceTestSourceSet.runtimeClasspath
-    useJUnitPlatform()
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true

@@ -17,7 +17,7 @@ public class ExtraProtoBufSerialization extends ProtoBufSerialization {
   }
 
   public byte[] serializeBulkImportToBytes(@Nonnull BulkImport bulkImport) {
-    Objects.requireNonNull(bulkImport);
+    Objects.requireNonNull(bulkImport, "bulkImport should not be null");
     return DirectBulkImportSerializer.serialize(
         bulkImport, getLionWebVersion(), shouldSerializeEmptyFeatures());
   }
