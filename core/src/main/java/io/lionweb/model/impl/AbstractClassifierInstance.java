@@ -49,7 +49,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public boolean addAnnotation(@Nonnull AnnotationInstance instance) {
-    Objects.requireNonNull(instance);
+    Objects.requireNonNull(instance, "instance should not be null");
     if (this.annotations == null) {
       this.annotations = new ArrayList<>();
     }
@@ -84,7 +84,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public int removeAnnotation(@Nonnull AnnotationInstance instance) {
-    Objects.requireNonNull(instance);
+    Objects.requireNonNull(instance, "instance should not be null");
     int index = -1;
     if (annotations != null) {
       index = this.annotations.indexOf(instance);
@@ -112,7 +112,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
    * @return the index at which the annotation was removed, or -1 if the annotation was not found
    */
   int tryToRemoveAnnotation(@Nonnull AnnotationInstance instance) {
-    Objects.requireNonNull(instance);
+    Objects.requireNonNull(instance, "instance should not be null");
     int index = -1;
     if (annotations != null) {
       index = this.annotations.indexOf(instance);
@@ -134,7 +134,7 @@ public abstract class AbstractClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeChild(@Nonnull Node child) {
-    Objects.requireNonNull(child);
+    Objects.requireNonNull(child, "child should not be null");
     for (Containment containment : this.getClassifier().allContainments()) {
       List<? extends Node> children = this.getChildren(containment);
       int index = children.indexOf(child);

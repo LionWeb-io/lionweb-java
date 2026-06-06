@@ -42,7 +42,7 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
    * preventing assigning null to it (see https://github.com/LionWeb-io/lionweb-jvm/pull/234).
    */
   public @Nonnull DynamicClassifierInstance<T> setID(@Nonnull String id) {
-    Objects.requireNonNull(id);
+    Objects.requireNonNull(id, "id should not be null");
     this.id = id;
     return this;
   }
@@ -164,8 +164,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
 
   @Override
   public void removeChild(@Nonnull Containment containment, int index) {
-    Objects.requireNonNull(containment);
-    Objects.requireNonNull(containment.getKey());
+    Objects.requireNonNull(containment, "containment should not be null");
+    Objects.requireNonNull(containment.getKey(), "containment.key should not be null");
     if (containmentValues == null) {
       throw new IllegalArgumentException("Invalid index " + index + " when children are 0");
     }
@@ -192,8 +192,8 @@ public abstract class DynamicClassifierInstance<T extends Classifier<T>>
   @Nonnull
   @Override
   public List<ReferenceValue> getReferenceValues(@Nonnull Reference reference) {
-    Objects.requireNonNull(reference);
-    Objects.requireNonNull(reference.getKey());
+    Objects.requireNonNull(reference, "reference should not be null");
+    Objects.requireNonNull(reference.getKey(), "reference.key should not be null");
 
     ensureHaveReference(reference);
 

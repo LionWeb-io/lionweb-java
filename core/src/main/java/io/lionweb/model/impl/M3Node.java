@@ -49,7 +49,7 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
    * preventing assigning null to it (see https://github.com/LionWeb-io/lionweb-jvm/pull/234).
    */
   public @Nonnull T setID(@Nonnull String id) {
-    Objects.requireNonNull(id);
+    Objects.requireNonNull(id, "id should not be null");
     this.id = id;
     return (T) this;
   }
@@ -126,8 +126,8 @@ public abstract class M3Node<T extends M3Node> extends AbstractNode
 
   @Override
   public void addChild(@Nonnull Containment containment, @Nonnull Node child) {
-    Objects.requireNonNull(containment);
-    Objects.requireNonNull(child);
+    Objects.requireNonNull(containment, "containment should not be null");
+    Objects.requireNonNull(child, "child should not be null");
     if (!getClassifier().allContainments().contains(containment)) {
       throw new IllegalArgumentException("Containment not belonging to this concept");
     }

@@ -42,8 +42,8 @@ public class SerializationChunk {
 
   public static SerializationChunk fromNodes(
       @Nonnull LionWebVersion lionWebVersion, @Nonnull List<SerializedClassifierInstance> nodes) {
-    Objects.requireNonNull(lionWebVersion);
-    Objects.requireNonNull(nodes);
+    Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
+    Objects.requireNonNull(nodes, "nodes should not be null");
     if (nodes.isEmpty()) {
       throw new IllegalArgumentException();
     }
