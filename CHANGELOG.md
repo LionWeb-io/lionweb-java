@@ -1,5 +1,11 @@
 # Changelog
 
+### 1.4.3
+
+* Add explicit messages to all bare `Objects.requireNonNull` calls across the codebase
+* Centralise Gradle build configuration: introduce `lionweb-java-conventions`, `lionweb-kotlin-conventions`, `lionweb-functional-test-conventions` convention plugins in `buildSrc` covering JVM source/target compatibility, toolchain, `mavenCentral()` repository, JUnit Platform test runner, test logging, `sourcesJar`, and the `functionalTest` suite skeleton; remove the resulting duplication from all submodule build files
+* Bump Kotlin to 2.4.0
+
 ### Version 1.4.2
 
 * Reorganize server package structure; introduce `HTTPBulkServer` with full RESTful bulk and inspection API endpoints

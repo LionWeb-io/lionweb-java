@@ -172,26 +172,28 @@ public abstract class AbstractSerialization {
   }
 
   public void setAllUnavailabilityPolicies(@Nonnull UnavailableNodePolicy unavailabilityPolicy) {
-    Objects.requireNonNull(unavailabilityPolicy);
+    Objects.requireNonNull(unavailabilityPolicy, "unavailabilityPolicy should not be null");
     this.unavailableChildrenPolicy = unavailabilityPolicy;
     this.unavailableReferenceTargetPolicy = unavailabilityPolicy;
     this.unavailableParentPolicy = unavailabilityPolicy;
   }
 
   public void setUnavailableParentPolicy(@Nonnull UnavailableNodePolicy unavailableParentPolicy) {
-    Objects.requireNonNull(unavailableParentPolicy);
+    Objects.requireNonNull(unavailableParentPolicy, "unavailableParentPolicy should not be null");
     this.unavailableParentPolicy = unavailableParentPolicy;
   }
 
   public void setUnavailableChildrenPolicy(
       @Nonnull UnavailableNodePolicy unavailableChildrenPolicy) {
-    Objects.requireNonNull(unavailableChildrenPolicy);
+    Objects.requireNonNull(
+        unavailableChildrenPolicy, "unavailableChildrenPolicy should not be null");
     this.unavailableChildrenPolicy = unavailableChildrenPolicy;
   }
 
   public void setUnavailableReferenceTargetPolicy(
       @Nonnull UnavailableNodePolicy unavailableReferenceTargetPolicy) {
-    Objects.requireNonNull(unavailableReferenceTargetPolicy);
+    Objects.requireNonNull(
+        unavailableReferenceTargetPolicy, "unavailableReferenceTargetPolicy should not be null");
     this.unavailableReferenceTargetPolicy = unavailableReferenceTargetPolicy;
   }
 

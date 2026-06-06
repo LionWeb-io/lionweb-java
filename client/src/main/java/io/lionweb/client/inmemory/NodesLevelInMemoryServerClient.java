@@ -38,7 +38,7 @@ public class NodesLevelInMemoryServerClient
    */
   public NodesLevelInMemoryServerClient(
       @NotNull InMemoryServer inMemoryServer, @NotNull String repositoryName) {
-    Objects.requireNonNull(repositoryName);
+    Objects.requireNonNull(repositoryName, "repositoryName should not be null");
     this.chunkLevel = new ChunkLevelInMemoryServerClient(inMemoryServer, repositoryName);
   }
 

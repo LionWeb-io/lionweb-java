@@ -71,7 +71,7 @@ public interface ChunkLevelBulkAPIClient {
   @NotNull
   default Stream<SerializedClassifierInstance> retrieveAsStreamChunk(
       @NotNull Stream<String> nodeIds, int limit) throws IOException {
-    Objects.requireNonNull(nodeIds);
+    Objects.requireNonNull(nodeIds, "nodeIds should not be null");
     return retrieveAsChunk(nodeIds.collect(Collectors.toList()), limit).stream();
   }
 

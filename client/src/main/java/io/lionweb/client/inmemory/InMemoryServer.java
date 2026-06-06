@@ -63,7 +63,7 @@ public class InMemoryServer {
   }
 
   public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration) {
-    Objects.requireNonNull(repositoryConfiguration);
+    Objects.requireNonNull(repositoryConfiguration, "repositoryConfiguration should not be null");
     if (repositoryConfiguration.getHistorySupport() == HistorySupport.ENABLED) {
       throw new IllegalArgumentException(
           "The InMemoryServer does not support History for the time being");
@@ -74,7 +74,7 @@ public class InMemoryServer {
   }
 
   public void deleteRepository(@NotNull String repositoryName) {
-    Objects.requireNonNull(repositoryName);
+    Objects.requireNonNull(repositoryName, "repositoryName should not be null");
     if (!repositories.containsKey(repositoryName)) {
       throw new IllegalArgumentException();
     }
@@ -89,7 +89,7 @@ public class InMemoryServer {
 
   public @NotNull RepositoryVersionToken createPartitionFromChunk(
       @NotNull String repositoryName, @NotNull List<SerializedClassifierInstance> partitions) {
-    Objects.requireNonNull(partitions);
+    Objects.requireNonNull(partitions, "partitions should not be null");
     RepositoryData repositoryData = getRepository(repositoryName);
     // We get all roots (i.e. -> partitions) which do not yet exist
     // and add them to the list of partition IDs
@@ -121,7 +121,7 @@ public class InMemoryServer {
 
   public @NotNull RepositoryVersionToken deletePartitions(
       @NotNull String repositoryName, @NotNull List<String> partitionIds) {
-    Objects.requireNonNull(partitionIds);
+    Objects.requireNonNull(partitionIds, "partitionIds should not be null");
     RepositoryData repositoryData = getRepository(repositoryName);
     repositoryData.partitionIDs.removeIf(partitionIds::contains);
     partitionIds.forEach(repositoryData::deleteNodeAndDescendant);

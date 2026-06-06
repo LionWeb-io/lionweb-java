@@ -30,7 +30,7 @@ inline fun <P : ClassifierInstance<*>, reified T : Node> singleReference(
                 1 -> {
                     if (referenceValues[0] == null) {
                         return null
-                    } else if (referenceValues is SpecificReferenceValue<*>) {
+                    } else if (referenceValues[0] is SpecificReferenceValue<*>) {
                         return referenceValues[0] as SpecificReferenceValue<T>
                     } else {
                         SpecificReferenceValue(T::class)

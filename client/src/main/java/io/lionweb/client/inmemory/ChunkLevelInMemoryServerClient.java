@@ -44,7 +44,7 @@ public class ChunkLevelInMemoryServerClient
 
   @Override
   public void createRepository(@NotNull RepositoryConfiguration repositoryConfiguration) {
-    Objects.requireNonNull(repositoryConfiguration);
+    Objects.requireNonNull(repositoryConfiguration, "repositoryConfiguration should not be null");
     inMemoryServer.createRepository(repositoryConfiguration);
   }
 
