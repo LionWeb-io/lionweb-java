@@ -53,6 +53,11 @@ public class ProtoBufBytesBenchmark {
   }
 
   @Benchmark
+  public byte[] serializeDirectUnsorted() {
+    return DirectProtoBufSerializer.serializeUnsorted(chunk, true);
+  }
+
+  @Benchmark
   public SerializationChunk deserializeDirect() throws IOException {
     return DirectProtoBufDeserializer.deserialize(serializedBytes, true);
   }

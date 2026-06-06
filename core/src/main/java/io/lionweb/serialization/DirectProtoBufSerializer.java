@@ -12,11 +12,14 @@ import java.util.*;
 final class DirectProtoBufSerializer {
   // Strategy:
   //
-  // 1. Traverse all nodes once to populate string / language / meta-pointer intern tables and
-  //    build a plan containing every integer index and pre-computed body size.
-  // 2. Build cached tables (UTF-8 lengths, meta-pointer body sizes, language body sizes).
-  // 3. Compute the exact total byte count without touching domain objects.
-  // 4. Allocate one byte[] and write from the plan — zero HashMap lookups, zero domain traversal.
+  // 1. Traverse all nodes once to count reference frequencies for strings, languages, and
+  //    meta-pointers, then sort each intern table by descending frequency so the most-referenced
+  //    items get the smallest varint indices (index 1–127 encodes in 1 byte vs. 2+ bytes).
+  // 2. Traverse all nodes a second time to populate the pre-sorted intern tables and build a
+  //    flat plan containing every integer index and pre-computed body size.
+  // 3. Build cached tables (UTF-8 lengths, meta-pointer body sizes, language body sizes).
+  // 4. Compute the exact total byte count without touching domain objects.
+  // 5. Allocate one byte[] and write from the plan — zero HashMap lookups, zero domain traversal.
 
   private DirectProtoBufSerializer() {}
 
@@ -76,6 +79,35 @@ final class DirectProtoBufSerializer {
       metaPointers.add(mp);
       metaPointerIndex.put(mp, index);
       return index;
+    }
+  }
+
+  /** Frequency counters for strings, languages, and meta-pointers collected in a first pass. */
+  private static final class FreqState {
+    final HashMap<String, int[]> str = new HashMap<>();
+    final HashMap<LanguageVersion, int[]> lang = new HashMap<>();
+    final HashMap<MetaPointer, int[]> mp = new HashMap<>();
+
+    void countStr(String s) {
+      if (s != null) str.computeIfAbsent(s, k -> new int[1])[0]++;
+    }
+
+    void countMp(MetaPointer m) {
+      if (m == null) return;
+      boolean isNew = !mp.containsKey(m);
+      mp.computeIfAbsent(m, k -> new int[1])[0]++;
+      if (isNew) {
+        LanguageVersion lv = m.getLanguageVersion();
+        if (lv != null) {
+          boolean isNewLang = !lang.containsKey(lv);
+          lang.computeIfAbsent(lv, k -> new int[1])[0]++;
+          if (isNewLang) {
+            countStr(lv.getKey());
+            countStr(lv.getVersion());
+          }
+        }
+        countStr(m.getKey());
+      }
     }
   }
 
@@ -240,19 +272,39 @@ final class DirectProtoBufSerializer {
   static byte[] serialize(SerializationChunk chunk, boolean serializeEmptyFeatures) {
     List<SerializedClassifierInstance> instances = chunk.getClassifierInstances();
     int nodeCount = instances.size();
+    int estimatedStrings = Math.max(16, nodeCount * 4);
+    int estimatedMetaPointers = Math.max(16, nodeCount / 2);
 
-    // Heuristic pre-sizing to avoid resize overhead on typical models
+    SerializeState state =
+        buildSortedSerializeState(
+            instances,
+            chunk.getLanguages(),
+            serializeEmptyFeatures,
+            estimatedStrings,
+            8,
+            estimatedMetaPointers);
+    return serializeWithState(chunk, instances, serializeEmptyFeatures, state);
+  }
+
+  /** Serializes without frequency sorting — used by benchmarks to measure the unsorted baseline. */
+  static byte[] serializeUnsorted(SerializationChunk chunk, boolean serializeEmptyFeatures) {
+    List<SerializedClassifierInstance> instances = chunk.getClassifierInstances();
+    int nodeCount = instances.size();
     int estimatedStrings = Math.max(16, nodeCount * 4);
     int estimatedMetaPointers = Math.max(16, nodeCount / 2);
 
     SerializeState state = new SerializeState(estimatedStrings, 8, estimatedMetaPointers);
+    return serializeWithState(chunk, instances, serializeEmptyFeatures, state);
+  }
 
-    // Single traversal: populate intern tables AND build flat plan
+  private static byte[] serializeWithState(
+      SerializationChunk chunk,
+      List<SerializedClassifierInstance> instances,
+      boolean serializeEmptyFeatures,
+      SerializeState state) {
     SerializationPlan plan = buildSerializationPlan(state, instances, serializeEmptyFeatures);
-
     CachedTables cached = new CachedTables(state);
     int totalSize = computeChunkSize(chunk, cached, plan);
-
     byte[] result = new byte[totalSize];
     CodedOutputStream cos = CodedOutputStream.newInstance(result);
     try {
@@ -261,6 +313,79 @@ final class DirectProtoBufSerializer {
       throw new IllegalStateException("Unexpected IOException writing to byte array", e);
     }
     return result;
+  }
+
+  /**
+   * First pass: count how many times each string, language, and meta-pointer index will appear in
+   * the binary, then build a {@link SerializeState} with the intern tables pre-sorted by descending
+   * frequency. Items used most often get the smallest indices, which encode as shorter varints.
+   */
+  private static SerializeState buildSortedSerializeState(
+      List<SerializedClassifierInstance> instances,
+      List<LanguageVersion> declaredLanguages,
+      boolean serializeEmptyFeatures,
+      int estimatedStrings,
+      int estimatedLanguages,
+      int estimatedMetaPointers) {
+
+    FreqState freq = new FreqState();
+
+    for (SerializedClassifierInstance n : instances) {
+      freq.countStr(n.getID());
+      freq.countStr(n.getParentNodeID());
+      freq.countMp(n.getClassifier());
+
+      for (SerializedPropertyValue p : n.getProperties()) {
+        if (serializeEmptyFeatures || p.getValue() != null) {
+          freq.countStr(p.getValue());
+          freq.countMp(p.getMetaPointer());
+        }
+      }
+
+      for (SerializedContainmentValue c : n.getContainments()) {
+        if (serializeEmptyFeatures || !c.getChildrenIds().isEmpty()) {
+          for (String child : c.getChildrenIds()) freq.countStr(child);
+          freq.countMp(c.getMetaPointer());
+        }
+      }
+
+      for (SerializedReferenceValue r : n.getReferences()) {
+        if (serializeEmptyFeatures || !r.getValue().isEmpty()) {
+          for (SerializedReferenceValue.Entry e : r.getValue()) {
+            freq.countStr(e.getReference());
+            freq.countStr(e.getResolveInfo());
+          }
+          freq.countMp(r.getMetaPointer());
+        }
+      }
+
+      for (String ann : n.getAnnotations()) freq.countStr(ann);
+    }
+
+    SerializeState state =
+        new SerializeState(estimatedStrings, estimatedLanguages, estimatedMetaPointers);
+
+    // Seed strings sorted by descending frequency; tie-break alphabetically for determinism.
+    freq.str.entrySet().stream()
+        .sorted(
+            Comparator.<Map.Entry<String, int[]>>comparingInt(e -> -e.getValue()[0])
+                .thenComparing(Map.Entry.comparingByKey()))
+        .forEach(e -> state.stringIndexer(e.getKey()));
+
+    // Seed languages in the chunk's declared order so round-trips preserve language ordering.
+    // (Strings are already seeded above, so language key/version strings already have optimal
+    // indices when languageIndexer is called here.)
+    for (LanguageVersion lv : declaredLanguages) {
+      state.languageIndexer(lv);
+    }
+
+    // Seed meta-pointers sorted by descending frequency.
+    // Languages are already indexed, so metaPointerIndexer only looks them up, never reorders.
+    freq.mp.entrySet().stream()
+        .sorted(Comparator.comparingInt((Map.Entry<MetaPointer, int[]> e) -> -e.getValue()[0]))
+        .forEach(e -> state.metaPointerIndexer(e.getKey()));
+
+    return state;
   }
 
   private static SerializationPlan buildSerializationPlan(

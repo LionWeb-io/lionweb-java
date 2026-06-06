@@ -123,4 +123,76 @@ class DirectProtoBufTest {
 
     assertEquals(chunk, restored, "Large language: serialize → deserialize must be lossless");
   }
+
+  private SerializationChunk loadLargeLanguage() throws IOException {
+    InputStream is = getClass().getResourceAsStream("/serialization/LargeLanguage.json");
+    assertNotNull(is, "LargeLanguage.json must be on classpath");
+    String json;
+    try (java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(is))) {
+      json = r.lines().collect(Collectors.joining("\n"));
+    }
+    return new LowLevelJsonSerialization().deserializeSerializationBlock(json);
+  }
+
+  @Test
+  void frequencySortingProducesSmallerOrEqualOutput() throws IOException {
+    SerializationChunk chunk = loadLargeLanguage();
+
+    byte[] sorted = DirectProtoBufSerializer.serialize(chunk, true);
+    byte[] unsorted = DirectProtoBufSerializer.serializeUnsorted(chunk, true);
+
+    int savings = unsorted.length - sorted.length;
+    double pct = 100.0 * savings / unsorted.length;
+    System.out.printf(
+        "[size] unsorted=%d B  sorted=%d B  savings=%d B (%.2f%%)%n",
+        unsorted.length, sorted.length, savings, pct);
+
+    assertTrue(
+        sorted.length <= unsorted.length,
+        "Frequency-sorted output ("
+            + sorted.length
+            + " B) should be <= unsorted ("
+            + unsorted.length
+            + " B)");
+  }
+
+  @Test
+  void frequencySortingSerializationTimeOverhead() throws IOException {
+    SerializationChunk chunk = loadLargeLanguage();
+
+    int warmupRounds = 20;
+    int measureRounds = 100;
+
+    // Warmup
+    for (int i = 0; i < warmupRounds; i++) {
+      DirectProtoBufSerializer.serialize(chunk, true);
+      DirectProtoBufSerializer.serializeUnsorted(chunk, true);
+    }
+
+    // Measure unsorted
+    long t0 = System.nanoTime();
+    for (int i = 0; i < measureRounds; i++) {
+      DirectProtoBufSerializer.serializeUnsorted(chunk, true);
+    }
+    long unsortedNs = (System.nanoTime() - t0) / measureRounds;
+
+    // Measure sorted
+    t0 = System.nanoTime();
+    for (int i = 0; i < measureRounds; i++) {
+      DirectProtoBufSerializer.serialize(chunk, true);
+    }
+    long sortedNs = (System.nanoTime() - t0) / measureRounds;
+
+    double overhead = 100.0 * (sortedNs - unsortedNs) / unsortedNs;
+    System.out.printf(
+        "[perf] unsorted=%.2f ms  sorted=%.2f ms  overhead=%.1f%%%n",
+        unsortedNs / 1e6, sortedNs / 1e6, overhead);
+
+    // Sorted should not be more than 3× slower; the extra pass is lightweight.
+    assertTrue(
+        sortedNs < unsortedNs * 3,
+        String.format(
+            "Frequency sort overhead too large: unsorted=%.2f ms, sorted=%.2f ms",
+            unsortedNs / 1e6, sortedNs / 1e6));
+  }
 }
