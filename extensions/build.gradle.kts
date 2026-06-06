@@ -3,12 +3,9 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
+    id("lionweb-functional-test-conventions")
     id("lionweb-publish-conventions")
     id("lionweb-java-conventions")
-}
-
-repositories {
-    mavenCentral()
 }
 
 val javadocConfig by configurations.creating {
@@ -51,25 +48,6 @@ tasks.jacocoTestReport {
 tasks.withType<Test>().all {
     // Set the environment variable so that Testcontainers can reuse containers between test runs
     environment("TESTCONTAINERS_REUSE_ENABLE", "true")
-}
-
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
-        }
-    }
 }
 
 dependencies {

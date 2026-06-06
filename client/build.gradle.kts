@@ -1,16 +1,12 @@
 plugins {
-    `jvm-test-suite`
     id("java-library")
     alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
     id("integration-test-conventions")
+    id("lionweb-functional-test-conventions")
     id("lionweb-publish-conventions")
     id("lionweb-java-conventions")
-}
-
-repositories {
-    mavenCentral()
 }
 
 val lionwebServerCommitID: String by project
@@ -45,25 +41,6 @@ tasks.withType<Test>().all {
     environment("TESTCONTAINERS_REUSE_ENABLE", "true")
 }
 
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
-        }
-    }
-}
-
 val performanceTestSourceSet = sourceSets.create("performanceTest") {
     compileClasspath += sourceSets["main"].output + sourceSets["test"].output
     runtimeClasspath += sourceSets["main"].output + sourceSets["test"].output
@@ -80,7 +57,6 @@ tasks.register<Test>("performanceTest") {
     shouldRunAfter(tasks.test)
     testClassesDirs = performanceTestSourceSet.output.classesDirs
     classpath = performanceTestSourceSet.runtimeClasspath
-    useJUnitPlatform()
     testLogging {
         events(
             org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED,

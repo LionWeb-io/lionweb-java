@@ -14,7 +14,6 @@ plugins {
 }
 
 repositories {
-    mavenCentral()
     // Required for MPS OpenAPI and Modelix's Model API
     maven {
         url = URI("https://artifacts.itemis.cloud/repository/maven-mps/")
@@ -141,7 +140,6 @@ tasks.jacocoTestReport {
 
 tasks.test {
     finalizedBy(tasks.jacocoTestReport) // run report after tests
-    useJUnitPlatform()
 }
 
 val performanceTestSourceSet = sourceSets.create("performanceTest") {
@@ -167,7 +165,6 @@ tasks.register<Test>("performanceTest") {
     shouldRunAfter(tasks.test)
     testClassesDirs = performanceTestSourceSet.output.classesDirs
     classpath = performanceTestSourceSet.runtimeClasspath
-    useJUnitPlatform()
     testLogging {
         events(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
         showStandardStreams = true

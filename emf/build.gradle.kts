@@ -5,10 +5,6 @@ plugins {
     id("lionweb-java-conventions")
 }
 
-repositories {
-    mavenCentral()
-}
-
 val javadocConfig by configurations.creating {
     extendsFrom(configurations.testImplementation.get())
 }

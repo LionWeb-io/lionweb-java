@@ -1,6 +1,6 @@
 plugins {
-    `jvm-test-suite`
     id("lionweb-kotlin-conventions")
+    id("lionweb-functional-test-conventions")
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
     id("java-library")
@@ -16,8 +16,6 @@ repositories {
             snapshotsOnly()
         }
     }
-    mavenLocal()
-    mavenCentral()
 }
 
 ktlint {
@@ -28,25 +26,6 @@ ktlint {
                 .absolutePath
                 .split(File.separator)
                 .contains("build")
-        }
-    }
-}
-
-testing {
-    suites {
-        val test by getting(JvmTestSuite::class) {
-            useJUnitJupiter()
-        }
-
-        register<JvmTestSuite>("functionalTest") {
-
-            targets {
-                all {
-                    testTask.configure {
-                        shouldRunAfter(test)
-                    }
-                }
-            }
         }
     }
 }
@@ -90,15 +69,5 @@ afterEvaluate {
         named("generateMetadataFileForMavenPublication") {
             dependsOn("kotlinSourcesJar")
         }
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
-tasks.withType<Test> {
-    testLogging {
-        events("standardOut", "passed", "skipped", "failed")
     }
 }

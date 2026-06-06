@@ -1,5 +1,4 @@
 plugins {
-    `jvm-test-suite`
     id("lionweb-kotlin-conventions")
     alias(libs.plugins.dokka)
     alias(libs.plugins.ktlint)
@@ -15,8 +14,6 @@ repositories {
             snapshotsOnly()
         }
     }
-    mavenLocal()
-    mavenCentral()
 }
 
 ktlint {
@@ -52,15 +49,5 @@ afterEvaluate {
         named("generateMetadataFileForMavenPublication") {
             dependsOn("kotlinSourcesJar")
         }
-    }
-}
-
-tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-}
-
-tasks.withType<Test> {
-    testLogging {
-        events("standardOut", "passed", "skipped", "failed")
     }
 }
