@@ -7,6 +7,8 @@ import io.lionweb.client.delta.messages.DeltaQueryResponse;
 import io.lionweb.client.delta.messages.events.StandardErrorCode;
 import io.lionweb.client.delta.messages.queries.*;
 import io.lionweb.client.delta.messages.queries.partitcipations.*;
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToChangingPartitionsRequest;
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToChangingPartitionsResponse;
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest;
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsResponse;
 import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest;
@@ -79,6 +81,9 @@ class DeltaQueryReceiverImpl implements DeltaQueryReceiver {
     } else if (query instanceof UnsubscribeFromPartitionContentsRequest) {
       UnsubscribeFromPartitionContentsRequest req = (UnsubscribeFromPartitionContentsRequest) query;
       return new UnsubscribeFromPartitionContentsResponse(req.queryId);
+    } else if (query instanceof SubscribeToChangingPartitionsRequest) {
+      SubscribeToChangingPartitionsRequest req = (SubscribeToChangingPartitionsRequest) query;
+      return new SubscribeToChangingPartitionsResponse(req.queryId);
     }
     throw new UnsupportedOperationException("Not supported yet.");
   }

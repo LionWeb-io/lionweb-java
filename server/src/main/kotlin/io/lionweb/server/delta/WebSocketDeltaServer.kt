@@ -36,6 +36,7 @@ import io.lionweb.client.delta.messages.queries.partitcipations.ReconnectRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOffRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnRequest
 import io.lionweb.client.delta.messages.queries.partitcipations.SignOnResponse
+import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToChangingPartitionsRequest
 import io.lionweb.client.delta.messages.queries.subscriptions.SubscribeToPartitionContentsRequest
 import io.lionweb.client.delta.messages.queries.subscriptions.UnsubscribeFromPartitionContentsRequest
 import io.lionweb.client.inmemory.InMemoryServer
@@ -114,8 +115,12 @@ class WebSocketDeltaServer(
         when {
             DeltaMessageSerialization.isCommandClass(targetClass) -> {
                 // Commands carry participationId as an extra wire field injected by
-                // WebSocketDeltaChannel.sendCommand – strip it before deserializing.
-                val participationId = root.get("participationId")?.asString ?: return
+                // WebSocketDeltaChannel.sendCommand – strip it before deserializing. Clients that
+                // don't add this non-standard field (e.g. the lionweb-csharp client) rely on the
+                // participationId already tracked for this connection from its SignOnResponse.
+                val participationId = root.get("participationId")?.asString
+                    ?: connectionParticipations[conn]
+                    ?: return
                 messageLog?.add(
                     MessageLogEntry(
                         timestamp = System.currentTimeMillis(),
@@ -142,6 +147,7 @@ class WebSocketDeltaServer(
                     }
                     is SignOffRequest -> connectionParticipations.remove(conn)
                     is ListAndSubscribePartitionsRequest -> lifecycleSubscribers.add(conn)
+                    is SubscribeToChangingPartitionsRequest -> lifecycleSubscribers.add(conn)
                     is SubscribeToPartitionContentsRequest ->
                         contentSubscriptions.getOrPut(conn) { ConcurrentHashMap.newKeySet() }.add(query.partition)
                     is UnsubscribeFromPartitionContentsRequest ->
@@ -274,33 +280,32 @@ class WebSocketDeltaServer(
         private val connections = CopyOnWriteArrayList<WebSocket>()
         private val eventReceivers = CopyOnWriteArrayList<DeltaEventReceiver>()
         private val queryResponseReceivers = CopyOnWriteArrayList<DeltaQueryResponseReceiver>()
-        private val nextEventId = AtomicInteger(1)
+        private val connectionSequenceNumbers = ConcurrentHashMap<WebSocket, AtomicInteger>()
 
         var commandReceiver: DeltaCommandReceiver? = null
         var queryReceiver: DeltaQueryReceiver? = null
 
         fun addConnection(conn: WebSocket) = connections.add(conn)
 
-        fun removeConnection(conn: WebSocket) = connections.remove(conn)
+        fun removeConnection(conn: WebSocket) {
+            connections.remove(conn)
+            connectionSequenceNumbers.remove(conn)
+        }
+
+        // Each connection has its own monotonically increasing sequence number space, starting
+        // at 0, matching what client implementations (e.g. lionweb-csharp's LionWebClient) expect
+        // for events delivered to that connection.
+        private fun nextSequenceNumberFor(conn: WebSocket): Int =
+            connectionSequenceNumbers.getOrPut(conn) { AtomicInteger(0) }.getAndIncrement()
 
         override fun sendEvent(eventProducer: Function<Int, DeltaEvent>) {
-            val event = eventProducer.apply(nextEventId.getAndIncrement())
-            val json = serialization.serialize(event)
-            messageLog?.add(
-                MessageLogEntry(
-                    timestamp = System.currentTimeMillis(),
-                    direction = "sent",
-                    category = "event",
-                    messageKind = event.javaClass.simpleName,
-                    json = json,
-                ),
-            )
+            val probeEvent = eventProducer.apply(0)
             val targets: List<WebSocket> =
-                when (event) {
+                when (probeEvent) {
                     is PartitionAdded, is PartitionDeleted ->
                         lifecycleSubscribers.filter { it.isOpen }
                     else -> {
-                        val partitions = relevantPartitionsForEvent(event)
+                        val partitions = relevantPartitionsForEvent(probeEvent)
                         if (partitions.isEmpty()) {
                             connections.filter { it.isOpen }
                         } else {
@@ -310,8 +315,33 @@ class WebSocketDeltaServer(
                         }
                     }
                 }
-            targets.forEach { it.send(json) }
-            eventReceivers.forEach { it.receiveEvent(event) }
+            targets.forEach { conn ->
+                val event = eventProducer.apply(nextSequenceNumberFor(conn))
+                // Connections subscribed to partition lifecycle events also implicitly subscribe
+                // to the content of newly created partitions, matching lionweb-csharp's server
+                // behaviour (LionWebRepository.SubscribeCreatedParitions).
+                if (event is PartitionAdded) {
+                    val partitionId =
+                        event.newPartition.classifierInstances.firstOrNull { it.parentNodeID == null }?.getID()
+                    if (partitionId != null) {
+                        contentSubscriptions.getOrPut(conn) { ConcurrentHashMap.newKeySet() }.add(partitionId)
+                    }
+                } else if (event is PartitionDeleted) {
+                    contentSubscriptions[conn]?.remove(event.deletedPartition)
+                }
+                val json = serialization.serialize(event)
+                messageLog?.add(
+                    MessageLogEntry(
+                        timestamp = System.currentTimeMillis(),
+                        direction = "sent",
+                        category = "event",
+                        messageKind = event.javaClass.simpleName,
+                        json = json,
+                    ),
+                )
+                conn.send(json)
+            }
+            eventReceivers.forEach { it.receiveEvent(probeEvent) }
         }
 
         override fun sendQuery(queryProducer: Function<String, DeltaQuery>): DeltaQueryResponse? = null

@@ -20,10 +20,20 @@ public enum DeltaProtocolVersion {
     return name().substring(1).replace('_', '.');
   }
 
-  /** Parses a wire-format string (e.g. {@code "2026.1"}) to the corresponding enum constant. */
+  /**
+   * Parses a wire-format string (e.g. {@code "2026.1"}) to the corresponding enum constant.
+   *
+   * <p>Some client implementations send their LionWeb metamodel version here instead of an actual
+   * Delta Protocol version (this field is otherwise unused by this implementation), so unknown
+   * values fall back to the latest known protocol version rather than rejecting the connection.
+   */
   public static @NotNull DeltaProtocolVersion fromWireString(@NotNull String wire) {
     Objects.requireNonNull(wire, "wire must not be null");
     String enumName = "v" + wire.replace('.', '_');
-    return DeltaProtocolVersion.valueOf(enumName);
+    try {
+      return DeltaProtocolVersion.valueOf(enumName);
+    } catch (IllegalArgumentException e) {
+      return DeltaProtocolVersion.v2026_1;
+    }
   }
 }
