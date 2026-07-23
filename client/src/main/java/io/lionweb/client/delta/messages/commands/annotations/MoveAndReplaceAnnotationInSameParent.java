@@ -6,8 +6,9 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Move existing node movedAnnotation within the same parent to indexOffset. Delete current node
- * replacedAnnotation at movedAnnotation's parent’s annotations at indexOffset, and all its descendants
- * (including annotation instances). Does NOT change references to any of the deleted nodes.
+ * replacedAnnotation at movedAnnotation's parent’s annotations at indexOffset, and all its
+ * descendants (including annotation instances). Does NOT change references to any of the deleted
+ * nodes.
  */
 public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
   public final int indexOffset;

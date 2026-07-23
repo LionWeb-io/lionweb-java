@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Move existing entry movedTarget/movedResolveInfo[32] inside parent's reference at oldIndex inside
- * parent's reference at indexOffset, replacing existing entry replacedTarget/replacedResolveInfo[32]
- * in parent's reference at indexOffset.
+ * parent's reference at indexOffset, replacing existing entry
+ * replacedTarget/replacedResolveInfo[32] in parent's reference at indexOffset.
  */
 public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
   public final @NotNull String parent;

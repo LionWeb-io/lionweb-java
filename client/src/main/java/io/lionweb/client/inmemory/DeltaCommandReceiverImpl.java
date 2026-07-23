@@ -300,7 +300,12 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     channel.sendEvent(
         seqNum ->
             new ChildMovedInSameContainment(
-                    seqNum, cmd.indexOffset, cmd.movedChild, cmd.parent, cmd.containment, cmd.oldIndex)
+                    seqNum,
+                    cmd.indexOffset,
+                    cmd.movedChild,
+                    cmd.parent,
+                    cmd.containment,
+                    cmd.oldIndex)
                 .addSource(source));
   }
 
