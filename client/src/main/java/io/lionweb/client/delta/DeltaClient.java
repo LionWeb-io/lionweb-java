@@ -353,7 +353,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         ensureParticipation(),
         commandId ->
             new MoveChildInSameContainment(
-                commandId, newIndex, movedChild, parent, containment, oldIndex));
+                commandId, newIndex - oldIndex, movedChild, parent, containment, oldIndex));
   }
 
   /**
@@ -576,7 +576,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
         ensureParticipation(),
         commandId ->
             new MoveAnnotationInSameParent(
-                commandId, newIndex, movedAnnotationId, parentId, oldIndex));
+                commandId, newIndex - oldIndex, movedAnnotationId, parentId, oldIndex));
   }
 
   /**
@@ -779,7 +779,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                     + event.containment);
           Node child = instance.getChildren(containment).get(event.oldIndex);
           instance.removeChild(containment, event.oldIndex);
-          instance.addChild(containment, child, event.indexOffset);
+          instance.addChild(containment, child, event.oldIndex + event.indexOffset);
         });
   }
 

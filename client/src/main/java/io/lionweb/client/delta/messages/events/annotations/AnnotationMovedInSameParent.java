@@ -23,9 +23,6 @@ public class AnnotationMovedInSameParent extends BaseDeltaEvent<AnnotationMovedI
     super(sequenceNumber);
     Objects.requireNonNull(movedAnnotation, "movedAnnotation should not be null");
     Objects.requireNonNull(parent, "parent should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }

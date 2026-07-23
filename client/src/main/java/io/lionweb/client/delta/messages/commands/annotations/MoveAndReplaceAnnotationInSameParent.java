@@ -27,9 +27,6 @@ public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
     super(commandId);
     Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
     Objects.requireNonNull(movedAnnotation, "movedAnnotation must not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset must be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }

@@ -21,9 +21,6 @@ public final class MoveChildInSameContainment extends DeltaCommand {
       @NotNull MetaPointer containment,
       int oldIndex) {
     super(commandId);
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset must be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }

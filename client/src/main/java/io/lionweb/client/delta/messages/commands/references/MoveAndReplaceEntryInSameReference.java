@@ -37,9 +37,6 @@ public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset must be non-negative");
-    }
     this.parent = parent;
     this.reference = reference;
     this.oldIndex = oldIndex;

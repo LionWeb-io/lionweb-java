@@ -27,9 +27,6 @@ public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
       @NotNull String replacedChild,
       @NotNull String movedChild) {
     super(commandId);
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset must be non-negative");
-    }
     Objects.requireNonNull(replacedChild, "replacedChild must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     Objects.requireNonNull(parent, "parent must not be null");

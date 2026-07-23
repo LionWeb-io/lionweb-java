@@ -31,9 +31,6 @@ public final class ChildMovedAndReplacedInSameContainment
     Objects.requireNonNull(containment, "containment should not be null");
     Objects.requireNonNull(replacedChild, "replacedChild should not be null");
     Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }

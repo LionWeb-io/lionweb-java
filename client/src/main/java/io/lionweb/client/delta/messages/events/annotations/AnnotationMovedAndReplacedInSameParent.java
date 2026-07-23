@@ -34,9 +34,6 @@ public class AnnotationMovedAndReplacedInSameParent
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
-    }
     this.indexOffset = indexOffset;
     this.movedAnnotation = movedAnnotation;
     this.parent = parent;

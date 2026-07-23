@@ -221,7 +221,8 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     SerializedClassifierInstance parent = requireNode(data, cmd.parent);
     List<String> annotations = new ArrayList<>(parent.getAnnotations());
     String id = annotations.remove(cmd.oldIndex);
-    annotations.add(cmd.indexOffset, id);
+    int newIndex = cmd.oldIndex + cmd.indexOffset;
+    annotations.add(newIndex, id);
     parent.setAnnotations(annotations);
     channel.sendEvent(
         seqNum ->
@@ -296,7 +297,8 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
       @NotNull CommandSource source) {
     SerializedClassifierInstance parent = requireNode(data, cmd.parent);
     parent.removeChild(cmd.movedChild);
-    parent.addChild(cmd.containment, cmd.movedChild, cmd.indexOffset);
+    int newIndex = cmd.oldIndex + cmd.indexOffset;
+    parent.addChild(cmd.containment, cmd.movedChild, newIndex);
     channel.sendEvent(
         seqNum ->
             new ChildMovedInSameContainment(

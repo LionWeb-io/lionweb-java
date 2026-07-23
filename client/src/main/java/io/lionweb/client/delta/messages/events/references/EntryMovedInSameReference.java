@@ -29,9 +29,6 @@ public class EntryMovedInSameReference extends BaseDeltaEvent<EntryMovedInSameRe
     super(sequenceNumber);
     Objects.requireNonNull(parent, "parent should not be null");
     Objects.requireNonNull(reference, "reference should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
