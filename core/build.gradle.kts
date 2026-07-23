@@ -117,10 +117,41 @@ val downloadIntegrationTestResources = tasks.register("downloadIntegrationTestRe
     }
 }
 
+val jsonSchemasDir: File = File(project.layout.buildDirectory.get().asFile, "jsonSchemas")
+
+// Downloads the official LionWeb JSON Schemas from the specification repository, rather than
+// committing them here, so that we always validate against the latest published version.
+val downloadJsonSchemas = tasks.register("downloadJsonSchemas") {
+    val schemaURL =
+        "https://raw.githubusercontent.com/LionWeb-io/specification/refs/heads/main/serialization/serialization.schema.json"
+    val destinationFile = File(jsonSchemasDir, "serialization.schema.json")
+    outputs.file(destinationFile)
+    doLast {
+        if (destinationFile.exists()) {
+            logger.info("Not downloading JSON schema as file ${destinationFile.absolutePath} exists")
+        } else {
+            jsonSchemasDir.mkdirs()
+            logger.info("Downloading JSON schema from $schemaURL to ${destinationFile.absolutePath}")
+            URI(schemaURL).toURL().openStream().use { input ->
+                destinationFile.outputStream().use { output -> input.copyTo(output) }
+            }
+        }
+        require(destinationFile.exists() && destinationFile.isFile) {
+            "Unable to download the JSON schema from $schemaURL"
+        }
+    }
+}
+
 tasks.named<Test>("integrationTest") {
     dependsOn(downloadIntegrationTestResources)
+    dependsOn(downloadJsonSchemas)
     description = "Runs integration tests in core/src/integrationTest"
     environment("integrationTestingDir", File(integrationTestResources.absolutePath, "testset"))
+    environment("jsonSchemasDir", jsonSchemasDir.absolutePath)
+    environment(
+        "serializationChunksDir",
+        File(project.projectDir, "src/test/resources/serialization").absolutePath,
+    )
 }
 
 tasks.jacocoTestReport {
