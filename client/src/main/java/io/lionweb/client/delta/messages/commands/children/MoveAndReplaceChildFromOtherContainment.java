@@ -6,9 +6,9 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Move existing node movedChild inside newParent's newContainment at newIndex. Delete current
- * child replacedChild inside newParent's newContainment at newIndex, and all its descendants
- * (including annotation instances). Does NOT change references to any of the deleted nodes.
+ * Move existing node movedChild inside newParent's newContainment at newIndex. Delete current child
+ * replacedChild inside newParent's newContainment at newIndex, and all its descendants (including
+ * annotation instances). Does NOT change references to any of the deleted nodes.
  */
 public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand {
   public final @NotNull String newParent;
