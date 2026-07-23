@@ -339,8 +339,7 @@ public abstract class AbstractSerialization {
                             // References to M3 elements and built-ins are serialized without a
                             // target reference id, relying on the resolveInfo to resolve them back
                             // (specification section 3.4). We only drop the id when a resolveInfo
-                            // is
-                            // present, otherwise the target would become unresolvable.
+                            // is present, otherwise the target would become unresolvable.
                             if (builtinsReferenceDangling
                                 && rv.getResolveInfo() != null
                                 && ClassifierInstanceUtils.isBuiltinElement(rv.getReferred())) {
