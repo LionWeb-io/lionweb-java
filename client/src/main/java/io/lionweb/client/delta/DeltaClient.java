@@ -779,7 +779,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                     + event.containment);
           Node child = instance.getChildren(containment).get(event.oldIndex);
           instance.removeChild(containment, event.oldIndex);
-          instance.addChild(containment, child, event.newIndex);
+          instance.addChild(containment, child, event.indexOffset);
         });
   }
 
@@ -807,7 +807,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                     + event.newContainment);
           Node child = instance.getChildren(oldContainment).get(event.oldIndex);
           instance.removeChild(oldContainment, event.oldIndex);
-          instance.addChild(newContainment, child, event.newIndex);
+          instance.addChild(newContainment, child, event.indexOffset);
         });
   }
 
@@ -837,7 +837,7 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                           + newInstance
                           + " using metapointer "
                           + event.newContainment);
-                newInstance.addChild(newContainment, child, event.newIndex);
+                newInstance.addChild(newContainment, child, event.indexOffset);
                 monitorNode(child);
               });
         });

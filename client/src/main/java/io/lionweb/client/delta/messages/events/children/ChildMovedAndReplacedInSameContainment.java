@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 public final class ChildMovedAndReplacedInSameContainment
     extends BaseDeltaEvent<ChildMovedAndReplacedInSameContainment> {
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String movedChild;
   public final @NotNull String parent;
   public final @NotNull MetaPointer containment;
@@ -18,7 +18,7 @@ public final class ChildMovedAndReplacedInSameContainment
 
   public ChildMovedAndReplacedInSameContainment(
       int sequenceNumber,
-      int newIndex,
+      int indexOffset,
       @NotNull String movedChild,
       @NotNull String parent,
       @NotNull MetaPointer containment,
@@ -31,13 +31,13 @@ public final class ChildMovedAndReplacedInSameContainment
     Objects.requireNonNull(containment, "containment should not be null");
     Objects.requireNonNull(replacedChild, "replacedChild should not be null");
     Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex should be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset should be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.movedChild = movedChild;
     this.parent = parent;
     this.containment = containment;
@@ -49,8 +49,8 @@ public final class ChildMovedAndReplacedInSameContainment
   @Override
   public String toString() {
     return "ChildMovedAndReplacedInSameContainment{"
-        + "newIndex="
-        + newIndex
+        + "indexOffset="
+        + indexOffset
         + ", movedChild='"
         + movedChild
         + '\''

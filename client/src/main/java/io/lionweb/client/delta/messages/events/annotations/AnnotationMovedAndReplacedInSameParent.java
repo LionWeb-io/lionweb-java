@@ -7,11 +7,11 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Existing node movedAnnotation (previously inside parent's annotations at oldIndex) has replaced
- * the existing replacedAnnotation inside parent's annotations at newIndex.
+ * the existing replacedAnnotation inside parent's annotations at indexOffset.
  */
 public class AnnotationMovedAndReplacedInSameParent
     extends BaseDeltaEvent<AnnotationMovedAndReplacedInSameParent> {
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String movedAnnotation;
   public final @NotNull String parent;
   public final int oldIndex;
@@ -20,7 +20,7 @@ public class AnnotationMovedAndReplacedInSameParent
 
   public AnnotationMovedAndReplacedInSameParent(
       int sequenceNumber,
-      int newIndex,
+      int indexOffset,
       @NotNull String movedAnnotation,
       @NotNull String parent,
       int oldIndex,
@@ -34,10 +34,10 @@ public class AnnotationMovedAndReplacedInSameParent
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex should be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset should be non-negative");
     }
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.movedAnnotation = movedAnnotation;
     this.parent = parent;
     this.oldIndex = oldIndex;
@@ -48,8 +48,8 @@ public class AnnotationMovedAndReplacedInSameParent
   @Override
   public String toString() {
     return "AnnotationMovedAndReplacedInSameParent{"
-        + "newIndex="
-        + newIndex
+        + "indexOffset="
+        + indexOffset
         + ", movedAnnotation='"
         + movedAnnotation
         + '\''

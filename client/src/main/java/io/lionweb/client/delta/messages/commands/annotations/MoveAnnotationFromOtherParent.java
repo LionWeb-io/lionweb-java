@@ -4,10 +4,10 @@ import io.lionweb.client.delta.messages.DeltaCommand;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-/** Move existing node movedAnnotation inside newParent's annotations at newIndex. */
+/** Move existing node movedAnnotation inside newParent's annotations at indexOffset. */
 public final class MoveAnnotationFromOtherParent extends DeltaCommand {
   public final @NotNull String newParent;
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String movedAnnotation;
   public final @NotNull String oldParent;
   public final int oldIndex;
@@ -15,22 +15,22 @@ public final class MoveAnnotationFromOtherParent extends DeltaCommand {
   public MoveAnnotationFromOtherParent(
       @NotNull String commandId,
       @NotNull String newParent,
-      int newIndex,
+      int indexOffset,
       @NotNull String movedAnnotation,
       @NotNull String oldParent,
       int oldIndex) {
     super(commandId);
     Objects.requireNonNull(newParent, "newParent must not be null");
     Objects.requireNonNull(movedAnnotation, "movedAnnotation must not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset must be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }
     Objects.requireNonNull(oldParent, "oldParent must not be null");
     this.newParent = newParent;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.movedAnnotation = movedAnnotation;
     this.oldParent = oldParent;
     this.oldIndex = oldIndex;
@@ -42,8 +42,8 @@ public final class MoveAnnotationFromOtherParent extends DeltaCommand {
         + "newParent='"
         + newParent
         + '\''
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", movedAnnotation='"
         + movedAnnotation
         + '\''

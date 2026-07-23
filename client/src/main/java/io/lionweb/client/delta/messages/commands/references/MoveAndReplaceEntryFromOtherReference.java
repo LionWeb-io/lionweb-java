@@ -8,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Move existing entry movedTarget/movedResolveInfo inside oldParent's oldReference at oldIndex to
- * newParent's newReference at newIndex, replacing existing entry replacedTarget/replacedResolveInfo
- * in newParent's newReference at newIndex.
+ * newParent's newReference at indexOffset, replacing existing entry replacedTarget/replacedResolveInfo
+ * in newParent's newReference at indexOffset.
  */
 public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
   public final @Nullable String newParent;
   public final @NotNull MetaPointer newReference;
-  public final int newIndex;
+  public final int indexOffset;
   public final @Nullable String replacedTarget;
   public final @Nullable String replacedResolveInfo;
   public final @Nullable String oldParent;
@@ -27,7 +27,7 @@ public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
       @NotNull String commandId,
       @NotNull String newParent,
       @NotNull MetaPointer newReference,
-      int newIndex,
+      int indexOffset,
       @Nullable String replacedTarget,
       @Nullable String replacedResolveInfo,
       @NotNull String oldParent,
@@ -37,8 +37,8 @@ public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
       @Nullable String movedResolveInfo) {
     super(commandId);
     Objects.requireNonNull(newReference, "newReference must not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset must be non-negative");
     }
     Objects.requireNonNull(oldReference, "oldReference must not be null");
     if (oldIndex < 0) {
@@ -48,7 +48,7 @@ public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
     Objects.requireNonNull(oldParent, "oldParent must not be null");
     this.newParent = newParent;
     this.newReference = newReference;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedTarget = replacedTarget;
     this.replacedResolveInfo = replacedResolveInfo;
     this.oldParent = oldParent;
@@ -66,8 +66,8 @@ public final class MoveAndReplaceEntryFromOtherReference extends DeltaCommand {
         + '\''
         + ", newReference="
         + newReference
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", replacedTarget='"
         + replacedTarget
         + '\''

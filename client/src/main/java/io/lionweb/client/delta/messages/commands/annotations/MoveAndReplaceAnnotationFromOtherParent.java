@@ -5,13 +5,13 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Move existing node movedAnnotation inside newParent's annotations at newIndex. Delete current
- * node replacedAnnotation at newParent's annotations at newIndex, and all its descendants
+ * Move existing node movedAnnotation inside newParent's annotations at indexOffset. Delete current
+ * node replacedAnnotation at newParent's annotations at indexOffset, and all its descendants
  * (including annotation instances). Does NOT change references to any of the deleted nodes
  */
 public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand {
   public final @NotNull String newParent;
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String replacedAnnotation;
   public final @NotNull String movedAnnotation;
   public final @NotNull String oldParent;
@@ -20,7 +20,7 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
   public MoveAndReplaceAnnotationFromOtherParent(
       @NotNull String commandId,
       @NotNull String newParent,
-      int newIndex,
+      int indexOffset,
       @NotNull String replacedAnnotation,
       @NotNull String movedAnnotation,
       @NotNull String oldParent,
@@ -29,15 +29,15 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
     Objects.requireNonNull(newParent, "newParent must not be null");
     Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
     Objects.requireNonNull(movedAnnotation, "movedAnnotation must not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset must be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }
     Objects.requireNonNull(oldParent, "oldParent must not be null");
     this.newParent = newParent;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedAnnotation = replacedAnnotation;
     this.movedAnnotation = movedAnnotation;
     this.oldParent = oldParent;
@@ -50,8 +50,8 @@ public final class MoveAndReplaceAnnotationFromOtherParent extends DeltaCommand 
         + "newParent='"
         + newParent
         + '\''
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", replacedAnnotation='"
         + replacedAnnotation
         + '\''

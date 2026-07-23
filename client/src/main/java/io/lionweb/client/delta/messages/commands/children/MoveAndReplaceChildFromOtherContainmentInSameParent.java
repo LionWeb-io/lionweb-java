@@ -7,14 +7,14 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Move existing node movedChild (currently inside one of movedChild's parent’s containments other
- * than newContainment) inside movedChild's parent’s newContainment at newIndex. Delete current
- * child replacedChild inside movedChild's parent’s newContainment at newIndex, and all its
+ * than newContainment) inside movedChild's parent’s newContainment at indexOffset. Delete current
+ * child replacedChild inside movedChild's parent’s newContainment at indexOffset, and all its
  * descendants (including annotation instances). Does NOT change references to any of the deleted
  * nodes.
  */
 public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends DeltaCommand {
   public final @NotNull MetaPointer newContainment;
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String replacedChild;
   public final @NotNull String movedChild;
   public final @NotNull String parent;
@@ -24,7 +24,7 @@ public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends D
   public MoveAndReplaceChildFromOtherContainmentInSameParent(
       @NotNull String commandId,
       @NotNull MetaPointer newContainment,
-      int newIndex,
+      int indexOffset,
       @NotNull String replacedChild,
       @NotNull String movedChild,
       @NotNull String parent,
@@ -33,8 +33,8 @@ public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends D
     super(commandId);
 
     Objects.requireNonNull(newContainment, "newContainment must not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset must be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
@@ -44,7 +44,7 @@ public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends D
     Objects.requireNonNull(parent, "parent must not be null");
     Objects.requireNonNull(oldContainment, "oldContainment must not be null");
     this.newContainment = newContainment;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedChild = replacedChild;
     this.movedChild = movedChild;
     this.parent = parent;
@@ -57,8 +57,8 @@ public final class MoveAndReplaceChildFromOtherContainmentInSameParent extends D
     return "MoveAndReplaceChildFromOtherContainmentInSameParent{"
         + "newContainment="
         + newContainment
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", replacedChild='"
         + replacedChild
         + '\''

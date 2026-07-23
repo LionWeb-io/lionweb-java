@@ -6,14 +6,14 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Move existing node movedChild inside newParent's newContainment at newIndex. Delete current child
- * replacedChild inside newParent's newContainment at newIndex, and all its descendants (including
+ * Move existing node movedChild inside newParent's newContainment at indexOffset. Delete current child
+ * replacedChild inside newParent's newContainment at indexOffset, and all its descendants (including
  * annotation instances). Does NOT change references to any of the deleted nodes.
  */
 public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand {
   public final @NotNull String newParent;
   public final @NotNull MetaPointer newContainment;
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String oldParent;
   public final @NotNull MetaPointer oldContainment;
   public final int oldIndex;
@@ -24,7 +24,7 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
       @NotNull String commandId,
       @NotNull String newParent,
       @NotNull MetaPointer newContainment,
-      int newIndex,
+      int indexOffset,
       @NotNull String oldParent,
       @NotNull MetaPointer oldContainment,
       int oldIndex,
@@ -35,8 +35,8 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
     Objects.requireNonNull(newContainment, "newContainment must not be null");
     Objects.requireNonNull(oldParent, "oldParent must not be null");
     Objects.requireNonNull(oldContainment, "oldContainment must not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset must be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
@@ -45,7 +45,7 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     this.newParent = newParent;
     this.newContainment = newContainment;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedChild = replacedChild;
     this.movedChild = movedChild;
     this.oldParent = oldParent;
@@ -61,8 +61,8 @@ public final class MoveAndReplaceChildFromOtherContainment extends DeltaCommand 
         + '\''
         + ", newContainment="
         + newContainment
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", oldParent='"
         + oldParent
         + '\''

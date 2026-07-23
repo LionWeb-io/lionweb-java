@@ -8,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Existing reference movedTarget/movedResolveInfo (previously inside parent's reference at
- * oldIndex) has been moved to parent's reference at newIndex.
+ * oldIndex) has been moved to parent's reference at indexOffset.
  */
 public class EntryMovedInSameReference extends BaseDeltaEvent<EntryMovedInSameReference> {
   public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
   public final int oldIndex;
-  public final int newIndex;
+  public final int indexOffset;
   public final @Nullable String movedTarget;
   public final @Nullable String movedResolveInfo;
 
@@ -23,14 +23,14 @@ public class EntryMovedInSameReference extends BaseDeltaEvent<EntryMovedInSameRe
       @NotNull String parent,
       @NotNull MetaPointer reference,
       int oldIndex,
-      int newIndex,
+      int indexOffset,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo) {
     super(sequenceNumber);
     Objects.requireNonNull(parent, "parent should not be null");
     Objects.requireNonNull(reference, "reference should not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex should be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset should be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
@@ -38,7 +38,7 @@ public class EntryMovedInSameReference extends BaseDeltaEvent<EntryMovedInSameRe
     this.parent = parent;
     this.reference = reference;
     this.oldIndex = oldIndex;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.movedTarget = movedTarget;
     this.movedResolveInfo = movedResolveInfo;
   }
@@ -53,8 +53,8 @@ public class EntryMovedInSameReference extends BaseDeltaEvent<EntryMovedInSameRe
         + reference
         + ", oldIndex="
         + oldIndex
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", movedTarget='"
         + movedTarget
         + '\''

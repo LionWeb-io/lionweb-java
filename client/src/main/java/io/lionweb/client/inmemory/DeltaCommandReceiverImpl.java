@@ -221,12 +221,12 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     SerializedClassifierInstance parent = requireNode(data, cmd.parent);
     List<String> annotations = new ArrayList<>(parent.getAnnotations());
     String id = annotations.remove(cmd.oldIndex);
-    annotations.add(cmd.newIndex, id);
+    annotations.add(cmd.indexOffset, id);
     parent.setAnnotations(annotations);
     channel.sendEvent(
         seqNum ->
             new AnnotationMovedInSameParent(
-                    seqNum, cmd.newIndex, cmd.movedAnnotation, cmd.parent, cmd.oldIndex)
+                    seqNum, cmd.indexOffset, cmd.movedAnnotation, cmd.parent, cmd.oldIndex)
                 .addSource(source));
   }
 
@@ -242,14 +242,14 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     oldParent.setAnnotations(oldAnnotations);
     annotation.setParentNodeID(cmd.newParent);
     List<String> newAnnotations = new ArrayList<>(newParent.getAnnotations());
-    newAnnotations.add(cmd.newIndex, cmd.movedAnnotation);
+    newAnnotations.add(cmd.indexOffset, cmd.movedAnnotation);
     newParent.setAnnotations(newAnnotations);
     channel.sendEvent(
         seqNum ->
             new AnnotationMovedFromOtherParent(
                     seqNum,
                     cmd.newParent,
-                    cmd.newIndex,
+                    cmd.indexOffset,
                     cmd.movedAnnotation,
                     cmd.oldParent,
                     cmd.oldIndex)
@@ -296,11 +296,11 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
       @NotNull CommandSource source) {
     SerializedClassifierInstance parent = requireNode(data, cmd.parent);
     parent.removeChild(cmd.movedChild);
-    parent.addChild(cmd.containment, cmd.movedChild, cmd.newIndex);
+    parent.addChild(cmd.containment, cmd.movedChild, cmd.indexOffset);
     channel.sendEvent(
         seqNum ->
             new ChildMovedInSameContainment(
-                    seqNum, cmd.newIndex, cmd.movedChild, cmd.parent, cmd.containment, cmd.oldIndex)
+                    seqNum, cmd.indexOffset, cmd.movedChild, cmd.parent, cmd.containment, cmd.oldIndex)
                 .addSource(source));
   }
 
@@ -310,12 +310,12 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
       @NotNull CommandSource source) {
     SerializedClassifierInstance parent = requireNode(data, cmd.parent);
     parent.removeChild(cmd.movedChild);
-    parent.addChild(cmd.newContainment, cmd.movedChild, cmd.newIndex);
+    parent.addChild(cmd.newContainment, cmd.movedChild, cmd.indexOffset);
     channel.sendEvent(
         seqNum -> {
           ChildMovedFromOtherContainmentInSameParent event =
               new ChildMovedFromOtherContainmentInSameParent(
-                  seqNum, cmd.newContainment, cmd.newIndex, cmd.movedChild);
+                  seqNum, cmd.newContainment, cmd.indexOffset, cmd.movedChild);
           event.parent = cmd.parent;
           event.oldContainment = cmd.oldContainment;
           event.oldIndex = cmd.oldIndex;
@@ -332,12 +332,12 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     SerializedClassifierInstance child = requireNode(data, cmd.movedChild);
     oldParent.removeChild(cmd.movedChild);
     child.setParentNodeID(cmd.newParent);
-    newParent.addChild(cmd.newContainment, cmd.movedChild, cmd.newIndex);
+    newParent.addChild(cmd.newContainment, cmd.movedChild, cmd.indexOffset);
     channel.sendEvent(
         seqNum -> {
           ChildMovedFromOtherContainment event =
               new ChildMovedFromOtherContainment(
-                  seqNum, cmd.newParent, cmd.newContainment, cmd.newIndex, cmd.movedChild);
+                  seqNum, cmd.newParent, cmd.newContainment, cmd.indexOffset, cmd.movedChild);
           event.oldParent = cmd.oldParent;
           event.oldContainment = cmd.oldContainment;
           event.oldIndex = cmd.oldIndex;

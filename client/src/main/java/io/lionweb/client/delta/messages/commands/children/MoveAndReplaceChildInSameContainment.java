@@ -6,14 +6,14 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Move existing node movedChild within its current containment to newIndex. Delete current child
- * replacedChild inside the same containment at newIndex, and all its descendants (including
+ * Move existing node movedChild within its current containment to indexOffset. Delete current child
+ * replacedChild inside the same containment at indexOffset, and all its descendants (including
  * annotation instances). Does NOT change references to any of the deleted nodes
  */
 public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
   public final @NotNull String parent;
   public final @NotNull MetaPointer containment;
-  public final int newIndex;
+  public final int indexOffset;
   public final int oldIndex;
   public final @NotNull String replacedChild;
   public final @NotNull String movedChild;
@@ -22,19 +22,19 @@ public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
       @NotNull String commandId,
       @NotNull String parent,
       @NotNull MetaPointer containment,
-      int newIndex,
+      int indexOffset,
       int oldIndex,
       @NotNull String replacedChild,
       @NotNull String movedChild) {
     super(commandId);
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
+    if (indexOffset < 0) {
+      throw new IllegalArgumentException("indexOffset must be non-negative");
     }
     Objects.requireNonNull(replacedChild, "replacedChild must not be null");
     Objects.requireNonNull(movedChild, "movedChild must not be null");
     Objects.requireNonNull(parent, "parent must not be null");
     Objects.requireNonNull(containment, "containment must not be null");
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedChild = replacedChild;
     this.movedChild = movedChild;
     this.parent = parent;
@@ -50,8 +50,8 @@ public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
         + '\''
         + ", containment="
         + containment
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", oldIndex="
         + oldIndex
         + ", replacedChild='"
