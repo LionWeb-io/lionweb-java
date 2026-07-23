@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Existing reference movedTarget/movedResolveInfo (previously inside oldParent's oldReference at
- * oldIndex) has been moved to newParent's newReference at indexOffset.
+ * oldIndex) has been moved to newParent's newReference at newIndex.
  */
 public class EntryMovedFromOtherReference extends BaseDeltaEvent<EntryMovedFromOtherReference> {
   public final @NotNull String newParent;
   public final @NotNull MetaPointer newReference;
-  public final int indexOffset;
+  public final int newIndex;
   public final @NotNull String oldParent;
   public final @NotNull MetaPointer oldReference;
   public final int oldIndex;
@@ -24,7 +24,7 @@ public class EntryMovedFromOtherReference extends BaseDeltaEvent<EntryMovedFromO
       int sequenceNumber,
       @NotNull String newParent,
       @NotNull MetaPointer newReference,
-      int indexOffset,
+      int newIndex,
       @NotNull String oldParent,
       @NotNull MetaPointer oldReference,
       int oldIndex,
@@ -35,15 +35,15 @@ public class EntryMovedFromOtherReference extends BaseDeltaEvent<EntryMovedFromO
     Objects.requireNonNull(newReference, "newReference should not be null");
     Objects.requireNonNull(oldParent, "oldParent should not be null");
     Objects.requireNonNull(oldReference, "oldReference should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
     this.newParent = newParent;
     this.newReference = newReference;
-    this.indexOffset = indexOffset;
+    this.newIndex = newIndex;
     this.oldParent = oldParent;
     this.oldReference = oldReference;
     this.oldIndex = oldIndex;
@@ -59,8 +59,8 @@ public class EntryMovedFromOtherReference extends BaseDeltaEvent<EntryMovedFromO
         + '\''
         + ", newReference="
         + newReference
-        + ", indexOffset="
-        + indexOffset
+        + ", newIndex="
+        + newIndex
         + ", oldParent='"
         + oldParent
         + '\''

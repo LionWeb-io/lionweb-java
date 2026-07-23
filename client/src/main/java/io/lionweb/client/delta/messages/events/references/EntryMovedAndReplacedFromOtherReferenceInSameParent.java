@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Existing reference movedTarget/movedResolveInfo (previously inside parent's oldReference at
  * oldIndex) has replaced existing replacedTarget/replacedResolveInfo at parent's newReference at
- * indexOffset.
+ * newIndex.
  */
 public class EntryMovedAndReplacedFromOtherReferenceInSameParent
     extends BaseDeltaEvent<EntryMovedAndReplacedFromOtherReferenceInSameParent> {
   public final @NotNull String parent;
   public final @NotNull MetaPointer newReference;
-  public final int indexOffset;
+  public final int newIndex;
   public final @Nullable String movedTarget;
   public final @Nullable String movedResolveInfo;
   public final @NotNull MetaPointer oldReference;
@@ -27,7 +27,7 @@ public class EntryMovedAndReplacedFromOtherReferenceInSameParent
       int sequenceNumber,
       @NotNull String parent,
       @NotNull MetaPointer newReference,
-      int indexOffset,
+      int newIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo,
       @NotNull MetaPointer oldReference,
@@ -38,15 +38,15 @@ public class EntryMovedAndReplacedFromOtherReferenceInSameParent
     Objects.requireNonNull(parent, "parent should not be null");
     Objects.requireNonNull(newReference, "newReference should not be null");
     Objects.requireNonNull(oldReference, "oldReference should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
     this.parent = parent;
     this.newReference = newReference;
-    this.indexOffset = indexOffset;
+    this.newIndex = newIndex;
     this.movedTarget = movedTarget;
     this.movedResolveInfo = movedResolveInfo;
     this.oldReference = oldReference;
@@ -63,8 +63,8 @@ public class EntryMovedAndReplacedFromOtherReferenceInSameParent
         + '\''
         + ", newReference="
         + newReference
-        + ", indexOffset="
-        + indexOffset
+        + ", newIndex="
+        + newIndex
         + ", movedTarget='"
         + movedTarget
         + '\''

@@ -8,12 +8,12 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Move existing entry movedTarget/movedResolveInfo inside parent's oldReference at oldIndex to
- * parent's newReference at indexOffset.
+ * parent's newReference at newIndex.
  */
 public final class MoveEntryFromOtherReferenceInSameParent extends DeltaCommand {
   public final @Nullable String parent;
   public final @NotNull MetaPointer newReference;
-  public final int indexOffset;
+  public final int newIndex;
   public final @NotNull MetaPointer oldReference;
   public final int oldIndex;
   public final @Nullable String movedTarget;
@@ -23,15 +23,15 @@ public final class MoveEntryFromOtherReferenceInSameParent extends DeltaCommand 
       @Nullable String commandId,
       @NotNull String parent,
       @NotNull MetaPointer newReference,
-      int indexOffset,
+      int newIndex,
       @NotNull MetaPointer oldReference,
       int oldIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo) {
     super(commandId);
     Objects.requireNonNull(newReference, "newReference must not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset must be non-negative");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex must be non-negative");
     }
     Objects.requireNonNull(oldReference, "oldReference must not be null");
     if (oldIndex < 0) {
@@ -39,7 +39,7 @@ public final class MoveEntryFromOtherReferenceInSameParent extends DeltaCommand 
     }
     this.parent = parent;
     this.newReference = newReference;
-    this.indexOffset = indexOffset;
+    this.newIndex = newIndex;
     this.oldReference = oldReference;
     this.oldIndex = oldIndex;
     this.movedTarget = movedTarget;
@@ -54,8 +54,8 @@ public final class MoveEntryFromOtherReferenceInSameParent extends DeltaCommand 
         + '\''
         + ", newReference="
         + newReference
-        + ", indexOffset="
-        + indexOffset
+        + ", newIndex="
+        + newIndex
         + ", oldReference="
         + oldReference
         + ", oldIndex="

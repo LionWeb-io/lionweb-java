@@ -242,14 +242,14 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     oldParent.setAnnotations(oldAnnotations);
     annotation.setParentNodeID(cmd.newParent);
     List<String> newAnnotations = new ArrayList<>(newParent.getAnnotations());
-    newAnnotations.add(cmd.indexOffset, cmd.movedAnnotation);
+    newAnnotations.add(cmd.newIndex, cmd.movedAnnotation);
     newParent.setAnnotations(newAnnotations);
     channel.sendEvent(
         seqNum ->
             new AnnotationMovedFromOtherParent(
                     seqNum,
                     cmd.newParent,
-                    cmd.indexOffset,
+                    cmd.newIndex,
                     cmd.movedAnnotation,
                     cmd.oldParent,
                     cmd.oldIndex)
@@ -315,12 +315,12 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
       @NotNull CommandSource source) {
     SerializedClassifierInstance parent = requireNode(data, cmd.parent);
     parent.removeChild(cmd.movedChild);
-    parent.addChild(cmd.newContainment, cmd.movedChild, cmd.indexOffset);
+    parent.addChild(cmd.newContainment, cmd.movedChild, cmd.newIndex);
     channel.sendEvent(
         seqNum -> {
           ChildMovedFromOtherContainmentInSameParent event =
               new ChildMovedFromOtherContainmentInSameParent(
-                  seqNum, cmd.newContainment, cmd.indexOffset, cmd.movedChild);
+                  seqNum, cmd.newContainment, cmd.newIndex, cmd.movedChild);
           event.parent = cmd.parent;
           event.oldContainment = cmd.oldContainment;
           event.oldIndex = cmd.oldIndex;
@@ -337,12 +337,12 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
     SerializedClassifierInstance child = requireNode(data, cmd.movedChild);
     oldParent.removeChild(cmd.movedChild);
     child.setParentNodeID(cmd.newParent);
-    newParent.addChild(cmd.newContainment, cmd.movedChild, cmd.indexOffset);
+    newParent.addChild(cmd.newContainment, cmd.movedChild, cmd.newIndex);
     channel.sendEvent(
         seqNum -> {
           ChildMovedFromOtherContainment event =
               new ChildMovedFromOtherContainment(
-                  seqNum, cmd.newParent, cmd.newContainment, cmd.indexOffset, cmd.movedChild);
+                  seqNum, cmd.newParent, cmd.newContainment, cmd.newIndex, cmd.movedChild);
           event.oldParent = cmd.oldParent;
           event.oldContainment = cmd.oldContainment;
           event.oldIndex = cmd.oldIndex;

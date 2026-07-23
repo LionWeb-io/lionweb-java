@@ -8,13 +8,13 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Move existing entry movedTarget/movedResolveInfo inside parent's oldReference at oldIndex to
- * parent's newReference at indexOffset, replacing existing entry
- * replacedTarget/replacedResolveInfo[32] in parent's newReference at indexOffset.
+ * parent's newReference at newIndex, replacing existing entry
+ * replacedTarget/replacedResolveInfo[32] in parent's newReference at newIndex.
  */
 public final class MoveAndReplaceEntryFromOtherReferenceInSameParent extends DeltaCommand {
   public final @NotNull String parent;
   public final @NotNull MetaPointer newReference;
-  public final int indexOffset;
+  public final int newIndex;
   public final @Nullable String replacedTarget;
   public final @Nullable String replacedResolveInfo;
   public final @NotNull MetaPointer oldReference;
@@ -26,7 +26,7 @@ public final class MoveAndReplaceEntryFromOtherReferenceInSameParent extends Del
       @NotNull String commandId,
       @NotNull String parent,
       @NotNull MetaPointer newReference,
-      int indexOffset,
+      int newIndex,
       @Nullable String replacedTarget,
       @Nullable String replacedResolveInfo,
       @NotNull MetaPointer oldReference,
@@ -36,8 +36,8 @@ public final class MoveAndReplaceEntryFromOtherReferenceInSameParent extends Del
     super(commandId);
     Objects.requireNonNull(parent, "parent must not be null");
     Objects.requireNonNull(newReference, "newReference must not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset must be non-negative");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex must be non-negative");
     }
     Objects.requireNonNull(oldReference, "oldReference must not be null");
     if (oldIndex < 0) {
@@ -45,7 +45,7 @@ public final class MoveAndReplaceEntryFromOtherReferenceInSameParent extends Del
     }
     this.parent = parent;
     this.newReference = newReference;
-    this.indexOffset = indexOffset;
+    this.newIndex = newIndex;
     this.replacedTarget = replacedTarget;
     this.replacedResolveInfo = replacedResolveInfo;
     this.oldReference = oldReference;
@@ -62,8 +62,8 @@ public final class MoveAndReplaceEntryFromOtherReferenceInSameParent extends Del
         + '\''
         + ", newReference="
         + newReference
-        + ", indexOffset="
-        + indexOffset
+        + ", newIndex="
+        + newIndex
         + ", replacedTarget='"
         + replacedTarget
         + '\''

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 public final class ChildMovedAndReplacedFromOtherContainmentInSameParent
     extends BaseDeltaEvent<ChildMovedAndReplacedFromOtherContainmentInSameParent> {
   public final @NotNull MetaPointer newContainment;
-  public final int indexOffset;
+  public final int newIndex;
   public final @NotNull String movedChild;
   public final @NotNull String parent;
   public final @NotNull MetaPointer oldContainment;
@@ -20,7 +20,7 @@ public final class ChildMovedAndReplacedFromOtherContainmentInSameParent
   public ChildMovedAndReplacedFromOtherContainmentInSameParent(
       int sequenceNumber,
       @NotNull MetaPointer newContainment,
-      int indexOffset,
+      int newIndex,
       @NotNull String movedChild,
       @NotNull String parent,
       @NotNull MetaPointer oldContainment,
@@ -34,14 +34,14 @@ public final class ChildMovedAndReplacedFromOtherContainmentInSameParent
     Objects.requireNonNull(oldContainment, "oldContainment should not be null");
     Objects.requireNonNull(replacedChild, "replacedChild should not be null");
     Objects.requireNonNull(replacedDescendants, "replacedDescendants should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
     }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
     this.newContainment = newContainment;
-    this.indexOffset = indexOffset;
+    this.newIndex = newIndex;
     this.movedChild = movedChild;
     this.parent = parent;
     this.oldContainment = oldContainment;
@@ -55,8 +55,8 @@ public final class ChildMovedAndReplacedFromOtherContainmentInSameParent
     return "ChildMovedAndReplacedFromOtherContainmentInSameParent{"
         + "newContainment="
         + newContainment
-        + ", indexOffset="
-        + indexOffset
+        + ", newIndex="
+        + newIndex
         + ", movedChild='"
         + movedChild
         + '\''

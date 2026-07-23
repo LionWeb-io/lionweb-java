@@ -15,7 +15,7 @@ public final class ChildMovedFromOtherContainment
   public final @NotNull MetaPointer newContainment;
 
   /** The new index in the containment after the move. */
-  public final int indexOffset;
+  public final int newIndex;
 
   /** The ID of the child node that was moved. */
   public final @NotNull String movedChild;
@@ -33,18 +33,18 @@ public final class ChildMovedFromOtherContainment
       int sequenceNumber,
       @NotNull String newParent,
       @NotNull MetaPointer newContainment,
-      int indexOffset,
+      int newIndex,
       @NotNull String movedChild) {
     super(sequenceNumber);
     Objects.requireNonNull(newParent, "newParent should not be null");
     Objects.requireNonNull(newContainment, "newContainment should not be null");
     Objects.requireNonNull(movedChild, "movedChild should not be null");
-    if (indexOffset < 0) {
-      throw new IllegalArgumentException("indexOffset should be non-negative");
+    if (newIndex < 0) {
+      throw new IllegalArgumentException("newIndex should be non-negative");
     }
     this.newParent = newParent;
     this.newContainment = newContainment;
-    this.indexOffset = indexOffset;
+    this.newIndex = newIndex;
     this.movedChild = movedChild;
   }
 
@@ -56,8 +56,8 @@ public final class ChildMovedFromOtherContainment
         + '\''
         + ", newContainment="
         + newContainment
-        + ", indexOffset="
-        + indexOffset
+        + ", newIndex="
+        + newIndex
         + ", movedChild='"
         + movedChild
         + '\''
