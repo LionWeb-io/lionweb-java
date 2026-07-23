@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
 
 /**
  * Move existing entry movedTarget/movedResolveInfo[32] inside parent's reference at oldIndex inside
- * parent's reference at newIndex, replacing existing entry replacedTarget/replacedResolveInfo[32]
- * in parent's reference at newIndex.
+ * parent's reference at indexOffset, replacing existing entry
+ * replacedTarget/replacedResolveInfo[32] in parent's reference at indexOffset.
  */
 public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
   public final @NotNull String parent;
@@ -17,7 +17,7 @@ public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
   public final int oldIndex;
   public final @Nullable String movedTarget;
   public final @Nullable String movedResolveInfo;
-  public final int newIndex;
+  public final int indexOffset;
   public final @Nullable String replacedTarget;
   public final @Nullable String replacedResolveInfo;
 
@@ -28,7 +28,7 @@ public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
       int oldIndex,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo,
-      int newIndex,
+      int indexOffset,
       @Nullable String replacedTarget,
       @Nullable String replacedResolveInfo) {
     super(commandId);
@@ -37,15 +37,12 @@ public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
-    }
     this.parent = parent;
     this.reference = reference;
     this.oldIndex = oldIndex;
     this.movedTarget = movedTarget;
     this.movedResolveInfo = movedResolveInfo;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedTarget = replacedTarget;
     this.replacedResolveInfo = replacedResolveInfo;
   }
@@ -66,8 +63,8 @@ public final class MoveAndReplaceEntryInSameReference extends DeltaCommand {
         + ", movedResolveInfo='"
         + movedResolveInfo
         + '\''
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", replacedTarget='"
         + replacedTarget
         + '\''

@@ -9,13 +9,13 @@ import org.jetbrains.annotations.Nullable;
 /**
  * Existing reference movedTarget/movedResolveInfo (previously inside parent's reference at
  * oldIndex) has replaced existing replacedTarget/replacedResolveInfo at parent's reference at
- * newIndex.
+ * indexOffset.
  */
 public class EntryMovedAndReplacedInSameReference
     extends BaseDeltaEvent<EntryMovedAndReplacedInSameReference> {
   public final @NotNull String parent;
   public final @NotNull MetaPointer reference;
-  public final int newIndex;
+  public final int indexOffset;
   public final @Nullable String movedTarget;
   public final @Nullable String movedResolveInfo;
   public final int oldIndex;
@@ -26,7 +26,7 @@ public class EntryMovedAndReplacedInSameReference
       int sequenceNumber,
       @NotNull String parent,
       @NotNull MetaPointer reference,
-      int newIndex,
+      int indexOffset,
       @Nullable String movedTarget,
       @Nullable String movedResolveInfo,
       int oldIndex,
@@ -35,15 +35,12 @@ public class EntryMovedAndReplacedInSameReference
     super(sequenceNumber);
     Objects.requireNonNull(parent, "parent should not be null");
     Objects.requireNonNull(reference, "reference should not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex should be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex should be non-negative");
     }
     this.parent = parent;
     this.reference = reference;
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.movedTarget = movedTarget;
     this.movedResolveInfo = movedResolveInfo;
     this.oldIndex = oldIndex;
@@ -59,8 +56,8 @@ public class EntryMovedAndReplacedInSameReference
         + '\''
         + ", reference="
         + reference
-        + ", newIndex="
-        + newIndex
+        + ", indexOffset="
+        + indexOffset
         + ", movedTarget='"
         + movedTarget
         + '\''

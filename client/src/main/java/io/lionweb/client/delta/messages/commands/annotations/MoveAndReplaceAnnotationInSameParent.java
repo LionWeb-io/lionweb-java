@@ -5,12 +5,13 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Move existing node movedAnnotation within the same parent to newIndex. Delete current node
- * replacedAnnotation at movedAnnotation's parent’s annotations at newIndex, and all its descendants
- * (including annotation instances). Does NOT change references to any of the deleted nodes.
+ * Move existing node movedAnnotation within the same parent to indexOffset. Delete current node
+ * replacedAnnotation at movedAnnotation's parent’s annotations at indexOffset, and all its
+ * descendants (including annotation instances). Does NOT change references to any of the deleted
+ * nodes.
  */
 public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
-  public final int newIndex;
+  public final int indexOffset;
   public final @NotNull String replacedAnnotation;
   public final @NotNull String movedAnnotation;
   public final @NotNull String parent;
@@ -18,7 +19,7 @@ public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
 
   public MoveAndReplaceAnnotationInSameParent(
       @NotNull String commandId,
-      int newIndex,
+      int indexOffset,
       @NotNull String replacedAnnotation,
       @NotNull String movedAnnotation,
       @NotNull String parent,
@@ -26,14 +27,11 @@ public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
     super(commandId);
     Objects.requireNonNull(replacedAnnotation, "replacedAnnotation must not be null");
     Objects.requireNonNull(movedAnnotation, "movedAnnotation must not be null");
-    if (newIndex < 0) {
-      throw new IllegalArgumentException("newIndex must be non-negative");
-    }
     if (oldIndex < 0) {
       throw new IllegalArgumentException("oldIndex must be non-negative");
     }
     Objects.requireNonNull(parent, "parent must not be null");
-    this.newIndex = newIndex;
+    this.indexOffset = indexOffset;
     this.replacedAnnotation = replacedAnnotation;
     this.movedAnnotation = movedAnnotation;
     this.parent = parent;
@@ -43,8 +41,8 @@ public final class MoveAndReplaceAnnotationInSameParent extends DeltaCommand {
   @Override
   public String toString() {
     return "MoveAndReplaceAnnotationInSameParent{"
-        + "newIndex="
-        + newIndex
+        + "indexOffset="
+        + indexOffset
         + ", replacedAnnotation='"
         + replacedAnnotation
         + '\''

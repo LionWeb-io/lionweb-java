@@ -97,7 +97,7 @@ public abstract class AbstractSerialization {
 
   private final @Nonnull LionWebVersion lionWebVersion;
 
-  protected boolean builtinsReferenceDangling = false;
+  protected boolean builtinsReferenceDangling;
 
   protected AbstractSerialization() {
     this(LionWebVersion.currentVersion);
@@ -106,6 +106,11 @@ public abstract class AbstractSerialization {
   protected AbstractSerialization(@Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     this.lionWebVersion = lionWebVersion;
+    // As of LionWeb 2024.1, references to M3 elements and built-ins SHOULD be serialized without a
+    // target reference id, relying on the resolveInfo (autoresolve) instead. See specification
+    // section 3.4 "Serialization of predefined keys". This is only possible from 2024.1 onwards, as
+    // earlier versions do not carry the qualified resolveInfo required to resolve them back.
+    this.builtinsReferenceDangling = lionWebVersion == LionWebVersion.v2024_1;
     // prevent public access
     classifierResolver = new ClassifierResolver();
     instantiator = new Instantiator();
@@ -331,7 +336,12 @@ public abstract class AbstractSerialization {
                           rv -> {
                             String referredID =
                                 rv.getReferred() == null ? null : rv.getReferred().getID();
+                            // References to M3 elements and built-ins are serialized without a
+                            // target reference id, relying on the resolveInfo to resolve them back
+                            // (specification section 3.4). We only drop the id when a resolveInfo
+                            // is present, otherwise the target would become unresolvable.
                             if (builtinsReferenceDangling
+                                && rv.getResolveInfo() != null
                                 && ClassifierInstanceUtils.isBuiltinElement(rv.getReferred())) {
                               referredID = null;
                             }
