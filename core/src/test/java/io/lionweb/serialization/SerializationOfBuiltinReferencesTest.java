@@ -113,6 +113,24 @@ public class SerializationOfBuiltinReferencesTest extends SerializationTest {
     assertNotNull(entry.getReference(), "Reference id should be kept for 2023.1");
   }
 
+  /** A Language that depends on Builtins. */
+  @Test
+  public void languageDependsOnBuiltins() {
+    Language language =
+        new Language().setID("l-id").setKey("l-key").setName("MyLanguage").setVersion("1");
+    language.addDependency(LionCoreBuiltins.getInstance());
+    Concept concept =
+        new Concept().setID("c-id").setKey("c-key").setName("MyConcept").setParent(language);
+    language.addElement(concept);
+
+    JsonSerialization serialization = SerializationProvider.getStandardJsonSerialization();
+    SerializationChunk chunk = serialization.serializeTreeToSerializationChunk(language);
+
+    SerializedReferenceValue.Entry entry = singleTypeEntry(chunk, "l-id", "Language-dependsOn");
+    assertNull(entry.getReference(), "Reference id to builtin should be null");
+    assertEquals("LionCore_builtins", entry.getResolveInfo());
+  }
+
   /** An Annotation that implements builtin INamed and annotations builtin Node. */
   @Test
   public void annotationImplementsBuiltinINamed() {
