@@ -10,8 +10,8 @@ import com.networknt.schema.SpecificationVersion;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -53,11 +53,7 @@ public class SerializationSchemaValidationTest {
   static Stream<Path> chunkFiles() {
     Path chunksDir = requireDir("serializationChunksDir");
     try (Stream<Path> files = Files.list(chunksDir)) {
-      return files
-          .filter(p -> p.getFileName().toString().endsWith(".json"))
-          .sorted()
-          .collect(Collectors.toList())
-          .stream();
+      return files.filter(p -> p.getFileName().toString().endsWith(".json")).sorted();
     } catch (IOException e) {
       throw new UncheckedIOException("Unable to list serialization chunks in " + chunksDir, e);
     }
@@ -75,7 +71,7 @@ public class SerializationSchemaValidationTest {
 
   private static String readString(Path path) {
     try {
-      return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);
+      return Files.readString(path);
     } catch (IOException e) {
       throw new UncheckedIOException("Unable to read " + path, e);
     }
@@ -86,6 +82,16 @@ public class SerializationSchemaValidationTest {
     if (value == null) {
       throw new IllegalStateException("environment variable " + envVar + " not defined.");
     }
-    return Paths.get(value);
+    try {
+      Path dir = Paths.get(value);
+      if (!dir.toFile().isDirectory()) {
+        throw new IllegalStateException(
+            "environment variable " + envVar + " does not point to a directory.");
+      }
+      return dir;
+    } catch (InvalidPathException e) {
+      throw new IllegalStateException(
+          "environment variable " + envVar + " does not point to a valid directory.", e);
+    }
   }
 }
