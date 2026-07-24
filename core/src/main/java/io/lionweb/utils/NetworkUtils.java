@@ -18,6 +18,12 @@ import javax.annotation.Nonnull;
  */
 public class NetworkUtils {
 
+  /** Number of attempts performed before giving up on a transient network failure. */
+  private static final int MAX_ATTEMPTS = 3;
+
+  /** Base delay, in milliseconds, used for the exponential backoff between retries. */
+  private static final long RETRY_BASE_DELAY_MS = 500;
+
   private NetworkUtils() {
     // Prevent instantiation
   }
@@ -48,6 +54,26 @@ public class NetworkUtils {
   }
 
   private static InputStream urlToInputStream(URL url, Map<String, String> args) {
+    RuntimeException lastException = null;
+    for (int attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+      try {
+        return attemptUrlToInputStream(url, args);
+      } catch (RuntimeException e) {
+        lastException = e;
+        if (attempt < MAX_ATTEMPTS) {
+          try {
+            Thread.sleep(RETRY_BASE_DELAY_MS * (1L << (attempt - 1)));
+          } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw e;
+          }
+        }
+      }
+    }
+    throw lastException;
+  }
+
+  private static InputStream attemptUrlToInputStream(URL url, Map<String, String> args) {
     HttpURLConnection con = null;
     InputStream inputStream = null;
     try {

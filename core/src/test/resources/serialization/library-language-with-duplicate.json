@@ -61,6 +61,7 @@
           "targets": []
         }
       ],
+      "annotations": [],
       "parent": null
     },
     {
@@ -127,6 +128,7 @@
           "targets": []
         }
       ],
+      "annotations": [],
       "parent": "library"
     },
     {
@@ -178,6 +180,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-Book"
     },
     {
@@ -229,6 +232,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-Book"
     },
     {
@@ -288,6 +292,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-Book"
     },
     {
@@ -354,6 +359,7 @@
           "targets": []
         }
       ],
+      "annotations": [],
       "parent": "library"
     },
     {
@@ -405,6 +411,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-Library"
     },
     {
@@ -464,6 +471,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-Library"
     },
     {
@@ -529,6 +537,7 @@
           "targets": []
         }
       ],
+      "annotations": [],
       "parent": "library"
     },
     {
@@ -580,6 +589,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-Writer"
     },
     {
@@ -650,6 +660,7 @@
           "targets": []
         }
       ],
+      "annotations": [],
       "parent": "library"
     },
     {
@@ -701,6 +712,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-GuideBookWriter"
     },
     {
@@ -771,6 +783,7 @@
           "targets": []
         }
       ],
+      "annotations": [],
       "parent": "library"
     },
     {
@@ -822,6 +835,7 @@
           ]
         }
       ],
+      "annotations": [],
       "parent": "library-SpecialistBookWriter"
     }
   ]
