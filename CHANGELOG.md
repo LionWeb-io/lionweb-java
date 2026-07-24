@@ -2,6 +2,9 @@
 
 ### Version 1.4.5
 
+* Fix how some references are saved in M3
+* Make some tests more resilient to transient network errors
+
 ### Version 1.4.4
 
 * Fix serialization of references to `LionCore-builtins` and M3 elements in LionWeb 2024.1: the target reference id is now omitted (serialized as `null`), relying on the qualified `resolveInfo` (e.g. `LionWeb.LionCore_builtins.String`) as mandated by specification section 3.4. For LionWeb 2023.1 the reference id is still kept (issue #411)
