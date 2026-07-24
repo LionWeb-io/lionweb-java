@@ -53,7 +53,13 @@ public class SerializationSchemaValidationTest {
   static Stream<Path> chunkFiles() {
     Path chunksDir = requireDir("serializationChunksDir");
     try (Stream<Path> files = Files.list(chunksDir)) {
-      return files.filter(p -> p.getFileName().toString().endsWith(".json")).sorted();
+      // Materialize into a list while the directory stream is still open: the returned stream is
+      // consumed later by JUnit, after this try-with-resources has closed the underlying stream.
+      return files
+          .filter(p -> p.getFileName().toString().endsWith(".json"))
+          .sorted()
+          .collect(Collectors.toList())
+          .stream();
     } catch (IOException e) {
       throw new UncheckedIOException("Unable to list serialization chunks in " + chunksDir, e);
     }
