@@ -2,6 +2,7 @@ package io.lionweb.language;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.lioncore.LionCore;
+import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.ReferenceValue;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -75,7 +76,7 @@ public class Annotation extends Classifier<Annotation> {
 
   public void addImplementedInterface(@Nonnull Interface iface) {
     Objects.requireNonNull(iface, "iface should not be null");
-    this.addReferenceMultipleValue("implements", new ReferenceValue(iface, iface.getName()));
+    this.addReferenceMultipleValue("implements", ClassifierInstanceUtils.referenceTo(iface));
   }
 
   /**
@@ -90,7 +91,7 @@ public class Annotation extends Classifier<Annotation> {
     if (extended == null) {
       this.setReferenceSingleValue("extends", null);
     } else {
-      this.setReferenceSingleValue("extends", new ReferenceValue(extended, extended.getName()));
+      this.setReferenceSingleValue("extends", ClassifierInstanceUtils.referenceTo(extended));
     }
     return this;
   }
@@ -108,7 +109,7 @@ public class Annotation extends Classifier<Annotation> {
     if (target == null) {
       this.setReferenceSingleValue("annotates", null);
     } else {
-      this.setReferenceSingleValue("annotates", new ReferenceValue(target, target.getName()));
+      this.setReferenceSingleValue("annotates", ClassifierInstanceUtils.referenceTo(target));
     }
     return this;
   }
