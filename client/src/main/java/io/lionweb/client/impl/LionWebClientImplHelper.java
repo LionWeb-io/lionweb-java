@@ -13,7 +13,12 @@ abstract class LionWebClientImplHelper {
   protected static final MediaType JSON = MediaType.get("application/json");
 
   protected final ClientConfiguration conf;
-  protected final Gson gson = new GsonBuilder().serializeNulls().create();
+  protected final Gson gson =
+      new GsonBuilder()
+          .setFormattingStyle(
+              FormattingStyle.PRETTY.withNewline(System.lineSeparator()).withIndent("           "))
+          .serializeNulls()
+          .create();
 
   public LionWebClientImplHelper(ClientConfiguration clientConfiguration) {
     this.conf = clientConfiguration;

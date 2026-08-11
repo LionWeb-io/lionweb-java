@@ -132,6 +132,7 @@ Tested and supported Java versions: 11, 17, 21, and 25.
 
 * Introducing benchmarks
 * Tuning serialization and deserialization performance
+* Set EOL of exported JSON to that of OS (to avoid problems with OS and Git), and indentation to 4 spaces.
 
 ### Version 1.3.6
 
