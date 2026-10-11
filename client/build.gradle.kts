@@ -1,6 +1,5 @@
 plugins {
     id("java-library")
-    alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
     id("integration-test-conventions")
