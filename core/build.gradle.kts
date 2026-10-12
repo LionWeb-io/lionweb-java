@@ -5,7 +5,6 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions
 plugins {
     id("java-library")
     id("idea")
-    alias(libs.plugins.shadow)
     alias(libs.plugins.vt.publish)
     jacoco
     id("integration-test-conventions")
