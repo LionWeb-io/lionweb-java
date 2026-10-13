@@ -496,6 +496,37 @@ public class ChunkValidatorTest {
   }
 
   @Test
+  public void testPlacementsAreAccumulated() {
+    SerializedClassifierInstance parent1 = createValidNode("parent1", null);
+    SerializedClassifierInstance parent2 = createValidNode("parent2", null);
+    SerializedClassifierInstance parent3 = createValidNode("parent3", null);
+    SerializedClassifierInstance child = createValidNode("child1", "parent3");
+    parent1.addAnnotation("child1");
+    parent2.unsafeAppendContainmentValue(createContainment("child1"));
+    parent3.unsafeAppendContainmentValue(createContainment("child1"));
+
+    chunk.addClassifierInstances(parent1, parent2, parent3, child);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "child1 is listed in multiple places: [parent1 among annotations] and now parent2 at "
+                + testMetaPointer));
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "child1 is listed in multiple places: [parent1 among annotations, parent2 at "
+                + testMetaPointer
+                + "] and now parent3 at "
+                + testMetaPointer));
+    // parent3 does contain child1, even if it is not the first node listing it
+    assertFalse(hasIssueContaining(result, "but such parent does not contain it"));
+  }
+
+  @Test
   public void testValidSerializationFormatVersion() {
     chunk.setSerializationFormatVersion("2024.1");
     assertTrue(validator.validate(chunk).isSuccessful());

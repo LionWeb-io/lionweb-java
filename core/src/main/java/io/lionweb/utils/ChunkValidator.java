@@ -48,9 +48,11 @@ public class ChunkValidator extends Validator<SerializationChunk> {
 
     checkSerializationFormatVersion(chunk, validationResult);
 
+    List<SerializedClassifierInstance> nodes = chunk.getClassifierInstances();
+
     // Prepare supporting structures
-    Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>();
-    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
+    Map<String, SerializedClassifierInstance> nodesByID = new HashMap<>(capacityFor(nodes.size()));
+    for (SerializedClassifierInstance node : nodes) {
       // Verifying IDs are valid
       if (!IdUtils.isValidID(node.getID())) {
         validationResult.addError("Invalid node id: " + node.getID(), node.getID());
@@ -64,13 +66,71 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
     }
 
-    checkLanguagesAndMetaPointers(chunk, validationResult);
-    checkReferencedIDs(chunk, validationResult);
-    checkContainmentHierarchy(chunk, nodesByID, validationResult);
-    checkCycles(chunk, nodesByID, validationResult);
+    Set<LanguageVersion> declaredLanguages = checkDeclaredLanguages(chunk, validationResult);
+
+    // All the per-node checks are done in a single pass
+    Set<LanguageVersion> usedLanguages = new HashSet<>();
+    Set<MetaPointer> featureMetaPointers = new HashSet<>();
+    Placements placements = new Placements(nodes.size());
+    for (SerializedClassifierInstance node : nodes) {
+      checkClassifier(node, usedLanguages, validationResult);
+      featureMetaPointers.clear();
+      for (SerializedContainmentValue containmentValue : node.getContainments()) {
+        MetaPointer containment = containmentValue.getMetaPointer();
+        checkFeatureMetaPointer(
+            node, containment, usedLanguages, featureMetaPointers, validationResult);
+        for (String childId : containmentValue.getChildrenIds()) {
+          checkChild(node, containment, childId, nodesByID, placements, validationResult);
+        }
+      }
+      for (SerializedReferenceValue referenceValue : node.getReferences()) {
+        checkFeatureMetaPointer(
+            node,
+            referenceValue.getMetaPointer(),
+            usedLanguages,
+            featureMetaPointers,
+            validationResult);
+        for (SerializedReferenceValue.Entry entry : referenceValue.getValue()) {
+          String target = entry.getReference();
+          if (target != null && !IdUtils.isValidID(target)) {
+            validationResult.addError(
+                "Node " + node.getID() + " has an invalid reference target id: " + target,
+                node.getID());
+          }
+        }
+      }
+      for (SerializedPropertyValue propertyValue : node.getProperties()) {
+        checkFeatureMetaPointer(
+            node,
+            propertyValue.getMetaPointer(),
+            usedLanguages,
+            featureMetaPointers,
+            validationResult);
+      }
+      for (String annotationId : node.getAnnotations()) {
+        checkAnnotation(node, annotationId, nodesByID, placements, validationResult);
+      }
+      checkParentID(node, validationResult);
+    }
+
+    checkUsedLanguages(chunk, declaredLanguages, usedLanguages, validationResult);
+    checkParentsContainTheirNodes(nodes, nodesByID, placements, validationResult);
+    checkCycles(nodes, nodesByID, validationResult);
+    additionalChecks(chunk, nodesByID, validationResult);
 
     return validationResult;
   }
+
+  /**
+   * Hook for subclasses to perform further checks, after the ones done by this class.
+   *
+   * @param nodesByID the nodes of the chunk, indexed by ID (the first node is kept for duplicate
+   *     IDs). It should not be modified.
+   */
+  protected void additionalChecks(
+      @Nonnull SerializationChunk chunk,
+      @Nonnull Map<String, SerializedClassifierInstance> nodesByID,
+      @Nonnull ValidationResult validationResult) {}
 
   private void checkSerializationFormatVersion(
       @Nonnull SerializationChunk chunk, @Nonnull ValidationResult validationResult) {
@@ -84,9 +144,9 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     }
   }
 
-  private void checkLanguagesAndMetaPointers(
+  /** Check the languages declared in the chunk are well-formed. */
+  private static @Nonnull Set<LanguageVersion> checkDeclaredLanguages(
       @Nonnull SerializationChunk chunk, @Nonnull ValidationResult validationResult) {
-    // Check the languages declared in the chunk are well-formed
     Set<LanguageVersion> declaredLanguages = new HashSet<>();
     for (LanguageVersion language : chunk.getLanguages()) {
       if (language.getKey() == null || language.getVersion() == null) {
@@ -101,64 +161,72 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
       declaredLanguages.add(language);
     }
+    return declaredLanguages;
+  }
 
-    // Check used languages and duplicate metapointers
-    Set<LanguageVersion> usedLanguages = new HashSet<>();
-    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
-      MetaPointer classifier = node.getClassifier();
-      if (classifier == null) {
-        validationResult.addError("Node " + node.getID() + " has no classifier", node.getID());
-      } else {
-        checkMetaPointer(node, classifier, "classifier", validationResult);
-        usedLanguages.add(classifier.getLanguageVersion());
-      }
-
-      List<MetaPointer> metaPointers = new ArrayList<>();
-      node.getContainments().forEach(c -> metaPointers.add(c.getMetaPointer()));
-      node.getReferences().forEach(r -> metaPointers.add(r.getMetaPointer()));
-      node.getProperties().forEach(p -> metaPointers.add(p.getMetaPointer()));
-
-      Set<MetaPointer> featureMetaPointers = new HashSet<>();
-      for (MetaPointer metaPointer : metaPointers) {
-        if (metaPointer == null) {
-          validationResult.addError(
-              "Node " + node.getID() + " has a feature without metapointer", node.getID());
-          continue;
-        }
-        checkMetaPointer(node, metaPointer, "feature", validationResult);
-        usedLanguages.add(metaPointer.getLanguageVersion());
-        if (!featureMetaPointers.add(metaPointer)) {
-          validationResult.addError(
-              "Node " + node.getID() + " has duplicate feature metapointer: " + metaPointer,
-              node.getID());
-        }
+  private static void checkUsedLanguages(
+      @Nonnull SerializationChunk chunk,
+      @Nonnull Set<LanguageVersion> declaredLanguages,
+      @Nonnull Set<LanguageVersion> usedLanguages,
+      @Nonnull ValidationResult validationResult) {
+    if (usedLanguages.equals(declaredLanguages)) {
+      return;
+    }
+    Set<String> extraLanguages = new TreeSet<>();
+    for (LanguageVersion language : declaredLanguages) {
+      if (!usedLanguages.contains(language)) {
+        extraLanguages.add(formatLanguage(language));
       }
     }
 
-    if (!usedLanguages.equals(declaredLanguages)) {
-      Set<String> extraLanguages = new TreeSet<>();
-      for (LanguageVersion language : declaredLanguages) {
-        if (!usedLanguages.contains(language)) {
-          extraLanguages.add(formatLanguage(language));
-        }
+    Set<String> missingLanguages = new TreeSet<>();
+    for (LanguageVersion language : usedLanguages) {
+      if (!declaredLanguages.contains(language)) {
+        missingLanguages.add(formatLanguage(language));
       }
+    }
 
-      Set<String> missingLanguages = new TreeSet<>();
-      for (LanguageVersion language : usedLanguages) {
-        if (!declaredLanguages.contains(language)) {
-          missingLanguages.add(formatLanguage(language));
-        }
-      }
+    validationResult.addError(
+        "We expected these used languages: "
+            + usedLanguages
+            + " and we found "
+            + chunk.getLanguages()
+            + ". Extra languages: "
+            + String.join(", ", extraLanguages)
+            + ". Missing languages: "
+            + String.join(", ", missingLanguages));
+  }
 
+  private static void checkClassifier(
+      @Nonnull SerializedClassifierInstance node,
+      @Nonnull Set<LanguageVersion> usedLanguages,
+      @Nonnull ValidationResult validationResult) {
+    MetaPointer classifier = node.getClassifier();
+    if (classifier == null) {
+      validationResult.addError("Node " + node.getID() + " has no classifier", node.getID());
+    } else {
+      checkMetaPointer(node, classifier, "classifier", validationResult);
+      usedLanguages.add(classifier.getLanguageVersion());
+    }
+  }
+
+  private static void checkFeatureMetaPointer(
+      @Nonnull SerializedClassifierInstance node,
+      @Nullable MetaPointer metaPointer,
+      @Nonnull Set<LanguageVersion> usedLanguages,
+      @Nonnull Set<MetaPointer> featureMetaPointers,
+      @Nonnull ValidationResult validationResult) {
+    if (metaPointer == null) {
       validationResult.addError(
-          "We expected these used languages: "
-              + usedLanguages
-              + " and we found "
-              + chunk.getLanguages()
-              + ". Extra languages: "
-              + String.join(", ", extraLanguages)
-              + ". Missing languages: "
-              + String.join(", ", missingLanguages));
+          "Node " + node.getID() + " has a feature without metapointer", node.getID());
+      return;
+    }
+    checkMetaPointer(node, metaPointer, "feature", validationResult);
+    usedLanguages.add(metaPointer.getLanguageVersion());
+    if (!featureMetaPointers.add(metaPointer)) {
+      validationResult.addError(
+          "Node " + node.getID() + " has duplicate feature metapointer: " + metaPointer,
+          node.getID());
     }
   }
 
@@ -194,115 +262,93 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     }
   }
 
-  private void checkReferencedIDs(
-      @Nonnull SerializationChunk chunk, @Nonnull ValidationResult validationResult) {
-    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
-      String parentID = node.getParentNodeID();
-      if (parentID != null) {
-        if (!IdUtils.isValidID(parentID)) {
-          validationResult.addError(
-              "Node " + node.getID() + " has an invalid parent id: " + parentID, node.getID());
-        }
-        if (parentID.equals(node.getID())) {
-          validationResult.addError(
-              "Node " + node.getID() + " lists itself as parent", node.getID());
-        }
+  private static void checkParentID(
+      @Nonnull SerializedClassifierInstance node, @Nonnull ValidationResult validationResult) {
+    String parentID = node.getParentNodeID();
+    if (parentID != null) {
+      if (!IdUtils.isValidID(parentID)) {
+        validationResult.addError(
+            "Node " + node.getID() + " has an invalid parent id: " + parentID, node.getID());
       }
-      for (SerializedContainmentValue containmentValue : node.getContainments()) {
-        for (String childId : containmentValue.getChildrenIds()) {
-          if (!IdUtils.isValidID(childId)) {
-            validationResult.addError(
-                "Node " + node.getID() + " has an invalid child id: " + childId, node.getID());
-          }
-        }
-      }
-      for (String annotationId : node.getAnnotations()) {
-        if (!IdUtils.isValidID(annotationId)) {
-          validationResult.addError(
-              "Node " + node.getID() + " has an invalid annotation id: " + annotationId,
-              node.getID());
-        }
-      }
-      for (SerializedReferenceValue referenceValue : node.getReferences()) {
-        for (SerializedReferenceValue.Entry entry : referenceValue.getValue()) {
-          String target = entry.getReference();
-          if (target != null && !IdUtils.isValidID(target)) {
-            validationResult.addError(
-                "Node " + node.getID() + " has an invalid reference target id: " + target,
-                node.getID());
-          }
-        }
+      if (parentID.equals(node.getID())) {
+        validationResult.addError("Node " + node.getID() + " lists itself as parent", node.getID());
       }
     }
   }
 
-  private void checkContainmentHierarchy(
-      @Nonnull SerializationChunk chunk,
+  private static void checkChild(
+      @Nonnull SerializedClassifierInstance node,
+      @Nullable MetaPointer containment,
+      @Nullable String childId,
       @Nonnull Map<String, SerializedClassifierInstance> nodesByID,
+      @Nonnull Placements placements,
       @Nonnull ValidationResult validationResult) {
-    // Ensuring that containments and annotations are the inverse of parent relationships
-    Map<String, Set<String>> containedNodes = new HashMap<>();
-    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
-      for (SerializedContainmentValue containmentValue : node.getContainments()) {
-        for (String childId : containmentValue.getChildrenIds()) {
-          // Verifying nodes do not appear in multiple containments or annotations
-          String newPlacement = node.getID() + " at " + containmentValue.getMetaPointer();
-          registerPlacement(childId, newPlacement, containedNodes, validationResult);
-          SerializedClassifierInstance child = nodesByID.get(childId);
-          if (child != null && !Objects.equals(child.getParentNodeID(), node.getID())) {
-            validationResult.addError(
-                childId
-                    + " is listed as child of "
-                    + node.getID()
-                    + " but it has as parent "
-                    + child.getParentNodeID(),
-                node.getID());
-          }
-        }
-      }
-      for (String annotationId : node.getAnnotations()) {
-        // Verifying nodes do not appear in multiple containments or annotations
-        String newPlacement = node.getID() + " among annotations";
-        registerPlacement(annotationId, newPlacement, containedNodes, validationResult);
-        SerializedClassifierInstance annotation = nodesByID.get(annotationId);
-        if (annotation != null && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
-          validationResult.addError(
-              annotationId
-                  + " is listed as an annotation of "
-                  + node.getID()
-                  + " but it has as parent "
-                  + annotation.getParentNodeID(),
-              node.getID());
-        }
-      }
-
-      if (node.getParentNodeID() != null && node.getID() != null) {
-        SerializedClassifierInstance parent = nodesByID.get(node.getParentNodeID());
-        if (parent != null && !parent.contains(node.getID())) {
-          validationResult.addError(
-              node.getID()
-                  + " list as parent "
-                  + node.getParentNodeID()
-                  + " but such parent does not contain it",
-              node.getID());
-        }
-      }
+    if (!IdUtils.isValidID(childId)) {
+      validationResult.addError(
+          "Node " + node.getID() + " has an invalid child id: " + childId, node.getID());
+    }
+    // Verifying nodes do not appear in multiple containments or annotations
+    placements.register(childId, node, false, containment, validationResult);
+    // Ensuring that containments are the inverse of parent relationships
+    SerializedClassifierInstance child = nodesByID.get(childId);
+    if (child != null && !Objects.equals(child.getParentNodeID(), node.getID())) {
+      validationResult.addError(
+          childId
+              + " is listed as child of "
+              + node.getID()
+              + " but it has as parent "
+              + child.getParentNodeID(),
+          node.getID());
     }
   }
 
-  private static void registerPlacement(
-      @Nullable String containedId,
-      @Nonnull String newPlacement,
-      @Nonnull Map<String, Set<String>> containedNodes,
+  private static void checkAnnotation(
+      @Nonnull SerializedClassifierInstance node,
+      @Nullable String annotationId,
+      @Nonnull Map<String, SerializedClassifierInstance> nodesByID,
+      @Nonnull Placements placements,
       @Nonnull ValidationResult validationResult) {
-    Set<String> placements = containedNodes.get(containedId);
-    if (placements != null) {
+    if (!IdUtils.isValidID(annotationId)) {
       validationResult.addError(
-          containedId + " is listed in multiple places: " + placements + " and now " + newPlacement,
-          containedId);
-      placements.add(newPlacement);
-    } else {
-      containedNodes.put(containedId, new LinkedHashSet<>(Collections.singletonList(newPlacement)));
+          "Node " + node.getID() + " has an invalid annotation id: " + annotationId, node.getID());
+    }
+    // Verifying nodes do not appear in multiple containments or annotations
+    placements.register(annotationId, node, true, null, validationResult);
+    // Ensuring that annotations are the inverse of parent relationships
+    SerializedClassifierInstance annotation = nodesByID.get(annotationId);
+    if (annotation != null && !Objects.equals(annotation.getParentNodeID(), node.getID())) {
+      validationResult.addError(
+          annotationId
+              + " is listed as an annotation of "
+              + node.getID()
+              + " but it has as parent "
+              + annotation.getParentNodeID(),
+          node.getID());
+    }
+  }
+
+  /** Ensuring that parent relationships are the inverse of containments and annotations. */
+  private static void checkParentsContainTheirNodes(
+      @Nonnull List<SerializedClassifierInstance> nodes,
+      @Nonnull Map<String, SerializedClassifierInstance> nodesByID,
+      @Nonnull Placements placements,
+      @Nonnull ValidationResult validationResult) {
+    for (SerializedClassifierInstance node : nodes) {
+      if (node.getParentNodeID() == null || node.getID() == null) {
+        continue;
+      }
+      SerializedClassifierInstance parent = nodesByID.get(node.getParentNodeID());
+      // Fast path: the parent is the first node we saw listing this node
+      if (parent != null
+          && placements.firstContainer(node.getID()) != parent
+          && !parent.contains(node.getID())) {
+        validationResult.addError(
+            node.getID()
+                + " list as parent "
+                + node.getParentNodeID()
+                + " but such parent does not contain it",
+            node.getID());
+      }
     }
   }
 
@@ -310,19 +356,21 @@ public class ChunkValidator extends Validator<SerializationChunk> {
    * Verify that, following the parent relationships of the nodes present in the chunk, we never get
    * back to a node already visited. Self-parenting is reported separately.
    */
-  private void checkCycles(
-      @Nonnull SerializationChunk chunk,
+  private static void checkCycles(
+      @Nonnull List<SerializedClassifierInstance> nodes,
       @Nonnull Map<String, SerializedClassifierInstance> nodesByID,
       @Nonnull ValidationResult validationResult) {
     // IDs of nodes for which we have already established whether they are part of a cycle
-    Set<String> explored = new HashSet<>();
+    Set<String> explored = new HashSet<>(capacityFor(nodes.size()));
     Set<String> reportedInCycle = new HashSet<>();
-    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
+    List<String> path = new ArrayList<>();
+    Set<String> onPath = new HashSet<>();
+    for (SerializedClassifierInstance node : nodes) {
       if (node.getID() == null || explored.contains(node.getID())) {
         continue;
       }
-      List<String> path = new ArrayList<>();
-      Set<String> onPath = new HashSet<>();
+      path.clear();
+      onPath.clear();
       String current = node.getID();
       while (current != null && !explored.contains(current) && onPath.add(current)) {
         path.add(current);
@@ -339,6 +387,74 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
       explored.addAll(path);
     }
+  }
+
+  /**
+   * Keeps track of where each node is listed as child or annotation. Only the first container is
+   * stored for each node: descriptions of the placements are built only when a node is found in
+   * more than one place.
+   */
+  private static final class Placements {
+    private final Map<String, SerializedClassifierInstance> firstContainers;
+    private final Map<String, Set<String>> multiplePlacements = new HashMap<>();
+
+    Placements(int expectedSize) {
+      firstContainers = new HashMap<>(capacityFor(expectedSize));
+    }
+
+    @Nullable
+    SerializedClassifierInstance firstContainer(@Nonnull String containedId) {
+      return firstContainers.get(containedId);
+    }
+
+    void register(
+        @Nullable String containedId,
+        @Nonnull SerializedClassifierInstance container,
+        boolean asAnnotation,
+        @Nullable MetaPointer containment,
+        @Nonnull ValidationResult validationResult) {
+      SerializedClassifierInstance firstContainer =
+          firstContainers.putIfAbsent(containedId, container);
+      if (firstContainer == null) {
+        return;
+      }
+      Set<String> placements = multiplePlacements.get(containedId);
+      if (placements == null) {
+        placements = new LinkedHashSet<>();
+        placements.add(describeFirstPlacement(firstContainer, containedId));
+        multiplePlacements.put(containedId, placements);
+      }
+      String newPlacement = describePlacement(container, asAnnotation, containment);
+      validationResult.addError(
+          containedId + " is listed in multiple places: " + placements + " and now " + newPlacement,
+          containedId);
+      placements.add(newPlacement);
+    }
+
+    private static @Nonnull String describeFirstPlacement(
+        @Nonnull SerializedClassifierInstance container, @Nullable String containedId) {
+      // Containments are examined before annotations, as they are registered in this order
+      for (SerializedContainmentValue containmentValue : container.getContainments()) {
+        if (containmentValue.getChildrenIds().contains(containedId)) {
+          return describePlacement(container, false, containmentValue.getMetaPointer());
+        }
+      }
+      return describePlacement(container, true, null);
+    }
+
+    private static @Nonnull String describePlacement(
+        @Nonnull SerializedClassifierInstance container,
+        boolean asAnnotation,
+        @Nullable MetaPointer containment) {
+      return asAnnotation
+          ? container.getID() + " among annotations"
+          : container.getID() + " at " + containment;
+    }
+  }
+
+  /** Initial capacity of a hash-based collection meant to hold the given number of elements. */
+  private static int capacityFor(int expectedSize) {
+    return Math.max(16, (int) (expectedSize / 0.75f) + 1);
   }
 
   private static @Nonnull String formatLanguage(@Nonnull LanguageVersion language) {
