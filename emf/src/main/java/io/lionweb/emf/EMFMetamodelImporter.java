@@ -2,6 +2,7 @@ package io.lionweb.emf;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.emf.mapping.LanguageEntitiesToEElementsMapping;
+import io.lionweb.emf.support.AnnotationsEncoding;
 import io.lionweb.language.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -51,6 +52,12 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           setIDAndKey(iface, ePackage.getName() + "-" + iface.getName());
           metamodel.addElement(iface);
           entitiesToEElementsMapping.registerMapping(iface, eClass);
+        } else if (AnnotationsEncoding.isAnnotation(eClass)) {
+          Annotation annotation = new Annotation(getLionWebVersion());
+          annotation.setName(eClass.getName());
+          setIDAndKey(annotation, ePackage.getName() + "-" + annotation.getName());
+          metamodel.addElement(annotation);
+          entitiesToEElementsMapping.registerMapping(annotation, eClass);
         } else {
           Concept concept = new Concept(getLionWebVersion(), eClass.getName());
           setIDAndKey(concept, ePackage.getName() + "-" + concept.getName());
@@ -97,6 +104,42 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
 
           processStructuralFeatures(ePackage, eClass, iface);
 
+        } else if (AnnotationsEncoding.isAnnotation(eClass)) {
+          Annotation annotation = entitiesToEElementsMapping.getCorrespondingAnnotation(eClass);
+
+          List<EObject> annotatedEClasses =
+              eClass.getEAnnotation(AnnotationsEncoding.ANNOTATION_SOURCE).getReferences();
+          if (annotatedEClasses.size() > 1) {
+            throw new IllegalStateException(
+                "Annotation " + eClass.getName() + " should annotate at most one EClass");
+          } else if (annotatedEClasses.size() == 1) {
+            Classifier<?> annotated =
+                convertEClassifierToClassifier((EClassifier) annotatedEClasses.get(0));
+            addLanguageDependency(metamodel, annotated);
+            annotation.setAnnotates(annotated);
+          }
+
+          for (EClass supertype : eClass.getESuperTypes()) {
+            if (supertype.isInterface()) {
+              Interface superInterface =
+                  entitiesToEElementsMapping.getCorrespondingInterface(supertype);
+              addLanguageDependency(metamodel, superInterface);
+              annotation.addImplementedInterface(superInterface);
+            } else if (AnnotationsEncoding.isAnnotation(supertype)) {
+              Annotation superAnnotation =
+                  entitiesToEElementsMapping.getCorrespondingAnnotation(supertype);
+              if (annotation.getExtendedAnnotation() != null) {
+                throw new IllegalStateException("Cannot set more than one extended annotation");
+              }
+              addLanguageDependency(metamodel, superAnnotation);
+              annotation.setExtendedAnnotation(superAnnotation);
+            } else if (!supertype.equals(EcorePackage.eINSTANCE.getEObject())) {
+              throw new UnsupportedOperationException(
+                  "Annotation " + eClass.getName() + " cannot extend " + supertype.getName());
+            }
+          }
+
+          processStructuralFeatures(ePackage, eClass, annotation);
         } else {
           Concept concept = entitiesToEElementsMapping.getCorrespondingConcept(eClass);
 
@@ -157,6 +200,10 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
   private void processStructuralFeatures(
       EPackage ePackage, EClass eClass, Classifier<?> classifier) {
     for (EStructuralFeature eFeature : eClass.getEStructuralFeatures()) {
+      if (AnnotationsEncoding.isAnnotatedEReference(eFeature)) {
+        // This reference is used to encode the annotated element, it is not a LionWeb feature
+        continue;
+      }
       if (eFeature.eClass().getName().equals(EcorePackage.Literals.EATTRIBUTE.getName())) {
         EAttribute eAttribute = (EAttribute) eFeature;
         DataType<DataType> propertyType =

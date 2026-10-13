@@ -2,7 +2,10 @@ package io.lionweb.emf;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.emf.mapping.LanguageEntitiesToEElementsMapping;
+import io.lionweb.emf.support.AnnotationsEncoding;
 import io.lionweb.language.Reference;
+import io.lionweb.model.AnnotationInstance;
+import io.lionweb.model.ClassifierInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import io.lionweb.model.ReferenceValue;
@@ -28,10 +31,17 @@ public class EMFModelExporter extends AbstractEMFExporter {
     super(entitiesToEElementsMapping);
   }
 
+  /**
+   * Export the given roots into a new Resource. Annotation instances are exported as additional
+   * root EObjects, placed after all the given roots. See {@link AnnotationsEncoding}.
+   */
   public Resource exportResource(List<Node> roots) {
     Resource resource = new ResourceImpl();
     ReferencesPostponer referencesPostponer = new ReferencesPostponer();
-    roots.forEach(m -> resource.getContents().add(exportTree(m, referencesPostponer)));
+    List<EObject> exportedAnnotations = new ArrayList<>();
+    roots.forEach(
+        m -> resource.getContents().add(exportTree(m, referencesPostponer, exportedAnnotations)));
+    resource.getContents().addAll(exportedAnnotations);
     referencesPostponer.addLinks();
     return resource;
   }
@@ -41,8 +51,29 @@ public class EMFModelExporter extends AbstractEMFExporter {
     return propertyValue;
   }
 
-  /** This export the root received to a single EObject tree. */
+  /**
+   * This export the root received to a single EObject tree. Note that the EObjects representing
+   * annotation instances are not contained in the returned tree: use {@link #exportTree(Node,
+   * ReferencesPostponer, List)} to collect them.
+   */
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
+    return exportTree(root, referencesPostponer, new ArrayList<>());
+  }
+
+  /**
+   * This export the root received to a single EObject tree. The EObjects representing the
+   * annotation instances attached to the exported nodes (or to other annotation instances) are
+   * added to exportedAnnotations.
+   */
+  public EObject exportTree(
+      Node root, ReferencesPostponer referencesPostponer, List<EObject> exportedAnnotations) {
+    return exportClassifierInstance(root, referencesPostponer, exportedAnnotations);
+  }
+
+  private EObject exportClassifierInstance(
+      ClassifierInstance<?> root,
+      ReferencesPostponer referencesPostponer,
+      List<EObject> exportedAnnotations) {
     EClass eClass =
         (EClass) entitiesToEElementsMapping.getCorrespondingEClass(root.getClassifier());
     if (eClass == null) {
@@ -53,14 +84,18 @@ public class EMFModelExporter extends AbstractEMFExporter {
               + root);
     }
     EObject eObject = eClass.getEPackage().getEFactoryInstance().create(eClass);
-    referencesPostponer.trackMapping(root, eObject);
+    if (root instanceof Node) {
+      referencesPostponer.trackMapping((Node) root, eObject);
+    }
 
     eObject
         .eClass()
         .getEAllStructuralFeatures()
         .forEach(
             eStructuralFeature -> {
-              if (eStructuralFeature instanceof EAttribute) {
+              if (AnnotationsEncoding.isAnnotatedEReference(eStructuralFeature)) {
+                // This is set by the annotated element when exporting its annotations
+              } else if (eStructuralFeature instanceof EAttribute) {
                 EAttribute eAttribute = (EAttribute) eStructuralFeature;
                 Object propertyValue =
                     ClassifierInstanceUtils.getPropertyValueByName(root, eAttribute.getName());
@@ -75,7 +110,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
                             root, eReference.getName());
                     List<EObject> childrenInEmf =
                         childrenInLW.stream()
-                            .map(clw -> exportTree(clw, referencesPostponer))
+                            .map(clw -> exportTree(clw, referencesPostponer, exportedAnnotations))
                             .collect(Collectors.toList());
                     eObject.eSet(eReference, childrenInEmf);
                   } else {
@@ -92,7 +127,9 @@ public class EMFModelExporter extends AbstractEMFExporter {
                               + "as the relation has not multiplicity many");
                     } else if (childrenInLW.size() == 1) {
                       eObject.eSet(
-                          eReference, exportTree(childrenInLW.get(0), referencesPostponer));
+                          eReference,
+                          exportTree(
+                              childrenInLW.get(0), referencesPostponer, exportedAnnotations));
                     } else {
                       eObject.eSet(eReference, null);
                     }
@@ -108,6 +145,22 @@ public class EMFModelExporter extends AbstractEMFExporter {
                         + eStructuralFeature.getName());
               }
             });
+
+    for (AnnotationInstance annotationInstance : root.getAnnotations()) {
+      // We want each annotation instance to precede the annotations attached to it
+      int index = exportedAnnotations.size();
+      EObject annotationEObject =
+          exportClassifierInstance(annotationInstance, referencesPostponer, exportedAnnotations);
+      EReference annotatedEReference =
+          AnnotationsEncoding.getAnnotatedEReference(annotationEObject.eClass());
+      if (annotatedEReference == null) {
+        throw new IllegalStateException(
+            "Cannot find the EReference to the annotated element in EClass "
+                + annotationEObject.eClass().getName());
+      }
+      annotationEObject.eSet(annotatedEReference, eObject);
+      exportedAnnotations.add(index, annotationEObject);
+    }
 
     return eObject;
   }
@@ -168,16 +221,18 @@ public class EMFModelExporter extends AbstractEMFExporter {
           });
     }
 
-    public void recordReference(Node node, EObject eObject, EReference eReference) {
+    public void recordReference(
+        ClassifierInstance<?> node, EObject eObject, EReference eReference) {
       postponedReferences.add(new PostponedReference(node, eObject, eReference));
     }
 
     static class PostponedReference {
-      final Node node;
+      final ClassifierInstance<?> node;
       final EObject eObject;
       final EReference eReference;
 
-      public PostponedReference(Node node, EObject eObject, EReference eReference) {
+      public PostponedReference(
+          ClassifierInstance<?> node, EObject eObject, EReference eReference) {
         this.node = node;
         this.eObject = eObject;
         this.eReference = eReference;

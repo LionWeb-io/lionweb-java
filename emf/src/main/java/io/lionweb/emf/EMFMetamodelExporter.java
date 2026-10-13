@@ -2,6 +2,7 @@ package io.lionweb.emf;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.emf.mapping.LanguageEntitiesToEElementsMapping;
+import io.lionweb.emf.support.AnnotationsEncoding;
 import io.lionweb.language.*;
 import java.util.List;
 import java.util.Objects;
@@ -80,6 +81,19 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
 
                 ePackage.getEClassifiers().add(eClass);
                 entitiesToEElementsMapping.registerMapping(iface, eClass);
+              } else if (e instanceof Annotation) {
+                Annotation annotation = (Annotation) e;
+
+                EClass eClass = EcoreFactory.eINSTANCE.createEClass();
+                eClass.setName(annotation.getName());
+                eClass.setInterface(false);
+                eClass.setAbstract(false);
+                EAnnotation marker = EcoreFactory.eINSTANCE.createEAnnotation();
+                marker.setSource(AnnotationsEncoding.ANNOTATION_SOURCE);
+                eClass.getEAnnotations().add(marker);
+
+                ePackage.getEClassifiers().add(eClass);
+                entitiesToEElementsMapping.registerMapping(annotation, eClass);
               } else if (e instanceof Enumeration) {
                 Enumeration enumeration = (Enumeration) e;
 
@@ -196,6 +210,62 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
         .forEach(f -> eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f)));
   }
 
+  private void populateEClassFromAnnotation(Annotation annotation) {
+    EClass eClass = (EClass) entitiesToEElementsMapping.getCorrespondingEClass(annotation);
+
+    if (annotation.getAnnotates() != null) {
+      EClass annotatedEClass =
+          (EClass) entitiesToEElementsMapping.getCorrespondingEClass(annotation.getAnnotates());
+      eClass
+          .getEAnnotation(AnnotationsEncoding.ANNOTATION_SOURCE)
+          .getReferences()
+          .add(annotatedEClass);
+    }
+
+    if (annotation.getExtendedAnnotation() != null) {
+      EClass superEClass =
+          (EClass)
+              entitiesToEElementsMapping.getCorrespondingEClass(annotation.getExtendedAnnotation());
+      eClass.getESuperTypes().add(superEClass);
+    } else {
+      // The reference to the annotated element is inherited when extending another annotation
+      Classifier<?> annotated = annotation.getEffectivelyAnnotated();
+      EReference annotatedEReference = EcoreFactory.eINSTANCE.createEReference();
+      annotatedEReference.setName(AnnotationsEncoding.ANNOTATED_EREFERENCE_NAME);
+      annotatedEReference.setContainment(false);
+      annotatedEReference.setLowerBound(0);
+      annotatedEReference.setUpperBound(1);
+      annotatedEReference.setEType(
+          annotated == null
+              ? EcorePackage.eINSTANCE.getEObject()
+              : entitiesToEElementsMapping.getCorrespondingEClass(annotated));
+      eClass.getEStructuralFeatures().add(annotatedEReference);
+    }
+    annotation
+        .getImplemented()
+        .forEach(
+            implemented -> {
+              EClass implementedEClass =
+                  (EClass) entitiesToEElementsMapping.getCorrespondingEClass(implemented);
+              eClass.getESuperTypes().add(implementedEClass);
+            });
+
+    annotation
+        .getFeatures()
+        .forEach(
+            f -> {
+              if (AnnotationsEncoding.ANNOTATED_EREFERENCE_NAME.equals(f.getName())) {
+                throw new UnsupportedOperationException(
+                    "Cannot export annotation "
+                        + annotation.getName()
+                        + " because it has a feature named "
+                        + AnnotationsEncoding.ANNOTATED_EREFERENCE_NAME
+                        + ", which is reserved to represent the annotated element");
+              }
+              eClass.getEStructuralFeatures().add(convertFeatureToEStructuralFeature(f));
+            });
+  }
+
   private void populateEEnumFromEnumerration(Enumeration enumeration) {
     EEnum eEnum = entitiesToEElementsMapping.getCorrespondingEEnum(enumeration);
 
@@ -218,6 +288,8 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
                 populateEClassFromConcept((Concept) e);
               } else if (e instanceof Interface) {
                 populateEClassFromInterface((Interface) e);
+              } else if (e instanceof Annotation) {
+                populateEClassFromAnnotation((Annotation) e);
               } else if (e instanceof Enumeration) {
                 populateEEnumFromEnumerration((Enumeration) e);
               } else {
