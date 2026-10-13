@@ -24,30 +24,14 @@ import javax.annotation.Nullable;
  *   <li>no node uses the same feature metapointer more than once
  *   <li>containments and annotations are the inverse of parent relationships
  *   <li>no node appears in multiple containments or annotations
- *   <li>all nodes listed as children or annotations are present in the chunk
  *   <li>there are no cycles in the containment hierarchy
- *   <li>optionally, that the chunk contains exactly one root
  * </ul>
+ *
+ * <p>Children and annotations listed by a node do not need to be present in the chunk, as the
+ * specification allows them to be outside the processed document. Use {@link
+ * PartitionChunkValidator} to validate a chunk representing an entire partition.
  */
 public class ChunkValidator extends Validator<SerializationChunk> {
-
-  private final boolean requireSingleRoot;
-
-  public ChunkValidator() {
-    this(false);
-  }
-
-  /**
-   * @param requireSingleRoot when true, the validator requires the chunk to contain exactly one
-   *     node without parent
-   */
-  public ChunkValidator(boolean requireSingleRoot) {
-    this.requireSingleRoot = requireSingleRoot;
-  }
-
-  public boolean isRequireSingleRoot() {
-    return requireSingleRoot;
-  }
 
   @Override
   public @Nonnull ValidationResult validate(@Nonnull SerializationChunk chunk) {
@@ -76,9 +60,6 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     checkReferencedIDs(chunk, validationResult);
     checkContainmentHierarchy(chunk, nodesByID, validationResult);
     checkCycles(chunk, nodesByID, validationResult);
-    if (requireSingleRoot) {
-      checkSingleRoot(chunk, validationResult);
-    }
 
     return validationResult;
   }
@@ -237,11 +218,9 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       @Nonnull ValidationResult validationResult) {
     // Ensuring that containments and annotations are the inverse of parent relationships
     Map<String, Set<String>> containedNodes = new HashMap<>();
-    Set<String> expectedBecauseContained = new HashSet<>();
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getChildrenIds()) {
-          expectedBecauseContained.add(childId);
           // Verifying nodes do not appear in multiple containments or annotations
           String newPlacement = node.getID() + " at " + containmentValue.getMetaPointer();
           registerPlacement(childId, newPlacement, containedNodes, validationResult);
@@ -258,7 +237,6 @@ public class ChunkValidator extends Validator<SerializationChunk> {
         }
       }
       for (String annotationId : node.getAnnotations()) {
-        expectedBecauseContained.add(annotationId);
         // Verifying nodes do not appear in multiple containments or annotations
         String newPlacement = node.getID() + " among annotations";
         registerPlacement(annotationId, newPlacement, containedNodes, validationResult);
@@ -285,19 +263,6 @@ public class ChunkValidator extends Validator<SerializationChunk> {
               node.getID());
         }
       }
-    }
-
-    // Verify all contained nodes are present
-    Set<String> missingNodes = new TreeSet<>(Comparator.nullsFirst(Comparator.naturalOrder()));
-    for (String requiredId : expectedBecauseContained) {
-      if (!nodesByID.containsKey(requiredId)) {
-        missingNodes.add(requiredId);
-      }
-    }
-    if (!missingNodes.isEmpty()) {
-      validationResult.addError(
-          "Some nodes should be contained, but are not present: "
-              + missingNodes.stream().map(String::valueOf).collect(Collectors.joining(", ")));
     }
   }
 
@@ -350,17 +315,6 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       }
       explored.addAll(path);
     }
-  }
-
-  private void checkSingleRoot(
-      @Nonnull SerializationChunk chunk, @Nonnull ValidationResult validationResult) {
-    Set<String> roots = new TreeSet<>(Comparator.nullsFirst(Comparator.naturalOrder()));
-    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
-      if (node.getParentNodeID() == null) {
-        roots.add(node.getID());
-      }
-    }
-    validationResult.addErrorIf(roots.size() != 1, "Expected exactly one root, found: " + roots);
   }
 
   private static @Nonnull String formatLanguage(@Nonnull LanguageVersion language) {

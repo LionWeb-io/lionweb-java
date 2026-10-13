@@ -618,29 +618,25 @@ public class ChunkValidatorTest {
   }
 
   @Test
-  public void testSingleRootIsNotRequiredByDefault() {
+  public void testMultipleRootsAreAccepted() {
     chunk.addClassifierInstances(createValidNode("root1", null), createValidNode("root2", null));
     chunk.addLanguage(testLanguage);
 
-    assertFalse(validator.isRequireSingleRoot());
     assertTrue(validator.validate(chunk).isSuccessful());
   }
 
   @Test
-  public void testSingleRootCanBeRequired() {
-    ChunkValidator singleRootValidator = new ChunkValidator(true);
-    chunk.addClassifierInstances(createValidNode("root2", null), createValidNode("root1", null));
+  public void testChildrenAndAnnotationsOutsideTheChunkAreAccepted() {
+    // The specification allows contained nodes and annotations to be outside the chunk
+    SerializedClassifierInstance root = createValidNode("root1", null);
+    root.unsafeAppendContainmentValue(createContainment("child1"));
+    root.addAnnotation("annotation1");
+    chunk.addClassifierInstances(root);
     chunk.addLanguage(testLanguage);
 
-    ValidationResult result = singleRootValidator.validate(chunk);
+    ValidationResult result = validator.validate(chunk);
 
-    assertFalse(result.isSuccessful());
-    assertTrue(hasIssueContaining(result, "Expected exactly one root, found: [root1, root2]"));
-
-    SerializationChunk singleRootChunk = new SerializationChunk();
-    singleRootChunk.addClassifierInstances(createValidNode("root1", null));
-    singleRootChunk.addLanguage(testLanguage);
-    assertTrue(singleRootValidator.validate(singleRootChunk).isSuccessful());
+    assertTrue(result.isSuccessful(), result.getIssues().toString());
   }
 
   // Helper methods

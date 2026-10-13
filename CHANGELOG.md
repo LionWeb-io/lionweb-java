@@ -2,7 +2,7 @@
 
 ### Version 1.4.7
 
-* `ChunkValidator`: additionally verify the serialization format version, well-formed languages and complete metapointers, the validity of parent/child/annotation/reference target IDs, and the absence of cycles in the containment hierarchy. Fix a `NullPointerException` when a contained node has no parent and a wrong placement in the "listed in multiple places" message. The single-root check is now optional in `ChunkValidator` (`new ChunkValidator(true)`) and is reused by `PartitionChunkValidator` (issue #253)
+* `ChunkValidator`: check serialization format version, languages, metapointers, IDs used in relations and containment cycles; accept children and annotations outside the chunk, as the specification allows (only `PartitionChunkValidator` requires them); fix a `NullPointerException` (issues #253, #465)
 
 ### Version 1.4.6
 
