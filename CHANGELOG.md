@@ -1,5 +1,9 @@
 # Changelog
 
+### Version 1.4.7
+
+* `ChunkValidator`: check serialization format version, languages, metapointers, IDs used in relations and containment cycles; accept children and annotations outside the chunk, as the specification allows (only `PartitionChunkValidator` requires them); fix a `NullPointerException` (issues #253, #465)
+
 ### Version 1.4.6
 
 * Remove the unneeded `RawReferenceValue` class (issue #432)
