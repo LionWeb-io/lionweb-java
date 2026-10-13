@@ -1,49 +1,49 @@
 package io.lionweb.utils;
 
-import static java.util.stream.Collectors.*;
-
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedContainmentValue;
-import java.util.Objects;
+import java.util.Comparator;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import javax.annotation.Nonnull;
 
 /**
  * Verify a Chunk represents a valid partition. It does all the checks done by ChunkValidator, plus
- * some checks specific to partitions.
+ * some checks specific to partitions: all contained nodes are present in the chunk and there is
+ * exactly one root.
  */
 public class PartitionChunkValidator extends ChunkValidator {
 
   @Override
-  public @Nonnull ValidationResult validate(@Nonnull SerializationChunk chunk) {
-    Objects.requireNonNull(chunk, "chunk should not be null");
-    ValidationResult validationResult = super.validate(chunk);
-
-    // All contained nodes are present in the chunk
-    Set<String> nodesPresent =
-        chunk.getClassifierInstances().stream().map(n -> n.getID()).collect(toSet());
+  protected void additionalChecks(
+      @Nonnull SerializationChunk chunk,
+      @Nonnull Map<String, SerializedClassifierInstance> nodesByID,
+      @Nonnull ValidationResult validationResult) {
+    Set<String> roots = new TreeSet<>(Comparator.nullsFirst(Comparator.naturalOrder()));
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
+      // All contained nodes are present in the chunk
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getChildrenIds()) {
-          validationResult.addErrorIf(
-              !nodesPresent.contains(childId), "Missing node: " + childId, childId);
+          if (!nodesByID.containsKey(childId)) {
+            validationResult.addError("Missing node: " + childId, childId);
+          }
         }
       }
       for (String annotationId : node.getAnnotations()) {
-        validationResult.addErrorIf(
-            !nodesPresent.contains(annotationId), "Missing node: " + annotationId, annotationId);
+        if (!nodesByID.containsKey(annotationId)) {
+          validationResult.addError("Missing node: " + annotationId, annotationId);
+        }
+      }
+      if (node.getParentNodeID() == null) {
+        roots.add(node.getID());
       }
     }
 
     // There is just one root in the chunk
-    Set<String> roots =
-        chunk.getClassifierInstances().stream()
-            .filter(n -> n.getParentNodeID() == null)
-            .map(n -> n.getID())
-            .collect(toSet());
-    validationResult.addErrorIf(roots.size() != 1, "Expected exactly one root, found: " + roots);
-
-    return validationResult;
+    if (roots.size() != 1) {
+      validationResult.addError("Expected exactly one root, found: " + roots);
+    }
   }
 }
