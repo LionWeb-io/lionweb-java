@@ -4,10 +4,10 @@ import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedContainmentValue;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 
 /**
@@ -23,20 +23,22 @@ public class PartitionChunkValidator extends ChunkValidator {
     ValidationResult validationResult = super.validate(chunk);
 
     // All contained nodes are present in the chunk
-    Set<String> nodesPresent =
-        chunk.getClassifierInstances().stream()
-            .map(SerializedClassifierInstance::getID)
-            .collect(Collectors.toSet());
+    Set<String> nodesPresent = new HashSet<>();
+    for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
+      nodesPresent.add(node.getID());
+    }
     for (SerializedClassifierInstance node : chunk.getClassifierInstances()) {
       for (SerializedContainmentValue containmentValue : node.getContainments()) {
         for (String childId : containmentValue.getChildrenIds()) {
-          validationResult.addErrorIf(
-              !nodesPresent.contains(childId), "Missing node: " + childId, childId);
+          if (!nodesPresent.contains(childId)) {
+            validationResult.addError("Missing node: " + childId, childId);
+          }
         }
       }
       for (String annotationId : node.getAnnotations()) {
-        validationResult.addErrorIf(
-            !nodesPresent.contains(annotationId), "Missing node: " + annotationId, annotationId);
+        if (!nodesPresent.contains(annotationId)) {
+          validationResult.addError("Missing node: " + annotationId, annotationId);
+        }
       }
     }
 
@@ -47,7 +49,9 @@ public class PartitionChunkValidator extends ChunkValidator {
         roots.add(node.getID());
       }
     }
-    validationResult.addErrorIf(roots.size() != 1, "Expected exactly one root, found: " + roots);
+    if (roots.size() != 1) {
+      validationResult.addError("Expected exactly one root, found: " + roots);
+    }
 
     return validationResult;
   }

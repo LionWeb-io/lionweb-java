@@ -3,7 +3,6 @@ package io.lionweb.utils;
 import io.lionweb.LionWebVersion;
 import io.lionweb.serialization.data.*;
 import java.util.*;
-import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
@@ -33,6 +32,14 @@ import javax.annotation.Nullable;
  * PartitionChunkValidator} to validate a chunk representing an entire partition.
  */
 public class ChunkValidator extends Validator<SerializationChunk> {
+
+  private static final Set<String> KNOWN_SERIALIZATION_FORMAT_VERSIONS = new HashSet<>();
+
+  static {
+    for (LionWebVersion lionWebVersion : LionWebVersion.values()) {
+      KNOWN_SERIALIZATION_FORMAT_VERSIONS.add(lionWebVersion.getVersionString());
+    }
+  }
 
   @Override
   public @Nonnull ValidationResult validate(@Nonnull SerializationChunk chunk) {
@@ -71,11 +78,10 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     if (serializationFormatVersion == null) {
       return;
     }
-    boolean known =
-        Arrays.stream(LionWebVersion.values())
-            .anyMatch(v -> v.getVersionString().equals(serializationFormatVersion));
-    validationResult.addErrorIf(
-        !known, "Unknown serialization format version: " + serializationFormatVersion);
+    if (!KNOWN_SERIALIZATION_FORMAT_VERSIONS.contains(serializationFormatVersion)) {
+      validationResult.addError(
+          "Unknown serialization format version: " + serializationFormatVersion);
+    }
   }
 
   private void checkLanguagesAndMetaPointers(
@@ -130,19 +136,19 @@ public class ChunkValidator extends Validator<SerializationChunk> {
     }
 
     if (!usedLanguages.equals(declaredLanguages)) {
-      String extraLanguages =
-          declaredLanguages.stream()
-              .filter(e -> !usedLanguages.contains(e))
-              .map(ChunkValidator::formatLanguage)
-              .sorted()
-              .collect(Collectors.joining(", "));
+      Set<String> extraLanguages = new TreeSet<>();
+      for (LanguageVersion language : declaredLanguages) {
+        if (!usedLanguages.contains(language)) {
+          extraLanguages.add(formatLanguage(language));
+        }
+      }
 
-      String missingLanguages =
-          usedLanguages.stream()
-              .filter(e -> !declaredLanguages.contains(e))
-              .map(ChunkValidator::formatLanguage)
-              .sorted()
-              .collect(Collectors.joining(", "));
+      Set<String> missingLanguages = new TreeSet<>();
+      for (LanguageVersion language : usedLanguages) {
+        if (!declaredLanguages.contains(language)) {
+          missingLanguages.add(formatLanguage(language));
+        }
+      }
 
       validationResult.addError(
           "We expected these used languages: "
@@ -150,9 +156,9 @@ public class ChunkValidator extends Validator<SerializationChunk> {
               + " and we found "
               + chunk.getLanguages()
               + ". Extra languages: "
-              + extraLanguages
+              + String.join(", ", extraLanguages)
               + ". Missing languages: "
-              + missingLanguages);
+              + String.join(", ", missingLanguages));
     }
   }
 
