@@ -1,6 +1,7 @@
 package io.lionweb.serialization;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.lionweb.LionWebVersion;
@@ -78,6 +79,28 @@ public class TopologicalLanguageSorterTest {
     assertTrue(indexOfStarlasuV1 < indexOfMigrationV1);
     assertTrue(indexOfStarlasuV1 < indexOfPipelineV1);
     assertTrue(indexOfStarlasuV2 < indexOfCodebaseV2);
+  }
+
+  @Test
+  public void unknownDependenciesCanBeAccepted() throws IOException {
+    LowLevelJsonSerialization jsonSerialization = new LowLevelJsonSerialization();
+    SerializationChunk codebaseV1 =
+        jsonSerialization.deserializeSerializationBlock(
+            read(this.getClass().getResourceAsStream("/starlasuspecs/codebase.language.v1.json")));
+    TopologicalLanguageSorter sorter = new TopologicalLanguageSorter(LionWebVersion.v2023_1);
+    List<SerializationChunk> chunks = Arrays.asList(codebaseV1);
+
+    IllegalStateException e =
+        assertThrows(IllegalStateException.class, () -> sorter.topologicalSort(chunks));
+    assertEquals("Unknown dependency: com-strumenta-StarLasu", e.getMessage());
+
+    assertThrows(
+        IllegalStateException.class,
+        () -> sorter.topologicalSort(chunks, id -> id.equals("another-language")));
+    assertEquals(
+        Arrays.asList(codebaseV1),
+        sorter.topologicalSort(chunks, id -> id.equals("com-strumenta-StarLasu")));
+    assertEquals(Arrays.asList(codebaseV1), sorter.topologicalSort(chunks, id -> true));
   }
 
   private static String read(InputStream in) throws IOException {

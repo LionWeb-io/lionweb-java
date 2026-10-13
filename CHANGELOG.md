@@ -1,5 +1,15 @@
 # Changelog
 
+### Version 1.4.7
+
+* `LionWebArchive` improvements (issue #443):
+  * Add the `LionWebArchive.Writer` streaming writer: chunks are serialized in parallel within a bounded window and written as soon as they are ready, so memory does not grow with the archive size. `store()` now uses it
+  * Add an optional compression level to `store()` and `Writer` (default stays `0`)
+  * `load()` opens the archive once with `ZipFile`, deserializes chunks in parallel (still passing them to the `Loader` in order, on the calling thread) and preallocates entry buffers when the size is known
+  * `loadNodes()` accepts dependencies on languages already registered in the serialization, and gains an option to ignore unknown language dependencies. `TopologicalLanguageSorter.topologicalSort` gains an overload accepting a predicate for known dependencies
+  * Document that empty containments and references are not stored in archives
+  * Expose the format constants `STANDARD_EXTENSION`, `METADATA_PATH`, `LANGUAGES_DIRECTORY`, `PARTITIONS_DIRECTORY`, `CHUNK_EXTENSION` and `DEFAULT_COMPRESSION_LEVEL`
+
 ### Version 1.4.6
 
 * Remove the unneeded `RawReferenceValue` class (issue #432)
