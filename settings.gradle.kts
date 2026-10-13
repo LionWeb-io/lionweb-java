@@ -17,6 +17,7 @@ plugins {
 include("core")
 include("emf")
 include("emf-builtins")
+include("emf-cli")
 include("extensions")
 include("client")
 include("client-testing")
