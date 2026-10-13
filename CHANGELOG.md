@@ -1,5 +1,10 @@
 # Changelog
 
+### Version 1.4.7
+
+* Delta protocol: register for (de)serialization the commands and events on reference targets, resolveInfos and entry moves (`AddReferenceTarget`, `ChangeReferenceResolveInfo`, `MoveEntryFromOtherReference`, `EntryMovedAndReplacedInSameReference`, etc.), which were previously deserialized as `null`. The in-memory delta server handles the corresponding commands, `DeltaClient` applies the corresponding events and offers `send*Command` methods for them. Invalid reference commands are answered with an error event (issue #428)
+* In-memory delta server: handle `MoveAndReplaceChildInSameContainment`, `MoveAndReplaceChildFromOtherContainment`, `MoveAndReplaceChildFromOtherContainmentInSameParent`, `MoveAndReplaceAnnotationInSameParent` and `MoveAndReplaceAnnotationFromOtherParent` (issue #428)
+
 ### Version 1.4.6
 
 * Remove the unneeded `RawReferenceValue` class (issue #432)

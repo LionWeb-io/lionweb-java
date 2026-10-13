@@ -16,9 +16,7 @@ import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.AddProperty;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.commands.properties.DeleteProperty;
-import io.lionweb.client.delta.messages.commands.references.AddReference;
-import io.lionweb.client.delta.messages.commands.references.ChangeReference;
-import io.lionweb.client.delta.messages.commands.references.DeleteReference;
+import io.lionweb.client.delta.messages.commands.references.*;
 import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
 import io.lionweb.client.delta.messages.events.annotations.AnnotationAdded;
@@ -32,9 +30,7 @@ import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.properties.PropertyDeleted;
-import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
-import io.lionweb.client.delta.messages.events.references.ReferenceChanged;
-import io.lionweb.client.delta.messages.events.references.ReferenceDeleted;
+import io.lionweb.client.delta.messages.events.references.*;
 import io.lionweb.client.delta.messages.queries.ErrorResponse;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsRequest;
 import io.lionweb.client.delta.messages.queries.ListAndSubscribePartitionsResponse;
@@ -167,6 +163,32 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
       else if (event instanceof ReferenceAdded) onReferenceAdded((ReferenceAdded) event);
       else if (event instanceof ReferenceChanged) onReferenceChanged((ReferenceChanged) event);
       else if (event instanceof ReferenceDeleted) onReferenceDeleted((ReferenceDeleted) event);
+      else if (event instanceof ReferenceTargetAdded)
+        onReferenceTargetAdded((ReferenceTargetAdded) event);
+      else if (event instanceof ReferenceTargetChanged)
+        onReferenceTargetChanged((ReferenceTargetChanged) event);
+      else if (event instanceof ReferenceTargetDeleted)
+        onReferenceTargetDeleted((ReferenceTargetDeleted) event);
+      else if (event instanceof ReferenceResolveInfoAdded)
+        onReferenceResolveInfoAdded((ReferenceResolveInfoAdded) event);
+      else if (event instanceof ReferenceResolveInfoChanged)
+        onReferenceResolveInfoChanged((ReferenceResolveInfoChanged) event);
+      else if (event instanceof ReferenceResolveInfoDeleted)
+        onReferenceResolveInfoDeleted((ReferenceResolveInfoDeleted) event);
+      else if (event instanceof EntryMovedInSameReference)
+        onEntryMovedInSameReference((EntryMovedInSameReference) event);
+      else if (event instanceof EntryMovedFromOtherReferenceInSameParent)
+        onEntryMovedFromOtherReferenceInSameParent(
+            (EntryMovedFromOtherReferenceInSameParent) event);
+      else if (event instanceof EntryMovedFromOtherReference)
+        onEntryMovedFromOtherReference((EntryMovedFromOtherReference) event);
+      else if (event instanceof EntryMovedAndReplacedInSameReference)
+        onEntryMovedAndReplacedInSameReference((EntryMovedAndReplacedInSameReference) event);
+      else if (event instanceof EntryMovedAndReplacedFromOtherReferenceInSameParent)
+        onEntryMovedAndReplacedFromOtherReferenceInSameParent(
+            (EntryMovedAndReplacedFromOtherReferenceInSameParent) event);
+      else if (event instanceof EntryMovedAndReplacedFromOtherReference)
+        onEntryMovedAndReplacedFromOtherReference((EntryMovedAndReplacedFromOtherReference) event);
       else if (event instanceof ChildMovedInSameContainment)
         onChildMovedInSameContainment((ChildMovedInSameContainment) event);
       else if (event instanceof ChildMovedFromOtherContainmentInSameParent)
@@ -665,6 +687,381 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
                 commandId, newParentId, newIndex, movedAnnotationId, oldParentId, oldIndex));
   }
 
+  /**
+   * Sends a command to add a target to an existing reference entry which has only a resolveInfo.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param index 0-based position of the entry in the reference
+   * @param newTarget id of the target node
+   */
+  public void sendAddReferenceTargetCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @NotNull String newTarget) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    Objects.requireNonNull(newTarget, "newTarget must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId -> new AddReferenceTarget(commandId, parent, reference, index, newTarget));
+  }
+
+  /**
+   * Sends a command to change the target of an existing reference entry, keeping its resolveInfo.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param index 0-based position of the entry in the reference
+   * @param oldTarget id of the current target node
+   * @param newTarget id of the new target node
+   */
+  public void sendChangeReferenceTargetCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @NotNull String oldTarget,
+      @NotNull String newTarget) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    Objects.requireNonNull(oldTarget, "oldTarget must not be null");
+    Objects.requireNonNull(newTarget, "newTarget must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new ChangeReferenceTarget(commandId, parent, reference, index, oldTarget, newTarget));
+  }
+
+  /**
+   * Sends a command to delete the target of an existing reference entry, keeping its resolveInfo.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param index 0-based position of the entry in the reference
+   * @param deletedTarget id of the current target node
+   */
+  public void sendDeleteReferenceTargetCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @NotNull String deletedTarget) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    Objects.requireNonNull(deletedTarget, "deletedTarget must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId -> new DeleteReferenceTarget(commandId, parent, reference, index, deletedTarget));
+  }
+
+  /**
+   * Sends a command to add a resolveInfo to an existing reference entry which has only a target.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param index 0-based position of the entry in the reference
+   * @param newResolveInfo the resolveInfo to add
+   */
+  public void sendAddReferenceResolveInfoCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @NotNull String newResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    Objects.requireNonNull(newResolveInfo, "newResolveInfo must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new AddReferenceResolveInfo(commandId, parent, reference, index, newResolveInfo));
+  }
+
+  /**
+   * Sends a command to change the resolveInfo of an existing reference entry, keeping its target.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param index 0-based position of the entry in the reference
+   * @param oldResolveInfo the current resolveInfo
+   * @param newResolveInfo the new resolveInfo
+   */
+  public void sendChangeReferenceResolveInfoCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @NotNull String oldResolveInfo,
+      @NotNull String newResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    Objects.requireNonNull(oldResolveInfo, "oldResolveInfo must not be null");
+    Objects.requireNonNull(newResolveInfo, "newResolveInfo must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new ChangeReferenceResolveInfo(
+                commandId, parent, reference, index, oldResolveInfo, newResolveInfo));
+  }
+
+  /**
+   * Sends a command to delete the resolveInfo of an existing reference entry, keeping its target.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param index 0-based position of the entry in the reference
+   * @param deletedResolveInfo the current resolveInfo
+   */
+  public void sendDeleteReferenceResolveInfoCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @NotNull String deletedResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    Objects.requireNonNull(deletedResolveInfo, "deletedResolveInfo must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new DeleteReferenceResolveInfo(
+                commandId, parent, reference, index, deletedResolveInfo));
+  }
+
+  /**
+   * Moves a reference entry within the same reference from {@code oldIndex} to {@code newIndex}.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param oldIndex current 0-based position of the entry
+   * @param newIndex desired final 0-based position after the move
+   * @param movedTarget target of the moved entry, if any
+   * @param movedResolveInfo resolveInfo of the moved entry, if any
+   */
+  public void sendMoveEntryInSameReferenceCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int oldIndex,
+      int newIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new MoveEntryInSameReference(
+                commandId,
+                parent,
+                reference,
+                oldIndex,
+                newIndex - oldIndex,
+                movedTarget,
+                movedResolveInfo));
+  }
+
+  /**
+   * Moves a reference entry between two references of the same parent.
+   *
+   * @param parent id of the node holding the references
+   * @param oldReference MetaPointer of the source reference feature
+   * @param oldIndex current position in the old reference
+   * @param newReference MetaPointer of the target reference feature
+   * @param newIndex desired final position in the new reference
+   * @param movedTarget target of the moved entry, if any
+   * @param movedResolveInfo resolveInfo of the moved entry, if any
+   */
+  public void sendMoveEntryFromOtherReferenceInSameParentCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer oldReference,
+      int oldIndex,
+      @NotNull MetaPointer newReference,
+      int newIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(oldReference, "oldReference must not be null");
+    Objects.requireNonNull(newReference, "newReference must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new MoveEntryFromOtherReferenceInSameParent(
+                commandId,
+                parent,
+                newReference,
+                newIndex,
+                oldReference,
+                oldIndex,
+                movedTarget,
+                movedResolveInfo));
+  }
+
+  /**
+   * Moves a reference entry from a reference of one node to a reference of another node.
+   *
+   * @param oldParent id of the node currently holding the entry
+   * @param oldReference MetaPointer of the source reference feature
+   * @param oldIndex current position in the old reference
+   * @param newParent id of the node which will hold the entry
+   * @param newReference MetaPointer of the target reference feature
+   * @param newIndex desired final position in the new reference
+   * @param movedTarget target of the moved entry, if any
+   * @param movedResolveInfo resolveInfo of the moved entry, if any
+   */
+  public void sendMoveEntryFromOtherReferenceCommand(
+      @NotNull String oldParent,
+      @NotNull MetaPointer oldReference,
+      int oldIndex,
+      @NotNull String newParent,
+      @NotNull MetaPointer newReference,
+      int newIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo) {
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
+    Objects.requireNonNull(oldReference, "oldReference must not be null");
+    Objects.requireNonNull(newParent, "newParent must not be null");
+    Objects.requireNonNull(newReference, "newReference must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new MoveEntryFromOtherReference(
+                commandId,
+                newParent,
+                newReference,
+                newIndex,
+                oldParent,
+                oldReference,
+                oldIndex,
+                movedTarget,
+                movedResolveInfo));
+  }
+
+  /**
+   * Moves a reference entry within the same reference, replacing the entry which, once the moved
+   * entry has been removed, is at {@code newIndex}.
+   *
+   * @param parent id of the node holding the reference
+   * @param reference MetaPointer of the reference feature
+   * @param oldIndex current 0-based position of the moved entry
+   * @param newIndex final 0-based position of the moved entry, where the replaced entry is
+   * @param movedTarget target of the moved entry, if any
+   * @param movedResolveInfo resolveInfo of the moved entry, if any
+   * @param replacedTarget target of the replaced entry, if any
+   * @param replacedResolveInfo resolveInfo of the replaced entry, if any
+   */
+  public void sendMoveAndReplaceEntryInSameReferenceCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int oldIndex,
+      int newIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo,
+      @Nullable String replacedTarget,
+      @Nullable String replacedResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(reference, "reference must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new MoveAndReplaceEntryInSameReference(
+                commandId,
+                parent,
+                reference,
+                oldIndex,
+                movedTarget,
+                movedResolveInfo,
+                newIndex - oldIndex,
+                replacedTarget,
+                replacedResolveInfo));
+  }
+
+  /**
+   * Moves a reference entry between two references of the same parent, replacing the entry at
+   * {@code newIndex} of the new reference.
+   *
+   * @param parent id of the node holding the references
+   * @param oldReference MetaPointer of the source reference feature
+   * @param oldIndex current position in the old reference
+   * @param newReference MetaPointer of the target reference feature
+   * @param newIndex position of the replaced entry in the new reference
+   * @param movedTarget target of the moved entry, if any
+   * @param movedResolveInfo resolveInfo of the moved entry, if any
+   * @param replacedTarget target of the replaced entry, if any
+   * @param replacedResolveInfo resolveInfo of the replaced entry, if any
+   */
+  public void sendMoveAndReplaceEntryFromOtherReferenceInSameParentCommand(
+      @NotNull String parent,
+      @NotNull MetaPointer oldReference,
+      int oldIndex,
+      @NotNull MetaPointer newReference,
+      int newIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo,
+      @Nullable String replacedTarget,
+      @Nullable String replacedResolveInfo) {
+    Objects.requireNonNull(parent, "parent must not be null");
+    Objects.requireNonNull(oldReference, "oldReference must not be null");
+    Objects.requireNonNull(newReference, "newReference must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new MoveAndReplaceEntryFromOtherReferenceInSameParent(
+                commandId,
+                parent,
+                newReference,
+                newIndex,
+                replacedTarget,
+                replacedResolveInfo,
+                oldReference,
+                oldIndex,
+                movedTarget,
+                movedResolveInfo));
+  }
+
+  /**
+   * Moves a reference entry from a reference of one node to a reference of another node, replacing
+   * the entry at {@code newIndex} of the new reference.
+   *
+   * @param oldParent id of the node currently holding the entry
+   * @param oldReference MetaPointer of the source reference feature
+   * @param oldIndex current position in the old reference
+   * @param newParent id of the node which will hold the entry
+   * @param newReference MetaPointer of the target reference feature
+   * @param newIndex position of the replaced entry in the new reference
+   * @param movedTarget target of the moved entry, if any
+   * @param movedResolveInfo resolveInfo of the moved entry, if any
+   * @param replacedTarget target of the replaced entry, if any
+   * @param replacedResolveInfo resolveInfo of the replaced entry, if any
+   */
+  public void sendMoveAndReplaceEntryFromOtherReferenceCommand(
+      @NotNull String oldParent,
+      @NotNull MetaPointer oldReference,
+      int oldIndex,
+      @NotNull String newParent,
+      @NotNull MetaPointer newReference,
+      int newIndex,
+      @Nullable String movedTarget,
+      @Nullable String movedResolveInfo,
+      @Nullable String replacedTarget,
+      @Nullable String replacedResolveInfo) {
+    Objects.requireNonNull(oldParent, "oldParent must not be null");
+    Objects.requireNonNull(oldReference, "oldReference must not be null");
+    Objects.requireNonNull(newParent, "newParent must not be null");
+    Objects.requireNonNull(newReference, "newReference must not be null");
+    channel.sendCommand(
+        ensureParticipation(),
+        commandId ->
+            new MoveAndReplaceEntryFromOtherReference(
+                commandId,
+                newParent,
+                newReference,
+                newIndex,
+                replacedTarget,
+                replacedResolveInfo,
+                oldParent,
+                oldReference,
+                oldIndex,
+                movedTarget,
+                movedResolveInfo));
+  }
+
   protected void monitorNode(@NotNull Node node) {
     Objects.requireNonNull(node, "node must not be null");
     nodes.computeIfAbsent(node.getID(), id -> new HashSet<>()).add(new WeakReference<>(node));
@@ -826,6 +1223,184 @@ public class DeltaClient implements DeltaEventReceiver, DeltaQueryResponseReceiv
           }
           instance.removeReferenceValue(reference, event.index);
         });
+  }
+
+  private void onReferenceTargetAdded(@NotNull ReferenceTargetAdded event) {
+    setReferred(event.parent, event.reference, event.index, event.newTarget);
+  }
+
+  private void onReferenceTargetChanged(@NotNull ReferenceTargetChanged event) {
+    setReferred(event.parent, event.reference, event.index, event.newTarget);
+  }
+
+  private void onReferenceTargetDeleted(@NotNull ReferenceTargetDeleted event) {
+    setReferred(event.parent, event.reference, event.index, null);
+  }
+
+  private void onReferenceResolveInfoAdded(@NotNull ReferenceResolveInfoAdded event) {
+    setResolveInfo(event.parent, event.reference, event.index, event.newResolveInfo);
+  }
+
+  private void onReferenceResolveInfoChanged(@NotNull ReferenceResolveInfoChanged event) {
+    setResolveInfo(event.parent, event.reference, event.index, event.newResolveInfo);
+  }
+
+  private void onReferenceResolveInfoDeleted(@NotNull ReferenceResolveInfoDeleted event) {
+    setResolveInfo(event.parent, event.reference, event.index, null);
+  }
+
+  private void onEntryMovedInSameReference(@NotNull EntryMovedInSameReference event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference reference = requireReference(instance, event.reference);
+          ReferenceValue moved = instance.getReferenceValues(reference).get(event.oldIndex);
+          instance.removeReferenceValue(reference, event.oldIndex);
+          instance.addReferenceValue(reference, event.oldIndex + event.indexOffset, moved);
+        });
+  }
+
+  private void onEntryMovedFromOtherReferenceInSameParent(
+      @NotNull EntryMovedFromOtherReferenceInSameParent event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference oldReference = requireReference(instance, event.oldReference);
+          Reference newReference = requireReference(instance, event.newReference);
+          ReferenceValue moved = instance.getReferenceValues(oldReference).get(event.oldIndex);
+          instance.removeReferenceValue(oldReference, event.oldIndex);
+          instance.addReferenceValue(newReference, event.newIndex, moved);
+        });
+  }
+
+  private void onEntryMovedFromOtherReference(@NotNull EntryMovedFromOtherReference event) {
+    ReferenceValue moved =
+        removeReferenceValue(
+            event.oldParent,
+            event.oldReference,
+            event.oldIndex,
+            event.movedTarget,
+            event.movedResolveInfo);
+    forEachNode(
+        event.newParent,
+        instance ->
+            instance.addReferenceValue(
+                requireReference(instance, event.newReference), event.newIndex, moved));
+  }
+
+  /**
+   * Consistently with the in-memory server, the moved entry replaces the entry found at {@code
+   * oldIndex + indexOffset} once the moved entry has been removed from its original position.
+   */
+  private void onEntryMovedAndReplacedInSameReference(
+      @NotNull EntryMovedAndReplacedInSameReference event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference reference = requireReference(instance, event.reference);
+          ReferenceValue moved = instance.getReferenceValues(reference).get(event.oldIndex);
+          instance.removeReferenceValue(reference, event.oldIndex);
+          int newIndex = event.oldIndex + event.indexOffset;
+          instance.removeReferenceValue(reference, newIndex);
+          instance.addReferenceValue(reference, newIndex, moved);
+        });
+  }
+
+  private void onEntryMovedAndReplacedFromOtherReferenceInSameParent(
+      @NotNull EntryMovedAndReplacedFromOtherReferenceInSameParent event) {
+    forEachNode(
+        event.parent,
+        instance -> {
+          Reference oldReference = requireReference(instance, event.oldReference);
+          Reference newReference = requireReference(instance, event.newReference);
+          ReferenceValue moved = instance.getReferenceValues(oldReference).get(event.oldIndex);
+          instance.removeReferenceValue(oldReference, event.oldIndex);
+          instance.removeReferenceValue(newReference, event.newIndex);
+          instance.addReferenceValue(newReference, event.newIndex, moved);
+        });
+  }
+
+  private void onEntryMovedAndReplacedFromOtherReference(
+      @NotNull EntryMovedAndReplacedFromOtherReference event) {
+    ReferenceValue moved =
+        removeReferenceValue(
+            event.oldParent,
+            event.oldReference,
+            event.oldIndex,
+            event.movedTarget,
+            event.movedResolveInfo);
+    forEachNode(
+        event.newParent,
+        instance -> {
+          Reference newReference = requireReference(instance, event.newReference);
+          instance.removeReferenceValue(newReference, event.newIndex);
+          instance.addReferenceValue(newReference, event.newIndex, moved);
+        });
+  }
+
+  /** Sets the target of the reference entry at {@code index} of every local copy of the parent. */
+  private void setReferred(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @Nullable String newTarget) {
+    forEachNode(
+        parent,
+        instance ->
+            instance.setReferred(
+                requireReference(instance, reference),
+                index,
+                newTarget == null ? null : new ProxyNode(newTarget)));
+  }
+
+  /**
+   * Sets the resolveInfo of the reference entry at {@code index} of every local copy of the parent.
+   */
+  private void setResolveInfo(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @Nullable String newResolveInfo) {
+    forEachNode(
+        parent,
+        instance ->
+            instance.setResolveInfo(requireReference(instance, reference), index, newResolveInfo));
+  }
+
+  /**
+   * Removes the reference entry at {@code index} from every local copy of {@code parent}.
+   *
+   * @return the removed entry or, if {@code parent} is not tracked locally, an entry built from the
+   *     given target and resolveInfo
+   */
+  private @NotNull ReferenceValue removeReferenceValue(
+      @NotNull String parent,
+      @NotNull MetaPointer reference,
+      int index,
+      @Nullable String target,
+      @Nullable String resolveInfo) {
+    List<ReferenceValue> removed = new ArrayList<>();
+    forEachNode(
+        parent,
+        instance -> {
+          Reference ref = requireReference(instance, reference);
+          removed.add(instance.getReferenceValues(ref).get(index));
+          instance.removeReferenceValue(ref, index);
+        });
+    if (!removed.isEmpty()) {
+      return removed.get(0);
+    }
+    return new ReferenceValue(target == null ? null : new ProxyNode(target), resolveInfo);
+  }
+
+  private static @NotNull Reference requireReference(
+      @NotNull ClassifierInstance<?> instance, @NotNull MetaPointer metaPointer) {
+    Reference reference = instance.getClassifier().getReferenceByMetaPointer(metaPointer);
+    if (reference == null) {
+      throw new IllegalStateException(
+          "Reference not found for " + instance + " using metapointer " + metaPointer);
+    }
+    return reference;
   }
 
   private void onChildMovedInSameContainment(@NotNull ChildMovedInSameContainment event) {

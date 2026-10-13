@@ -13,9 +13,7 @@ import io.lionweb.client.delta.messages.commands.partitions.DeletePartition;
 import io.lionweb.client.delta.messages.commands.properties.AddProperty;
 import io.lionweb.client.delta.messages.commands.properties.ChangeProperty;
 import io.lionweb.client.delta.messages.commands.properties.DeleteProperty;
-import io.lionweb.client.delta.messages.commands.references.AddReference;
-import io.lionweb.client.delta.messages.commands.references.ChangeReference;
-import io.lionweb.client.delta.messages.commands.references.DeleteReference;
+import io.lionweb.client.delta.messages.commands.references.*;
 import io.lionweb.client.delta.messages.events.ClassifierChanged;
 import io.lionweb.client.delta.messages.events.CustomErrorCode;
 import io.lionweb.client.delta.messages.events.ErrorEvent;
@@ -27,9 +25,8 @@ import io.lionweb.client.delta.messages.events.partitions.PartitionDeleted;
 import io.lionweb.client.delta.messages.events.properties.PropertyAdded;
 import io.lionweb.client.delta.messages.events.properties.PropertyChanged;
 import io.lionweb.client.delta.messages.events.properties.PropertyDeleted;
-import io.lionweb.client.delta.messages.events.references.ReferenceAdded;
-import io.lionweb.client.delta.messages.events.references.ReferenceChanged;
-import io.lionweb.client.delta.messages.events.references.ReferenceDeleted;
+import io.lionweb.client.delta.messages.events.references.*;
+import io.lionweb.serialization.data.MetaPointer;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedReferenceValue;
 import java.util.*;
@@ -106,6 +103,49 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
         handleChangeReference((ChangeReference) command, data, source);
       else if (command instanceof DeleteReference)
         handleDeleteReference((DeleteReference) command, data, source);
+      else if (command instanceof AddReferenceTarget)
+        handleAddReferenceTarget((AddReferenceTarget) command, data, source);
+      else if (command instanceof ChangeReferenceTarget)
+        handleChangeReferenceTarget((ChangeReferenceTarget) command, data, source);
+      else if (command instanceof DeleteReferenceTarget)
+        handleDeleteReferenceTarget((DeleteReferenceTarget) command, data, source);
+      else if (command instanceof AddReferenceResolveInfo)
+        handleAddReferenceResolveInfo((AddReferenceResolveInfo) command, data, source);
+      else if (command instanceof ChangeReferenceResolveInfo)
+        handleChangeReferenceResolveInfo((ChangeReferenceResolveInfo) command, data, source);
+      else if (command instanceof DeleteReferenceResolveInfo)
+        handleDeleteReferenceResolveInfo((DeleteReferenceResolveInfo) command, data, source);
+      else if (command instanceof MoveEntryInSameReference)
+        handleMoveEntryInSameReference((MoveEntryInSameReference) command, data, source);
+      else if (command instanceof MoveEntryFromOtherReferenceInSameParent)
+        handleMoveEntryFromOtherReferenceInSameParent(
+            (MoveEntryFromOtherReferenceInSameParent) command, data, source);
+      else if (command instanceof MoveEntryFromOtherReference)
+        handleMoveEntryFromOtherReference((MoveEntryFromOtherReference) command, data, source);
+      else if (command instanceof MoveAndReplaceEntryInSameReference)
+        handleMoveAndReplaceEntryInSameReference(
+            (MoveAndReplaceEntryInSameReference) command, data, source);
+      else if (command instanceof MoveAndReplaceEntryFromOtherReferenceInSameParent)
+        handleMoveAndReplaceEntryFromOtherReferenceInSameParent(
+            (MoveAndReplaceEntryFromOtherReferenceInSameParent) command, data, source);
+      else if (command instanceof MoveAndReplaceEntryFromOtherReference)
+        handleMoveAndReplaceEntryFromOtherReference(
+            (MoveAndReplaceEntryFromOtherReference) command, data, source);
+      else if (command instanceof MoveAndReplaceChildInSameContainment)
+        handleMoveAndReplaceChildInSameContainment(
+            (MoveAndReplaceChildInSameContainment) command, data, source);
+      else if (command instanceof MoveAndReplaceChildFromOtherContainmentInSameParent)
+        handleMoveAndReplaceChildFromOtherContainmentInSameParent(
+            (MoveAndReplaceChildFromOtherContainmentInSameParent) command, data, source);
+      else if (command instanceof MoveAndReplaceChildFromOtherContainment)
+        handleMoveAndReplaceChildFromOtherContainment(
+            (MoveAndReplaceChildFromOtherContainment) command, data, source);
+      else if (command instanceof MoveAndReplaceAnnotationInSameParent)
+        handleMoveAndReplaceAnnotationInSameParent(
+            (MoveAndReplaceAnnotationInSameParent) command, data, source);
+      else if (command instanceof MoveAndReplaceAnnotationFromOtherParent)
+        handleMoveAndReplaceAnnotationFromOtherParent(
+            (MoveAndReplaceAnnotationFromOtherParent) command, data, source);
       else if (command instanceof ChangeClassifier)
         handleChangeClassifier((ChangeClassifier) command, data, source);
       else if (command instanceof AddPartition) handleAddPartition((AddPartition) command, source);
@@ -114,6 +154,8 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
       else sendNotImplemented(command, source);
     } catch (NodeNotFoundException e) {
       sendError(participationId, StandardErrorCode.UNKNOWN_NODE.code, e.getMessage(), null);
+    } catch (InvalidCommandException e) {
+      sendError(participationId, e.errorCode, e.getMessage(), source);
     }
   }
 
@@ -494,6 +536,440 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
                 .addSource(source));
   }
 
+  private void handleAddReferenceTarget(
+      @NotNull AddReferenceTarget cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String newTarget = requireTarget(cmd.newTarget);
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry entry = requireEntry(entries, cmd.index);
+    String resolveInfo = entry.getResolveInfo();
+    entries.set(cmd.index, new SerializedReferenceValue.Entry(newTarget, resolveInfo));
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ReferenceTargetAdded(
+                    seqNum, cmd.parent, cmd.reference, cmd.index, newTarget, resolveInfo)
+                .addSource(source));
+  }
+
+  private void handleChangeReferenceTarget(
+      @NotNull ChangeReferenceTarget cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String newTarget = requireTarget(cmd.newTarget);
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry entry = requireEntry(entries, cmd.index);
+    String replacedTarget = requireTarget(entry.getReference());
+    String resolveInfo = entry.getResolveInfo();
+    entries.set(cmd.index, new SerializedReferenceValue.Entry(newTarget, resolveInfo));
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ReferenceTargetChanged(
+                    seqNum,
+                    cmd.parent,
+                    cmd.reference,
+                    cmd.index,
+                    newTarget,
+                    resolveInfo,
+                    replacedTarget)
+                .addSource(source));
+  }
+
+  private void handleDeleteReferenceTarget(
+      @NotNull DeleteReferenceTarget cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry entry = requireEntry(entries, cmd.index);
+    String deletedTarget = requireTarget(entry.getReference());
+    String resolveInfo = entry.getResolveInfo();
+    entries.set(cmd.index, new SerializedReferenceValue.Entry(null, resolveInfo));
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ReferenceTargetDeleted(
+                    seqNum, cmd.parent, cmd.reference, cmd.index, resolveInfo, deletedTarget)
+                .addSource(source));
+  }
+
+  private void handleAddReferenceResolveInfo(
+      @NotNull AddReferenceResolveInfo cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String newResolveInfo = requireResolveInfo(cmd.newResolveInfo);
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry entry = requireEntry(entries, cmd.index);
+    String target = entry.getReference();
+    entries.set(cmd.index, new SerializedReferenceValue.Entry(target, newResolveInfo));
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ReferenceResolveInfoAdded(
+                    seqNum, cmd.parent, cmd.reference, cmd.index, newResolveInfo, target)
+                .addSource(source));
+  }
+
+  private void handleChangeReferenceResolveInfo(
+      @NotNull ChangeReferenceResolveInfo cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String newResolveInfo = requireResolveInfo(cmd.newResolveInfo);
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry entry = requireEntry(entries, cmd.index);
+    String oldResolveInfo = requireResolveInfo(entry.getResolveInfo());
+    String target = entry.getReference();
+    entries.set(cmd.index, new SerializedReferenceValue.Entry(target, newResolveInfo));
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ReferenceResolveInfoChanged(
+                    seqNum,
+                    cmd.parent,
+                    cmd.reference,
+                    cmd.index,
+                    newResolveInfo,
+                    target,
+                    oldResolveInfo)
+                .addSource(source));
+  }
+
+  private void handleDeleteReferenceResolveInfo(
+      @NotNull DeleteReferenceResolveInfo cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry entry = requireEntry(entries, cmd.index);
+    String deletedResolveInfo = requireResolveInfo(entry.getResolveInfo());
+    String target = entry.getReference();
+    entries.set(cmd.index, new SerializedReferenceValue.Entry(target, null));
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ReferenceResolveInfoDeleted(
+                    seqNum, cmd.parent, cmd.reference, cmd.index, target, deletedResolveInfo)
+                .addSource(source));
+  }
+
+  /**
+   * Moves an entry within the same reference. Consistently with {@link MoveChildInSameContainment},
+   * the moved entry ends up at index {@code oldIndex + indexOffset}.
+   */
+  private void handleMoveEntryInSameReference(
+      @NotNull MoveEntryInSameReference cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry moved = requireEntry(entries, cmd.oldIndex);
+    entries.remove(cmd.oldIndex);
+    int newIndex = requireInsertionIndex(entries, cmd.oldIndex + cmd.indexOffset);
+    entries.add(newIndex, moved);
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new EntryMovedInSameReference(
+                    seqNum,
+                    cmd.parent,
+                    cmd.reference,
+                    cmd.oldIndex,
+                    cmd.indexOffset,
+                    moved.getReference(),
+                    moved.getResolveInfo())
+                .addSource(source));
+  }
+
+  private void handleMoveEntryFromOtherReferenceInSameParent(
+      @NotNull MoveEntryFromOtherReferenceInSameParent cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String parentId = requireParent(cmd.parent);
+    SerializedClassifierInstance node = requireNode(data, parentId);
+    SerializedReferenceValue.Entry moved =
+        moveEntry(node, cmd.oldReference, cmd.oldIndex, node, cmd.newReference, cmd.newIndex);
+    sendEventToSubscribers(
+        partitionsOf(data, parentId),
+        seqNum ->
+            new EntryMovedFromOtherReferenceInSameParent(
+                    seqNum,
+                    parentId,
+                    cmd.newReference,
+                    cmd.newIndex,
+                    cmd.oldReference,
+                    cmd.oldIndex,
+                    moved.getReference(),
+                    moved.getResolveInfo())
+                .addSource(source));
+  }
+
+  private void handleMoveEntryFromOtherReference(
+      @NotNull MoveEntryFromOtherReference cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String oldParentId = requireParent(cmd.oldParent);
+    String newParentId = requireParent(cmd.newParent);
+    SerializedClassifierInstance oldParent = requireNode(data, oldParentId);
+    SerializedClassifierInstance newParent = requireNode(data, newParentId);
+    Set<String> partitionIds = partitionsOf(data, oldParentId, newParentId);
+    SerializedReferenceValue.Entry moved =
+        moveEntry(
+            oldParent, cmd.oldReference, cmd.oldIndex, newParent, cmd.newReference, cmd.newIndex);
+    sendEventToSubscribers(
+        partitionIds,
+        seqNum ->
+            new EntryMovedFromOtherReference(
+                    seqNum,
+                    newParentId,
+                    cmd.newReference,
+                    cmd.newIndex,
+                    oldParentId,
+                    cmd.oldReference,
+                    cmd.oldIndex,
+                    moved.getReference(),
+                    moved.getResolveInfo())
+                .addSource(source));
+  }
+
+  /**
+   * Moves an entry within the same reference, replacing the entry found at the destination.
+   * Consistently with {@link #handleMoveEntryInSameReference}, the destination index {@code
+   * oldIndex + indexOffset} is the final index of the moved entry, i.e., it is computed after the
+   * moved entry has been removed from its original position.
+   */
+  private void handleMoveAndReplaceEntryInSameReference(
+      @NotNull MoveAndReplaceEntryInSameReference cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    List<SerializedReferenceValue.Entry> entries = referenceEntries(node, cmd.reference);
+    SerializedReferenceValue.Entry moved = requireEntry(entries, cmd.oldIndex);
+    entries.remove(cmd.oldIndex);
+    int newIndex = cmd.oldIndex + cmd.indexOffset;
+    SerializedReferenceValue.Entry replaced = requireEntry(entries, newIndex);
+    entries.set(newIndex, moved);
+    node.setReferenceValue(cmd.reference, entries);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new EntryMovedAndReplacedInSameReference(
+                    seqNum,
+                    cmd.parent,
+                    cmd.reference,
+                    cmd.indexOffset,
+                    moved.getReference(),
+                    moved.getResolveInfo(),
+                    cmd.oldIndex,
+                    replaced.getReference(),
+                    replaced.getResolveInfo())
+                .addSource(source));
+  }
+
+  private void handleMoveAndReplaceEntryFromOtherReferenceInSameParent(
+      @NotNull MoveAndReplaceEntryFromOtherReferenceInSameParent cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance node = requireNode(data, cmd.parent);
+    SerializedReferenceValue.Entry[] movedAndReplaced =
+        moveAndReplaceEntry(
+            node, cmd.oldReference, cmd.oldIndex, node, cmd.newReference, cmd.newIndex);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new EntryMovedAndReplacedFromOtherReferenceInSameParent(
+                    seqNum,
+                    cmd.parent,
+                    cmd.newReference,
+                    cmd.newIndex,
+                    movedAndReplaced[0].getReference(),
+                    movedAndReplaced[0].getResolveInfo(),
+                    cmd.oldReference,
+                    cmd.oldIndex,
+                    movedAndReplaced[1].getReference(),
+                    movedAndReplaced[1].getResolveInfo())
+                .addSource(source));
+  }
+
+  private void handleMoveAndReplaceEntryFromOtherReference(
+      @NotNull MoveAndReplaceEntryFromOtherReference cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    String oldParentId = requireParent(cmd.oldParent);
+    String newParentId = requireParent(cmd.newParent);
+    SerializedClassifierInstance oldParent = requireNode(data, oldParentId);
+    SerializedClassifierInstance newParent = requireNode(data, newParentId);
+    Set<String> partitionIds = partitionsOf(data, oldParentId, newParentId);
+    SerializedReferenceValue.Entry[] movedAndReplaced =
+        moveAndReplaceEntry(
+            oldParent, cmd.oldReference, cmd.oldIndex, newParent, cmd.newReference, cmd.newIndex);
+    sendEventToSubscribers(
+        partitionIds,
+        seqNum ->
+            new EntryMovedAndReplacedFromOtherReference(
+                    seqNum,
+                    newParentId,
+                    cmd.newReference,
+                    cmd.newIndex,
+                    movedAndReplaced[0].getReference(),
+                    movedAndReplaced[0].getResolveInfo(),
+                    oldParentId,
+                    cmd.oldReference,
+                    cmd.oldIndex,
+                    movedAndReplaced[1].getReference(),
+                    movedAndReplaced[1].getResolveInfo())
+                .addSource(source));
+  }
+
+  /**
+   * Moves a child within the same containment, replacing (and deleting) {@code replacedChild}. The
+   * moved child takes the position the replaced child has once the moved child has been removed
+   * from its original position.
+   */
+  private void handleMoveAndReplaceChildInSameContainment(
+      @NotNull MoveAndReplaceChildInSameContainment cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+    requireNode(data, cmd.movedChild);
+    List<String> replacedDescendants =
+        moveAndReplaceChild(
+            data, parent, cmd.movedChild, parent, cmd.containment, cmd.replacedChild);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ChildMovedAndReplacedInSameContainment(
+                    seqNum,
+                    cmd.indexOffset,
+                    cmd.movedChild,
+                    cmd.parent,
+                    cmd.containment,
+                    cmd.oldIndex,
+                    cmd.replacedChild,
+                    replacedDescendants)
+                .addSource(source));
+  }
+
+  private void handleMoveAndReplaceChildFromOtherContainmentInSameParent(
+      @NotNull MoveAndReplaceChildFromOtherContainmentInSameParent cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+    requireNode(data, cmd.movedChild);
+    List<String> replacedDescendants =
+        moveAndReplaceChild(
+            data, parent, cmd.movedChild, parent, cmd.newContainment, cmd.replacedChild);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new ChildMovedAndReplacedFromOtherContainmentInSameParent(
+                    seqNum,
+                    cmd.newContainment,
+                    cmd.newIndex,
+                    cmd.movedChild,
+                    cmd.parent,
+                    cmd.oldContainment,
+                    cmd.oldIndex,
+                    cmd.replacedChild,
+                    replacedDescendants)
+                .addSource(source));
+  }
+
+  private void handleMoveAndReplaceChildFromOtherContainment(
+      @NotNull MoveAndReplaceChildFromOtherContainment cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance oldParent = requireNode(data, cmd.oldParent);
+    SerializedClassifierInstance newParent = requireNode(data, cmd.newParent);
+    SerializedClassifierInstance child = requireNode(data, cmd.movedChild);
+    Set<String> partitionIds = partitionsOf(data, cmd.oldParent, cmd.newParent);
+    List<String> replacedDescendants =
+        moveAndReplaceChild(
+            data, oldParent, cmd.movedChild, newParent, cmd.newContainment, cmd.replacedChild);
+    child.setParentNodeID(cmd.newParent);
+    sendEventToSubscribers(
+        partitionIds,
+        seqNum ->
+            new ChildMovedAndReplacedFromOtherContainment(
+                    seqNum,
+                    cmd.newParent,
+                    cmd.newContainment,
+                    cmd.newIndex,
+                    cmd.movedChild,
+                    cmd.oldParent,
+                    cmd.oldContainment,
+                    cmd.oldIndex,
+                    cmd.replacedChild,
+                    replacedDescendants)
+                .addSource(source));
+  }
+
+  /**
+   * Moves an annotation within the same parent, replacing (and deleting) {@code
+   * replacedAnnotation}. The moved annotation takes the position the replaced annotation has once
+   * the moved annotation has been removed from its original position.
+   */
+  private void handleMoveAndReplaceAnnotationInSameParent(
+      @NotNull MoveAndReplaceAnnotationInSameParent cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance parent = requireNode(data, cmd.parent);
+    requireNode(data, cmd.movedAnnotation);
+    List<String> replacedDescendants =
+        moveAndReplaceAnnotation(data, parent, cmd.movedAnnotation, parent, cmd.replacedAnnotation);
+    sendEventToSubscribers(
+        partitionsOf(data, cmd.parent),
+        seqNum ->
+            new AnnotationMovedAndReplacedInSameParent(
+                    seqNum,
+                    cmd.indexOffset,
+                    cmd.movedAnnotation,
+                    cmd.parent,
+                    cmd.oldIndex,
+                    cmd.replacedAnnotation,
+                    replacedDescendants.toArray(new String[0]))
+                .addSource(source));
+  }
+
+  private void handleMoveAndReplaceAnnotationFromOtherParent(
+      @NotNull MoveAndReplaceAnnotationFromOtherParent cmd,
+      @NotNull RepositoryData data,
+      @NotNull CommandSource source) {
+    SerializedClassifierInstance oldParent = requireNode(data, cmd.oldParent);
+    SerializedClassifierInstance newParent = requireNode(data, cmd.newParent);
+    SerializedClassifierInstance annotation = requireNode(data, cmd.movedAnnotation);
+    Set<String> partitionIds = partitionsOf(data, cmd.oldParent, cmd.newParent);
+    List<String> replacedDescendants =
+        moveAndReplaceAnnotation(
+            data, oldParent, cmd.movedAnnotation, newParent, cmd.replacedAnnotation);
+    annotation.setParentNodeID(cmd.newParent);
+    sendEventToSubscribers(
+        partitionIds,
+        seqNum ->
+            new AnnotationMovedAndReplacedFromOtherParent(
+                    seqNum,
+                    cmd.newParent,
+                    cmd.newIndex,
+                    cmd.movedAnnotation,
+                    cmd.oldParent,
+                    cmd.oldIndex,
+                    cmd.replacedAnnotation,
+                    replacedDescendants.toArray(new String[0]))
+                .addSource(source));
+  }
+
   private void handleChangeClassifier(
       @NotNull ChangeClassifier cmd, @NotNull RepositoryData data, @NotNull CommandSource source) {
     SerializedClassifierInstance node = requireNode(data, cmd.node);
@@ -602,9 +1078,219 @@ class DeltaCommandReceiverImpl implements DeltaCommandReceiver {
             });
   }
 
+  /** Returns a mutable copy of the entries of the given reference of the given node. */
+  private static @NotNull List<SerializedReferenceValue.Entry> referenceEntries(
+      @NotNull SerializedClassifierInstance node, @NotNull MetaPointer reference) {
+    return new ArrayList<>(node.getReferenceValues(reference));
+  }
+
+  private static @NotNull SerializedReferenceValue.Entry requireEntry(
+      @NotNull List<SerializedReferenceValue.Entry> entries, int index) {
+    if (index < 0 || index >= entries.size()) {
+      throw new InvalidCommandException(
+          StandardErrorCode.UNKNOWN_INDEX.code,
+          "No reference entry at index " + index + ", the reference has " + entries.size());
+    }
+    return entries.get(index);
+  }
+
+  private static int requireInsertionIndex(
+      @NotNull List<SerializedReferenceValue.Entry> entries, int index) {
+    if (index < 0 || index > entries.size()) {
+      throw new InvalidCommandException(
+          StandardErrorCode.UNKNOWN_INDEX.code,
+          "Cannot insert a reference entry at index "
+              + index
+              + ", the reference has "
+              + entries.size());
+    }
+    return index;
+  }
+
+  private static @NotNull String requireTarget(@Nullable String target) {
+    if (target == null) {
+      throw new InvalidCommandException(
+          StandardErrorCode.UNDEFINED_REFERENCE_TARGET.code, "Reference target is not defined");
+    }
+    return target;
+  }
+
+  private static @NotNull String requireResolveInfo(@Nullable String resolveInfo) {
+    if (resolveInfo == null) {
+      throw new InvalidCommandException(
+          CustomErrorCode.UNDEFINED_RESOLVE_INFO, "Reference resolveInfo is not defined");
+    }
+    return resolveInfo;
+  }
+
+  private static @NotNull String requireParent(@Nullable String parent) {
+    if (parent == null) {
+      throw new InvalidCommandException(
+          StandardErrorCode.MOVE_WITHOUT_PARENT.code, "Parent of the move is not specified");
+    }
+    return parent;
+  }
+
+  /**
+   * Moves the entry at {@code oldIndex} of {@code oldParent}'s {@code oldReference} to {@code
+   * newIndex} of {@code newParent}'s {@code newReference}. Nothing is modified if the command is
+   * invalid.
+   *
+   * @return the moved entry
+   */
+  private static @NotNull SerializedReferenceValue.Entry moveEntry(
+      @NotNull SerializedClassifierInstance oldParent,
+      @NotNull MetaPointer oldReference,
+      int oldIndex,
+      @NotNull SerializedClassifierInstance newParent,
+      @NotNull MetaPointer newReference,
+      int newIndex) {
+    List<SerializedReferenceValue.Entry> oldEntries = referenceEntries(oldParent, oldReference);
+    SerializedReferenceValue.Entry moved = requireEntry(oldEntries, oldIndex);
+    oldEntries.remove(oldIndex);
+    boolean sameReference = oldParent == newParent && oldReference.equals(newReference);
+    List<SerializedReferenceValue.Entry> newEntries =
+        sameReference ? oldEntries : referenceEntries(newParent, newReference);
+    newEntries.add(requireInsertionIndex(newEntries, newIndex), moved);
+    oldParent.setReferenceValue(oldReference, oldEntries);
+    newParent.setReferenceValue(newReference, newEntries);
+    return moved;
+  }
+
+  /**
+   * Moves the entry at {@code oldIndex} of {@code oldParent}'s {@code oldReference} to {@code
+   * newIndex} of {@code newParent}'s {@code newReference}, replacing the entry found there. Nothing
+   * is modified if the command is invalid.
+   *
+   * @return the moved entry and the replaced entry, in this order
+   */
+  private static @NotNull SerializedReferenceValue.Entry[] moveAndReplaceEntry(
+      @NotNull SerializedClassifierInstance oldParent,
+      @NotNull MetaPointer oldReference,
+      int oldIndex,
+      @NotNull SerializedClassifierInstance newParent,
+      @NotNull MetaPointer newReference,
+      int newIndex) {
+    List<SerializedReferenceValue.Entry> oldEntries = referenceEntries(oldParent, oldReference);
+    SerializedReferenceValue.Entry moved = requireEntry(oldEntries, oldIndex);
+    oldEntries.remove(oldIndex);
+    boolean sameReference = oldParent == newParent && oldReference.equals(newReference);
+    List<SerializedReferenceValue.Entry> newEntries =
+        sameReference ? oldEntries : referenceEntries(newParent, newReference);
+    SerializedReferenceValue.Entry replaced = requireEntry(newEntries, newIndex);
+    newEntries.set(newIndex, moved);
+    oldParent.setReferenceValue(oldReference, oldEntries);
+    newParent.setReferenceValue(newReference, newEntries);
+    return new SerializedReferenceValue.Entry[] {moved, replaced};
+  }
+
+  /**
+   * Moves {@code movedChild} from {@code oldParent} into {@code newParent}'s {@code
+   * newContainment}, at the position of {@code replacedChild}, which is deleted together with its
+   * descendants. The position is computed after removing the moved child, so that it is correct
+   * also when moving within the same containment. Nothing is modified if the command is invalid.
+   *
+   * @return the descendants of the replaced child
+   */
+  private @NotNull List<String> moveAndReplaceChild(
+      @NotNull RepositoryData data,
+      @NotNull SerializedClassifierInstance oldParent,
+      @NotNull String movedChild,
+      @NotNull SerializedClassifierInstance newParent,
+      @NotNull MetaPointer newContainment,
+      @NotNull String replacedChild) {
+    List<String> replacedDescendants = requireReplaceable(data, movedChild, replacedChild);
+    if (!oldParent.getChildren().contains(movedChild)) {
+      throw new InvalidCommandException(
+          StandardErrorCode.INDEX_NODE_MISMATCH.code,
+          "Node " + movedChild + " is not a child of " + oldParent.getID());
+    }
+    List<String> siblings = new ArrayList<>(newParent.getContainmentValues(newContainment));
+    siblings.remove(movedChild);
+    int index = siblings.indexOf(replacedChild);
+    if (index == -1) {
+      throw new InvalidCommandException(
+          StandardErrorCode.INDEX_NODE_MISMATCH.code,
+          "Node " + replacedChild + " is not a child of " + newParent.getID());
+    }
+    oldParent.removeChild(movedChild);
+    newParent.removeChild(replacedChild);
+    data.deleteNodeAndDescendant(replacedChild);
+    newParent.addChild(newContainment, movedChild, index);
+    return replacedDescendants;
+  }
+
+  /**
+   * Moves {@code movedAnnotation} from {@code oldParent} to {@code newParent}, at the position of
+   * {@code replacedAnnotation}, which is deleted together with its descendants. The position is
+   * computed after removing the moved annotation, so that it is correct also when moving within the
+   * same parent. Nothing is modified if the command is invalid.
+   *
+   * @return the descendants of the replaced annotation
+   */
+  private @NotNull List<String> moveAndReplaceAnnotation(
+      @NotNull RepositoryData data,
+      @NotNull SerializedClassifierInstance oldParent,
+      @NotNull String movedAnnotation,
+      @NotNull SerializedClassifierInstance newParent,
+      @NotNull String replacedAnnotation) {
+    List<String> replacedDescendants =
+        requireReplaceable(data, movedAnnotation, replacedAnnotation);
+    List<String> oldAnnotations = new ArrayList<>(oldParent.getAnnotations());
+    if (!oldAnnotations.remove(movedAnnotation)) {
+      throw new InvalidCommandException(
+          StandardErrorCode.INDEX_NODE_MISMATCH.code,
+          "Node " + movedAnnotation + " is not an annotation of " + oldParent.getID());
+    }
+    List<String> newAnnotations =
+        oldParent == newParent ? oldAnnotations : new ArrayList<>(newParent.getAnnotations());
+    int index = newAnnotations.indexOf(replacedAnnotation);
+    if (index == -1) {
+      throw new InvalidCommandException(
+          StandardErrorCode.INDEX_NODE_MISMATCH.code,
+          "Node " + replacedAnnotation + " is not an annotation of " + newParent.getID());
+    }
+    newAnnotations.set(index, movedAnnotation);
+    oldParent.setAnnotations(oldAnnotations);
+    newParent.setAnnotations(newAnnotations);
+    data.deleteNodeAndDescendant(replacedAnnotation);
+    return replacedDescendants;
+  }
+
+  /**
+   * Verifies that {@code replaced} exists and can be replaced by {@code moved}, i.e., {@code moved}
+   * is neither {@code replaced} nor one of its descendants.
+   *
+   * @return the descendants of {@code replaced}
+   */
+  private @NotNull List<String> requireReplaceable(
+      @NotNull RepositoryData data, @NotNull String moved, @NotNull String replaced) {
+    requireNode(data, replaced);
+    List<String> replacedDescendants = new ArrayList<>();
+    collectDescendants(data, replaced, replacedDescendants);
+    if (moved.equals(replaced) || replacedDescendants.contains(moved)) {
+      throw new InvalidCommandException(
+          StandardErrorCode.INVALID_MOVE.code,
+          "Node " + moved + " cannot replace itself or one of its ancestors");
+    }
+    return replacedDescendants;
+  }
+
   private class NodeNotFoundException extends RuntimeException {
     NodeNotFoundException(String nodeId) {
       super("Node with id " + nodeId + " not found");
+    }
+  }
+
+  /**
+   * A command which cannot be applied: it is answered with an error event having the given code.
+   */
+  private static class InvalidCommandException extends RuntimeException {
+    final @NotNull String errorCode;
+
+    InvalidCommandException(@NotNull String errorCode, @NotNull String message) {
+      super(message);
+      this.errorCode = errorCode;
     }
   }
 }
