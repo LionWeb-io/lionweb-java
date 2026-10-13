@@ -2,6 +2,9 @@ package io.lionweb.emf;
 
 import io.lionweb.LionWebVersion;
 import io.lionweb.emf.mapping.LanguageEntitiesToEElementsMapping;
+import io.lionweb.language.Containment;
+import io.lionweb.language.Feature;
+import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
@@ -41,6 +44,34 @@ public class EMFModelExporter extends AbstractEMFExporter {
     return propertyValue;
   }
 
+  /**
+   * LionWeb Properties cannot be multiple, so an EAttribute with upper bound greater than 1 is
+   * represented in LionWeb as a multiple Containment of auxiliary holder nodes (see {@link
+   * EMFMetamodelImporter}). Here we collect the values stored in such holder nodes.
+   */
+  private List<Object> exportMultipleAttributeValues(Node node, EAttribute eAttribute) {
+    Feature<?> feature = node.getClassifier().getFeatureByName(eAttribute.getName());
+    if (!(feature instanceof Containment)) {
+      throw new IllegalStateException(
+          "EAttribute "
+              + eAttribute.getEContainingClass().getName()
+              + "."
+              + eAttribute.getName()
+              + " has multiplicity many, so a corresponding Containment was expected in "
+              + node.getClassifier().getName()
+              + ", but found "
+              + feature);
+    }
+    Containment containment = (Containment) feature;
+    Property holderProperty =
+        containment
+            .getType()
+            .requirePropertyByName(EMFMetamodelImporter.MULTIPLE_ATTRIBUTE_HOLDER_PROPERTY_NAME);
+    return node.getChildren(containment).stream()
+        .map(holder -> convertAttributeValue(holder.getPropertyValue(holderProperty)))
+        .collect(Collectors.toList());
+  }
+
   /** This export the root received to a single EObject tree. */
   public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
     EClass eClass =
@@ -62,10 +93,14 @@ public class EMFModelExporter extends AbstractEMFExporter {
             eStructuralFeature -> {
               if (eStructuralFeature instanceof EAttribute) {
                 EAttribute eAttribute = (EAttribute) eStructuralFeature;
-                Object propertyValue =
-                    ClassifierInstanceUtils.getPropertyValueByName(root, eAttribute.getName());
-                Object attributeValue = convertAttributeValue(propertyValue);
-                eObject.eSet(eAttribute, attributeValue);
+                if (eAttribute.isMany()) {
+                  eObject.eSet(eAttribute, exportMultipleAttributeValues(root, eAttribute));
+                } else {
+                  Object propertyValue =
+                      ClassifierInstanceUtils.getPropertyValueByName(root, eAttribute.getName());
+                  Object attributeValue = convertAttributeValue(propertyValue);
+                  eObject.eSet(eAttribute, attributeValue);
+                }
               } else if (eStructuralFeature instanceof EReference) {
                 EReference eReference = (EReference) eStructuralFeature;
                 if (eReference.isContainment()) {

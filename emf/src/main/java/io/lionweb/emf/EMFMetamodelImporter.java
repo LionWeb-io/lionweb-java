@@ -13,6 +13,14 @@ import org.eclipse.emf.ecore.resource.Resource;
 /** EMF importer which produces LionWeb's Metamodels. */
 public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
 
+  /**
+   * Name of the Property of the auxiliary holder Concept introduced for each EAttribute with upper
+   * bound greater than 1. LionWeb Properties cannot be multiple, so such an EAttribute is mapped to
+   * a multiple Containment whose type is a holder Concept exposing a single Property with this
+   * name.
+   */
+  public static final String MULTIPLE_ATTRIBUTE_HOLDER_PROPERTY_NAME = "content";
+
   public EMFMetamodelImporter() {
     this(LionWebVersion.currentVersion);
   }
@@ -182,7 +190,8 @@ public class EMFMetamodelImporter extends AbstractEMFImporter<Language> {
           setIDAndKey(holderConcept, ePackage.getName() + "-" + holderConcept.getName());
           holderConcept.setAbstract(false);
 
-          Property property = new Property(getLionWebVersion(), "content");
+          Property property =
+              new Property(getLionWebVersion(), MULTIPLE_ATTRIBUTE_HOLDER_PROPERTY_NAME);
           setIDAndKey(
               property,
               ePackage.getName() + "-" + holderConcept.getName() + "-" + property.getName());
