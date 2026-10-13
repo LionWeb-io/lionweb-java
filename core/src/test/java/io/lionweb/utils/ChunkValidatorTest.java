@@ -555,6 +555,44 @@ public class ChunkValidatorTest {
   }
 
   @Test
+  public void testInvalidLanguage() {
+    chunk.addLanguage(LanguageVersion.of("test lang", "1.0"));
+    chunk.addLanguage(LanguageVersion.of("other-lang", ""));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "Invalid language: the key should be a valid identifier and the version should not be"
+                + " empty, found test lang/1.0"));
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "Invalid language: the key should be a valid identifier and the version should not be"
+                + " empty, found other-lang/"));
+  }
+
+  @Test
+  public void testInvalidMetaPointers() {
+    SerializedClassifierInstance node = new SerializedClassifierInstance();
+    node.setID("node1");
+    node.setClassifier(MetaPointer.get("test-lang", "1.0", "my concept"));
+    node.unsafeAppendPropertyValue(
+        SerializedPropertyValue.get(MetaPointer.get("test-lang", "", "prop"), "value"));
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+    chunk.addLanguage(LanguageVersion.of("test-lang", ""));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid classifier metapointer"));
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid feature metapointer"));
+  }
+
+  @Test
   public void testInvalidIdsInRelations() {
     SerializedClassifierInstance node = createValidNode("node1", "invalid parent");
     node.unsafeAppendContainmentValue(createContainment("invalid child"));

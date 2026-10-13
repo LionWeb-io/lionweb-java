@@ -17,7 +17,8 @@ import javax.annotation.Nullable;
  *   <li>the serialization format version, when specified, is a known one
  *   <li>the languages listed in the chunk are well-formed and correspond exactly to the languages
  *       used in the chunk
- *   <li>all metapointers are complete (language, version, and key are all specified)
+ *   <li>all metapointers are complete and well-formed (language and key are valid identifiers,
+ *       version is not empty)
  *   <li>node IDs, as well as IDs used to refer to parents, children, annotations, and reference
  *       targets, are valid
  *   <li>there are no duplicate node IDs
@@ -85,6 +86,11 @@ public class ChunkValidator extends Validator<SerializationChunk> {
       if (language.getKey() == null || language.getVersion() == null) {
         validationResult.addError(
             "Invalid language: both key and version should be specified, found "
+                + formatLanguage(language));
+      } else if (!IdUtils.isValidID(language.getKey()) || language.getVersion().isEmpty()) {
+        validationResult.addError(
+            "Invalid language: the key should be a valid identifier and the version should not be"
+                + " empty, found "
                 + formatLanguage(language));
       }
       declaredLanguages.add(language);
@@ -166,6 +172,18 @@ public class ChunkValidator extends Validator<SerializationChunk> {
               + " metapointer: "
               + metaPointer
               + ". Language, version, and key should all be specified",
+          node.getID());
+    } else if (!IdUtils.isValidID(metaPointer.getLanguage())
+        || !IdUtils.isValidID(metaPointer.getKey())
+        || metaPointer.getVersion().isEmpty()) {
+      validationResult.addError(
+          "Node "
+              + node.getID()
+              + " has an invalid "
+              + role
+              + " metapointer: "
+              + metaPointer
+              + ". Language and key should be valid identifiers, version should not be empty",
           node.getID());
     }
   }
