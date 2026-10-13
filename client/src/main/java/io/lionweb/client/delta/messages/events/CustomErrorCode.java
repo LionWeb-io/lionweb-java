@@ -20,11 +20,5 @@ public final class CustomErrorCode {
    */
   public static final String NOT_IMPLEMENTED = "Custom_notImplemented";
 
-  /**
-   * A command requires a reference entry to have a resolveInfo, but it does not have one. This is
-   * the counterpart, for resolveInfo, of {@link StandardErrorCode#UNDEFINED_REFERENCE_TARGET}.
-   */
-  public static final String UNDEFINED_RESOLVE_INFO = "Custom_undefinedResolveInfo";
-
   private CustomErrorCode() {}
 }
