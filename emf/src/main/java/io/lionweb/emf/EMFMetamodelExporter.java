@@ -6,6 +6,7 @@ import io.lionweb.language.*;
 import java.util.List;
 import java.util.Objects;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
@@ -28,6 +29,27 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
   }
 
+  /**
+   * Return the registry used to look up existing EPackages before creating new ones. This is stored
+   * in the mapping, so that it is also used when Languages are exported implicitly.
+   */
+  public @Nullable EPackage.Registry getEPackageRegistry() {
+    return entitiesToEElementsMapping.getEPackageRegistry();
+  }
+
+  /**
+   * Set the registry used to look up existing EPackages before creating new ones. See {@link
+   * LanguageEntitiesToEElementsMapping#setEPackageRegistry(EPackage.Registry)}.
+   */
+  public void setEPackageRegistry(@Nullable EPackage.Registry ePackageRegistry) {
+    entitiesToEElementsMapping.setEPackageRegistry(ePackageRegistry);
+  }
+
+  /** Return the namespace URI used for the EPackage corresponding to the given Language. */
+  public static @Nonnull String nsURIFor(@Nonnull Language language) {
+    return "https://lionweb.io/" + language.getKey();
+  }
+
   /** This export all the languages received to a single Resource. */
   public Resource exportResource(List<Language> languages) {
     Resource resource = new ResourceImpl();
@@ -35,8 +57,21 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     return resource;
   }
 
-  /** This export the Language received to a single EPackage. */
+  /**
+   * This export the Language received to a single EPackage.
+   *
+   * <p>If the Language has already been mapped to an EPackage, that EPackage is returned. If an
+   * EPackage with the corresponding namespace URI is present in the EPackage registry (see {@link
+   * #setEPackageRegistry(EPackage.Registry)}), that EPackage is mapped to the Language and
+   * returned. Only otherwise a new EPackage is created. This avoids creating duplicate EClasses for
+   * Languages which already have an EMF counterpart (e.g., generated EPackages).
+   */
   public EPackage exportLanguage(Language language) {
+    EPackage existing = findExistingEPackage(language);
+    if (existing != null) {
+      return existing;
+    }
+
     EPackage ePackage = EcoreFactory.eINSTANCE.createEPackage();
 
     // Ecore expects valid Java identifiers as package name, see
@@ -45,15 +80,32 @@ public class EMFMetamodelExporter extends AbstractEMFExporter {
     // https://github.com/eclipse-emf/org.eclipse.emf/blob/d761f373bda75cccc7adfd79783304762fd3affa/plugins/org.eclipse.emf.ecore/src/org/eclipse/emf/ecore/util/EcoreValidator.java#L683
     // Otherwise, generated Java code might not compile.
     ePackage.setName(language.getName().replaceAll("[^\\p{Alnum}_]", "_"));
-    ePackage.setNsURI("https://lionweb.io/" + language.getKey());
+    ePackage.setNsURI(nsURIFor(language));
     ePackage.setNsPrefix(language.getName());
 
     // We first create all EClasses and only later we draw relationships
     // among them
     createEClasses(language, ePackage);
+    entitiesToEElementsMapping.registerMapping(language, ePackage);
     populateEClasses(language);
 
     return ePackage;
+  }
+
+  private @Nullable EPackage findExistingEPackage(Language language) {
+    EPackage known = entitiesToEElementsMapping.getKnownEPackage(language);
+    if (known != null) {
+      return known;
+    }
+    EPackage.Registry ePackageRegistry = entitiesToEElementsMapping.getEPackageRegistry();
+    if (ePackageRegistry != null) {
+      EPackage registered = ePackageRegistry.getEPackage(nsURIFor(language));
+      if (registered != null) {
+        entitiesToEElementsMapping.registerMapping(language, registered);
+        return registered;
+      }
+    }
+    return null;
   }
 
   private void createEClasses(Language language, EPackage ePackage) {
