@@ -457,7 +457,197 @@ public class ChunkValidatorTest {
     assertTrue(result.getIssues().size() >= 2); // Should have multiple errors
   }
 
+  @Test
+  public void testChildWithoutParentDoesNotCauseException() {
+    SerializedClassifierInstance parent = createValidNode("parent1", null);
+    SerializedClassifierInstance child = createValidNode("child1", null);
+    parent.unsafeAppendContainmentValue(createContainment("child1"));
+
+    chunk.addClassifierInstances(parent, child);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        hasIssueContaining(
+            result, "child1 is listed as child of parent1 but it has as parent null"));
+  }
+
+  @Test
+  public void testMultiplePlacementsAreReported() {
+    SerializedClassifierInstance parent1 = createValidNode("parent1", null);
+    SerializedClassifierInstance parent2 = createValidNode("parent2", null);
+    SerializedClassifierInstance child = createValidNode("child1", "parent1");
+    parent1.unsafeAppendContainmentValue(createContainment("child1"));
+    parent2.addAnnotation("child1");
+
+    chunk.addClassifierInstances(parent1, parent2, child);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "child1 is listed in multiple places: [parent1 at "
+                + testMetaPointer
+                + "] and now parent2 among annotations"));
+  }
+
+  @Test
+  public void testValidSerializationFormatVersion() {
+    chunk.setSerializationFormatVersion("2024.1");
+    assertTrue(validator.validate(chunk).isSuccessful());
+    chunk.setSerializationFormatVersion("2023.1");
+    assertTrue(validator.validate(chunk).isSuccessful());
+  }
+
+  @Test
+  public void testUnknownSerializationFormatVersion() {
+    chunk.setSerializationFormatVersion("1999.1");
+    ValidationResult result = validator.validate(chunk);
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Unknown serialization format version: 1999.1"));
+  }
+
+  @Test
+  public void testIncompleteLanguage() {
+    chunk.addLanguage(LanguageVersion.of("test-lang", null));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "Invalid language: both key and version should be specified, found test-lang/null"));
+  }
+
+  @Test
+  public void testMissingClassifier() {
+    SerializedClassifierInstance node = new SerializedClassifierInstance();
+    node.setID("node1");
+    chunk.addClassifierInstances(node);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has no classifier"));
+  }
+
+  @Test
+  public void testIncompleteMetaPointers() {
+    SerializedClassifierInstance node = new SerializedClassifierInstance();
+    node.setID("node1");
+    node.setClassifier(MetaPointer.get("test-lang", "1.0", null));
+    node.unsafeAppendPropertyValue(
+        SerializedPropertyValue.get(MetaPointer.get(null, "1.0", "prop"), "value"));
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+    chunk.addLanguage(LanguageVersion.of(null, "1.0"));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has an incomplete classifier metapointer"));
+    assertTrue(hasIssueContaining(result, "Node node1 has an incomplete feature metapointer"));
+  }
+
+  @Test
+  public void testInvalidIdsInRelations() {
+    SerializedClassifierInstance node = createValidNode("node1", "invalid parent");
+    node.unsafeAppendContainmentValue(createContainment("invalid child"));
+    node.addAnnotation("invalid annotation");
+    SerializedReferenceValue referenceValue =
+        new SerializedReferenceValue(
+            MetaPointer.get("test-lang", "1.0", "TestRef"),
+            Arrays.asList(
+                new SerializedReferenceValue.Entry("invalid target", null),
+                new SerializedReferenceValue.Entry(null, "only-resolve-info")));
+    node.unsafeAppendReferenceValue(referenceValue);
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid parent id: invalid parent"));
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid child id: invalid child"));
+    assertTrue(
+        hasIssueContaining(result, "Node node1 has an invalid annotation id: invalid annotation"));
+    assertTrue(
+        hasIssueContaining(
+            result, "Node node1 has an invalid reference target id: invalid target"));
+    assertFalse(hasIssueContaining(result, "invalid reference target id: null"));
+  }
+
+  @Test
+  public void testNodeBeingItsOwnParent() {
+    SerializedClassifierInstance node = createValidNode("node1", "node1");
+    node.unsafeAppendContainmentValue(createContainment("node1"));
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 lists itself as parent"));
+  }
+
+  @Test
+  public void testContainmentCycle() {
+    SerializedClassifierInstance a = createValidNode("a", "c");
+    SerializedClassifierInstance b = createValidNode("b", "a");
+    SerializedClassifierInstance c = createValidNode("c", "b");
+    a.unsafeAppendContainmentValue(createContainment("b"));
+    b.unsafeAppendContainmentValue(createContainment("c"));
+    c.unsafeAppendContainmentValue(createContainment("a"));
+    chunk.addClassifierInstances(a, b, c);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertEquals(
+        1,
+        result.getIssues().stream()
+            .filter(i -> i.getMessage().startsWith("Cycle in the containment hierarchy"))
+            .count());
+    assertTrue(hasIssueContaining(result, "Cycle in the containment hierarchy: a -> c -> b"));
+  }
+
+  @Test
+  public void testSingleRootIsNotRequiredByDefault() {
+    chunk.addClassifierInstances(createValidNode("root1", null), createValidNode("root2", null));
+    chunk.addLanguage(testLanguage);
+
+    assertFalse(validator.isRequireSingleRoot());
+    assertTrue(validator.validate(chunk).isSuccessful());
+  }
+
+  @Test
+  public void testSingleRootCanBeRequired() {
+    ChunkValidator singleRootValidator = new ChunkValidator(true);
+    chunk.addClassifierInstances(createValidNode("root2", null), createValidNode("root1", null));
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = singleRootValidator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Expected exactly one root, found: [root1, root2]"));
+
+    SerializationChunk singleRootChunk = new SerializationChunk();
+    singleRootChunk.addClassifierInstances(createValidNode("root1", null));
+    singleRootChunk.addLanguage(testLanguage);
+    assertTrue(singleRootValidator.validate(singleRootChunk).isSuccessful());
+  }
+
   // Helper methods
+
+  private boolean hasIssueContaining(ValidationResult result, String text) {
+    return result.getIssues().stream().anyMatch(i -> i.getMessage().contains(text));
+  }
 
   private SerializedClassifierInstance createValidNode(String id, String parentId) {
     SerializedClassifierInstance node = new SerializedClassifierInstance();

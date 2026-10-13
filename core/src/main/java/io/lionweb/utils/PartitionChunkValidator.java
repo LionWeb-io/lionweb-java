@@ -11,9 +11,14 @@ import javax.annotation.Nonnull;
 
 /**
  * Verify a Chunk represents a valid partition. It does all the checks done by ChunkValidator, plus
- * some checks specific to partitions.
+ * some checks specific to partitions, such as requiring exactly one root.
  */
 public class PartitionChunkValidator extends ChunkValidator {
+
+  public PartitionChunkValidator() {
+    // A partition has exactly one root
+    super(true);
+  }
 
   @Override
   public @Nonnull ValidationResult validate(@Nonnull SerializationChunk chunk) {
@@ -35,14 +40,6 @@ public class PartitionChunkValidator extends ChunkValidator {
             !nodesPresent.contains(annotationId), "Missing node: " + annotationId, annotationId);
       }
     }
-
-    // There is just one root in the chunk
-    Set<String> roots =
-        chunk.getClassifierInstances().stream()
-            .filter(n -> n.getParentNodeID() == null)
-            .map(n -> n.getID())
-            .collect(toSet());
-    validationResult.addErrorIf(roots.size() != 1, "Expected exactly one root, found: " + roots);
 
     return validationResult;
   }
