@@ -10,12 +10,17 @@ import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.serialization.data.SerializedClassifierInstance;
 import io.lionweb.serialization.data.SerializedReferenceValue;
 import java.util.*;
+import java.util.function.Predicate;
 import javax.annotation.Nonnull;
 
 /**
  * This knows how to sort a list of languages based on the same LionWeb Version according to their
  * dependencies, so that a language A depending on a language B is always specified after B.
  * Circular dependencies are not allowed and cause errors.
+ *
+ * <p>By default, every dependency must be one of the languages being sorted, otherwise an error is
+ * raised. Dependencies on languages known by other means (e.g., already registered in a
+ * serialization) can be accepted by using {@link #topologicalSort(Collection, Predicate)}.
  */
 public class TopologicalLanguageSorter {
 
@@ -26,8 +31,33 @@ public class TopologicalLanguageSorter {
     this.lionWebVersion = lionWebVersion;
   }
 
+  /**
+   * Sorts the given language chunks so that each language follows the languages it depends on.
+   *
+   * @throws IllegalStateException if a language depends on a language not among the given chunks,
+   *     if there are cyclic dependencies, or if there are duplicate languages
+   */
   public @Nonnull List<SerializationChunk> topologicalSort(
       @Nonnull Collection<SerializationChunk> chunks) {
+    return topologicalSort(chunks, languageID -> false);
+  }
+
+  /**
+   * Sorts the given language chunks so that each language follows the languages it depends on.
+   *
+   * @param chunks the language chunks to sort
+   * @param isKnownDependency tells if a dependency which is not among the given chunks should be
+   *     accepted (and ignored for the purpose of sorting). It receives the ID of the language
+   *     depended upon. Use {@code id -> true} to ignore all unknown dependencies.
+   * @throws IllegalStateException if a language depends on a language not among the given chunks
+   *     and not accepted by {@code isKnownDependency}, if there are cyclic dependencies, or if
+   *     there are duplicate languages
+   */
+  public @Nonnull List<SerializationChunk> topologicalSort(
+      @Nonnull Collection<SerializationChunk> chunks,
+      @Nonnull Predicate<String> isKnownDependency) {
+    Objects.requireNonNull(chunks, "chunks should not be null");
+    Objects.requireNonNull(isKnownDependency, "isKnownDependency should not be null");
     List<SerializationChunk> result = new ArrayList<>();
     Set<String> visited = new HashSet<>();
     Set<String> visiting = new HashSet<>();
@@ -45,7 +75,7 @@ public class TopologicalLanguageSorter {
     }
 
     for (SerializationChunk chunk : chunks) {
-      visit(chunk, visited, visiting, result, chunkMap);
+      visit(chunk, visited, visiting, result, chunkMap, isKnownDependency);
     }
 
     return result;
@@ -69,7 +99,8 @@ public class TopologicalLanguageSorter {
       Set<String> visited,
       Set<String> visiting,
       List<SerializationChunk> out,
-      Map<String, SerializationChunk> chunkMap) {
+      Map<String, SerializationChunk> chunkMap,
+      Predicate<String> isKnownDependency) {
 
     SerializedClassifierInstance languageNode = extractLanguageNode(chunk);
     if (languageNode == null) return;
@@ -84,9 +115,12 @@ public class TopologicalLanguageSorter {
     for (String depKey : deps(languageNode)) {
       SerializationChunk dep = chunkMap.get(depKey);
       if (dep == null) {
+        if (isKnownDependency.test(depKey)) {
+          continue;
+        }
         throw new IllegalStateException("Unknown dependency: " + depKey);
       }
-      visit(dep, visited, visiting, out, chunkMap);
+      visit(dep, visited, visiting, out, chunkMap, isKnownDependency);
     }
     visiting.remove(key);
     visited.add(key);
