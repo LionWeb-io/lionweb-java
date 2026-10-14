@@ -3,6 +3,7 @@
 ### Version 1.4.7
 
 * `ChunkValidator`: check serialization format version, languages, metapointers, IDs used in relations and containment cycles; accept children and annotations outside the chunk, as the specification allows (only `PartitionChunkValidator` requires them); fix a `NullPointerException` (issues #253, #465)
+* In-memory delta server: handle the five move-and-replace commands as specified in 2026.1, with the specification's error codes; deleted descendants now include annotations. Rename two move-and-replace child commands and their events to the 2026.1 names (issue #474)
 
 ### Version 1.4.6
 
