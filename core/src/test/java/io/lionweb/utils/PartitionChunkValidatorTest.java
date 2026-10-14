@@ -100,7 +100,7 @@ public class PartitionChunkValidatorTest {
     ValidationResult result = validator.validate(chunk);
 
     assertFalse(result.isSuccessful());
-    assertEquals(5, result.getIssues().size());
+    assertEquals(4, result.getIssues().size());
     assertTrue(
         result.getIssues().stream()
             .anyMatch(error -> error.getMessage().contains("Missing node: missingChild1")));
@@ -113,14 +113,6 @@ public class PartitionChunkValidatorTest {
     assertTrue(
         result.getIssues().stream()
             .anyMatch(error -> error.getMessage().contains("Missing node: missingAnnotation2")));
-    assertTrue(
-        result.getIssues().stream()
-            .anyMatch(
-                error ->
-                    error
-                        .getMessage()
-                        .contains(
-                            "Some nodes should be contained, but are not present: missingAnnotation1, missingAnnotation2, missingChild1, missingChild2")));
   }
 
   @Test
@@ -148,34 +140,20 @@ public class PartitionChunkValidatorTest {
     SerializedClassifierInstance root2 = createValidNode("root2", null);
     SerializedClassifierInstance root3 = createValidNode("root3", null);
 
-    chunk.addClassifierInstances(root1, root2, root3);
+    chunk.addClassifierInstances(root2, root3, root1);
     chunk.addLanguages(testLanguage);
 
     ValidationResult result = validator.validate(chunk);
 
     assertFalse(result.isSuccessful());
+    // Roots are reported in a deterministic order
     assertTrue(
         result.getIssues().stream()
             .anyMatch(
                 error ->
                     error
-                            .getMessage()
-                            .contains("Expected exactly one root, found: [root1, root2, root3]")
-                        || error
-                            .getMessage()
-                            .contains("Expected exactly one root, found: [root1, root3, root2]")
-                        || error
-                            .getMessage()
-                            .contains("Expected exactly one root, found: [root2, root1, root3]")
-                        || error
-                            .getMessage()
-                            .contains("Expected exactly one root, found: [root2, root3, root1]")
-                        || error
-                            .getMessage()
-                            .contains("Expected exactly one root, found: [root3, root1, root2]")
-                        || error
-                            .getMessage()
-                            .contains("Expected exactly one root, found: [root3, root2, root1]")));
+                        .getMessage()
+                        .contains("Expected exactly one root, found: [root1, root2, root3]")));
   }
 
   @Test

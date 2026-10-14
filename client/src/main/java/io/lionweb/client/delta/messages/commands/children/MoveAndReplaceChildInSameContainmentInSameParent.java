@@ -6,11 +6,12 @@ import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Move existing node movedChild within its current containment to indexOffset. Delete current child
- * replacedChild inside the same containment at indexOffset, and all its descendants (including
- * annotation instances). Does NOT change references to any of the deleted nodes
+ * Move existing node movedChild, initially at index oldIndex within the containment inside parent,
+ * to the target index (oldIndex + indexOffset), replacing current child replacedChild at the target
+ * index. replacedChild subsequently gets deleted, including all its descendants (including
+ * annotation instances). Does NOT change references to any of the deleted nodes.
  */
-public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
+public final class MoveAndReplaceChildInSameContainmentInSameParent extends DeltaCommand {
   public final @NotNull String parent;
   public final @NotNull MetaPointer containment;
   public final int indexOffset;
@@ -18,7 +19,7 @@ public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
   public final @NotNull String replacedChild;
   public final @NotNull String movedChild;
 
-  public MoveAndReplaceChildInSameContainment(
+  public MoveAndReplaceChildInSameContainmentInSameParent(
       @NotNull String commandId,
       @NotNull String parent,
       @NotNull MetaPointer containment,
@@ -41,7 +42,7 @@ public final class MoveAndReplaceChildInSameContainment extends DeltaCommand {
 
   @Override
   public String toString() {
-    return "MoveAndReplaceChildInSameContainment{"
+    return "MoveAndReplaceChildInSameContainmentInSameParent{"
         + "parent='"
         + parent
         + '\''

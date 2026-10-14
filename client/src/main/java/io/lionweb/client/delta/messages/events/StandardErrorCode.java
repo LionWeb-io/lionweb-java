@@ -17,7 +17,17 @@ public enum StandardErrorCode {
   INDEX_NODE_MISMATCH("indexNodeMismatch"),
   MOVE_WITHOUT_PARENT("moveWithoutParent"),
   INVALID_MOVE("invalidMove"),
-  UNDEFINED_REFERENCE_TARGET("undefinedReferenceTarget");
+  UNDEFINED_REFERENCE_TARGET("undefinedReferenceTarget"),
+  PARENT_MISMATCH("parentMismatch"),
+  INDEX_OUT_OF_RANGE("indexOutOfRange"),
+  CIRCULAR_CONTAINMENT("circularContainment"),
+  OLD_AND_NEW_PARENT_IDENTICAL("oldAndNewParentIdentical"),
+  OLD_AND_NEW_CONTAINMENT_IDENTICAL("oldAndNewContainmentIdentical"),
+  OLD_AND_NEW_INDEX_IDENTICAL("oldAndNewIndexIdentical"),
+  INVALID_INDEX_OFFSET("invalidIndexOffset"),
+  INDEX_ANNOTATION_MISMATCH("indexAnnotationMismatch"),
+  UNKNOWN_CONTAINMENT("unknownContainment"),
+  INDEX_CHILD_MISMATCH("indexChildMismatch");
 
   public final @NotNull String code;
 
