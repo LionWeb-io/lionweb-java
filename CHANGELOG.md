@@ -6,7 +6,7 @@
 * In-memory delta server: handle the five move-and-replace commands as specified in 2026.1, with the specification's error codes; deleted descendants now include annotations. Rename two move-and-replace child commands and their events to the 2026.1 names (issue #474)
 * `LionWebArchive` improvements (issue #443):
   * Add the `LionWebArchive.Writer` streaming writer: chunks are serialized in parallel within a bounded window and written as soon as they are ready, so memory does not grow with the archive size. `store()` now uses it
-  * Add an optional compression level to `store()` and `Writer` (default stays `0`)
+  * Add an optional compression level to `store()` and `Writer` (default stays `0`), also settable on a `Writer` through `setCompressionLevel()` and readable through `getCompressionLevel()`. Uncompressed entries are now written as ZIP `STORED` entries, so no Deflater/Inflater is involved
   * `load()` opens the archive once with `ZipFile`, deserializes chunks in parallel (still passing them to the `Loader` in order, on the calling thread) and preallocates entry buffers when the size is known
   * `loadNodes()` accepts dependencies on languages already registered in the serialization, and gains an option to ignore unknown language dependencies. `TopologicalLanguageSorter.topologicalSort` gains an overload accepting a predicate for known dependencies
   * Document that empty containments and references are not stored in archives

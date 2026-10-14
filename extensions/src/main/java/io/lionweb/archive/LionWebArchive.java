@@ -14,6 +14,7 @@ import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.zip.CRC32;
 import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -22,37 +23,16 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 /**
- * Represents an LionWeb Archive.
- *
- * <p>The LionWeb Archive is a container file used to package a set or related LionWeb partitions
- * (e.g., the content of a LionWeb Repository) in a single archive. It is technically a ZIP file
- * that can have any extension, although the standard extension is <code>.lwa</code> (for
- * <em>LionWeb Archive</em>).
- *
- * <p>The archive follows a predefined directory structure containing the following directories:
+ * A LionWeb Archive: a ZIP file (standard extension {@code .lwa}) packaging a set of partitions
+ * together with the languages needed to interpret them. It contains:
  *
  * <ul>
- *   <li><b>partitions/</b> — Contains a collection of LionWeb partitions.
- *   <li><b>languages/</b> — Contains the language definitions required to load and interpret the
- *       partitions.
- *   <li><b>metadata/</b> — Contains metadata files describing the archive. This directory always
- *       includes a file named <code>metadata.properties</code>, which defines the archive’s
- *       properties.
+ *   <li>{@value #METADATA_PATH}: the archive properties, including {@value #LW_VERSION_KEY}
+ *   <li>{@value #LANGUAGES_DIRECTORY}: one ProtoBuf chunk per language
+ *   <li>{@value #PARTITIONS_DIRECTORY}: one ProtoBuf chunk per partition
  * </ul>
  *
- * <p>One of the properties defined in <code>metadata.properties</code> is <code>LionWeb-Version
- * </code>, which indicates the version of the LionWeb format used.
- *
- * <p>All files contained in the LionWeb Archive are serialized using the <b>Protocol Buffers
- * (Protobuf)</b> format. The paths and names used by the format are exposed as constants (see
- * {@link #STANDARD_EXTENSION}, {@link #METADATA_PATH}, {@link #LANGUAGES_DIRECTORY}, {@link
- * #PARTITIONS_DIRECTORY} and {@link #CHUNK_EXTENSION}).
- *
- * <p>Chunks are stored in the compact form produced by {@link
- * SerializationProvider#getEfficientProtoBufSerialization(LionWebVersion)}: empty containments and
- * empty references are not stored. Therefore, chunks loaded from an archive do not contain them and
- * may not be {@code equals} to the chunks originally stored, although they represent the same
- * nodes.
+ * <p>Empty containments and references are not stored.
  */
 public class LionWebArchive {
 
@@ -361,8 +341,7 @@ public class LionWebArchive {
    * serialized in parallel, within a bounded window, and written to the archive as soon as they are
    * ready. Therefore, the memory used does not depend on the size of the whole archive.
    *
-   * @param compressionLevel the compression level, from 0 (no compression) to 9 (best compression),
-   *     or {@link Deflater#DEFAULT_COMPRESSION}
+   * @param compressionLevel see {@link Writer#setCompressionLevel(int)}
    */
   public static void store(
       @Nonnull File file,
@@ -409,6 +388,7 @@ public class LionWebArchive {
     private final OrderedPipeline<ZipChunk> pipeline;
     private final ThreadLocal<ProtoBufSerialization> serialization;
     private final OrderedPipeline.ResultConsumer<ZipChunk> entryWriter = this::writeEntry;
+    private int compressionLevel;
     private boolean closed = false;
 
     /**
@@ -426,18 +406,13 @@ public class LionWebArchive {
      *
      * @param file the file to write. Its parent directories are created, if needed.
      * @param lionWebVersion the LionWeb version of the chunks to be written
-     * @param compressionLevel the compression level, from 0 (no compression) to 9 (best
-     *     compression), or {@link Deflater#DEFAULT_COMPRESSION}
+     * @param compressionLevel see {@link #setCompressionLevel(int)}
      */
     public Writer(@Nonnull File file, @Nonnull LionWebVersion lionWebVersion, int compressionLevel)
         throws IOException {
       Objects.requireNonNull(file, "file should not be null");
       Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
-      if (compressionLevel != Deflater.DEFAULT_COMPRESSION
-          && (compressionLevel < Deflater.NO_COMPRESSION
-              || compressionLevel > Deflater.BEST_COMPRESSION)) {
-        throw new IllegalArgumentException("Invalid compression level: " + compressionLevel);
-      }
+      setCompressionLevel(compressionLevel);
 
       // Ensure parent directory exists
       File parent = file.getParentFile();
@@ -447,6 +422,8 @@ public class LionWebArchive {
 
       Properties metadata = new Properties();
       metadata.setProperty(LW_VERSION_KEY, lionWebVersion.getVersionString());
+      ByteArrayOutputStream metadataBytes = new ByteArrayOutputStream();
+      metadata.store(metadataBytes, null);
 
       this.zipOut =
           new ZipOutputStream(
@@ -457,10 +434,7 @@ public class LionWebArchive {
                       StandardOpenOption.TRUNCATE_EXISTING),
                   FOUR_MIB));
       try {
-        zipOut.setLevel(compressionLevel);
-        zipOut.putNextEntry(new ZipEntry(METADATA_PATH));
-        metadata.store(zipOut, null);
-        zipOut.closeEntry();
+        writeEntry(new ZipChunk(METADATA_PATH, metadataBytes.toByteArray(), compressionLevel));
       } catch (IOException | RuntimeException e) {
         zipOut.close();
         throw e;
@@ -469,6 +443,26 @@ public class LionWebArchive {
           ThreadLocal.withInitial(
               () -> SerializationProvider.getEfficientProtoBufSerialization(lionWebVersion));
       this.pipeline = new OrderedPipeline<>(defaultParallelism());
+    }
+
+    /** Returns the compression level used for the chunks added from now on. */
+    public int getCompressionLevel() {
+      return compressionLevel;
+    }
+
+    /**
+     * Sets the compression level used for the chunks added from now on.
+     *
+     * @param compressionLevel from 0 (no compression, the default) to 9 (best compression), or
+     *     {@link Deflater#DEFAULT_COMPRESSION}
+     */
+    public void setCompressionLevel(int compressionLevel) {
+      if (compressionLevel != Deflater.DEFAULT_COMPRESSION
+          && (compressionLevel < Deflater.NO_COMPRESSION
+              || compressionLevel > Deflater.BEST_COMPRESSION)) {
+        throw new IllegalArgumentException("Invalid compression level: " + compressionLevel);
+      }
+      this.compressionLevel = compressionLevel;
     }
 
     /** Adds a chunk containing a language. */
@@ -488,10 +482,12 @@ public class LionWebArchive {
         throw new IllegalStateException("The writer has been closed");
       }
       final String entryName = directory + getPartitionId(chunk) + CHUNK_EXTENSION;
+      final int level = compressionLevel;
       pipeline.submit(
           () -> {
             try {
-              return new ZipChunk(entryName, serialization.get().serializeToByteArray(chunk));
+              return new ZipChunk(
+                  entryName, serialization.get().serializeToByteArray(chunk), level);
             } catch (Exception e) {
               throw new RuntimeException("Failed to serialize chunk for " + entryName, e);
             }
@@ -500,7 +496,18 @@ public class LionWebArchive {
     }
 
     private void writeEntry(ZipChunk zipChunk) throws IOException {
-      zipOut.putNextEntry(new ZipEntry(zipChunk.entryName));
+      ZipEntry entry = new ZipEntry(zipChunk.entryName);
+      if (zipChunk.compressionLevel == Deflater.NO_COMPRESSION) {
+        // Stored entries are not passed through a Deflater, neither when writing nor when reading
+        entry.setMethod(ZipEntry.STORED);
+        entry.setSize(zipChunk.bytes.length);
+        entry.setCompressedSize(zipChunk.bytes.length);
+        entry.setCrc(zipChunk.crc);
+      } else {
+        entry.setMethod(ZipEntry.DEFLATED);
+        zipOut.setLevel(zipChunk.compressionLevel);
+      }
+      zipOut.putNextEntry(entry);
       zipOut.write(zipChunk.bytes);
       zipOut.closeEntry();
     }
@@ -519,14 +526,27 @@ public class LionWebArchive {
     }
   }
 
-  /** Simple holder for a prepared ZIP entry. */
+  /**
+   * A prepared ZIP entry. The CRC, needed for stored entries, is computed here so that it is
+   * calculated in parallel.
+   */
   private static final class ZipChunk {
     final String entryName;
     final byte[] bytes;
+    final int compressionLevel;
+    final long crc;
 
-    ZipChunk(String entryName, byte[] bytes) {
+    ZipChunk(String entryName, byte[] bytes, int compressionLevel) {
       this.entryName = entryName;
       this.bytes = bytes;
+      this.compressionLevel = compressionLevel;
+      if (compressionLevel == Deflater.NO_COMPRESSION) {
+        CRC32 crc32 = new CRC32();
+        crc32.update(bytes);
+        this.crc = crc32.getValue();
+      } else {
+        this.crc = -1;
+      }
     }
   }
 

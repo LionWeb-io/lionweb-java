@@ -21,15 +21,18 @@ import io.lionweb.serialization.SerializationProvider;
 import io.lionweb.serialization.data.SerializationChunk;
 import io.lionweb.utils.ModelComparator;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import java.util.zip.ZipInputStream;
 import org.junit.jupiter.api.Test;
 
 public class LionWebArchiveTest {
@@ -341,6 +344,60 @@ public class LionWebArchiveTest {
     assertThrows(
         IllegalArgumentException.class,
         () -> new LionWebArchive.Writer(compressed, LionWebVersion.v2023_1, -2));
+  }
+
+  @Test
+  public void writerCompressionLevelCanBeChangedBetweenChunks() throws IOException {
+    List<SerializationChunk> partitionChunks = createCompanyChunks(2);
+    File archiveFile = Files.createTempFile("lionweb-archive", ".lwa").toFile();
+
+    try (LionWebArchive.Writer writer =
+        new LionWebArchive.Writer(archiveFile, LionWebVersion.v2023_1)) {
+      assertEquals(LionWebArchive.DEFAULT_COMPRESSION_LEVEL, writer.getCompressionLevel());
+      writer.addPartitionChunk(partitionChunks.get(0));
+      writer.setCompressionLevel(9);
+      assertEquals(9, writer.getCompressionLevel());
+      writer.addPartitionChunk(partitionChunks.get(1));
+      assertThrows(IllegalArgumentException.class, () -> writer.setCompressionLevel(10));
+      assertEquals(9, writer.getCompressionLevel());
+    }
+
+    try (ZipFile zipFile = new ZipFile(archiveFile)) {
+      assertEquals(
+          ZipEntry.STORED,
+          zipFile
+              .getEntry(
+                  LionWebArchive.PARTITIONS_DIRECTORY
+                      + rootId(partitionChunks.get(0))
+                      + LionWebArchive.CHUNK_EXTENSION)
+              .getMethod());
+      assertEquals(
+          ZipEntry.DEFLATED,
+          zipFile
+              .getEntry(
+                  LionWebArchive.PARTITIONS_DIRECTORY
+                      + rootId(partitionChunks.get(1))
+                      + LionWebArchive.CHUNK_EXTENSION)
+              .getMethod());
+    }
+
+    // Stored and deflated entries can also be read sequentially, as older versions do
+    int entries = 0;
+    try (ZipInputStream zipIn = new ZipInputStream(new FileInputStream(archiveFile))) {
+      while (zipIn.getNextEntry() != null) {
+        zipIn.readAllBytes();
+        entries++;
+      }
+    }
+    assertEquals(3, entries);
+
+    CollectingLoader loader = new CollectingLoader();
+    LionWebArchive.load(archiveFile, loader);
+    assertEquals(
+        Arrays.asList(rootId(partitionChunks.get(0)), rootId(partitionChunks.get(1))),
+        loader.partitionChunks.stream()
+            .map(LionWebArchiveTest::rootId)
+            .collect(Collectors.toList()));
   }
 
   @Test
