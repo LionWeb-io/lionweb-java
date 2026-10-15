@@ -52,8 +52,8 @@ public class EMFModelExporter extends AbstractEMFExporter {
   }
 
   /**
-   * Exports the given root to a single EObject tree. Note that the EObjects representing
-   * annotation instances are not contained in the returned tree: use {@link #exportTree(Node,
+   * Exports the given root to a single EObject tree. Note that the EObjects representing annotation
+   * instances are not contained in the returned tree: use {@link #exportTree(Node,
    * ReferencesPostponer, List)} to collect them.
    */
   public @Nonnull EObject exportTreeWithoutAnnotations(
@@ -62,9 +62,9 @@ public class EMFModelExporter extends AbstractEMFExporter {
   }
 
   /**
-   * Exports the given root to a single EObject tree. The EObjects representing the
-   * annotation instances attached to the exported nodes (or to other annotation instances) are
-   * added to exportedAnnotations.
+   * Exports the given root to a single EObject tree. The EObjects representing the annotation
+   * instances attached to the exported nodes (or to other annotation instances) are added to
+   * exportedAnnotations.
    */
   public @Nonnull EObject exportTree(
       @Nonnull Node root,

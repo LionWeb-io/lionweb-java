@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -246,6 +247,29 @@ public class EMFAnnotationsTest {
         libEObject,
         approval2EObject.eGet(
             AnnotationsEncoding.getAnnotatedEReference(approval2EObject.eClass())));
+  }
+
+  @Test
+  public void exportModelWithRegisteredAnnotationPackage() {
+    createLanguage();
+    EPackage ePackage = new EMFMetamodelExporter().exportLanguage(language);
+    EPackage.Registry registry = new EPackageRegistryImpl();
+    registry.put(ePackage.getNsURI(), ePackage);
+    LanguageEntitiesToEElementsMapping mapping = new LanguageEntitiesToEElementsMapping();
+    mapping.setEPackageRegistry(registry);
+
+    Resource resource =
+        new EMFModelExporter(mapping).exportResource(Collections.singletonList(createModel()));
+
+    assertEquals(5, resource.getContents().size());
+    for (EObject eObject : resource.getContents()) {
+      assertSame(ePackage, eObject.eClass().getEPackage());
+    }
+    assertSame(comment, mapping.getCorrespondingAnnotation(getEClass(ePackage, "Comment")));
+    assertSame(
+        signedComment, mapping.getCorrespondingAnnotation(getEClass(ePackage, "SignedComment")));
+    assertSame(approval, mapping.getCorrespondingAnnotation(getEClass(ePackage, "Approval")));
+    assertSame(ePackage, mapping.getKnownEPackage(language));
   }
 
   @Test
