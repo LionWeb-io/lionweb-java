@@ -33,6 +33,12 @@ public class LanguageEntitiesToEElementsMapping {
 
   private @Nonnull LionWebVersion lionWebVersion;
 
+  /**
+   * Registry used to look up existing EPackages (e.g., generated ones) before exporting a Language
+   * into a new EPackage. When null, no lookup is performed.
+   */
+  private @Nullable EPackage.Registry ePackageRegistry = EPackage.Registry.INSTANCE;
+
   /** Creates a mapping with pre-populated builtins. */
   public LanguageEntitiesToEElementsMapping() {
     this(LionWebVersion.currentVersion, true);
@@ -271,6 +277,12 @@ public class LanguageEntitiesToEElementsMapping {
         registerMapping((Concept) entity, (EClass) eClassifier);
       } else if (entity instanceof Interface && eClassifier instanceof EClass) {
         registerMapping((Interface) entity, (EClass) eClassifier);
+      } else if (entity instanceof Enumeration && eClassifier instanceof EEnum) {
+        registerMapping((Enumeration) entity, (EEnum) eClassifier);
+      } else if (entity instanceof PrimitiveType
+          && eClassifier instanceof EDataType
+          && !(eClassifier instanceof EEnum)) {
+        registerMapping((PrimitiveType) entity, (EDataType) eClassifier);
       } else if (entity instanceof Annotation) {
         // fall-through
       } else if (entity instanceof Classifier && eClassifier == null) {
@@ -284,6 +296,14 @@ public class LanguageEntitiesToEElementsMapping {
 
     ePackagesToLanguages.put(ePackage, language);
     languagesToEPackages.put(language, ePackage);
+  }
+
+  /**
+   * Return the EPackage already associated to the given Language, if any. Differently from the
+   * other lookup methods, this method does not trigger the export of the Language.
+   */
+  public @Nullable EPackage getKnownEPackage(@Nonnull Language language) {
+    return languagesToEPackages.get(language);
   }
 
   public boolean knows(EClassifier eClassifier) {
@@ -328,6 +348,20 @@ public class LanguageEntitiesToEElementsMapping {
         XMLTypePackageImpl.Literals.INT, LionCoreBuiltins.getInteger(lionWebVersion));
     eDataTypesToPrimitiveTypes.put(
         XMLTypePackageImpl.Literals.BOOLEAN, LionCoreBuiltins.getBoolean(lionWebVersion));
+  }
+
+  public @Nullable EPackage.Registry getEPackageRegistry() {
+    return ePackageRegistry;
+  }
+
+  /**
+   * Set the registry used to look up existing EPackages (by namespace URI) before exporting a
+   * Language into a new EPackage. By default the global {@link EPackage.Registry#INSTANCE} is used.
+   * Passing null disables the lookup, so that a new EPackage is always created for Languages not
+   * yet known to this mapping.
+   */
+  public void setEPackageRegistry(@Nullable EPackage.Registry ePackageRegistry) {
+    this.ePackageRegistry = ePackageRegistry;
   }
 
   public @Nonnull LionWebVersion getLionWebVersion() {
