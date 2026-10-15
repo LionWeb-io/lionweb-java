@@ -131,7 +131,7 @@ public class LanguageEntitiesToEElementsMapping {
     return eClassesToInterfaces.get(eClass);
   }
 
-  public Annotation getCorrespondingAnnotation(EClass eClass) {
+  public @Nonnull Annotation getCorrespondingAnnotation(@Nonnull EClass eClass) {
     if (!eClassesToAnnotations.containsKey(eClass)) {
       if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
         throw new IllegalStateException(
@@ -260,7 +260,7 @@ public class LanguageEntitiesToEElementsMapping {
     interfacesToEClasses.put(iface, eClass);
   }
 
-  public void registerMapping(Annotation annotation, EClass eClass) {
+  public void registerMapping(@Nonnull Annotation annotation, @Nonnull EClass eClass) {
     eClassesToAnnotations.put(eClass, annotation);
     annotationsToEClasses.put(annotation, eClass);
   }

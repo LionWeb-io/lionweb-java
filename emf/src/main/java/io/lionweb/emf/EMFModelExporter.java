@@ -35,7 +35,7 @@ public class EMFModelExporter extends AbstractEMFExporter {
    * Export the given roots into a new Resource. Annotation instances are exported as additional
    * root EObjects, placed after all the given roots. See {@link AnnotationsEncoding}.
    */
-  public Resource exportResource(List<Node> roots) {
+  public @Nonnull Resource exportResource(@Nonnull List<Node> roots) {
     Resource resource = new ResourceImpl();
     ReferencesPostponer referencesPostponer = new ReferencesPostponer();
     List<EObject> exportedAnnotations = new ArrayList<>();
@@ -52,21 +52,24 @@ public class EMFModelExporter extends AbstractEMFExporter {
   }
 
   /**
-   * This export the root received to a single EObject tree. Note that the EObjects representing
+   * Exports the given root to a single EObject tree. Note that the EObjects representing
    * annotation instances are not contained in the returned tree: use {@link #exportTree(Node,
    * ReferencesPostponer, List)} to collect them.
    */
-  public EObject exportTree(Node root, ReferencesPostponer referencesPostponer) {
+  public @Nonnull EObject exportTreeWithoutAnnotations(
+      @Nonnull Node root, @Nonnull ReferencesPostponer referencesPostponer) {
     return exportTree(root, referencesPostponer, new ArrayList<>());
   }
 
   /**
-   * This export the root received to a single EObject tree. The EObjects representing the
+   * Exports the given root to a single EObject tree. The EObjects representing the
    * annotation instances attached to the exported nodes (or to other annotation instances) are
    * added to exportedAnnotations.
    */
-  public EObject exportTree(
-      Node root, ReferencesPostponer referencesPostponer, List<EObject> exportedAnnotations) {
+  public @Nonnull EObject exportTree(
+      @Nonnull Node root,
+      @Nonnull ReferencesPostponer referencesPostponer,
+      @Nonnull List<EObject> exportedAnnotations) {
     return exportClassifierInstance(root, referencesPostponer, exportedAnnotations);
   }
 
@@ -222,7 +225,9 @@ public class EMFModelExporter extends AbstractEMFExporter {
     }
 
     public void recordReference(
-        ClassifierInstance<?> node, EObject eObject, EReference eReference) {
+        @Nonnull ClassifierInstance<?> node,
+        @Nonnull EObject eObject,
+        @Nonnull EReference eReference) {
       postponedReferences.add(new PostponedReference(node, eObject, eReference));
     }
 

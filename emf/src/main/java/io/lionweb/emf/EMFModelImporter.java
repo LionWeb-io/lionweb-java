@@ -43,7 +43,7 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
    * therefore not returned among the roots.
    */
   @Override
-  public List<Node> importResource(Resource resource) {
+  public @Nonnull List<Node> importResource(@Nonnull Resource resource) {
     List<Node> nodes = new LinkedList<>();
     Map<EObject, ClassifierInstance<?>> imported = new IdentityHashMap<>();
     List<EObject> annotationEObjects = new LinkedList<>();
