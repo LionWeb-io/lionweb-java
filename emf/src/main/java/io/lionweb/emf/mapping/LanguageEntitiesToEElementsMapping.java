@@ -4,6 +4,7 @@ import io.lionweb.LionWebVersion;
 import io.lionweb.emf.EMFMetamodelExporter;
 import io.lionweb.emf.EMFMetamodelImporter;
 import io.lionweb.emf.builtins.BuiltinsPackage;
+import io.lionweb.emf.support.AnnotationsEncoding;
 import io.lionweb.language.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,6 +26,8 @@ public class LanguageEntitiesToEElementsMapping {
   private final Map<EClass, Interface> eClassesToInterfaces = new HashMap<>();
   private final Map<Concept, EClass> conceptsToEClasses = new HashMap<>();
   private final Map<Interface, EClass> interfacesToEClasses = new HashMap<>();
+  private final Map<EClass, Annotation> eClassesToAnnotations = new HashMap<>();
+  private final Map<Annotation, EClass> annotationsToEClasses = new HashMap<>();
 
   private final Map<EEnum, Enumeration> eEnumsToEnumerations = new HashMap<>();
   private final Map<Enumeration, EEnum> enumerationsToEEnums = new HashMap<>();
@@ -72,7 +75,7 @@ public class LanguageEntitiesToEElementsMapping {
             eObject -> {
               if (eObject instanceof EClass) {
                 EClass eClass = (EClass) eObject;
-                if (!eClass.isInterface()) {
+                if (!eClass.isInterface() && !AnnotationsEncoding.isAnnotation(eClass)) {
                   registerMapping(language.getConceptByName(eClass.getName()), eClass);
                 }
               }
@@ -91,7 +94,7 @@ public class LanguageEntitiesToEElementsMapping {
             eObject -> {
               if (eObject instanceof EClass) {
                 EClass eClass = (EClass) eObject;
-                if (!eClass.isInterface()) {
+                if (!eClass.isInterface() && !AnnotationsEncoding.isAnnotation(eClass)) {
                   registerMapping(language.getConceptByName(eClass.getName()), eClass);
                 }
               }
@@ -134,8 +137,26 @@ public class LanguageEntitiesToEElementsMapping {
     return eClassesToInterfaces.get(eClass);
   }
 
+  public @Nonnull Annotation getCorrespondingAnnotation(@Nonnull EClass eClass) {
+    if (!eClassesToAnnotations.containsKey(eClass)) {
+      if (ePackagesToLanguages.containsKey(eClass.getEPackage())) {
+        throw new IllegalStateException(
+            "Cannot find corresponding Annotation for EClass "
+                + eClass.getName()
+                + " in EPackage "
+                + eClass.getEPackage().getName());
+      }
+      processEPackage(eClass.getEPackage());
+    }
+    if (!eClassesToAnnotations.containsKey(eClass)) {
+      throw new IllegalStateException(
+          "Cannot find corresponding Annotation for EClass " + eClass.getName());
+    }
+    return eClassesToAnnotations.get(eClass);
+  }
+
   public EClassifier getCorrespondingEClass(Classifier type) {
-    if (!conceptsToEClasses.containsKey(type) && !interfacesToEClasses.containsKey(type)) {
+    if (!knows(type)) {
       if (languagesToEPackages.containsKey(type.getLanguage())) {
         throw new IllegalStateException(
             "Cannot find corresponding EClassifier for Classifier "
@@ -149,6 +170,8 @@ public class LanguageEntitiesToEElementsMapping {
       return conceptsToEClasses.get(type);
     } else if (interfacesToEClasses.containsKey(type)) {
       return interfacesToEClasses.get(type);
+    } else if (annotationsToEClasses.containsKey(type)) {
+      return annotationsToEClasses.get(type);
     } else {
       throw new IllegalStateException(
           "Cannot find corresponding EClassifier for Classifier " + type.getName());
@@ -243,6 +266,11 @@ public class LanguageEntitiesToEElementsMapping {
     interfacesToEClasses.put(iface, eClass);
   }
 
+  public void registerMapping(@Nonnull Annotation annotation, @Nonnull EClass eClass) {
+    eClassesToAnnotations.put(eClass, annotation);
+    annotationsToEClasses.put(annotation, eClass);
+  }
+
   public void registerMapping(Enumeration enumeration, EEnum eEnum) {
     eEnumsToEnumerations.put(eEnum, enumeration);
     enumerationsToEEnums.put(enumeration, eEnum);
@@ -277,14 +305,14 @@ public class LanguageEntitiesToEElementsMapping {
         registerMapping((Concept) entity, (EClass) eClassifier);
       } else if (entity instanceof Interface && eClassifier instanceof EClass) {
         registerMapping((Interface) entity, (EClass) eClassifier);
+      } else if (entity instanceof Annotation && eClassifier instanceof EClass) {
+        registerMapping((Annotation) entity, (EClass) eClassifier);
       } else if (entity instanceof Enumeration && eClassifier instanceof EEnum) {
         registerMapping((Enumeration) entity, (EEnum) eClassifier);
       } else if (entity instanceof PrimitiveType
           && eClassifier instanceof EDataType
           && !(eClassifier instanceof EEnum)) {
         registerMapping((PrimitiveType) entity, (EDataType) eClassifier);
-      } else if (entity instanceof Annotation) {
-        // fall-through
       } else if (entity instanceof Classifier && eClassifier == null) {
         throw new IllegalStateException(
             "Can't find corresponding EClassifier for Classifier "
@@ -308,12 +336,14 @@ public class LanguageEntitiesToEElementsMapping {
 
   public boolean knows(EClassifier eClassifier) {
     return eClassesToConcepts.containsKey(eClassifier)
-        || eClassesToInterfaces.containsKey(eClassifier);
+        || eClassesToInterfaces.containsKey(eClassifier)
+        || eClassesToAnnotations.containsKey(eClassifier);
   }
 
   public boolean knows(Classifier classifier) {
     return conceptsToEClasses.containsKey(classifier)
-        || interfacesToEClasses.containsKey(classifier);
+        || interfacesToEClasses.containsKey(classifier)
+        || annotationsToEClasses.containsKey(classifier);
   }
 
   public @Nullable Classifier getCorrespondingClassifier(EClassifier eClassifier) {
@@ -322,6 +352,9 @@ public class LanguageEntitiesToEElementsMapping {
     }
     if (eClassesToInterfaces.containsKey(eClassifier)) {
       return eClassesToInterfaces.get(eClassifier);
+    }
+    if (eClassesToAnnotations.containsKey(eClassifier)) {
+      return eClassesToAnnotations.get(eClassifier);
     }
     return null;
   }
