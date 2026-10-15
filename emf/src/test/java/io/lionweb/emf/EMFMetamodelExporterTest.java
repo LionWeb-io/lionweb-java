@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.eclipse.emf.common.util.URI;
 import org.eclipse.emf.ecore.*;
+import org.eclipse.emf.ecore.impl.EPackageRegistryImpl;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.ResourceSet;
 import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
@@ -295,5 +296,106 @@ public class EMFMetamodelExporterTest {
             .collect(Collectors.toList());
 
     assertEquals(expected, actual);
+  }
+
+  private static Language createReferencedLanguage() {
+    Language lang = new Language("ReferencedLang").setKey("ref-key").setID("ref-id");
+    lang.setVersion("1");
+    new Concept(lang, "Target", "ref-target", "ref-target-key");
+    Enumeration color = new Enumeration(lang, "Color", "ref-color");
+    new EnumerationLiteral(color, "red", "ref-color-red");
+    return lang;
+  }
+
+  private static Language createReferencingLanguage(Language referenced) {
+    Language lang =
+        new Language("ReferencingLang").setKey("referencing-key").setID("referencing-id");
+    lang.setVersion("1");
+    lang.addDependency(referenced);
+    Concept source = new Concept(lang, "Source", "src", "src-key");
+    source.addFeature(
+        Containment.createMultiple("targets", referenced.getConceptByName("Target"))
+            .setID("src-targets")
+            .setKey("src-targets-key"));
+    source.addFeature(
+        Property.createOptional("color", (Enumeration) referenced.getElementByName("Color"))
+            .setID("src-color")
+            .setKey("src-color-key"));
+    return lang;
+  }
+
+  @Test
+  public void exportingTheSameLanguageTwiceReturnsTheSameEPackage() {
+    Language lang = createReferencedLanguage();
+    EMFMetamodelExporter exporter = new EMFMetamodelExporter();
+    exporter.setEPackageRegistry(null);
+
+    EPackage first = exporter.exportLanguage(lang);
+    EPackage second = exporter.exportLanguage(lang);
+
+    assertSame(first, second);
+    assertEquals(2, first.getEClassifiers().size());
+  }
+
+  @Test
+  public void exportResourceDoesNotDuplicateDependedUponLanguages() {
+    Language referenced = createReferencedLanguage();
+    Language referencing = createReferencingLanguage(referenced);
+    EMFMetamodelExporter exporter = new EMFMetamodelExporter();
+    exporter.setEPackageRegistry(null);
+
+    // The referencing language comes first, so the referenced one is exported implicitly while
+    // resolving the type of the containment
+    Resource resource = exporter.exportResource(Arrays.asList(referencing, referenced));
+
+    assertEquals(2, resource.getContents().size());
+    EPackage referencingPkg = (EPackage) resource.getContents().get(0);
+    EPackage referencedPkg = (EPackage) resource.getContents().get(1);
+    EClass source = (EClass) referencingPkg.getEClassifier("Source");
+    EReference targets = (EReference) source.getEStructuralFeature("targets");
+    assertSame(referencedPkg.getEClassifier("Target"), targets.getEType());
+    EAttribute color = (EAttribute) source.getEStructuralFeature("color");
+    assertSame(referencedPkg.getEClassifier("Color"), color.getEType());
+  }
+
+  @Test
+  public void exportLanguageReusesEPackageFromRegistry() {
+    Language referenced = createReferencedLanguage();
+    EMFMetamodelExporter initialExporter = new EMFMetamodelExporter();
+    initialExporter.setEPackageRegistry(null);
+    EPackage existingPkg = initialExporter.exportLanguage(referenced);
+    assertEquals(EMFMetamodelExporter.nsURIFor(referenced), existingPkg.getNsURI());
+
+    EPackage.Registry registry = new EPackageRegistryImpl();
+    registry.put(existingPkg.getNsURI(), existingPkg);
+
+    EMFMetamodelExporter exporter = new EMFMetamodelExporter();
+    exporter.setEPackageRegistry(registry);
+    EPackage exported = exporter.exportLanguage(referenced);
+
+    assertSame(existingPkg, exported);
+    assertEquals(2, exported.getEClassifiers().size());
+  }
+
+  @Test
+  public void dependedUponLanguageIsTakenFromRegistry() {
+    Language referenced = createReferencedLanguage();
+    Language referencing = createReferencingLanguage(referenced);
+    EMFMetamodelExporter initialExporter = new EMFMetamodelExporter();
+    initialExporter.setEPackageRegistry(null);
+    EPackage existingPkg = initialExporter.exportLanguage(referenced);
+
+    EPackage.Registry registry = new EPackageRegistryImpl();
+    registry.put(existingPkg.getNsURI(), existingPkg);
+
+    EMFMetamodelExporter exporter = new EMFMetamodelExporter();
+    exporter.setEPackageRegistry(registry);
+    EPackage referencingPkg = exporter.exportLanguage(referencing);
+
+    EClass source = (EClass) referencingPkg.getEClassifier("Source");
+    EReference targets = (EReference) source.getEStructuralFeature("targets");
+    assertSame(existingPkg.getEClassifier("Target"), targets.getEType());
+    EAttribute color = (EAttribute) source.getEStructuralFeature("color");
+    assertSame(existingPkg.getEClassifier("Color"), color.getEType());
   }
 }

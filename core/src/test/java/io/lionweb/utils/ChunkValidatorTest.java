@@ -457,7 +457,262 @@ public class ChunkValidatorTest {
     assertTrue(result.getIssues().size() >= 2); // Should have multiple errors
   }
 
+  @Test
+  public void testChildWithoutParentDoesNotCauseException() {
+    SerializedClassifierInstance parent = createValidNode("parent1", null);
+    SerializedClassifierInstance child = createValidNode("child1", null);
+    parent.unsafeAppendContainmentValue(createContainment("child1"));
+
+    chunk.addClassifierInstances(parent, child);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        hasIssueContaining(
+            result, "child1 is listed as child of parent1 but it has as parent null"));
+  }
+
+  @Test
+  public void testMultiplePlacementsAreReported() {
+    SerializedClassifierInstance parent1 = createValidNode("parent1", null);
+    SerializedClassifierInstance parent2 = createValidNode("parent2", null);
+    SerializedClassifierInstance child = createValidNode("child1", "parent1");
+    parent1.unsafeAppendContainmentValue(createContainment("child1"));
+    parent2.addAnnotation("child1");
+
+    chunk.addClassifierInstances(parent1, parent2, child);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "child1 is listed in multiple places: [parent1 at "
+                + testMetaPointer
+                + "] and now parent2 among annotations"));
+  }
+
+  @Test
+  public void testPlacementsAreAccumulated() {
+    SerializedClassifierInstance parent1 = createValidNode("parent1", null);
+    SerializedClassifierInstance parent2 = createValidNode("parent2", null);
+    SerializedClassifierInstance parent3 = createValidNode("parent3", null);
+    SerializedClassifierInstance child = createValidNode("child1", "parent3");
+    parent1.addAnnotation("child1");
+    parent2.unsafeAppendContainmentValue(createContainment("child1"));
+    parent3.unsafeAppendContainmentValue(createContainment("child1"));
+
+    chunk.addClassifierInstances(parent1, parent2, parent3, child);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "child1 is listed in multiple places: [parent1 among annotations] and now parent2 at "
+                + testMetaPointer));
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "child1 is listed in multiple places: [parent1 among annotations, parent2 at "
+                + testMetaPointer
+                + "] and now parent3 at "
+                + testMetaPointer));
+    // parent3 does contain child1, even if it is not the first node listing it
+    assertFalse(hasIssueContaining(result, "but such parent does not contain it"));
+  }
+
+  @Test
+  public void testValidSerializationFormatVersion() {
+    chunk.setSerializationFormatVersion("2024.1");
+    assertTrue(validator.validate(chunk).isSuccessful());
+    chunk.setSerializationFormatVersion("2023.1");
+    assertTrue(validator.validate(chunk).isSuccessful());
+  }
+
+  @Test
+  public void testUnknownSerializationFormatVersion() {
+    chunk.setSerializationFormatVersion("1999.1");
+    ValidationResult result = validator.validate(chunk);
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Unknown serialization format version: 1999.1"));
+  }
+
+  @Test
+  public void testIncompleteLanguage() {
+    chunk.addLanguage(LanguageVersion.of("test-lang", null));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "Invalid language: both key and version should be specified, found test-lang/null"));
+  }
+
+  @Test
+  public void testMissingClassifier() {
+    SerializedClassifierInstance node = new SerializedClassifierInstance();
+    node.setID("node1");
+    chunk.addClassifierInstances(node);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has no classifier"));
+  }
+
+  @Test
+  public void testIncompleteMetaPointers() {
+    SerializedClassifierInstance node = new SerializedClassifierInstance();
+    node.setID("node1");
+    node.setClassifier(MetaPointer.get("test-lang", "1.0", null));
+    node.unsafeAppendPropertyValue(
+        SerializedPropertyValue.get(MetaPointer.get(null, "1.0", "prop"), "value"));
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+    chunk.addLanguage(LanguageVersion.of(null, "1.0"));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has an incomplete classifier metapointer"));
+    assertTrue(hasIssueContaining(result, "Node node1 has an incomplete feature metapointer"));
+  }
+
+  @Test
+  public void testInvalidLanguage() {
+    chunk.addLanguage(LanguageVersion.of("test lang", "1.0"));
+    chunk.addLanguage(LanguageVersion.of("other-lang", ""));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "Invalid language: the key should be a valid identifier and the version should not be"
+                + " empty, found test lang/1.0"));
+    assertTrue(
+        hasIssueContaining(
+            result,
+            "Invalid language: the key should be a valid identifier and the version should not be"
+                + " empty, found other-lang/"));
+  }
+
+  @Test
+  public void testInvalidMetaPointers() {
+    SerializedClassifierInstance node = new SerializedClassifierInstance();
+    node.setID("node1");
+    node.setClassifier(MetaPointer.get("test-lang", "1.0", "my concept"));
+    node.unsafeAppendPropertyValue(
+        SerializedPropertyValue.get(MetaPointer.get("test-lang", "", "prop"), "value"));
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+    chunk.addLanguage(LanguageVersion.of("test-lang", ""));
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid classifier metapointer"));
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid feature metapointer"));
+  }
+
+  @Test
+  public void testInvalidIdsInRelations() {
+    SerializedClassifierInstance node = createValidNode("node1", "invalid parent");
+    node.unsafeAppendContainmentValue(createContainment("invalid child"));
+    node.addAnnotation("invalid annotation");
+    SerializedReferenceValue referenceValue =
+        new SerializedReferenceValue(
+            MetaPointer.get("test-lang", "1.0", "TestRef"),
+            Arrays.asList(
+                new SerializedReferenceValue.Entry("invalid target", null),
+                new SerializedReferenceValue.Entry(null, "only-resolve-info")));
+    node.unsafeAppendReferenceValue(referenceValue);
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid parent id: invalid parent"));
+    assertTrue(hasIssueContaining(result, "Node node1 has an invalid child id: invalid child"));
+    assertTrue(
+        hasIssueContaining(result, "Node node1 has an invalid annotation id: invalid annotation"));
+    assertTrue(
+        hasIssueContaining(
+            result, "Node node1 has an invalid reference target id: invalid target"));
+    assertFalse(hasIssueContaining(result, "invalid reference target id: null"));
+  }
+
+  @Test
+  public void testNodeBeingItsOwnParent() {
+    SerializedClassifierInstance node = createValidNode("node1", "node1");
+    node.unsafeAppendContainmentValue(createContainment("node1"));
+    chunk.addClassifierInstances(node);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertTrue(hasIssueContaining(result, "Node node1 lists itself as parent"));
+  }
+
+  @Test
+  public void testContainmentCycle() {
+    SerializedClassifierInstance a = createValidNode("a", "c");
+    SerializedClassifierInstance b = createValidNode("b", "a");
+    SerializedClassifierInstance c = createValidNode("c", "b");
+    a.unsafeAppendContainmentValue(createContainment("b"));
+    b.unsafeAppendContainmentValue(createContainment("c"));
+    c.unsafeAppendContainmentValue(createContainment("a"));
+    chunk.addClassifierInstances(a, b, c);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertFalse(result.isSuccessful());
+    assertEquals(
+        1,
+        result.getIssues().stream()
+            .filter(i -> i.getMessage().startsWith("Cycle in the containment hierarchy"))
+            .count());
+    assertTrue(hasIssueContaining(result, "Cycle in the containment hierarchy: a -> c -> b"));
+  }
+
+  @Test
+  public void testMultipleRootsAreAccepted() {
+    chunk.addClassifierInstances(createValidNode("root1", null), createValidNode("root2", null));
+    chunk.addLanguage(testLanguage);
+
+    assertTrue(validator.validate(chunk).isSuccessful());
+  }
+
+  @Test
+  public void testChildrenAndAnnotationsOutsideTheChunkAreAccepted() {
+    // The specification allows contained nodes and annotations to be outside the chunk
+    SerializedClassifierInstance root = createValidNode("root1", null);
+    root.unsafeAppendContainmentValue(createContainment("child1"));
+    root.addAnnotation("annotation1");
+    chunk.addClassifierInstances(root);
+    chunk.addLanguage(testLanguage);
+
+    ValidationResult result = validator.validate(chunk);
+
+    assertTrue(result.isSuccessful(), result.getIssues().toString());
+  }
+
   // Helper methods
+
+  private boolean hasIssueContaining(ValidationResult result, String text) {
+    return result.getIssues().stream().anyMatch(i -> i.getMessage().contains(text));
+  }
 
   private SerializedClassifierInstance createValidNode(String id, String parentId) {
     SerializedClassifierInstance node = new SerializedClassifierInstance();
