@@ -3,8 +3,10 @@
 ### Version 1.4.7
 
 * `ChunkValidator`: check serialization format version, languages, metapointers, IDs used in relations and containment cycles; accept children and annotations outside the chunk, as the specification allows (only `PartitionChunkValidator` requires them); fix a `NullPointerException` (issues #253, #465)
-* `LanguageValidator`: report languages without a version, duplicate field names in a `StructuredDataType` and containments whose type is an `Annotation` (issue #459)
-* `NodeTreeValidator`: report partitions that are not root nodes (issue #461)
+* `LanguageValidator`: report languages without a version, duplicate field names in a `StructuredDataType`, containments whose type is an `Annotation`, invalid names and keys, own features whose name clashes with an inherited one, and elements of languages not listed among the (transitive) dependencies (issue #459)
+* `LanguageValidator`: fix false positives in `StructuredDataType` cycle detection, e.g. when two fields use the same type (issue #460)
+* `NodeTreeValidator`: report partitions that are not root nodes, and annotations applied to nodes whose classifier they do not annotate (issue #461)
+* Deserialization: annotations follow the order of their parent's `annotations` list, and annotations not listed by their parent are not attached (issue #464)
 * In-memory delta server: handle the five move-and-replace commands as specified in 2026.1, with the specification's error codes; deleted descendants now include annotations. Rename two move-and-replace child commands and their events to the 2026.1 names (issue #474)
 * `LionWebArchive` improvements (issue #443):
   * Add the `LionWebArchive.Writer` streaming writer: chunks are serialized in parallel within a bounded window and written as soon as they are ready, so memory does not grow with the archive size. `store()` now uses it
