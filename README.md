@@ -23,9 +23,9 @@ or support.
 
 For visibility on the future plans regarding this project refer to the [Roadmap](ROADMAP.md).
 
-Currently the project is on par with the LionWeb specification.
-
-In particular, this library supports both versions 2023.1 and 2024.1 of the specification.
+This library supports versions 2023.1 and 2024.1 of the specification.
+Known divergences from 2024.1 are tracked in [#458](https://github.com/LionWeb-io/lionweb-jvm/issues/458),
+and support for 2026.1 in [#450](https://github.com/LionWeb-io/lionweb-jvm/issues/450).
 
 ## Using the library
 
