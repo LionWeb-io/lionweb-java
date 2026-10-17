@@ -728,6 +728,42 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
+  public void deserializeAnnotationsPreservesOrderOfParent() {
+    Language l = new Language("l", "l", "l", "1");
+    Annotation a = new Annotation(l, "a", "a", "a");
+    Concept c = new Concept(l, "c", "c", "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    new DynamicAnnotationInstance("a1", a, n1);
+    new DynamicAnnotationInstance("a2", a, n1);
+    new DynamicAnnotationInstance("a3", a, n1);
+
+    JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
+    hjs.enableDynamicNodes();
+    SerializationChunk original = hjs.serializeNodesToSerializationChunk(n1);
+    assertEquals(Arrays.asList("a1", "a2", "a3"), original.getInstanceByID("n1").getAnnotations());
+
+    // The order of the nodes differs from the order of the parent's annotations
+    SerializationChunk reordered =
+        SerializationChunk.fromNodes(
+            LionWebVersion.currentVersion,
+            Arrays.asList(
+                original.getInstanceByID("a3"),
+                original.getInstanceByID("a1"),
+                original.getInstanceByID("n1"),
+                original.getInstanceByID("a2")));
+
+    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationChunk(reordered);
+    ClassifierInstance<?> deserializedN1 = deserialized.get(2);
+    assertEquals("n1", deserializedN1.getID());
+    assertEquals(
+        Arrays.asList("a1", "a2", "a3"),
+        deserializedN1.getAnnotations().stream()
+            .map(ClassifierInstance::getID)
+            .collect(Collectors.toList()));
+  }
+
+  @Test
   public void serializeLanguage() {
     Language metaLang = new Language("metaLang", "metaLang", "metaLang", "1");
     Annotation metaAnn = new Annotation(metaLang, "metaAnn", "metaAnn", "metaAnn");

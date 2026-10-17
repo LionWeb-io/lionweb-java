@@ -577,6 +577,9 @@ public abstract class AbstractSerialization {
             this.instanceResolver);
     NodePopulator nodePopulator =
         new NodePopulator(this, classifierInstanceResolver, deserializationStatus, lionWebVersion);
+    // Annotations are attached after populating all nodes, so that we can follow the order of the
+    // parent's annotations list rather than the (undefined) order of the nodes
+    List<SerializedClassifierInstance> annotationsToAttach = new ArrayList<>();
     serializedClassifierInstances.forEach(
         node -> {
           ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
@@ -600,7 +603,7 @@ public abstract class AbstractSerialization {
                 (AbstractClassifierInstance<?>) deserializedByID.get(node.getParentNodeID());
             AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
             if (abstractClassifierInstance != null) {
-              abstractClassifierInstance.addAnnotation(annotationInstance);
+              annotationsToAttach.add(node);
             } else if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
               // Nothing to do
             } else {
@@ -609,6 +612,11 @@ public abstract class AbstractSerialization {
             }
           }
         });
+    attachAnnotationsInOrder(
+        serializedClassifierInstances,
+        annotationsToAttach,
+        serializedToInstanceMap,
+        deserializedByID);
 
     // We want the nodes returned to be sorted as the original serializedNodes
     List<ClassifierInstance<?>> nodesWithOriginalSorting =
@@ -617,6 +625,40 @@ public abstract class AbstractSerialization {
         n -> nodesWithOriginalSorting.add(serializedToInstanceMap.get(n)));
     nodesWithOriginalSorting.addAll(deserializationStatus.proxies);
     return nodesWithOriginalSorting;
+  }
+
+  /**
+   * Attach annotations following the order of the annotations list of their parent. Annotations not
+   * listed by their parent are attached afterwards, in the order in which they appear among the
+   * nodes.
+   */
+  private static void attachAnnotationsInOrder(
+      List<SerializedClassifierInstance> serializedClassifierInstances,
+      List<SerializedClassifierInstance> annotationsToAttach,
+      IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap,
+      Map<String, ClassifierInstance<?>> deserializedByID) {
+    if (annotationsToAttach.isEmpty()) {
+      return;
+    }
+    Map<String, SerializedClassifierInstance> annotationsByID = new HashMap<>();
+    annotationsToAttach.forEach(a -> annotationsByID.put(a.getID(), a));
+    Set<SerializedClassifierInstance> attached = Collections.newSetFromMap(new IdentityHashMap<>());
+    Consumer<SerializedClassifierInstance> attach =
+        a -> {
+          if (attached.add(a)) {
+            ((AbstractClassifierInstance<?>) deserializedByID.get(a.getParentNodeID()))
+                .addAnnotation((AnnotationInstance) serializedToInstanceMap.get(a));
+          }
+        };
+    for (SerializedClassifierInstance parent : serializedClassifierInstances) {
+      for (String annotationID : parent.getAnnotations()) {
+        SerializedClassifierInstance a = annotationsByID.get(annotationID);
+        if (a != null && Objects.equals(a.getParentNodeID(), parent.getID())) {
+          attach.accept(a);
+        }
+      }
+    }
+    annotationsToAttach.forEach(attach);
   }
 
   private @Nullable ClassifierInstance<?> instantiateFromSerialized(
