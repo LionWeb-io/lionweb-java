@@ -147,6 +147,52 @@ public class LowLevelJsonSerializationTest extends SerializationTest {
     assertThrows(RuntimeException.class, () -> lljs.deserializeSerializationBlock(json));
   }
 
+  private static String chunkWithPropertyValue(String jsonValue) {
+    return "{\n"
+        + "  \"serializationFormatVersion\": \"2024.1\",\n"
+        + "  \"languages\": [],\n"
+        + "  \"nodes\": [{\n"
+        + "    \"id\": \"n1\",\n"
+        + "    \"classifier\": {\"language\": \"l\", \"version\": \"1\", \"key\": \"c\"},\n"
+        + "    \"properties\": [{\n"
+        + "      \"property\": {\"language\": \"l\", \"version\": \"1\", \"key\": \"p\"},\n"
+        + "      \"value\": "
+        + jsonValue
+        + "\n"
+        + "    }],\n"
+        + "    \"containments\": [],\n"
+        + "    \"references\": [],\n"
+        + "    \"annotations\": [],\n"
+        + "    \"parent\": null\n"
+        + "  }]\n"
+        + "}";
+  }
+
+  @Test
+  public void propertyValueStringOrNullIsAccepted() {
+    LowLevelJsonSerialization lljs = new LowLevelJsonSerialization();
+    for (String jsonValue : Arrays.asList("\"abc\"", "\"\"", "\"123\"")) {
+      SerializationChunk chunk =
+          lljs.deserializeSerializationBlock(chunkWithPropertyValue(jsonValue));
+      assertEquals(
+          JsonParser.parseString(jsonValue).getAsString(),
+          chunk.getClassifierInstances().get(0).getProperties().get(0).getValue());
+    }
+    SerializationChunk chunk = lljs.deserializeSerializationBlock(chunkWithPropertyValue("null"));
+    assertNull(chunk.getClassifierInstances().get(0).getProperties().get(0).getValue());
+  }
+
+  @Test
+  public void propertyValueNotStringNorNullIsRejected() {
+    LowLevelJsonSerialization lljs = new LowLevelJsonSerialization();
+    for (String jsonValue : Arrays.asList("123", "-1", "true", "{}", "[\"a\"]")) {
+      assertThrows(
+          DeserializationException.class,
+          () -> lljs.deserializeSerializationBlock(chunkWithPropertyValue(jsonValue)),
+          jsonValue);
+    }
+  }
+
   private void assertTheFileIsReserializedFromLowLevelCorrectly(String filePath) {
     InputStream inputStream = this.getClass().getResourceAsStream(filePath);
     JsonElement jsonElement = JsonParser.parseReader(new InputStreamReader(inputStream));

@@ -25,17 +25,21 @@ class SerializationUtils {
     }
   }
 
+  /**
+   * Returns the value of a member that must be either a JSON string or null. A missing member is
+   * treated as null.
+   */
   @Nullable
-  static String tryToGetStringProperty(JsonObject jsonObject, String propertyName) {
-    if (!jsonObject.has(propertyName)) {
-      return null;
-    }
+  static String getStringOrNullProperty(JsonObject jsonObject, String propertyName) {
     JsonElement value = jsonObject.get(propertyName);
-    if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
-      return value.getAsJsonPrimitive().getAsString();
-    } else {
+    if (value == null || value.isJsonNull()) {
       return null;
     }
+    if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+      return value.getAsString();
+    }
+    throw new DeserializationException(
+        "Expected " + propertyName + " to be a string or null, but found " + value);
   }
 
   @Nullable
@@ -47,9 +51,9 @@ class SerializationUtils {
     if (value.isJsonObject()) {
       JsonObject valueJO = value.getAsJsonObject();
       return MetaPointer.get(
-          tryToGetStringProperty(valueJO, "language"),
-          tryToGetStringProperty(valueJO, "version"),
-          tryToGetStringProperty(valueJO, "key"));
+          getStringOrNullProperty(valueJO, "language"),
+          getStringOrNullProperty(valueJO, "version"),
+          getStringOrNullProperty(valueJO, "key"));
     } else {
       return null;
     }
@@ -91,8 +95,8 @@ class SerializationUtils {
           .map(
               e ->
                   new SerializedReferenceValue.Entry(
-                      tryToGetStringProperty(e.getAsJsonObject(), "reference"),
-                      tryToGetStringProperty(e.getAsJsonObject(), "resolveInfo")))
+                      getStringOrNullProperty(e.getAsJsonObject(), "reference"),
+                      getStringOrNullProperty(e.getAsJsonObject(), "resolveInfo")))
           .collect(Collectors.toList());
     } else {
       return null;
