@@ -92,9 +92,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
         "{\"ids\":["
             + String.join(", ", nodeIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
             + "]}";
-    Map<String, String> params = new HashMap<>();
-    params.put("depthLimit", String.valueOf(limit));
-    Request.Builder rq = buildRequest("/bulk/retrieve", true, true, true, params);
+    Request.Builder rq = buildRequest("/bulk/retrieve", true, true, true, retrieveParams(limit));
     Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
 
     return performCall(
@@ -128,6 +126,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
         if (response.code() != HttpURLConnection.HTTP_OK) {
           throw new BulkRequestFailureException(url, response.code(), responseBody);
         } else {
+          checkSuccess(request, response, responseBody);
           return getRepoVersionFromResponse(responseBody);
         }
       }

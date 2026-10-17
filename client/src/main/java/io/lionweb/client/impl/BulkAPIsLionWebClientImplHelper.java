@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import okhttp3.Request;
 import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,6 +88,32 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
     Request request = rq.post(body).build();
 
     return performCall(
-        request, (response, responseBody) -> getRepoVersionFromResponse(responseBody));
+        request,
+        (response, responseBody) -> {
+          checkSuccess(request, response, responseBody);
+          return getRepoVersionFromResponse(responseBody);
+        });
+  }
+
+  /**
+   * Query parameters for a retrieve call. The specification has no value for infinite depth: in
+   * that case depthLimit must be omitted. Integer.MAX_VALUE is used to express infinite depth.
+   */
+  static Map<String, String> retrieveParams(int limit) {
+    Map<String, String> params = new HashMap<>();
+    if (limit != Integer.MAX_VALUE) {
+      params.put("depthLimit", String.valueOf(limit));
+    }
+    return params;
+  }
+
+  void checkSuccess(Request request, Response response, @Nullable String responseBody) {
+    boolean success =
+        responseBody != null
+            && JsonParser.parseString(responseBody).getAsJsonObject().get("success").getAsBoolean();
+    if (!success) {
+      throw new BulkRequestFailureException(
+          request.url().toString(), response.code(), responseBody);
+    }
   }
 }

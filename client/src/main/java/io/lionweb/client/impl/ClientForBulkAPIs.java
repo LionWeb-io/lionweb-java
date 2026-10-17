@@ -101,9 +101,7 @@ public class ClientForBulkAPIs extends BulkAPIsLionWebClientImplHelper implement
         "{\"ids\":["
             + String.join(", ", nodeIds.stream().map(id -> "\"" + id + "\"").toArray(String[]::new))
             + "]}";
-    Map<String, String> params = new HashMap<>();
-    params.put("depthLimit", String.valueOf(limit));
-    Request.Builder rq = buildRequest("/bulk/retrieve", true, true, true, params);
+    Request.Builder rq = buildRequest("/bulk/retrieve", true, true, true, retrieveParams(limit));
     Request request = rq.post(RequestBody.create(bodyJson, JSON)).build();
 
     return performCall(
