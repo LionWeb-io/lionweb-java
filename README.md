@@ -7,7 +7,7 @@ LionWeb JVM is the JVM implementation of the [LionWeb](https://lionweb.io) speci
 
 The published libraries require Java 11 or higher (the Gradle plugin requires Java 17 or higher).
 
-Building the project requires Java 17 or higher. We support and test on Java 17, 21, and 25.
+Building the project requires Java 17 or higher. We test on Java 17 and 25.
 
 ## Documentation
 
