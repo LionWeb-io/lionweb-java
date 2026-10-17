@@ -77,11 +77,11 @@ public interface ChunkLevelBulkAPIClient {
 
   default @NotNull List<SerializedClassifierInstance> retrieveAsChunk(@NotNull List<String> nodeIds)
       throws IOException {
-    return retrieveAsChunk(nodeIds, Integer.MAX_VALUE);
+    return retrieveAsChunk(nodeIds, BulkAPIClient.INFINITE_DEPTH);
   }
 
   default @NotNull Stream<SerializedClassifierInstance> retrieveAsStreamChunk(
       @NotNull Stream<String> nodeIds) throws IOException {
-    return retrieveAsStreamChunk(nodeIds, Integer.MAX_VALUE);
+    return retrieveAsStreamChunk(nodeIds, BulkAPIClient.INFINITE_DEPTH);
   }
 }

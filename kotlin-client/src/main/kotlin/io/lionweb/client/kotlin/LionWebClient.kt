@@ -3,6 +3,7 @@ package io.lionweb.client.kotlin
 import com.google.gson.JsonParser
 import io.lionweb.LionWebVersion
 import io.lionweb.client.ExtendedLionWebClient
+import io.lionweb.client.api.BulkAPIClient
 import io.lionweb.client.api.ClassifierKey
 import io.lionweb.client.api.ClassifierResult
 import io.lionweb.client.api.HistorySupport
@@ -27,11 +28,6 @@ import io.lionweb.serialization.extensions.TransferFormat
 import java.util.LinkedList
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty
-
-// This number must be lower than Number.MAX_SAFE_INTEGER, or the LionWeb Repo would crash
-// Number.MAX_SAFE_INTEGER = 9,007,199,254,740,991
-// Integer.MAX_VALUE       =         2,147,483,647
-val MAX_DEPTH = Integer.MAX_VALUE
 
 class LionWebClient(
     val hostname: String = "localhost",
@@ -126,7 +122,7 @@ class LionWebClient(
         val limit =
             when (retrievalMode) {
                 RetrievalMode.SINGLE_NODE -> 0
-                RetrievalMode.ENTIRE_SUBTREE -> MAX_DEPTH
+                RetrievalMode.ENTIRE_SUBTREE -> BulkAPIClient.INFINITE_DEPTH
             }
         return jRepoClient.retrieve(rootIds, limit)
     }

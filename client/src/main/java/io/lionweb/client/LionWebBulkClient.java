@@ -246,12 +246,12 @@ public class LionWebBulkClient
   }
 
   public List<Node> retrieve(List<String> nodeIds) throws IOException {
-    return retrieve(nodeIds, Integer.MAX_VALUE);
+    return retrieve(nodeIds, BulkAPIClient.INFINITE_DEPTH);
   }
 
   public @NotNull Node retrieve(@NotNull String nodeId) throws IOException {
     Objects.requireNonNull(nodeId, "nodeId should not be null");
-    List<Node> nodes = retrieve(List.of(nodeId), Integer.MAX_VALUE);
+    List<Node> nodes = retrieve(List.of(nodeId), BulkAPIClient.INFINITE_DEPTH);
     List<Node> matchingNodes =
         nodes.stream().filter(n -> nodeId.equals(n.getID())).collect(Collectors.toList());
     if (matchingNodes.size() != 1) {

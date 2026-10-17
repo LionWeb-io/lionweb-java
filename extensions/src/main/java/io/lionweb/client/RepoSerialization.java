@@ -42,7 +42,8 @@ public class RepoSerialization {
     Objects.requireNonNull(apiClient, "apiClient cannot be null");
     Objects.requireNonNull(directory, "directory cannot be null");
     for (String partitionID : apiClient.listPartitionsIDs()) {
-      String partitionData = apiClient.rawRetrieve(List.of(partitionID), Integer.MAX_VALUE);
+      String partitionData =
+          apiClient.rawRetrieve(List.of(partitionID), BulkAPIClient.INFINITE_DEPTH);
       File partitionFile = new File(directory, partitionID + ".json");
       Files.write(
           partitionFile.toPath(),
@@ -65,7 +66,8 @@ public class RepoSerialization {
         ZipOutputStream zos = new ZipOutputStream(bos)) {
 
       for (String partitionID : apiClient.listPartitionsIDs()) {
-        String partitionData = apiClient.rawRetrieve(List.of(partitionID), Integer.MAX_VALUE);
+        String partitionData =
+            apiClient.rawRetrieve(List.of(partitionID), BulkAPIClient.INFINITE_DEPTH);
 
         ZipEntry entry = new ZipEntry(partitionID + ".json");
         zos.putNextEntry(entry);
