@@ -11,6 +11,7 @@ import io.lionweb.model.impl.DynamicStructuredDataTypeInstance;
 import io.lionweb.model.impl.EnumerationValue;
 import io.lionweb.model.impl.EnumerationValueImpl;
 import io.lionweb.model.impl.M3Node;
+import java.util.Arrays;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -191,6 +192,29 @@ public class DataTypesValuesSerializationTest {
     // Test with required = true should still work with valid value
     Object result2 = serialization.deserialize(booleanType, "false", true);
     assertEquals(false, result2);
+  }
+
+  @Test
+  public void testBooleanDeserializationAcceptsOnlyTrueAndFalse() {
+    serialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.v2024_1);
+
+    assertEquals(true, serialization.deserialize(booleanType, "true", true));
+    assertEquals(false, serialization.deserialize(booleanType, "false", false));
+    // Examples of invalid encodings from the specification
+    for (String invalid :
+        Arrays.asList("TRUE", "False", " true", "false ", "t", "f", "1", "0", "-1", "")) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> serialization.deserialize(booleanType, invalid, true),
+          invalid);
+    }
+  }
+
+  @Test
+  public void testBooleanDeserializationOfNullRequiredValue() {
+    serialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.v2024_1);
+
+    assertNull(serialization.deserialize(booleanType, null, true));
   }
 
   @Test
