@@ -60,7 +60,6 @@ jobs:
     env:
       # Used by AbstractClientFunctionalTest instead of building the server image in every test JVM.
       LIONWEB_SERVER_TEST_IMAGE: lionweb-server-functional-test:ci
-      SERVER_IMAGE_TAR: ${{ github.workspace }}/../lionweb-server-image.tar
 
     steps:
     - uses: actions/checkout@v7
@@ -78,6 +77,7 @@ jobs:
       run: |
         commit=$(grep '^lionwebServerCommitID=' gradle.properties | cut -d= -f2)
         echo "commit=$commit" >> "$GITHUB_OUTPUT"
+        echo "SERVER_IMAGE_TAR=$RUNNER_TEMP/lionweb-server-image.tar" >> "$GITHUB_ENV"
         echo "key=lionweb-server-image-$commit-${{ hashFiles('client-testing/src/main/resources/**') }}" >> "$GITHUB_OUTPUT"
     - name: Restore LionWeb server image
       id: server-image-cache
