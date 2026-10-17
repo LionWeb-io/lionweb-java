@@ -7,6 +7,7 @@ import io.lionweb.model.Node;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import javax.annotation.Nonnull;
 
@@ -88,18 +89,21 @@ public class NodeTreeValidator extends Validator<Node> {
         .forEach(child -> validateNodeAndDescendants(child, validationResult));
   }
 
+  /** Classifiers are compared by ID, as their equals compares their whole content. */
   private static boolean isSameOrSubtypeOf(Classifier<?> classifier, Classifier<?> other) {
-    return classifier.equals(other) || inheritsFrom(classifier, other, new HashSet<>());
+    return Objects.equals(classifier.getID(), other.getID())
+        || inheritsFrom(classifier, other.getID(), new HashSet<>());
   }
 
   /** Stops as soon as a match is found. The visited set guards against inheritance loops. */
   private static boolean inheritsFrom(
-      Classifier<?> classifier, Classifier<?> other, Set<Classifier<?>> visited) {
-    if (!visited.add(classifier)) {
+      Classifier<?> classifier, String otherID, Set<String> visitedIDs) {
+    if (!visitedIDs.add(classifier.getID())) {
       return false;
     }
     for (Classifier<?> ancestor : classifier.directAncestors()) {
-      if (ancestor.equals(other) || inheritsFrom(ancestor, other, visited)) {
+      if (Objects.equals(ancestor.getID(), otherID)
+          || inheritsFrom(ancestor, otherID, visitedIDs)) {
         return true;
       }
     }
