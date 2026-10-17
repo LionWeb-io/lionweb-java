@@ -65,7 +65,12 @@ public class LanguageValidator extends Validator<Language> {
 
   /**
    * Own features must not reuse the name of an inherited feature. Clashes among inherited features
-   * are allowed by the specification, so they are not reported.
+   * are allowed by the specification (see the name-clash example in the constraints of Feature), so
+   * they are not reported.
+   *
+   * @see <a
+   *     href="https://lionweb.io/specification/2024.1/metametamodel/metametamodel.html#Feature">Feature
+   *     constraints</a>
    */
   private void validateFeatureNamesDoNotClashWithInherited(
       ValidationResult result, Classifier<?> classifier) {
