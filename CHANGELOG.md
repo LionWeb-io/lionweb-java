@@ -8,6 +8,10 @@
 * `NodeTreeValidator`: report partitions that are not root nodes, and annotations applied to nodes whose classifier they do not annotate (issue #461)
 * Deserialization: annotations follow the order of their parent's `annotations` list, and annotations not listed by their parent are not attached (issue #464)
 * In-memory delta server: handle the five move-and-replace commands as specified in 2026.1, with the specification's error codes; deleted descendants now include annotations. Rename two move-and-replace child commands and their events to the 2026.1 names (issue #474)
+* Bulk clients: omit `depthLimit` when retrieving with infinite depth, as required by the specification, and check the `success` flag of `createPartitions` and `deletePartitions` responses. Add `BulkAPIClient.INFINITE_DEPTH`; the Kotlin client's `MAX_DEPTH` is removed in its favor (issue #467)
+* EMF: support annotations in the metamodel and model importers and exporters, with the encoding documented in `io.lionweb.emf.support.AnnotationsEncoding` (issue #85)
+* EMF: map multi-valued `EAttribute`s at the model level, so models round-trip between EMF and LionWeb (issue #165)
+* `EMFMetamodelExporter`: reuse `EPackage`s already mapped or registered in the `EPackage` registry instead of creating duplicates (issue #112)
 * `LionWebArchive` improvements (issue #443):
   * Add the `LionWebArchive.Writer` streaming writer: chunks are serialized in parallel within a bounded window and written as soon as they are ready, so memory does not grow with the archive size. `store()` now uses it
   * Add an optional compression level to `store()` and `Writer` (default stays `0`), also settable on a `Writer` through `setCompressionLevel()` and readable through `getCompressionLevel()`. Uncompressed entries are now written as ZIP `STORED` entries, so no Deflater/Inflater is involved
@@ -15,6 +19,8 @@
   * `loadNodes()` accepts dependencies on languages already registered in the serialization, and gains an option to ignore unknown language dependencies. `TopologicalLanguageSorter.topologicalSort` gains an overload accepting a predicate for known dependencies
   * Document that empty containments and references are not stored in archives
   * Expose the format constants `STANDARD_EXTENSION`, `METADATA_PATH`, `LANGUAGES_DIRECTORY`, `PARTITIONS_DIRECTORY`, `CHUNK_EXTENSION` and `DEFAULT_COMPRESSION_LEVEL`
+* Reduce the release size on Maven Central: stop publishing the `-all.jar` of `core`, `client` and `extensions` (the runnable `server-all.jar` is kept), and generate javadoc without bundled fonts on JDK 23+ (issue #441)
+* Bump dependencies: Spotless 8.10.4, okhttp 5.5.0, Kotlin 2.4.21, `gradle/actions` 6.4.0
 
 ### Version 1.4.6
 
