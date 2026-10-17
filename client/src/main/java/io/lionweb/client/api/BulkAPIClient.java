@@ -14,6 +14,9 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface BulkAPIClient {
 
+  /** Retrieve depth meaning no limit: depthLimit is then omitted from the request. */
+  int INFINITE_DEPTH = Integer.MAX_VALUE;
+
   @NotNull
   LionWebVersion getLionWebVersion();
 
@@ -45,6 +48,6 @@ public interface BulkAPIClient {
   List<Node> retrieve(List<String> nodeIds, int limit) throws IOException;
 
   default List<Node> retrieve(List<String> nodeIds) throws IOException {
-    return retrieve(nodeIds, Integer.MAX_VALUE);
+    return retrieve(nodeIds, INFINITE_DEPTH);
   }
 }

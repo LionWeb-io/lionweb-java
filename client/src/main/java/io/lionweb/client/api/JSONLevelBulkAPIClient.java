@@ -34,6 +34,6 @@ public interface JSONLevelBulkAPIClient {
   String rawRetrieve(@Nullable List<String> nodeIds, int limit) throws IOException;
 
   default @NotNull String rawRetrieve(@Nullable List<String> nodeIds) throws IOException {
-    return rawRetrieve(nodeIds, Integer.MAX_VALUE);
+    return rawRetrieve(nodeIds, BulkAPIClient.INFINITE_DEPTH);
   }
 }

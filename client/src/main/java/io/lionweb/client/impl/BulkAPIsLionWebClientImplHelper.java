@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import io.lionweb.client.BulkRequestFailureException;
+import io.lionweb.client.api.BulkAPIClient;
 import io.lionweb.client.api.RepositoryVersionToken;
 import io.lionweb.serialization.LowLevelJsonSerialization;
 import io.lionweb.serialization.data.SerializationChunk;
@@ -90,24 +91,24 @@ abstract class BulkAPIsLionWebClientImplHelper extends LionWebClientImplHelper {
     return performCall(
         request,
         (response, responseBody) -> {
-          checkSuccess(request, response, responseBody);
+          ensureSuccess(request, response, responseBody);
           return getRepoVersionFromResponse(responseBody);
         });
   }
 
   /**
    * Query parameters for a retrieve call. The specification has no value for infinite depth: in
-   * that case depthLimit must be omitted. Integer.MAX_VALUE is used to express infinite depth.
+   * that case depthLimit must be omitted.
    */
   static Map<String, String> retrieveParams(int limit) {
     Map<String, String> params = new HashMap<>();
-    if (limit != Integer.MAX_VALUE) {
+    if (limit != BulkAPIClient.INFINITE_DEPTH) {
       params.put("depthLimit", String.valueOf(limit));
     }
     return params;
   }
 
-  void checkSuccess(Request request, Response response, @Nullable String responseBody) {
+  void ensureSuccess(Request request, Response response, @Nullable String responseBody) {
     boolean success =
         responseBody != null
             && JsonParser.parseString(responseBody).getAsJsonObject().get("success").getAsBoolean();

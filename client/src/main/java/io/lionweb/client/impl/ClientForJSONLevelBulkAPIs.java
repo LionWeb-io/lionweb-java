@@ -126,7 +126,7 @@ public class ClientForJSONLevelBulkAPIs extends BulkAPIsLionWebClientImplHelper
         if (response.code() != HttpURLConnection.HTTP_OK) {
           throw new BulkRequestFailureException(url, response.code(), responseBody);
         } else {
-          checkSuccess(request, response, responseBody);
+          ensureSuccess(request, response, responseBody);
           return getRepoVersionFromResponse(responseBody);
         }
       }
