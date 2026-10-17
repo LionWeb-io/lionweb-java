@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedFromOtherContainment
-    extends BaseDeltaEvent<ChildMovedAndReplacedFromOtherContainment> {
+public final class ChildMovedAndReplacedFromContainmentInOtherParent
+    extends BaseDeltaEvent<ChildMovedAndReplacedFromContainmentInOtherParent> {
   /** The new parent node after the move. */
   public final @NotNull String newParent;
 
@@ -35,7 +35,7 @@ public final class ChildMovedAndReplacedFromOtherContainment
   /** The IDs of all descendants of the replaced child. */
   public final @NotNull List<String> replacedDescendants;
 
-  public ChildMovedAndReplacedFromOtherContainment(
+  public ChildMovedAndReplacedFromContainmentInOtherParent(
       int sequenceNumber,
       @NotNull String newParent,
       @NotNull MetaPointer newContainment,
@@ -73,7 +73,7 @@ public final class ChildMovedAndReplacedFromOtherContainment
 
   @Override
   public String toString() {
-    return "ChildMovedAndReplacedFromOtherContainment{"
+    return "ChildMovedAndReplacedFromContainmentInOtherParent{"
         + "newParent='"
         + newParent
         + '\''

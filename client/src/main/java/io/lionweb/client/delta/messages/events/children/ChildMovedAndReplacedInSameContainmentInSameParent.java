@@ -6,8 +6,8 @@ import java.util.List;
 import java.util.Objects;
 import org.jetbrains.annotations.NotNull;
 
-public final class ChildMovedAndReplacedInSameContainment
-    extends BaseDeltaEvent<ChildMovedAndReplacedInSameContainment> {
+public final class ChildMovedAndReplacedInSameContainmentInSameParent
+    extends BaseDeltaEvent<ChildMovedAndReplacedInSameContainmentInSameParent> {
   public final int indexOffset;
   public final @NotNull String movedChild;
   public final @NotNull String parent;
@@ -16,7 +16,7 @@ public final class ChildMovedAndReplacedInSameContainment
   public final @NotNull String replacedChild;
   public final @NotNull List<String> replacedDescendants;
 
-  public ChildMovedAndReplacedInSameContainment(
+  public ChildMovedAndReplacedInSameContainmentInSameParent(
       int sequenceNumber,
       int indexOffset,
       @NotNull String movedChild,
@@ -45,7 +45,7 @@ public final class ChildMovedAndReplacedInSameContainment
 
   @Override
   public String toString() {
-    return "ChildMovedAndReplacedInSameContainment{"
+    return "ChildMovedAndReplacedInSameContainmentInSameParent{"
         + "indexOffset="
         + indexOffset
         + ", movedChild='"

@@ -46,6 +46,7 @@ class RepositoryData {
     indexRemove(curr);
     nodesByID.remove(nodeId);
     curr.getChildren().forEach(this::deleteNodeAndDescendant);
+    curr.getAnnotations().forEach(this::deleteNodeAndDescendant);
   }
 
   private ClassifierKey classifierKeyOf(SerializedClassifierInstance node) {
