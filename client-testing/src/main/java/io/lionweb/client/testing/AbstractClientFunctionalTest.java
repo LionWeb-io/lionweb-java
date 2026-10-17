@@ -12,6 +12,7 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
+import org.testcontainers.utility.DockerImageName;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 /**
@@ -75,14 +76,7 @@ public class AbstractClientFunctionalTest {
             versionKey,
             k -> {
               GenericContainer<?> newServer =
-                  new GenericContainer<>(
-                          new ImageFromDockerfile()
-                              .withFileFromClasspath(
-                                  "Dockerfile", "clienttesting-lionweb-server-Dockerfile")
-                              .withFileFromClasspath(
-                                  "server-config.template.json", "server-config.template.json")
-                              .withBuildArg(
-                                  "lionwebServerCommitID", BuildConfig.LIONWEB_SERVER_COMMIT_ID))
+                  newServerContainer()
                       .dependsOn(db)
                       .withNetwork(network)
                       .withEnv("PGHOST", "mypgdb")
@@ -105,6 +99,25 @@ public class AbstractClientFunctionalTest {
             });
 
     System.setProperty("MODEL_REPO_PORT", Integer.toString(getServerPort()));
+  }
+
+  /**
+   * Environment variable naming an already available LionWeb server image to use instead of
+   * building it from the Dockerfile. CI builds (or restores) that image once per job, so that each
+   * test JVM does not build it again.
+   */
+  public static final String PREBUILT_SERVER_IMAGE_ENV = "LIONWEB_SERVER_TEST_IMAGE";
+
+  private static GenericContainer<?> newServerContainer() {
+    String prebuiltImage = System.getenv(PREBUILT_SERVER_IMAGE_ENV);
+    if (prebuiltImage != null && !prebuiltImage.isEmpty()) {
+      return new GenericContainer<>(DockerImageName.parse(prebuiltImage));
+    }
+    return new GenericContainer<>(
+        new ImageFromDockerfile()
+            .withFileFromClasspath("Dockerfile", "clienttesting-lionweb-server-Dockerfile")
+            .withFileFromClasspath("server-config.template.json", "server-config.template.json")
+            .withBuildArg("lionwebServerCommitID", BuildConfig.LIONWEB_SERVER_COMMIT_ID));
   }
 
   public int getServerPort() {
