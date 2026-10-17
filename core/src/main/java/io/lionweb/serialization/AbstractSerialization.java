@@ -629,8 +629,7 @@ public abstract class AbstractSerialization {
 
   /**
    * Attach annotations following the order of the annotations list of their parent. Annotations not
-   * listed by their parent are attached afterwards, in the order in which they appear among the
-   * nodes.
+   * listed by their parent are not attached.
    */
   private static void attachAnnotationsInOrder(
       List<SerializedClassifierInstance> serializedClassifierInstances,
@@ -642,23 +641,16 @@ public abstract class AbstractSerialization {
     }
     Map<String, SerializedClassifierInstance> annotationsByID = new HashMap<>();
     annotationsToAttach.forEach(a -> annotationsByID.put(a.getID(), a));
-    Set<SerializedClassifierInstance> attached = Collections.newSetFromMap(new IdentityHashMap<>());
-    Consumer<SerializedClassifierInstance> attach =
-        a -> {
-          if (attached.add(a)) {
-            ((AbstractClassifierInstance<?>) deserializedByID.get(a.getParentNodeID()))
-                .addAnnotation((AnnotationInstance) serializedToInstanceMap.get(a));
-          }
-        };
     for (SerializedClassifierInstance parent : serializedClassifierInstances) {
       for (String annotationID : parent.getAnnotations()) {
         SerializedClassifierInstance a = annotationsByID.get(annotationID);
         if (a != null && Objects.equals(a.getParentNodeID(), parent.getID())) {
-          attach.accept(a);
+          annotationsByID.remove(annotationID);
+          ((AbstractClassifierInstance<?>) deserializedByID.get(parent.getID()))
+              .addAnnotation((AnnotationInstance) serializedToInstanceMap.get(a));
         }
       }
     }
-    annotationsToAttach.forEach(attach);
   }
 
   private @Nullable ClassifierInstance<?> instantiateFromSerialized(

@@ -764,6 +764,31 @@ public class JsonSerializationTest extends SerializationTest {
   }
 
   @Test
+  public void deserializeAnnotationsNotListedByParentAreNotAttached() {
+    Language l = new Language("l", "l", "l", "1");
+    Annotation a = new Annotation(l, "a", "a", "a");
+    Concept c = new Concept(l, "c", "c", "c");
+
+    DynamicNode n1 = new DynamicNode("n1", c);
+    new DynamicAnnotationInstance("a1", a, n1);
+    new DynamicAnnotationInstance("a2", a, n1);
+
+    JsonSerialization hjs = SerializationProvider.getStandardJsonSerialization();
+    hjs.enableDynamicNodes();
+    SerializationChunk chunk = hjs.serializeNodesToSerializationChunk(n1);
+    chunk.getInstanceByID("n1").removeAnnotation("a2");
+
+    List<ClassifierInstance<?>> deserialized = hjs.deserializeSerializationChunk(chunk);
+    ClassifierInstance<?> deserializedN1 =
+        deserialized.stream().filter(n -> "n1".equals(n.getID())).findFirst().get();
+    assertEquals(
+        Arrays.asList("a1"),
+        deserializedN1.getAnnotations().stream()
+            .map(ClassifierInstance::getID)
+            .collect(Collectors.toList()));
+  }
+
+  @Test
   public void serializeLanguage() {
     Language metaLang = new Language("metaLang", "metaLang", "metaLang", "1");
     Annotation metaAnn = new Annotation(metaLang, "metaAnn", "metaAnn", "metaAnn");
