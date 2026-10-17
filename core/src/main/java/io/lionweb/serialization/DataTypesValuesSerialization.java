@@ -11,7 +11,6 @@ import io.lionweb.model.impl.EnumerationValueImpl;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -27,9 +26,6 @@ public class DataTypesValuesSerialization {
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
   private final Map<String, StructuredDataType> structuredDataTypesByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
-
-  /** Base-10 with an optional sign and no leading zeros, as required by the specification. */
-  private static final Pattern INTEGER_PATTERN = Pattern.compile("[+-]?(0|[1-9][0-9]*)");
 
   public void registerLanguage(@Nonnull Language language) {
     Objects.requireNonNull(language, "language should not be null");
@@ -133,6 +129,56 @@ public class DataTypesValuesSerialization {
    * <p>Integers are represented as Java {@code int}: values outside the 32-bit signed range are
    * refused with an {@link IllegalArgumentException}, as permitted by the specification.
    */
+  /**
+   * Parses an Integer as required by the specification: base-10, an optional sign, ASCII digits
+   * only and no leading zeros. Validation and parsing happen in a single pass, without allocations.
+   */
+  static int parseInteger(@Nonnull String value) {
+    int n = value.length();
+    int i = 0;
+    boolean negative = false;
+    if (n > 0) {
+      char first = value.charAt(0);
+      if (first == '-') {
+        negative = true;
+        i = 1;
+      } else if (first == '+') {
+        i = 1;
+      }
+    }
+    if (i == n || (value.charAt(i) == '0' && n - i > 1)) {
+      throw new IllegalArgumentException("Invalid Integer value: \"" + value + "\"");
+    }
+    // Accumulated as a negative number, to also represent Integer.MIN_VALUE
+    int limit = negative ? Integer.MIN_VALUE : -Integer.MAX_VALUE;
+    int multLimit = limit / 10;
+    int result = 0;
+    boolean outOfRange = false;
+    for (; i < n; i++) {
+      int digit = value.charAt(i) - '0';
+      if (digit < 0 || digit > 9) {
+        throw new IllegalArgumentException("Invalid Integer value: \"" + value + "\"");
+      }
+      if (!outOfRange) {
+        if (result < multLimit) {
+          outOfRange = true;
+        } else {
+          result *= 10;
+          if (result < limit + digit) {
+            outOfRange = true;
+          } else {
+            result -= digit;
+          }
+        }
+      }
+    }
+    if (outOfRange) {
+      throw new IllegalArgumentException(
+          "Integer value out of the supported 32-bit range: \"" + value + "\"");
+    }
+    return negative ? result : -result;
+  }
+
   public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
       @Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
@@ -174,17 +220,7 @@ public class DataTypesValuesSerialization {
               if (serializedValue == null) {
                 return null;
               }
-              if (!INTEGER_PATTERN.matcher(serializedValue).matches()) {
-                throw new IllegalArgumentException(
-                    "Invalid Integer value: \"" + serializedValue + "\"");
-              }
-              try {
-                return Integer.parseInt(serializedValue);
-              } catch (NumberFormatException e) {
-                throw new IllegalArgumentException(
-                    "Integer value out of the supported 32-bit range: \"" + serializedValue + "\"",
-                    e);
-              }
+              return parseInteger(serializedValue);
             });
 
     dataTypeSerializers.put(
