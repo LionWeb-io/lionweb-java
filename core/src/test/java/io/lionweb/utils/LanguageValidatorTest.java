@@ -587,4 +587,104 @@ public class LanguageValidatorTest {
                 containment)),
         l.validate().getIssues());
   }
+
+  @Test
+  public void namesMustBeValidIdentifiers() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
+    Concept c1 = new Concept(l, "my name", "c1-id", "c1-key");
+    Concept c2 = new Concept(l, "1abc", "c2-id", "c2-key");
+    Concept c3 = new Concept(l, "a$b", "c3-id", "c3-key");
+    Concept c4 = new Concept(l, "", "c4-id", "c4-key");
+    assertEquals(
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(IssueSeverity.Error, "Invalid name 'my name'", c1),
+                new Issue(IssueSeverity.Error, "Invalid name '1abc'", c2),
+                new Issue(IssueSeverity.Error, "Invalid name 'a$b'", c3),
+                new Issue(IssueSeverity.Error, "Invalid name ''", c4))),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void namesCanUseUnicodeUnderscoresAndKeywords() {
+    Language l =
+        new Language("com.foo.Accounting", "my_language_id", "my_language_key").setVersion("1");
+    new Concept(l, "_x", "c1-id", "c1-key");
+    new Concept(l, "Città", "c2-id", "c2-key");
+    new Concept(l, "class", "c3-id", "c3-key");
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+  }
+
+  @Test
+  public void keysMustBeValidIdentifiers() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
+    Concept c = new Concept(l, "C", "c-id", "my.concept.key");
+    assertEquals(
+        Collections.singleton(new Issue(IssueSeverity.Error, "Invalid key 'my.concept.key'", c)),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void transitiveDependenciesCanBeUsed() {
+    Language l1 = new Language("L1", "l1-id", "l1-key").setVersion("1");
+    Concept c1 = new Concept(l1, "C1", "c1-id", "c1-key");
+    Language l2 = new Language("L2", "l2-id", "l2-key").setVersion("1");
+    l2.addDependency(l1);
+    Language l3 = new Language("L3", "l3-id", "l3-key").setVersion("1");
+    l3.addDependency(l2);
+    Concept c3 = new Concept(l3, "C3", "c3-id", "c3-key");
+    c3.setExtendedConcept(c1);
+    assertEquals(Collections.emptySet(), l3.validate().getIssues());
+  }
+
+  @Test
+  public void featureTypesMustBeInDependencies() {
+    Language l1 = new Language("L1", "l1-id", "l1-key").setVersion("1");
+    PrimitiveType pt = new PrimitiveType(l1, "PT", "pt-id").setKey("pt-key");
+    Language l2 = new Language("L2", "l2-id", "l2-key").setVersion("1");
+    Concept c = new Concept(l2, "C", "c-id", "c-key");
+    c.addFeature(Property.createRequired("p", pt, "p-id").setKey("p-key"));
+    assertEquals(
+        Collections.singleton(
+            new Issue(
+                IssueSeverity.Error,
+                "Language l1-key version 1 is not listed among dependencies",
+                l2)),
+        l2.validate().getIssues());
+  }
+
+  @Test
+  public void ownFeatureNamesMustNotClashWithInheritedFeatures() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
+    Concept a = new Concept(l, "A", "a-id", "a-key");
+    a.addFeature(
+        Property.createRequired("f", LionCoreBuiltins.getString(), "af-id").setKey("af-key"));
+    Concept b = new Concept(l, "B", "b-id", "b-key");
+    b.setExtendedConcept(a);
+    Property bf =
+        Property.createRequired("f", LionCoreBuiltins.getString(), "bf-id").setKey("bf-key");
+    b.addFeature(bf);
+    assertEquals(
+        Collections.singleton(
+            new Issue(IssueSeverity.Error, "Feature name f clashes with an inherited feature", bf)),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void featuresInheritedThroughADiamondAreNotDuplicates() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
+    Interface i = new Interface(l, "I", "i-id", "i-key");
+    i.addFeature(
+        Property.createRequired("f", LionCoreBuiltins.getString(), "f-id").setKey("f-key"));
+    Interface i1 = new Interface(l, "I1", "i1-id", "i1-key");
+    i1.addExtendedInterface(i);
+    Interface i2 = new Interface(l, "I2", "i2-id", "i2-key");
+    i2.addExtendedInterface(i);
+    Concept c = new Concept(l, "C", "c-id", "c-key");
+    c.addImplementedInterface(i1);
+    c.addImplementedInterface(i2);
+    c.addFeature(
+        Property.createRequired("g", LionCoreBuiltins.getString(), "g-id").setKey("g-key"));
+    assertEquals(Collections.emptySet(), l.validate().getIssues());
+  }
 }

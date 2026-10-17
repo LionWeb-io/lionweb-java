@@ -9,6 +9,7 @@ import io.lionweb.model.impl.M3Node;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 
 /**
  * LanguageValidator is responsible for validating objects of type {@code Language}. It ensures that
@@ -29,18 +30,12 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateEnumeration(ValidationResult result, Enumeration enumeration) {
-    enumeration
-        .getLiterals()
-        .forEach(
-            (EnumerationLiteral lit) ->
-                result.addErrorIf(lit.getName() == null, "Simple name not set", lit));
     validateNamesAreUnique(enumeration.getLiterals(), result);
   }
 
   private void validateClassifier(ValidationResult result, Classifier<?> classifier) {
     for (Feature<?> feature : classifier.getFeatures()) {
       result
-          .addErrorIf(feature.getName() == null, "Simple name not set", feature)
           .addErrorIf(feature.getContainer() == null, "Container not set", feature)
           .addErrorIf(
               feature.getContainer() != null
@@ -59,6 +54,43 @@ public class LanguageValidator extends Validator<Language> {
               feature);
     }
     validateNamesAreUnique(classifier.getFeatures(), result);
+    validateFeatureNamesDoNotClashWithInherited(result, classifier);
+  }
+
+  /**
+   * Own features must not reuse the name of an inherited feature. Clashes among inherited features
+   * are allowed by the specification (see the name-clash example in the constraints of Feature), so
+   * they are not reported.
+   *
+   * @see <a
+   *     href="https://lionweb.io/specification/2024.1/metametamodel/metametamodel.html#Feature">Feature
+   *     constraints</a>
+   */
+  private void validateFeatureNamesDoNotClashWithInherited(
+      ValidationResult result, Classifier<?> classifier) {
+    if (classifier.getFeatures().isEmpty()) {
+      return;
+    }
+    Map<String, Feature<?>> ownFeaturesByName = new HashMap<>();
+    for (Feature<?> feature : classifier.getFeatures()) {
+      if (feature.getName() != null) {
+        ownFeaturesByName.put(feature.getName(), feature);
+      }
+    }
+    for (Classifier<?> ancestor : classifier.allAncestors()) {
+      // A classifier among its own ancestors means a cyclic hierarchy, reported elsewhere
+      if (ancestor == classifier) {
+        continue;
+      }
+      for (Feature<?> inherited : ancestor.getFeatures()) {
+        Feature<?> clashing = ownFeaturesByName.get(inherited.getName());
+        if (clashing != null) {
+          result.addError(
+              "Feature name " + clashing.getName() + " clashes with an inherited feature",
+              clashing);
+        }
+      }
+    }
   }
 
   private void validateConcept(ValidationResult result, Concept concept) {
@@ -122,15 +154,13 @@ public class LanguageValidator extends Validator<Language> {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
-    result
-        .addErrorIf(language.getName() == null, "Qualified name not set", language)
-        .addErrorIf(
-            language.getVersion() == null || language.getVersion().isEmpty(),
-            "Version not set",
-            language);
+    result.addErrorIf(
+        language.getVersion() == null || language.getVersion().isEmpty(),
+        "Version not set",
+        language);
 
     validateNamesAreUnique(language.getElements(), result);
-    validateKeysAreNotNull(language, result);
+    validateNamesAndKeysAreValid(language, result);
     validateKeysAreUnique(language, result);
     validateLWVersionConsistency(language, result);
     validateLanguageDependencies(language, result);
@@ -140,7 +170,6 @@ public class LanguageValidator extends Validator<Language> {
         .forEach(
             (LanguageEntity el) -> {
               result
-                  .addErrorIf(el.getName() == null, "Simple name not set", el)
                   .addErrorIf(el.getLanguage() == null, "Language not set", el)
                   .addErrorIf(
                       el.getLanguage() != null && el.getLanguage() != language,
@@ -190,81 +219,96 @@ public class LanguageValidator extends Validator<Language> {
             });
   }
 
-  private void validateKeysAreNotNull(Language language, ValidationResult result) {
-    language
-        .thisAndAllDescendants()
-        .forEach(
-            n -> {
-              if (n instanceof IKeyed<?>) {
-                IKeyed<?> IKeyed = (IKeyed<?>) n;
-                String key = IKeyed.getKey();
-                if (key == null) {
-                  result.addError("Key should not be null", n);
-                }
-              }
-            });
+  private void validateNamesAndKeysAreValid(Language language, ValidationResult result) {
+    for (Node n : language.thisAndAllDescendants()) {
+      if (n instanceof IKeyed<?>) {
+        IKeyed<?> keyed = (IKeyed<?>) n;
+        String key = keyed.getKey();
+        if (key == null) {
+          result.addError("Key should not be null", n);
+        } else if (!IdUtils.isValidID(key)) {
+          result.addError("Invalid key '" + key + "'", n);
+        }
+        // The language name can be a qualified name
+        String name = keyed.getName();
+        if (name == null) {
+          result.addError(n == language ? "Qualified name not set" : "Simple name not set", n);
+        } else if (!(n == language
+            ? Naming.isValidQualifiedName(name)
+            : Naming.isValidName(name))) {
+          result.addError("Invalid name '" + name + "'", n);
+        }
+      }
+    }
   }
 
   private void validateLanguageDependencies(Language language, ValidationResult result) {
     Set<Language> usedLanguages = new HashSet<>();
-    for (Concept concept : language.getConcepts()) {
-      Concept extended = concept.getExtendedConcept();
-      if (extended != null) {
-        Language l = extended.getLanguage();
-        if (l != null) {
-          usedLanguages.add(l);
-        }
-      }
-      for (Interface interfaze : concept.getImplemented()) {
-        Language l = interfaze.getLanguage();
-        if (l != null) {
-          usedLanguages.add(l);
-        }
-      }
-    }
-    for (Interface interfaze : language.getInterfaces()) {
-      for (Interface extendedInterface : interfaze.getExtendedInterfaces()) {
-        Language l = extendedInterface.getLanguage();
-        if (l != null) {
-          usedLanguages.add(l);
-        }
-      }
-    }
-    for (Annotation annotation : language.getAnnotationDefinitions()) {
-      Classifier<?> target = annotation.getAnnotates();
-      if (target != null) {
-        Language l = target.getLanguage();
-        if (l != null) {
-          usedLanguages.add(l);
-        }
-      }
-    }
-    for (StructuredDataType structuredDataType : language.getStructuredDataTypes()) {
-      for (Field field : structuredDataType.getFields()) {
-        DataType<?> fieldType = field.getType();
-        if (fieldType != null) {
-          Language l = fieldType.getLanguage();
-          if (l != null) {
-            usedLanguages.add(l);
+    for (LanguageEntity<?> element : language.getElements()) {
+      if (element instanceof Classifier<?>) {
+        for (Feature<?> feature : ((Classifier<?>) element).getFeatures()) {
+          if (feature instanceof Property) {
+            addLanguageOf(usedLanguages, ((Property) feature).getType());
+          } else if (feature instanceof Link<?>) {
+            addLanguageOf(usedLanguages, ((Link<?>) feature).getType());
           }
         }
       }
+      if (element instanceof Concept) {
+        Concept concept = (Concept) element;
+        addLanguageOf(usedLanguages, concept.getExtendedConcept());
+        for (Interface interfaze : concept.getImplemented()) {
+          addLanguageOf(usedLanguages, interfaze);
+        }
+      } else if (element instanceof Interface) {
+        for (Interface extendedInterface : ((Interface) element).getExtendedInterfaces()) {
+          addLanguageOf(usedLanguages, extendedInterface);
+        }
+      } else if (element instanceof Annotation) {
+        Annotation annotation = (Annotation) element;
+        addLanguageOf(usedLanguages, annotation.getAnnotates());
+        addLanguageOf(usedLanguages, annotation.getExtendedAnnotation());
+        for (Interface interfaze : annotation.getImplemented()) {
+          addLanguageOf(usedLanguages, interfaze);
+        }
+      } else if (element instanceof StructuredDataType) {
+        for (Field field : ((StructuredDataType) element).getFields()) {
+          addLanguageOf(usedLanguages, field.getType());
+        }
+      }
     }
-    usedLanguages.stream()
-        .filter(
-            ul ->
-                !language.dependsOn().contains(ul)
-                    && ul != language
-                    && !isImplicitlyUsedLanguage(language.getLionWebVersion(), ul))
-        .forEach(
-            ul ->
-                result.addError(
-                    "Language "
-                        + ul.getKey()
-                        + " version "
-                        + ul.getVersion()
-                        + " is not listed among dependencies",
-                    language));
+    usedLanguages.remove(language);
+    if (usedLanguages.isEmpty()) {
+      return;
+    }
+    // Elements of transitive dependencies can be used too
+    Set<Language> allDependencies = new HashSet<>();
+    Deque<Language> toExplore = new ArrayDeque<>(language.dependsOn());
+    while (!toExplore.isEmpty()) {
+      Language dependency = toExplore.pop();
+      if (allDependencies.add(dependency)) {
+        toExplore.addAll(dependency.dependsOn());
+      }
+    }
+    for (Language ul : usedLanguages) {
+      if (!allDependencies.contains(ul)
+          && !isImplicitlyUsedLanguage(language.getLionWebVersion(), ul)) {
+        result.addError(
+            "Language "
+                + ul.getKey()
+                + " version "
+                + ul.getVersion()
+                + " is not listed among dependencies",
+            language);
+      }
+    }
+  }
+
+  private static void addLanguageOf(
+      Set<Language> usedLanguages, @Nullable LanguageEntity<?> entity) {
+    if (entity != null && entity.getLanguage() != null) {
+      usedLanguages.add(entity.getLanguage());
+    }
   }
 
   private boolean isImplicitlyUsedLanguage(
