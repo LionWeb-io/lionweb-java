@@ -55,7 +55,7 @@ tasks.withType<Javadoc>().configureEach {
     classpath = files(mainSourceSet.output, mainSourceSet.compileClasspath, javadocConfig)
     (options as StandardJavadocDocletOptions).apply {
         links(
-            "https://docs.oracle.com/javase/8/docs/api/",
+            "https://docs.oracle.com/en/java/javase/11/docs/api/",
             "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/",
             "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/",
         )
