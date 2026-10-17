@@ -430,7 +430,7 @@ public class LanguageValidatorTest {
   @Test
   public void diamondOfSDTsIsNotCircular() {
     // A{b:B, c:C}, B{d:D}, C{d:D}
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key", "1");
     l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
@@ -455,7 +455,7 @@ public class LanguageValidatorTest {
   @Test
   public void sdtUsedByMultipleFieldsIsNotCircular() {
     // P{q1:Q, q2:Q}, Q{r:R}
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key", "1");
     l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdtP = new StructuredDataType(l, "SDTP", "sdtp_id", "sdtp_key");
     StructuredDataType sdtQ = new StructuredDataType(l, "SDTQ", "sdtq_id", "sdtq_key");
