@@ -579,7 +579,7 @@ public abstract class AbstractSerialization {
         new NodePopulator(this, classifierInstanceResolver, deserializationStatus, lionWebVersion);
     // Annotations are attached after populating all nodes, so that we can follow the order of the
     // parent's annotations list rather than the (undefined) order of the nodes
-    List<SerializedClassifierInstance> annotationsToAttach = new ArrayList<>();
+    Map<String, SerializedClassifierInstance> annotationsToAttach = new HashMap<>();
     serializedClassifierInstances.forEach(
         node -> {
           ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
@@ -603,7 +603,7 @@ public abstract class AbstractSerialization {
                 (AbstractClassifierInstance<?>) deserializedByID.get(node.getParentNodeID());
             AnnotationInstance annotationInstance = (AnnotationInstance) classifierInstance;
             if (abstractClassifierInstance != null) {
-              annotationsToAttach.add(node);
+              annotationsToAttach.put(node.getID(), node);
             } else if (unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
               // Nothing to do
             } else {
@@ -633,19 +633,17 @@ public abstract class AbstractSerialization {
    */
   private static void attachAnnotationsInOrder(
       List<SerializedClassifierInstance> serializedClassifierInstances,
-      List<SerializedClassifierInstance> annotationsToAttach,
+      Map<String, SerializedClassifierInstance> annotationsToAttach,
       IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap,
       Map<String, ClassifierInstance<?>> deserializedByID) {
     if (annotationsToAttach.isEmpty()) {
       return;
     }
-    Map<String, SerializedClassifierInstance> annotationsByID = new HashMap<>();
-    annotationsToAttach.forEach(a -> annotationsByID.put(a.getID(), a));
     for (SerializedClassifierInstance parent : serializedClassifierInstances) {
       for (String annotationID : parent.getAnnotations()) {
-        SerializedClassifierInstance a = annotationsByID.get(annotationID);
+        SerializedClassifierInstance a = annotationsToAttach.get(annotationID);
         if (a != null && Objects.equals(a.getParentNodeID(), parent.getID())) {
-          annotationsByID.remove(annotationID);
+          annotationsToAttach.remove(annotationID);
           ((AbstractClassifierInstance<?>) deserializedByID.get(parent.getID()))
               .addAnnotation((AnnotationInstance) serializedToInstanceMap.get(a));
         }
