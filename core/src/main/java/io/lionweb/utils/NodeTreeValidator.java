@@ -13,7 +13,7 @@ import javax.annotation.Nonnull;
  *
  * <ul>
  *   <li>It validates each node's ID to ensure it conforms to predefined rules.
- *   <li>It ensures root nodes belong to an appropriate classifier.
+ *   <li>It ensures root nodes, and only root nodes, are instances of a partition concept.
  *   <li>It checks containment rules, such as required and single features, are correctly satisfied.
  *   <li>It verifies that all node IDs within the hierarchy are unique.
  * </ul>
@@ -36,6 +36,11 @@ public class NodeTreeValidator extends Validator<Node> {
       validationResult.addErrorIf(
           !node.getClassifier().isPartition(),
           "A root node should be an instance of a Partition concept",
+          node);
+    } else {
+      validationResult.addErrorIf(
+          node.getClassifier().isPartition(),
+          "A non-root node should not be an instance of a Partition concept",
           node);
     }
     node.getClassifier()

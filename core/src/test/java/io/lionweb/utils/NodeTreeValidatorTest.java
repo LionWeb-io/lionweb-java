@@ -3,6 +3,7 @@ package io.lionweb.utils;
 import static org.junit.jupiter.api.Assertions.*;
 
 import io.lionweb.language.Concept;
+import io.lionweb.language.Containment;
 import io.lionweb.model.impl.DynamicNode;
 import java.util.Arrays;
 import java.util.Collections;
@@ -69,5 +70,41 @@ public class NodeTreeValidatorTest {
     DynamicNode node = new DynamicNode("N1", nonPartitionConcept);
     ValidationResult vr = new NodeTreeValidator().validate(node);
     assertTrue(vr.isSuccessful());
+  }
+
+  @Test
+  public void nonPartitionChildOfPartitionIsValid() {
+    Concept partitionConcept = new Concept("P").setKey("P-key").setID("P-id");
+    partitionConcept.setPartition(true);
+    Concept childConcept = new Concept("C").setKey("C-key").setID("C-id");
+    Containment children = Containment.createMultiple("children", childConcept);
+    children.setKey("children-key");
+    partitionConcept.addFeature(children);
+    DynamicNode root = new DynamicNode("N1", partitionConcept);
+    root.addChild(children, new DynamicNode("N2", childConcept));
+    ValidationResult vr = new NodeTreeValidator().validate(root);
+    assertTrue(vr.isSuccessful());
+  }
+
+  @Test
+  public void nestedPartitionIsNotValid() {
+    Concept partitionConcept = new Concept("P").setKey("P-key").setID("P-id");
+    partitionConcept.setPartition(true);
+    Containment children = Containment.createMultiple("children", partitionConcept);
+    children.setKey("children-key");
+    partitionConcept.addFeature(children);
+    DynamicNode root = new DynamicNode("N1", partitionConcept);
+    DynamicNode nested = new DynamicNode("N2", partitionConcept);
+    root.addChild(children, nested);
+    ValidationResult vr = new NodeTreeValidator().validate(root);
+    assertFalse(vr.isSuccessful());
+    assertEquals(
+        new HashSet(
+            Arrays.asList(
+                new Issue(
+                    IssueSeverity.Error,
+                    "A non-root node should not be an instance of a Partition concept",
+                    nested))),
+        vr.getIssues());
   }
 }
