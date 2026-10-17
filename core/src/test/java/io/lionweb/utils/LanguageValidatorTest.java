@@ -16,7 +16,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void anEmptyAnnotationIsInvalid() {
-    Language language = new Language("MyLanguageName").setKey("mm-key").setID("mm-id");
+    Language language =
+        new Language("MyLanguageName").setKey("mm-key").setID("mm-id").setVersion("1");
     Annotation annotation = new Annotation().setKey("aa-key").setID("aa-id");
     language.addElement(annotation);
 
@@ -38,7 +39,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void anAnnotationMustSpecifyAnnotated() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Annotation annotation =
         new Annotation(language, "MyAnnotation", "annotation-id").setKey("annotation-key");
     language.addElement(annotation);
@@ -50,7 +52,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void anAnnotationCanBeValid() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Annotation annotation =
         new Annotation(language, "MyAnnotation", "annotation-id").setKey("annotation-key");
     language.addElement(annotation);
@@ -64,7 +67,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void anEmptyPrimitiveTypeIsInvalid() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     PrimitiveType primitiveType = new PrimitiveType().setKey("pt-key").setID("pt-id");
     language.addElement(primitiveType);
 
@@ -84,7 +88,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void aPrimitiveTypeCanBeValid() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     PrimitiveType primitiveType =
         new PrimitiveType(language, "PrimitiveType", "pt-id").setKey("pt-key");
     language.addElement(primitiveType);
@@ -96,7 +101,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void simpleSelfInheritanceIsCaught() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Concept a = new Concept(language, "a", "id-a").setKey("key-a");
     a.setExtendedConcept(a);
     language.addElement(a);
@@ -108,7 +114,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void indirectSelfInheritanceOfConceptsIsCaught() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Concept a = new Concept(language, "a", "id-a").setKey("key-a");
     Concept b = new Concept(language, "b", "id-b").setKey("key-b");
     a.setExtendedConcept(b);
@@ -126,7 +133,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void directSelfInheritanceOfInterfacesIsCaught() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Interface a = new Interface(language, "a", "a-id").setKey("a-key");
     a.addExtendedInterface(a);
 
@@ -142,7 +150,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void indirectSelfInheritanceOfInterfacesIsCaught() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Interface a = new Interface(language, "a", "a-id").setKey("a-key");
     Interface b = new Interface(language, "b", "b-id").setKey("b-key");
     a.addExtendedInterface(b);
@@ -164,7 +173,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void multipleDirectImplementationsOfTheSameInterfaceAreNotAllowed() {
-    Language language = new Language("MyLanguage").setKey("mm-key").setID("mm-id");
+    Language language = new Language("MyLanguage").setKey("mm-key").setID("mm-id").setVersion("1");
     Concept a = new Concept(language, "a", "id-a").setKey("key-a");
     Interface i = new Interface(language, "I", "id-i").setKey("key-i");
 
@@ -186,7 +195,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void multipleIndirectImplementationsOfTheSameInterfaceAreAllowed() {
-    Language language = new Language("MyLanguage").setID("myM3ID").setKey("myM3key");
+    Language language =
+        new Language("MyLanguage").setID("myM3ID").setKey("myM3key").setVersion("1");
     Concept a = new Concept(language, "A", "a-id").setKey("a-key");
     Concept b = new Concept(language, "B", "b-id").setKey("b-key");
     Interface i = new Interface(language, "I", "i-id").setKey("i-key");
@@ -219,7 +229,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void diamondWithInterfaces() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     Interface base = new Interface(l, "Base", "base_id", "base_key");
     Interface branchA = new Interface(l, "BranchA", "branchA_id", "branchA_key");
     branchA.addExtendedInterface(base);
@@ -236,7 +246,7 @@ public class LanguageValidatorTest {
   // interface I2 extends I1
   @Test
   public void mutualExtensionOfInterfaces() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     Interface branchA = new Interface(l, "BranchA", "branchA_id", "branchA_key");
     Interface branchB = new Interface(l, "BranchB", "branchB_id", "branchB_key");
     branchA.addExtendedInterface(branchB);
@@ -257,7 +267,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void aSubAnnotationShouldNotDefineAnnotatesToADifferentValue() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     Concept c = new Concept(l, "C", "c_id", "c_key");
     Concept c2 = new Concept(l, "C2", "c2_id", "c2_key");
     Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
@@ -277,7 +287,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void aSubAnnotationCanReDefineAnnotatesToTheSameValue() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     Concept c = new Concept(l, "C", "c_id", "c_key");
     Annotation a = new Annotation(l, "A", "branchA_id", "branchA_key");
     a.setAnnotates(c);
@@ -289,7 +299,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void anSDTWithNoFieldsIsInvalid() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
     Set<Issue> issuesA = l.validate().getIssues();
@@ -308,7 +318,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void anSDTShouldNotHaveDirectlyCircularReferences() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
     sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
@@ -326,7 +336,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void anSDTShouldNotHaveIndirectlyCircularReferences() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     l.addDependency(LionCoreBuiltins.getInstance());
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
@@ -351,7 +361,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void checkDirectCircularityOfSDTs() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
     sdt.addField(new Field("MyStringField", LionCoreBuiltins.getString(), "fs_id", "fs_key"));
     assertFalse(LanguageValidator.isCircular(sdt));
@@ -362,7 +372,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void checkIndirectCircularityOfSDTs() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
     sdtA.addField(new Field("MySDTField", sdtB, "fsdt1_id", "fsdt1_key"));
@@ -377,7 +387,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void thirdLevelCircularityOfSDTs() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
     StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
@@ -394,7 +404,7 @@ public class LanguageValidatorTest {
 
   @Test
   public void fifthLevelCircularityOfSDTs() {
-    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
     StructuredDataType sdtA = new StructuredDataType(l, "SDTA", "sdta_id", "sdta_key");
     StructuredDataType sdtB = new StructuredDataType(l, "SDTB", "sdtb_id", "sdtb_key");
     StructuredDataType sdtC = new StructuredDataType(l, "SDTC", "sdtc_id", "sdtc_key");
@@ -419,7 +429,11 @@ public class LanguageValidatorTest {
 
   @Test
   public void signalLWVersionInconsistencyOnConcept() {
-    Language l = new Language(LionWebVersion.v2024_1, "MyLanguage").setID("l-id").setKey("l-key");
+    Language l =
+        new Language(LionWebVersion.v2024_1, "MyLanguage")
+            .setID("l-id")
+            .setKey("l-key")
+            .setVersion("1");
     Concept c = new Concept(LionWebVersion.v2023_1, "MyConcept").setID("c-id").setKey("c-key");
     l.addElement(c);
 
@@ -433,7 +447,11 @@ public class LanguageValidatorTest {
 
   @Test
   public void signalLWVersionInconsistencyOnFeature() {
-    Language l = new Language(LionWebVersion.v2024_1, "MyLanguage").setID("l-id").setKey("l-key");
+    Language l =
+        new Language(LionWebVersion.v2024_1, "MyLanguage")
+            .setID("l-id")
+            .setKey("l-key")
+            .setVersion("1");
     Concept c = new Concept(LionWebVersion.v2024_1, "MyConcept").setID("c-id").setKey("c-key");
     l.addElement(c);
     Property p = new Property(LionWebVersion.v2023_1, "MyProperty").setID("p-id").setKey("p-key");
@@ -449,7 +467,8 @@ public class LanguageValidatorTest {
 
   @Test
   public void verifyLanguageDependencies() {
-    Language l1 = new Language("MyLanguage1", "my_language1_id", "my_language1_key");
+    Language l1 =
+        new Language("MyLanguage1", "my_language1_id", "my_language1_key").setVersion("1");
 
     ValidationResult r1 = new LanguageValidator().validate(l1);
     assertTrue(r1.isSuccessful());
@@ -472,5 +491,53 @@ public class LanguageValidatorTest {
             "Language my_language2_key version null is not listed among dependencies",
             l1),
         r3.getIssues().iterator().next());
+  }
+
+  @Test
+  public void aLanguageWithoutVersionIsInvalid() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key");
+    assertEquals(
+        Collections.singleton(new Issue(IssueSeverity.Error, "Version not set", l)),
+        l.validate().getIssues());
+
+    l.setVersion("");
+    assertEquals(
+        Collections.singleton(new Issue(IssueSeverity.Error, "Version not set", l)),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void anSDTShouldNotHaveFieldsWithTheSameName() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
+    l.addDependency(LionCoreBuiltins.getInstance());
+    StructuredDataType sdt = new StructuredDataType(l, "SDT", "sdt_id", "sdt_key");
+    Field f1 = new Field("f", LionCoreBuiltins.getString(), "f1_id", "f1_key");
+    Field f2 = new Field("f", LionCoreBuiltins.getInteger(), "f2_id", "f2_key");
+    sdt.addField(f1);
+    sdt.addField(f2);
+    assertEquals(
+        new HashSet<>(
+            Arrays.asList(
+                new Issue(IssueSeverity.Error, "Duplicate name f", f1),
+                new Issue(IssueSeverity.Error, "Duplicate name f", f2))),
+        l.validate().getIssues());
+  }
+
+  @Test
+  public void anAnnotationCannotBeTheTypeOfAContainment() {
+    Language l = new Language("MyLanguage", "my_language_id", "my_language_key").setVersion("1");
+    Concept c = new Concept(l, "C", "c-id", "c-key");
+    Annotation a = new Annotation(l, "A", "a-id", "a-key");
+    a.setAnnotates(c);
+    Containment containment = Containment.createOptional("myContainment", a);
+    containment.setID("cont-id").setKey("cont-key");
+    c.addFeature(containment);
+    assertEquals(
+        Collections.singleton(
+            new Issue(
+                IssueSeverity.Error,
+                "A containment cannot hold elements of type annotation",
+                containment)),
+        l.validate().getIssues());
   }
 }

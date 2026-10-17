@@ -38,23 +38,26 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateClassifier(ValidationResult result, Classifier<?> classifier) {
-    classifier
-        .getFeatures()
-        .forEach(
-            (Feature feature) ->
-                result
-                    .addErrorIf(feature.getName() == null, "Simple name not set", feature)
-                    .addErrorIf(feature.getContainer() == null, "Container not set", feature)
-                    .addErrorIf(
-                        feature.getContainer() != null
-                            && ((Node) feature.getContainer()).getID() != null
-                            && !((Node) feature.getContainer()).getID().equals(classifier.getID()),
-                        "Features container not set correctly: set to "
-                            + feature.getContainer()
-                            + " when "
-                            + classifier
-                            + " was expected",
-                        feature));
+    for (Feature<?> feature : classifier.getFeatures()) {
+      result
+          .addErrorIf(feature.getName() == null, "Simple name not set", feature)
+          .addErrorIf(feature.getContainer() == null, "Container not set", feature)
+          .addErrorIf(
+              feature.getContainer() != null
+                  && ((Node) feature.getContainer()).getID() != null
+                  && !((Node) feature.getContainer()).getID().equals(classifier.getID()),
+              "Features container not set correctly: set to "
+                  + feature.getContainer()
+                  + " when "
+                  + classifier
+                  + " was expected",
+              feature)
+          .addErrorIf(
+              feature instanceof Containment
+                  && ((Containment) feature).getType() instanceof Annotation,
+              "A containment cannot hold elements of type annotation",
+              feature);
+    }
     validateNamesAreUnique(classifier.getFeatures(), result);
   }
 
@@ -98,6 +101,7 @@ public class LanguageValidator extends Validator<Language> {
       result.addError(
           "Circular references are forbidden in StructuralDataFields", structuredDataType);
     }
+    validateNamesAreUnique(structuredDataType.getFields(), result);
   }
 
   private void validateLWVersionConsistency(Language language, ValidationResult result) {
@@ -116,7 +120,12 @@ public class LanguageValidator extends Validator<Language> {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
-    result.addErrorIf(language.getName() == null, "Qualified name not set", language);
+    result
+        .addErrorIf(language.getName() == null, "Qualified name not set", language)
+        .addErrorIf(
+            language.getVersion() == null || language.getVersion().isEmpty(),
+            "Version not set",
+            language);
 
     validateNamesAreUnique(language.getElements(), result);
     validateKeysAreNotNull(language, result);
