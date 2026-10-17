@@ -38,31 +38,26 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateClassifier(ValidationResult result, Classifier<?> classifier) {
-    classifier
-        .getFeatures()
-        .forEach(
-            (Feature feature) ->
-                result
-                    .addErrorIf(feature.getName() == null, "Simple name not set", feature)
-                    .addErrorIf(feature.getContainer() == null, "Container not set", feature)
-                    .addErrorIf(
-                        feature.getContainer() != null
-                            && ((Node) feature.getContainer()).getID() != null
-                            && !((Node) feature.getContainer()).getID().equals(classifier.getID()),
-                        "Features container not set correctly: set to "
-                            + feature.getContainer()
-                            + " when "
-                            + classifier
-                            + " was expected",
-                        feature));
-    classifier.getFeatures().stream()
-        .filter(feature -> feature instanceof Containment)
-        .forEach(
-            feature ->
-                result.addErrorIf(
-                    ((Containment) feature).getType() instanceof Annotation,
-                    "An annotation cannot be the type of a containment",
-                    feature));
+    for (Feature<?> feature : classifier.getFeatures()) {
+      result
+          .addErrorIf(feature.getName() == null, "Simple name not set", feature)
+          .addErrorIf(feature.getContainer() == null, "Container not set", feature)
+          .addErrorIf(
+              feature.getContainer() != null
+                  && ((Node) feature.getContainer()).getID() != null
+                  && !((Node) feature.getContainer()).getID().equals(classifier.getID()),
+              "Features container not set correctly: set to "
+                  + feature.getContainer()
+                  + " when "
+                  + classifier
+                  + " was expected",
+              feature)
+          .addErrorIf(
+              feature instanceof Containment
+                  && ((Containment) feature).getType() instanceof Annotation,
+              "A containment cannot hold elements of type annotation",
+              feature);
+    }
     validateNamesAreUnique(classifier.getFeatures(), result);
   }
 

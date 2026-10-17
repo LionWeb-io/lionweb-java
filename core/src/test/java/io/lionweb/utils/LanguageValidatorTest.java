@@ -536,7 +536,7 @@ public class LanguageValidatorTest {
         Collections.singleton(
             new Issue(
                 IssueSeverity.Error,
-                "An annotation cannot be the type of a containment",
+                "A containment cannot hold elements of type annotation",
                 containment)),
         l.validate().getIssues());
   }
