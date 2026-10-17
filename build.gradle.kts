@@ -123,7 +123,7 @@ gradle.projectsEvaluated {
         javadocOptions.charSet = "UTF-8"
         javadocOptions.setAuthor(true)
         javadocOptions.setVersion(true)
-        javadocOptions.links("https://docs.oracle.com/javase/8/docs/api/")
+        javadocOptions.links("https://docs.oracle.com/en/java/javase/11/docs/api/")
         javadocOptions.addStringOption("Xdoclint:none", "-quiet")
         javadocOptions.addStringOption("tag", "generated:a:Generated")
         javadocOptions.addStringOption("tag", "model:a:Model")

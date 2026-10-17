@@ -35,7 +35,7 @@ tasks.register<Javadoc>("myJavadoc") {
     classpath = javadocConfig
     options {
         require(this is StandardJavadocDocletOptions)
-        addStringOption("link", "https://docs.oracle.com/javase/8/docs/api/")
+        addStringOption("link", "https://docs.oracle.com/en/java/javase/11/docs/api/")
         addStringOption("link", "https://download.eclipse.org/modeling/emf/emf/javadoc/2.10.0/")
         addStringOption("link", "https://alexanderpann.github.io/mps-openapi-doc/javadoc_2021.2/")
     }
