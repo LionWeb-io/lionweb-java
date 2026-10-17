@@ -218,6 +218,65 @@ public class DataTypesValuesSerializationTest {
   }
 
   @Test
+  public void testIntegerDeserializationOfValidEncodings() {
+    serialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.v2024_1);
+
+    // Examples of valid encodings from the specification (within the 32-bit range)
+    assertEquals(0, serialization.deserialize(integerType, "0", true));
+    assertEquals(0, serialization.deserialize(integerType, "+0", true));
+    assertEquals(0, serialization.deserialize(integerType, "-0", true));
+    assertEquals(123, serialization.deserialize(integerType, "123", true));
+    assertEquals(-100000, serialization.deserialize(integerType, "-100000", true));
+    assertEquals(999, serialization.deserialize(integerType, "+999", true));
+    assertEquals(Integer.MAX_VALUE, serialization.deserialize(integerType, "2147483647", true));
+    assertEquals(Integer.MIN_VALUE, serialization.deserialize(integerType, "-2147483648", true));
+    assertEquals(-2147483647, serialization.deserialize(integerType, "-2147483647", true));
+    assertEquals(7, serialization.deserialize(integerType, "7", true));
+    assertNull(serialization.deserialize(integerType, null, false));
+  }
+
+  @Test
+  public void testIntegerDeserializationOfInvalidEncodings() {
+    serialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.v2024_1);
+
+    // Examples of invalid encodings from the specification
+    for (String invalid : Arrays.asList("", "+-0", "++1", "00002", "0xAA12", " 5", "-6 ")) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> serialization.deserialize(integerType, invalid, true),
+          invalid);
+    }
+    // Other invalid values, including non-ASCII digits that Integer.parseInt would accept
+    for (String invalid : Arrays.asList("\u0661\u0662", "1\uFF12", "-", "+", "-00", "12a")) {
+      assertThrows(
+          IllegalArgumentException.class,
+          () -> serialization.deserialize(integerType, invalid, true),
+          invalid);
+    }
+  }
+
+  @Test
+  public void testIntegerDeserializationOutsideOf32BitRange() {
+    serialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.v2024_1);
+
+    // Valid per the specification, but outside of the supported range
+    for (String outOfRange :
+        Arrays.asList(
+            "2147483648",
+            "+2147483648",
+            "21474836470",
+            "-2147483649",
+            "100000000200000000300000000400000000500000000600000000700000000800000000900000000999999999",
+            "-999999999900000000800000000700000000600000000500000000400000000300000000200000000100000000")) {
+      IllegalArgumentException e =
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> serialization.deserialize(integerType, outOfRange, true));
+      assertTrue(e.getMessage().contains("32-bit range"), e.getMessage());
+    }
+  }
+
+  @Test
   public void testEnumerationSerialization() {
     serialization.registerLanguage(testLanguage);
     serialization.enableDynamicNodes();
