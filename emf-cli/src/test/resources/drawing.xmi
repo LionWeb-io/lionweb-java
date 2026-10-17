@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<shapes:Drawing xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:shapes="http://example.org/shapes" name="My drawing">
+  <shapes xsi:type="shapes:Circle" filled="true" radius="10"/>
+  <shapes xsi:type="shapes:Square" side="5"/>
+</shapes:Drawing>

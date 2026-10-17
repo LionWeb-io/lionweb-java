@@ -51,6 +51,25 @@ Contains LionCore (M2) and LionWeb (M1) implementations in Java, including (de-)
 ## Emf
 Contains im/exporters to convert models between LionCore &harr; Ecore and LionWeb &harr; EMF.
 
+## Emf-cli
+A command line tool (`lionweb-emf`) exposing the im/exporters of the _emf_ sub-project.
+
+Build a fat JAR and run it:
+
+```
+./gradlew :emf-cli:shadowJar
+java -jar emf-cli/build/libs/lionweb-emf-cli-*-all.jar <command> [options]
+```
+
+| Command | Conversion |
+|---|---|
+| `import-metamodel <file.ecore>... [-o out.json] [-v 2023.1\|2024.1]` | Ecore &rarr; LionCore |
+| `export-metamodel <languages.json>... [-o out.ecore]` | LionCore &rarr; Ecore |
+| `import-model <model.xmi> -m <metamodel.ecore> [-o out.json] [-v 2023.1\|2024.1]` | EMF &rarr; LionWeb |
+| `export-model <model.json> -l <languages.json> [-o out.xmi]` | LionWeb &rarr; EMF |
+
+When `-o` is omitted, the result is printed on standard output. Use `--help` on any command for details.
+
 ## Emf-builtins
 Some of LionCore's built-in elements have no direct representation in Ecore.
 This sub-project is an Eclipse project that defines an _EPackage_ `builtins` to host the equivalent elements in Ecore.
