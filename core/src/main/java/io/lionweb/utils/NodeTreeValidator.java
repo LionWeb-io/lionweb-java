@@ -5,7 +5,9 @@ import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -67,24 +69,41 @@ public class NodeTreeValidator extends Validator<Node> {
                   node);
             });
     for (AnnotationInstance annotationInstance : node.getAnnotations()) {
-      Classifier<?> annotated =
+      Classifier<?> annotatedClassifier =
           annotationInstance.getAnnotationDefinition().getEffectivelyAnnotated();
       // A missing annotates is a language error, reported by the LanguageValidator
-      if (annotated != null
-          && !node.getClassifier().equals(annotated)
-          && !node.getClassifier().allAncestors().contains(annotated)) {
+      if (annotatedClassifier != null
+          && !isSameOrSubtypeOf(node.getClassifier(), annotatedClassifier)) {
         validationResult.addError(
             "Annotation "
                 + annotationInstance.getAnnotationDefinition().getName()
                 + " cannot be applied to an instance of "
                 + node.getClassifier().getName()
                 + ", as it annotates "
-                + annotated.getName(),
+                + annotatedClassifier.getName(),
             annotationInstance);
       }
     }
     ClassifierInstanceUtils.getChildren(node)
         .forEach(child -> validateNodeAndDescendants(child, validationResult));
+  }
+
+  private static boolean isSameOrSubtypeOf(Classifier<?> classifier, Classifier<?> other) {
+    return classifier.equals(other) || inheritsFrom(classifier, other, new HashSet<>());
+  }
+
+  /** Stops as soon as a match is found. The visited set guards against inheritance loops. */
+  private static boolean inheritsFrom(
+      Classifier<?> classifier, Classifier<?> other, Set<Classifier<?>> visited) {
+    if (!visited.add(classifier)) {
+      return false;
+    }
+    for (Classifier<?> ancestor : classifier.directAncestors()) {
+      if (ancestor.equals(other) || inheritsFrom(ancestor, other, visited)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   private void validateIDsAreUnique(Node node, ValidationResult result) {
