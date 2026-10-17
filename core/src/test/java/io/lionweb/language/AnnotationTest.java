@@ -77,7 +77,7 @@ public class AnnotationTest extends BaseTest {
 
   @Test
   public void annotates() {
-    Language language = new Language("LangFoo", "lf", "lf");
+    Language language = new Language("LangFoo", "lf", "lf").setVersion("1");
     Concept myConcept = new Concept(language, "MyConcept", "c", "c");
     Annotation otherAnnotation = new Annotation(language, "OtherAnnotation", "oa", "oa");
     otherAnnotation.setAnnotates(myConcept);
