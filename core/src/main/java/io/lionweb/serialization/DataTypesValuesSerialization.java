@@ -128,21 +128,23 @@ public class DataTypesValuesSerialization {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
     dataTypeDeserializers.put(
         LionCoreBuiltins.getBoolean(lionWebVersion).getID(),
-        new DataTypeDeserializer<Boolean>() {
-
-          @Override
-          public Boolean deserialize(String serializedValue) {
-            throw new UnsupportedOperationException();
-          }
-
-          @Override
-          public Boolean deserialize(String serializedValue, boolean isRequired) {
-            if (!isRequired && serializedValue == null) {
-              return null;
-            }
-            return Boolean.parseBoolean(serializedValue);
-          }
-        });
+        (DataTypeDeserializer<Boolean>)
+            serializedValue -> {
+              // null means unset, also for required properties
+              if (serializedValue == null) {
+                return null;
+              }
+              // The spec allows exactly "true" and "false"
+              switch (serializedValue) {
+                case "true":
+                  return true;
+                case "false":
+                  return false;
+                default:
+                  throw new IllegalArgumentException(
+                      "Invalid Boolean value: \"" + serializedValue + "\"");
+              }
+            });
     dataTypeDeserializers.put(LionCoreBuiltins.getString(lionWebVersion).getID(), s -> s);
     if (lionWebVersion.equals(LionWebVersion.v2023_1)) {
       dataTypeDeserializers.put(
