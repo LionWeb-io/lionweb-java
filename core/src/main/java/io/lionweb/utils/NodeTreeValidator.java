@@ -1,9 +1,14 @@
 package io.lionweb.utils;
 
+import io.lionweb.language.Classifier;
+import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.ClassifierInstanceUtils;
 import io.lionweb.model.Node;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 import javax.annotation.Nonnull;
 
 /**
@@ -15,6 +20,7 @@ import javax.annotation.Nonnull;
  *   <li>It validates each node's ID to ensure it conforms to predefined rules.
  *   <li>It ensures root nodes, and only root nodes, are instances of a partition concept.
  *   <li>It checks containment rules, such as required and single features, are correctly satisfied.
+ *   <li>It checks that annotations are attached only to instances of the classifier they annotate.
  *   <li>It verifies that all node IDs within the hierarchy are unique.
  * </ul>
  */
@@ -63,8 +69,51 @@ public class NodeTreeValidator extends Validator<Node> {
                       + " children",
                   node);
             });
+    for (AnnotationInstance annotationInstance : node.getAnnotations()) {
+      Classifier<?> annotatedClassifier =
+          annotationInstance.getAnnotationDefinition().getEffectivelyAnnotated();
+      // A missing annotates is a language error, reported by the LanguageValidator
+      if (annotatedClassifier != null
+          && !isSameOrSubtypeOf(node.getClassifier(), annotatedClassifier)) {
+        validationResult.addError(
+            "Annotation "
+                + annotationInstance.getAnnotationDefinition().getName()
+                + " cannot be applied to an instance of "
+                + node.getClassifier().getName()
+                + ", as it annotates "
+                + annotatedClassifier.getName(),
+            annotationInstance);
+      }
+    }
     ClassifierInstanceUtils.getChildren(node)
         .forEach(child -> validateNodeAndDescendants(child, validationResult));
+  }
+
+  private static boolean isSameOrSubtypeOf(Classifier<?> classifier, Classifier<?> other) {
+    return isSame(classifier, other)
+        || inheritsFrom(classifier, other, Collections.newSetFromMap(new IdentityHashMap<>()));
+  }
+
+  /** Stops as soon as a match is found. The visited set guards against inheritance loops. */
+  private static boolean inheritsFrom(
+      Classifier<?> classifier, Classifier<?> other, Set<Classifier<?>> visited) {
+    if (!visited.add(classifier)) {
+      return false;
+    }
+    for (Classifier<?> ancestor : classifier.directAncestors()) {
+      if (isSame(ancestor, other) || inheritsFrom(ancestor, other, visited)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * Compares by ID, as equals compares the whole content. Without an ID, only the same instance
+   * matches.
+   */
+  private static boolean isSame(Classifier<?> a, Classifier<?> b) {
+    return a == b || (a.getID() != null && a.getID().equals(b.getID()));
   }
 
   private void validateIDsAreUnique(Node node, ValidationResult result) {
