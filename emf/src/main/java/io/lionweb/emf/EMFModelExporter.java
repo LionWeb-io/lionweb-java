@@ -3,6 +3,9 @@ package io.lionweb.emf;
 import io.lionweb.LionWebVersion;
 import io.lionweb.emf.mapping.LanguageEntitiesToEElementsMapping;
 import io.lionweb.emf.support.AnnotationsEncoding;
+import io.lionweb.language.Containment;
+import io.lionweb.language.Feature;
+import io.lionweb.language.Property;
 import io.lionweb.language.Reference;
 import io.lionweb.model.AnnotationInstance;
 import io.lionweb.model.ClassifierInstance;
@@ -12,6 +15,7 @@ import io.lionweb.model.ReferenceValue;
 import java.util.*;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.eclipse.emf.ecore.*;
 import org.eclipse.emf.ecore.resource.Resource;
 import org.eclipse.emf.ecore.resource.impl.ResourceImpl;
@@ -46,9 +50,38 @@ public class EMFModelExporter extends AbstractEMFExporter {
     return resource;
   }
 
-  private Object convertAttributeValue(Object propertyValue) {
+  private @Nullable Object convertAttributeValue(@Nullable Object propertyValue) {
     // TODO improve...
     return propertyValue;
+  }
+
+  /**
+   * LionWeb Properties cannot be multiple, so an EAttribute with upper bound greater than 1 is
+   * represented in LionWeb as a multiple Containment of auxiliary holder nodes (see {@link
+   * EMFMetamodelImporter}). Here we collect the values stored in such holder nodes.
+   */
+  private @Nonnull List<Object> exportMultipleAttributeValues(
+      @Nonnull ClassifierInstance<?> node, @Nonnull EAttribute eAttribute) {
+    Feature<?> feature = node.getClassifier().getFeatureByName(eAttribute.getName());
+    if (!(feature instanceof Containment)) {
+      throw new IllegalStateException(
+          "EAttribute "
+              + eAttribute.getEContainingClass().getName()
+              + "."
+              + eAttribute.getName()
+              + " has multiplicity many, so a corresponding Containment was expected in "
+              + node.getClassifier().getName()
+              + ", but found "
+              + feature);
+    }
+    Containment containment = (Containment) feature;
+    Property holderProperty =
+        containment
+            .getType()
+            .requirePropertyByName(EMFMetamodelImporter.MULTIPLE_ATTRIBUTE_HOLDER_PROPERTY_NAME);
+    return node.getChildren(containment).stream()
+        .map(holder -> convertAttributeValue(holder.getPropertyValue(holderProperty)))
+        .collect(Collectors.toList());
   }
 
   /**
@@ -100,10 +133,14 @@ public class EMFModelExporter extends AbstractEMFExporter {
                 // This is set by the annotated element when exporting its annotations
               } else if (eStructuralFeature instanceof EAttribute) {
                 EAttribute eAttribute = (EAttribute) eStructuralFeature;
-                Object propertyValue =
-                    ClassifierInstanceUtils.getPropertyValueByName(root, eAttribute.getName());
-                Object attributeValue = convertAttributeValue(propertyValue);
-                eObject.eSet(eAttribute, attributeValue);
+                if (eAttribute.isMany()) {
+                  eObject.eSet(eAttribute, exportMultipleAttributeValues(root, eAttribute));
+                } else {
+                  Object propertyValue =
+                      ClassifierInstanceUtils.getPropertyValueByName(root, eAttribute.getName());
+                  Object attributeValue = convertAttributeValue(propertyValue);
+                  eObject.eSet(eAttribute, attributeValue);
+                }
               } else if (eStructuralFeature instanceof EReference) {
                 EReference eReference = (EReference) eStructuralFeature;
                 if (eReference.isContainment()) {

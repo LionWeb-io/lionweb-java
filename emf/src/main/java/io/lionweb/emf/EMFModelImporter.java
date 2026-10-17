@@ -121,24 +121,12 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
               if (sfValue != null) {
                 if (eStructuralFeature instanceof EAttribute) {
                   EAttribute eAttribute = (EAttribute) eStructuralFeature;
+                  checkAttributeTypeIsSupported(eAttribute);
                   if (eAttribute.isMany()) {
-                    throw new UnsupportedOperationException();
-                  }
-                  if (eAttribute.getEAttributeType().equals(EcorePackage.eINSTANCE.getEInt())) {
-                    ClassifierInstanceUtils.setPropertyValueByName(
-                        node, eStructuralFeature.getName(), sfValue);
-                  } else if (eAttribute
-                      .getEAttributeType()
-                      .equals(EcorePackage.eINSTANCE.getEString())) {
-                    ClassifierInstanceUtils.setPropertyValueByName(
-                        node, eStructuralFeature.getName(), sfValue);
-                  } else if (eAttribute
-                      .getEAttributeType()
-                      .equals(EcorePackage.eINSTANCE.getEBoolean())) {
-                    ClassifierInstanceUtils.setPropertyValueByName(
-                        node, eStructuralFeature.getName(), sfValue);
+                    importMultipleAttribute(eObject, node, eAttribute, (List<?>) sfValue);
                   } else {
-                    throw new UnsupportedOperationException();
+                    ClassifierInstanceUtils.setPropertyValueByName(
+                        node, eStructuralFeature.getName(), sfValue);
                   }
                 } else if (eStructuralFeature instanceof EReference) {
                   EReference eReference = (EReference) eStructuralFeature;
@@ -165,5 +153,40 @@ public class EMFModelImporter extends AbstractEMFImporter<Node> {
                 }
               }
             });
+  }
+
+  private void checkAttributeTypeIsSupported(@Nonnull EAttribute eAttribute) {
+    EDataType type = eAttribute.getEAttributeType();
+    if (!type.equals(EcorePackage.eINSTANCE.getEInt())
+        && !type.equals(EcorePackage.eINSTANCE.getEString())
+        && !type.equals(EcorePackage.eINSTANCE.getEBoolean())) {
+      throw new UnsupportedOperationException(
+          "Unsupported type " + type.getName() + " for EAttribute " + eAttribute.getName());
+    }
+  }
+
+  /**
+   * LionWeb Properties cannot be multiple, so an EAttribute with upper bound greater than 1 is
+   * mapped by {@link EMFMetamodelImporter} to a multiple Containment whose type is an auxiliary
+   * holder Concept. Here we create one holder node per attribute value, storing the value in the
+   * holder's {@link EMFMetamodelImporter#MULTIPLE_ATTRIBUTE_HOLDER_PROPERTY_NAME} Property.
+   */
+  private void importMultipleAttribute(
+      @Nonnull EObject eObject,
+      @Nonnull ClassifierInstance<?> node,
+      @Nonnull EAttribute eAttribute,
+      @Nonnull List<?> values) {
+    Containment containment = node.getClassifier().requireContainmentByName(eAttribute.getName());
+    Concept holderConcept = (Concept) containment.getType();
+    Property holderProperty =
+        holderConcept.requirePropertyByName(
+            EMFMetamodelImporter.MULTIPLE_ATTRIBUTE_HOLDER_PROPERTY_NAME);
+    for (Object value : values) {
+      Node holderNode =
+          nodeInstantiator.instantiate(
+              holderConcept, eObject, Collections.emptyMap(), Collections.emptyMap());
+      holderNode.setPropertyValue(holderProperty, value);
+      node.addChild(containment, holderNode);
+    }
   }
 }
