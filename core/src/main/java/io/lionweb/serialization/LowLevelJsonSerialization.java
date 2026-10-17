@@ -281,7 +281,7 @@ public class LowLevelJsonSerialization {
             serializedClassifierInstance.unsafeAppendPropertyValue(
                 SerializedPropertyValue.get(
                     SerializationUtils.tryToGetMetaPointerProperty(propertyJO, "property"),
-                    SerializationUtils.tryToGetStringProperty(propertyJO, "value")));
+                    SerializationUtils.getStringOrNullProperty(propertyJO, "value")));
           });
 
       JsonArray containments;

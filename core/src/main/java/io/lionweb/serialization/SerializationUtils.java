@@ -38,6 +38,23 @@ class SerializationUtils {
     }
   }
 
+  /**
+   * Returns the value of a member that must be either a JSON string or null (e.g., a property
+   * value). A missing member is treated as null.
+   */
+  @Nullable
+  static String getStringOrNullProperty(JsonObject jsonObject, String propertyName) {
+    JsonElement value = jsonObject.get(propertyName);
+    if (value == null || value.isJsonNull()) {
+      return null;
+    }
+    if (value.isJsonPrimitive() && value.getAsJsonPrimitive().isString()) {
+      return value.getAsString();
+    }
+    throw new DeserializationException(
+        "Expected " + propertyName + " to be a string or null, but found " + value);
+  }
+
   @Nullable
   static MetaPointer tryToGetMetaPointerProperty(JsonObject jsonObject, String propertyName) {
     if (!jsonObject.has(propertyName)) {
