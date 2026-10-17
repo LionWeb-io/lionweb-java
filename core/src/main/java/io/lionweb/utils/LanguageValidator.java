@@ -30,18 +30,12 @@ public class LanguageValidator extends Validator<Language> {
   }
 
   private void validateEnumeration(ValidationResult result, Enumeration enumeration) {
-    enumeration
-        .getLiterals()
-        .forEach(
-            (EnumerationLiteral lit) ->
-                result.addErrorIf(lit.getName() == null, "Simple name not set", lit));
     validateNamesAreUnique(enumeration.getLiterals(), result);
   }
 
   private void validateClassifier(ValidationResult result, Classifier<?> classifier) {
     for (Feature<?> feature : classifier.getFeatures()) {
       result
-          .addErrorIf(feature.getName() == null, "Simple name not set", feature)
           .addErrorIf(feature.getContainer() == null, "Container not set", feature)
           .addErrorIf(
               feature.getContainer() != null
@@ -160,12 +154,10 @@ public class LanguageValidator extends Validator<Language> {
     // Given languages are also valid node trees, we check against errors for node trees
     ValidationResult result = new NodeTreeValidator().validate(language);
 
-    result
-        .addErrorIf(language.getName() == null, "Qualified name not set", language)
-        .addErrorIf(
-            language.getVersion() == null || language.getVersion().isEmpty(),
-            "Version not set",
-            language);
+    result.addErrorIf(
+        language.getVersion() == null || language.getVersion().isEmpty(),
+        "Version not set",
+        language);
 
     validateNamesAreUnique(language.getElements(), result);
     validateNamesAndKeysAreValid(language, result);
@@ -178,7 +170,6 @@ public class LanguageValidator extends Validator<Language> {
         .forEach(
             (LanguageEntity el) -> {
               result
-                  .addErrorIf(el.getName() == null, "Simple name not set", el)
                   .addErrorIf(el.getLanguage() == null, "Language not set", el)
                   .addErrorIf(
                       el.getLanguage() != null && el.getLanguage() != language,
@@ -238,10 +229,13 @@ public class LanguageValidator extends Validator<Language> {
         } else if (!IdUtils.isValidID(key)) {
           result.addError("Invalid key '" + key + "'", n);
         }
-        // Null names are reported elsewhere. The language name can be a qualified name.
+        // The language name can be a qualified name
         String name = keyed.getName();
-        if (name != null
-            && !(n == language ? Naming.isValidQualifiedName(name) : Naming.isValidName(name))) {
+        if (name == null) {
+          result.addError(n == language ? "Qualified name not set" : "Simple name not set", n);
+        } else if (!(n == language
+            ? Naming.isValidQualifiedName(name)
+            : Naming.isValidName(name))) {
           result.addError("Invalid name '" + name + "'", n);
         }
       }
