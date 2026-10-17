@@ -12,6 +12,8 @@ import io.lionweb.model.impl.EnumerationValue;
 import io.lionweb.model.impl.EnumerationValueImpl;
 import io.lionweb.model.impl.M3Node;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -383,10 +385,113 @@ public class DataTypesValuesSerializationTest {
     instance.setFieldValue(testStructuredDataType.getFields().get(0), null);
     instance.setFieldValue(testStructuredDataType.getFields().get(1), 42);
 
-    String serialized = serialization.serialize(testStructuredDataType.getID(), instance);
-    assertNotNull(serialized);
-    assertTrue(serialized.contains("null"));
-    assertTrue(serialized.contains("42"));
+    // Fields are required, so an unset field cannot be serialized
+    assertThrows(
+        IllegalStateException.class,
+        () -> serialization.serialize(testStructuredDataType.getID(), instance));
+  }
+
+  /** Structured datatypes used in the examples of the specification. */
+  private void registerSpecExampleStructuredDataTypes() {
+    Language language = new Language(LionWebVersion.v2024_1, "SpecExamples");
+    language.setID("spec-examples").setKey("spec-examples").setVersion("1");
+    Enumeration currency = new Enumeration(language, "Currency", "aa");
+    currency.setKey("currency");
+    currency.addLiteral(new EnumerationLiteral(currency, "EUR", "a0").setKey("cur-eur"));
+    currency.addLiteral(new EnumerationLiteral(currency, "GBP", "a1").setKey("cur-gbp"));
+    StructuredDataType amount = new StructuredDataType(language, "Amount", "10");
+    amount.setKey("amount");
+    amount.addField(new Field("value", integerType, "11").setKey("amount-val"));
+    amount.addField(new Field("currency", currency, "12").setKey("amount-cur"));
+    amount.addField(new Field("digital", booleanType, "13").setKey("digital"));
+    StructuredDataType decimal = new StructuredDataType(language, "Decimal", "20");
+    decimal.setKey("decimal");
+    decimal.addField(new Field("int", integerType, "21").setKey("decimal-int"));
+    decimal.addField(new Field("frac", integerType, "22").setKey("decimal-frac"));
+    StructuredDataType complex = new StructuredDataType(language, "ComplexNumber", "30");
+    complex.setKey("complex");
+    complex.addField(new Field("real", decimal, "31").setKey("complex-real"));
+    complex.addField(new Field("imaginary", decimal, "32").setKey("complex-imaginary"));
+    language.addElement(currency);
+    language.addElement(amount);
+    language.addElement(decimal);
+    language.addElement(complex);
+
+    serialization.registerLanguage(language);
+    serialization.enableDynamicNodes();
+    serialization.registerLionBuiltinsPrimitiveSerializersAndDeserializers(LionWebVersion.v2024_1);
+  }
+
+  private Object deserializeSpecExample(String sdtID, String serializedValue) {
+    StructuredDataType sdt = new StructuredDataType();
+    sdt.setID(sdtID);
+    return serialization.deserialize(sdt, serializedValue, true);
+  }
+
+  @Test
+  public void testStructuredDataTypeDeserializationOfValidSpecExamples() {
+    registerSpecExampleStructuredDataTypes();
+
+    StructuredDataTypeInstance amount =
+        (StructuredDataTypeInstance)
+            deserializeSpecExample(
+                "10",
+                "{\n  \"amount-val\":  \"42\",\n  \"amount-cur\": \"cur-eur\",\n  \"digital\": \"false\"\n}");
+    assertEquals(
+        "{\"amount-val\":\"42\",\"amount-cur\":\"cur-eur\",\"digital\":\"false\"}",
+        serialization.serialize("10", amount));
+
+    StructuredDataTypeInstance decimal =
+        (StructuredDataTypeInstance)
+            deserializeSpecExample("20", "{\"decimal-int\": \"42\", \"decimal-frac\": \"0\"}");
+    assertEquals(
+        "{\"decimal-int\":\"42\",\"decimal-frac\":\"0\"}", serialization.serialize("20", decimal));
+
+    StructuredDataTypeInstance complex =
+        (StructuredDataTypeInstance)
+            deserializeSpecExample(
+                "30",
+                "{\n\"complex-real\": { \"decimal-int\": \"23\", \"decimal-frac\": \"17\"},\n"
+                    + "\"complex-imaginary\": { \"decimal-int\": \"42\", \"decimal-frac\": \"0\"}\n}");
+    assertEquals(
+        "{\"complex-real\":{\"decimal-int\":\"23\",\"decimal-frac\":\"17\"},"
+            + "\"complex-imaginary\":{\"decimal-int\":\"42\",\"decimal-frac\":\"0\"}}",
+        serialization.serialize("30", complex));
+  }
+
+  @Test
+  public void testStructuredDataTypeDeserializationOfInvalidSpecExamples() {
+    registerSpecExampleStructuredDataTypes();
+
+    Map<String, String> invalidExamples = new LinkedHashMap<>();
+    invalidExamples.put(
+        "non-string field values",
+        "{\n  \"amount-val\":  42,\n  \"amount-cur\": \"cur-eur\",\n  \"digital\": false\n}");
+    invalidExamples.put("missing field", "{\"decimal-int\": \"42\"}");
+    invalidExamples.put("null value", "{\"decimal-int\": \"42\", \"decimal-frac\": null}");
+    invalidExamples.put("missing outer braces", "\"decimal-int\": \"42\", \"decimal-frac\": \"0\"");
+    invalidExamples.put("field name as JSON keys", "{\"int\": \"42\", \"frac\": \"0\"}");
+    invalidExamples.put(
+        "invalid field value", "{\"decimal-int\": \"42\", \"decimal-frac\": \"nothing\"}");
+    invalidExamples.put(
+        "unknown field",
+        "{\"decimal-int\": \"42\", \"decimal-frac\": \"0\", \"decimal-comment\": \"life question?\"}");
+    invalidExamples.put(
+        "recursively nested structured datatype",
+        "{\n\"complex-real\": \"{ \\\"decimal-int\\\": \\\"23\\\", \\\"decimal-frac\\\": \\\"17\\\"}\",\n"
+            + "\"complex-imaginary\": { \"decimal-int\": \"42\", \"decimal-frac\": \"0\"}\n}");
+
+    invalidExamples.forEach(
+        (description, serializedValue) -> {
+          String sdtID =
+              description.equals("non-string field values")
+                  ? "10"
+                  : description.startsWith("recursively") ? "30" : "20";
+          assertThrows(
+              IllegalArgumentException.class,
+              () -> deserializeSpecExample(sdtID, serializedValue),
+              description);
+        });
   }
 
   enum TestEnum2 {

@@ -103,22 +103,45 @@ public class DataTypesValuesSerialization {
     }
     StructuredDataType sdt = structuredDataTypesByID.get(dataTypeID);
     DynamicStructuredDataTypeInstance sdtInstance = new DynamicStructuredDataTypeInstance(sdt);
+    // All fields are required: each one must be present, with a non-null value
     for (Field field : sdt.getFields()) {
-      if (jo.has(field.getKey())) {
-        DataType<?> fieldDataType = field.getType();
-        JsonElement jFieldValue = jo.get(field.getKey());
-        if (jFieldValue instanceof JsonNull) {
-          sdtInstance.setFieldValue(field, null);
-        } else {
-          if (isStructuredDataType(fieldDataType.getID())) {
-            sdtInstance.setFieldValue(
-                field, deserializeSDT(fieldDataType.getID(), jFieldValue.getAsJsonObject()));
-          } else {
-            Object fieldValue = this.deserialize(fieldDataType, jFieldValue.getAsString(), false);
-            sdtInstance.setFieldValue(field, fieldValue);
-          }
-        }
+      DataType<?> fieldDataType = field.getType();
+      JsonElement jFieldValue = jo.get(field.getKey());
+      if (jFieldValue == null || jFieldValue.isJsonNull()) {
+        throw new IllegalArgumentException(
+            "Missing value for field " + field.getKey() + " of " + sdt.getKey() + ": " + jo);
       }
+      if (isStructuredDataType(fieldDataType.getID())) {
+        if (!jFieldValue.isJsonObject()) {
+          throw new IllegalArgumentException(
+              "Field "
+                  + field.getKey()
+                  + " of "
+                  + sdt.getKey()
+                  + " should be a JSON object: "
+                  + jo);
+        }
+        sdtInstance.setFieldValue(
+            field, deserializeSDT(fieldDataType.getID(), jFieldValue.getAsJsonObject()));
+      } else {
+        if (!jFieldValue.isJsonPrimitive() || !jFieldValue.getAsJsonPrimitive().isString()) {
+          throw new IllegalArgumentException(
+              "Field "
+                  + field.getKey()
+                  + " of "
+                  + sdt.getKey()
+                  + " should be a JSON string: "
+                  + jo);
+        }
+        Object fieldValue = this.deserialize(fieldDataType, jFieldValue.getAsString(), false);
+        sdtInstance.setFieldValue(field, fieldValue);
+      }
+    }
+    Set<String> unknownKeys = new HashSet<>(jo.keySet());
+    sdt.getFields().forEach(f -> unknownKeys.remove(f.getKey()));
+    if (!unknownKeys.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Unknown fields " + unknownKeys + " for " + sdt.getKey() + ": " + jo);
     }
     return sdtInstance;
   }
@@ -265,8 +288,18 @@ public class DataTypesValuesSerialization {
       if (serializedValue == null) {
         return null;
       }
-      JsonObject jo = JsonParser.parseString(serializedValue).getAsJsonObject();
-      return deserializeSDT(dataTypeID, jo);
+      JsonElement je;
+      try {
+        je = JsonParser.parseString(serializedValue);
+      } catch (JsonParseException e) {
+        throw new IllegalArgumentException(
+            "Invalid structured data type value: " + serializedValue, e);
+      }
+      if (!je.isJsonObject()) {
+        throw new IllegalArgumentException(
+            "Structured data type value should be a JSON object: " + serializedValue);
+      }
+      return deserializeSDT(dataTypeID, je.getAsJsonObject());
     } else {
       throw new IllegalArgumentException(
           "Unable to deserialize primitive values of type " + dataType);
@@ -282,7 +315,13 @@ public class DataTypesValuesSerialization {
       Objects.requireNonNull(field.getType().getID(), "Field type ID should be set");
       Object fieldValue = structuredDataTypeInstance.getFieldValue(field);
       if (fieldValue == null) {
-        jo.add(field.getKey(), JsonNull.INSTANCE);
+        // Fields are required: neither null nor a missing member would be valid
+        throw new IllegalStateException(
+            "Cannot serialize "
+                + structuredDataTypeInstance
+                + ": field "
+                + field.getKey()
+                + " is not set");
       } else if (isStructuredDataType(field.getType().getID())) {
         // We need to handle those differently to avoid having nested strings
         StructuredDataTypeInstance fieldValueAsSDT = (StructuredDataTypeInstance) fieldValue;
