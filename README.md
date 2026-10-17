@@ -1,7 +1,7 @@
 # LionWeb JVM
 
 ![Maven Central Version](https://img.shields.io/maven-central/v/io.lionweb/lionweb-2024.1-core)
-![Build](https://github.com/LionWeb-io/lionweb-java/actions/workflows/ci.yml/badge.svg)
+![Build](https://github.com/LionWeb-io/lionweb-jvm/actions/workflows/ci.yml/badge.svg)
 
 LionWeb JVM is the JVM implementation of the [LionWeb](https://lionweb.io) specification, providing libraries for Java and Kotlin.
 
@@ -11,7 +11,7 @@ Building the project requires Java 17 or higher. We support and test on Java 17,
 
 ## Documentation
 
-Take a look at the [Documentation](https://lionweb.io/lionweb-java).
+Take a look at the [Documentation](https://lionweb.io/Guides-JVM/Guides-Java/) and the [API documentation](https://lionweb.io/lionweb-jvm/api/index.html).
 
 ## Status of the project
 
