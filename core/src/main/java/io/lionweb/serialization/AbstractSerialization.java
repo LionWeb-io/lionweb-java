@@ -580,10 +580,14 @@ public abstract class AbstractSerialization {
     // Annotations are attached after populating all nodes, so that we can follow the order of the
     // parent's annotations list rather than the (undefined) order of the nodes
     Map<String, SerializedClassifierInstance> annotationsToAttach = new HashMap<>();
+    List<SerializedClassifierInstance> annotatedNodes = new ArrayList<>();
     serializedClassifierInstances.forEach(
         node -> {
           ClassifierInstance<?> classifierInstance = serializedToInstanceMap.get(node);
           nodePopulator.populateClassifierInstance(classifierInstance, node);
+          if (!node.getAnnotations().isEmpty()) {
+            annotatedNodes.add(node);
+          }
           ClassifierInstance<?> parent = classifierInstanceResolver.resolve(node.getParentNodeID());
           if (parent instanceof ProxyNode
               && unavailableParentPolicy == UnavailableNodePolicy.PROXY_NODES) {
@@ -613,10 +617,7 @@ public abstract class AbstractSerialization {
           }
         });
     attachAnnotationsInOrder(
-        serializedClassifierInstances,
-        annotationsToAttach,
-        serializedToInstanceMap,
-        deserializedByID);
+        annotatedNodes, annotationsToAttach, serializedToInstanceMap, deserializedByID);
 
     // We want the nodes returned to be sorted as the original serializedNodes
     List<ClassifierInstance<?>> nodesWithOriginalSorting =
@@ -632,14 +633,14 @@ public abstract class AbstractSerialization {
    * listed by their parent are not attached.
    */
   private static void attachAnnotationsInOrder(
-      List<SerializedClassifierInstance> serializedClassifierInstances,
+      List<SerializedClassifierInstance> annotatedNodes,
       Map<String, SerializedClassifierInstance> annotationsToAttach,
       IdentityHashMap<SerializedClassifierInstance, ClassifierInstance<?>> serializedToInstanceMap,
       Map<String, ClassifierInstance<?>> deserializedByID) {
     if (annotationsToAttach.isEmpty()) {
       return;
     }
-    for (SerializedClassifierInstance parent : serializedClassifierInstances) {
+    for (SerializedClassifierInstance parent : annotatedNodes) {
       for (String annotationID : parent.getAnnotations()) {
         SerializedClassifierInstance a = annotationsToAttach.get(annotationID);
         if (a != null && Objects.equals(a.getParentNodeID(), parent.getID())) {
