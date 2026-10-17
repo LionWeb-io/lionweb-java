@@ -11,6 +11,7 @@ import io.lionweb.model.impl.EnumerationValueImpl;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -26,6 +27,9 @@ public class DataTypesValuesSerialization {
   private final Map<String, Enumeration> enumerationsByID = new HashMap<>();
   private final Map<String, StructuredDataType> structuredDataTypesByID = new HashMap<>();
   private boolean dynamicNodesEnabled = false;
+
+  /** Base-10 with an optional sign and no leading zeros, as required by the specification. */
+  private static final Pattern INTEGER_PATTERN = Pattern.compile("[+-]?(0|[1-9][0-9]*)");
 
   public void registerLanguage(@Nonnull Language language) {
     Objects.requireNonNull(language, "language should not be null");
@@ -123,6 +127,12 @@ public class DataTypesValuesSerialization {
     return sdtInstance;
   }
 
+  /**
+   * Registers serializers and deserializers for the LionCore built-in primitive types.
+   *
+   * <p>Integers are represented as Java {@code int}: values outside the 32-bit signed range are
+   * refused with an {@link IllegalArgumentException}, as permitted by the specification.
+   */
   public void registerLionBuiltinsPrimitiveSerializersAndDeserializers(
       @Nonnull LionWebVersion lionWebVersion) {
     Objects.requireNonNull(lionWebVersion, "lionWebVersion should not be null");
@@ -164,7 +174,17 @@ public class DataTypesValuesSerialization {
               if (serializedValue == null) {
                 return null;
               }
-              return Integer.parseInt(serializedValue);
+              if (!INTEGER_PATTERN.matcher(serializedValue).matches()) {
+                throw new IllegalArgumentException(
+                    "Invalid Integer value: \"" + serializedValue + "\"");
+              }
+              try {
+                return Integer.parseInt(serializedValue);
+              } catch (NumberFormatException e) {
+                throw new IllegalArgumentException(
+                    "Integer value out of the supported 32-bit range: \"" + serializedValue + "\"",
+                    e);
+              }
             });
 
     dataTypeSerializers.put(
